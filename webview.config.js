@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 let mode = 'production';
-let dist = 'web-build';
+let target = 'web-build';
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const pkgJson = require('./package.json');
@@ -13,7 +13,7 @@ if (args) {
       mode = args[index + 1] || mode;
     }
     if (p === '--dist') {
-      dist = args[index + 1] || dist;
+      target = args[index + 1] || target;
     }
   });
 }
@@ -27,6 +27,9 @@ const baseConfig = dist => {
       static: {
         directory: path.join(__dirname, 'web-build'),
       },
+      hot: false,
+      liveReload: false,
+      webSocketServer: false,
       compress: true,
       port: 9000,
     },
@@ -34,7 +37,7 @@ const baseConfig = dist => {
       rules: [
         {
           exclude: /(node_modules)/,
-          test: /\.(js|mjs|ts|tsx)$/,
+          test: /\.(js|cjs|mjs|ts|tsx)$/,
           use: [
             {
               loader: require.resolve('babel-loader'),
@@ -55,17 +58,20 @@ const baseConfig = dist => {
       hints: false,
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        filename: 'index.html',
-        template: './src/web/index.html',
-        chunks: ['main'],
-      }),
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify(mode),
           PKG_NAME: JSON.stringify(pkgJson.name),
           PKG_VERSION: JSON.stringify(pkgJson.version),
         },
+      }),
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: './src/web/index.html',
+        chunks: ['main'],
       }),
     ],
     resolve: {
@@ -78,12 +84,12 @@ const baseConfig = dist => {
         http: require.resolve('stream-http'),
         https: require.resolve('https-browserify'),
         assert: require.resolve('assert'),
+        buffer: require.resolve('buffer'),
         zlib: false,
         url: false,
       },
     },
-    watch: true,
   };
 };
 
-module.exports = baseConfig(dist);
+module.exports = baseConfig(target);
