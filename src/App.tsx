@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useRef } from 'react';
+import React from 'react';
 import {WebViewProvider} from './providers/WebViewProvider';
 import {Home} from './screens/Home';
 import {store} from './stores';
@@ -10,9 +10,12 @@ import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import { NavigationContainer, NavigationContainerRef, useNavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import {CreateAccount} from './screens/CreateAccount';
-import {useColorScheme} from 'react-native';
+import {StatusBar, useColorScheme} from 'react-native';
 import {ThemeContext} from './providers/contexts';
 import {THEME_PRESET} from './themes';
 import {Header} from './components/Header';
@@ -36,7 +39,8 @@ export const App = () => {
     <Provider store={store}>
       <WebViewProvider>
         <ThemeContext.Provider value={theme}>
-          <Header navigationRef={navigationRef}/>
+          <StatusBar backgroundColor={theme.colors.background} />
+          <Header navigationRef={navigationRef} />
           <NavigationContainer ref={navigationRef} theme={theme}>
             <Stack.Navigator
               initialRouteName="Home"
