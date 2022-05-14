@@ -1,12 +1,11 @@
-import {ScrollView, Text, View} from 'react-native';
+import {Image, View} from 'react-native';
 import React from 'react';
 
 export const NFTTab = () => {
   return (
-    <ScrollView>
-      <View>
-        <Text>NFTs Tab</Text>
-      </View>
-    </ScrollView>
+    <View
+      style={{alignItems: 'center', height: '100%', justifyContent: 'center'}}>
+      <Image source={require('../../assets/nft-coming-soon.png')} />
+    </View>
   );
 };

@@ -1,12 +1,11 @@
 import React from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {Image, View} from 'react-native';
 
 export const CrowdloansTab = () => {
   return (
-    <ScrollView>
-      <View>
-        <Text>Crowdloans Tab</Text>
-      </View>
-    </ScrollView>
+    <View
+      style={{alignItems: 'center', height: '100%', justifyContent: 'center'}}>
+      <Image source={require('../../assets/crowdloans-empty-list.png')} />
+    </View>
   );
 };
