@@ -19,6 +19,7 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {ThemeContext} from './providers/contexts';
 import {THEME_PRESET} from './themes';
 import {Header} from './components/Header';
+import {ToastProvider} from 'react-native-toast-notifications';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -37,28 +38,34 @@ export const App = () => {
 
   return (
     <Provider store={store}>
-      <WebViewProvider>
-        <ThemeContext.Provider value={theme}>
-          <StatusBar backgroundColor={theme.colors.background} />
-          <Header navigationRef={navigationRef} />
-          <NavigationContainer ref={navigationRef} theme={theme}>
-            <Stack.Navigator
-              initialRouteName="Home"
-              screenOptions={{
-                animation: 'fade_from_bottom',
-              }}>
-              <Stack.Group screenOptions={{headerShown: false}}>
-                <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen
-                  name="CreateAccount"
-                  component={CreateAccount}
-                  options={{title: 'Create Account'}}
-                />
-              </Stack.Group>
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ThemeContext.Provider>
-      </WebViewProvider>
+      <ToastProvider
+        normalColor={theme.colors.notification}
+        successColor={theme.colors.primary}
+        warningColor={theme.colors.notification_warning}
+        dangerColor={theme.colors.notification_danger}>
+        <WebViewProvider>
+          <ThemeContext.Provider value={theme}>
+            <StatusBar backgroundColor={theme.colors.background} />
+            <Header navigationRef={navigationRef} />
+            <NavigationContainer ref={navigationRef} theme={theme}>
+              <Stack.Navigator
+                initialRouteName="Home"
+                screenOptions={{
+                  animation: 'fade_from_bottom',
+                }}>
+                <Stack.Group screenOptions={{headerShown: false}}>
+                  <Stack.Screen name="Home" component={Home} />
+                  <Stack.Screen
+                    name="CreateAccount"
+                    component={CreateAccount}
+                    options={{title: 'Create Account'}}
+                  />
+                </Stack.Group>
+              </Stack.Navigator>
+            </NavigationContainer>
+          </ThemeContext.Provider>
+        </WebViewProvider>
+      </ToastProvider>
     </Provider>
   );
 };

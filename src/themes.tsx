@@ -9,6 +9,9 @@ export interface SWTheme extends Theme {
     text: string;
     border: string;
     notification: string;
+    notification_success: string;
+    notification_warning: string;
+    notification_danger: string;
   };
 }
 
@@ -22,7 +25,10 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       card: 'rgb(18, 18, 18)',
       text: 'rgb(229, 229, 231)',
       border: 'rgb(39, 39, 41)',
-      notification: 'rgb(255, 69, 58)',
+      notification: 'rgba(0, 0, 0, 0.8)',
+      notification_success: 'rgba(66, 197, 154, 0.8)',
+      notification_warning: 'rgba(240, 189, 24, 0.8)',
+      notification_danger: 'rgba(230, 41, 51, 0.8)',
     },
   },
   light: {
@@ -34,7 +40,10 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       card: 'rgb(255, 255, 255)',
       text: 'rgb(28, 28, 30)',
       border: 'rgb(216, 216, 216)',
-      notification: 'rgb(255, 59, 48)',
+      notification: 'rgba(0, 0, 0, 0.8)',
+      notification_success: 'rgba(66, 197, 154, 0.8)',
+      notification_warning: 'rgba(240, 189, 24, 0.8)',
+      notification_danger: 'rgba(230, 41, 51, 0.8)',
     },
   },
 };

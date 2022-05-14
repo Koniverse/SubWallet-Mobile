@@ -1,10 +1,4 @@
-import React, {
-  MutableRefObject,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {MutableRefObject, useEffect, useRef, useState} from 'react';
 import {WebViewContext} from './contexts';
 import WebView from 'react-native-webview';
 import {
@@ -19,6 +13,7 @@ import {WebViewMessage} from 'react-native-webview/lib/WebViewTypes';
 import {updateAccounts, updateCurrentAccount} from '../stores/Accounts';
 import {useDispatch} from 'react-redux';
 import {updatePrice} from '../stores/Price';
+import {useToast} from 'react-native-toast-notifications';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -41,6 +36,7 @@ export const WebViewProvider = ({
   const webRef = useRef<WebView>();
   const dispatch = useDispatch();
   const [status, setStatus] = useState('init');
+  const toast = useToast();
 
   function onMessage(data: NativeSyntheticEvent<WebViewMessage>) {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -50,6 +46,9 @@ export const WebViewProvider = ({
         // @ts-ignore
         const webViewStatus = data.response?.status as string;
         setStatus(webViewStatus);
+        toast.show(webViewStatus, {
+          type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
+        });
         return true;
       } else {
         return false;
