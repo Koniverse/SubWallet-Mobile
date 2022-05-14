@@ -6,39 +6,9 @@ import {StakingTab} from './Home/StakingTab';
 import {TransfersTab} from './Home/TransfersTab';
 import {CryptoTab} from './Home/CryptoTab';
 
-// @ts-ignore
-import CryptoLogo from '../assets/home-tab-icon/crypto.svg';
-// @ts-ignore
-import CryptoLogoFocused from '../assets/home-tab-icon/crypto-active.svg';
-// @ts-ignore
-import NFTLogo from '../assets/home-tab-icon/nfts.svg';
-// @ts-ignore
-import NFTLogoFocused from '../assets/home-tab-icon/nfts-active.svg';
-// @ts-ignore
-import CrowndloanLogo from '../assets/home-tab-icon/crowdloans.svg';
-// @ts-ignore
-import CrowndloanLogoFocused from '../assets/home-tab-icon/crowdloans-active.svg';
-// @ts-ignore
-import StakingLogo from '../assets/home-tab-icon/staking.svg';
-// @ts-ignore
-import StakingLogoFocused from '../assets/home-tab-icon/staking-active.svg';
-// @ts-ignore
-import TransferLogo from '../assets/home-tab-icon/transfers.svg';
-// @ts-ignore
-import TransferLogoFocused from '../assets/home-tab-icon/transfers-active.svg';
-
-const logoMap = {
-  crypto: CryptoLogo,
-  crypto_focused: CryptoLogoFocused,
-  nfts: NFTLogo,
-  nfts_focused: NFTLogoFocused,
-  crowdloan: CrowndloanLogo,
-  crowdloan_focused: CrowndloanLogoFocused,
-  staking: StakingLogo,
-  staking_focused: StakingLogoFocused,
-  transfer: TransferLogo,
-  transfer_focused: TransferLogoFocused,
-};
+import {useSubWalletTheme} from '../hooks/useSubWalletTheme';
+import {TouchableHighlight} from 'react-native';
+import {HomeTabIcon} from '../assets';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -50,43 +20,91 @@ type HomeStackParamList = {
 
 export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
+  const swThemeColor = useSubWalletTheme().colors;
 
-  const getHomeTabIcon = (iconName: string) => {
-    // @ts-ignore
-    return ({focused, size}) => {
+  function getHomeTabIcon(
+    iconName: string,
+  ): (rs: {
+    color: string;
+    size: number;
+    focused: boolean;
+  }) => React.ReactElement {
+    return ({color, size}) => {
       // @ts-ignore
-      const IconComponent = logoMap[focused ? iconName + '_focused' : iconName];
-      return <IconComponent width={size} />;
+      const IconComponent = HomeTabIcon[iconName];
+      return <IconComponent width={size} color={color} />;
     };
-  };
+  }
+
   return (
     <Tab.Navigator
       initialRouteName={'NFT'}
-      screenOptions={{headerShown: false}}>
+      screenOptions={{
+        headerShown: false,
+        tabBarButton: props => {
+          let customStyle = {marginLeft: 10, marginRight: 10};
+          if (props.accessibilityState?.selected) {
+            customStyle = {
+              ...customStyle,
+              // @ts-ignore
+              borderTopWidth: 2,
+              borderTopColor: swThemeColor.primary,
+              marginTop: -2,
+            };
+          }
+          // @ts-ignore
+          props.style = [[...props.style], customStyle];
+
+          return <TouchableHighlight {...props} />;
+        },
+        tabBarIconStyle: {
+          marginTop: 6,
+        },
+        tabBarLabelStyle: {
+          paddingBottom: 8,
+        },
+        tabBarStyle: {
+          paddingTop: 0,
+          paddingBottom: 0,
+          backgroundColor: swThemeColor.background,
+          borderTopWidth: 2,
+          height: 64,
+        },
+      }}>
       <Tab.Screen
         name={'Crypto'}
         component={CryptoTab}
-        options={{tabBarIcon: getHomeTabIcon('crypto'), tabBarActiveTintColor: '#42C59A'}}
+        options={{
+          tabBarIcon: getHomeTabIcon('crypto'),
+        }}
       />
       <Tab.Screen
         name={'NFT'}
         component={NFTTab}
-        options={{tabBarIcon: getHomeTabIcon('nfts'), tabBarActiveTintColor: '#42C59A'}}
+        options={{
+          tabBarIcon: getHomeTabIcon('nft'),
+        }}
       />
       <Tab.Screen
         name={'Crowdloans'}
         component={CrowdloansTab}
-        options={{tabBarIcon: getHomeTabIcon('crowdloan'), tabBarActiveTintColor: '#42C59A'}}
+        options={{
+          tabBarIcon: getHomeTabIcon('crowdloan'),
+        }}
       />
       <Tab.Screen
         name={'Staking'}
         component={StakingTab}
-        options={{tabBarIcon: getHomeTabIcon('staking'), tabBarActiveTintColor: '#42C59A'}}
+        options={{
+          tabBarIcon: getHomeTabIcon('staking'),
+        }}
       />
       <Tab.Screen
         name={'Transfers'}
         component={TransfersTab}
-        options={{tabBarIcon: getHomeTabIcon('transfer'), tabBarActiveTintColor: '#42C59A'}}
+        options={{
+          tabBarIcon: getHomeTabIcon('transfer'),
+        }}
       />
     </Tab.Navigator>
   );
