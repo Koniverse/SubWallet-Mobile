@@ -4,7 +4,7 @@
 import React from 'react';
 import {WebViewProvider} from './providers/WebViewProvider';
 import {Home} from './screens/Home';
-import {store} from './stores';
+import {persistor, store} from './stores';
 import {Provider} from 'react-redux';
 import {
   createNativeStackNavigator,
@@ -20,10 +20,13 @@ import {ThemeContext} from './providers/contexts';
 import {THEME_PRESET} from './themes';
 import {Header} from './components/Header';
 import {ToastProvider} from 'react-native-toast-notifications';
+import {AccountList} from './screens/AccountList';
+import {PersistGate} from 'redux-persist/integration/react';
 
 export type RootStackParamList = {
   Home: undefined;
   CreateAccount: undefined;
+  AccountList: undefined;
 };
 
 export type NavigationProps =
@@ -38,34 +41,41 @@ export const App = () => {
 
   return (
     <Provider store={store}>
-      <ToastProvider
-        normalColor={theme.colors.notification}
-        successColor={theme.colors.primary}
-        warningColor={theme.colors.notification_warning}
-        dangerColor={theme.colors.notification_danger}>
-        <WebViewProvider>
-          <ThemeContext.Provider value={theme}>
-            <StatusBar backgroundColor={theme.colors.background} />
-            <Header navigationRef={navigationRef} />
-            <NavigationContainer ref={navigationRef} theme={theme}>
-              <Stack.Navigator
-                initialRouteName="Home"
-                screenOptions={{
-                  animation: 'fade_from_bottom',
-                }}>
-                <Stack.Group screenOptions={{headerShown: false}}>
-                  <Stack.Screen name="Home" component={Home} />
-                  <Stack.Screen
-                    name="CreateAccount"
-                    component={CreateAccount}
-                    options={{title: 'Create Account'}}
-                  />
-                </Stack.Group>
-              </Stack.Navigator>
-            </NavigationContainer>
-          </ThemeContext.Provider>
-        </WebViewProvider>
-      </ToastProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ToastProvider
+          normalColor={theme.colors.notification}
+          successColor={theme.colors.primary}
+          warningColor={theme.colors.notification_warning}
+          dangerColor={theme.colors.notification_danger}>
+          <WebViewProvider>
+            <ThemeContext.Provider value={theme}>
+              <StatusBar backgroundColor={theme.colors.background} />
+              <Header navigationRef={navigationRef} />
+              <NavigationContainer ref={navigationRef} theme={theme}>
+                <Stack.Navigator
+                  initialRouteName="Home"
+                  screenOptions={{
+                    animation: 'fade_from_bottom',
+                  }}>
+                  <Stack.Group screenOptions={{headerShown: false}}>
+                    <Stack.Screen name="Home" component={Home} />
+                    <Stack.Screen
+                      name="CreateAccount"
+                      component={CreateAccount}
+                      options={{title: 'Create Account'}}
+                    />
+                    <Stack.Screen
+                      name="AccountList"
+                      component={AccountList}
+                      options={{title: 'Account List'}}
+                    />
+                  </Stack.Group>
+                </Stack.Navigator>
+              </NavigationContainer>
+            </ThemeContext.Provider>
+          </WebViewProvider>
+        </ToastProvider>
+      </PersistGate>
     </Provider>
   );
 };

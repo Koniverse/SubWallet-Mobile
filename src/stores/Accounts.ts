@@ -1,8 +1,14 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AccountJson} from '@subwallet/extension-base/background/types';
 
-const ACCOUNT_STORE_DEFAULT: {accounts: AccountJson[]; currentAccount: string} =
-  {accounts: [], currentAccount: 'all'};
+const ACCOUNT_STORE_DEFAULT: {
+  accounts: AccountJson[];
+  currentAccountAddress: string;
+  currentAccount?: AccountJson;
+} = {
+  accounts: [],
+  currentAccountAddress: 'all',
+};
 
 const accountsSlice = createSlice({
   name: 'accounts',
@@ -12,7 +18,10 @@ const accountsSlice = createSlice({
       state.accounts = action.payload;
     },
     updateCurrentAccount(state, action: PayloadAction<string>) {
-      state.currentAccount = action.payload;
+      state.currentAccountAddress = action.payload;
+      state.currentAccount = state.accounts.find(
+        acc => acc.address === state.currentAccountAddress,
+      );
     },
   },
 });

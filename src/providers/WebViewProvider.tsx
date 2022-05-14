@@ -67,8 +67,9 @@ export const WebViewProvider = ({
         saveCurrentAccountAddress({address: 'ALL'}, () => {});
       }
     });
+
     subscribePrice(null, price => {
-      updatePrice(price);
+      dispatch(updatePrice(price));
     });
   }
 

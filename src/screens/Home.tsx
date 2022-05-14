@@ -38,7 +38,7 @@ export const Home = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName={'NFT'}
+      initialRouteName={'Crypto'}
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
