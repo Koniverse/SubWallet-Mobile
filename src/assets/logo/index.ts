@@ -267,7 +267,7 @@ const LogosMap: Record<string, string> = {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   xcausd: require('./ausd.svg'),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  default: require('./default.svg')
+  default: require('./default.svg'),
 };
 
 export default LogosMap;

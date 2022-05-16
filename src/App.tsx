@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {WebViewProvider} from './providers/WebViewProvider';
 import {Home} from './screens/Home';
 import {persistor, store} from './stores';
