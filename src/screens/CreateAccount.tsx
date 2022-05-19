@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, ScrollView, Text, TextInput } from 'react-native';
 import { createAccountSuriV2, createSeedV2 } from '../messaging';
 import { useNavigation } from '@react-navigation/native';
@@ -23,14 +23,14 @@ export const CreateAccount = () => {
       .catch(console.error);
   }, []);
 
-  const createAccount = () => {
+  const createAccount = useCallback(() => {
     createAccountSuriV2(name, password, seedPhase, true, ['sr25519'])
       .then(created => {
         console.log(created);
         navigation.navigate('Home');
       })
       .catch(console.error);
-  };
+  }, [name, navigation, password, seedPhase]);
 
   return (
     <ScrollView>

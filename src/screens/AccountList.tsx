@@ -6,7 +6,7 @@ import { RootState } from 'stores/index';
 import { Button, ScrollView, Text, View } from 'react-native';
 import { Account } from 'components/Account';
 
-export function AccountList() {
+export const AccountList = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
@@ -29,4 +29,4 @@ export function AccountList() {
       </View>
     </ScrollView>
   );
-}
+};

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NFTTab } from './Home/NFTTab';
 import { CrowdloansTab } from './Home/CrowdloansTab';
@@ -26,15 +26,16 @@ export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const swThemeColor = useSubWalletTheme().colors;
 
-  function getHomeTabIcon(
-    iconName: string,
-  ): (rs: { color: string; size: number; focused: boolean }) => React.ReactElement {
-    return ({ color, size }) => {
-      // @ts-ignore
-      const IconComponent = HomeTabIcon[iconName];
-      return <IconComponent width={size} color={color} />;
-    };
-  }
+  const getHomeTabIcon = useCallback(
+    (iconName: string): ((rs: { color: string; size: number; focused: boolean }) => React.ReactElement) => {
+      return ({ color, size }) => {
+        // @ts-ignore
+        const IconComponent = HomeTabIcon[iconName];
+        return <IconComponent width={size} color={color} />;
+      };
+    },
+    [],
+  );
 
   return (
     <Tab.Navigator

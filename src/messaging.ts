@@ -80,11 +80,11 @@ type Handlers = Record<string, Handler>;
 const handlers: Handlers = {};
 let webviewRef: MutableRefObject<WebView | undefined>;
 
-export function setViewRef(viewRef: MutableRefObject<WebView | undefined>) {
+export const setViewRef = (viewRef: MutableRefObject<WebView | undefined>) => {
   webviewRef = viewRef;
-}
+};
 
-export function listenMessage(data: Message['data'], handleUnknown?: (data: Message['data']) => boolean): void {
+export const listenMessage = (data: Message['data'], handleUnknown?: (data: Message['data']) => boolean): void => {
   const handler = handlers[data.id];
   console.debug(data);
   if (!handler) {
@@ -111,14 +111,14 @@ export function listenMessage(data: Message['data'], handleUnknown?: (data: Mess
   } else {
     handler.resolve(data.response);
   }
-}
+};
 
 // @ts-ignore
-export function postMessage({ id, message, request }) {
+export const postMessage = ({ id, message, request }) => {
   const injection = 'window.postMessage(' + JSON.stringify({ id, message, request }) + ')';
   console.debug(injection);
   webviewRef.current?.injectJavaScript(injection);
-}
+};
 
 function sendMessage<TMessageType extends MessageTypesWithNullRequest>(
   message: TMessageType,

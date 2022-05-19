@@ -1,6 +1,6 @@
 import { QrScannerContext } from 'providers/contexts';
 import { useContext } from 'react';
 
-export function useQrScanner() {
+export const useQrScanner = () => {
   return useContext(QrScannerContext);
-}
+};

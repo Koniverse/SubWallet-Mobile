@@ -18,12 +18,12 @@ export const QrScannerProvider = ({
   const [result, setResult] = useState<QrResult>({ ...QR_RESULT_DEFAULT });
   const [status, setStatus] = useState<'off' | 'scanning' | 'scanned'>('off');
 
-  function open({ onScanned, onClosed }: QrCallBackMap) {
+  const open = ({ onScanned, onClosed }: QrCallBackMap) => {
     callbackMap.onScanned = onScanned;
     callbackMap.onClosed = onClosed;
     setStatus('scanning');
     navigationRef.navigate('QrScanner');
-  }
+  };
 
   const _generateQrResult = useCallback(
     (val: QrValue) => {

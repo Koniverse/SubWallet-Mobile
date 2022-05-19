@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { ThemeContext } from 'providers/contexts';
 
-export function useSubWalletTheme() {
+export const useSubWalletTheme = () => {
   return useContext(ThemeContext);
-}
+};

@@ -13,7 +13,7 @@ interface HeaderProps {
   navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
 }
 
-export function Header({ navigationRef }: HeaderProps): ReactElement<HeaderProps> {
+export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps> => {
   const swThemeColor = useSubWalletTheme().colors;
   const Logo = useSVG().Logo;
   const accountStore = useSelector((state: RootState) => state.accounts);
@@ -59,4 +59,4 @@ export function Header({ navigationRef }: HeaderProps): ReactElement<HeaderProps
       </TouchableWithoutFeedback>
     </View>
   );
-}
+};

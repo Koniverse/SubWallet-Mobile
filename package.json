@@ -17,7 +17,6 @@
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "@reduxjs/toolkit": "^1.8.1",
-    "@subwallet/extension-koni-base": "0.4.2-1",
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-camera": "^4.2.1",
@@ -34,6 +33,7 @@
     "redux-thunk": "^2.4.1"
   },
   "devDependencies": {
+    "@subwallet/extension-koni-base": "0.4.2-1",
     "@babel/core": "^7.12.9",
     "@babel/plugin-syntax-import-meta": "^7.10.4",
     "@babel/preset-env": "^7.17.12",
@@ -77,8 +77,8 @@
   },
   "resolutions": {
     "@types/react": "^17",
-    "@polkadot/api": "^8.4.2",
     "@polkadot/util": "^9.2.1",
+    "@polkadot/api": "^8.4.2",
     "@polkadot/util-crypto": "^9.2.1",
     "@polkadot/wasm-crypto": "^6.1.1"
   },

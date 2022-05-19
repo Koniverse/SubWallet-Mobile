@@ -5,7 +5,7 @@ import { SubWalletStyle } from 'styles/index';
 import { QrScannerContext } from 'providers/contexts';
 import { QrValue } from 'types/QRScanner';
 
-export function QrScanner() {
+export const QrScanner = () => {
   const [lastFrame, setLastFrame] = useState<QrValue>(undefined);
   const [content, setContent] = useState<QrValue>('');
   const qrContext = useContext(QrScannerContext);
@@ -79,4 +79,4 @@ export function QrScanner() {
       </RNCamera>
     </View>
   );
-}
+};

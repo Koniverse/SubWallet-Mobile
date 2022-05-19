@@ -1,5 +1,5 @@
 import { SVGImages } from '../assets';
 
-export function useSVG() {
+export const useSVG = () => {
   return SVGImages;
-}
+};

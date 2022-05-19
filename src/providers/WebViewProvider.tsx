@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
+import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { WebViewContext } from './contexts';
 import WebView from 'react-native-webview';
 import {
@@ -10,9 +10,9 @@ import {
 } from '../messaging';
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import { updateAccounts, updateCurrentAccount } from '../stores/Accounts';
+import { updateAccounts, updateCurrentAccount } from 'stores/Accounts';
 import { useDispatch } from 'react-redux';
-import { updatePrice } from '../stores/Price';
+import { updatePrice } from 'stores/Price';
 import { useToast } from 'react-native-toast-notifications';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 
@@ -37,30 +37,33 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const [status, setStatus] = useState('init');
   const toast = useToast();
 
-  function onMessage(data: NativeSyntheticEvent<WebViewMessage>) {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    listenMessage(JSON.parse(data.nativeEvent.data), data => {
-      // @ts-ignore
-      if (data.id === '0' && data.response?.status) {
+  const onMessage = useCallback(
+    (data: NativeSyntheticEvent<WebViewMessage>) => {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      listenMessage(JSON.parse(data.nativeEvent.data), data => {
         // @ts-ignore
-        const webViewStatus = data.response?.status as string;
-        setStatus(webViewStatus);
-        toast.show(webViewStatus, {
-          type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
-        });
-        return true;
-      } else {
-        return false;
-      }
-    });
-  }
+        if (data.id === '0' && data.response?.status) {
+          // @ts-ignore
+          const webViewStatus = data.response?.status as string;
+          setStatus(webViewStatus);
+          toast.show(webViewStatus, {
+            type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
+          });
+          return true;
+        } else {
+          return false;
+        }
+      });
+    },
+    [toast],
+  );
 
-  function onWebViewLoaded() {
-    console.log('Web View Loaded');
+  const onWebViewLoaded = useCallback(() => {
+    console.debug('Web View Loaded');
     subscribeAccountsWithCurrentAddress(rs => {
       dispatch(updateAccounts(rs.accounts));
       if (rs.currentAddress) {
-        console.log(rs.currentAddress);
+        console.debug(rs.currentAddress);
         dispatch(updateCurrentAccount(rs.currentAddress));
       } else {
         saveCurrentAccountAddress({ address: ALL_ACCOUNT_KEY }, () => {});
@@ -70,7 +73,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
     subscribePrice(null, price => {
       dispatch(updatePrice(price));
     });
-  }
+  }, [dispatch]);
 
   useEffect(() => {
     setViewRef(webRef);
