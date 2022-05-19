@@ -6,6 +6,7 @@ import { RootState } from 'stores/index';
 import { ScrollView, View } from 'react-native';
 import { Account } from 'components/Account';
 import { Button } from 'components/Button';
+import { SpaceStyle } from 'styles/space';
 
 export const AccountList = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -14,7 +15,7 @@ export const AccountList = () => {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <View>
+      <View style={SpaceStyle.oneContainer}>
         <View style={{ marginBottom: 20 }}>
           {accounts.map(acc => (
             <Account key={acc.address} name={acc.name || ''} address={acc.address} />

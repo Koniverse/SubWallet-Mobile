@@ -35,7 +35,7 @@ export const Account = ({ name, address }: AccountProps) => {
       onPress={() => {
         selectAccount(address);
       }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
         <Avatar address={address} size={42} />
         <View style={{ marginLeft: 8 }}>
           <Text style={{ fontSize: 12, marginBottom: 8 }}>{name}</Text>

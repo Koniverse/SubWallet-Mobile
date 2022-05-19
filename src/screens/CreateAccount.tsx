@@ -6,6 +6,7 @@ import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Button } from 'components/Button';
+import { SpaceStyle } from 'styles/space';
 
 export const CreateAccount = () => {
   const accountStore = useSelector((state: RootState) => state.accounts);
@@ -34,7 +35,7 @@ export const CreateAccount = () => {
   }, [name, navigation, password, seedPhase]);
 
   return (
-    <ScrollView>
+    <ScrollView style={SpaceStyle.oneContainer}>
       <Text>Seed Phase: </Text>
       <Text>{seedPhase}</Text>
       <TextInput

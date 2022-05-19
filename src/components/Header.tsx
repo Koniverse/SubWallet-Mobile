@@ -10,6 +10,7 @@ import { WebViewContext } from 'providers/contexts';
 import { useToast } from 'react-native-toast-notifications';
 import { Button } from 'components/Button';
 import { Avatar } from 'components/Avatar';
+import { SpaceStyle } from 'styles/space';
 
 interface HeaderProps {
   navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
@@ -29,13 +30,17 @@ export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps
 
   return (
     <View
-      style={{
-        backgroundColor: swThemeColor.background,
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 8,
-      }}>
-      <View style={{ flex: 1 }}>
+      style={[
+        SpaceStyle.oneContainer,
+        {
+          backgroundColor: swThemeColor.background,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingTop: 8,
+          paddingBottom: 8,
+        },
+      ]}>
+      <View style={{ flex: 1, marginLeft: -8 }}>
         <TouchableWithoutFeedback
           onPress={() => {
             navigationRef.navigate('Home');
@@ -46,12 +51,12 @@ export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps
           }
         </TouchableWithoutFeedback>
       </View>
-      <Button title="Reload Background" onPress={reloadBackground} color={'secondary'} />
+      <Button style={{ marginRight: 16 }} title="Reload Background" onPress={reloadBackground} color={'secondary'} />
       <TouchableWithoutFeedback
         onPress={() => {
           navigationRef.navigate('AccountList');
         }}>
-        <View style={{ padding: 4, paddingRight: 8 }}>
+        <View>
           <Avatar address={currentAccount?.address || ''} size={48} />
         </View>
       </TouchableWithoutFeedback>
