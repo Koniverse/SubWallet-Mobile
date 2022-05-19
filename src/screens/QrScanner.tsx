@@ -1,9 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
-import { SubWalletStyle } from 'styles/index';
 import { QrScannerContext } from 'providers/contexts';
 import { QrValue } from 'types/QRScanner';
+import { Background } from 'styles/color';
+import { Button } from 'components/Button';
 
 export const QrScanner = () => {
   const [lastFrame, setLastFrame] = useState<QrValue>(undefined);
@@ -33,6 +34,7 @@ export const QrScanner = () => {
 
   function onContinue() {
     setLastFrame(undefined);
+    setContent(undefined);
     camera?.resumePreview();
   }
 
@@ -56,24 +58,15 @@ export const QrScanner = () => {
         onBarCodeRead={onBarCodeRead}
         style={{ width: '100%' }}>
         <View style={{ width: '100%', height: '100%' }}>
-          <View
-            style={{
-              ...SubWalletStyle.background.transparentDark,
-              paddingTop: 12,
-              paddingBottom: 12,
-            }}>
+          <View style={[Background.transparentDark, { paddingTop: 12, paddingBottom: 12 }]}>
             <Text style={{ textAlign: 'center' }}>QR Scanner</Text>
           </View>
           <View style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-            <Text
-              style={{
-                ...SubWalletStyle.background.transparentDark,
-                padding: 8,
-              }}>
-              {content}
-            </Text>
-            <Button title={'OK'} onPress={onOk} />
-            <Button title={'Continue'} onPress={onContinue} />
+            {!!content && <Text style={[Background.transparentDark, { padding: 8 }]}>{content}</Text>}
+            <View style={[Background.transparentDark, { flexDirection: 'row', padding: 20 }]}>
+              <Button style={{ flex: 1, marginRight: 8 }} color="secondary" title={'OK'} onPress={onOk} />
+              <Button style={{ flex: 1 }} title={'Continue'} onPress={onContinue} />
+            </View>
           </View>
         </View>
       </RNCamera>

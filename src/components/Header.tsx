@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { WebViewContext } from 'providers/contexts';
 import { useToast } from 'react-native-toast-notifications';
+import { Button } from 'components/Button';
 
 interface HeaderProps {
   navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
@@ -44,11 +45,7 @@ export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps
           }
         </TouchableWithoutFeedback>
       </View>
-      <TouchableWithoutFeedback onPress={reloadBackground}>
-        <View style={{ padding: 4 }}>
-          <Text>Reload background</Text>
-        </View>
-      </TouchableWithoutFeedback>
+      <Button title="Reload Background" onPress={reloadBackground} color={'secondary'} />
       <TouchableWithoutFeedback
         onPress={() => {
           navigationRef.navigate('AccountList');

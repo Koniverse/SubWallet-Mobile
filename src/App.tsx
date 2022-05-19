@@ -11,7 +11,7 @@ import { NavigationContainer, useNavigationContainerRef } from '@react-navigatio
 import { CreateAccount } from 'screens/CreateAccount';
 import { StatusBar, useColorScheme } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
-import { THEME_PRESET } from './themes';
+import { THEME_PRESET } from 'styles/themes';
 import { Header } from 'components/Header';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { AccountList } from 'screens/AccountList';

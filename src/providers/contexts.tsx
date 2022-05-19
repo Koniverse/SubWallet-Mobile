@@ -1,6 +1,6 @@
 import React, { MutableRefObject } from 'react';
 import WebView from 'react-native-webview';
-import { SWTheme, THEME_PRESET } from '../themes';
+import { SWTheme, THEME_PRESET } from 'styles/themes';
 import { QrCallBackMap, QrValue } from 'types/QRScanner';
 
 const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
