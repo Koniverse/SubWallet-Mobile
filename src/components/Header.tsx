@@ -1,21 +1,19 @@
-import React, {ReactElement, useContext} from 'react';
-import {Text, TouchableWithoutFeedback, View} from 'react-native';
-import {useSubWalletTheme} from '../hooks/useSubWalletTheme';
-import {useSVG} from '../hooks/useSVG';
-import {RootStackParamList} from '../App';
-import {NavigationContainerRefWithCurrent} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
-import {RootState} from '../stores';
-import {WebViewContext} from '../providers/contexts';
-import {useToast} from 'react-native-toast-notifications';
+import React, { ReactElement, useContext } from 'react';
+import { Text, TouchableWithoutFeedback, View } from 'react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useSVG } from 'hooks/useSVG';
+import { RootStackParamList } from 'types/routes';
+import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { WebViewContext } from 'providers/contexts';
+import { useToast } from 'react-native-toast-notifications';
 
 interface HeaderProps {
   navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
 }
 
-export function Header({
-  navigationRef,
-}: HeaderProps): ReactElement<HeaderProps> {
+export function Header({ navigationRef }: HeaderProps): ReactElement<HeaderProps> {
   const swThemeColor = useSubWalletTheme().colors;
   const Logo = useSVG().Logo;
   const accountStore = useSelector((state: RootState) => state.accounts);
@@ -35,16 +33,19 @@ export function Header({
         alignItems: 'center',
         padding: 8,
       }}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <TouchableWithoutFeedback
           onPress={() => {
             navigationRef.navigate('Home');
           }}>
-          <Logo.SubWallet width={48} height={48} />
+          {
+            // @ts-ignore
+            <Logo.SubWallet width={48} height={48} />
+          }
         </TouchableWithoutFeedback>
       </View>
       <TouchableWithoutFeedback onPress={reloadBackground}>
-        <View style={{padding: 4}}>
+        <View style={{ padding: 4 }}>
           <Text>Reload background</Text>
         </View>
       </TouchableWithoutFeedback>
@@ -52,7 +53,7 @@ export function Header({
         onPress={() => {
           navigationRef.navigate('AccountList');
         }}>
-        <View style={{padding: 4, paddingRight: 8}}>
+        <View style={{ padding: 4, paddingRight: 8 }}>
           <Text>{currentAccount?.name || '...'}</Text>
         </View>
       </TouchableWithoutFeedback>

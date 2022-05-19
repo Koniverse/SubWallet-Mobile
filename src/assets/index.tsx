@@ -10,6 +10,8 @@ import StakingLogo from './home-tab-icon/staking.svg';
 import TransferLogo from './home-tab-icon/transfers.svg';
 // @ts-ignore
 import SubWalletLogo from './sub-wallet-logo.svg';
+// @ts-ignore
+import AllAccountLogo from './all-account-icon.svg';
 
 export const HomeTabIcon = {
   crypto: CryptoLogo,
@@ -21,6 +23,7 @@ export const HomeTabIcon = {
 
 export const Logo = {
   SubWallet: SubWalletLogo,
+  AllAccount: AllAccountLogo,
 };
 
 export const SVGImages = {

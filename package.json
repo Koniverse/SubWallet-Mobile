@@ -2,17 +2,16 @@
   "name": "subwalletmobile",
   "version": "0.0.1",
   "private": true,
+  "license": "Apache-2.0",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "webview-dev": "polkadot-exec-webpack --config ./webpack.config.cjs --mode development",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@polkadot/reactnative-identicon": "^2.1.1",
-    "@polkadot/wasm-crypto": "^6.1.1",
+    "@polkadot/reactnative-identicon": "^2.2.1",
     "@react-native-async-storage/async-storage": "^1.17.4",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.10",
@@ -22,6 +21,7 @@
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-camera": "^4.2.1",
+    "react-native-qrcode-svg": "^6.1.2",
     "react-native-safe-area-context": "^4.2.5",
     "react-native-screens": "^3.13.1",
     "react-native-svg": "^12.3.0",
@@ -35,6 +35,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@babel/plugin-syntax-import-meta": "^7.10.4",
+    "@babel/preset-env": "^7.17.12",
     "@babel/runtime": "^7.12.5",
     "@polkadot/types": "^8.3.2",
     "@react-native-community/eslint-config": "^2.0.0",
@@ -49,6 +51,8 @@
     "assert": "^2.0.0",
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.5",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-rewrite-require": "^1.14.5",
     "crypto-browserify": "^3.12.0",
     "eslint": "^7.32.0",
     "html-webpack-plugin": "^5.5.0",
@@ -58,17 +62,25 @@
     "metro-react-native-babel-preset": "^0.67.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "react-native-crypto": "^2.2.0",
+    "react-native-randombytes": "^3.6.1",
     "react-test-renderer": "17.0.2",
+    "readable-stream": "^3.6.0",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "typescript": "^4.4.4",
     "url-loader": "^4.1.1",
+    "vm-browserify": "^1.1.2",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.9.0"
   },
   "resolutions": {
-    "@types/react": "^17"
+    "@types/react": "^17",
+    "@polkadot/api": "^8.4.2",
+    "@polkadot/util": "^9.2.1",
+    "@polkadot/util-crypto": "^9.2.1",
+    "@polkadot/wasm-crypto": "^6.1.1"
   },
   "jest": {
     "preset": "react-native",

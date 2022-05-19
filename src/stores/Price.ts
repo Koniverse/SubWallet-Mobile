@@ -1,5 +1,5 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {PriceJson} from '@subwallet/extension-base/background/KoniTypes';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
 
 const PRICE_STORE_DEFAULT: PriceJson = {
   currency: 'usd',
@@ -22,5 +22,5 @@ const priceSlice = createSlice({
   },
 });
 
-export const {updatePrice} = priceSlice.actions;
+export const { updatePrice } = priceSlice.actions;
 export default priceSlice.reducer;

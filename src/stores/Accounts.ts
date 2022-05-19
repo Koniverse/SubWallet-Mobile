@@ -1,5 +1,5 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {AccountJson} from '@subwallet/extension-base/background/types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AccountJson } from '@subwallet/extension-base/background/types';
 
 const ACCOUNT_STORE_DEFAULT: {
   accounts: AccountJson[];
@@ -19,12 +19,10 @@ const accountsSlice = createSlice({
     },
     updateCurrentAccount(state, action: PayloadAction<string>) {
       state.currentAccountAddress = action.payload;
-      state.currentAccount = state.accounts.find(
-        acc => acc.address === state.currentAccountAddress,
-      );
+      state.currentAccount = state.accounts.find(acc => acc.address === state.currentAccountAddress);
     },
   },
 });
 
-export const {updateAccounts, updateCurrentAccount} = accountsSlice.actions;
+export const { updateAccounts, updateCurrentAccount } = accountsSlice.actions;
 export default accountsSlice.reducer;

@@ -20,13 +20,13 @@ import type {
   SigningRequest,
   SubscriptionMessageTypes,
 } from '@subwallet/extension-base/background/types';
-import type {Message} from '@subwallet/extension-base/types';
-import type {KeyringPair$Json} from '@polkadot/keyring/types';
-import type {KeyringPairs$Json} from '@polkadot/ui-keyring/types';
-import type {HexString} from '@polkadot/util/types';
-import type {KeypairType} from '@polkadot/util-crypto/types';
+import type { Message } from '@subwallet/extension-base/types';
+import type { KeyringPair$Json } from '@polkadot/keyring/types';
+import type { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
+import type { HexString } from '@polkadot/util/types';
+import type { KeypairType } from '@polkadot/util-crypto/types';
 
-import {AuthUrls} from '@subwallet/extension-base/background/handlers/State';
+import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
   AccountsWithCurrentAddress,
   ApiInitStatus,
@@ -65,9 +65,9 @@ import {
   TransactionHistoryItemType,
   TransferError,
 } from '@subwallet/extension-base/background/KoniTypes';
-import {RequestCurrentAccountAddress} from '@subwallet/extension-base/background/types';
-import {getId} from '@subwallet/extension-base/utils/getId';
-import {MutableRefObject} from 'react';
+import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
+import { MutableRefObject } from 'react';
 import WebView from 'react-native-webview';
 
 interface Handler {
@@ -84,10 +84,7 @@ export function setViewRef(viewRef: MutableRefObject<WebView | undefined>) {
   webviewRef = viewRef;
 }
 
-export function listenMessage(
-  data: Message['data'],
-  handleUnknown?: (data: Message['data']) => boolean,
-): void {
+export function listenMessage(data: Message['data'], handleUnknown?: (data: Message['data']) => boolean): void {
   const handler = handlers[data.id];
   console.debug(data);
   if (!handler) {
@@ -117,9 +114,8 @@ export function listenMessage(
 }
 
 // @ts-ignore
-export function postMessage({id, message, request}) {
-  const injection =
-    'window.postMessage(' + JSON.stringify({id, message, request}) + ')';
+export function postMessage({ id, message, request }) {
+  const injection = 'window.postMessage(' + JSON.stringify({ id, message, request }) + ')';
   console.debug(injection);
   webviewRef.current?.injectJavaScript(injection);
 }
@@ -144,24 +140,18 @@ function sendMessage<TMessageType extends MessageTypes>(
   return new Promise((resolve, reject): void => {
     const id = getId();
 
-    handlers[id] = {reject, resolve, subscriber};
+    handlers[id] = { reject, resolve, subscriber };
 
-    postMessage({id, message, request: request || {}});
+    postMessage({ id, message, request: request || {} });
   });
 }
 
-export async function editAccount(
-  address: string,
-  name: string,
-): Promise<boolean> {
-  return sendMessage('pri(accounts.edit)', {address, name});
+export async function editAccount(address: string, name: string): Promise<boolean> {
+  return sendMessage('pri(accounts.edit)', { address, name });
 }
 
-export async function showAccount(
-  address: string,
-  isShowing: boolean,
-): Promise<boolean> {
-  return sendMessage('pri(accounts.show)', {address, isShowing});
+export async function showAccount(address: string, isShowing: boolean): Promise<boolean> {
+  return sendMessage('pri(accounts.show)', { address, isShowing });
 }
 
 export async function saveCurrentAccountAddress(
@@ -171,25 +161,15 @@ export async function saveCurrentAccountAddress(
   return sendMessage('pri(currentAccount.saveAddress)', data, callback);
 }
 
-export async function toggleBalancesVisibility(
-  callback: (data: RequestSettingsType) => void,
-): Promise<boolean> {
-  return sendMessage(
-    'pri(currentAccount.changeBalancesVisibility)',
-    null,
-    callback,
-  );
+export async function toggleBalancesVisibility(callback: (data: RequestSettingsType) => void): Promise<boolean> {
+  return sendMessage('pri(currentAccount.changeBalancesVisibility)', null, callback);
 }
 
 export async function saveAccountAllLogo(
   accountAllLogo: string,
   callback: (data: RequestSettingsType) => void,
 ): Promise<boolean> {
-  return sendMessage(
-    'pri(currentAccount.saveAccountAllLogo)',
-    accountAllLogo,
-    callback,
-  );
+  return sendMessage('pri(currentAccount.saveAccountAllLogo)', accountAllLogo, callback);
 }
 
 export async function subscribeSettings(
@@ -199,90 +179,62 @@ export async function subscribeSettings(
   return sendMessage('pri(currentAccount.subscribeSettings)', data, callback);
 }
 
-export async function tieAccount(
-  address: string,
-  genesisHash: string | null,
-): Promise<boolean> {
-  return sendMessage('pri(accounts.tie)', {address, genesisHash});
+export async function tieAccount(address: string, genesisHash: string | null): Promise<boolean> {
+  return sendMessage('pri(accounts.tie)', { address, genesisHash });
 }
 
-export async function exportAccount(
-  address: string,
-  password: string,
-): Promise<{exportedJson: KeyringPair$Json}> {
-  return sendMessage('pri(accounts.export)', {address, password});
+export async function exportAccount(address: string, password: string): Promise<{ exportedJson: KeyringPair$Json }> {
+  return sendMessage('pri(accounts.export)', { address, password });
 }
 
-export async function exportAccountPrivateKey(
-  address: string,
-  password: string,
-): Promise<{privateKey: string}> {
-  return sendMessage('pri(accounts.exportPrivateKey)', {address, password});
+export async function exportAccountPrivateKey(address: string, password: string): Promise<{ privateKey: string }> {
+  return sendMessage('pri(accounts.exportPrivateKey)', { address, password });
 }
 
 export async function exportAccounts(
   addresses: string[],
   password: string,
-): Promise<{exportedJson: KeyringPairs$Json}> {
-  return sendMessage('pri(accounts.batchExport)', {addresses, password});
+): Promise<{ exportedJson: KeyringPairs$Json }> {
+  return sendMessage('pri(accounts.batchExport)', { addresses, password });
 }
 
-export async function validateAccount(
-  address: string,
-  password: string,
-): Promise<boolean> {
-  return sendMessage('pri(accounts.validate)', {address, password});
+export async function validateAccount(address: string, password: string): Promise<boolean> {
+  return sendMessage('pri(accounts.validate)', { address, password });
 }
 
 export async function forgetAccount(address: string): Promise<boolean> {
-  return sendMessage('pri(accounts.forget)', {address});
+  return sendMessage('pri(accounts.forget)', { address });
 }
 
 export async function approveAuthRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.approve)', {id});
+  return sendMessage('pri(authorize.approve)', { id });
 }
 
-export async function approveAuthRequestV2(
-  id: string,
-  accounts: string[],
-): Promise<boolean> {
-  return sendMessage('pri(authorize.approveV2)', {id, accounts});
+export async function approveAuthRequestV2(id: string, accounts: string[]): Promise<boolean> {
+  return sendMessage('pri(authorize.approveV2)', { id, accounts });
 }
 
 export async function approveMetaRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(metadata.approve)', {id});
+  return sendMessage('pri(metadata.approve)', { id });
 }
 
 export async function cancelSignRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(signing.cancel)', {id});
+  return sendMessage('pri(signing.cancel)', { id });
 }
 
-export async function isSignLocked(
-  id: string,
-): Promise<ResponseSigningIsLocked> {
-  return sendMessage('pri(signing.isLocked)', {id});
+export async function isSignLocked(id: string): Promise<ResponseSigningIsLocked> {
+  return sendMessage('pri(signing.isLocked)', { id });
 }
 
-export async function approveSignPassword(
-  id: string,
-  savePass: boolean,
-  password?: string,
-): Promise<boolean> {
-  return sendMessage('pri(signing.approve.password)', {id, password, savePass});
+export async function approveSignPassword(id: string, savePass: boolean, password?: string): Promise<boolean> {
+  return sendMessage('pri(signing.approve.password)', { id, password, savePass });
 }
 
-export async function approveSignSignature(
-  id: string,
-  signature: HexString,
-): Promise<boolean> {
-  return sendMessage('pri(signing.approve.signature)', {id, signature});
+export async function approveSignSignature(id: string, signature: HexString): Promise<boolean> {
+  return sendMessage('pri(signing.approve.signature)', { id, signature });
 }
 
-export async function createAccountExternal(
-  name: string,
-  address: string,
-  genesisHash: string,
-): Promise<boolean> {
+export async function createAccountExternal(name: string, address: string, genesisHash: string): Promise<boolean> {
   return sendMessage('pri(accounts.create.external)', {
     address,
     genesisHash,
@@ -346,8 +298,8 @@ export async function createSeed(
   length?: SeedLengths,
   seed?: string,
   type?: KeypairType,
-): Promise<{address: string; seed: string}> {
-  return sendMessage('pri(seed.create)', {length, seed, type});
+): Promise<{ address: string; seed: string }> {
+  return sendMessage('pri(seed.create)', { length, seed, type });
 }
 
 export async function createSeedV2(
@@ -355,24 +307,22 @@ export async function createSeedV2(
   seed?: string,
   types?: Array<KeypairType>,
 ): Promise<ResponseSeedCreateV2> {
-  return sendMessage('pri(seed.createV2)', {length, seed, types});
+  return sendMessage('pri(seed.createV2)', { length, seed, types });
 }
 
 export async function rejectAuthRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.reject)', {id});
+  return sendMessage('pri(authorize.reject)', { id });
 }
 
 export async function rejectAuthRequestV2(id: string): Promise<boolean> {
-  return sendMessage('pri(authorize.rejectV2)', {id});
+  return sendMessage('pri(authorize.rejectV2)', { id });
 }
 
 export async function rejectMetaRequest(id: string): Promise<boolean> {
-  return sendMessage('pri(metadata.reject)', {id});
+  return sendMessage('pri(metadata.reject)', { id });
 }
 
-export async function subscribeAccounts(
-  cb: (accounts: AccountJson[]) => void,
-): Promise<boolean> {
+export async function subscribeAccounts(cb: (accounts: AccountJson[]) => void): Promise<boolean> {
   return sendMessage('pri(accounts.subscribe)', null, cb);
 }
 
@@ -386,15 +336,11 @@ export async function triggerAccountsSubscription(): Promise<boolean> {
   return sendMessage('pri(accounts.triggerSubscription)');
 }
 
-export async function subscribeAuthorizeRequests(
-  cb: (accounts: AuthorizeRequest[]) => void,
-): Promise<boolean> {
+export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
   return sendMessage('pri(authorize.requests)', null, cb);
 }
 
-export async function subscribeAuthorizeRequestsV2(
-  cb: (accounts: AuthorizeRequest[]) => void,
-): Promise<boolean> {
+export async function subscribeAuthorizeRequestsV2(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
   return sendMessage('pri(authorize.requestsV2)', null, cb);
 }
 
@@ -406,9 +352,7 @@ export async function getAuthListV2(): Promise<ResponseAuthorizeList> {
   return sendMessage('pri(authorize.listV2)');
 }
 
-export async function toggleAuthorization(
-  url: string,
-): Promise<ResponseAuthorizeList> {
+export async function toggleAuthorization(url: string): Promise<ResponseAuthorizeList> {
   return sendMessage('pri(authorize.toggle)', url);
 }
 
@@ -416,7 +360,7 @@ export async function changeAuthorizationAll(
   connectValue: boolean,
   callback: (data: AuthUrls) => void,
 ): Promise<boolean> {
-  return sendMessage('pri(authorize.changeSiteAll)', {connectValue}, callback);
+  return sendMessage('pri(authorize.changeSiteAll)', { connectValue }, callback);
 }
 
 export async function changeAuthorization(
@@ -424,11 +368,7 @@ export async function changeAuthorization(
   url: string,
   callback: (data: AuthUrls) => void,
 ): Promise<boolean> {
-  return sendMessage(
-    'pri(authorize.changeSite)',
-    {url, connectValue},
-    callback,
-  );
+  return sendMessage('pri(authorize.changeSite)', { url, connectValue }, callback);
 }
 
 export async function changeAuthorizationPerAcc(
@@ -437,50 +377,31 @@ export async function changeAuthorizationPerAcc(
   url: string,
   callback: (data: AuthUrls) => void,
 ): Promise<boolean> {
-  return sendMessage(
-    'pri(authorize.changeSitePerAccount)',
-    {address, url, connectValue},
-    callback,
-  );
+  return sendMessage('pri(authorize.changeSitePerAccount)', { address, url, connectValue }, callback);
 }
 
-export async function forgetSite(
-  url: string,
-  callback: (data: AuthUrls) => void,
-): Promise<boolean> {
-  return sendMessage('pri(authorize.forgetSite)', {url}, callback);
+export async function forgetSite(url: string, callback: (data: AuthUrls) => void): Promise<boolean> {
+  return sendMessage('pri(authorize.forgetSite)', { url }, callback);
 }
 
-export async function forgetAllSite(
-  callback: (data: AuthUrls) => void,
-): Promise<boolean> {
+export async function forgetAllSite(callback: (data: AuthUrls) => void): Promise<boolean> {
   return sendMessage('pri(authorize.forgetAllSite)', null, callback);
 }
 
-export async function subscribeMetadataRequests(
-  cb: (accounts: MetadataRequest[]) => void,
-): Promise<boolean> {
+export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<boolean> {
   return sendMessage('pri(metadata.requests)', null, cb);
 }
 
-export async function subscribeSigningRequests(
-  cb: (accounts: SigningRequest[]) => void,
-): Promise<boolean> {
+export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
   return sendMessage('pri(signing.requests)', null, cb);
 }
 
-export async function validateSeed(
-  suri: string,
-  type?: KeypairType,
-): Promise<{address: string; suri: string}> {
-  return sendMessage('pri(seed.validate)', {suri, type});
+export async function validateSeed(suri: string, type?: KeypairType): Promise<{ address: string; suri: string }> {
+  return sendMessage('pri(seed.validate)', { suri, type });
 }
 
-export async function validateSeedV2(
-  suri: string,
-  types: Array<KeypairType>,
-): Promise<ResponseSeedValidateV2> {
-  return sendMessage('pri(seed.validateV2)', {suri, types});
+export async function validateSeedV2(suri: string, types: Array<KeypairType>): Promise<ResponseSeedValidateV2> {
+  return sendMessage('pri(seed.validateV2)', { suri, types });
 }
 
 export async function validateDerivationPath(
@@ -537,26 +458,16 @@ export async function windowOpen(path: AllowedPath): Promise<boolean> {
   return sendMessage('pri(window.open)', path);
 }
 
-export async function jsonGetAccountInfo(
-  json: KeyringPair$Json,
-): Promise<ResponseJsonGetAccountInfo> {
+export async function jsonGetAccountInfo(json: KeyringPair$Json): Promise<ResponseJsonGetAccountInfo> {
   return sendMessage('pri(json.account.info)', json);
 }
 
-export async function jsonRestore(
-  file: KeyringPair$Json,
-  password: string,
-  address: string,
-): Promise<void> {
-  return sendMessage('pri(json.restore)', {file, password, address});
+export async function jsonRestore(file: KeyringPair$Json, password: string, address: string): Promise<void> {
+  return sendMessage('pri(json.restore)', { file, password, address });
 }
 
-export async function batchRestore(
-  file: KeyringPairs$Json,
-  password: string,
-  address: string,
-): Promise<void> {
-  return sendMessage('pri(json.batchRestore)', {file, password, address});
+export async function batchRestore(file: KeyringPairs$Json, password: string, address: string): Promise<void> {
+  return sendMessage('pri(json.batchRestore)', { file, password, address });
 }
 
 export async function jsonRestoreV2(
@@ -637,11 +548,7 @@ export async function getAllNetworkMetadata(): Promise<NetWorkMetadataDef[]> {
 export async function subscribeHistory(
   callback: (historyMap: Record<string, TransactionHistoryItemType[]>) => void,
 ): Promise<Record<string, TransactionHistoryItemType[]>> {
-  return sendMessage(
-    'pri(transaction.history.getSubscription)',
-    null,
-    callback,
-  );
+  return sendMessage('pri(transaction.history.getSubscription)', null, callback);
 }
 
 export async function updateTransactionHistory(
@@ -650,15 +557,11 @@ export async function updateTransactionHistory(
   item: TransactionHistoryItemType,
   callback: (items: TransactionHistoryItemType[]) => void,
 ): Promise<boolean> {
-  return sendMessage(
-    'pri(transaction.history.add)',
-    {address, networkKey, item},
-    callback,
-  );
+  return sendMessage('pri(transaction.history.add)', { address, networkKey, item }, callback);
 }
 
 export async function initApi(networkKey: string): Promise<ApiInitStatus> {
-  return sendMessage('pri(api.init)', {networkKey});
+  return sendMessage('pri(api.init)', { networkKey });
 }
 
 export async function getNft(account: string): Promise<NftJson> {
@@ -673,9 +576,7 @@ export async function subscribeNft(
   return sendMessage('pri(nft.getSubscription)', request, callback);
 }
 
-export async function subscribeNftCollection(
-  callback: (data: NftCollectionJson) => void,
-): Promise<NftCollectionJson> {
+export async function subscribeNftCollection(callback: (data: NftCollectionJson) => void): Promise<NftCollectionJson> {
   return sendMessage('pri(nftCollection.getSubscription)', null, callback);
 }
 
@@ -702,9 +603,7 @@ export async function subscribeStakingReward(
   return sendMessage('pri(stakingReward.getSubscription)', request, callback);
 }
 
-export async function nftForceUpdate(
-  request: RequestNftForceUpdate,
-): Promise<boolean> {
+export async function nftForceUpdate(request: RequestNftForceUpdate): Promise<boolean> {
   return sendMessage('pri(nft.forceUpdate)', request);
 }
 
@@ -712,21 +611,15 @@ export async function getNftTransfer(): Promise<NftTransferExtra> {
   return sendMessage('pri(nftTransfer.getNftTransfer)', null);
 }
 
-export async function subscribeNftTransfer(
-  callback: (data: NftTransferExtra) => void,
-): Promise<NftTransferExtra> {
+export async function subscribeNftTransfer(callback: (data: NftTransferExtra) => void): Promise<NftTransferExtra> {
   return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
 }
 
-export async function setNftTransfer(
-  request: NftTransferExtra,
-): Promise<boolean> {
+export async function setNftTransfer(request: NftTransferExtra): Promise<boolean> {
   return sendMessage('pri(nftTransfer.setNftTransfer)', request);
 }
 
-export async function checkTransfer(
-  request: RequestCheckTransfer,
-): Promise<ResponseCheckTransfer> {
+export async function checkTransfer(request: RequestCheckTransfer): Promise<ResponseCheckTransfer> {
   return sendMessage('pri(accounts.checkTransfer)', request);
 }
 
@@ -737,9 +630,7 @@ export async function makeTransfer(
   return sendMessage('pri(accounts.transfer)', request, callback);
 }
 
-export async function evmNftGetTransaction(
-  request: EvmNftTransactionRequest,
-): Promise<EvmNftTransaction> {
+export async function evmNftGetTransaction(request: EvmNftTransactionRequest): Promise<EvmNftTransaction> {
   return sendMessage('pri(evmNft.getTransaction)', request);
 }
 

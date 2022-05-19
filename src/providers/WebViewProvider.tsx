@@ -1,5 +1,5 @@
-import React, {MutableRefObject, useEffect, useRef, useState} from 'react';
-import {WebViewContext} from './contexts';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { WebViewContext } from './contexts';
 import WebView from 'react-native-webview';
 import {
   listenMessage,
@@ -8,12 +8,13 @@ import {
   subscribeAccountsWithCurrentAddress,
   subscribePrice,
 } from '../messaging';
-import {NativeSyntheticEvent, View} from 'react-native';
-import {WebViewMessage} from 'react-native-webview/lib/WebViewTypes';
-import {updateAccounts, updateCurrentAccount} from '../stores/Accounts';
-import {useDispatch} from 'react-redux';
-import {updatePrice} from '../stores/Price';
-import {useToast} from 'react-native-toast-notifications';
+import { NativeSyntheticEvent, View } from 'react-native';
+import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
+import { updateAccounts, updateCurrentAccount } from '../stores/Accounts';
+import { useDispatch } from 'react-redux';
+import { updatePrice } from '../stores/Price';
+import { useToast } from 'react-native-toast-notifications';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -30,9 +31,7 @@ const ERROR_HANDLE_SCRIPT = `
 
 const baseUrl = 'http://192.168.10.189:9000';
 
-export const WebViewProvider = ({
-  children,
-}: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
+export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
   const dispatch = useDispatch();
   const [status, setStatus] = useState('init');
@@ -64,7 +63,7 @@ export const WebViewProvider = ({
         console.log(rs.currentAddress);
         dispatch(updateCurrentAccount(rs.currentAddress));
       } else {
-        saveCurrentAccountAddress({address: 'ALL'}, () => {});
+        saveCurrentAccountAddress({ address: ALL_ACCOUNT_KEY }, () => {});
       }
     });
 
@@ -78,15 +77,15 @@ export const WebViewProvider = ({
   }, [webRef]);
 
   return (
-    <WebViewContext.Provider value={{viewRef: webRef, status}}>
-      <View style={{height: 0}}>
+    <WebViewContext.Provider value={{ viewRef: webRef, status }}>
+      <View style={{ height: 0 }}>
         <WebView
           // @ts-ignore
           ref={webRef}
           onLoadEnd={onWebViewLoaded}
           injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
           onMessage={onMessage}
-          source={{uri: `${baseUrl}/index.html`, baseUrl}}
+          source={{ uri: `${baseUrl}/index.html`, baseUrl }}
           javaScriptEnabled={true}
         />
       </View>

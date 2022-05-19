@@ -1,13 +1,10 @@
 import React from 'react';
-import {Image, View} from 'react-native';
+import { Image, View } from 'react-native';
 
 export const TransfersTab = () => {
   return (
-    <View
-      style={{alignItems: 'center', height: '100%', justifyContent: 'center'}}>
-      <Image
-        source={require('../../assets/transaction-history-coming-soon.png')}
-      />
+    <View style={{ alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+      <Image source={require('assets/transaction-history-coming-soon.png')} />
     </View>
   );
 };

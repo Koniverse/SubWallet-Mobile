@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Button, ScrollView, Text, TextInput} from 'react-native';
-import {createAccountSuriV2, createSeedV2} from '../messaging';
-import {useNavigation} from '@react-navigation/native';
-import {NavigationProps} from '../App';
-import {useSelector} from 'react-redux';
-import {RootState} from '../stores';
+import React, { useEffect, useState } from 'react';
+import { Button, ScrollView, Text, TextInput } from 'react-native';
+import { createAccountSuriV2, createSeedV2 } from '../messaging';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'types/routes';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 export const CreateAccount = () => {
   const accountStore = useSelector((state: RootState) => state.accounts);
@@ -12,11 +12,11 @@ export const CreateAccount = () => {
   const [seedPhase, setSeedPhase] = useState('');
   const [name, setName] = useState('Account ' + accounts.length);
   const [password, setPassword] = useState('');
-  const navigation = useNavigation<NavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
 
   useEffect(() => {
     createSeedV2()
-      .then(({seed}) => {
+      .then(({ seed }) => {
         // setAddress(address);
         setSeedPhase(seed);
       })
@@ -52,11 +52,7 @@ export const CreateAccount = () => {
           setPassword(e.nativeEvent.text);
         }}
       />
-      <Button
-        title="Create Account"
-        disabled={seedPhase === '[seed phase]'}
-        onPress={createAccount}
-      />
+      <Button title="Create Account" disabled={seedPhase === '[seed phase]'} onPress={createAccount} />
     </ScrollView>
   );
 };

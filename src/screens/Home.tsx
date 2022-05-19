@@ -1,14 +1,15 @@
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NFTTab} from './Home/NFTTab';
-import {CrowdloansTab} from './Home/CrowdloansTab';
-import {StakingTab} from './Home/StakingTab';
-import {TransfersTab} from './Home/TransfersTab';
-import {CryptoTab} from './Home/CryptoTab';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NFTTab } from './Home/NFTTab';
+import { CrowdloansTab } from './Home/CrowdloansTab';
+import { StakingTab } from './Home/StakingTab';
+import { TransfersTab } from './Home/TransfersTab';
+import { CryptoTab } from './Home/CryptoTab';
 
-import {useSubWalletTheme} from '../hooks/useSubWalletTheme';
-import {TouchableHighlight} from 'react-native';
-import {HomeTabIcon} from '../assets';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { TouchableHighlight } from 'react-native';
+import { HomeTabIcon } from '../assets';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -18,18 +19,17 @@ type HomeStackParamList = {
   Transfers: undefined;
 };
 
+export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
+export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
+
 export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const swThemeColor = useSubWalletTheme().colors;
 
   function getHomeTabIcon(
     iconName: string,
-  ): (rs: {
-    color: string;
-    size: number;
-    focused: boolean;
-  }) => React.ReactElement {
-    return ({color, size}) => {
+  ): (rs: { color: string; size: number; focused: boolean }) => React.ReactElement {
+    return ({ color, size }) => {
       // @ts-ignore
       const IconComponent = HomeTabIcon[iconName];
       return <IconComponent width={size} color={color} />;
@@ -42,7 +42,7 @@ export const Home = () => {
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
-          let customStyle = {marginLeft: 10, marginRight: 10};
+          let customStyle = { marginLeft: 10, marginRight: 10 };
           if (props.accessibilityState?.selected) {
             customStyle = {
               ...customStyle,
