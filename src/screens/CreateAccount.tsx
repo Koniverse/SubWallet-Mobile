@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, ScrollView, Text, TextInput } from 'react-native';
+import { ScrollView, Text, TextInput } from 'react-native';
 import { createAccountSuriV2, createSeedV2 } from '../messaging';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { Button } from 'components/Button';
 
 export const CreateAccount = () => {
   const accountStore = useSelector((state: RootState) => state.accounts);

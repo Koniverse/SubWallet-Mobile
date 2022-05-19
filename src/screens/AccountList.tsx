@@ -3,8 +3,9 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Button, ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Account } from 'components/Account';
+import { Button } from 'components/Button';
 
 export const AccountList = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -15,7 +16,6 @@ export const AccountList = () => {
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <View>
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ marginBottom: 12, marginTop: 10 }}>Account List</Text>
           {accounts.map(acc => (
             <Account key={acc.address} name={acc.name || ''} address={acc.address} />
           ))}

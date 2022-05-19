@@ -28,7 +28,7 @@ export const Button = (buttonProps: ButtonProps) => {
   );
   const finalStyle = [style, ButtonStyle.base];
 
-  const _color = color || 'primary';
+  const _color = color || 'secondary';
   if (ButtonStyle[_color]) {
     // @ts-ignore
     finalStyle.push(ButtonStyle[_color]);

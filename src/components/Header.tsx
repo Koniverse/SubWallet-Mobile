@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext } from 'react';
-import { Text, TouchableWithoutFeedback, View } from 'react-native';
+import { TouchableWithoutFeedback, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSVG } from 'hooks/useSVG';
 import { RootStackParamList } from 'types/routes';
@@ -9,6 +9,7 @@ import { RootState } from 'stores/index';
 import { WebViewContext } from 'providers/contexts';
 import { useToast } from 'react-native-toast-notifications';
 import { Button } from 'components/Button';
+import { Avatar } from 'components/Avatar';
 
 interface HeaderProps {
   navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
@@ -51,7 +52,7 @@ export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps
           navigationRef.navigate('AccountList');
         }}>
         <View style={{ padding: 4, paddingRight: 8 }}>
-          <Text>{currentAccount?.name || '...'}</Text>
+          <Avatar address={currentAccount?.address || ''} size={48} />
         </View>
       </TouchableWithoutFeedback>
     </View>
