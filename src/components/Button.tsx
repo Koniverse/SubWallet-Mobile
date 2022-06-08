@@ -37,7 +37,7 @@ export const Button = (buttonProps: ButtonProps) => {
   return (
     <TouchableWithoutFeedback {...buttonProps}>
       <View style={finalStyle}>
-        <Text style={{ color: 'inherit', textAlign: 'center' }}>{title}</Text>
+        <Text style={{ textAlign: 'center' }}>{title}</Text>
       </View>
     </TouchableWithoutFeedback>
   );

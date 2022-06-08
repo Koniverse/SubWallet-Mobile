@@ -37,7 +37,7 @@ import {
   EvmNftSubmitTransaction,
   EvmNftTransaction,
   EvmNftTransactionRequest,
-  EvmNftTransactionResponse,
+  EvmNftTransactionResponse, NetworkJson,
   NetWorkMetadataDef,
   NftCollectionJson,
   NftJson,
@@ -613,6 +613,10 @@ export async function getNftTransfer(): Promise<NftTransferExtra> {
 
 export async function subscribeNftTransfer(callback: (data: NftTransferExtra) => void): Promise<NftTransferExtra> {
   return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
+}
+
+export async function subscribeNetworkMap(callback: (data: Record<string, NetworkJson>) => void): Promise<Record<string, NetworkJson>> {
+  return sendMessage('pri(networkMap.getSubscription)', null, callback);
 }
 
 export async function setNftTransfer(request: NftTransferExtra): Promise<boolean> {

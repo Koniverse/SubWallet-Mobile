@@ -20,6 +20,7 @@ export const CreateAccount = () => {
     createSeedV2()
       .then(({ seed }) => {
         // setAddress(address);
+        console.log('seed', seed);
         setSeedPhase(seed);
       })
       .catch(console.error);
@@ -28,10 +29,10 @@ export const CreateAccount = () => {
   const createAccount = useCallback(() => {
     createAccountSuriV2(name, password, seedPhase, true, ['sr25519'])
       .then(created => {
-        console.log(created);
+        console.log('created', created);
         navigation.navigate('Home');
       })
-      .catch(console.error);
+      .catch(e => console.log('e--', e));
   }, [name, navigation, password, seedPhase]);
 
   return (

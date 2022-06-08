@@ -9,27 +9,29 @@ import { Provider } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaView, StatusBar, useColorScheme } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { Header } from 'components/Header';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { AccountList } from 'screens/AccountList';
 import { PersistGate } from 'redux-persist/integration/react';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { QrScanner } from 'screens/QrScanner';
 import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
+import { STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from "utils/sharedStyles";
 
-cryptoWaitReady().then(rs => {
-  console.debug('crypto-ready', rs);
-});
+// cryptoWaitReady().then(rs => {
+//   console.debug('crypto-ready', rs);
+// });
 
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
-  const isDarkMode = useColorScheme() === 'dark';
+  // const isDarkMode = useColorScheme() === 'dark';
+  const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
+  StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   return (
     <Provider store={store}>
@@ -43,7 +45,14 @@ export const App = () => {
           <WebViewProvider>
             <QrScannerProvider navigationRef={navigationRef}>
               <ThemeContext.Provider value={theme}>
-                <StatusBar backgroundColor={theme.colors.background} />
+                <SafeAreaView
+                  style={{
+                    paddingTop: STATUS_BAR_HEIGHT,
+                    height: STATUS_BAR_HEIGHT,
+                    backgroundColor: theme.colors.background,
+                  }}>
+                  <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
+                </SafeAreaView>
                 <Header navigationRef={navigationRef} />
                 <NavigationContainer ref={navigationRef} theme={theme}>
                   <Stack.Navigator

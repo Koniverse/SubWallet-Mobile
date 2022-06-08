@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import {Text, View} from 'react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import Identicon from '@polkadot/reactnative-identicon';
 import React from 'react';
@@ -18,7 +18,8 @@ export const Avatar = ({ address, size }: AvatarProps) => {
         // @ts-ignore
         <Logo.AllAccount width={size} height={size} />
       ) : (
-        <Identicon value={address} size={size} theme={'polkadot'} />
+          <Text>Avatar</Text>
+        // <Identicon value={address} size={size} theme={'polkadot'} />
       )}
     </View>
   );

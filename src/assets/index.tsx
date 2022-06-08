@@ -12,6 +12,12 @@ import TransferLogo from './home-tab-icon/transfers.svg';
 import SubWalletLogo from './sub-wallet-logo.svg';
 // @ts-ignore
 import AllAccountLogo from './all-account-icon.svg';
+import ReceiveIcon from './receive-icon.svg';
+import SendIcon from './send-icon.svg';
+import SwapIcon from './swap-icon.svg';
+import CloneIcon from './clone.svg';
+import WarningIcon from './warning.svg';
+import DangerIcon from './danger.svg';
 
 export const HomeTabIcon = {
   crypto: CryptoLogo,
@@ -29,4 +35,10 @@ export const Logo = {
 export const SVGImages = {
   HomeTabIcon,
   Logo,
+  ReceiveIcon: ReceiveIcon,
+  SendIcon: SendIcon,
+  SwapIcon: SwapIcon,
+  CloneIcon: CloneIcon,
+  WarningIcon: WarningIcon,
+  DangerIcon: DangerIcon
 };
