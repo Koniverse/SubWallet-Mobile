@@ -1,7 +1,9 @@
-import {StyleSheet} from "react-native";
-import { getStatusBarHeight } from "react-native-status-bar-height";
+import { StyleSheet } from 'react-native';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 export const FontRegular = { fontFamily: 'Lexend-Regular' };
+export const FontMedium = { fontFamily: 'Lexend-Medium' };
+export const FontSemiBold = { fontFamily: 'Lexend-SemiBold' };
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
 export const STATUS_BAR_DARK_CONTENT = 'dark-content';
@@ -9,13 +11,13 @@ const largerText = {
   fontSize: 15,
   lineHeight: 26,
   ...FontRegular,
-}
+};
 
 const mainText = {
   fontSize: 14,
   lineHeight: 24,
   ...FontRegular,
-}
+};
 
 const textInput = {
   height: 48,
@@ -31,7 +33,5 @@ export const sharedStyles = StyleSheet.create({
   largerText,
   textInput,
 
-  inputStyle: {
-
-  }
-})
+  inputStyle: {},
+});

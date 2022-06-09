@@ -42,3 +42,8 @@ export const SVGImages = {
   WarningIcon: WarningIcon,
   DangerIcon: DangerIcon
 };
+
+export const Images = {
+  loading: require('./loading.gif'),
+  stackingEmptyList: require('./stacking-empty-list.png')
+};
