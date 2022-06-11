@@ -18,6 +18,8 @@ export interface SWTheme extends Theme {
     warningBackgroundColor: string;
     dangerBackgroundColor: string;
     inputBackground: string;
+    checkBoxBorderColor: string;
+    background2: string;
   };
 }
 
@@ -27,10 +29,10 @@ export const THEME_PRESET: Record<string, SWTheme> = {
     colors: {
       primary: '#42C59A',
       secondary: '#004BFF',
-      background: '#010414',
+      background: '#161616',
       card: 'rgb(18, 18, 18)',
       text: 'rgb(229, 229, 231)',
-      border: 'rgb(39, 39, 41)',
+      border: '#222222',
       notification: 'rgba(0, 0, 0, 0.8)',
       notification_success: 'rgba(66, 197, 154, 0.8)',
       notification_warning: 'rgba(240, 189, 24, 0.8)',
@@ -41,6 +43,8 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       warningBackgroundColor: 'rgba(231, 185, 23, 0.2)',
       dangerBackgroundColor: 'rgba(175, 17, 17, 0.25)',
       inputBackground: '#262C4A',
+      checkBoxBorderColor: '#2D365C',
+      background2: '#222',
     },
   },
   light: {
@@ -62,6 +66,8 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       warningBackgroundColor: 'rgba(231, 185, 23, 0.1)',
       dangerBackgroundColor: 'rgba(175, 17, 17, 0.1)',
       inputBackground: '#F5F5F5',
+      checkBoxBorderColor: '#DDD',
+      background2: '#222',
     },
   },
 };

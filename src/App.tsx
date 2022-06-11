@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { WebViewProvider } from 'providers/WebViewProvider';
-import { Home } from 'screens/Home';
 import { persistor, store } from './stores';
 import { Provider } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,7 +18,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { QrScanner } from 'screens/QrScanner';
 import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
-import { STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from "utils/sharedStyles";
+import { STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { Home } from 'screens/Home';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);

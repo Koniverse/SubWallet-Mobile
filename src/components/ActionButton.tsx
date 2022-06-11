@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getIcon } from 'utils/index';
-import {FontRegular} from "utils/sharedStyles";
+import { FontRegular } from 'styles/sharedStyles';
 
 interface Props {
   label: string;

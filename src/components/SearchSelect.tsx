@@ -4,7 +4,7 @@ import {Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, TouchableWitho
 import {faChevronDown} from "@fortawesome/free-solid-svg-icons";
 import {useSubWalletTheme} from "hooks/useSubWalletTheme";
 import {useMemo} from "react";
-import {sharedStyles, STATUS_BAR_HEIGHT} from "utils/sharedStyles";
+import {sharedStyles, STATUS_BAR_HEIGHT} from "styles/sharedStyles";
 import {SubWalletModal} from "components/SubWalletModal";
 import {SearchBox} from "components/SearchBox";
 

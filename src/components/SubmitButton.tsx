@@ -3,7 +3,7 @@ import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from '
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'utils/sharedStyles';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 
 interface ButtonProps extends TouchableOpacityProps {

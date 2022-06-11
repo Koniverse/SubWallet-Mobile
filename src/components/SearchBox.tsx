@@ -3,7 +3,7 @@ import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native"
 import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import {faMagnifyingGlass, faXmark} from "@fortawesome/free-solid-svg-icons";
 import {useSubWalletTheme} from "hooks/useSubWalletTheme";
-import {sharedStyles} from "utils/sharedStyles";
+import {sharedStyles} from "styles/sharedStyles";
 
 interface Props {
   autoFocus: boolean;

@@ -1,15 +1,15 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NFTTab } from './Home/NFTTab';
-import { CrowdloansTab } from './Home/CrowdloansTab';
-import { StakingTab } from './Home/StakingTab';
-import { TransfersTab } from './Home/TransfersTab';
-import { CryptoTab } from './Home/CryptoTab';
+import { NFTTab } from './NFTTab';
+import { CrowdloansTab } from './CrowdloansTab';
+import { StakingTab } from './StakingTab';
+import { TransfersTab } from './TransfersTab';
+import { CryptoTab } from './CryptoTab';
 
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TouchableHighlight } from 'react-native';
-import { HomeTabIcon } from '../assets';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -26,30 +26,19 @@ export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const swThemeColor = useSubWalletTheme().colors;
 
-  const getHomeTabIcon = useCallback(
-    (iconName: string): ((rs: { color: string; size: number; focused: boolean }) => React.ReactElement) => {
-      return ({ color, size }) => {
-        // @ts-ignore
-        const IconComponent = HomeTabIcon[iconName];
-        return <IconComponent width={size} color={color} />;
-      };
-    },
-    [],
-  );
-
   return (
     <Tab.Navigator
       initialRouteName={'Crypto'}
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
-          let customStyle = { marginLeft: 10, marginRight: 10 };
+          let customStyle = {};
           if (props.accessibilityState?.selected) {
             customStyle = {
               ...customStyle,
               // @ts-ignore
               borderTopWidth: 2,
-              borderTopColor: swThemeColor.primary,
+              borderTopColor: swThemeColor.secondary,
               marginTop: -2,
             };
           }
@@ -59,52 +48,69 @@ export const Home = () => {
           return <TouchableHighlight {...props} />;
         },
         tabBarIconStyle: {
-          marginTop: 6,
+          marginTop: 10,
         },
         tabBarLabelStyle: {
-          paddingBottom: 8,
+          paddingBottom: 32,
+          fontSize: 12,
+          lineHeight: 25,
+          fontWeight: '600',
         },
         tabBarStyle: {
           paddingTop: 0,
           paddingBottom: 0,
           backgroundColor: swThemeColor.background,
-          borderTopWidth: 2,
-          height: 64,
+          borderTopWidth: 1,
+          paddingLeft: 16,
+          paddingRight: 16,
+          height: 92,
         },
+        tabBarActiveTintColor: swThemeColor.secondary,
+        tabBarInactiveTintColor: swThemeColor.textColor,
       }}>
       <Tab.Screen
         name={'Crypto'}
         component={CryptoTab}
         options={{
-          tabBarIcon: getHomeTabIcon('crypto'),
+          tabBarIcon: ({ color, size }) => {
+            return <CurrencyCircleDollar size={size} color={color} weight={'bold'} />;
+          },
         }}
       />
       <Tab.Screen
         name={'NFT'}
         component={NFTTab}
         options={{
-          tabBarIcon: getHomeTabIcon('nft'),
+          tabBarIcon: ({ color, size }) => {
+            return <Aperture size={size} color={color} weight={'bold'} />;
+          },
         }}
       />
       <Tab.Screen
         name={'Crowdloans'}
         component={CrowdloansTab}
         options={{
-          tabBarIcon: getHomeTabIcon('crowdloan'),
+          tabBarIcon: ({ color, size }) => {
+            return <Rocket size={size} color={color} weight={'bold'} />;
+          },
         }}
       />
       <Tab.Screen
         name={'Staking'}
         component={StakingTab}
         options={{
-          tabBarIcon: getHomeTabIcon('staking'),
+          tabBarIcon: ({ color, size }) => {
+            return <Database size={size} color={color} weight={'bold'} />;
+          },
         }}
       />
       <Tab.Screen
         name={'Transfers'}
         component={TransfersTab}
         options={{
-          tabBarIcon: getHomeTabIcon('transfer'),
+          tabBarIcon: ({ color, size }) => {
+            return <GlobeSimple size={size} color={color} weight={'bold'} />;
+          },
         }}
       />
     </Tab.Navigator>

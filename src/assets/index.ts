@@ -18,6 +18,9 @@ import SwapIcon from './swap-icon.svg';
 import CloneIcon from './clone.svg';
 import WarningIcon from './warning.svg';
 import DangerIcon from './danger.svg';
+import CheckBoxIcon from './checkbox.svg';
+import CheckBoxFilledIcon from './checkbox-filled.svg';
+import { ImageLogosMap, SvgLogosMap } from 'assets/logo';
 
 export const HomeTabIcon = {
   crypto: CryptoLogo,
@@ -33,6 +36,7 @@ export const Logo = {
 };
 
 export const SVGImages = {
+  ...SvgLogosMap,
   HomeTabIcon,
   Logo,
   ReceiveIcon: ReceiveIcon,
@@ -40,10 +44,13 @@ export const SVGImages = {
   SwapIcon: SwapIcon,
   CloneIcon: CloneIcon,
   WarningIcon: WarningIcon,
-  DangerIcon: DangerIcon
+  DangerIcon: DangerIcon,
+  CheckBoxIcon: CheckBoxIcon,
+  CheckBoxFilledIcon: CheckBoxFilledIcon,
 };
 
 export const Images = {
+  ...ImageLogosMap,
   loading: require('./loading.gif'),
-  stackingEmptyList: require('./stacking-empty-list.png')
+  stackingEmptyList: require('./stacking-empty-list.png'),
 };

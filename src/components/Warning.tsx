@@ -1,7 +1,7 @@
 import React, {useMemo} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {SVGImages} from "assets/index";
-import {sharedStyles} from "utils/sharedStyles";
+import {sharedStyles} from "styles/sharedStyles";
 import {useSubWalletTheme} from "hooks/useSubWalletTheme";
 
 

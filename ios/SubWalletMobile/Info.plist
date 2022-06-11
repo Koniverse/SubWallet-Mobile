@@ -39,10 +39,10 @@
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>fonts/Lexend-Light.ttf</string>
-		<string>fonts/Lexend-Medium.ttf</string>
-		<string>fonts/Lexend-Regular.ttf</string>
-		<string>fonts/Lexend-SemiBold.ttf</string>
+		<string>fonts/SpaceGrotesk-Light.ttf</string>
+		<string>fonts/SpaceGrotesk-Medium.ttf</string>
+		<string>fonts/SpaceGrotesk-Regular.ttf</string>
+		<string>fonts/SpaceGrotesk-SemiBold.ttf</string>
 		<string>fonts/FontAwesome.ttf</string>
 		<string>fonts/FontAwesome5_Brands.ttf</string>
 		<string>fonts/FontAwesome5_Regular.ttf</string>
