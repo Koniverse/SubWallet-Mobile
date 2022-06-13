@@ -10,6 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TouchableHighlight } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
+import { RestoreJson } from 'screens/RestoreJson';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -105,8 +106,8 @@ export const Home = () => {
         }}
       />
       <Tab.Screen
-        name={'Transfers'}
-        component={TransfersTab}
+        name={'Restore'}
+        component={RestoreJson}
         options={{
           tabBarIcon: ({ color, size }) => {
             return <GlobeSimple size={size} color={color} weight={'bold'} />;

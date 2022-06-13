@@ -23,6 +23,7 @@ function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: St
     backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingLeft: 32,
     paddingRight: 32,
     ...style,
