@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { ColorMap } from 'styles/color';
-import {FontBold, FontMedium, sharedStyles} from 'styles/sharedStyles';
+import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
+import { BUTTON_ACTIVE_OPACITY } from '../constant';
+import { CaretRight } from 'phosphor-react-native';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -68,14 +68,14 @@ export const SubmitButton = (buttonProps: ButtonProps) => {
 
   return (
     <TouchableOpacity
-      activeOpacity={0.5}
+      activeOpacity={BUTTON_ACTIVE_OPACITY}
       {...buttonProps}
       disabled={disabled || isBusy}
       style={getWrapperStyle(backgroundColor, style)}>
       <Text style={getTextStyle(color)}>{title}</Text>
       {hasRightArrow && (
         <View style={iconStyle}>
-          <FontAwesomeIcon icon={faChevronRight} size={15} color={color || ColorMap.light} />
+          <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />
         </View>
       )}
       {(disabled || isBusy) && <View style={disabledOverlay} />}

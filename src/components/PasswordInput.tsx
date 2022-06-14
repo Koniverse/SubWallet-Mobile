@@ -1,20 +1,24 @@
-import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
-import {FontSize0, sharedStyles} from 'styles/sharedStyles';
+import React from 'react';
+import { StyleProp, Text, TextInput, TextInputProps, View } from 'react-native';
+import { FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 
 interface InputProps extends TextInputProps {
   label: string;
+  containerStyle?: StyleProp<any>;
 }
 
-const inputContainerStyle: StyleProp<any> = {
-  borderRadius: 5,
-  backgroundColor: ColorMap.dark1,
-  width: '100%',
-  paddingHorizontal: 16,
-  paddingTop: 4,
-  height: 64,
+const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
+  return {
+    borderRadius: 5,
+    backgroundColor: ColorMap.dark1,
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    height: 64,
+    ...style
+  }
 };
 
 const inputLabelStyle: StyleProp<any> = {
@@ -34,11 +38,11 @@ const inputStyle: StyleProp<any> = {
 };
 
 export const PasswordInput = (inputProps: InputProps) => {
-  const { label } = inputProps;
+  const { containerStyle, label } = inputProps;
   const theme = useSubWalletTheme().colors;
 
   return (
-    <View style={inputContainerStyle}>
+    <View style={getInputContainerStyle(containerStyle)}>
       <Text style={inputLabelStyle}>{label}</Text>
       <TextInput
         style={inputStyle}

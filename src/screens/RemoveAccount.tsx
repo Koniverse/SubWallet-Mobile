@@ -5,7 +5,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -57,9 +57,10 @@ const buttonStyle: StyleProp<any> = {
   flex: 1,
 };
 
+const Icon = Trash;
+
 export const RemoveAccount = () => {
   const navigation = useNavigation();
-  const Icon = Trash;
 
   return (
     <SubScreenContainer navigation={navigation} title={'Remove Account'}>
