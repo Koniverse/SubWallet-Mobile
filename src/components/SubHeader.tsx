@@ -13,9 +13,10 @@ import { IconButton } from 'components/IconButton';
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
   showRightBtn?: boolean;
+  title: string;
 }
 
-export const SubHeader = ({ navigation, showRightBtn = true }: Props) => {
+export const SubHeader = ({ navigation, showRightBtn = true, title }: Props) => {
   // const navigation = useNavigation();
   const swThemeColor = useSubWalletTheme().colors;
   const toast = useToast();
@@ -53,7 +54,7 @@ export const SubHeader = ({ navigation, showRightBtn = true }: Props) => {
       <IconButton icon={ArrowLeft} onPress={() => navigation.goBack()} />
 
       <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'center' }}>
-        <Text style={styles.subHeaderTitle}>Accounts</Text>
+        <Text style={styles.subHeaderTitle}>{title}</Text>
       </View>
 
       {showRightBtn && <IconButton icon={Plus} onPress={() => {}} />}
