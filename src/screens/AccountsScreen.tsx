@@ -71,7 +71,7 @@ export const AccountsScreen = () => {
   };
 
   return (
-    <SubScreenContainer navigation={navigation}>
+    <SubScreenContainer navigation={navigation} title={'Accounts'}>
       <View style={styles.accountsWrapper}>
         <FlatList
           style={{ paddingHorizontal: 16, flex: 1 }}

@@ -16,7 +16,7 @@ interface Props {
   title: string;
 }
 
-export const SubHeader = ({ navigation, showRightBtn = true, title }: Props) => {
+export const SubHeader = ({ navigation, showRightBtn, title }: Props) => {
   // const navigation = useNavigation();
   const swThemeColor = useSubWalletTheme().colors;
   const toast = useToast();
