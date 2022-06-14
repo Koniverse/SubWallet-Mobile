@@ -6,7 +6,7 @@ import {
   saveCurrentAccountAddress,
   setViewRef,
   subscribeAccountsWithCurrentAddress, subscribeNetworkMap,
-  subscribePrice,
+  subscribePrice, subscribeSettings,
 } from '../messaging';
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
@@ -16,6 +16,7 @@ import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
 import { useToast } from 'react-native-toast-notifications';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import {updateSettings} from "stores/Settings";
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -30,7 +31,7 @@ const ERROR_HANDLE_SCRIPT = `
     true;
 `;
 
-const baseUrl = 'http://192.168.10.189:9000';
+const baseUrl = 'http://192.168.10.177:9000';
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
@@ -69,6 +70,10 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
       } else {
         saveCurrentAccountAddress({ address: ALL_ACCOUNT_KEY }, () => {});
       }
+    });
+
+    subscribeSettings(null, settings => {
+      dispatch(updateSettings(settings));
     });
 
     subscribePrice(null, price => {

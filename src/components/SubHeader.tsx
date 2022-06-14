@@ -5,7 +5,7 @@ import { RootStackParamList } from 'types/routes';
 import { WebViewContext } from 'providers/contexts';
 import { useToast } from 'react-native-toast-notifications';
 import { SpaceStyle } from 'styles/space';
-import { sharedStyles } from 'styles/sharedStyles';
+import { FontSize4, sharedStyles } from 'styles/sharedStyles';
 import { ArrowLeft, Plus } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { IconButton } from 'components/IconButton';
@@ -29,7 +29,8 @@ export const SubHeader = ({ navigation, showRightBtn = true }: Props) => {
     () =>
       StyleSheet.create({
         subHeaderTitle: {
-          ...sharedStyles.mediumText2,
+          ...sharedStyles.mediumText,
+          ...FontSize4,
           color: swThemeColor.textColor,
         },
       }),

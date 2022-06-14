@@ -8,33 +8,32 @@ export const FontBold = { fontFamily: 'SpaceGrotesk-Bold' };
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
 export const STATUS_BAR_DARK_CONTENT = 'dark-content';
+export const FontSize1 = { fontSize: 14 };
+export const FontSize2 = { fontSize: 15 };
+export const FontSize3 = { fontSize: 18 };
+export const FontSize4 = { fontSize: 20 };
+export const FontSize5 = { fontSize: 40 };
 
 const smallText = {
-  fontSize: 14,
+  ...FontSize1,
   lineHeight: 24,
   ...FontRegular,
 };
 
 const mainText = {
-  fontSize: 15,
+  ...FontSize2,
   lineHeight: 26,
   ...FontRegular,
 };
 
 const mediumText = {
-  fontSize: 18,
+  ...FontSize3,
   lineHeight: 25,
   ...FontRegular,
 };
 
-const mediumText2 = {
-  fontSize: 20,
-  lineHeight: 26,
-  ...FontBold,
-};
-
 const largeText = {
-  fontSize: 40,
+  ...FontSize5,
   lineHeight: 51,
   ...FontRegular,
 };
@@ -53,7 +52,6 @@ export const sharedStyles = StyleSheet.create({
   smallText,
   mainText,
   mediumText,
-  mediumText2,
   largeText,
   textInput,
 
