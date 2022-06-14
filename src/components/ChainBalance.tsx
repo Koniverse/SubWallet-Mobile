@@ -25,12 +25,12 @@ export const ChainBalance = ({ isLoading }: Props) => {
           flexDirection: 'row',
         },
         textStyle: {
-          ...sharedStyles.largerText,
+          ...sharedStyles.mainText,
           fontWeight: '500',
           color: theme.textColor,
         },
         subTextStyle: {
-          ...sharedStyles.largerText,
+          ...sharedStyles.mainText,
           color: theme.textColor2,
         },
         chainBalanceMetaWrapper: {

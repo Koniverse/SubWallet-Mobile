@@ -30,7 +30,7 @@ function getWrapperStyle(backgroundColor: string = ColorMap.dark2, style: StyleP
 
 function getTextStyle(color: string = ColorMap.light) {
   return {
-    ...sharedStyles.largerText,
+    ...sharedStyles.mediumText,
     ...FontSemiBold,
     fontSize: 18,
     color,

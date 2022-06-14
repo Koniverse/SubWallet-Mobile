@@ -38,7 +38,7 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       notification_warning: 'rgba(240, 189, 24, 0.8)',
       notification_danger: 'rgba(230, 41, 51, 0.8)',
       textColor: '#FFF',
-      textColor2: '#7B8098',
+      textColor2: '#999999',
       subTextColor: '#DDD',
       warningBackgroundColor: 'rgba(231, 185, 23, 0.2)',
       dangerBackgroundColor: 'rgba(175, 17, 17, 0.25)',

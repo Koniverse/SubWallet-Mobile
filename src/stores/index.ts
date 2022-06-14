@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import accountsReducer from './Accounts';
 import priceReducer from './Price';
 import networkMapReducer from './NetworkMap';
+import settingsReducer from './Settings';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   accounts: accountsReducer,
   price: priceReducer,
   networkMap: networkMapReducer,
+  settings: settingsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

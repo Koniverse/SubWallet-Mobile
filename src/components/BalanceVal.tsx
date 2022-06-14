@@ -1,6 +1,8 @@
 import BigN from 'bignumber.js';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import {sharedStyles} from "styles/sharedStyles";
+import {useSubWalletTheme} from "hooks/useSubWalletTheme";
 
 type BalanceViewProps = {
   value: string | BigN;
@@ -10,8 +12,28 @@ type BalanceViewProps = {
   withSymbol?: boolean;
 };
 
-export const BalanceVal = ({startWithSymbol = false, symbol, value, withComma = true, withSymbol = true}: BalanceViewProps) => {
-  const styles = useMemo(() => StyleSheet.create({}), []);
+export const BalanceVal = ({
+  startWithSymbol = false,
+  symbol,
+  value,
+  withComma = true,
+  withSymbol = true,
+}: BalanceViewProps) => {
+  const theme = useSubWalletTheme().colors;
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        balanceValWrapper: {
+          flexDirection: 'row',
+        },
+        balanceValText: {
+          ...sharedStyles.largeText,
+          fontWeight: 'bold',
+          color: theme.textColor,
+        },
+      }),
+    [theme],
+  );
 
   let [prefix, postfix] = value.toString().split('.');
 
@@ -28,12 +50,12 @@ export const BalanceVal = ({startWithSymbol = false, symbol, value, withComma = 
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (
-    <View>
-      <Text>{startWithSymbol && withSymbol && symbolView}</Text>
-      <Text>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}</Text>
-      <Text>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
-      <Text>{isString && lastSymbol}</Text>
-      <Text>{!startWithSymbol && withSymbol && symbolView}</Text>
+    <View style={styles.balanceValWrapper}>
+      <Text style={styles.balanceValText}>{startWithSymbol && withSymbol && symbolView}</Text>
+      <Text style={styles.balanceValText}>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}</Text>
+      <Text style={styles.balanceValText}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
+      <Text style={styles.balanceValText}>{isString && lastSymbol}</Text>
+      <Text style={styles.balanceValText}>{!startWithSymbol && withSymbol && symbolView}</Text>
     </View>
   );
 };

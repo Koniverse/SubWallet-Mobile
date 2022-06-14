@@ -20,6 +20,7 @@ import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
 import { STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { Home } from 'screens/Home';
+import { AccountsScreen } from 'screens/AccountsScreen';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -53,7 +54,6 @@ export const App = () => {
                   }}>
                   <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
                 </SafeAreaView>
-                <Header navigationRef={navigationRef} />
                 <NavigationContainer ref={navigationRef} theme={theme}>
                   <Stack.Navigator
                     initialRouteName="Home"
@@ -68,6 +68,11 @@ export const App = () => {
                         options={{ title: 'Create Account' }}
                       />
                       <Stack.Screen name="AccountList" component={AccountList} options={{ title: 'Account List' }} />
+                      <Stack.Screen
+                        name="AccountsScreen"
+                        component={AccountsScreen}
+                        options={{ title: 'Account Screen' }}
+                      />
                     </Stack.Group>
                     <Stack.Group
                       screenOptions={{

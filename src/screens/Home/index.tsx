@@ -3,13 +3,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NFTTab } from './NFTTab';
 import { CrowdloansTab } from './CrowdloansTab';
 import { StakingTab } from './StakingTab';
-import { TransfersTab } from './TransfersTab';
-import { CryptoTab } from './CryptoTab';
 
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TouchableHighlight } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
+import { CryptoTab } from 'screens/Home/CtyptoTab';
 import { RestoreJson } from 'screens/RestoreJson';
 
 type HomeStackParamList = {
@@ -18,6 +17,7 @@ type HomeStackParamList = {
   Crowdloans: undefined;
   Staking: undefined;
   Transfers: undefined;
+  Restore: undefined;
 };
 
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];

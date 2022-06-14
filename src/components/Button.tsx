@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableWithoutFeedback, TouchableWithoutFeedbackProps, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedbackProps, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import {sharedStyles} from "styles/sharedStyles";
 
 interface ButtonProps extends TouchableWithoutFeedbackProps {
   title: string;
@@ -14,7 +15,7 @@ export const Button = (buttonProps: ButtonProps) => {
   const ButtonStyle = useMemo(
     () =>
       StyleSheet.create({
-        base: { opacity: 1, paddingLeft: 16, paddingRight: 16, paddingTop: 8, paddingBottom: 8, borderRadius: 6 },
+        base: { opacity: 1, paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12, borderRadius: 5 },
         primary: {
           color: '#FFF',
           backgroundColor: theme.primary,
@@ -22,6 +23,12 @@ export const Button = (buttonProps: ButtonProps) => {
         secondary: {
           color: '#FFF',
           backgroundColor: theme.secondary,
+        },
+        buttonTextStyle: {
+          color: theme.textColor,
+          textAlign: 'center',
+          ...sharedStyles.mediumText,
+          fontWeight: '600',
         },
       }),
     [theme],
@@ -35,10 +42,10 @@ export const Button = (buttonProps: ButtonProps) => {
   }
 
   return (
-    <TouchableWithoutFeedback {...buttonProps}>
+    <TouchableOpacity {...buttonProps}>
       <View style={finalStyle}>
-        <Text style={{ textAlign: 'center' }}>{title}</Text>
+        <Text style={ButtonStyle.buttonTextStyle}>{title}</Text>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };

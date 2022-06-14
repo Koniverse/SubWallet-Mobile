@@ -3,7 +3,7 @@ import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from '
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import {FontBold, FontMedium, sharedStyles} from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 
 interface ButtonProps extends TouchableOpacityProps {
@@ -18,8 +18,8 @@ interface ButtonProps extends TouchableOpacityProps {
 function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: StyleProp<any> = {}): StyleProp<any> {
   return {
     position: 'relative',
-    height: 48,
-    borderRadius: 8,
+    height: 52,
+    borderRadius: 5,
     backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
@@ -32,8 +32,8 @@ function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: St
 
 function getTextStyle(color: string = ColorMap.light) {
   return {
-    ...sharedStyles.largerText,
-    ...FontMedium,
+    ...sharedStyles.mediumText,
+    ...FontBold,
     color,
   };
 }

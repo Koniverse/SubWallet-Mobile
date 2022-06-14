@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCurrentAccount } from 'stores/Accounts';
 import { RootNavigationProps } from 'types/routes';
-import { Avatar } from 'components/Avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUsb } from '@fortawesome/free-brands-svg-icons';
 import { faQrcode } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +17,7 @@ import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { sharedStyles } from 'styles/sharedStyles';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -98,12 +98,14 @@ export const Account = ({
       StyleSheet.create({
         accountName: {
           color: theme.textColor,
-          ...sharedStyles.largerText,
+          ...sharedStyles.mediumText,
+          fontWeight: '600',
         },
 
         accountAddress: {
           color: theme.textColor2,
-          ...sharedStyles.mainText,
+          ...sharedStyles.smallText,
+          fontWeight: '500',
         },
 
         accountAddressBlock: {
@@ -147,20 +149,20 @@ export const Account = ({
   const Name = () => {
     return (
       <View>
-        {!!name && !!isExternal && !!isHardware ? (
-          <FontAwesomeIcon
-            // @ts-ignore
-            rotation={270}
-            icon={faUsb}
-            title={'hardware wallet account'}
-          />
-        ) : (
-          <FontAwesomeIcon
-            icon={faQrcode}
-            // @ts-ignore
-            title={'external account'}
-          />
-        )}
+        {/*{!!name && !!isExternal && !!isHardware ? (*/}
+        {/*  <FontAwesomeIcon*/}
+        {/*    // @ts-ignore*/}
+        {/*    rotation={270}*/}
+        {/*    icon={faUsb}*/}
+        {/*    title={'hardware wallet account'}*/}
+        {/*  />*/}
+        {/*) : (*/}
+        {/*  <FontAwesomeIcon*/}
+        {/*    icon={faQrcode}*/}
+        {/*    // @ts-ignore*/}
+        {/*    title={'external account'}*/}
+        {/*  />*/}
+        {/*)}*/}
 
         <Text style={styles.accountName}>{name}</Text>
       </View>
@@ -173,8 +175,8 @@ export const Account = ({
         selectAccount(address);
       }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
-        <Avatar address={address} size={42} />
-        <View style={{ marginLeft: 8 }}>
+        <SubWalletAvatar address={address} size={42} />
+        <View style={{ marginLeft: 16 }}>
           <Name />
 
           <View style={styles.accountAddressBlock}>

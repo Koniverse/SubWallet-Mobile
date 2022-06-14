@@ -1,22 +1,25 @@
-import React, { ReactElement, useContext } from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
+import React, { useContext, useMemo } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSVG } from 'hooks/useSVG';
 import { RootStackParamList } from 'types/routes';
-import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { WebViewContext } from 'providers/contexts';
 import { useToast } from 'react-native-toast-notifications';
-import { Button } from 'components/Button';
-import { Avatar } from 'components/Avatar';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
+import { toShort } from 'utils/index';
+import { sharedStyles } from 'styles/sharedStyles';
+import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-interface HeaderProps {
-  navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
-export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps> => {
+export const Header = ({ navigation }: Props) => {
+  // const navigation = useNavigation();
   const swThemeColor = useSubWalletTheme().colors;
   const Logo = useSVG().Logo;
   const accountStore = useSelector((state: RootState) => state.accounts);
@@ -28,38 +31,77 @@ export const Header = ({ navigationRef }: HeaderProps): ReactElement<HeaderProps
     webview.viewRef?.current?.reload();
   };
 
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        accountName: {
+          ...sharedStyles.mediumText,
+          color: swThemeColor.textColor,
+          fontWeight: '600',
+          paddingLeft: 16,
+        },
+        accountAddress: {
+          ...sharedStyles.mainText,
+          color: swThemeColor.textColor2,
+          paddingLeft: 4,
+        },
+        actionButtonStyle: {
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+      }),
+    [swThemeColor],
+  );
+
   return (
     <View
       style={[
         SpaceStyle.oneContainer,
         {
-          backgroundColor: swThemeColor.background,
+          backgroundColor: '#222222',
           flexDirection: 'row',
           alignItems: 'center',
+          justifyContent: 'space-between',
           paddingTop: 8,
           paddingBottom: 8,
         },
       ]}>
-      <View style={{ flex: 1, marginLeft: -8 }}>
-        <TouchableWithoutFeedback
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity
           onPress={() => {
-            navigationRef.navigate('Home');
+            navigation.navigate('AccountsScreen');
           }}>
-          {
-            // @ts-ignore
-            <Logo.SubWallet width={48} height={48} />
-          }
-        </TouchableWithoutFeedback>
+          <View>
+            <SubWalletAvatar address={currentAccount?.address || ''} size={48} />
+          </View>
+        </TouchableOpacity>
+        <Text style={styles.accountName}>Wallet 01</Text>
+        <Text style={styles.accountAddress}>{`(${toShort('5DnVVG5afXqUSa6wyMEbecAtWckTTNFrbb7jy1z4gCfR6Ljf')})`}</Text>
       </View>
-      <Button style={{ marginRight: 16 }} title="Reload Background" onPress={reloadBackground} color={'secondary'} />
-      <TouchableWithoutFeedback
-        onPress={() => {
-          navigationRef.navigate('AccountList');
-        }}>
-        <View>
-          <Avatar address={currentAccount?.address || ''} size={48} />
-        </View>
-      </TouchableWithoutFeedback>
+
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity style={styles.actionButtonStyle}>
+          <SlidersHorizontal size={20} color={'#FFF'} weight={'bold'} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionButtonStyle}>
+          <MagnifyingGlass size={20} color={'#FFF'} weight={'bold'} />
+        </TouchableOpacity>
+      </View>
+      {/*<View style={{ flex: 1, marginLeft: -8 }}>*/}
+      {/*  <TouchableWithoutFeedback*/}
+      {/*    onPress={() => {*/}
+      {/*      navigationRef.navigate('Home');*/}
+      {/*    }}>*/}
+      {/*    {*/}
+      {/*      // @ts-ignore*/}
+      {/*      <Logo.SubWallet width={48} height={48} />*/}
+      {/*    }*/}
+      {/*  </TouchableWithoutFeedback>*/}
+      {/*</View>*/}
+      {/*<Button style={{ marginRight: 16 }} title="Reload Background" onPress={reloadBackground} color={'secondary'} />*/}
     </View>
   );
 };

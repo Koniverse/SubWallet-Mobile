@@ -31,7 +31,7 @@ export const SearchSelect = ({ value, onChangeSelect, data }: Props) => {
       width: width,
     },
     searchSelectText: {
-      ...sharedStyles.mainText,
+      ...sharedStyles.smallText,
       color: theme.textColor,
     },
     modalStyle: {
