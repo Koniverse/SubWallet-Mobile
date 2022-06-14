@@ -10,9 +10,12 @@ import { SubmitButton } from 'components/SubmitButton';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging';
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
+import { SubScreenContainer } from 'components/SubScreenContainer';
+import { useNavigation } from '@react-navigation/native';
 // import RNFetchBlob from 'rn-fetch-blob';
 
 export const RestoreJson = () => {
+  const navigation = useNavigation();
   const [password, setPassword] = useState<string>('');
   const [file, setFile] = useState<KeyringPair$Json | KeyringPairs$Json | undefined>(undefined);
   const [isPasswordError, setIsPasswordError] = useState(false);
@@ -109,18 +112,20 @@ export const RestoreJson = () => {
   console.log('accountsInfo00000', accountsInfo);
 
   return (
-    <View>
-      <InputFile onChangeResult={_onChangeFile} />
-      <Input onChangeText={setPassword} value={password} secureTextEntry />
-      <SubmitButton
-        isBusy={isBusy}
-        title={'Restore Account'}
-        onPress={_onRestore}
-        disabled={isFileError || isPasswordError}
-      />
-      {isPasswordError && <Text>Error: Password Error!</Text>}
-      {isFileError && <Text>Error: File Error!</Text>}
-      {isRestoreSuccess && <Text>Info: Restore Success!</Text>}
-    </View>
+    <SubScreenContainer title={'Export JSON'} navigation={navigation}>
+      <View>
+        <InputFile onChangeResult={_onChangeFile} />
+        <Input onChangeText={setPassword} value={password} secureTextEntry />
+        <SubmitButton
+          isBusy={isBusy}
+          title={'Restore Account'}
+          onPress={_onRestore}
+          disabled={isFileError || isPasswordError}
+        />
+        {isPasswordError && <Text>Error: Password Error!</Text>}
+        {isFileError && <Text>Error: File Error!</Text>}
+        {isRestoreSuccess && <Text>Info: Restore Success!</Text>}
+      </View>
+    </SubScreenContainer>
   );
 };

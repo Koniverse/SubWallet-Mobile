@@ -32,6 +32,7 @@ export const SubHeader = ({ navigation, showRightBtn, title }: Props) => {
         subHeaderTitle: {
           ...sharedStyles.mediumText,
           ...FontSize4,
+          fontWeight: 'bold',
           color: swThemeColor.textColor,
         },
       }),
@@ -47,17 +48,23 @@ export const SubHeader = ({ navigation, showRightBtn, title }: Props) => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          paddingTop: 8,
-          paddingBottom: 8,
+          position: 'relative',
+          height: 40,
         },
       ]}>
-      <IconButton icon={ArrowLeft} onPress={() => navigation.goBack()} />
-
       <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'center' }}>
         <Text style={styles.subHeaderTitle}>{title}</Text>
       </View>
 
-      {showRightBtn && <IconButton icon={Plus} onPress={() => {}} />}
+      <IconButton
+        icon={ArrowLeft}
+        onPress={() => navigation.goBack()}
+        iconButtonStyle={{ position: 'absolute', left: 0, top: 0}}
+      />
+
+      {showRightBtn && (
+        <IconButton icon={Plus} onPress={() => {}} iconButtonStyle={{ position: 'absolute', right: 0, top: 0 }} />
+      )}
     </View>
   );
 };

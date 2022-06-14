@@ -8,10 +8,9 @@ import { Provider } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { SafeAreaView, StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaView, StatusBar } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
-import { Header } from 'components/Header';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { AccountList } from 'screens/AccountList';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -21,6 +20,9 @@ import { RootStackParamList } from 'types/routes';
 import { STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
+import { EditAccount } from 'screens/EditAccount';
+import { RemoveAccount } from 'screens/RemoveAccount';
+import { RestoreJson } from 'screens/RestoreJson';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -72,6 +74,13 @@ export const App = () => {
                         name="AccountsScreen"
                         component={AccountsScreen}
                         options={{ title: 'Account Screen' }}
+                      />
+                      <Stack.Screen name="EditAccount" component={EditAccount} options={{ title: 'Edit Account' }} />
+                      <Stack.Screen name="RestoreJson" component={RestoreJson} options={{ title: 'Restore JSON' }} />
+                      <Stack.Screen
+                        name="RemoveAccount"
+                        component={RemoveAccount}
+                        options={{ title: 'Remove Account' }}
                       />
                     </Stack.Group>
                     <Stack.Group

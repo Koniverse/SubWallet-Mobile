@@ -6,9 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCurrentAccount } from 'stores/Accounts';
 import { RootNavigationProps } from 'types/routes';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUsb } from '@fortawesome/free-brands-svg-icons';
-import { faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { accountAllRecoded, defaultRecoded, getIcon } from 'utils/index';
 import { RootState } from 'stores/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -18,6 +15,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { sharedStyles } from 'styles/sharedStyles';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import { CircleWavyCheck } from 'phosphor-react-native';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -68,7 +66,10 @@ export const Account = ({
   );
   const _isAccountAll = address && isAccountAll(address);
   const networkInfo = getNetworkInfoByGenesisHash(genesisHash || recodedGenesis);
-
+  const [isSelected, setSelected] = useState(false);
+  const {
+    accounts: { currentAccountAddress },
+  } = useSelector((state: RootState) => state);
   useEffect((): void => {
     if (!address) {
       setRecoded(defaultRecoded);
@@ -93,6 +94,14 @@ export const Account = ({
     //TODO: change recoded
   }, [accountList, _isAccountAll, address, networkInfo, givenType]);
 
+  useEffect((): void => {
+    if (currentAccountAddress === address) {
+      setSelected(true);
+    } else {
+      setSelected(false);
+    }
+  }, [address, currentAccountAddress]);
+
   const styles = useMemo(
     () =>
       StyleSheet.create({
@@ -100,6 +109,7 @@ export const Account = ({
           color: theme.textColor,
           ...sharedStyles.mediumText,
           fontWeight: '600',
+          paddingRight: 5,
         },
 
         accountAddress: {
@@ -117,6 +127,10 @@ export const Account = ({
         copyBtn: {
           paddingLeft: 11,
         },
+        nameWrapper: {
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
       }),
     [theme],
   );
@@ -133,14 +147,19 @@ export const Account = ({
     Clipboard.setString(text);
   }, []);
 
-  const selectAccount = (accAddress: string) => {
-    saveCurrentAccountAddress({ address: accAddress }, rs => {
-      dispatch(updateCurrentAccount(rs.address));
-      navigation.navigate('Home');
-    })
-      .then(console.log)
-      .catch(console.error);
-  };
+  const selectAccount = useCallback(
+    (accAddress: string) => {
+      setSelected(true);
+
+      saveCurrentAccountAddress({ address: accAddress }, rs => {
+        dispatch(updateCurrentAccount(rs.address));
+        navigation.navigate('Home');
+      })
+        .then(console.log)
+        .catch(console.error);
+    },
+    [dispatch, navigation],
+  );
 
   // const removeAccount = (accAddress: string) => {
   //   forgetAccount(accAddress).then(console.log).catch(console.error);
@@ -148,23 +167,9 @@ export const Account = ({
 
   const Name = () => {
     return (
-      <View>
-        {/*{!!name && !!isExternal && !!isHardware ? (*/}
-        {/*  <FontAwesomeIcon*/}
-        {/*    // @ts-ignore*/}
-        {/*    rotation={270}*/}
-        {/*    icon={faUsb}*/}
-        {/*    title={'hardware wallet account'}*/}
-        {/*  />*/}
-        {/*) : (*/}
-        {/*  <FontAwesomeIcon*/}
-        {/*    icon={faQrcode}*/}
-        {/*    // @ts-ignore*/}
-        {/*    title={'external account'}*/}
-        {/*  />*/}
-        {/*)}*/}
-
+      <View style={styles.nameWrapper}>
         <Text style={styles.accountName}>{name}</Text>
+        {isSelected && <CircleWavyCheck size={20} color={'#42C59A'} weight={'bold'} />}
       </View>
     );
   };

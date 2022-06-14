@@ -39,6 +39,7 @@ export const Header = ({ navigation }: Props) => {
           color: swThemeColor.textColor,
           fontWeight: '600',
           paddingLeft: 16,
+          maxWidth: 100,
         },
         accountAddress: {
           ...sharedStyles.mainText,
@@ -77,8 +78,10 @@ export const Header = ({ navigation }: Props) => {
             <SubWalletAvatar address={currentAccount?.address || ''} size={48} />
           </View>
         </TouchableOpacity>
-        <Text style={styles.accountName}>Wallet 01</Text>
-        <Text style={styles.accountAddress}>{`(${toShort('5DnVVG5afXqUSa6wyMEbecAtWckTTNFrbb7jy1z4gCfR6Ljf')})`}</Text>
+        <Text style={styles.accountName} numberOfLines={1}>
+          {currentAccount ? currentAccount.name : ''}
+        </Text>
+        <Text style={styles.accountAddress}>{`(${toShort(currentAccount?.address || '', 4, 4)})`}</Text>
       </View>
 
       <View style={{ flexDirection: 'row' }}>

@@ -6,6 +6,9 @@ export type RootStackParamList = {
   AccountList: undefined;
   QrScanner: undefined;
   AccountsScreen: undefined;
+  EditAccount: undefined;
+  RemoveAccount: undefined;
+  RestoreJson: undefined;
 };
 
 export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];

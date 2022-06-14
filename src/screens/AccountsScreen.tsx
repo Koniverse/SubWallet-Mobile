@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
+import React, {useCallback, useMemo} from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from 'types/routes';
+import { RootNavigationProps } from 'types/routes';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
 import { useSelector } from 'react-redux';
@@ -12,10 +11,11 @@ import { DotsThree } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { SubmitButton } from 'components/SubmitButton';
 
 export const AccountsScreen = () => {
-  const navigation: NativeStackScreenProps<RootStackParamList> = useNavigation();
+  const navigation = useNavigation();
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
   const theme = useSubWalletTheme().colors;
@@ -53,7 +53,13 @@ export const AccountsScreen = () => {
       <View style={styles.accountItemContainer}>
         <Account key={item.address} name={item.name || ''} address={item.address} showCopyBtn={false} />
 
-        <IconButton icon={DotsThree} />
+        <IconButton
+          icon={DotsThree}
+          onPress={() => {
+            // @ts-ignore
+            navigation.navigate('EditAccount', [item.address, item.name]);
+          }}
+        />
       </View>
     );
   };
@@ -65,7 +71,7 @@ export const AccountsScreen = () => {
   const renderFooterComponent = () => {
     return (
       <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 42 }}>
-        <SubmitButton title={'Add / Connect Account'} />
+        <SubmitButton backgroundColor={theme.background2} title={'Add / Connect Account'} />
       </View>
     );
   };
@@ -82,8 +88,6 @@ export const AccountsScreen = () => {
           ListEmptyComponent={renderListEmptyComponent}
           keyExtractor={item => item.address}
         />
-        {/*{accounts.map(acc => (*/}
-        {/*))}*/}
         {renderFooterComponent()}
       </View>
     </SubScreenContainer>

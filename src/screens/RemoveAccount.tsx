@@ -5,6 +5,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import {useNavigation} from "@react-navigation/native";
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -48,7 +49,7 @@ const text2Style: StyleProp<any> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.disabled,
-  textAlign: 'center'
+  textAlign: 'center',
 };
 
 const buttonStyle: StyleProp<any> = {
@@ -57,10 +58,11 @@ const buttonStyle: StyleProp<any> = {
 };
 
 export const RemoveAccount = () => {
+  const navigation = useNavigation();
   const Icon = Trash;
 
   return (
-    <SubScreenContainer title={'Remove Account'}>
+    <SubScreenContainer navigation={navigation} title={'Remove Account'}>
       <View style={layoutContainerStyle}>
         <View style={bodyAreaStyle}>
           <View style={bodyContentStyle}>

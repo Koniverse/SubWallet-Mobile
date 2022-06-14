@@ -10,6 +10,7 @@ export const FontRegular = { fontFamily: 'SpaceGrotesk-Regular' };
 export const FontMedium = { fontFamily: 'SpaceGrotesk-Medium' };
 export const FontSemiBold = { fontFamily: 'SpaceGrotesk-SemiBold' };
 export const FontBold = { fontFamily: 'SpaceGrotesk-Bold' };
+export const FontSize0 = { fontSize: 12 };
 export const FontSize1 = { fontSize: 14 };
 export const FontSize2 = { fontSize: 15 };
 export const FontSize3 = { fontSize: 18 };

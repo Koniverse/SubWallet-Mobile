@@ -10,6 +10,7 @@ import { TokensTab } from 'screens/Home/CtyptoTab/TokensTab';
 import { useNavigation } from '@react-navigation/native';
 import { MainScreenContainer } from 'components/MainScreenContainer';
 import { RootNavigationProps } from 'types/routes';
+import {PasswordInput} from "components/PasswordInput";
 
 const ROUTES = [
   { key: 'chains', title: 'Chains' },
@@ -51,6 +52,8 @@ export const CryptoTab = () => {
             <ActionButton label="Send" iconSize={24} iconName={'SendIcon'} />
             <ActionButton label="Swap" iconSize={24} iconName={'SwapIcon'} />
           </View>
+
+          <PasswordInput label={'password for this account'} />
         </View>
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
