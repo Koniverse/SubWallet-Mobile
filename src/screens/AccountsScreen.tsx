@@ -1,7 +1,6 @@
-import React, {useCallback, useMemo} from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { RootNavigationProps } from 'types/routes';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
 import { useSelector } from 'react-redux';
@@ -11,7 +10,6 @@ import { DotsThree } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { SubmitButton } from 'components/SubmitButton';
 
 export const AccountsScreen = () => {
@@ -57,7 +55,7 @@ export const AccountsScreen = () => {
           icon={DotsThree}
           onPress={() => {
             // @ts-ignore
-            navigation.navigate('EditAccount', [item.address, item.name]);
+            navigation.navigate('EditAccount', { address: item.address, name: item.name });
           }}
         />
       </View>

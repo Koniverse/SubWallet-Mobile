@@ -18,11 +18,13 @@ export const EditAccount = () => {
   const theme = useSubWalletTheme().colors;
   const navigation = useNavigation<RootNavigationProps>();
   const route = useRoute<RootRouteProps>();
-  const data = route.params as string[];
-  const [editedName, setEditName] = useState<string>(data[1]);
+  const data = route.params;
+  // @ts-ignore
+  const [editedName, setEditName] = useState<string>(data ? data.name : '');
   const _saveChange = useCallback(
     (editName: string) => {
-      data && data[0] && editAccount(data[0], editName).catch(e => console.log(e));
+      // @ts-ignore
+      data && data.name && editAccount(data.name, editName).catch(e => console.log(e));
     },
     [data],
   );
@@ -56,7 +58,10 @@ export const EditAccount = () => {
     <SubScreenContainer navigation={navigation} title={'Edit Account'}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
         <View style={{ paddingVertical: 24 }}>
-          <SubWalletAvatar address={data ? data[0] : ''} size={76} />
+          {
+            // @ts-ignore
+            <SubWalletAvatar address={data ? data.address : ''} size={76} />
+          }
         </View>
 
         <EditAccountInputText
@@ -73,14 +78,16 @@ export const EditAccount = () => {
             editAccountInputStyle={{ flex: 1 }}
             outerInputStyle={{ color: theme.textColor2 }}
             label={'Account Address'}
-            inputValue={data ? toShort(data[0]) : ''}
+            // @ts-ignore
+            inputValue={data ? toShort(data.address) : ''}
             isDisabled
           />
           <IconButton
             iconButtonStyle={{ width: 20, height: 20, paddingBottom: 22 }}
             icon={CopySimple}
             color={theme.textColor2}
-            onPress={() => copyToClipboard(data[0])}
+            // @ts-ignore
+            onPress={() => copyToClipboard(data ? data.address : '')}
           />
         </View>
 
