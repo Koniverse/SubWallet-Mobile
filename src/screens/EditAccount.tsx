@@ -49,6 +49,11 @@ export const EditAccount = () => {
     [toast],
   );
 
+  const onExportPrivateKey = () => {
+    // @ts-ignore
+    navigation.navigate('ExportPrivateKey', { address: data.address });
+  };
+
   const onRemoveAccount = () => {
     // @ts-ignore
     navigation.navigate('RemoveAccount', { address: data.address });
@@ -96,7 +101,7 @@ export const EditAccount = () => {
           title={'Export Private Key'}
           icon={Key}
           hasRightArrow
-          onPress={() => navigation.navigate('ExportPrivateKey')}
+          onPress={onExportPrivateKey}
         />
         <ActionItem
           style={{ width: '100%', marginBottom: 16 }}

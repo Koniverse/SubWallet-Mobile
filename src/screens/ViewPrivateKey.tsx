@@ -8,9 +8,11 @@ import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from '
 import { LeftIconButton } from 'components/LeftIconButton';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
 import { PasswordInput } from 'components/PasswordInput';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
+import { exportAccountPrivateKey } from '../messaging';
+import { RootRouteProps } from 'types/routes';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -96,11 +98,15 @@ const PrivateBlockIcon = FingerprintSimple;
 
 export const ViewPrivateKey = () => {
   const navigation = useNavigation();
-  const [privateKey, setPrivateKey] = useState<string>(
-    'OxSWYgeW91IGV4cGVjdCB0aGUgcHJpdmF0ZSBrZXksIHRoZW4gbm90aGluZyB0byBzZWUgaGVyZQ==',
-  );
+  const route = useRoute<RootRouteProps>();
+  const [privateKey, setPrivateKey] = useState<string>('');
   const toast = useToast();
+  const [password, setPassword] = useState<string>('');
+  const [isBusy, setIsBusy] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  // @ts-ignore
+  const { address } = route.params;
   const copyToClipboard = useCallback(
     (text: string) => {
       Clipboard.setString(text);
@@ -109,12 +115,32 @@ export const ViewPrivateKey = () => {
     [toast],
   );
 
-  const _onTapPrivate = () => {
+  const onTapPrivate = () => {
     setCurrentViewStep(ViewStep.ENTER_PW);
   };
 
-  const _onPasswordBlur = () => {
-    setCurrentViewStep(ViewStep.SHOW_PK);
+  const onTypePassword = (pass: string) => {
+    setPassword(pass);
+    setErrorMessage('');
+  };
+
+  const onSetPassword = () => {
+    setIsBusy(true);
+    exportAccountPrivateKey(address, password)
+      .then(({ privateKey: resPrivateKey }) => {
+        setPrivateKey(resPrivateKey);
+        setIsBusy(false);
+        setCurrentViewStep(ViewStep.SHOW_PK);
+      })
+      .catch((error: Error) => {
+        console.log(error);
+        setErrorMessage(error.message);
+        setIsBusy(false);
+      });
+  };
+
+  const onPressDone = () => {
+    navigation.goBack();
   };
 
   return (
@@ -129,7 +155,7 @@ export const ViewPrivateKey = () => {
           </View>
 
           {currentViewStep === ViewStep.HIDE_PK && (
-            <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={privateBlockStyle} onPress={_onTapPrivate}>
+            <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={privateBlockStyle} onPress={onTapPrivate}>
               <View style={privateBlockOverlayStyle}>
                 <Text style={{ ...privateBlockTextStyle, marginBottom: 4, color: ColorMap.light }}>
                   Tap to reveal your private key
@@ -145,11 +171,18 @@ export const ViewPrivateKey = () => {
           )}
 
           {currentViewStep === ViewStep.ENTER_PW && (
-            <PasswordInput
-              label={'password for this account'}
-              onBlur={_onPasswordBlur}
-              containerStyle={passwordInputStyle}
-            />
+            <>
+              <PasswordInput
+                label={'password for this account'}
+                containerStyle={passwordInputStyle}
+                onBlur={onSetPassword}
+                onChangeText={onTypePassword}
+                onEndEditing={onSetPassword}
+              />
+              {!!errorMessage && (
+                <Text style={{ ...sharedStyles.mainText, color: ColorMap.danger, marginTop: 10 }}>{errorMessage}</Text>
+              )}
+            </>
           )}
 
           {currentViewStep === ViewStep.SHOW_PK && (
@@ -171,7 +204,7 @@ export const ViewPrivateKey = () => {
         </View>
 
         <View style={footerAreaStyle}>
-          <SubmitButton title={'Done'} style={buttonStyle} />
+          <SubmitButton title={'Done'} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />
         </View>
       </View>
     </SubScreenContainer>
