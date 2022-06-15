@@ -11,6 +11,7 @@ import { PasswordInput } from 'components/PasswordInput';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
+import { RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { RootRouteProps } from 'types/routes';
 
@@ -97,9 +98,11 @@ const ViewStep = {
 const PrivateBlockIcon = FingerprintSimple;
 
 export const ViewPrivateKey = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavigationProps>();
   const route = useRoute<RootRouteProps>();
-  const [privateKey, setPrivateKey] = useState<string>('');
+  const [privateKey, setPrivateKey] = useState<string>(
+    'OxSWYgeW91IGV4cGVjdCB0aGUgcHJpdmF0ZSBrZXksIHRoZW4gbm90aGluZyB0byBzZWUgaGVyZQ==',
+  );
   const toast = useToast();
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);

@@ -1,4 +1,4 @@
-import { StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { saveCurrentAccountAddress } from '../messaging';
@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCurrentAccount } from 'stores/Accounts';
 import { RootNavigationProps } from 'types/routes';
-import { accountAllRecoded, defaultRecoded, getIcon } from 'utils/index';
+import { accountAllRecoded, defaultRecoded } from 'utils/index';
 import { RootState } from 'stores/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { Recoded } from 'types/ui-types';
@@ -14,8 +14,9 @@ import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { CircleWavyCheck } from 'phosphor-react-native';
+import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
+import { IconButton } from 'components/IconButton';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -29,6 +30,7 @@ const accountNameStyle: StyleProp<any> = {
   ...sharedStyles.mediumText,
   ...FontBold,
   paddingRight: 5,
+  maxWidth: 220,
 };
 
 const accountAddressStyle: StyleProp<any> = {
@@ -40,7 +42,6 @@ const accountAddressStyle: StyleProp<any> = {
 const accountAddressBlock: StyleProp<any> = {
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'center',
 };
 
 const accountCopyBtn: StyleProp<any> = {
@@ -164,14 +165,17 @@ export const Account = ({
   const Name = () => {
     return (
       <View style={nameWrapper}>
-        <Text style={accountNameStyle}>{name}</Text>
+        <Text style={accountNameStyle} numberOfLines={1}>
+          {name}
+        </Text>
         {isSelected && <CircleWavyCheck size={20} color={'#42C59A'} weight={'bold'} />}
       </View>
     );
   };
 
   return (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
+      style={{ flex: 1 }}
       onPress={() => {
         selectAccount(address);
       }}>
@@ -188,9 +192,11 @@ export const Account = ({
             )}
 
             {showCopyBtn && (
-              <TouchableOpacity style={accountCopyBtn} onPress={() => copyToClipboard((formatted && formatted) || '')}>
-                {getIcon('CloneIcon', 20, '#FFF')}
-              </TouchableOpacity>
+              <IconButton
+                style={accountCopyBtn}
+                icon={CopySimple}
+                onPress={() => copyToClipboard((formatted && formatted) || '')}
+              />
             )}
           </View>
         </View>
@@ -200,6 +206,6 @@ export const Account = ({
           </div>
         )}
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };

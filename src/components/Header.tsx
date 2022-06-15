@@ -44,7 +44,6 @@ const actionButtonStyle: StyleProp<any> = {
 };
 
 export const Header = ({ navigation }: Props) => {
-  // const navigation = useNavigation();
   // const Logo = useSVG().Logo;
   const accountStore = useSelector((state: RootState) => state.accounts);
   const currentAccount = accountStore.currentAccount;
@@ -77,7 +76,7 @@ export const Header = ({ navigation }: Props) => {
           <SlidersHorizontal size={20} color={'#FFF'} weight={'bold'} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={actionButtonStyle}>
+        <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('Settings')}>
           <Gear size={20} color={'#FFF'} weight={'bold'} />
         </TouchableOpacity>
       </View>

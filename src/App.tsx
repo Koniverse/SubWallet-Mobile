@@ -25,6 +25,7 @@ import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { ColorMap } from 'styles/color';
 import { ViewPrivateKey } from 'screens/ViewPrivateKey';
+import { Settings } from 'screens/Settings';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -50,12 +51,6 @@ export const App = () => {
           <WebViewProvider>
             <QrScannerProvider navigationRef={navigationRef}>
               <ThemeContext.Provider value={theme}>
-                <SafeAreaView
-                  style={{
-                    backgroundColor: ColorMap.dark2,
-                  }}>
-                  <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
-                </SafeAreaView>
                 <NavigationContainer ref={navigationRef} theme={theme}>
                   <Stack.Navigator
                     initialRouteName="Home"
@@ -82,6 +77,7 @@ export const App = () => {
                         component={ViewPrivateKey}
                         options={{ title: 'Export Private Key' }}
                       />
+                      <Stack.Screen name="Settings" component={Settings} options={{ title: 'Settings' }} />
                       <Stack.Screen
                         name="RemoveAccount"
                         component={RemoveAccount}

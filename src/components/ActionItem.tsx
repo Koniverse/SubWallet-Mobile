@@ -2,7 +2,7 @@ import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from '
 import React from 'react';
 import { CaretRight, IconProps } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import {FontMedium, FontSemiBold, sharedStyles} from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
 
 interface ActionItemProps extends TouchableOpacityProps {
@@ -13,9 +13,17 @@ interface ActionItemProps extends TouchableOpacityProps {
   hasRightArrow?: boolean;
   // isBusy?: boolean;
   icon: (iconProps: IconProps) => JSX.Element;
+  showIcon?: boolean;
+  subTitle?: string;
+  paddingLeft?: number;
+  subTextColor?: string;
 }
 
-function getWrapperStyle(backgroundColor: string = ColorMap.dark2, style: StyleProp<any> = {}): StyleProp<any> {
+function getWrapperStyle(
+  backgroundColor: string = ColorMap.dark2,
+  style: StyleProp<any> = {},
+  paddingLeft: number = 52,
+): StyleProp<any> {
   return {
     position: 'relative',
     height: 52,
@@ -23,7 +31,8 @@ function getWrapperStyle(backgroundColor: string = ColorMap.dark2, style: StyleP
     backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 52,
+    justifyContent: 'space-between',
+    paddingLeft,
     paddingRight: 20,
     ...style,
   };
@@ -35,6 +44,15 @@ function getTextStyle(color: string = ColorMap.light) {
     ...FontSemiBold,
     fontSize: 18,
     color,
+  };
+}
+
+function getSubTextStyle(color: string = ColorMap.disabled) {
+  return {
+    ...sharedStyles.mainText,
+    ...FontMedium,
+    color,
+    paddingRight: 31,
   };
 }
 
@@ -52,17 +70,31 @@ const arrowStyle: StyleProp<any> = {
 };
 
 export const ActionItem = (actionProps: ActionItemProps) => {
-  const { icon: Icon, color, title, backgroundColor, style, hasRightArrow } = actionProps;
+  const {
+    icon: Icon,
+    color,
+    subTextColor,
+    title,
+    subTitle,
+    backgroundColor,
+    paddingLeft,
+    style,
+    showIcon = true,
+    hasRightArrow,
+  } = actionProps;
 
   return (
     <TouchableOpacity
       activeOpacity={BUTTON_ACTIVE_OPACITY}
       {...actionProps}
-      style={getWrapperStyle(backgroundColor, style)}>
-      <View style={iconStyle}>
-        <Icon size={20} color={color || ColorMap.light} weight={'bold'} />
-      </View>
+      style={getWrapperStyle(backgroundColor, style, paddingLeft)}>
+      {showIcon && (
+        <View style={iconStyle}>
+          <Icon size={20} color={color || ColorMap.light} weight={'bold'} />
+        </View>
+      )}
       <Text style={getTextStyle(color)}>{title}</Text>
+      <Text style={getSubTextStyle(subTextColor)}>{subTitle || ''}</Text>
       {hasRightArrow && (
         <View style={arrowStyle}>
           <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />

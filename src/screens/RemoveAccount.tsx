@@ -6,7 +6,7 @@ import { Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootRouteProps } from 'types/routes';
+import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { forgetAccount } from '../messaging';
 import { toShort } from 'utils/index';
 
@@ -63,7 +63,7 @@ const buttonStyle: StyleProp<any> = {
 const Icon = Trash;
 
 export const RemoveAccount = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavigationProps>();
   const route = useRoute<RootRouteProps>();
   const [isBusy, setIsBusy] = useState(false);
   // @ts-ignore

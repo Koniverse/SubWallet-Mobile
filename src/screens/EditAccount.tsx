@@ -35,7 +35,7 @@ export const EditAccount = () => {
   const _saveChange = useCallback(
     (editName: string) => {
       // @ts-ignore
-      data && data.name && editAccount(data.name, editName).catch(e => console.log(e));
+      data && data.address && editAccount(data.address, editName).catch(e => console.log(e));
     },
     [data],
   );

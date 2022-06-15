@@ -17,7 +17,6 @@ interface Props {
 }
 
 export const SubHeader = ({ navigation, showRightBtn, title }: Props) => {
-  // const navigation = useNavigation();
   const swThemeColor = useSubWalletTheme().colors;
   const toast = useToast();
   const webview = useContext(WebViewContext);
@@ -59,7 +58,7 @@ export const SubHeader = ({ navigation, showRightBtn, title }: Props) => {
       <IconButton
         icon={ArrowLeft}
         onPress={() => navigation.goBack()}
-        iconButtonStyle={{ position: 'absolute', left: 16, top: 0}}
+        iconButtonStyle={{ position: 'absolute', left: 16, top: 0 }}
       />
 
       {showRightBtn && (

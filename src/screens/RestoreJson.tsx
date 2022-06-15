@@ -14,15 +14,16 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { RootNavigationProps } from 'types/routes';
 // import RNFetchBlob from 'rn-fetch-blob';
 
 const textStyle = {
   ...sharedStyles.mainText,
-  color: ColorMap.light
+  color: ColorMap.light,
 };
 
 export const RestoreJson = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavigationProps>();
   const [password, setPassword] = useState<string>('');
   const [file, setFile] = useState<KeyringPair$Json | KeyringPairs$Json | undefined>(undefined);
   const [isPasswordError, setIsPasswordError] = useState(false);

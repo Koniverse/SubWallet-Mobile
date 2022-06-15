@@ -12,6 +12,7 @@ import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
+import { RootNavigationProps } from 'types/routes';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -31,7 +32,7 @@ const accountItemSeparator: StyleProp<any> = {
 };
 
 export const AccountsScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavigationProps>();
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
   const theme = useSubWalletTheme().colors;
@@ -49,7 +50,6 @@ export const AccountsScreen = () => {
         <IconButton
           icon={DotsThree}
           onPress={() => {
-            // @ts-ignore
             navigation.navigate('EditAccount', { address: item.address, name: item.name });
           }}
         />
