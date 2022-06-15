@@ -35,6 +35,7 @@ const inputStyle: StyleProp<any> = {
   paddingBottom: 5,
   fontWeight: '500',
   color: ColorMap.light,
+  textAlignVertical: 'top',
 };
 
 export const PasswordInput = (inputProps: InputProps) => {

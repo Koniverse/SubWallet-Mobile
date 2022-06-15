@@ -12,7 +12,14 @@ import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging'
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
+import { sharedStyles } from 'styles/sharedStyles';
+import { ColorMap } from 'styles/color';
 // import RNFetchBlob from 'rn-fetch-blob';
+
+const textStyle = {
+  ...sharedStyles.mainText,
+  color: ColorMap.light
+};
 
 export const RestoreJson = () => {
   const navigation = useNavigation();
@@ -108,12 +115,9 @@ export const RestoreJson = () => {
       });
   };
 
-  console.log('123123123123', password);
-  console.log('accountsInfo00000', accountsInfo);
-
   return (
-    <SubScreenContainer title={'Export JSON'} navigation={navigation}>
-      <View>
+    <SubScreenContainer title={'Restore JSON'} navigation={navigation}>
+      <View style={sharedStyles.blockContent}>
         <InputFile onChangeResult={_onChangeFile} />
         <Input onChangeText={setPassword} value={password} secureTextEntry />
         <SubmitButton
@@ -122,9 +126,9 @@ export const RestoreJson = () => {
           onPress={_onRestore}
           disabled={isFileError || isPasswordError}
         />
-        {isPasswordError && <Text>Error: Password Error!</Text>}
-        {isFileError && <Text>Error: File Error!</Text>}
-        {isRestoreSuccess && <Text>Info: Restore Success!</Text>}
+        {isPasswordError && <Text style={{ ...textStyle, color: ColorMap.danger }}>Error: Password Error!</Text>}
+        {isFileError && <Text style={{ ...textStyle, color: ColorMap.danger }}>Error: File Error!</Text>}
+        {isRestoreSuccess && <Text style={textStyle}>Info: Restore Success!</Text>}
       </View>
     </SubScreenContainer>
   );

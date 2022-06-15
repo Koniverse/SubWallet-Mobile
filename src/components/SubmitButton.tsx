@@ -44,7 +44,7 @@ const disabledOverlay: StyleProp<any> = {
   top: 0,
   left: 0,
   bottom: 0,
-  borderRadius: 8,
+  borderRadius: 5,
   backgroundColor: ColorMap.disabledOverlay,
 };
 

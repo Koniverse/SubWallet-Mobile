@@ -54,6 +54,11 @@ export const EditAccount = () => {
     [toast],
   );
 
+  const onRemoveAccount = () => {
+    // @ts-ignore
+    navigation.navigate('RemoveAccount', { address: data.address });
+  };
+
   return (
     <SubScreenContainer navigation={navigation} title={'Edit Account'}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
@@ -104,7 +109,7 @@ export const EditAccount = () => {
           title={'Remove Account'}
           icon={Trash}
           color={theme.notification_danger}
-          onPress={() => navigation.navigate('RemoveAccount')}
+          onPress={onRemoveAccount}
         />
       </View>
     </SubScreenContainer>
