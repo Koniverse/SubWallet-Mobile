@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import React from 'react';
+import { FlatList, StyleProp, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
@@ -11,35 +11,30 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n';
 import { SubmitButton } from 'components/SubmitButton';
+import { ColorMap } from 'styles/color';
+
+const accountsWrapper: StyleProp<any> = {
+  flex: 1,
+};
+const accountItemContainer: StyleProp<any> = {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingVertical: 11,
+};
+
+const accountItemSeparator: StyleProp<any> = {
+  borderBottomWidth: 1,
+  borderBottomColor: ColorMap.dark2,
+  borderBottomStyle: 'solid',
+  marginLeft: 50,
+};
 
 export const AccountsScreen = () => {
   const navigation = useNavigation();
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
   const theme = useSubWalletTheme().colors;
-
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        accountsWrapper: {
-          flex: 1,
-        },
-        accountItemContainer: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingVertical: 11,
-        },
-
-        accountItemSeparator: {
-          borderBottomWidth: 1,
-          borderBottomColor: theme.background2,
-          borderBottomStyle: 'solid',
-          marginLeft: 50,
-        },
-      }),
-    [theme],
-  );
 
   const renderListEmptyComponent = () => {
     return <Warning warningMessage={i18n.noAccountText} isDanger={false} />;
@@ -48,7 +43,7 @@ export const AccountsScreen = () => {
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.accountItemContainer}>
+      <View style={accountItemContainer}>
         <Account key={item.address} name={item.name || ''} address={item.address} showCopyBtn={false} />
 
         <IconButton
@@ -63,7 +58,7 @@ export const AccountsScreen = () => {
   };
 
   const renderSeparator = () => {
-    return <View style={styles.accountItemSeparator} />;
+    return <View style={accountItemSeparator} />;
   };
 
   const renderFooterComponent = () => {
@@ -76,7 +71,7 @@ export const AccountsScreen = () => {
 
   return (
     <SubScreenContainer navigation={navigation} title={'Accounts'}>
-      <View style={styles.accountsWrapper}>
+      <View style={accountsWrapper}>
         <FlatList
           style={{ paddingHorizontal: 16, flex: 1 }}
           keyboardShouldPersistTaps={'handled'}

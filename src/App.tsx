@@ -23,6 +23,7 @@ import { AccountsScreen } from 'screens/AccountsScreen';
 import { EditAccount } from 'screens/EditAccount';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
+import {ColorMap} from "styles/color";
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -50,9 +51,7 @@ export const App = () => {
               <ThemeContext.Provider value={theme}>
                 <SafeAreaView
                   style={{
-                    paddingTop: STATUS_BAR_HEIGHT,
-                    height: STATUS_BAR_HEIGHT,
-                    backgroundColor: theme.colors.background,
+                    backgroundColor: ColorMap.dark2,
                   }}>
                   <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
                 </SafeAreaView>

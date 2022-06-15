@@ -1,6 +1,6 @@
-import React from "react";
-import {Button} from "components/Button";
-import DocumentPicker, {DirectoryPickerResponse, DocumentPickerResponse} from "react-native-document-picker";
+import React from 'react';
+import { Button } from 'components/Button';
+import DocumentPicker, { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
 
 interface Props {
   onChangeResult: (value: Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null) => void
@@ -8,7 +8,6 @@ interface Props {
 
 export const InputFile = ({ onChangeResult }: Props) => {
   return (
-
     <Button
       title="open picker for single file selection"
       onPress={async () => {
@@ -16,7 +15,7 @@ export const InputFile = ({ onChangeResult }: Props) => {
           const pickerResult = await DocumentPicker.pickSingle({
             presentationStyle: 'fullScreen',
             copyTo: 'cachesDirectory',
-          })
+          });
           onChangeResult([pickerResult])
         } catch (e) {
           console.log('e', e);
@@ -24,4 +23,4 @@ export const InputFile = ({ onChangeResult }: Props) => {
       }}
     />
   );
-}
+};

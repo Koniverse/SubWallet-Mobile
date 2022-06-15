@@ -1,27 +1,24 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import React from 'react';
+import { StyleProp, TextInput, TextInputProps } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ColorMap } from 'styles/color';
 
 interface InputProps extends TextInputProps {}
 
+const inputContainer: StyleProp<any> = {
+  borderRadius: 8,
+  width: '100%',
+  backgroundColor: ColorMap.inputBackground,
+  color: ColorMap.disabled,
+};
+
 export const Input = (inputProps: InputProps) => {
   const theme = useSubWalletTheme().colors;
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        inputContainer: {
-          borderRadius: 8,
-          width: '100%',
-          backgroundColor: theme.inputBackground,
-          color: theme.textColor2,
-        },
-      }),
-    [theme],
-  );
+
   return (
     <TextInput
-      style={[sharedStyles.textInput, styles.inputContainer]}
+      style={[sharedStyles.textInput, inputContainer]}
       placeholderTextColor={theme.textColor2}
       selectionColor={theme.textColor2}
       {...inputProps}

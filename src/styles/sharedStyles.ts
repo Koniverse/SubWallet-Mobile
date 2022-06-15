@@ -6,10 +6,11 @@ export const STATUS_BAR_DARK_CONTENT = 'dark-content';
 
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { contracts } from '@polkadot/types/interfaces/definitions';
-export const FontRegular = { fontFamily: 'SpaceGrotesk-Regular' };
-export const FontMedium = { fontFamily: 'SpaceGrotesk-Medium' };
-export const FontSemiBold = { fontFamily: 'SpaceGrotesk-SemiBold' };
-export const FontBold = { fontFamily: 'SpaceGrotesk-Bold' };
+export const FontLight = { fontFamily: 'SpaceGrotesk-Light' }; //300
+export const FontRegular = { fontFamily: 'SpaceGrotesk-Regular' }; //400
+export const FontMedium = { fontFamily: 'SpaceGrotesk-Medium' }; //500
+export const FontSemiBold = { fontFamily: 'SpaceGrotesk-SemiBold' }; //600
+export const FontBold = { fontFamily: 'SpaceGrotesk-Bold' }; //700
 export const FontSize0 = { fontSize: 12 };
 export const FontSize1 = { fontSize: 14 };
 export const FontSize2 = { fontSize: 15 };

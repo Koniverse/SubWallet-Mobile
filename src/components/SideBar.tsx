@@ -1,7 +1,7 @@
-import Modal, { Direction, SupportedAnimation } from "react-native-modal";
-import {Dimensions, SafeAreaView, StyleSheet, Text, View} from "react-native";
-import React, {useMemo} from "react";
-import {useSubWalletTheme} from "hooks/useSubWalletTheme";
+import Modal, { Direction, SupportedAnimation } from 'react-native-modal';
+import { SafeAreaView, StyleProp, Text, View } from 'react-native';
+import React from 'react';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   visible: boolean;
@@ -12,16 +12,19 @@ interface Props {
   swipeDirection: Direction | Direction[] | undefined;
 }
 
-export const SideBar = ({ onCloseSideBar, visible, sideBarStyle, animationIn, animationOut, swipeDirection }: Props) => {
-  const theme = useSubWalletTheme().colors;
-  const styles = useMemo(() => StyleSheet.create({
+const contentWrapperStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark1,
+  flex: 1,
+};
 
-    contentWrapperStyle: {
-      backgroundColor: theme.background,
-      flex: 1,
-    }
-  }), []);
-
+export const SideBar = ({
+  onCloseSideBar,
+  visible,
+  sideBarStyle,
+  animationIn,
+  animationOut,
+  swipeDirection,
+}: Props) => {
   return (
     <Modal
       isVisible={visible}
@@ -36,13 +39,12 @@ export const SideBar = ({ onCloseSideBar, visible, sideBarStyle, animationIn, an
       useNativeDriver
       hideModalContentWhileAnimating
       propagateSwipe
-      style={sideBarStyle}
-    >
-      <SafeAreaView style={styles.contentWrapperStyle}>
+      style={sideBarStyle}>
+      <SafeAreaView style={contentWrapperStyle}>
         <View>
           <Text>{123123}</Text>
         </View>
       </SafeAreaView>
     </Modal>
   );
-}
+};

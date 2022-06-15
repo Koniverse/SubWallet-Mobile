@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
-import Identicon from '@polkadot/reactnative-identicon';
+// import Identicon from '@polkadot/reactnative-identicon';
 // @ts-ignore
 import Avatar from 'react-native-boring-avatars';
 import React from 'react';

@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleProp, View } from 'react-native';
 import { CheckBox } from 'react-native-elements';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CheckBoxesType } from 'types/ui-types';
 import { getIcon } from 'utils/index';
 
@@ -10,28 +9,21 @@ interface Props {
   onChangeCallback: (selectedVal: string[]) => void;
 }
 
-export const Checkboxes = ({ dataList, onChangeCallback }: Props) => {
-  const theme = useSubWalletTheme().colors;
-  const [valueMap, setValueMap] = useState<Record<string, boolean>>({});
+const checkBoxListContainer: StyleProp<any> = {
+  flexDirection: 'row',
+  paddingVertical: 10,
+  alignItems: 'center',
+};
+const checkBoxItemContainer: StyleProp<any> = {
+  margin: 0,
+  marginLeft: 0,
+  marginRight: 0,
+  borderWidth: 0,
+  padding: 0,
+};
 
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        checkBoxListContainer: {
-          flexDirection: 'row',
-          paddingVertical: 10,
-          alignItems: 'center',
-        },
-        checkBoxItemContainer: {
-          margin: 0,
-          marginLeft: 0,
-          marginRight: 0,
-          borderWidth: 0,
-          padding: 0,
-        },
-      }),
-    [],
-  );
+export const Checkboxes = ({ dataList, onChangeCallback }: Props) => {
+  const [valueMap, setValueMap] = useState<Record<string, boolean>>({});
 
   const _onChangeItemValue = (key: string) => {
     let checked = !!valueMap[key];
@@ -57,7 +49,7 @@ export const Checkboxes = ({ dataList, onChangeCallback }: Props) => {
 
   const renderItem = (item: CheckBoxesType) => {
     return (
-      <View key={item.value} style={styles.checkBoxListContainer}>
+      <View key={item.value} style={checkBoxListContainer}>
         <CheckBox
           checked={!!valueMap[item.value]}
           onPress={() => {
@@ -65,13 +57,7 @@ export const Checkboxes = ({ dataList, onChangeCallback }: Props) => {
           }}
           checkedIcon={getIcon('CheckBoxFilledIcon', 16, '#FFF')}
           uncheckedIcon={getIcon('CheckBoxIcon', 16, '#FFF')}
-          containerStyle={{
-            margin: 0,
-            marginLeft: 0,
-            marginRight: 0,
-            borderWidth: 0,
-            padding: 0,
-          }}
+          containerStyle={checkBoxItemContainer}
         />
 
         {item.labelComponent}

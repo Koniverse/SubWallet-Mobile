@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { saveCurrentAccountAddress } from '../messaging';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,10 +12,10 @@ import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { Recoded } from 'types/ui-types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { sharedStyles } from 'styles/sharedStyles';
+import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { CircleWavyCheck } from 'phosphor-react-native';
+import { ColorMap } from 'styles/color';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -23,6 +23,34 @@ export interface AccountProps extends AccountJson {
   isShowAddress?: boolean;
   showCopyBtn?: boolean;
 }
+
+const accountNameStyle: StyleProp<any> = {
+  color: ColorMap.light,
+  ...sharedStyles.mediumText,
+  ...FontBold,
+  paddingRight: 5,
+};
+
+const accountAddressStyle: StyleProp<any> = {
+  color: ColorMap.disabled,
+  ...sharedStyles.mainText,
+  ...FontSemiBold,
+};
+
+const accountAddressBlock: StyleProp<any> = {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+};
+
+const accountCopyBtn: StyleProp<any> = {
+  paddingLeft: 11,
+};
+
+const nameWrapper: StyleProp<any> = {
+  flexDirection: 'row',
+  alignItems: 'center',
+};
 
 export const Account = ({
   name,
@@ -41,7 +69,6 @@ export const Account = ({
   const accountList = accounts.accounts;
   const [{ account, formatted, genesisHash: recodedGenesis, isEthereum, prefix }, setRecoded] =
     useState<Recoded>(defaultRecoded);
-  const theme = useSubWalletTheme().colors;
   const getNetworkInfoByGenesisHash = useCallback(
     (hash?: string | null): NetworkJson | null => {
       if (!hash) {
@@ -102,45 +129,14 @@ export const Account = ({
     }
   }, [address, currentAccountAddress]);
 
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        accountName: {
-          color: theme.textColor,
-          ...sharedStyles.mediumText,
-          fontWeight: '600',
-          paddingRight: 5,
-        },
-
-        accountAddress: {
-          color: theme.textColor2,
-          ...sharedStyles.smallText,
-          fontWeight: '500',
-        },
-
-        accountAddressBlock: {
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-        },
-
-        copyBtn: {
-          paddingLeft: 11,
-        },
-        nameWrapper: {
-          flexDirection: 'row',
-          alignItems: 'center',
-        },
-      }),
-    [theme],
-  );
-
   const toShortAddress = (_address: string | null, halfLength?: number) => {
-    const address = (_address || '').toString();
+    const currentAddress = (_address || '').toString();
 
     const addressLength = halfLength || 7;
 
-    return address.length > 13 ? `${address.slice(0, addressLength)}…${address.slice(-addressLength)}` : address;
+    return currentAddress.length > 13
+      ? `${currentAddress.slice(0, addressLength)}…${currentAddress.slice(-addressLength)}`
+      : currentAddress;
   };
 
   const copyToClipboard = useCallback((text: string) => {
@@ -167,8 +163,8 @@ export const Account = ({
 
   const Name = () => {
     return (
-      <View style={styles.nameWrapper}>
-        <Text style={styles.accountName}>{name}</Text>
+      <View style={nameWrapper}>
+        <Text style={accountNameStyle}>{name}</Text>
         {isSelected && <CircleWavyCheck size={20} color={'#42C59A'} weight={'bold'} />}
       </View>
     );
@@ -184,15 +180,15 @@ export const Account = ({
         <View style={{ marginLeft: 16 }}>
           <Name />
 
-          <View style={styles.accountAddressBlock}>
+          <View style={accountAddressBlock}>
             {isShowAddress && (
-              <Text style={styles.accountAddress}>
+              <Text style={accountAddressStyle}>
                 {_isAccountAll ? 'All Accounts' : toShortAddress(formatted || address, 10)}
               </Text>
             )}
 
             {showCopyBtn && (
-              <TouchableOpacity style={styles.copyBtn} onPress={() => copyToClipboard((formatted && formatted) || '')}>
+              <TouchableOpacity style={accountCopyBtn} onPress={() => copyToClipboard((formatted && formatted) || '')}>
                 {getIcon('CloneIcon', 20, '#FFF')}
               </TouchableOpacity>
             )}

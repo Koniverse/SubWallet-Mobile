@@ -1,8 +1,8 @@
 import BigN from 'bignumber.js';
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {sharedStyles} from "styles/sharedStyles";
-import {useSubWalletTheme} from "hooks/useSubWalletTheme";
+import React from 'react';
+import { StyleProp, Text, View } from 'react-native';
+import { FontBold, sharedStyles } from 'styles/sharedStyles';
+import { ColorMap } from 'styles/color';
 
 type BalanceViewProps = {
   value: string | BigN;
@@ -12,6 +12,16 @@ type BalanceViewProps = {
   withSymbol?: boolean;
 };
 
+const balanceValWrapper: StyleProp<any> = {
+  flexDirection: 'row',
+};
+
+const balanceValText: StyleProp<any> = {
+  ...sharedStyles.largeText,
+  ...FontBold,
+  color: ColorMap.light,
+};
+
 export const BalanceVal = ({
   startWithSymbol = false,
   symbol,
@@ -19,22 +29,6 @@ export const BalanceVal = ({
   withComma = true,
   withSymbol = true,
 }: BalanceViewProps) => {
-  const theme = useSubWalletTheme().colors;
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        balanceValWrapper: {
-          flexDirection: 'row',
-        },
-        balanceValText: {
-          ...sharedStyles.largeText,
-          fontWeight: 'bold',
-          color: theme.textColor,
-        },
-      }),
-    [theme],
-  );
-
   let [prefix, postfix] = value.toString().split('.');
 
   if (startWithSymbol) {
@@ -50,12 +44,12 @@ export const BalanceVal = ({
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (
-    <View style={styles.balanceValWrapper}>
-      <Text style={styles.balanceValText}>{startWithSymbol && withSymbol && symbolView}</Text>
-      <Text style={styles.balanceValText}>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}</Text>
-      <Text style={styles.balanceValText}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
-      <Text style={styles.balanceValText}>{isString && lastSymbol}</Text>
-      <Text style={styles.balanceValText}>{!startWithSymbol && withSymbol && symbolView}</Text>
+    <View style={balanceValWrapper}>
+      <Text style={balanceValText}>{startWithSymbol && withSymbol && symbolView}</Text>
+      <Text style={balanceValText}>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}</Text>
+      <Text style={balanceValText}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
+      <Text style={balanceValText}>{isString && lastSymbol}</Text>
+      <Text style={balanceValText}>{!startWithSymbol && withSymbol && symbolView}</Text>
     </View>
   );
 };

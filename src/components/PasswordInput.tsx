@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, Text, TextInput, TextInputProps, View } from 'react-native';
-import { FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { FontSize0, sharedStyles, FontMedium } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 
@@ -17,8 +17,8 @@ const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
     paddingHorizontal: 16,
     paddingTop: 4,
     height: 64,
-    ...style
-  }
+    ...style,
+  };
 };
 
 const inputLabelStyle: StyleProp<any> = {
@@ -33,7 +33,7 @@ const inputStyle: StyleProp<any> = {
   lineHeight: 0,
   paddingTop: 5,
   paddingBottom: 5,
-  fontWeight: '500',
+  ...FontMedium,
   color: ColorMap.light,
   textAlignVertical: 'top',
 };

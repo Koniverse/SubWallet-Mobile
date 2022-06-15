@@ -1,23 +1,14 @@
-import React, {useMemo} from "react";
-import {StyleSheet, TextInput} from "react-native";
-import {sharedStyles} from "styles/sharedStyles";
-import {useSubWalletTheme} from "hooks/useSubWalletTheme";
+import React from 'react';
+import { StyleProp, TextInput } from 'react-native';
+import { sharedStyles } from 'styles/sharedStyles';
+import { ColorMap } from 'styles/color';
+
+const textAreaWrapper: StyleProp<any> = {
+  backgroundColor: ColorMap.inputBackground,
+  width: '100%',
+  color: ColorMap.disabled,
+};
 
 export const Textarea = () => {
-  const theme = useSubWalletTheme().colors;
-  const styles = useMemo(() => StyleSheet.create({
-    textAreaWrapper: {
-      backgroundColor: theme.inputBackground,
-      width: '100%',
-      color: theme.textColor2,
-    }
-  }), []);
-
-  return (
-    <TextInput
-      autoCapitalize='none'
-      style={[sharedStyles.inputAreaStyle, styles.textAreaWrapper]}
-      multiline={true}
-    />
-  );
-}
+  return <TextInput autoCapitalize="none" style={[sharedStyles.inputAreaStyle, textAreaWrapper]} multiline={true} />;
+};

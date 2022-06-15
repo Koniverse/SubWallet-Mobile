@@ -1,7 +1,5 @@
-import React, { useMemo } from "react";
-import { StyleSheet } from "react-native";
-import Modal from "react-native-modal";
-import { useSubWalletTheme } from "hooks/useSubWalletTheme";
+import React from 'react';
+import Modal from 'react-native-modal';
 interface Props {
   children: React.ReactNode;
   modalVisible: boolean;
@@ -9,25 +7,20 @@ interface Props {
 }
 
 export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible }: Props) => {
-  const theme = useSubWalletTheme().colors;
-  const styles = useMemo(() => StyleSheet.create({
-  }), []);
-
   return (
     <Modal
       isVisible={modalVisible}
       swipeDirection="down"
       style={{ margin: 0 }}
-      backdropColor={'rgba(51, 51, 51, 1)'}
+      backdropColor={'rgba(22, 22, 22, 0.8)'}
       onSwipeComplete={onChangeModalVisible}
       onBackdropPress={onChangeModalVisible}
       animationIn={'slideInUp'}
       animationOut={'slideOutDown'}
       // useNativeDriver
       hideModalContentWhileAnimating
-      propagateSwipe
-    >
+      propagateSwipe>
       {children}
     </Modal>
   );
-}
+};

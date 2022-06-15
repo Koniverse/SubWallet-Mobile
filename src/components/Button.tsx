@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedbackProps, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import {sharedStyles} from "styles/sharedStyles";
+import {FontSemiBold, sharedStyles} from "styles/sharedStyles";
 
 interface ButtonProps extends TouchableWithoutFeedbackProps {
   title: string;
@@ -28,7 +28,7 @@ export const Button = (buttonProps: ButtonProps) => {
           color: theme.textColor,
           textAlign: 'center',
           ...sharedStyles.mediumText,
-          fontWeight: '600',
+          ...FontSemiBold,
         },
       }),
     [theme],

@@ -13,7 +13,11 @@ export const ColorMap = {
   warning: '#E7B917',
   disabledOverlay: 'rgba(0, 7, 45, 0.7)',
   dangerOverlay: 'rgba(245, 0, 14, 0.12)',
+  warningBackgroundColor: 'rgba(231, 185, 23, 0.2)',
+  dangerBackgroundColor: 'rgba(175, 17, 17, 0.25)',
   warningOverlay: 'rgba(231, 185, 23, 0.05)',
+  inputBackground: '#262C4A',
+  checkBoxBorderColor: '#2D365C',
 };
 
 export const Background = StyleSheet.create({

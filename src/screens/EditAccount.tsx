@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProps, RootRouteProps } from 'types/routes';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { editAccount } from '../messaging';
@@ -13,6 +13,17 @@ import { CopySimple, FileText, Key, Trash } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ActionItem } from 'components/ActionItem';
+import { ColorMap } from 'styles/color';
+
+const editAccountAddressItem: StyleProp<any> = {
+  borderRadius: 5,
+  backgroundColor: ColorMap.dark2,
+  width: '100%',
+  flexDirection: 'row',
+  paddingRight: 16,
+  alignItems: 'flex-end',
+  marginBottom: 16,
+};
 
 export const EditAccount = () => {
   const theme = useSubWalletTheme().colors;
@@ -29,22 +40,6 @@ export const EditAccount = () => {
     [data],
   );
   const toast = useToast();
-
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        editAccountAddressItem: {
-          borderRadius: 5,
-          backgroundColor: theme.background2,
-          width: '100%',
-          flexDirection: 'row',
-          paddingRight: 16,
-          alignItems: 'flex-end',
-          marginBottom: 16,
-        },
-      }),
-    [theme],
-  );
 
   const copyToClipboard = useCallback(
     (text: string) => {
@@ -78,7 +73,7 @@ export const EditAccount = () => {
           onEndEditing={() => _saveChange(editedName)}
         />
 
-        <View style={styles.editAccountAddressItem}>
+        <View style={editAccountAddressItem}>
           <EditAccountInputText
             editAccountInputStyle={{ flex: 1 }}
             outerInputStyle={{ color: theme.textColor2 }}

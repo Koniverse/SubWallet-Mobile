@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleProp, Text, View } from 'react-native';
 import { SVGImages } from 'assets/index';
 import { sharedStyles } from 'styles/sharedStyles';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   isDanger: boolean;
@@ -10,33 +10,31 @@ interface Props {
   warningMessage: string;
 }
 
-export const Warning = ({ warningMessage, isDanger, isBelowInput = false }: Props) => {
-  const theme = useSubWalletTheme().colors;
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        warningContainer: {
-          backgroundColor: isDanger ? theme.dangerBackgroundColor : theme.warningBackgroundColor,
-          borderRadius: 8,
-          paddingHorizontal: 15,
-          paddingVertical: 12,
-          flexDirection: 'row',
-        },
-        warningMessage: {
-          color: theme.textColor,
-          paddingLeft: 10,
-          ...sharedStyles.smallText,
-        },
-        warningImage: {
-          paddingTop: 5,
-        },
-      }),
-    [isDanger, theme],
-  );
+const warningContainer: StyleProp<any> = {
+  borderRadius: 8,
+  paddingHorizontal: 15,
+  paddingVertical: 12,
+  flexDirection: 'row',
+};
+const warningMessageStyle: StyleProp<any> = {
+  color: ColorMap.light,
+  paddingLeft: 10,
+  ...sharedStyles.smallText,
+};
+const warningImage: StyleProp<any> = {
+  paddingTop: 5,
+};
+const warningBackgroundColor: StyleProp<any> = {
+  backgroundColor: ColorMap.warningBackgroundColor,
+};
+const dangerBackgroundColor: StyleProp<any> = {
+  backgroundColor: ColorMap.dangerBackgroundColor,
+};
 
+export const Warning = ({ warningMessage, isDanger, isBelowInput = false }: Props) => {
   return (
-    <View style={styles.warningContainer}>
-      <View style={styles.warningImage}>
+    <View style={[warningContainer, isDanger ? warningBackgroundColor : dangerBackgroundColor]}>
+      <View style={warningImage}>
         {isDanger ? (
           // @ts-ignore
           <SVGImages.DangerIcon width={32} height={32} />
@@ -47,7 +45,7 @@ export const Warning = ({ warningMessage, isDanger, isBelowInput = false }: Prop
       </View>
 
       <View style={{ flex: 1 }}>
-        <Text style={styles.warningMessage}>{warningMessage}</Text>
+        <Text style={warningMessageStyle}>{warningMessage}</Text>
       </View>
     </View>
   );

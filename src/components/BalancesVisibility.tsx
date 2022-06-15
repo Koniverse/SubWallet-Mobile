@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import { BalanceVal } from 'components/BalanceVal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import BigN from 'bignumber.js';
 import { toggleBalancesVisibility } from '../messaging';
-import {sharedStyles} from "styles/sharedStyles";
+import { sharedStyles } from 'styles/sharedStyles';
 
 export const BalancesVisibility = () => {
   const {
