@@ -17,13 +17,14 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { QrScanner } from 'screens/QrScanner';
 import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
-import { STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
 import { EditAccount } from 'screens/EditAccount';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
-import {ColorMap} from "styles/color";
+import { ColorMap } from 'styles/color';
+import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -76,6 +77,11 @@ export const App = () => {
                       />
                       <Stack.Screen name="EditAccount" component={EditAccount} options={{ title: 'Edit Account' }} />
                       <Stack.Screen name="RestoreJson" component={RestoreJson} options={{ title: 'Restore JSON' }} />
+                      <Stack.Screen
+                        name="ExportPrivateKey"
+                        component={ViewPrivateKey}
+                        options={{ title: 'Export Private Key' }}
+                      />
                       <Stack.Screen
                         name="RemoveAccount"
                         component={RemoveAccount}

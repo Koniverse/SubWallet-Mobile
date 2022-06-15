@@ -44,7 +44,7 @@ export const EditAccount = () => {
   const copyToClipboard = useCallback(
     (text: string) => {
       Clipboard.setString(text);
-      toast.show('Start reload');
+      toast.show('Copied to Clipboard');
     },
     [toast],
   );
@@ -91,7 +91,13 @@ export const EditAccount = () => {
           />
         </View>
 
-        <ActionItem style={{ width: '100%', marginBottom: 4 }} title={'Export Private Key'} icon={Key} hasRightArrow />
+        <ActionItem
+          style={{ width: '100%', marginBottom: 4 }}
+          title={'Export Private Key'}
+          icon={Key}
+          hasRightArrow
+          onPress={() => navigation.navigate('ExportPrivateKey')}
+        />
         <ActionItem
           style={{ width: '100%', marginBottom: 16 }}
           title={'Export JSON'}

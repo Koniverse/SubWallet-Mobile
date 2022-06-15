@@ -59,11 +59,11 @@ export const SubHeader = ({ navigation, showRightBtn, title }: Props) => {
       <IconButton
         icon={ArrowLeft}
         onPress={() => navigation.goBack()}
-        iconButtonStyle={{ position: 'absolute', left: 0, top: 0}}
+        iconButtonStyle={{ position: 'absolute', left: 16, top: 0}}
       />
 
       {showRightBtn && (
-        <IconButton icon={Plus} onPress={() => {}} iconButtonStyle={{ position: 'absolute', right: 0, top: 0 }} />
+        <IconButton icon={Plus} onPress={() => {}} iconButtonStyle={{ position: 'absolute', right: 16, top: 0 }} />
       )}
     </View>
   );

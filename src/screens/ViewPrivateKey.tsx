@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
@@ -8,6 +8,9 @@ import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from '
 import { LeftIconButton } from 'components/LeftIconButton';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
 import { PasswordInput } from 'components/PasswordInput';
+import { useNavigation } from '@react-navigation/native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { useToast } from 'react-native-toast-notifications';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -92,10 +95,19 @@ const ViewStep = {
 const PrivateBlockIcon = FingerprintSimple;
 
 export const ViewPrivateKey = () => {
+  const navigation = useNavigation();
   const [privateKey, setPrivateKey] = useState<string>(
     'OxSWYgeW91IGV4cGVjdCB0aGUgcHJpdmF0ZSBrZXksIHRoZW4gbm90aGluZyB0byBzZWUgaGVyZQ==',
   );
+  const toast = useToast();
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  const copyToClipboard = useCallback(
+    (text: string) => {
+      Clipboard.setString(text);
+      toast.show('Copied to Clipboard');
+    },
+    [toast],
+  );
 
   const _onTapPrivate = () => {
     setCurrentViewStep(ViewStep.ENTER_PW);
@@ -106,7 +118,7 @@ export const ViewPrivateKey = () => {
   };
 
   return (
-    <SubScreenContainer title={'Your Private Key'}>
+    <SubScreenContainer navigation={navigation} title={'Your Private Key'}>
       <View style={layoutContainerStyle}>
         <View style={bodyAreaStyle}>
           <View style={warningBlockStyle}>
@@ -152,6 +164,7 @@ export const ViewPrivateKey = () => {
                 icon={CopySimple}
                 title={'Copy to Clipboard'}
                 disabled={currentViewStep !== ViewStep.SHOW_PK}
+                onPress={() => copyToClipboard(privateKey)}
               />
             </View>
           )}

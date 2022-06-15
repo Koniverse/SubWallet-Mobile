@@ -10,6 +10,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoTab } from 'screens/Home/CtyptoTab';
 import { RestoreJson } from 'screens/RestoreJson';
+import { FontMedium } from 'styles/sharedStyles';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -55,7 +56,7 @@ export const Home = () => {
           paddingBottom: 32,
           fontSize: 12,
           lineHeight: 25,
-          fontWeight: '600',
+          ...FontMedium,
         },
         tabBarStyle: {
           paddingTop: 0,

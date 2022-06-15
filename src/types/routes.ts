@@ -9,6 +9,7 @@ export type RootStackParamList = {
   EditAccount: undefined;
   RemoveAccount: undefined;
   RestoreJson: undefined;
+  ExportPrivateKey: undefined;
 };
 
 export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];
