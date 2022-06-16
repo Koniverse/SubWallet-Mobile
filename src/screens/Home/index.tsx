@@ -11,6 +11,7 @@ import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'p
 import { CryptoTab } from 'screens/Home/CtyptoTab';
 import { RestoreJson } from 'screens/RestoreJson';
 import { FontMedium } from 'styles/sharedStyles';
+import { useSelector } from 'react-redux';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -27,6 +28,9 @@ export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route']
 export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const swThemeColor = useSubWalletTheme().colors;
+  const a = useSelector(state => state);
+
+  console.log('123123123123123123123', a);
 
   return (
     <Tab.Navigator

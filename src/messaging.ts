@@ -37,7 +37,8 @@ import {
   EvmNftSubmitTransaction,
   EvmNftTransaction,
   EvmNftTransactionRequest,
-  EvmNftTransactionResponse, NetworkJson,
+  EvmNftTransactionResponse,
+  NetworkJson,
   NetWorkMetadataDef,
   NftCollectionJson,
   NftJson,
@@ -545,6 +546,10 @@ export async function getAllNetworkMetadata(): Promise<NetWorkMetadataDef[]> {
   return sendMessage('pri(networkMetadata.list)');
 }
 
+export async function enableNetworkMap (networkKey: string): Promise<boolean> {
+  return sendMessage('pri(networkMap.enableOne)', networkKey);
+}
+
 export async function subscribeHistory(
   callback: (historyMap: Record<string, TransactionHistoryItemType[]>) => void,
 ): Promise<Record<string, TransactionHistoryItemType[]>> {
@@ -615,7 +620,9 @@ export async function subscribeNftTransfer(callback: (data: NftTransferExtra) =>
   return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
 }
 
-export async function subscribeNetworkMap(callback: (data: Record<string, NetworkJson>) => void): Promise<Record<string, NetworkJson>> {
+export async function subscribeNetworkMap(
+  callback: (data: Record<string, NetworkJson>) => void,
+): Promise<Record<string, NetworkJson>> {
   return sendMessage('pri(networkMap.getSubscription)', null, callback);
 }
 
