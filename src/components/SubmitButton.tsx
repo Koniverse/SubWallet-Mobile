@@ -4,7 +4,7 @@ import { ColorMap } from 'styles/color';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretRight, IconProps } from 'phosphor-react-native';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -13,6 +13,7 @@ interface ButtonProps extends TouchableOpacityProps {
   wrapperStyle?: StyleProp<any>;
   hasRightArrow?: boolean;
   isBusy?: boolean;
+  leftIcon?: (iconProps: IconProps) => JSX.Element;
 }
 
 function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: StyleProp<any> = {}): StyleProp<any> {
@@ -35,6 +36,7 @@ function getTextStyle(color: string = ColorMap.light) {
     ...sharedStyles.mediumText,
     ...FontBold,
     color,
+    paddingLeft: 10,
   };
 }
 
@@ -64,7 +66,7 @@ const loadingStyle: StyleProp<any> = {
 };
 
 export const SubmitButton = (buttonProps: ButtonProps) => {
-  const { title, backgroundColor, color, style, hasRightArrow, disabled, isBusy } = buttonProps;
+  const { leftIcon: LeftIcon, title, backgroundColor, color, style, hasRightArrow, disabled, isBusy } = buttonProps;
 
   return (
     <TouchableOpacity
@@ -72,6 +74,7 @@ export const SubmitButton = (buttonProps: ButtonProps) => {
       {...buttonProps}
       disabled={disabled || isBusy}
       style={getWrapperStyle(backgroundColor, style)}>
+      {!!LeftIcon && <LeftIcon size={20} weight={'bold'} color={ColorMap.light} />}
       <Text style={getTextStyle(color)}>{title}</Text>
       {hasRightArrow && (
         <View style={iconStyle}>

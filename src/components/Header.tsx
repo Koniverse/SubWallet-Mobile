@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from 'types/routes';
 import { useSelector } from 'react-redux';
@@ -7,9 +7,11 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
 import { toShort } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { Gear, SlidersHorizontal } from 'phosphor-react-native';
+import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
+import {WebViewContext} from "providers/contexts";
+import {useToast} from "react-native-toast-notifications";
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -47,19 +49,19 @@ export const Header = ({ navigation }: Props) => {
   // const Logo = useSVG().Logo;
   const accountStore = useSelector((state: RootState) => state.accounts);
   const currentAccount = accountStore.currentAccount;
-  // const toast = useToast();
-  // const webview = useContext(WebViewContext);
-  // const reloadBackground = () => {
-  //   toast.show('Start reload');
-  //   webview.viewRef?.current?.reload();
-  // };
+  const toast = useToast();
+  const webview = useContext(WebViewContext);
+  const reloadBackground = () => {
+    toast.show('Start reload');
+    webview.viewRef?.current?.reload();
+  };
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('AccountsScreen');
+            navigation.navigate('Settings');
           }}>
           <View>
             <SubWalletAvatar address={currentAccount?.address || ''} size={36} />
@@ -72,12 +74,12 @@ export const Header = ({ navigation }: Props) => {
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={actionButtonStyle}>
+        <TouchableOpacity style={actionButtonStyle} onPress={() => reloadBackground()}>
           <SlidersHorizontal size={20} color={'#FFF'} weight={'bold'} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('Settings')}>
-          <Gear size={20} color={'#FFF'} weight={'bold'} />
+        <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('SelectNetwork')}>
+          <MagnifyingGlass size={20} color={'#FFF'} weight={'bold'} />
         </TouchableOpacity>
       </View>
       {/*<View style={{ flex: 1, marginLeft: -8 }}>*/}

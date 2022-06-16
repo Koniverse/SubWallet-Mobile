@@ -12,6 +12,7 @@ import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
+import {SVGImages} from "assets/index";
 
 const ROUTES = [
   { key: 'chains', title: 'Chains' },
@@ -42,6 +43,7 @@ export const CryptoTab = () => {
   const {
     accounts: { currentAccountAddress },
   } = useSelector((state: RootState) => state);
+
   return (
     <MainScreenContainer navigation={navigation}>
       <View>

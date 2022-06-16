@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 import { ActionItem } from 'components/ActionItem';
 import {
   BellRinging,
@@ -18,6 +18,9 @@ import {
 } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { RootNavigationProps } from 'types/routes';
 
 const SETTINGS_LIST = [
   [
@@ -98,7 +101,10 @@ const SETTINGS_LIST = [
 ];
 
 export const Settings = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavigationProps>();
+  const {
+    accounts: { currentAccount },
+  } = useSelector((state: RootState) => state);
 
   return (
     <SubScreenContainer title={'Settings'} navigation={navigation}>
@@ -107,14 +113,16 @@ export const Settings = () => {
           icon={ShieldCheck}
           showIcon={false}
           title={'Account'}
-          subTitle={'SubWallet 01'}
+          subTitle={currentAccount ? currentAccount.name : ''}
           hasRightArrow
           paddingLeft={16}
           style={{ marginBottom: 16 }}
+          onPress={() => navigation.navigate('AccountsScreen')}
         />
 
         {SETTINGS_LIST[0].map(setting => (
           <ActionItem
+            key={setting.title}
             style={{ marginBottom: 4 }}
             icon={setting.icon}
             title={setting.title}
@@ -128,6 +136,7 @@ export const Settings = () => {
 
         {SETTINGS_LIST[1].map(setting => (
           <ActionItem
+            key={setting.title}
             style={{ marginBottom: 4 }}
             icon={setting.icon}
             title={setting.title}
@@ -141,6 +150,7 @@ export const Settings = () => {
 
         {SETTINGS_LIST[2].map(setting => (
           <ActionItem
+            key={setting.title}
             style={{ marginBottom: 4 }}
             icon={setting.icon}
             title={setting.title}
@@ -154,6 +164,7 @@ export const Settings = () => {
 
         {SETTINGS_LIST[3].map(setting => (
           <ActionItem
+            key={setting.title}
             style={{ marginBottom: 4 }}
             icon={setting.icon}
             title={setting.title}
@@ -163,6 +174,7 @@ export const Settings = () => {
 
         {SETTINGS_LIST[4].map(setting => (
           <ActionItem
+            key={setting.title}
             style={{ marginTop: 23, marginBottom: 44 }}
             icon={setting.icon}
             title={setting.title}

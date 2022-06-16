@@ -53,6 +53,7 @@ function getSubTextStyle(color: string = ColorMap.disabled) {
     ...FontMedium,
     color,
     paddingRight: 31,
+    maxWidth: 150,
   };
 }
 
@@ -94,7 +95,9 @@ export const ActionItem = (actionProps: ActionItemProps) => {
         </View>
       )}
       <Text style={getTextStyle(color)}>{title}</Text>
-      <Text style={getSubTextStyle(subTextColor)}>{subTitle || ''}</Text>
+      <Text style={getSubTextStyle(subTextColor)} numberOfLines={1}>
+        {subTitle || ''}
+      </Text>
       {hasRightArrow && (
         <View style={arrowStyle}>
           <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />

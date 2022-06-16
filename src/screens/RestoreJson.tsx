@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, StyleProp, View } from 'react-native';
 import { InputFile } from 'components/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
 import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
 import * as RNFS from 'react-native-fs';
-import { Input } from 'components/Input';
 import { SubmitButton } from 'components/SubmitButton';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging';
@@ -15,11 +14,18 @@ import { useNavigation } from '@react-navigation/native';
 import { sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
+import { PasswordInput } from 'components/PasswordInput';
+import { Warning } from 'components/Warning';
 // import RNFetchBlob from 'rn-fetch-blob';
 
-const textStyle = {
-  ...sharedStyles.mainText,
-  color: ColorMap.light,
+const bodyAreaStyle: StyleProp<any> = {
+  flex: 1,
+  paddingTop: 8,
+};
+
+const footerAreaStyle: StyleProp<any> = {
+  paddingTop: 12,
+  paddingBottom: 22,
 };
 
 export const RestoreJson = () => {
@@ -30,7 +36,6 @@ export const RestoreJson = () => {
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
-  const [isRestoreSuccess, setRestoreSuccess] = useState(false);
 
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
     setFile(fileContent);
@@ -68,7 +73,6 @@ export const RestoreJson = () => {
     }
 
     setFileError(false);
-    setRestoreSuccess(false);
     setIsPasswordError(false);
     setPassword('');
     setAccountsInfo([]);
@@ -102,12 +106,12 @@ export const RestoreJson = () => {
       : jsonRestoreV2(file, password, accountsInfo[0].address, true)
     )
       .then(() => {
-        setRestoreSuccess(true);
         setFileError(false);
         setIsBusy(false);
         setIsPasswordError(false);
         setPassword('');
         setAccountsInfo([]);
+        navigation.navigate('Home');
       })
       .catch(e => {
         console.log('Restore error', e);
@@ -118,18 +122,27 @@ export const RestoreJson = () => {
 
   return (
     <SubScreenContainer title={'Restore JSON'} navigation={navigation}>
-      <View style={sharedStyles.blockContent}>
-        <InputFile onChangeResult={_onChangeFile} />
-        <Input onChangeText={setPassword} value={password} secureTextEntry />
-        <SubmitButton
-          isBusy={isBusy}
-          title={'Restore Account'}
-          onPress={_onRestore}
-          disabled={isFileError || isPasswordError}
-        />
-        {isPasswordError && <Text style={{ ...textStyle, color: ColorMap.danger }}>Error: Password Error!</Text>}
-        {isFileError && <Text style={{ ...textStyle, color: ColorMap.danger }}>Error: File Error!</Text>}
-        {isRestoreSuccess && <Text style={textStyle}>Info: Restore Success!</Text>}
+      <View style={[sharedStyles.blockContent, { flex: 1 }]}>
+        <View style={bodyAreaStyle}>
+          <InputFile onChangeResult={_onChangeFile} />
+          <PasswordInput
+            label={'Wallet Password'}
+            containerStyle={{ backgroundColor: ColorMap.dark2, marginBottom: 8 }}
+            onChangeText={setPassword}
+            value={password}
+          />
+          {isPasswordError && <Warning warningMessage={'Unable to decode using the supplied passphrase'} isDanger />}
+          {isFileError && <Warning warningMessage={'Invalid Json file'} isDanger />}
+        </View>
+
+        <View style={footerAreaStyle}>
+          <SubmitButton
+            isBusy={isBusy}
+            title={'Import an Account'}
+            onPress={_onRestore}
+            disabled={isFileError || isPasswordError}
+          />
+        </View>
       </View>
     </SubScreenContainer>
   );

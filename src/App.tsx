@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { SafeAreaView, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -17,15 +17,15 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { QrScanner } from 'screens/QrScanner';
 import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
-import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
 import { EditAccount } from 'screens/EditAccount';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
-import { ColorMap } from 'styles/color';
 import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 import { Settings } from 'screens/Settings';
+import { SelectNetwork } from 'screens/SelectNetwork';
+import { FirstScreen } from 'screens/FirstScreen';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -53,11 +53,12 @@ export const App = () => {
               <ThemeContext.Provider value={theme}>
                 <NavigationContainer ref={navigationRef} theme={theme}>
                   <Stack.Navigator
-                    initialRouteName="Home"
+                    initialRouteName="FirstScreen"
                     screenOptions={{
                       animation: 'fade_from_bottom',
                     }}>
                     <Stack.Group screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="FirstScreen" component={FirstScreen} />
                       <Stack.Screen name="Home" component={Home} />
                       <Stack.Screen
                         name="CreateAccount"
@@ -82,6 +83,11 @@ export const App = () => {
                         name="RemoveAccount"
                         component={RemoveAccount}
                         options={{ title: 'Remove Account' }}
+                      />
+                      <Stack.Screen
+                        name="SelectNetwork"
+                        component={SelectNetwork}
+                        options={{ title: 'Select Network' }}
                       />
                     </Stack.Group>
                     <Stack.Group

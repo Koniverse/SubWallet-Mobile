@@ -10,6 +10,7 @@ import StakingLogo from './home-tab-icon/staking.svg';
 import TransferLogo from './home-tab-icon/transfers.svg';
 // @ts-ignore
 import SubWalletLogo from './sub-wallet-logo.svg';
+import SubWalletLogo2 from './logo-subwallet.svg';
 // @ts-ignore
 import AllAccountLogo from './all-account-icon.svg';
 import ReceiveIcon from './receive-icon.svg';
@@ -47,10 +48,12 @@ export const SVGImages = {
   DangerIcon: DangerIcon,
   CheckBoxIcon: CheckBoxIcon,
   CheckBoxFilledIcon: CheckBoxFilledIcon,
+  SubWallet2: SubWalletLogo2,
 };
 
 export const Images = {
   ...ImageLogosMap,
   loading: require('./loading.gif'),
   stackingEmptyList: require('./stacking-empty-list.png'),
+  loadingScreen: require('./loading-background.jpg'),
 };

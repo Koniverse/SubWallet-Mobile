@@ -17,17 +17,6 @@ interface Props {
   currentAccountAddress: string;
 }
 
-const receiveModalContainer: StyleProp<any> = {
-  height: 496,
-  backgroundColor: ColorMap.dark2,
-  marginTop: 'auto',
-  borderTopLeftRadius: 15,
-  borderTopRightRadius: 15,
-  alignItems: 'center',
-  paddingTop: 8,
-  paddingHorizontal: 16,
-};
-
 const receiveModalSeparator: StyleProp<any> = {
   width: 56,
   height: 4,
@@ -96,8 +85,11 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible, currentAcco
   );
 
   return (
-    <SubWalletModal modalVisible={receiveModalVisible} onChangeModalVisible={onChangeVisible}>
-      <View style={receiveModalContainer}>
+    <SubWalletModal
+      modalStyle={{ height: 496 }}
+      modalVisible={receiveModalVisible}
+      onChangeModalVisible={onChangeVisible}>
+      <View>
         <View style={receiveModalSeparator} />
         <Text style={receiveModalTitle}>Receive Asset</Text>
         <QRCode value={currentAccountAddress} size={180} />
