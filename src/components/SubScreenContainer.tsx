@@ -1,7 +1,7 @@
 import React from 'react';
 import { ContainerWithSubHeader, ContainerWithSubHeaderProps } from 'components/ContainerWithSubHeader';
 
-interface Props extends ContainerWithSubHeaderProps {
+interface Props extends Omit<ContainerWithSubHeaderProps, 'onPressBack'> {
   navigation: any;
 }
 

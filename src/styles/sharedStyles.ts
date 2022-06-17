@@ -1,11 +1,10 @@
 import { StyleSheet } from 'react-native';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
 export const STATUS_BAR_DARK_CONTENT = 'dark-content';
 
-import { getStatusBarHeight } from 'react-native-status-bar-height';
-import { contracts } from '@polkadot/types/interfaces/definitions';
 export const FontLight = { fontFamily: 'SpaceGrotesk-Light' }; //300
 export const FontRegular = { fontFamily: 'SpaceGrotesk-Regular' }; //400
 export const FontMedium = { fontFamily: 'SpaceGrotesk-Medium' }; //500
@@ -60,6 +59,12 @@ const blockContent = {
   borderRadius: 5,
 };
 
+const layoutContainer = {
+  ...ContainerHorizontalPadding,
+  paddingTop: 8,
+  paddingBottom: 22,
+};
+
 export const sharedStyles = StyleSheet.create({
   smallText,
   mainText,
@@ -67,6 +72,7 @@ export const sharedStyles = StyleSheet.create({
   largeText,
   textInput,
   blockContent,
+  layoutContainer,
 
   inputAreaStyle: {
     ...textInput,
