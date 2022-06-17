@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, View, ViewProps } from 'react-native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 
-interface Props {
-  isDanger: boolean;
+interface Props extends ViewProps {
+  isDanger?: boolean;
   title?: string;
   message: string;
 }
@@ -31,8 +31,9 @@ const getTitleStyle: StyleProp<any> = (color?: string) => {
 
 const warningContainer: StyleProp<any> = {
   borderRadius: 8,
-  paddingHorizontal: 15,
-  paddingVertical: 12,
+  paddingHorizontal: 16,
+  paddingTop: 17,
+  paddingBottom: 14,
   flexDirection: 'row',
 };
 
@@ -43,9 +44,9 @@ const dangerBackgroundColor: StyleProp<any> = {
   backgroundColor: ColorMap.dangerOverlay,
 };
 
-export const Warning = ({ message, isDanger, title }: Props) => {
+export const Warning = ({ message, isDanger, title, style }: Props) => {
   return (
-    <View style={[warningContainer, isDanger ? dangerBackgroundColor : warningBackgroundColor]}>
+    <View style={[warningContainer, isDanger ? dangerBackgroundColor : warningBackgroundColor, style]}>
       <View style={{ flex: 1, alignItems: 'center' }}>
         {title && <Text style={getTitleStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{title}</Text>}
         <Text style={getTextStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{message}</Text>

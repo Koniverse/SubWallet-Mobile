@@ -62,6 +62,7 @@ const blockContent = {
 const layoutContainer = {
   ...ContainerHorizontalPadding,
   paddingTop: 8,
+  flex: 1,
   paddingBottom: 22,
 };
 
