@@ -1,14 +1,12 @@
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import { SVGImages } from 'assets/index';
-import {FontBold, FontSize0, sharedStyles} from 'styles/sharedStyles';
+import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 
 interface Props {
   isDanger: boolean;
-  isBelowInput?: boolean;
-  warningMessage: string;
-  messageTitle: string;
+  title?: string;
+  message: string;
 }
 
 const getTextStyle: StyleProp<any> = (color?: string) => {
@@ -45,12 +43,12 @@ const dangerBackgroundColor: StyleProp<any> = {
   backgroundColor: ColorMap.dangerOverlay,
 };
 
-export const Warning = ({ warningMessage, isDanger, messageTitle, isBelowInput = false }: Props) => {
+export const Warning = ({ message, isDanger, title }: Props) => {
   return (
     <View style={[warningContainer, isDanger ? dangerBackgroundColor : warningBackgroundColor]}>
       <View style={{ flex: 1, alignItems: 'center' }}>
-        <Text style={getTitleStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{messageTitle}</Text>
-        <Text style={getTextStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{warningMessage}</Text>
+        {title && <Text style={getTitleStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{title}</Text>}
+        <Text style={getTextStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{message}</Text>
       </View>
     </View>
   );
