@@ -1,16 +1,40 @@
 import React, { useState } from 'react';
-import { StyleProp, View } from 'react-native';
+import { StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
-import { sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { SeedPhraseArea } from 'components/SeedPhraseArea';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { SubmitButton } from 'components/SubmitButton';
+
+const bodyAreaStyle: StyleProp<any> = {
+  flex: 1,
+};
+
+const footerAreaStyle: StyleProp<any> = {};
+
+const infoBlockStyle: StyleProp<any> = {
+  ...ContainerHorizontalPadding,
+  marginBottom: 24,
+};
+
+const infoTextStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.disabled,
+  textAlign: 'center',
+};
 
 const phraseAreaStyle: StyleProp<any> = {
+  marginBottom: 24,
+};
+
+const phraseBlockStyle: StyleProp<any> = {
   paddingLeft: 14,
   paddingRight: 14,
   flexDirection: 'row',
   flexWrap: 'wrap',
-  flex: 1,
+  marginBottom: 24,
 };
 
 const seedWordStyle = {
@@ -51,11 +75,27 @@ export const VerifySecretPhrase = () => {
   };
 
   return (
-    <View style={{ backgroundColor: ColorMap.dark1, flex: 1, ...sharedStyles.blockContent }}>
-      <SeedPhraseArea currentWords={selectedWord} onTapWord={onUnSelectWord} originWords={seedWords} />
-      <View style={phraseAreaStyle}>
-        {seedWords.map((word) => renderSeedWord(word))}
+    <ContainerWithSubHeader onPressBack={() => {}} title={'Verify Secret Phrase'}>
+      <View style={sharedStyles.layoutContainer}>
+        <View style={bodyAreaStyle}>
+          <View style={infoBlockStyle}>
+            <Text style={infoTextStyle}>
+              Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
+              assets.
+            </Text>
+          </View>
+          <SeedPhraseArea
+            currentWords={selectedWord}
+            onTapWord={onUnSelectWord}
+            originWords={seedWords}
+            style={phraseAreaStyle}
+          />
+          <View style={phraseBlockStyle}>{seedWords.map(word => renderSeedWord(word))}</View>
+        </View>
+        <View style={footerAreaStyle}>
+          <SubmitButton title={'Continue'} onPress={() => {}} />
+        </View>
       </View>
-    </View>
+    </ContainerWithSubHeader>
   );
 };
