@@ -132,13 +132,9 @@ export const RestoreJson = () => {
             value={password}
           />
           {isPasswordError && (
-            <Warning
-              messageTitle={'Error!'}
-              warningMessage={'Unable to decode using the supplied passphrase'}
-              isDanger
-            />
+            <Warning title={'Error!'} message={'Unable to decode using the supplied passphrase'} isDanger />
           )}
-          {isFileError && <Warning messageTitle={'Error!'} warningMessage={'Invalid Json file'} isDanger />}
+          {isFileError && <Warning title={'Error!'} message={'Invalid Json file'} isDanger />}
         </View>
 
         <View style={footerAreaStyle}>
