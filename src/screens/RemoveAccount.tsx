@@ -9,6 +9,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { forgetAccount } from '../messaging';
 import { toShort } from 'utils/index';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -65,6 +67,9 @@ const Icon = Trash;
 export const RemoveAccount = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const route = useRoute<RootRouteProps>();
+  const {
+    accounts: { accounts },
+  } = useSelector((state: RootState) => state);
   const [isBusy, setIsBusy] = useState(false);
   // @ts-ignore
   const { address } = route.params;
@@ -79,7 +84,11 @@ export const RemoveAccount = () => {
     setIsBusy(true);
     forgetAccount(address)
       .then(() => {
-        navigation.navigate('Home');
+        if (accounts && accounts.length === 2) {
+          navigation.navigate('FirstScreen');
+        } else {
+          navigation.navigate('Home');
+        }
       })
       .catch((error: Error) => {
         setIsBusy(false);

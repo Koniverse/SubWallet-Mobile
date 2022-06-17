@@ -24,7 +24,7 @@ const SECRET_TYPE = [
   {
     icon: Article,
     title: 'Secret Phrase',
-    navigationName: 'RestoreJson' as keyof RootStackParamList,
+    navigationName: 'ImportSecretPhrase' as keyof RootStackParamList,
   },
   {
     icon: LockKey,

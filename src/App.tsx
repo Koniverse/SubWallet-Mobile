@@ -26,6 +26,8 @@ import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 import { Settings } from 'screens/Settings';
 import { SelectNetwork } from 'screens/SelectNetwork';
 import { FirstScreen } from 'screens/FirstScreen';
+import { CreateWalletName } from 'screens/CreateAccount/CreateWalletName';
+import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -38,6 +40,9 @@ export const App = () => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
+  const {
+    accounts: { accounts },
+  } = store.getState();
 
   return (
     <Provider store={store}>
@@ -53,7 +58,7 @@ export const App = () => {
               <ThemeContext.Provider value={theme}>
                 <NavigationContainer ref={navigationRef} theme={theme}>
                   <Stack.Navigator
-                    initialRouteName="FirstScreen"
+                    initialRouteName={accounts && accounts.length ? 'Home' : 'FirstScreen'}
                     screenOptions={{
                       animation: 'fade_from_bottom',
                     }}>
@@ -88,6 +93,16 @@ export const App = () => {
                         name="SelectNetwork"
                         component={SelectNetwork}
                         options={{ title: 'Select Network' }}
+                      />
+                      <Stack.Screen
+                        name="CreateWalletName"
+                        component={CreateWalletName}
+                        options={{ title: 'Create Wallet Name' }}
+                      />
+                      <Stack.Screen
+                        name="ImportSecretPhrase"
+                        component={ImportSecretPhrase}
+                        options={{ title: 'Import Secret Phrase' }}
                       />
                     </Stack.Group>
                     <Stack.Group

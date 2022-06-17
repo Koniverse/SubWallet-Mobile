@@ -6,8 +6,11 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ArchiveTray, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
+import {useNavigation} from "@react-navigation/native";
+import {RootNavigationProps} from "types/routes";
 
 export const FirstScreen = () => {
+  const navigation = useNavigation<RootNavigationProps>();
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
 
   return (
@@ -34,6 +37,7 @@ export const FirstScreen = () => {
           leftIcon={UserCirclePlus}
           title={'Create a new wallet account'}
           style={{ marginBottom: 16, width: '100%' }}
+          onPress={() => navigation.navigate('CreateWalletName')}
         />
 
         <SubmitButton

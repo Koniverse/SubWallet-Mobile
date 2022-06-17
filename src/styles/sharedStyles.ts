@@ -44,7 +44,7 @@ const largeText = {
 
 const textInput = {
   height: 48,
-  borderRadius: 8,
+  borderRadius: 5,
   fontSize: 14,
   paddingHorizontal: 16,
   paddingTop: 8,
@@ -77,6 +77,6 @@ export const sharedStyles = StyleSheet.create({
 
   inputAreaStyle: {
     ...textInput,
-    height: 80,
+    height: 192,
   },
 });

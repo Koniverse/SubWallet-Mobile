@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import {StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 import { FontSize0, sharedStyles, FontMedium } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
-import {Eye, EyeSlash} from "phosphor-react-native";
-import {BUTTON_ACTIVE_OPACITY} from "../constant";
+import { Eye, EyeSlash } from 'phosphor-react-native';
+import { BUTTON_ACTIVE_OPACITY } from '../constant';
 
 interface InputProps extends TextInputProps {
   label: string;
