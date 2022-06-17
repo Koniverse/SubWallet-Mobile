@@ -99,7 +99,7 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible, currentAcco
           {getNetworkLogo('polkadot', 20)}
           <Text style={receiveModalAddressText}>{toShort(currentAccountAddress, 12, 12)}</Text>
           <IconButton
-            iconButtonStyle={receiveModalCopyBtn}
+            style={receiveModalCopyBtn}
             icon={CopySimple}
             color={ColorMap.disabled}
             onPress={() => copyToClipboard(currentAccountAddress)}

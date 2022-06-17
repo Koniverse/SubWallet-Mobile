@@ -88,7 +88,7 @@ export const EditAccount = () => {
             isDisabled
           />
           <IconButton
-            iconButtonStyle={{ width: 20, height: 20, paddingBottom: 22 }}
+            style={{ width: 20, height: 20, paddingBottom: 22 }}
             icon={CopySimple}
             color={theme.textColor2}
             // @ts-ignore

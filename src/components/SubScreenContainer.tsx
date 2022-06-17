@@ -1,9 +1,9 @@
 import React from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import { SafeAreaView, StatusBar, View } from 'react-native';
 import { SubHeader } from 'components/SubHeader';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import {ColorMap} from "styles/color";
-import {STATUS_BAR_LIGHT_CONTENT} from "styles/sharedStyles";
+import { ColorMap } from 'styles/color';
+import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 
 interface Props {
   children: JSX.Element;
@@ -13,6 +13,10 @@ interface Props {
 
 export const SubScreenContainer = ({ children, navigation, title }: Props) => {
   const theme = useSubWalletTheme().colors;
+  const onPressBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <SafeAreaView
@@ -21,7 +25,7 @@ export const SubScreenContainer = ({ children, navigation, title }: Props) => {
         }}>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
       </SafeAreaView>
-      <SubHeader navigation={navigation} title={title} />
+      <SubHeader onPressBack={onPressBack} title={title} />
       {children}
     </View>
   );
