@@ -38,7 +38,7 @@ export const AccountsScreen = () => {
   const theme = useSubWalletTheme().colors;
 
   const renderListEmptyComponent = () => {
-    return <Warning warningMessage={i18n.noAccountText} isDanger={false} />;
+    return <Warning messageTitle={''} warningMessage={i18n.noAccountText} isDanger={false} />;
   };
 
   // @ts-ignore

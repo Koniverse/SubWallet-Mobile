@@ -131,8 +131,14 @@ export const RestoreJson = () => {
             onChangeText={setPassword}
             value={password}
           />
-          {isPasswordError && <Warning warningMessage={'Unable to decode using the supplied passphrase'} isDanger />}
-          {isFileError && <Warning warningMessage={'Invalid Json file'} isDanger />}
+          {isPasswordError && (
+            <Warning
+              messageTitle={'Error!'}
+              warningMessage={'Unable to decode using the supplied passphrase'}
+              isDanger
+            />
+          )}
+          {isFileError && <Warning messageTitle={'Error!'} warningMessage={'Invalid Json file'} isDanger />}
         </View>
 
         <View style={footerAreaStyle}>
@@ -140,7 +146,7 @@ export const RestoreJson = () => {
             isBusy={isBusy}
             title={'Import an Account'}
             onPress={_onRestore}
-            disabled={isFileError || isPasswordError}
+            disabled={isFileError || isPasswordError || !password || !file}
           />
         </View>
       </View>

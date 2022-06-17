@@ -8,6 +8,7 @@ interface Props {
   isDanger: boolean;
   isBelowInput?: boolean;
   warningMessage: string;
+  messageTitle: string;
 }
 
 const getTextStyle: StyleProp<any> = (color?: string) => {
@@ -44,11 +45,11 @@ const dangerBackgroundColor: StyleProp<any> = {
   backgroundColor: ColorMap.dangerOverlay,
 };
 
-export const Warning = ({ warningMessage, isDanger, isBelowInput = false }: Props) => {
+export const Warning = ({ warningMessage, isDanger, messageTitle, isBelowInput = false }: Props) => {
   return (
     <View style={[warningContainer, isDanger ? dangerBackgroundColor : warningBackgroundColor]}>
       <View style={{ flex: 1, alignItems: 'center' }}>
-        <Text style={getTitleStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{isDanger ? 'Error' : 'Warning'}</Text>
+        <Text style={getTitleStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{messageTitle}</Text>
         <Text style={getTextStyle(isDanger ? ColorMap.danger : ColorMap.warning)}>{warningMessage}</Text>
       </View>
     </View>
