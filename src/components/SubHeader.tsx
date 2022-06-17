@@ -6,7 +6,7 @@ import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
 import { ArrowLeft, IconProps } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
 
-interface Props {
+export interface SubHeaderProps {
   showRightBtn?: boolean;
   title: string;
   onPressBack: () => void;
@@ -14,7 +14,7 @@ interface Props {
   onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
-export const SubHeader = ({ onPressBack, rightIcon, onPressRightIcon, title }: Props) => {
+export const SubHeader = ({ onPressBack, rightIcon, onPressRightIcon, title }: SubHeaderProps) => {
   const swThemeColor = useSubWalletTheme().colors;
   const styles = useMemo(
     () =>
