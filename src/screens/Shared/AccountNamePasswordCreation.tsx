@@ -36,7 +36,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
   const [pass2, setPass2] = useState<string | null>(null);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={sharedStyles.layoutContainer}>
       <View style={bodyAreaStyle}>
         <Text style={titleStyle}>Name will be used only locally in this application. You can edit it later</Text>
 

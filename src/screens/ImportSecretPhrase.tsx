@@ -10,6 +10,7 @@ import { SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 import { SubmitButton } from 'components/SubmitButton';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -92,12 +93,9 @@ export const ImportSecretPhrase = () => {
     }
   };
 
-  console.log('error', error);
-  console.log('seed', seed);
-
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} title={'Import Secret Phrase'}>
-      <View style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 22 }}>
+      <View style={sharedStyles.layoutContainer}>
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={{ flex: 1 }}>
             <View style={bodyAreaStyle}>
