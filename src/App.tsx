@@ -26,7 +26,6 @@ import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 import { Settings } from 'screens/Settings';
 import { SelectNetwork } from 'screens/SelectNetwork';
 import { FirstScreen } from 'screens/FirstScreen';
-import { CreateWalletName } from 'screens/CreateAccount/CreateWalletName';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 
 // cryptoWaitReady().then(rs => {
@@ -93,11 +92,6 @@ export const App = () => {
                         name="SelectNetwork"
                         component={SelectNetwork}
                         options={{ title: 'Select Network' }}
-                      />
-                      <Stack.Screen
-                        name="CreateWalletName"
-                        component={CreateWalletName}
-                        options={{ title: 'Create Wallet Name' }}
                       />
                       <Stack.Screen
                         name="ImportSecretPhrase"

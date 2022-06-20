@@ -13,7 +13,6 @@ export type RootStackParamList = {
   ExportPrivateKey: undefined;
   Settings: undefined;
   SelectNetwork: undefined;
-  CreateWalletName: undefined;
   ImportSecretPhrase: undefined;
 };
 
