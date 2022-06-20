@@ -12,8 +12,9 @@ export type RootStackParamList = {
   RestoreJson: undefined;
   ExportPrivateKey: undefined;
   Settings: undefined;
-  SelectNetwork: undefined;
+  NetworkSelect: undefined;
   ImportSecretPhrase: undefined;
+  NetworksSetting: undefined;
 };
 
 export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];

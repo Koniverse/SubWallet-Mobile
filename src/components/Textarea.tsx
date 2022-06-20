@@ -9,13 +9,14 @@ const textAreaWrapper: StyleProp<any> = {
   color: ColorMap.disabled,
 };
 
-interface Props extends TextInputProps {
-
-}
-
-export const Textarea = (textAreaProps: Props) => {
-  const { style } = textAreaProps;
+export const Textarea = (textAreaProps: TextInputProps) => {
+  const { style, onChangeText } = textAreaProps;
   return (
-    <TextInput autoCapitalize="none" style={[sharedStyles.inputAreaStyle, textAreaWrapper, style]} multiline={true} />
+    <TextInput
+      autoCapitalize="none"
+      style={[sharedStyles.inputAreaStyle, textAreaWrapper, style]}
+      multiline={true}
+      onChangeText={onChangeText}
+    />
   );
 };

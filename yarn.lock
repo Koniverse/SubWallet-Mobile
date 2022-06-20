@@ -1822,6 +1822,11 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
+"@metamask/safe-event-emitter@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
+  integrity sha512-/kSXhY692qiV1MXu6EeOZvg5nECLclxNXcKCxJ3cXQgYuRymRHpdx/t7JXfsK+JLjwA1e1c1/SBrlQYpusC29Q==
+
 "@metaverse-network-sdk/type-definitions@^0.0.1-6":
   version "0.0.1-13"
   resolved "https://registry.yarnpkg.com/@metaverse-network-sdk/type-definitions/-/type-definitions-0.0.1-13.tgz#1d02ba0f380c336d32065b89e9f421c0493b6bfd"
@@ -3137,10 +3142,10 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.22.0.tgz#d115bc5dcab8c0f5800e05e4ef265949042b13ec"
   integrity sha512-IKqrPY0B3AeIXEc5/JGgEhPZLy+SmVyQf+k0SIGcNSTqt1GLI3gQFEOFwSScJdem+iYZQUrn6YPPxC3TpdSC3A==
 
-"@subwallet/extension-base@^0.4.3-0":
-  version "0.4.3-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.4.3-0.tgz#b57619108ac87a22d4dccfe26861c071d2b8cecf"
-  integrity sha512-ReDjRIECfHFyArIP4tpYMKlOkDJnwvQ2TQVx/jWA+c2LR9VWQZ1VHu4+5LMHjT2Dh0k71PDo1kIC6F6s7mWbcg==
+"@subwallet/extension-base@0.4.6-1", "@subwallet/extension-base@^0.4.6-1":
+  version "0.4.6-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.4.6-1.tgz#db1413d8cd7496a79592a19147e8699c3a75625c"
+  integrity sha512-5yQu2cNOOJf+KF1lOH8sSCOjxR7pUlKRE5fqGCs1pdypw7MWj19jMD5GBlPixxYxBYodY/kVhAYa6bYPVIteIQ==
   dependencies:
     "@babel/runtime" "^7.16.7"
     "@ethereumjs/common" "^2.6.3"
@@ -3154,39 +3159,41 @@
     "@polkadot/ui-settings" "^0.89.1"
     "@polkadot/util" "^8.3.1"
     "@polkadot/util-crypto" "^8.3.1"
-    "@subwallet/extension-chains" "^0.4.3-0"
-    "@subwallet/extension-dapp" "^0.4.3-0"
-    "@subwallet/extension-inject" "^0.4.3-0"
+    "@subwallet/extension-chains" "^0.4.6-1"
+    "@subwallet/extension-dapp" "^0.4.6-1"
+    "@subwallet/extension-inject" "^0.4.6-1"
     ethereumjs-tx "^2.1.2"
     eventemitter3 "^4.0.7"
     rxjs "^7.5.1"
-    web3 "^1.7.1"
+    web3 "^1.7.3"
+    web3-core "^1.7.3"
+    web3-core-helpers "^1.7.3"
 
-"@subwallet/extension-chains@^0.4.3-0":
-  version "0.4.3-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-0.4.3-0.tgz#c35addb11e387448fcb3a56b2167ee727bb19807"
-  integrity sha512-yGFkyhqeJwK94vk5CHH/NmOXu6bBIVPtjvt7QpLXU6f1juvligajBk49K85fNCjQ5ooRoxvFzP6n3iJdKnR+kQ==
+"@subwallet/extension-chains@^0.4.6-1":
+  version "0.4.6-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-0.4.6-1.tgz#d3241be7f5f9c0823722aaa10eb88188117b3017"
+  integrity sha512-IgVwQHzVuSr6N0H0UDRo+KiJU+YHaRrdz383pS/SBkdGE7Jr192eCFB4vZ27QlX07pxOmEc+/JeaA5knNzq7/A==
   dependencies:
     "@babel/runtime" "^7.16.7"
     "@polkadot/networks" "^8.3.1"
     "@polkadot/util" "^8.3.1"
     "@polkadot/util-crypto" "^8.3.1"
-    "@subwallet/extension-inject" "^0.4.3-0"
+    "@subwallet/extension-inject" "^0.4.6-1"
 
-"@subwallet/extension-dapp@^0.4.3-0":
-  version "0.4.3-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-0.4.3-0.tgz#1add925fd6bf3c58ac3d98b5bfcea7b522b92377"
-  integrity sha512-4FqC64+KDCFhqlmfVfB/m++MHaLxCM41m8/7atsb91mRGDBPH3gnrjJxbX+67bQE2MhdafUNCecnOpMqRYASrw==
+"@subwallet/extension-dapp@^0.4.6-1":
+  version "0.4.6-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-0.4.6-1.tgz#22af9d66631c0fc9a75f6d43727b3a2a52bbb872"
+  integrity sha512-sq/xNJhJ3NluOYgu6oGyXUdR/+oMvDfpgl0Z1Sf4oj9rFZuyY7zEmIBuYLbat00RdtmniuguLxbOYhq3P4IMlg==
   dependencies:
     "@babel/runtime" "^7.16.7"
     "@polkadot/util" "^8.3.1"
     "@polkadot/util-crypto" "^8.3.1"
-    "@subwallet/extension-inject" "^0.4.3-0"
+    "@subwallet/extension-inject" "^0.4.6-1"
 
-"@subwallet/extension-inject@^0.4.3-0":
-  version "0.4.3-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-0.4.3-0.tgz#0bb75963114679535bc2bda113aff44f5626c9bf"
-  integrity sha512-DFQ+GKAE4cgD54EUn9r/EJlVmoiyQ6sMYcjNQ/MIVZZ74BuT/ITaOTa6mU9oZfyk/bj2i7D8Cg2EIQ/9SzPkpQ==
+"@subwallet/extension-inject@^0.4.6-1":
+  version "0.4.6-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-0.4.6-1.tgz#715c029a7fd085ceb4595ef8f0c08ba3a52abf5f"
+  integrity sha512-WxlTsbPOlNoGIcXQH7aNBcptnrhqNU9v9Noqe673Hc8vQA6pvSz7HnAgMoLWL8AI6uDHTscjUGJjlQ9uoRlbSA==
   dependencies:
     "@babel/runtime" "^7.16.7"
     "@polkadot/rpc-provider" "^7.3.1"
@@ -3194,11 +3201,12 @@
     "@polkadot/util" "^8.3.1"
     "@polkadot/util-crypto" "^8.3.1"
     "@polkadot/x-global" "^8.3.1"
+    web3-core "^1.7.3"
 
-"@subwallet/extension-koni-base@0.4.3-0":
-  version "0.4.3-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.4.3-0.tgz#622ea457daac15ab286531d1f3a6def58e2ef01d"
-  integrity sha512-NIQVJe7i7/T39qKPZq80bNFrAsaF2X+sdsPsGJy0dAzW8ho1uebtv21MmAw3AxQAag9R4Wwrv32bB9TWCIdJ1A==
+"@subwallet/extension-koni-base@0.4.6-1":
+  version "0.4.6-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.4.6-1.tgz#0e71cb9f47c294c6e6e53f91590f76d5bcf40d2c"
+  integrity sha512-mwZD28owaAsO6ajg7JzOEJyLp29ZP/DUASj/hw4A7dDEbz7G9PHvtXn+tePu9f5F15lSpHHP5/dDwjmAlTGw/Q==
   dependencies:
     "@acala-network/api" "4.0.2-20"
     "@acala-network/type-definitions" "^3.0.2-4"
@@ -3216,6 +3224,7 @@
     "@interlay/interbtc-types" "1.5.10"
     "@kiltprotocol/type-definitions" "0.1.23"
     "@laminar/type-definitions" "0.3.1"
+    "@metamask/safe-event-emitter" "^2.0.0"
     "@metaverse-network-sdk/type-definitions" "^0.0.1-6"
     "@parallel-finance/type-definitions" "1.5.4"
     "@phala/typedefs" "0.2.30"
@@ -3234,15 +3243,16 @@
     "@snowfork/snowbridge-types" "0.2.7"
     "@sora-substrate/type-definitions" "1.7.48"
     "@subsocial/types" "0.6.5"
-    "@subwallet/extension-base" "^0.4.3-0"
-    "@subwallet/extension-chains" "^0.4.3-0"
-    "@subwallet/extension-dapp" "^0.4.3-0"
-    "@subwallet/extension-inject" "^0.4.3-0"
+    "@subwallet/extension-base" "^0.4.6-1"
+    "@subwallet/extension-chains" "^0.4.6-1"
+    "@subwallet/extension-dapp" "^0.4.6-1"
+    "@subwallet/extension-inject" "^0.4.6-1"
     "@unique-nft/types" "0.3.1"
     "@zeitgeistpm/type-defs" "0.4.5"
     "@zeroio/type-definitions" "0.0.14"
     axios "^0.24.0"
     cross-fetch "^3.1.5"
+    eth-simple-keyring "^4.2.0"
     ethereumjs-tx "^2.1.2"
     eventemitter3 "^4.0.7"
     graphql "^16.3.0"
@@ -3250,9 +3260,10 @@
     pontem-types-bundle "1.0.15"
     protobufjs "^6.11.2"
     rxjs "^7.5.1"
-    web3 "^1.7.1"
-    web3-core "^1.7.1"
-    web3-eth-contract "^1.7.1"
+    web3 "^1.7.3"
+    web3-core "^1.7.3"
+    web3-core-helpers "^1.7.3"
+    web3-eth-contract "^1.7.3"
 
 "@svgr/babel-plugin-add-jsx-attribute@^6.0.0":
   version "6.0.0"
@@ -4154,6 +4165,11 @@ acorn@^8.2.4, acorn@^8.4.1, acorn@^8.5.0:
   version "8.7.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.7.1.tgz#0197122c843d1bf6d0a5e83220a788f278f63c30"
   integrity sha512-Xx54uLJQZ19lKygFXOWsscKUbsBZW0CPykPhVQdhIeIwrbPmJzqeASDInc8nKBnp/JT6igTs82qPXz069H8I/A==
+
+aes-js@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/aes-js/-/aes-js-3.1.2.tgz#db9aabde85d5caabbfc0d4f2a4446960f627146a"
+  integrity sha512-e5pEa2kBnBOgR4Y/p20pskXI74UEz7de8ZGVo58asOtvSVG5YAbJeELPZxOmt+Bnz3rX753YKhfIn4X4l1PPRQ==
 
 agent-base@6:
   version "6.0.2"
@@ -6544,6 +6560,26 @@ eth-lib@^0.1.26:
     ws "^3.0.0"
     xhr-request-promise "^0.1.2"
 
+eth-sig-util@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/eth-sig-util/-/eth-sig-util-3.0.1.tgz#8753297c83a3f58346bd13547b59c4b2cd110c96"
+  integrity sha512-0Us50HiGGvZgjtWTyAI/+qTzYPMLy5Q451D0Xy68bxq1QMWdoOddDwGvsqcFT27uohKgalM9z/yxplyt+mY2iQ==
+  dependencies:
+    ethereumjs-abi "^0.6.8"
+    ethereumjs-util "^5.1.1"
+    tweetnacl "^1.0.3"
+    tweetnacl-util "^0.15.0"
+
+eth-simple-keyring@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/eth-simple-keyring/-/eth-simple-keyring-4.2.0.tgz#c197a4bd4cce7d701b5f3607d0b843112ddb17e3"
+  integrity sha512-lBxFObXJTBjktDkQszXrqoB317wghEUYATQ3W19vLAjaznrmbdy1lccPhXIRMT9bHIUgNKOJQkLohNZiT9tO8Q==
+  dependencies:
+    eth-sig-util "^3.0.1"
+    ethereumjs-util "^7.0.9"
+    ethereumjs-wallet "^1.0.1"
+    events "^1.1.1"
+
 ethereum-bloom-filters@^1.0.6:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/ethereum-bloom-filters/-/ethereum-bloom-filters-1.0.10.tgz#3ca07f4aed698e75bd134584850260246a5fed8a"
@@ -6572,6 +6608,14 @@ ethereum-cryptography@^0.1.3:
     secp256k1 "^4.0.1"
     setimmediate "^1.0.5"
 
+ethereumjs-abi@^0.6.8:
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz#71bc152db099f70e62f108b7cdfca1b362c6fcae"
+  integrity sha512-Tx0r/iXI6r+lRsdvkFDlut0N08jWMnKRZ6Gkq+Nmw75lZe4e6o3EkSnkaBP5NF6+m5PTGAr9JP43N3LyeoglsA==
+  dependencies:
+    bn.js "^4.11.8"
+    ethereumjs-util "^6.0.0"
+
 ethereumjs-common@^1.5.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-1.5.2.tgz#2065dbe9214e850f2e955a80e650cb6999066979"
@@ -6584,6 +6628,19 @@ ethereumjs-tx@^2.1.2:
   dependencies:
     ethereumjs-common "^1.5.0"
     ethereumjs-util "^6.0.0"
+
+ethereumjs-util@^5.1.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.2.1.tgz#a833f0e5fca7e5b361384dc76301a721f537bf65"
+  integrity sha512-v3kT+7zdyCm1HIqWlLNrHGqHGLpGYIhjeHxQjnDXjLT2FyGJDsd3LWMYUo7pAFRrk86CR3nUJfhC81CCoJNNGQ==
+  dependencies:
+    bn.js "^4.11.0"
+    create-hash "^1.1.2"
+    elliptic "^6.5.2"
+    ethereum-cryptography "^0.1.3"
+    ethjs-util "^0.1.3"
+    rlp "^2.0.0"
+    safe-buffer "^5.1.1"
 
 ethereumjs-util@^6.0.0:
   version "6.2.1"
@@ -6598,7 +6655,7 @@ ethereumjs-util@^6.0.0:
     ethjs-util "0.1.6"
     rlp "^2.2.3"
 
-ethereumjs-util@^7.0.10, ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.4, ethereumjs-util@^7.1.5:
+ethereumjs-util@^7.0.10, ethereumjs-util@^7.0.9, ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.2, ethereumjs-util@^7.1.4, ethereumjs-util@^7.1.5:
   version "7.1.5"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.1.5.tgz#9ecf04861e4fbbeed7465ece5f23317ad1129181"
   integrity sha512-SDl5kKrQAudFBUe5OJM9Ac6WmMyYmXX/6sTmLZ3ffG2eY6ZIGBes3pEDxNN6V72WyOw4CPD5RomKdsa8DAAwLg==
@@ -6609,6 +6666,20 @@ ethereumjs-util@^7.0.10, ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.4, ethereu
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
+ethereumjs-wallet@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-1.0.2.tgz#2c000504b4c71e8f3782dabe1113d192522e99b6"
+  integrity sha512-CCWV4RESJgRdHIvFciVQFnCHfqyhXWchTPlkfp28Qc53ufs+doi5I/cV2+xeK9+qEo25XCWfP9MiL+WEPAZfdA==
+  dependencies:
+    aes-js "^3.1.2"
+    bs58check "^2.1.2"
+    ethereum-cryptography "^0.1.3"
+    ethereumjs-util "^7.1.2"
+    randombytes "^2.1.0"
+    scrypt-js "^3.0.1"
+    utf8 "^3.0.0"
+    uuid "^8.3.2"
+
 ethjs-unit@0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/ethjs-unit/-/ethjs-unit-0.1.6.tgz#c665921e476e87bce2a9d588a6fe0405b2c41699"
@@ -6617,7 +6688,7 @@ ethjs-unit@0.1.6:
     bn.js "4.11.6"
     number-to-bn "1.7.0"
 
-ethjs-util@0.1.6:
+ethjs-util@0.1.6, ethjs-util@^0.1.3:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/ethjs-util/-/ethjs-util-0.1.6.tgz#f308b62f185f9fe6237132fb2a9818866a5cd536"
   integrity sha512-CUnVOQq7gSpDHZVVrQW8ExxUETWrnrvXYvYz55wOU8Uj4VCgw56XC2B/fVqQN+f7gmrnRHSLVnFAwsCuNwji8w==
@@ -6652,6 +6723,11 @@ eventemitter3@^4.0.0, eventemitter3@^4.0.7:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
+events@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
+  integrity sha512-kEcvvCBByWXGnZy6JUlgAp2gBIUjfCAV6P6TgT1/aaQKcmuAEC4OZTV1I4EWQLz2gxZw76atuVyvHhTxvi0Flw==
 
 events@^3.2.0, events@^3.3.0:
   version "3.3.0"
@@ -12060,7 +12136,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rlp@^2.2.3, rlp@^2.2.4:
+rlp@^2.0.0, rlp@^2.2.3, rlp@^2.2.4:
   version "2.2.7"
   resolved "https://registry.yarnpkg.com/rlp/-/rlp-2.2.7.tgz#33f31c4afac81124ac4b283e2bd4d9720b30beaf"
   integrity sha512-d5gdPmgQ0Z+AklL2NVXr/IoSjNZFfTVvQWzL/AM2AOcSzYP2xjlb0AC8YyCLc41MSNf6P6QVtjgPdmVtzb+4lQ==
@@ -13217,6 +13293,11 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
+tweetnacl-util@^0.15.0:
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.1.tgz#b80fcdb5c97bcc508be18c44a4be50f022eea00b"
+  integrity sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==
+
 tweetnacl@1.x.x, tweetnacl@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
@@ -13698,7 +13779,7 @@ web3-bzz@1.7.3:
     got "9.6.0"
     swarm-js "^0.1.40"
 
-web3-core-helpers@1.7.3:
+web3-core-helpers@1.7.3, web3-core-helpers@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/web3-core-helpers/-/web3-core-helpers-1.7.3.tgz#9a8d7830737d0e9c48694b244f4ce0f769ba67b9"
   integrity sha512-qS2t6UKLhRV/6C7OFHtMeoHphkcA+CKUr2vfpxy4hubs3+Nj28K9pgiqFuvZiXmtEEwIAE2A28GBOC3RdcSuFg==
@@ -13743,7 +13824,7 @@ web3-core-subscriptions@1.7.3:
     eventemitter3 "4.0.4"
     web3-core-helpers "1.7.3"
 
-web3-core@1.7.3, web3-core@^1.7.1:
+web3-core@1.7.3, web3-core@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/web3-core/-/web3-core-1.7.3.tgz#2ef25c4cc023997f43af9f31a03b571729ff3cda"
   integrity sha512-4RNxueGyevD1XSjdHE57vz/YWRHybpcd3wfQS33fgMyHZBVLFDNwhn+4dX4BeofVlK/9/cmPAokLfBUStZMLdw==
@@ -13781,7 +13862,7 @@ web3-eth-accounts@1.7.3:
     web3-core-method "1.7.3"
     web3-utils "1.7.3"
 
-web3-eth-contract@1.7.3, web3-eth-contract@^1.7.1:
+web3-eth-contract@1.7.3, web3-eth-contract@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/web3-eth-contract/-/web3-eth-contract-1.7.3.tgz#c4efc118ed7adafbc1270b633f33e696a39c7fc7"
   integrity sha512-7mjkLxCNMWlQrlfM/MmNnlKRHwFk5XrZcbndoMt3KejcqDP6dPHi2PZLutEcw07n/Sk8OMpSamyF3QiGfmyRxw==
@@ -13904,7 +13985,7 @@ web3-utils@1.7.3:
     randombytes "^2.1.0"
     utf8 "3.0.0"
 
-web3@^1.7.1:
+web3@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.7.3.tgz#30fe786338b2cc775881cb28c056ee5da4be65b8"
   integrity sha512-UgBvQnKIXncGYzsiGacaiHtm0xzQ/JtGqcSO/ddzQHYxnNuwI72j1Pb4gskztLYihizV9qPNQYHMSCiBlStI9A==

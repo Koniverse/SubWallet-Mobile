@@ -65,6 +65,7 @@ import {
   StakingRewardJson,
   TransactionHistoryItemType,
   TransferError,
+  DisableNetworkResponse,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
 import { getId } from '@subwallet/extension-base/utils/getId';
@@ -546,7 +547,11 @@ export async function getAllNetworkMetadata(): Promise<NetWorkMetadataDef[]> {
   return sendMessage('pri(networkMetadata.list)');
 }
 
-export async function enableNetworkMap (networkKey: string): Promise<boolean> {
+export async function disableNetworkMap(networkKey: string): Promise<DisableNetworkResponse> {
+  return sendMessage('pri(networkMap.disableOne)', networkKey);
+}
+
+export async function enableNetworkMap(networkKey: string): Promise<boolean> {
   return sendMessage('pri(networkMap.enableOne)', networkKey);
 }
 

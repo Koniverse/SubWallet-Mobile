@@ -24,9 +24,10 @@ import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 import { Settings } from 'screens/Settings';
-import { SelectNetwork } from 'screens/SelectNetwork';
+import { NetworkSelect } from 'screens/NetworkSelect';
 import { FirstScreen } from 'screens/FirstScreen';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
+import { NetworksSetting } from 'screens/NetworksSetting';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -89,9 +90,14 @@ export const App = () => {
                         options={{ title: 'Remove Account' }}
                       />
                       <Stack.Screen
-                        name="SelectNetwork"
-                        component={SelectNetwork}
-                        options={{ title: 'Select Network' }}
+                        name="NetworkSelect"
+                        component={NetworkSelect}
+                        options={{ title: 'Network Select' }}
+                      />
+                      <Stack.Screen
+                        name="NetworksSetting"
+                        component={NetworksSetting}
+                        options={{ title: 'Networks Setting' }}
                       />
                       <Stack.Screen
                         name="ImportSecretPhrase"
