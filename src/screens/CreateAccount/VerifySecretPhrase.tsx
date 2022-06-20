@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { GestureResponderEvent, StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { SeedPhraseArea } from 'components/SeedPhraseArea';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SubmitButton } from 'components/SubmitButton';
+import { shuffleArray } from 'utils/index';
+
+interface Props {
+  onPressSubmit: (event: GestureResponderEvent) => void;
+  seed: string;
+}
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -41,25 +46,33 @@ const seedWordStyle = {
   margin: 2,
 };
 
-export const VerifySecretPhrase = () => {
-  const [selectedWord, setSelectedWord] = useState<string[]>(['gadget', 'assist']);
-  const phrase = 'gadget copy assist junior exhibit lazy educate brain used dust stay wink';
-  const seedWords: string[] = phrase.split(' ');
+const isCorrectWord = (selectedWords: string[], seed: string) => {
+  return selectedWords.join(' ') === seed;
+};
 
-  // todo: randomize seedWords
+export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
+  const [selectedWords, setSelectedWords] = useState<string[]>([]);
+  const [shuffleWords, setShuffleWords] = useState<string[] | null>(null);
+  const seedWords: string[] = seed.split(' ');
+
+  useEffect((): void => {
+    const words = seed.split(' ');
+    shuffleArray(words);
+    setShuffleWords(words);
+  }, [seed]);
 
   const onSelectWord = (word: string) => {
     return () => {
-      const newSelectedWord: string[] = [...selectedWord];
+      const newSelectedWord: string[] = [...selectedWords];
       newSelectedWord.push(word);
-      setSelectedWord(newSelectedWord);
+      setSelectedWords(newSelectedWord);
     };
   };
 
   const onUnSelectWord = (word: string) => {
-    const newSelectedWord: string[] = selectedWord.filter(w => w !== word);
+    const newSelectedWord: string[] = selectedWords.filter(w => w !== word);
 
-    setSelectedWord(newSelectedWord);
+    setSelectedWords(newSelectedWord);
   };
 
   const renderSeedWord = (word: string) => {
@@ -69,33 +82,31 @@ export const VerifySecretPhrase = () => {
         key={word}
         title={word}
         onPress={onSelectWord(word)}
-        isActivated={selectedWord.includes(word)}
+        isActivated={selectedWords.includes(word)}
       />
     );
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={() => {}} title={'Verify Secret Phrase'}>
-      <View style={sharedStyles.layoutContainer}>
-        <View style={bodyAreaStyle}>
-          <View style={infoBlockStyle}>
-            <Text style={infoTextStyle}>
-              Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
-              assets.
-            </Text>
-          </View>
-          <SeedPhraseArea
-            currentWords={selectedWord}
-            onTapWord={onUnSelectWord}
-            originWords={seedWords}
-            style={phraseAreaStyle}
-          />
-          <View style={phraseBlockStyle}>{seedWords.map(word => renderSeedWord(word))}</View>
+    <View style={sharedStyles.layoutContainer}>
+      <View style={bodyAreaStyle}>
+        <View style={infoBlockStyle}>
+          <Text style={infoTextStyle}>
+            Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
+            assets.
+          </Text>
         </View>
-        <View style={footerAreaStyle}>
-          <SubmitButton title={'Continue'} onPress={() => {}} />
-        </View>
+        <SeedPhraseArea
+          currentWords={selectedWords}
+          onTapWord={onUnSelectWord}
+          originWords={seedWords}
+          style={phraseAreaStyle}
+        />
+        <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(word => renderSeedWord(word))}</View>
       </View>
-    </ContainerWithSubHeader>
+      <View style={footerAreaStyle}>
+        <SubmitButton disabled={!isCorrectWord(selectedWords, seed)} title={'Continue'} onPress={onPressSubmit} />
+      </View>
+    </View>
   );
 };

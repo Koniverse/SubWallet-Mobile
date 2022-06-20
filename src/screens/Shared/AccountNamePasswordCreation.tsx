@@ -26,7 +26,7 @@ const titleStyle: StyleProp<any> = {
 };
 
 interface Props {
-  isBusy: boolean;
+  isBusy?: boolean;
   onCreateAccount: (curName: string, password: string) => void;
 }
 

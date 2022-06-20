@@ -9,7 +9,7 @@ import { IconButton } from 'components/IconButton';
 export interface SubHeaderProps {
   showRightBtn?: boolean;
   title: string;
-  onPressBack: () => void;
+  onPressBack: (event: GestureResponderEvent) => void;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
 }

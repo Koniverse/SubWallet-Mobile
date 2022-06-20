@@ -8,7 +8,7 @@ import { RootState } from 'stores/index';
 import { Button } from 'components/Button';
 import { SpaceStyle } from 'styles/space';
 
-export const CreateAccount = () => {
+export const CreateAccount2 = () => {
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
   const [seedPhase, setSeedPhase] = useState('');

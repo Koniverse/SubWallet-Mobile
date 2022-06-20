@@ -37,7 +37,7 @@ export const FirstScreen = () => {
           leftIcon={UserCirclePlus}
           title={'Create a new wallet account'}
           style={{ marginBottom: 16, width: '100%' }}
-          onPress={() => navigation.navigate('CreateWalletName')}
+          onPress={() => navigation.navigate('CreateAccount')}
         />
 
         <SubmitButton

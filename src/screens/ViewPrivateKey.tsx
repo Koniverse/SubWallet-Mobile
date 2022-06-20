@@ -100,9 +100,7 @@ const PrivateBlockIcon = FingerprintSimple;
 export const ViewPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const route = useRoute<RootRouteProps>();
-  const [privateKey, setPrivateKey] = useState<string>(
-    'OxSWYgeW91IGV4cGVjdCB0aGUgcHJpdmF0ZSBrZXksIHRoZW4gbm90aGluZyB0byBzZWUgaGVyZQ==',
-  );
+  const [privateKey, setPrivateKey] = useState<string>('');
   const toast = useToast();
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
