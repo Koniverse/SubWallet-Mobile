@@ -5,7 +5,7 @@ import {
   listenMessage,
   saveCurrentAccountAddress,
   setViewRef,
-  subscribeAccountsWithCurrentAddress,
+  subscribeAccountsWithCurrentAddress, subscribeBalance, subscribeChainRegistry,
   subscribeNetworkMap,
   subscribePrice,
   subscribeSettings,
@@ -19,6 +19,8 @@ import { updateNetworkMap } from 'stores/NetworkMap';
 import { useToast } from 'react-native-toast-notifications';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { updateSettings } from 'stores/Settings';
+import { updateChainRegistry } from 'stores/ChainRegistry';
+import { updateBalance } from 'stores/Balance';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -83,11 +85,25 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
       }
     });
 
+    subscribeChainRegistry(rs => {
+      dispatch(updateChainRegistry(rs));
+    }).then(rs => {
+      dispatch(updateChainRegistry(rs));
+    });
+
+    subscribeBalance(null, rs => {
+      dispatch(updateBalance(rs));
+    }).then(rs => {
+      dispatch(updateBalance(rs));
+    });
+
     subscribeSettings(null, settings => {
       dispatch(updateSettings(settings));
     });
 
     subscribePrice(null, price => {
+      dispatch(updatePrice(price));
+    }).then(price => {
       dispatch(updatePrice(price));
     });
   }, [dispatch]);
