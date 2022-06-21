@@ -16,6 +16,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainListScreen';
+import useAccountBalance from 'hooks/screen/useAccountBalance';
 
 const ROUTES = [
   { key: 'chains', title: 'Chains' },
@@ -66,6 +67,7 @@ export const CryptoTab = () => {
   const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
   const [selectNetwork, setSelectNetwork] = useState<string>('polkadot');
+  const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.NETWORK_DETAIL) {
@@ -118,6 +120,7 @@ export const CryptoTab = () => {
           receiveModalVisible={receiveModalVisible}
           networkMetadataMap={networkMetadataMap}
           showedNetworks={showedNetworks}
+          totalValue={totalBalanceValue}
         />
       )}
 
@@ -132,7 +135,7 @@ export const CryptoTab = () => {
             onPressRightIcon={() => {}}>
             <>
               <View style={cryptoTabContainer}>
-                <BalancesVisibility />
+                <BalancesVisibility symbol={'$'} value={'1000'} />
               </View>
 
               <ActionButtonContainer openReceiveModal={() => setReceiveModalVisible(true)} />

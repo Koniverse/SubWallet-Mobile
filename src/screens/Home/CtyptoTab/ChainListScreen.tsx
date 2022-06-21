@@ -10,8 +10,10 @@ import { TokensTab } from 'screens/Home/CtyptoTab/TokensTab';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import { StyleProp, View } from 'react-native';
 import { BalancesVisibility } from 'components/BalancesVisibility';
+import BigN from 'bignumber.js';
 
 interface Props {
+  totalValue: BigN;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   onShoHideReceiveModal: (isShowModal: boolean) => void;
   receiveModalVisible: boolean;
@@ -33,6 +35,7 @@ const ROUTES = [
 ];
 
 export const ChainListScreen = ({
+  totalValue,
   navigation,
   onShoHideReceiveModal,
   receiveModalVisible,
@@ -43,16 +46,9 @@ export const ChainListScreen = ({
   // @ts-ignore
   const renderScene = ({ route }) => {
     switch (route.key) {
-      case 'chains':
-        return (
-          <ChainsTab
-            address={currentAccountAddress}
-            networkKeys={showedNetworks}
-            networkMetadataMap={networkMetadataMap}
-          />
-        );
       case 'tokens':
         return <TokensTab />;
+      case 'chains':
       default:
         return (
           <ChainsTab
@@ -68,7 +64,7 @@ export const ChainListScreen = ({
     <MainScreenContainer navigation={navigation}>
       <>
         <View style={balanceContainer}>
-          <BalancesVisibility />
+          <BalancesVisibility value={totalValue} symbol={'$'} />
 
           <ActionButtonContainer openReceiveModal={() => onShoHideReceiveModal(true)} />
         </View>

@@ -46,7 +46,7 @@ export const BalanceVal = ({
   return (
     <View style={balanceValWrapper}>
       <Text style={balanceValText}>{startWithSymbol && withSymbol && symbolView}</Text>
-      <Text style={balanceValText}>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}</Text>
+      <Text style={balanceValText}>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}.</Text>
       <Text style={balanceValText}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
       <Text style={balanceValText}>{isString && lastSymbol}</Text>
       <Text style={balanceValText}>{!startWithSymbol && withSymbol && symbolView}</Text>
