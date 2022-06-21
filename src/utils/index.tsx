@@ -123,7 +123,12 @@ export function getNetworkLogo(networkKey: string, size: number) {
     // @ts-ignore
   } else if (Images[networkKey]) {
     // @ts-ignore
-    return <Image style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }} source={Images[networkKey]} />;
+    return (
+      <Image
+        style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }}
+        source={Images[networkKey]}
+      />
+    );
   }
 
   return getIcon('default', size);

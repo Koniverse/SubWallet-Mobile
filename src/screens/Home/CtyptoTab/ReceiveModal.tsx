@@ -10,19 +10,17 @@ import { CopySimple } from 'phosphor-react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   receiveModalVisible: boolean;
   onChangeVisible: () => void;
-  currentAccountAddress: string;
 }
 
-const receiveModalSeparator: StyleProp<any> = {
-  width: 56,
-  height: 4,
-  borderRadius: 2,
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  marginBottom: 19,
+const receiveModalContentWrapper: StyleProp<any> = {
+  alignItems: 'center',
+  width: '100%',
 };
 
 const receiveModalTitle: StyleProp<any> = {
@@ -74,8 +72,12 @@ const receiveModalExplorerBtn: StyleProp<any> = {
   marginRight: 8,
 };
 
-export const ReceiveModal = ({ receiveModalVisible, onChangeVisible, currentAccountAddress }: Props) => {
+export const ReceiveModal = ({ receiveModalVisible, onChangeVisible }: Props) => {
   const toast = useToast();
+  const {
+    accounts: { currentAccountAddress },
+    currentNetwork: { networkKey },
+  } = useSelector((state: RootState) => state);
   const copyToClipboard = useCallback(
     (text: string) => {
       Clipboard.setString(text);
@@ -89,14 +91,13 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible, currentAcco
       modalStyle={{ height: 496 }}
       modalVisible={receiveModalVisible}
       onChangeModalVisible={onChangeVisible}>
-      <View>
-        <View style={receiveModalSeparator} />
+      <View style={receiveModalContentWrapper}>
         <Text style={receiveModalTitle}>Receive Asset</Text>
         <QRCode value={currentAccountAddress} size={180} />
         <Text style={receiveModalGuide}>Scan address to receive payment</Text>
 
         <View style={receiveModalAddressWrapper}>
-          {getNetworkLogo('polkadot', 20)}
+          {getNetworkLogo(networkKey, 20)}
           <Text style={receiveModalAddressText}>{toShort(currentAccountAddress, 12, 12)}</Text>
           <IconButton
             style={receiveModalCopyBtn}

@@ -20,8 +20,6 @@ const headerWrapper: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingTop: 8,
-  paddingBottom: 8,
 };
 
 const accountName: StyleProp<any> = {
@@ -56,7 +54,7 @@ export const Header = ({ navigation }: Props) => {
             navigation.navigate('Settings');
           }}>
           <View>
-            <SubWalletAvatar address={currentAccount?.address || ''} size={36} />
+            <SubWalletAvatar address={currentAccount?.address || ''} size={34} />
           </View>
         </TouchableOpacity>
         <Text style={accountName} numberOfLines={1}>
@@ -74,18 +72,6 @@ export const Header = ({ navigation }: Props) => {
           <MagnifyingGlass size={20} color={'#FFF'} weight={'bold'} />
         </TouchableOpacity>
       </View>
-      {/*<View style={{ flex: 1, marginLeft: -8 }}>*/}
-      {/*  <TouchableWithoutFeedback*/}
-      {/*    onPress={() => {*/}
-      {/*      navigationRef.navigate('Home');*/}
-      {/*    }}>*/}
-      {/*    {*/}
-      {/*      // @ts-ignore*/}
-      {/*      <Logo.SubWallet width={48} height={48} />*/}
-      {/*    }*/}
-      {/*  </TouchableWithoutFeedback>*/}
-      {/*</View>*/}
-      {/*<Button style={{ marginRight: 16 }} title="Reload Background" onPress={reloadBackground} color={'secondary'} />*/}
     </View>
   );
 };

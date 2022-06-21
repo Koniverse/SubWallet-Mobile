@@ -1,12 +1,14 @@
 import React from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import {StyleProp, Text, TouchableOpacity, View} from 'react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 import { ColorMap } from 'styles/color';
+import { AccountInfoByNetwork } from 'types/ui-types';
 
 interface Props {
   isLoading: boolean;
+  accountInfo: AccountInfoByNetwork;
 }
 
 const chainBalanceMainArea: StyleProp<any> = {
@@ -18,14 +20,17 @@ const chainBalanceMainArea: StyleProp<any> = {
 };
 const chainBalancePart1: StyleProp<any> = {
   flexDirection: 'row',
+  paddingLeft: 16,
 };
 const textStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
+  ...sharedStyles.mediumText,
   ...FontMedium,
   color: ColorMap.light,
+  paddingBottom: 4,
 };
 const subTextStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
+  ...FontMedium,
   color: ColorMap.disabled,
 };
 const chainBalanceMetaWrapper: StyleProp<any> = {
@@ -33,22 +38,24 @@ const chainBalanceMetaWrapper: StyleProp<any> = {
 };
 const chainBalancePart2: StyleProp<any> = {
   alignItems: 'flex-end',
+  paddingRight: 16,
 };
 const chainBalanceSeparator: StyleProp<any> = {
   borderBottomWidth: 1,
   borderBottomColor: ColorMap.dark2,
-  marginLeft: 56,
+  marginLeft: 72,
+  marginRight: 16,
 };
 
-export const ChainBalance = ({ isLoading }: Props) => {
+export const ChainBalance = ({ accountInfo, isLoading }: Props) => {
   return (
-    <View style={{ width: '100%' }}>
+    <TouchableOpacity style={{ width: '100%' }}>
       <View style={chainBalanceMainArea}>
         <View style={chainBalancePart1}>
-          {getNetworkLogo('polkadot', 40)}
+          {getNetworkLogo(accountInfo.networkLogo, 40)}
           <View style={chainBalanceMetaWrapper}>
-            <Text style={textStyle}>Polkadot Relay Chain</Text>
-            <Text style={subTextStyle}>{toShort('12indbLeXK6wt77TvzHbnm13NEk79fozg5rE8JyREHgwGr79')}</Text>
+            <Text style={textStyle}>{accountInfo.networkDisplayName}</Text>
+            <Text style={subTextStyle}>{toShort(accountInfo.formattedAddress)}</Text>
           </View>
         </View>
 
@@ -67,6 +74,6 @@ export const ChainBalance = ({ isLoading }: Props) => {
       </View>
 
       <View style={chainBalanceSeparator} />
-    </View>
+    </TouchableOpacity>
   );
 };
