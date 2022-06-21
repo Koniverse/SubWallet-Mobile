@@ -16,12 +16,10 @@ import HydradxLogo from './hydradx.svg';
 import IntegriteeLogo from './integritee.svg';
 import InterlayLogo from './interlay.svg';
 import KaruraLogo from './karura.svg';
-import KhalaLogo from './khala.svg';
 import KusamaLogo from './kusama.svg';
 import MantaLogo from './manta.svg';
 import DolphinLogo from './dolphin.svg';
 import MoonriverLogo from './moonriver.svg';
-import NodleLogo from './nodle.svg';
 import ParallelLogo from './parallel.svg';
 import PhalaLogo from './phala.svg';
 import PicassoLogo from './picasso.svg';
@@ -34,10 +32,8 @@ import SubgameLogo from './subgame.svg';
 import SubsocialLogo from './subsocial.svg';
 import KoniLogo from './koni.svg';
 import WestendLogo from './westend.svg';
-import RococoLogo from './rococo.svg';
 import RobonomicsLogo from './robonomics.svg';
 import OdysseyLogo from './odyssey.svg';
-import PolkadexLogo from './polkadex.svg';
 import AlephLogo from './aleph.svg';
 import BitcountryLogo from './bitcountry.svg';
 import UniqueLogo from './unique.network.svg';
@@ -78,25 +74,23 @@ export const SvgLogosMap = {
   crab: CrabLogo,
   crust: CrustLogo,
   efinity: EfinityLogo,
-  equilibrium: EquilibriumLogo,
+  equilibrium_parachain: EquilibriumLogo,
   genshiro: GenshiroLogo,
+  genshiro_testnet: GenshiroLogo,
   hydradx: HydradxLogo,
   integritee: IntegriteeLogo,
   interlay: InterlayLogo,
   karura: KaruraLogo,
-  khala: KhalaLogo,
   kusama: KusamaLogo,
   manta: MantaLogo,
   dolphin: DolphinLogo,
-  moonriver: MoonriverLogo,
-  nodle: NodleLogo,
   parallel: ParallelLogo,
   phala: PhalaLogo,
   picasso: PicassoLogo,
   polkadot: PolkadotLogo,
   sakura: SakuraLogo,
   shadow: ShadowLogo,
-  sora: SoraLogo,
+  'sora-substrate': SoraLogo,
   statemine: StatemineLogo,
   subgame: SubgameLogo,
   statemint: StatemineLogo,
@@ -104,10 +98,8 @@ export const SvgLogosMap = {
   subsocial: SubsocialLogo,
   koni: KoniLogo,
   westend: WestendLogo,
-  rococo: RococoLogo,
   robonomics: RobonomicsLogo,
   odyssey: OdysseyLogo,
-  polkadex: PolkadexLogo,
   aleph: AlephLogo,
   alephTest: AlephLogo,
   bitcountry: BitcountryLogo,
@@ -195,6 +187,11 @@ export const ImageLogosMap = {
   aris: require('./aris.png'),
   kico: require('./kico.png'),
   hko: require('./hko.png'),
+  rococo: require('./rococo.png'),
+  nodle: require('./nodle.png'),
+  moonriver: require('./moonriver.png'),
+  khala: require('./khala.png'),
+  polkadex: require('./polkadex.png'),
   xckint: require('./kintsugi.png'),
   chrwna: require('./chrwna.png'),
   rmrk: require('./rmrk.jpg'),

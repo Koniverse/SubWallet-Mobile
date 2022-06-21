@@ -9,6 +9,8 @@ import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { decodeAddress, isEthereumAddress, ethereumEncode, encodeAddress } from '@polkadot/util-crypto';
 import { SvgLogosMap } from 'assets/logo';
 import { Image } from 'react-native';
+import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
+import { ColorMap } from 'styles/color';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -20,10 +22,10 @@ export const accountAllRecoded: Recoded = {
   isEthereum: false,
 };
 
-export const getIcon = (iconName: string, size: number, color?: string) => {
+export const getIcon = (iconName: string, size: number, color?: string, style?: object) => {
   // @ts-ignore
   const IconComponent = SVGImages[iconName];
-  return <IconComponent width={size} height={size} color={color} />;
+  return <IconComponent width={size} height={size} color={color} style={style} />;
 };
 
 export function toShort(text: string, preLength = 6, sufLength = 6): string {
@@ -93,11 +95,30 @@ export function recodeAddress(
 export function getNetworkLogo(networkKey: string, size: number) {
   // @ts-ignore
   if (SvgLogosMap[networkKey]) {
-    return getIcon(networkKey, size);
+    const style = {
+      borderRadius: size / 2,
+      width: size,
+      height: size,
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
+    };
+
+    const styleWithBgc = {
+      ...style,
+      backgroundColor: ColorMap.light,
+    };
+
+    if (networkKey === 'interlay') {
+      return getIcon(networkKey, size, '#FFF', styleWithBgc);
+    }
+
+    return getIcon(networkKey, size, '#FFF', style);
+
     // @ts-ignore
   } else if (Images[networkKey]) {
     // @ts-ignore
-    return <Image style={{ width: size, height: size }} source={Images[networkKey]} />;
+    return <Image style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }} source={Images[networkKey]} />;
   }
 
   return getIcon('default', size);
@@ -108,4 +129,73 @@ export function shuffleArray(array: any[]) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+}
+
+function analysisAccounts(accounts: AccountJson[]): [boolean, boolean] {
+  let substrateCounter = 0;
+  let etherumCounter = 0;
+
+  if (!accounts.length) {
+    return [false, false];
+  }
+
+  accounts.forEach(a => {
+    if (isAccountAll(a.address)) {
+      return;
+    }
+
+    if (isEthereumAddress(a.address)) {
+      etherumCounter++;
+    } else {
+      substrateCounter++;
+    }
+  });
+
+  return [etherumCounter === 0 && substrateCounter > 0, etherumCounter > 0 && substrateCounter === 0];
+}
+
+export function getGenesisOptionsByAddressType(
+  address: string | null | undefined,
+  accounts: AccountJson[],
+  genesisOptions: NetworkSelectOption[],
+): NetworkSelectOption[] {
+  if (!address || !accounts.length) {
+    return genesisOptions.filter(o => !o.isEthereum);
+  }
+
+  const result: NetworkSelectOption[] = [];
+
+  if (isAccountAll(address)) {
+    const [isContainOnlySubstrate, isContainOnlyEtherum] = [false, true];
+
+    if (isContainOnlySubstrate) {
+      genesisOptions.forEach(o => {
+        if (!o.isEthereum) {
+          result.push(o);
+        }
+      });
+    } else if (isContainOnlyEtherum) {
+      genesisOptions.forEach(o => {
+        if (o.isEthereum || o.networkKey === 'all') {
+          result.push(o);
+        }
+      });
+    } else {
+      return genesisOptions;
+    }
+  } else if (address.startsWith('0x')) {
+    genesisOptions.forEach(o => {
+      if (o.isEthereum || o.networkKey === 'all') {
+        result.push(o);
+      }
+    });
+  } else {
+    genesisOptions.forEach(o => {
+      if (!o.isEthereum) {
+        result.push(o);
+      }
+    });
+  }
+
+  return result;
 }

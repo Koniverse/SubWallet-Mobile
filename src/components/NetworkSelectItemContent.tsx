@@ -1,20 +1,21 @@
 import React from 'react';
-import { StyleProp, Switch, Text, View } from 'react-native';
+import { StyleProp, Text, View } from 'react-native';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { CircleWavyCheck } from 'phosphor-react-native';
 interface Props {
   itemName: string;
   itemKey: string;
-  isEnabled: boolean;
-  onValueChange: () => void;
+  isSelected: boolean;
 }
 
 const itemArea: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
-  paddingVertical: 16,
+  paddingVertical: 12,
   alignItems: 'center',
+  paddingRight: 16,
 };
 
 const itemBodyArea: StyleProp<any> = {
@@ -25,27 +26,27 @@ const itemBodyArea: StyleProp<any> = {
 const itemSeparator: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   height: 1,
-  marginLeft: 56,
+  marginLeft: 48,
 };
 
 const itemTextStyle: StyleProp<any> = {
-  paddingLeft: 16,
+  paddingLeft: 20,
   color: ColorMap.light,
   ...sharedStyles.mediumText,
   ...FontSemiBold,
 };
 
-export const NetworkAndTokenToggleItem = ({ itemKey, itemName, isEnabled, onValueChange }: Props) => {
+export const NetworkSelectItemContent = ({ itemKey, itemName, isSelected }: Props) => {
+  const CheckIcon = CircleWavyCheck;
   return (
     <View>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View>{getNetworkLogo(itemKey, 40)}</View>
-
+          {getNetworkLogo(itemKey, 28)}
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 
-        <Switch ios_backgroundColor="rgba(120,120,128,0.32)" value={isEnabled} onValueChange={onValueChange} />
+        {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
       </View>
 
       <View style={itemSeparator} />

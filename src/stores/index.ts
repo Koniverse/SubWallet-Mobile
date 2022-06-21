@@ -3,6 +3,7 @@ import accountsReducer from './Accounts';
 import priceReducer from './Price';
 import networkMapReducer from './NetworkMap';
 import settingsReducer from './Settings';
+import currentNetworkReducer from './CurrentNetwork';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   price: priceReducer,
   networkMap: networkMapReducer,
   settings: settingsReducer,
+  currentNetwork: currentNetworkReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

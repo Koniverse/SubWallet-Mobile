@@ -13,6 +13,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
 import {SVGImages} from "assets/index";
+import KhalaLogo from "assets/logo/khala.svg";
+import {SvgLogosMap} from "assets/logo";
 
 const ROUTES = [
   { key: 'chains', title: 'Chains' },

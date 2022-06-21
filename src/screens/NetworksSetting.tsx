@@ -6,7 +6,7 @@ import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Search } from 'components/Search';
-import { sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, sharedStyles } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n';
@@ -78,11 +78,11 @@ export const NetworksSetting = () => {
   const filteredNetworkMap = filterNetwork();
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Select Network'}>
-      <View style={{ ...sharedStyles.layoutContainer }}>
-        <Search onSearch={setSearchString} searchText={searchString} />
+    <SubScreenContainer navigation={navigation} title={'Network Setting'}>
+      <View style={{ ...sharedStyles.layoutContainer, paddingLeft: 0, paddingRight: 0 }}>
+        <Search onSearch={setSearchString} searchText={searchString} style={{ marginLeft: 16, marginRight: 16 }} />
         <FlatList
-          style={{ flex: 1 }}
+          style={{ flex: 1, ...ContainerHorizontalPadding }}
           keyboardShouldPersistTaps={'handled'}
           data={Object.values(filteredNetworkMap)}
           renderItem={renderItem}
