@@ -16,7 +16,7 @@ export const ContainerWithSubHeader = ({ children, ...subHeaderProps }: Containe
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <SafeAreaView
         style={{
-          backgroundColor: ColorMap.dark1,
+          backgroundColor: subHeaderProps.backgroundColor || ColorMap.dark1,
         }}>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
       </SafeAreaView>

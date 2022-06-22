@@ -10,6 +10,7 @@ type BalanceViewProps = {
   startWithSymbol?: boolean;
   withComma?: boolean;
   withSymbol?: boolean;
+  balanceValTextStyle?: object;
 };
 
 const balanceValWrapper: StyleProp<any> = {
@@ -23,6 +24,7 @@ const balanceValText: StyleProp<any> = {
 };
 
 export const BalanceVal = ({
+  balanceValTextStyle,
   startWithSymbol = false,
   symbol,
   value,
@@ -40,16 +42,18 @@ export const BalanceVal = ({
   const lastSymbol = postfix?.slice(-1);
   const isString = /^[KMB]/.test(lastSymbol);
   const postfixValue = postfix || '00';
-  const symbolView = prefix && <Text>{symbol}</Text>;
+  const symbolView = prefix && <Text>{' ' + symbol}</Text>;
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (
     <View style={balanceValWrapper}>
-      <Text style={balanceValText}>{startWithSymbol && withSymbol && symbolView}</Text>
-      <Text style={balanceValText}>{withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}.</Text>
-      <Text style={balanceValText}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
-      <Text style={balanceValText}>{isString && lastSymbol}</Text>
-      <Text style={balanceValText}>{!startWithSymbol && withSymbol && symbolView}</Text>
+      <Text style={[balanceValText, balanceValTextStyle]}>{startWithSymbol && withSymbol && symbolView}</Text>
+      <Text style={[balanceValText, balanceValTextStyle]}>
+        {withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}.
+      </Text>
+      <Text style={[balanceValText, balanceValTextStyle]}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
+      <Text style={[balanceValText, balanceValTextStyle]}>{isString && lastSymbol}</Text>
+      <Text style={[balanceValText, balanceValTextStyle]}>{!startWithSymbol && withSymbol && symbolView}</Text>
     </View>
   );
 };

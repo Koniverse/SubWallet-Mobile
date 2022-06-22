@@ -11,6 +11,7 @@ import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTyp
 import { StyleProp, View } from 'react-native';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import BigN from 'bignumber.js';
+import { BalanceInfo } from '../../../types';
 
 interface Props {
   totalValue: BigN;
@@ -19,7 +20,9 @@ interface Props {
   receiveModalVisible: boolean;
   currentAccountAddress: string;
   showedNetworks: string[];
+  networkBalanceMaps: Record<string, BalanceInfo>;
   networkMetadataMap: Record<string, NetWorkMetadataDef>;
+  onPressChainItem: () => void;
 }
 
 const balanceContainer: StyleProp<any> = {
@@ -42,6 +45,8 @@ export const ChainListScreen = ({
   currentAccountAddress,
   showedNetworks,
   networkMetadataMap,
+  networkBalanceMaps,
+  onPressChainItem,
 }: Props) => {
   // @ts-ignore
   const renderScene = ({ route }) => {
@@ -52,6 +57,8 @@ export const ChainListScreen = ({
       default:
         return (
           <ChainsTab
+            onPressChainItem={onPressChainItem}
+            networkBalanceMaps={networkBalanceMaps}
             address={currentAccountAddress}
             networkKeys={showedNetworks}
             networkMetadataMap={networkMetadataMap}

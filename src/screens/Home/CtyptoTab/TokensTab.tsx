@@ -1,10 +1,24 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { ChainBalance } from 'components/ChainBalance';
 
 export const TokensTab = () => {
   return (
     <View>
-      <Text>456</Text>
+      <ChainBalance
+        isLoading={false}
+        isToken
+        accountInfo={{
+          key: 'polkadot',
+          networkKey: 'polkadot',
+          networkDisplayName: 'Polkadot',
+          networkPrefix: -1,
+          networkLogo: 'polkadot',
+          networkIconTheme: '',
+          address: '123',
+          formattedAddress: '123',
+        }}
+      />
     </View>
   );
-}
+};

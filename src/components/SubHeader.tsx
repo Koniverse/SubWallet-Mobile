@@ -14,16 +14,19 @@ export interface SubHeaderProps {
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
   headerContent?: () => JSX.Element;
+  backgroundColor?: string;
 }
 
-const subHeaderWrapper: StyleProp<any> = {
-  backgroundColor: ColorMap.dark1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  position: 'relative',
-  height: 40,
-};
+function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
+  return {
+    backgroundColor: backgroundColor,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'relative',
+    height: 40,
+  };
+}
 
 const headerTitle: StyleProp<any> = {
   flexDirection: 'row',
@@ -31,7 +34,14 @@ const headerTitle: StyleProp<any> = {
   justifyContent: 'center',
 };
 
-export const SubHeader = ({ headerContent, onPressBack, rightIcon, onPressRightIcon, title }: SubHeaderProps) => {
+export const SubHeader = ({
+  headerContent,
+  onPressBack,
+  rightIcon,
+  onPressRightIcon,
+  title,
+  backgroundColor,
+}: SubHeaderProps) => {
   const swThemeColor = useSubWalletTheme().colors;
   const styles = useMemo(
     () =>
@@ -47,7 +57,7 @@ export const SubHeader = ({ headerContent, onPressBack, rightIcon, onPressRightI
   );
 
   return (
-    <View style={[SpaceStyle.oneContainer, subHeaderWrapper]}>
+    <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
       {!!headerContent ? (
         headerContent()
       ) : (

@@ -1,14 +1,20 @@
 import React from 'react';
-import {StyleProp, Text, TouchableOpacity, View} from 'react-native';
+import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
+import { BalanceInfo } from '../types';
+import { BalanceVal } from 'components/BalanceVal';
+import { getTotalConvertedBalanceValue, hasAnyChildTokenBalance } from 'screens/Home/CtyptoTab/utils';
+import { BN_ZERO } from 'utils/chainBalances';
 
-interface Props {
+interface Props extends TouchableOpacityProps {
   isLoading: boolean;
   accountInfo: AccountInfoByNetwork;
+  isToken?: boolean;
+  balanceInfo: BalanceInfo;
 }
 
 const chainBalanceMainArea: StyleProp<any> = {
@@ -47,15 +53,53 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
-export const ChainBalance = ({ accountInfo, isLoading }: Props) => {
+export const ChainBalance = ({ accountInfo, isLoading, isToken = false, onPress, balanceInfo }: Props) => {
+  const renderTokenValue = (curBalanceInfo: BalanceInfo) => {
+    if (!curBalanceInfo) {
+      return;
+    }
+
+    if (!hasAnyChildTokenBalance(curBalanceInfo)) {
+      return (
+        <BalanceVal balanceValTextStyle={textStyle} symbol={curBalanceInfo.symbol} value={balanceInfo.balanceValue} />
+      );
+    }
+
+    const showedTokens = [];
+
+    if (balanceInfo.balanceValue.gt(BN_ZERO)) {
+      showedTokens.push(balanceInfo.symbol);
+    }
+
+    for (const item of balanceInfo.childrenBalances) {
+      if (showedTokens.length > 1) {
+        showedTokens.push('...');
+
+        break;
+      }
+
+      if (item.balanceValue.gt(BN_ZERO)) {
+        showedTokens.push(item.symbol);
+      }
+    }
+
+    return <Text>{showedTokens.join(', ')}</Text>;
+  };
+
+  console.log('balanceInfo', balanceInfo);
+
   return (
-    <TouchableOpacity style={{ width: '100%' }}>
+    <TouchableOpacity style={{ width: '100%' }} onPress={onPress}>
       <View style={chainBalanceMainArea}>
         <View style={chainBalancePart1}>
           {getNetworkLogo(accountInfo.networkLogo, 40)}
           <View style={chainBalanceMetaWrapper}>
             <Text style={textStyle}>{accountInfo.networkDisplayName}</Text>
-            <Text style={subTextStyle}>{toShort(accountInfo.formattedAddress)}</Text>
+            {isToken ? (
+              <Text style={[subTextStyle, { color: ColorMap.primary }]}>{'$1.29'}</Text>
+            ) : (
+              <Text style={subTextStyle}>{toShort(accountInfo.formattedAddress)}</Text>
+            )}
           </View>
         </View>
 
@@ -67,8 +111,13 @@ export const ChainBalance = ({ accountInfo, isLoading }: Props) => {
 
         {!isLoading && (
           <View style={chainBalancePart2}>
-            <Text style={textStyle}>1200 DOT</Text>
-            <Text style={subTextStyle}>$1,800</Text>
+            {renderTokenValue(balanceInfo)}
+            <BalanceVal
+              balanceValTextStyle={subTextStyle}
+              startWithSymbol
+              symbol={'$'}
+              value={getTotalConvertedBalanceValue(balanceInfo)}
+            />
           </View>
         )}
       </View>

@@ -3,13 +3,14 @@ import { View } from 'react-native';
 import { ChainBalance } from 'components/ChainBalance';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountInfoByNetwork } from 'types/ui-types';
-import { reformatAddress } from '@subwallet/extension-koni-base/utils/utils';
-import { getNetworkLogo } from 'utils/index';
+import { BalanceInfo } from '../../../types';
 
 interface Props {
   address: string;
   networkKeys: string[];
   networkMetadataMap: Record<string, NetWorkMetadataDef>;
+  networkBalanceMaps: Record<string, BalanceInfo>;
+  onPressChainItem: () => void;
 }
 
 function getAccountInfoByNetwork(
@@ -45,7 +46,7 @@ function getAccountInfoByNetworkMap(
   return result;
 }
 
-export const ChainsTab = ({ address, networkKeys, networkMetadataMap }: Props) => {
+export const ChainsTab = ({ address, networkKeys, networkMetadataMap, onPressChainItem, networkBalanceMaps }: Props) => {
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     address,
     networkKeys,
@@ -54,8 +55,17 @@ export const ChainsTab = ({ address, networkKeys, networkMetadataMap }: Props) =
 
   const renderChainBalanceItem = (networkKey: string) => {
     const info = accountInfoByNetworkMap[networkKey];
-
-    return <ChainBalance key={info.key} accountInfo={info} isLoading={false} />;
+    const balanceInfo = networkBalanceMaps[networkKey];
+    console.log('networkBalanceMaps', networkBalanceMaps);
+    return (
+      <ChainBalance
+        key={info.key}
+        accountInfo={info}
+        isLoading={!balanceInfo}
+        onPress={onPressChainItem}
+        balanceInfo={balanceInfo}
+      />
+    );
   };
 
   return <View style={{ paddingTop: 8 }}>{networkKeys.map(key => renderChainBalanceItem(key))}</View>;

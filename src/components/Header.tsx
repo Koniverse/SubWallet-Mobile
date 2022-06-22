@@ -20,6 +20,7 @@ const headerWrapper: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
+  height: 40,
 };
 
 const accountName: StyleProp<any> = {
@@ -54,7 +55,7 @@ export const Header = ({ navigation }: Props) => {
             navigation.navigate('Settings');
           }}>
           <View>
-            <SubWalletAvatar address={currentAccount?.address || ''} size={34} />
+            <SubWalletAvatar address={currentAccount?.address || ''} size={32} />
           </View>
         </TouchableOpacity>
         <Text style={accountName} numberOfLines={1}>
