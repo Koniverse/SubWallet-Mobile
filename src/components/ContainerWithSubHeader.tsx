@@ -18,7 +18,7 @@ const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgro
 export const ContainerWithSubHeader = ({ children, ...subHeaderProps }: ContainerWithSubHeaderProps) => {
   return (
     <SafeAreaView style={getContainerStyle(subHeaderProps.backgroundColor)}>
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       <SubHeader {...subHeaderProps} />
       {children}
     </SafeAreaView>
