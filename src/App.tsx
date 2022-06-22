@@ -27,6 +27,7 @@ import { NetworkSelect } from 'screens/NetworkSelect';
 import { FirstScreen } from 'screens/FirstScreen';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
+import {STATUS_BAR_HEIGHT} from "styles/sharedStyles";
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -49,6 +50,7 @@ export const App = () => {
       normalColor={theme.colors.notification}
       successColor={theme.colors.primary}
       warningColor={theme.colors.notification_warning}
+      offsetTop={STATUS_BAR_HEIGHT + 10}
       dangerColor={theme.colors.notification_danger}>
       <WebViewProvider>
         <QrScannerProvider navigationRef={navigationRef}>
