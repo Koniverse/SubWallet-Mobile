@@ -5,15 +5,22 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useGetNetworkMetadata from 'hooks/screen/useGetNetworkMetadata';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
-import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainListScreen';
-import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetailScreen';
+import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainList/ChainListScreen';
+import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetail/ChainDetailScreen';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
+import { AccountInfoByNetwork } from 'types/ui-types';
+import { BalanceInfo } from '../../../types';
 
 const ViewStep = {
   CHAIN_LIST: 1,
   NETWORK_DETAIL: 2,
   TOKEN_DETAIL: 3,
 };
+
+interface NetworkInfo {
+  selectNetworkInfo: AccountInfoByNetwork | undefined;
+  selectBalanceInfo: BalanceInfo | undefined;
+}
 
 export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -26,9 +33,13 @@ export const CryptoTab = () => {
   const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
-  const [selectNetwork, setSelectNetwork] = useState<string>('polkadot');
+  const [{ selectNetworkInfo, selectBalanceInfo }, setSelectNetwork] = useState<NetworkInfo>({
+    selectNetworkInfo: undefined,
+    selectBalanceInfo: undefined,
+  });
 
-  const onPressChainItem = () => {
+  const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
+    setSelectNetwork({ selectNetworkInfo: info, selectBalanceInfo: balanceInfo });
     setCurrentViewStep(ViewStep.NETWORK_DETAIL);
   };
 
@@ -56,11 +67,13 @@ export const CryptoTab = () => {
         />
       )}
 
-      {currentViewStep === ViewStep.NETWORK_DETAIL && (
+      {currentViewStep === ViewStep.NETWORK_DETAIL && selectNetworkInfo && selectBalanceInfo && (
         <ChainDetailScreen
           onPressBack={onPressBack}
           onShoHideReceiveModal={setReceiveModalVisible}
           receiveModalVisible={receiveModalVisible}
+          selectNetworkInfo={selectNetworkInfo}
+          selectBalanceInfo={selectBalanceInfo}
         />
       )}
       {currentViewStep === ViewStep.TOKEN_DETAIL && <></>}

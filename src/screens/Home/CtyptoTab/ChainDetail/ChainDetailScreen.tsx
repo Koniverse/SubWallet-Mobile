@@ -2,20 +2,23 @@ import React from 'react';
 import { HorizontalTabView } from 'components/HorizontalTabView';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
 import { ActionButtonContainer } from 'screens/Home/CtyptoTab/ActionButtonContainer';
-import { TokensTab } from 'screens/Home/CtyptoTab/TokensTab';
+import { TokensTab } from 'screens/Home/CtyptoTab/ChainDetail/TokensTab';
 import { StyleProp, Text, View } from 'react-native';
-import { BalancesVisibility } from 'components/BalancesVisibility';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SlidersHorizontal } from 'phosphor-react-native';
-import { getNetworkLogo } from 'utils/index';
-import { HistoryTab } from 'screens/Home/CtyptoTab/HistoryTab';
+import { getNetworkLogo, toShort } from 'utils/index';
+import { HistoryTab } from 'screens/Home/CtyptoTab/ChainDetail/HistoryTab';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { AccountInfoByNetwork } from 'types/ui-types';
+import { BalanceInfo } from '../../../../types';
 
 interface Props {
   onPressBack: () => void;
   onShoHideReceiveModal: (isShowModal: boolean) => void;
   receiveModalVisible: boolean;
+  selectNetworkInfo: AccountInfoByNetwork;
+  selectBalanceInfo: BalanceInfo;
 }
 
 const balanceContainer: StyleProp<any> = {
@@ -25,18 +28,39 @@ const balanceContainer: StyleProp<any> = {
   paddingTop: 21,
 };
 
+const chainDetailHeader: StyleProp<any> = {
+  flexDirection: 'row',
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const chainDetailHeaderTitle: StyleProp<any> = {
+  ...sharedStyles.mediumText,
+  ...FontSemiBold,
+  color: ColorMap.light,
+  paddingLeft: 4,
+  maxWidth: 150,
+};
+
 const ROUTES = [
   { key: 'tokens', title: 'Tokens' },
-  { key: 'History', title: 'History' },
+  { key: 'history', title: 'History' },
 ];
 
-export const ChainDetailScreen = ({ onPressBack, onShoHideReceiveModal, receiveModalVisible }: Props) => {
+export const ChainDetailScreen = ({
+  onPressBack,
+  onShoHideReceiveModal,
+  receiveModalVisible,
+  selectNetworkInfo,
+  selectBalanceInfo,
+}: Props) => {
   const renderHeaderContent = () => {
     return (
-      <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {getNetworkLogo('polkadot', 20)}
-        <Text style={{ ...sharedStyles.mediumText, ...FontSemiBold, color: ColorMap.light, paddingLeft: 4 }}>
-          {'Polkadot'}
+      <View style={chainDetailHeader}>
+        {getNetworkLogo(selectNetworkInfo.networkKey, 20)}
+        <Text style={chainDetailHeaderTitle} numberOfLines={1}>
+          {selectNetworkInfo.networkDisplayName}
         </Text>
         <Text
           style={{
@@ -45,7 +69,7 @@ export const ChainDetailScreen = ({ onPressBack, onShoHideReceiveModal, receiveM
             color: ColorMap.disabled,
             paddingLeft: 4,
           }}>
-          {'(123123)'}
+          {`(${toShort(selectNetworkInfo.address, 4, 4)})`}
         </Text>
       </View>
     );
@@ -54,12 +78,11 @@ export const ChainDetailScreen = ({ onPressBack, onShoHideReceiveModal, receiveM
   // @ts-ignore
   const renderScene = ({ route }) => {
     switch (route.key) {
-      case 'tokens':
-        return <TokensTab />;
       case 'history':
         return <HistoryTab />;
+      case 'tokens':
       default:
-        return <HistoryTab />;
+        return <TokensTab selectNetworkInfo={selectNetworkInfo} selectBalanceInfo={selectBalanceInfo} />;
     }
   };
 

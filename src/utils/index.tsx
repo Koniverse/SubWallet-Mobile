@@ -97,7 +97,7 @@ export function recodeAddress(
   };
 }
 
-export function getNetworkLogo(networkKey: string, size: number) {
+export function getNetworkLogo(networkKey: string, size: number, defaultLogo = 'default') {
   // @ts-ignore
   if (SvgLogosMap[networkKey]) {
     const style = {
@@ -119,10 +119,7 @@ export function getNetworkLogo(networkKey: string, size: number) {
     }
 
     return getIcon(networkKey, size, '#FFF', style);
-
-    // @ts-ignore
   } else if (Images[networkKey]) {
-    // @ts-ignore
     return (
       <Image
         style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }}
@@ -131,7 +128,7 @@ export function getNetworkLogo(networkKey: string, size: number) {
     );
   }
 
-  return getIcon('default', size);
+  return getIcon(defaultLogo, size);
 }
 
 export function shuffleArray(array: any[]) {

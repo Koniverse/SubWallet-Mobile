@@ -1,20 +1,22 @@
 import React from 'react';
 import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { getNetworkLogo, toShort } from 'utils/index';
+import { getNetworkLogo } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 import { ColorMap } from 'styles/color';
-import { AccountInfoByNetwork } from 'types/ui-types';
-import { BalanceInfo } from '../types';
 import { BalanceVal } from 'components/BalanceVal';
-import { getTotalConvertedBalanceValue, hasAnyChildTokenBalance } from 'screens/Home/CtyptoTab/utils';
 import { BN_ZERO } from 'utils/chainBalances';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import BigN from 'bignumber.js';
 
 interface Props extends TouchableOpacityProps {
   isLoading: boolean;
-  accountInfo: AccountInfoByNetwork;
-  isToken?: boolean;
-  balanceInfo: BalanceInfo;
+  selectNetworkKey: string;
+  tokenBalanceValue: BigN;
+  convertedBalanceValue: BigN;
+  tokenBalanceSymbol: string;
+  defaultNetworkKey?: string;
 }
 
 const chainBalanceMainArea: StyleProp<any> = {
@@ -53,50 +55,30 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
-export const ChainBalance = ({ accountInfo, isLoading, isToken = false, onPress, balanceInfo }: Props) => {
-  const renderTokenValue = (curBalanceInfo: BalanceInfo) => {
-    if (!curBalanceInfo) {
-      return;
-    }
+export const TokenChainBalance = ({
+  isLoading,
+  onPress,
+  selectNetworkKey,
+  tokenBalanceSymbol,
+  tokenBalanceValue,
+  convertedBalanceValue,
+  defaultNetworkKey,
+}: Props) => {
+  const {
+    price: { tokenPriceMap },
+  } = useSelector((state: RootState) => state);
+  const reformatPrice = tokenPriceMap[tokenBalanceSymbol.toLowerCase()]
+    ? tokenPriceMap[tokenBalanceSymbol.toLowerCase()].toString().replace('.', ',')
+    : BN_ZERO;
 
-    if (!hasAnyChildTokenBalance(curBalanceInfo)) {
-      return (
-        <BalanceVal balanceValTextStyle={textStyle} symbol={curBalanceInfo.symbol} value={balanceInfo.balanceValue} />
-      );
-    }
-
-    const showedTokens = [];
-
-    if (balanceInfo.balanceValue.gt(BN_ZERO)) {
-      showedTokens.push(balanceInfo.symbol);
-    }
-
-    for (const item of balanceInfo.childrenBalances) {
-      if (showedTokens.length > 1) {
-        showedTokens.push('...');
-
-        break;
-      }
-
-      if (item.balanceValue.gt(BN_ZERO)) {
-        showedTokens.push(item.symbol);
-      }
-    }
-
-    return <Text style={textStyle}>{showedTokens.join(', ')}</Text>;
-  };
   return (
     <TouchableOpacity style={{ width: '100%' }} onPress={onPress}>
       <View style={chainBalanceMainArea}>
         <View style={chainBalancePart1}>
-          {getNetworkLogo(accountInfo.networkLogo, 40)}
+          {getNetworkLogo(selectNetworkKey.toLowerCase(), 40, defaultNetworkKey)}
           <View style={chainBalanceMetaWrapper}>
-            <Text style={textStyle}>{accountInfo.networkDisplayName}</Text>
-            {isToken ? (
-              <Text style={[subTextStyle, { color: ColorMap.primary }]}>{'$1.29'}</Text>
-            ) : (
-              <Text style={subTextStyle}>{toShort(accountInfo.formattedAddress)}</Text>
-            )}
+            <Text style={textStyle}>{tokenBalanceSymbol}</Text>
+            <Text style={[subTextStyle, { color: ColorMap.primary }]}>{`$${reformatPrice}`}</Text>
           </View>
         </View>
 
@@ -108,13 +90,8 @@ export const ChainBalance = ({ accountInfo, isLoading, isToken = false, onPress,
 
         {!isLoading && (
           <View style={chainBalancePart2}>
-            {renderTokenValue(balanceInfo)}
-            <BalanceVal
-              balanceValTextStyle={subTextStyle}
-              startWithSymbol
-              symbol={'$'}
-              value={getTotalConvertedBalanceValue(balanceInfo)}
-            />
+            <BalanceVal balanceValTextStyle={textStyle} symbol={tokenBalanceSymbol} value={tokenBalanceValue} />
+            <BalanceVal balanceValTextStyle={subTextStyle} startWithSymbol symbol={'$'} value={convertedBalanceValue} />
           </View>
         )}
       </View>

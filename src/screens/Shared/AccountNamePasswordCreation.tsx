@@ -6,6 +6,11 @@ import { EditAccountInputText } from 'components/EditAccountInputText';
 import { PasswordInput } from 'components/PasswordInput';
 import { SubmitButton } from 'components/SubmitButton';
 
+const containerStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark2,
+  marginBottom: 8,
+};
+
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
   paddingTop: 8,
@@ -49,13 +54,13 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
         <PasswordInput
           label={'Wallet Password'}
           onChangeText={curPass1 => setPass1(curPass1)}
-          containerStyle={{ backgroundColor: ColorMap.dark2, marginBottom: 8 }}
+          containerStyle={containerStyle}
         />
 
         <PasswordInput
           label={'Repeat Wallet Password'}
           onChangeText={curPass2 => setPass2(curPass2)}
-          containerStyle={{ backgroundColor: ColorMap.dark2, marginBottom: 8 }}
+          containerStyle={containerStyle}
         />
       </View>
       <View style={footerAreaStyle}>

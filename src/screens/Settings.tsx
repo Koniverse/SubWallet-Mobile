@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, StyleProp, Text } from 'react-native';
 import { ActionItem } from 'components/ActionItem';
 import {
   BellRinging,
@@ -100,6 +100,13 @@ const SETTINGS_LIST = [
   ],
 ];
 
+const settingTitleStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  color: ColorMap.disabled,
+  ...FontMedium,
+  paddingVertical: 12,
+};
+
 export const Settings = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
@@ -130,9 +137,7 @@ export const Settings = () => {
           />
         ))}
 
-        <Text style={{ ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium, paddingVertical: 12 }}>
-          Network & Assets
-        </Text>
+        <Text style={settingTitleStyle}>Network & Assets</Text>
 
         {SETTINGS_LIST[1].map(setting => (
           <ActionItem
@@ -144,9 +149,7 @@ export const Settings = () => {
           />
         ))}
 
-        <Text style={{ ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium, paddingVertical: 12 }}>
-          Community & Support
-        </Text>
+        <Text style={settingTitleStyle}>Community & Support</Text>
 
         {SETTINGS_LIST[2].map(setting => (
           <ActionItem
@@ -158,9 +161,7 @@ export const Settings = () => {
           />
         ))}
 
-        <Text style={{ ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium, paddingVertical: 12 }}>
-          About
-        </Text>
+        <Text style={settingTitleStyle}>About</Text>
 
         {SETTINGS_LIST[3].map(setting => (
           <ActionItem
