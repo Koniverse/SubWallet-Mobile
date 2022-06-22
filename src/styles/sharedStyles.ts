@@ -59,6 +59,11 @@ const blockContent = {
   borderRadius: 5,
 };
 
+const container = {
+  flex: 1,
+  paddingTop: STATUS_BAR_HEIGHT,
+};
+
 const layoutContainer = {
   ...ContainerHorizontalPadding,
   paddingTop: 8,
@@ -74,6 +79,7 @@ export const sharedStyles = StyleSheet.create({
   textInput,
   blockContent,
   layoutContainer,
+  container,
 
   inputAreaStyle: {
     ...textInput,
