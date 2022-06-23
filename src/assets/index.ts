@@ -21,6 +21,8 @@ import WarningIcon from './warning.svg';
 import DangerIcon from './danger.svg';
 import CheckBoxIcon from './checkbox.svg';
 import CheckBoxFilledIcon from './checkbox-filled.svg';
+import SuccessStatus from './success-status.svg';
+import FailStatus from './fail-status.svg';
 import { ImageLogosMap, SvgLogosMap } from 'assets/logo';
 
 export const HomeTabIcon = {
@@ -49,6 +51,8 @@ export const SVGImages = {
   CheckBoxIcon: CheckBoxIcon,
   CheckBoxFilledIcon: CheckBoxFilledIcon,
   SubWallet2: SubWalletLogo2,
+  SuccessStatus,
+  FailStatus,
 };
 
 export const Images = {
