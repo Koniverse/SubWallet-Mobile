@@ -6,7 +6,7 @@ import { Account } from 'components/Account';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThree, Plus } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n';
@@ -64,20 +64,20 @@ export const AccountsScreen = () => {
     return <View style={accountItemSeparator} />;
   };
 
+  const onCreateAccount = () => {
+    navigation.navigate('CreateAccount');
+  };
+
   const renderFooterComponent = () => {
     return (
       <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
-        <SubmitButton
-          backgroundColor={theme.background2}
-          title={'Add / Connect Account'}
-          onPress={() => navigation.navigate('CreateAccount')}
-        />
+        <SubmitButton backgroundColor={theme.background2} title={'Add / Connect Account'} onPress={onCreateAccount} />
       </View>
     );
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Accounts'}>
+    <SubScreenContainer navigation={navigation} title={'Accounts'} rightIcon={Plus} onPressRightIcon={onCreateAccount}>
       <View style={accountsWrapper}>
         <FlatList
           style={{ paddingHorizontal: 16, flex: 1 }}
