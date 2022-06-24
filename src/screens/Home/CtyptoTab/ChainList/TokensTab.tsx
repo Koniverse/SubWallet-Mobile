@@ -5,6 +5,7 @@ import { BalanceInfo } from '../../../../types';
 import { BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
 import { TokenChainBalance } from 'components/TokenChainBalance';
+import {ChainBalanceSkeleton} from "components/ChainBalanceSkeleton";
 
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
@@ -47,15 +48,21 @@ export const TokensTab = ({ networkBalanceMaps }: Props) => {
   return (
     <ScrollView>
       {tokenArray &&
-        tokenArray.map(token => (
-          <TokenChainBalance
-            isLoading={!networkBalanceMaps}
-            tokenBalanceValue={token.tokenBalanceValue}
-            convertedBalanceValue={token.convertedBalanceValue}
-            selectNetworkKey={token.selectNetworkKey}
-            tokenBalanceSymbol={token.tokenBalanceSymbol}
-          />
-        ))}
+        tokenArray.map((token, index) => {
+          if (!networkBalanceMaps) {
+            return <ChainBalanceSkeleton key={`${token.selectNetworkKey}-${index}`} />;
+          } else {
+            return (
+              <TokenChainBalance
+                key={`${token.selectNetworkKey}-${index}`}
+                tokenBalanceValue={token.tokenBalanceValue}
+                convertedBalanceValue={token.convertedBalanceValue}
+                selectNetworkKey={token.selectNetworkKey}
+                tokenBalanceSymbol={token.tokenBalanceSymbol}
+              />
+            );
+          }
+        })}
     </ScrollView>
   );
 };

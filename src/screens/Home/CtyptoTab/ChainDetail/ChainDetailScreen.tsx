@@ -12,13 +12,22 @@ import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
+import BigN from 'bignumber.js';
+import { BalanceVal } from 'components/BalanceVal';
+import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
 
 interface Props {
   onPressBack: () => void;
   onShoHideReceiveModal: (isShowModal: boolean) => void;
   receiveModalVisible: boolean;
-  selectNetworkInfo: AccountInfoByNetwork;
-  selectBalanceInfo: BalanceInfo;
+  selectedNetworkInfo: AccountInfoByNetwork;
+  selectedBalanceInfo: BalanceInfo;
+  onPressTokenItem: (
+    tokenName: string,
+    tokenBalanceValue: BigN,
+    tokenConvertedValue: BigN,
+    tokenSymbol: string,
+  ) => void;
 }
 
 const balanceContainer: StyleProp<any> = {
@@ -52,15 +61,16 @@ export const ChainDetailScreen = ({
   onPressBack,
   onShoHideReceiveModal,
   receiveModalVisible,
-  selectNetworkInfo,
-  selectBalanceInfo,
+  selectedNetworkInfo,
+  selectedBalanceInfo,
+  onPressTokenItem,
 }: Props) => {
   const renderHeaderContent = () => {
     return (
       <View style={chainDetailHeader}>
-        {getNetworkLogo(selectNetworkInfo.networkKey, 20)}
+        {getNetworkLogo(selectedNetworkInfo.networkKey, 20)}
         <Text style={chainDetailHeaderTitle} numberOfLines={1}>
-          {selectNetworkInfo.networkDisplayName}
+          {selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '')}
         </Text>
         <Text
           style={{
@@ -69,7 +79,7 @@ export const ChainDetailScreen = ({
             color: ColorMap.disabled,
             paddingLeft: 4,
           }}>
-          {`(${toShort(selectNetworkInfo.address, 4, 4)})`}
+          {`(${toShort(selectedNetworkInfo.address, 4, 4)})`}
         </Text>
       </View>
     );
@@ -82,7 +92,13 @@ export const ChainDetailScreen = ({
         return <HistoryTab />;
       case 'tokens':
       default:
-        return <TokensTab selectNetworkInfo={selectNetworkInfo} selectBalanceInfo={selectBalanceInfo} />;
+        return (
+          <TokensTab
+            selectedNetworkInfo={selectedNetworkInfo}
+            selectedBalanceInfo={selectedBalanceInfo}
+            onPressTokenItem={onPressTokenItem}
+          />
+        );
     }
   };
 
@@ -97,7 +113,7 @@ export const ChainDetailScreen = ({
       onPressRightIcon={() => {}}>
       <>
         <View style={balanceContainer}>
-          {/*<BalancesVisibility />*/}
+          <BalanceVal value={getTotalConvertedBalanceValue(selectedBalanceInfo)} startWithSymbol symbol={'$'} />
 
           <ActionButtonContainer openReceiveModal={() => onShoHideReceiveModal(true)} />
         </View>

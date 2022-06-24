@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import Loading from 'components/Loading';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../types';
@@ -11,9 +10,7 @@ import { getTotalConvertedBalanceValue, hasAnyChildTokenBalance } from 'screens/
 import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props extends TouchableOpacityProps {
-  isLoading: boolean;
   accountInfo: AccountInfoByNetwork;
-  isToken?: boolean;
   balanceInfo: BalanceInfo;
 }
 
@@ -53,7 +50,7 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
-export const ChainBalance = ({ accountInfo, isLoading, isToken = false, onPress, balanceInfo }: Props) => {
+export const ChainBalance = ({ accountInfo, onPress, balanceInfo }: Props) => {
   const renderTokenValue = (curBalanceInfo: BalanceInfo) => {
     if (!curBalanceInfo) {
       return;
@@ -91,32 +88,22 @@ export const ChainBalance = ({ accountInfo, isLoading, isToken = false, onPress,
         <View style={chainBalancePart1}>
           {getNetworkLogo(accountInfo.networkLogo, 40)}
           <View style={chainBalanceMetaWrapper}>
-            <Text style={textStyle}>{accountInfo.networkDisplayName}</Text>
-            {isToken ? (
-              <Text style={[subTextStyle, { color: ColorMap.primary }]}>{'$1.29'}</Text>
-            ) : (
-              <Text style={subTextStyle}>{toShort(accountInfo.formattedAddress)}</Text>
-            )}
+            <Text style={[textStyle, { maxWidth: 120 }]} numberOfLines={1}>
+              {accountInfo.networkDisplayName.replace(' Relay Chain', '')}
+            </Text>
+            <Text style={subTextStyle}>{toShort(accountInfo.formattedAddress)}</Text>
           </View>
         </View>
 
-        {isLoading && (
-          <View style={chainBalancePart2}>
-            <Loading width={40} height={40} />
-          </View>
-        )}
-
-        {!isLoading && (
-          <View style={chainBalancePart2}>
-            {renderTokenValue(balanceInfo)}
-            <BalanceVal
-              balanceValTextStyle={subTextStyle}
-              startWithSymbol
-              symbol={'$'}
-              value={getTotalConvertedBalanceValue(balanceInfo)}
-            />
-          </View>
-        )}
+        <View style={chainBalancePart2}>
+          {renderTokenValue(balanceInfo)}
+          <BalanceVal
+            balanceValTextStyle={subTextStyle}
+            startWithSymbol
+            symbol={'$'}
+            value={getTotalConvertedBalanceValue(balanceInfo)}
+          />
+        </View>
       </View>
 
       <View style={chainBalanceSeparator} />

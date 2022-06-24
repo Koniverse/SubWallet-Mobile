@@ -1,10 +1,11 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { TokenHistoryItem } from 'components/TokenHistoryItem';
 
 export const HistoryTab = () => {
   return (
     <View>
-      <Text>789</Text>
+      <TokenHistoryItem isLoading={false} isReceiveHistory={true} />
     </View>
   );
 };

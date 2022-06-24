@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
+import {Keyboard, StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View} from 'react-native';
 import { FontSize0, sharedStyles, FontMedium } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
@@ -59,6 +59,8 @@ export const PasswordInput = (inputProps: InputProps) => {
           placeholderTextColor={theme.textColor2}
           selectionColor={theme.textColor2}
           secureTextEntry={!isShowPassword}
+          blurOnSubmit={false}
+          onSubmitEditing={() => Keyboard.dismiss()}
           {...inputProps}
         />
 

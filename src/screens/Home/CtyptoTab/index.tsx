@@ -10,45 +10,74 @@ import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetail/ChainDetai
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
+import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
+import BigN from 'bignumber.js';
+import { BN_ZERO } from 'utils/chainBalances';
 
 const ViewStep = {
   CHAIN_LIST: 1,
   NETWORK_DETAIL: 2,
-  TOKEN_DETAIL: 3,
+  TOKEN_HISTORY: 3,
 };
 
 interface NetworkInfo {
-  selectNetworkInfo: AccountInfoByNetwork | undefined;
+  selectedNetworkInfo: AccountInfoByNetwork | undefined;
   selectBalanceInfo: BalanceInfo | undefined;
+  selectedTokenName: string;
+  tokenBalanceValue: BigN;
+  tokenConvertedValue: BigN;
+  tokenSymbol: string;
 }
 
 export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.CHAIN_LIST);
   const {
     accounts: { accounts, currentAccountAddress },
     currentNetwork,
   } = useSelector((state: RootState) => state);
+  const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.CHAIN_LIST);
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
-  const [{ selectNetworkInfo, selectBalanceInfo }, setSelectNetwork] = useState<NetworkInfo>({
-    selectNetworkInfo: undefined,
+  const [
+    { selectedNetworkInfo, selectBalanceInfo, selectedTokenName, tokenBalanceValue, tokenConvertedValue, tokenSymbol },
+    setSelectNetwork,
+  ] = useState<NetworkInfo>({
+    selectedNetworkInfo: undefined,
     selectBalanceInfo: undefined,
+    selectedTokenName: '',
+    tokenBalanceValue: BN_ZERO,
+    tokenConvertedValue: BN_ZERO,
+    tokenSymbol: '',
   });
 
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
-    setSelectNetwork({ selectNetworkInfo: info, selectBalanceInfo: balanceInfo });
+    setSelectNetwork(prevState => ({
+      ...prevState,
+      selectedNetworkInfo: info,
+      selectBalanceInfo: balanceInfo,
+    }));
     setCurrentViewStep(ViewStep.NETWORK_DETAIL);
   };
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.NETWORK_DETAIL) {
       setCurrentViewStep(ViewStep.CHAIN_LIST);
-    } else if (currentViewStep === ViewStep.TOKEN_DETAIL) {
+    } else if (currentViewStep === ViewStep.TOKEN_HISTORY) {
       setCurrentViewStep(ViewStep.NETWORK_DETAIL);
     }
+  };
+
+  const onPressTokenItem = (tokenName: string, balanceValue: BigN, convertedValue: BigN, tokenSymbol: string) => {
+    setSelectNetwork(prev => ({
+      ...prev,
+      selectedTokenName: tokenName,
+      tokenBalanceValue: balanceValue,
+      tokenConvertedValue: convertedValue,
+      tokenSymbol: tokenSymbol,
+    }));
+    setCurrentViewStep(ViewStep.TOKEN_HISTORY);
   };
 
   return (
@@ -67,16 +96,28 @@ export const CryptoTab = () => {
         />
       )}
 
-      {currentViewStep === ViewStep.NETWORK_DETAIL && selectNetworkInfo && selectBalanceInfo && (
+      {currentViewStep === ViewStep.NETWORK_DETAIL && selectedNetworkInfo && selectBalanceInfo && (
         <ChainDetailScreen
           onPressBack={onPressBack}
           onShoHideReceiveModal={setReceiveModalVisible}
           receiveModalVisible={receiveModalVisible}
-          selectNetworkInfo={selectNetworkInfo}
-          selectBalanceInfo={selectBalanceInfo}
+          selectedNetworkInfo={selectedNetworkInfo}
+          selectedBalanceInfo={selectBalanceInfo}
+          onPressTokenItem={onPressTokenItem}
         />
       )}
-      {currentViewStep === ViewStep.TOKEN_DETAIL && <></>}
+      {currentViewStep === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
+        <TokenHistoryScreen
+          onPressBack={onPressBack}
+          onShoHideReceiveModal={setReceiveModalVisible}
+          receiveModalVisible={receiveModalVisible}
+          selectedTokenName={selectedTokenName}
+          tokenBalanceValue={tokenBalanceValue}
+          tokenConvertedValue={tokenConvertedValue}
+          tokenHistorySymbol={tokenSymbol}
+          selectedNetworkInfo={selectedNetworkInfo}
+        />
+      )}
     </>
   );
 };

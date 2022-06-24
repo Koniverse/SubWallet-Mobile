@@ -42,7 +42,7 @@ export const BalanceVal = ({
   const lastSymbol = postfix?.slice(-1);
   const isString = /^[KMB]/.test(lastSymbol);
   const postfixValue = postfix || '00';
-  const symbolView = prefix && <Text>{' ' + symbol}</Text>;
+  const symbolView = prefix && <Text>{`${startWithSymbol ? '' : ' '}${symbol}`}</Text>;
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (

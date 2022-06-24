@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleProp } from 'react-native';
+import { SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { Header } from 'components/Header';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
@@ -18,10 +18,12 @@ const containerStyle: StyleProp<any> = {
 
 export const MainScreenContainer = ({ children, navigation }: Props) => {
   return (
-    <SafeAreaView style={containerStyle}>
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
+    <View style={containerStyle}>
+      <SafeAreaView>
+        <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
+      </SafeAreaView>
       <Header navigation={navigation} />
       {children}
-    </SafeAreaView>
+    </View>
   );
 };

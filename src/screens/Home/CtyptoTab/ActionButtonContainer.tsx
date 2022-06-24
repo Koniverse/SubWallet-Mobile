@@ -4,6 +4,7 @@ import ActionButton from 'components/ActionButton';
 
 interface Props {
   openReceiveModal: () => void;
+  style?: object;
 }
 
 const actionButtonWrapper: StyleProp<any> = {
@@ -14,9 +15,9 @@ const actionButtonWrapper: StyleProp<any> = {
   paddingBottom: 25,
 };
 
-export const ActionButtonContainer = ({ openReceiveModal }: Props) => {
+export const ActionButtonContainer = ({ openReceiveModal, style }: Props) => {
   return (
-    <View style={actionButtonWrapper}>
+    <View style={[actionButtonWrapper, style]}>
       <ActionButton label="Receive" iconSize={24} iconName={'ReceiveIcon'} onPress={openReceiveModal} />
       <ActionButton label="Send" iconSize={24} iconName={'SendIcon'} />
       <ActionButton label="Swap" iconSize={24} iconName={'SwapIcon'} />

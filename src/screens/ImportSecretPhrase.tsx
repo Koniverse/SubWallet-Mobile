@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleProp,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { ColorMap } from 'styles/color';
@@ -10,16 +18,13 @@ import { SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 import { SubmitButton } from 'components/SubmitButton';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
-  paddingTop: 8,
 };
 
 const footerAreaStyle: StyleProp<any> = {
   paddingTop: 12,
-  paddingBottom: 22,
 };
 
 const titleStyle: StyleProp<any> = {
@@ -61,9 +66,11 @@ export const ImportSecretPhrase = () => {
       .then(({ addressMap }) => {
         const address = addressMap[SUBSTRATE_ACCOUNT_TYPE];
         setAccount({ address, suri, genesis: '' });
+        setError('');
       })
-      .catch(() => {
+      .catch((e) => {
         setAccount(null);
+        console.log('e', e);
         setError('Invalid mnemonic seed');
       });
   }, [seed]);
@@ -95,15 +102,19 @@ export const ImportSecretPhrase = () => {
 
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} title={'Import Secret Phrase'}>
-      <View style={sharedStyles.layoutContainer}>
+      <>
         {currentViewStep === ViewStep.ENTER_SEED && (
-          <View style={{ flex: 1 }}>
+          <View style={sharedStyles.layoutContainer}>
             <View style={bodyAreaStyle}>
               <Text style={titleStyle}>
                 Restore an existing wallet account with your 12 or 24-word secret recovery phrase
               </Text>
 
-              <Textarea onChangeText={text => setSeed(text)} />
+              <Textarea
+                onChangeText={text => {
+                  setSeed(text);
+                }}
+              />
             </View>
             <View style={footerAreaStyle}>
               <SubmitButton
@@ -121,7 +132,7 @@ export const ImportSecretPhrase = () => {
         {currentViewStep === ViewStep.ENTER_PASSWORD && (
           <AccountNamePasswordCreation isBusy={isBusy} onCreateAccount={_onImportSeed} />
         )}
-      </View>
+      </>
     </ContainerWithSubHeader>
   );
 };

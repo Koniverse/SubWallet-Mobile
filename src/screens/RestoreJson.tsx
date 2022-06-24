@@ -23,11 +23,6 @@ const bodyAreaStyle: StyleProp<any> = {
   paddingTop: 8,
 };
 
-const footerAreaStyle: StyleProp<any> = {
-  paddingTop: 12,
-  paddingBottom: 22,
-};
-
 export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [password, setPassword] = useState<string>('');
@@ -137,7 +132,7 @@ export const RestoreJson = () => {
           {isFileError && <Warning title={'Error!'} message={'Invalid Json file'} isDanger />}
         </View>
 
-        <View style={footerAreaStyle}>
+        <View>
           <SubmitButton
             isBusy={isBusy}
             title={'Import an Account'}

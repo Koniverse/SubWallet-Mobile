@@ -28,6 +28,7 @@ export const HorizontalTabView = ({ renderScene, routes }: Props) => {
   return (
     <TabView
       navigationState={{ index, routes }}
+      style={{ backgroundColor: ColorMap.dark1 }}
       renderScene={renderScene}
       onIndexChange={setIndex}
       renderTabBar={props => (

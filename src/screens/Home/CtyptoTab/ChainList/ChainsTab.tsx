@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native';
 import { ChainBalance } from 'components/ChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
+import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 
 interface Props {
   networkKeys: string[];
@@ -15,15 +16,18 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
   const renderChainBalanceItem = (networkKey: string) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
-    return (
-      <ChainBalance
-        key={info.key}
-        accountInfo={info}
-        isLoading={!balanceInfo}
-        onPress={() => onPressChainItem(info, balanceInfo)}
-        balanceInfo={balanceInfo}
-      />
-    );
+    if (!balanceInfo) {
+      return <ChainBalanceSkeleton key={info.key} />;
+    } else {
+      return (
+        <ChainBalance
+          key={info.key}
+          accountInfo={info}
+          onPress={() => onPressChainItem(info, balanceInfo)}
+          balanceInfo={balanceInfo}
+        />
+      );
+    }
   };
 
   return <ScrollView style={{ paddingTop: 8 }}>{networkKeys.map(key => renderChainBalanceItem(key))}</ScrollView>;

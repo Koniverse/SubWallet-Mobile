@@ -13,12 +13,6 @@ const containerStyle: StyleProp<any> = {
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
-  paddingTop: 8,
-};
-
-const footerAreaStyle: StyleProp<any> = {
-  paddingTop: 12,
-  paddingBottom: 22,
 };
 
 const titleStyle: StyleProp<any> = {
@@ -63,7 +57,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
           containerStyle={containerStyle}
         />
       </View>
-      <View style={footerAreaStyle}>
+      <View>
         <SubmitButton
           disabled={!pass1 || !pass2 || pass1 !== pass2}
           isBusy={isBusy}

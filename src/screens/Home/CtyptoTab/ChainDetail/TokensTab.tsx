@@ -3,38 +3,70 @@ import { ScrollView } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
-import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
 import { BN_ZERO } from 'utils/chainBalances';
+import BigN from 'bignumber.js';
+import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 
 interface Props {
-  selectNetworkInfo: AccountInfoByNetwork;
-  selectBalanceInfo: BalanceInfo;
+  selectedNetworkInfo: AccountInfoByNetwork;
+  selectedBalanceInfo: BalanceInfo;
+  onPressTokenItem: (
+    tokenName: string,
+    tokenBalanceValue: BigN,
+    tokenConvertedValue: BigN,
+    tokenSymbol: string,
+  ) => void;
 }
 
-export const TokensTab = ({ selectNetworkInfo, selectBalanceInfo }: Props) => {
-  const tokenBalanceValue = selectBalanceInfo.balanceValue;
-  const convertedBalanceValue = getTotalConvertedBalanceValue(selectBalanceInfo);
+export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
+  const tokenBalanceValue = selectedBalanceInfo.balanceValue;
+  const convertedBalanceValue = selectedBalanceInfo.convertedBalanceValue;
   return (
     <ScrollView>
-      <TokenChainBalance
-        isLoading={!selectNetworkInfo && selectBalanceInfo}
-        tokenBalanceValue={tokenBalanceValue}
-        convertedBalanceValue={convertedBalanceValue}
-        selectNetworkKey={selectNetworkInfo.networkKey}
-        tokenBalanceSymbol={selectBalanceInfo.symbol}
-      />
-      {selectBalanceInfo && selectBalanceInfo.childrenBalances && selectBalanceInfo.childrenBalances.length ? (
-        selectBalanceInfo.childrenBalances.map(children => (
-          <TokenChainBalance
-            key={children.key}
-            isLoading={!selectNetworkInfo && selectBalanceInfo}
-            tokenBalanceValue={children.balanceValue}
-            convertedBalanceValue={children.convertedBalanceValue || BN_ZERO}
-            selectNetworkKey={children.key}
-            tokenBalanceSymbol={children.symbol}
-            defaultNetworkKey={selectNetworkInfo.networkKey}
-          />
-        ))
+      {!(selectedNetworkInfo && selectedBalanceInfo) ? (
+        <ChainBalanceSkeleton />
+      ) : (
+        <TokenChainBalance
+          tokenBalanceValue={tokenBalanceValue}
+          convertedBalanceValue={convertedBalanceValue}
+          selectNetworkKey={selectedNetworkInfo.networkKey}
+          tokenBalanceSymbol={selectedBalanceInfo.symbol}
+          onPress={() =>
+            onPressTokenItem(
+              selectedBalanceInfo.symbol,
+              selectedBalanceInfo.balanceValue,
+              selectedBalanceInfo.convertedBalanceValue,
+              selectedBalanceInfo.symbol,
+            )
+          }
+        />
+      )}
+
+      {selectedBalanceInfo && selectedBalanceInfo.childrenBalances && selectedBalanceInfo.childrenBalances.length ? (
+        selectedBalanceInfo.childrenBalances.map(children => {
+          if (!(selectedNetworkInfo && selectedBalanceInfo)) {
+            return <ChainBalanceSkeleton key={children.key} />;
+          } else {
+            return (
+              <TokenChainBalance
+                key={children.key}
+                tokenBalanceValue={children.balanceValue}
+                convertedBalanceValue={children.convertedBalanceValue || BN_ZERO}
+                selectNetworkKey={children.key}
+                tokenBalanceSymbol={children.symbol}
+                defaultNetworkKey={selectedNetworkInfo.networkKey}
+                onPress={() =>
+                  onPressTokenItem(
+                    children.symbol,
+                    children.balanceValue,
+                    children.convertedBalanceValue,
+                    selectedBalanceInfo.symbol,
+                  )
+                }
+              />
+            );
+          }
+        })
       ) : (
         <></>
       )}

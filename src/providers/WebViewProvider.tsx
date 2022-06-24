@@ -5,7 +5,9 @@ import {
   listenMessage,
   saveCurrentAccountAddress,
   setViewRef,
-  subscribeAccountsWithCurrentAddress, subscribeBalance, subscribeChainRegistry,
+  subscribeAccountsWithCurrentAddress,
+  subscribeBalance,
+  subscribeChainRegistry,
   subscribeNetworkMap,
   subscribePrice,
   subscribeSettings,
@@ -35,7 +37,7 @@ const ERROR_HANDLE_SCRIPT = `
     true;
 `;
 
-const baseUrl = 'http://192.168.10.177:9000';
+const baseUrl = 'https://wallet-runner.subwallet.app/';
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();

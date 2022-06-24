@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getNetworkLogo } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import Loading from 'components/Loading';
 import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
 import { BN_ZERO } from 'utils/chainBalances';
@@ -11,7 +10,6 @@ import { RootState } from 'stores/index';
 import BigN from 'bignumber.js';
 
 interface Props extends TouchableOpacityProps {
-  isLoading: boolean;
   selectNetworkKey: string;
   tokenBalanceValue: BigN;
   convertedBalanceValue: BigN;
@@ -56,7 +54,6 @@ const chainBalanceSeparator: StyleProp<any> = {
 };
 
 export const TokenChainBalance = ({
-  isLoading,
   onPress,
   selectNetworkKey,
   tokenBalanceSymbol,
@@ -82,18 +79,10 @@ export const TokenChainBalance = ({
           </View>
         </View>
 
-        {isLoading && (
-          <View style={chainBalancePart2}>
-            <Loading width={40} height={40} />
-          </View>
-        )}
-
-        {!isLoading && (
-          <View style={chainBalancePart2}>
-            <BalanceVal balanceValTextStyle={textStyle} symbol={tokenBalanceSymbol} value={tokenBalanceValue} />
-            <BalanceVal balanceValTextStyle={subTextStyle} startWithSymbol symbol={'$'} value={convertedBalanceValue} />
-          </View>
-        )}
+        <View style={chainBalancePart2}>
+          <BalanceVal balanceValTextStyle={textStyle} symbol={tokenBalanceSymbol} value={tokenBalanceValue} />
+          <BalanceVal balanceValTextStyle={subTextStyle} startWithSymbol symbol={'$'} value={convertedBalanceValue} />
+        </View>
       </View>
 
       <View style={chainBalanceSeparator} />
