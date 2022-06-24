@@ -68,7 +68,6 @@ const layoutContainer = {
   ...ContainerHorizontalPadding,
   paddingTop: 8,
   flex: 1,
-  paddingBottom: 22,
 };
 
 export const sharedStyles = StyleSheet.create({

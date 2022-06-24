@@ -13,6 +13,7 @@ import i18n from 'utils/i18n';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -47,12 +48,14 @@ export const AccountsScreen = () => {
       <View style={accountItemContainer}>
         <Account key={item.address} name={item.name || ''} address={item.address} showCopyBtn={false} />
 
-        <IconButton
-          icon={DotsThree}
-          onPress={() => {
-            navigation.navigate('EditAccount', { address: item.address, name: item.name });
-          }}
-        />
+        {!isAccountAll(item.address) && (
+          <IconButton
+            icon={DotsThree}
+            onPress={() => {
+              navigation.navigate('EditAccount', { address: item.address, name: item.name });
+            }}
+          />
+        )}
       </View>
     );
   };
@@ -63,8 +66,12 @@ export const AccountsScreen = () => {
 
   const renderFooterComponent = () => {
     return (
-      <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 42 }}>
-        <SubmitButton backgroundColor={theme.background2} title={'Add / Connect Account'} onPress={() => navigation.navigate('CreateAccount')} />
+      <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+        <SubmitButton
+          backgroundColor={theme.background2}
+          title={'Add / Connect Account'}
+          onPress={() => navigation.navigate('CreateAccount')}
+        />
       </View>
     );
   };

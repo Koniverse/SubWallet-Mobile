@@ -22,13 +22,15 @@ const logoStyle: StyleProp<any> = {
 };
 
 const textStyle: StyleProp<any> = {
-  height: 25,
+  height: 13,
+  borderRadius: 5,
 };
 
 const leftLine1Style: StyleProp<any> = {
   ...textStyle,
   width: 150,
-  marginBottom: 4,
+  marginTop: 6,
+  marginBottom: 10,
 };
 
 const leftLine2Style: StyleProp<any> = {
@@ -39,7 +41,8 @@ const leftLine2Style: StyleProp<any> = {
 const rightLine1Style: StyleProp<any> = {
   ...textStyle,
   width: 100,
-  marginBottom: 4,
+  marginTop: 6,
+  marginBottom: 10,
 };
 
 const rightLine2Style: StyleProp<any> = {
