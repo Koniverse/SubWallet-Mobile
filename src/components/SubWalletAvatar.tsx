@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { StyleProp, View, ViewProps } from 'react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 // import Identicon from '@polkadot/reactnative-identicon';
 // @ts-ignore
@@ -6,16 +6,24 @@ import Avatar from 'react-native-boring-avatars';
 import React from 'react';
 import { useSVG } from 'hooks/useSVG';
 
-interface AvatarProps {
+interface AvatarProps extends ViewProps {
   address: string;
   size: number;
 }
 
-export const SubWalletAvatar = ({ address, size }: AvatarProps) => {
+const wrapperStyle: StyleProp<any> = {
+  borderStyle: 'solid',
+  borderWidth: 2,
+  borderColor: '#004BFF',
+  borderRadius: 40,
+  padding: 2,
+};
+
+export const SubWalletAvatar = ({ address, size, ...viewProp }: AvatarProps) => {
   const Logo = useSVG().Logo;
 
   return (
-    <View style={{ borderStyle: 'solid', borderWidth: 2, borderColor: '#004BFF', borderRadius: 40, padding: 2 }}>
+    <View style={wrapperStyle} {...viewProp}>
       {address === ALL_ACCOUNT_KEY ? (
         // @ts-ignore
         <Logo.AllAccount width={size} height={size} />
