@@ -11,6 +11,7 @@ import { SvgLogosMap } from 'assets/logo';
 import { Image } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
+import { BN, formatBalance } from '@polkadot/util';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -205,4 +206,13 @@ export function getGenesisOptionsByAddressType(
   }
 
   return result;
+}
+
+export function reformatBalance(value: string | BN, decimals: number, token: string): [string, string] {
+  const si = formatBalance.calcSi(value.toString(), decimals);
+
+  return [
+    formatBalance(value, { decimals, forceUnit: si.value, withSi: false }),
+    si.power === 0 ? token : `${si.text} ${token}`,
+  ];
 }
