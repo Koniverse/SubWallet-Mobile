@@ -1,6 +1,8 @@
 import { AccountJson } from "@subwallet/extension-base/background/types";
 import React from "react";
 
+export type BalanceFormatType = [number, string, string | undefined];
+export type BitLength = 8 | 16 | 32 | 64 | 128 | 256;
 export interface Recoded {
   account: AccountJson | null;
   formatted: string | null;

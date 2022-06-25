@@ -27,7 +27,8 @@ import { NetworkSelect } from 'screens/NetworkSelect';
 import { FirstScreen } from 'screens/FirstScreen';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
-import {STATUS_BAR_HEIGHT} from "styles/sharedStyles";
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { SendFund } from 'screens/Sending';
 
 // cryptoWaitReady().then(rs => {
 //   console.debug('crypto-ready', rs);
@@ -91,6 +92,7 @@ export const App = () => {
                     component={ImportSecretPhrase}
                     options={{ title: 'Import Secret Phrase' }}
                   />
+                  <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
                 </Stack.Group>
                 <Stack.Group
                   screenOptions={{

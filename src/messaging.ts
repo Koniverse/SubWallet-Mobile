@@ -66,6 +66,10 @@ import {
   TransactionHistoryItemType,
   TransferError,
   DisableNetworkResponse,
+  RequestFreeBalance,
+  RequestTransferExistentialDeposit,
+  RequestTransferCheckReferenceCount,
+  RequestTransferCheckSupporting, SupportTransferResponse,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
 import { getId } from '@subwallet/extension-base/utils/getId';
@@ -472,6 +476,14 @@ export async function batchRestore(file: KeyringPairs$Json, password: string, ad
   return sendMessage('pri(json.batchRestore)', { file, password, address });
 }
 
+export async function cancelSubscription(request: string): Promise<boolean> {
+  return sendMessage('pri(subscription.cancel)', request);
+}
+
+export async function subscribeFreeBalance(request: RequestFreeBalance, callback: (balance: string) => void): Promise<string> {
+  return sendMessage('pri(freeBalance.subscribe)', request, callback);
+}
+
 export async function jsonRestoreV2(
   file: KeyringPair$Json,
   password: string,
@@ -506,6 +518,20 @@ export async function setNotification(notification: string): Promise<boolean> {
 
 export async function getPrice(): Promise<PriceJson> {
   return sendMessage('pri(price.getPrice)', null);
+}
+
+export async function transferGetExistentialDeposit(request: RequestTransferExistentialDeposit): Promise<string> {
+  return sendMessage('pri(transfer.getExistentialDeposit)', request);
+}
+
+export async function transferCheckReferenceCount(request: RequestTransferCheckReferenceCount): Promise<boolean> {
+  return sendMessage('pri(transfer.checkReferenceCount)', request);
+}
+
+export async function transferCheckSupporting(
+  request: RequestTransferCheckSupporting,
+): Promise<SupportTransferResponse> {
+  return sendMessage('pri(transfer.checkSupporting)', request);
 }
 
 export async function subscribePrice(

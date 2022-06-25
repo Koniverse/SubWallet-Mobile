@@ -20,6 +20,7 @@ interface Props {
   tokenBalanceValue: BigN;
   tokenConvertedValue: BigN;
   tokenHistorySymbol: string;
+  onPressSendFundBtn: () => void;
 }
 
 const tokenHistoryHeader: StyleProp<any> = {
@@ -59,6 +60,7 @@ export const TokenHistoryScreen = ({
   tokenBalanceValue,
   tokenConvertedValue,
   tokenHistorySymbol,
+  onPressSendFundBtn,
 }: Props) => {
   const renderHeaderContent = () => {
     return (
@@ -101,7 +103,11 @@ export const TokenHistoryScreen = ({
             <Text style={convertedBalanceStyle}>{')'}</Text>
           </View>
 
-          <ActionButtonContainer openReceiveModal={() => onShoHideReceiveModal(true)} style={{ paddingTop: 25 }} />
+          <ActionButtonContainer
+            onPressSendFundBtn={onPressSendFundBtn}
+            openReceiveModal={() => onShoHideReceiveModal(true)}
+            style={{ paddingTop: 25 }}
+          />
         </View>
 
         <ScrollView style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>

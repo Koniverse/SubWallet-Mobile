@@ -24,6 +24,7 @@ interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
   networkMetadataMap: Record<string, NetWorkMetadataDef>;
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
+  onPressSendFundBtn: () => void;
 }
 
 const balanceContainer: StyleProp<any> = {
@@ -81,6 +82,7 @@ export const ChainListScreen = ({
   networkMetadataMap,
   networkBalanceMaps,
   onPressChainItem,
+  onPressSendFundBtn,
 }: Props) => {
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,
@@ -112,7 +114,7 @@ export const ChainListScreen = ({
         <View style={balanceContainer}>
           <BalancesVisibility value={totalValue} symbol={'$'} />
 
-          <ActionButtonContainer openReceiveModal={() => onShoHideReceiveModal(true)} />
+          <ActionButtonContainer onPressSendFundBtn={onPressSendFundBtn} openReceiveModal={() => onShoHideReceiveModal(true)} />
         </View>
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />

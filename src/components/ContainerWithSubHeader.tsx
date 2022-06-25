@@ -26,6 +26,7 @@ export const ContainerWithSubHeader = ({ children, ...subHeaderProps }: Containe
       </SafeAreaView>
       <SubHeader {...subHeaderProps} />
       {children}
+      <SafeAreaView />
     </KeyboardAvoidingView>
   );
 };

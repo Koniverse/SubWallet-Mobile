@@ -22,6 +22,7 @@ interface Props {
   receiveModalVisible: boolean;
   selectedNetworkInfo: AccountInfoByNetwork;
   selectedBalanceInfo: BalanceInfo;
+  onPressSendFundBtn: () => void;
   onPressTokenItem: (
     tokenName: string,
     tokenBalanceValue: BigN,
@@ -64,6 +65,7 @@ export const ChainDetailScreen = ({
   selectedNetworkInfo,
   selectedBalanceInfo,
   onPressTokenItem,
+  onPressSendFundBtn,
 }: Props) => {
   const renderHeaderContent = () => {
     return (
@@ -115,7 +117,7 @@ export const ChainDetailScreen = ({
         <View style={balanceContainer}>
           <BalanceVal value={getTotalConvertedBalanceValue(selectedBalanceInfo)} startWithSymbol symbol={'$'} />
 
-          <ActionButtonContainer openReceiveModal={() => onShoHideReceiveModal(true)} />
+          <ActionButtonContainer onPressSendFundBtn={onPressSendFundBtn} openReceiveModal={() => onShoHideReceiveModal(true)} />
         </View>
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />

@@ -26,7 +26,7 @@ interface NetworkInfo {
   selectedTokenName: string;
   tokenBalanceValue: BigN;
   tokenConvertedValue: BigN;
-  tokenSymbol: string;
+  selectedTokenSymbol: string;
 }
 
 export const CryptoTab = () => {
@@ -41,7 +41,14 @@ export const CryptoTab = () => {
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
   const [
-    { selectedNetworkInfo, selectBalanceInfo, selectedTokenName, tokenBalanceValue, tokenConvertedValue, tokenSymbol },
+    {
+      selectedNetworkInfo,
+      selectBalanceInfo,
+      selectedTokenName,
+      tokenBalanceValue,
+      tokenConvertedValue,
+      selectedTokenSymbol,
+    },
     setSelectNetwork,
   ] = useState<NetworkInfo>({
     selectedNetworkInfo: undefined,
@@ -49,7 +56,7 @@ export const CryptoTab = () => {
     selectedTokenName: '',
     tokenBalanceValue: BN_ZERO,
     tokenConvertedValue: BN_ZERO,
-    tokenSymbol: '',
+    selectedTokenSymbol: '',
   });
 
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
@@ -75,9 +82,13 @@ export const CryptoTab = () => {
       selectedTokenName: tokenName,
       tokenBalanceValue: balanceValue,
       tokenConvertedValue: convertedValue,
-      tokenSymbol: tokenSymbol,
+      selectedTokenSymbol: tokenSymbol,
     }));
     setCurrentViewStep(ViewStep.TOKEN_HISTORY);
+  };
+
+  const onPressSendFundBtn = () => {
+    navigation.navigate('SendFund');
   };
 
   return (
@@ -85,6 +96,7 @@ export const CryptoTab = () => {
       {currentViewStep === ViewStep.CHAIN_LIST && (
         <ChainListScreen
           onPressChainItem={onPressChainItem}
+          onPressSendFundBtn={onPressSendFundBtn}
           currentAccountAddress={currentAccountAddress}
           navigation={navigation}
           onShoHideReceiveModal={setReceiveModalVisible}
@@ -101,6 +113,7 @@ export const CryptoTab = () => {
           onPressBack={onPressBack}
           onShoHideReceiveModal={setReceiveModalVisible}
           receiveModalVisible={receiveModalVisible}
+          onPressSendFundBtn={onPressSendFundBtn}
           selectedNetworkInfo={selectedNetworkInfo}
           selectedBalanceInfo={selectBalanceInfo}
           onPressTokenItem={onPressTokenItem}
@@ -112,9 +125,10 @@ export const CryptoTab = () => {
           onShoHideReceiveModal={setReceiveModalVisible}
           receiveModalVisible={receiveModalVisible}
           selectedTokenName={selectedTokenName}
+          onPressSendFundBtn={onPressSendFundBtn}
           tokenBalanceValue={tokenBalanceValue}
           tokenConvertedValue={tokenConvertedValue}
-          tokenHistorySymbol={tokenSymbol}
+          tokenHistorySymbol={selectedTokenSymbol}
           selectedNetworkInfo={selectedNetworkInfo}
         />
       )}

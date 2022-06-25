@@ -24,6 +24,7 @@ export const MainScreenContainer = ({ children, navigation }: Props) => {
       </SafeAreaView>
       <Header navigation={navigation} />
       {children}
+      <SafeAreaView />
     </View>
   );
 };
