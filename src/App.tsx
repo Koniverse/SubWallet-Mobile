@@ -1,6 +1,5 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-
 import React from 'react';
 import { WebViewProvider } from 'providers/WebViewProvider';
 import { RootState } from './stores';
@@ -29,10 +28,11 @@ import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { SendFund } from 'screens/Sending';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-// cryptoWaitReady().then(rs => {
-//   console.debug('crypto-ready', rs);
-// });
+cryptoWaitReady().then(rs => {
+  console.debug('crypto-ready', rs);
+});
 
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
