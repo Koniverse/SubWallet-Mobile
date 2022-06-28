@@ -110,8 +110,8 @@ def enableProguardInReleaseBuilds = false
  * give correct results when using with locales other than en-US.  Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
-
+// def jscFlavor = 'org.webkit:android-jsc:+'
+def jscFlavor = 'org.webkit:android-jsc-intl:+'
 /**
  * Whether to enable the Hermes VM.
  *
@@ -141,6 +141,7 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        missingDimensionStrategy 'react-native-camera', 'general'
 
         if (isNewArchitectureEnabled()) {
             // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -262,6 +263,19 @@ android {
 }
 
 dependencies {
+// If your app supports Android versions before Ice Cream Sandwich (API level 14)
+  implementation 'com.facebook.fresco:animated-base-support:1.3.0'
+
+  // For animated GIF support
+  implementation 'com.facebook.fresco:animated-gif:2.5.0'
+
+  // For WebP support, including animated WebP
+  implementation 'com.facebook.fresco:animated-webp:2.5.0'
+  implementation 'com.facebook.fresco:webpsupport:2.5.0'
+
+  // For WebP support, without animations
+  implementation 'com.facebook.fresco:webpsupport:2.5.0'
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     //noinspection GradleDynamicVersion
@@ -319,3 +333,5 @@ def isNewArchitectureEnabled() {
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
