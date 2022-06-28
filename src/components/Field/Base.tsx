@@ -10,6 +10,7 @@ export interface FieldBaseProps extends ViewProps {
 const wrapperStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   borderRadius: 5,
+  marginBottom: 8,
 };
 
 const labelStyle: StyleProp<any> = {

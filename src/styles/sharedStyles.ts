@@ -26,7 +26,7 @@ const smallText = {
 
 const mainText = {
   ...FontSize2,
-  lineHeight: 26,
+  lineHeight: 25,
   ...FontRegular,
 };
 

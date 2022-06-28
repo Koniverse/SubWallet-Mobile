@@ -35,7 +35,6 @@ const getInputLabelStyle: StyleProp<any> = (textTransform?: string) => {
 
 const inputStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
-  lineHeight: 0,
   paddingTop: 5,
   paddingBottom: 5,
   flex: 1,

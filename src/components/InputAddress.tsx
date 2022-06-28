@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import { FontSize0, sharedStyles, FontMedium } from 'styles/sharedStyles';
+import { FontSize0, sharedStyles, FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 import { QrCode } from 'phosphor-react-native';
@@ -40,10 +40,7 @@ const getInputLabelStyle: StyleProp<any> = (textTransform?: string) => {
 };
 
 const inputStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  lineHeight: 20,
-  paddingTop: 5,
-  paddingBottom: 5,
+  ...FontSize2,
   flex: 1,
   paddingHorizontal: 4,
   ...FontMedium,
@@ -52,10 +49,12 @@ const inputStyle: StyleProp<any> = {
 };
 
 const textInputStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
+  ...FontSize2,
+  flex: 1,
   paddingHorizontal: 4,
-  lineHeight: 20,
+  ...FontMedium,
   color: ColorMap.light,
+  textAlignVertical: 'top',
 };
 
 export const InputAddress = (inputAddressProps: InputProps) => {

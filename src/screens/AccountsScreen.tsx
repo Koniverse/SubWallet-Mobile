@@ -9,7 +9,6 @@ import { IconButton } from 'components/IconButton';
 import { DotsThree, Plus } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
-import i18n from 'utils/i18n';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
@@ -39,7 +38,15 @@ export const AccountsScreen = () => {
   const theme = useSubWalletTheme().colors;
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.noAccountText} isDanger={false} />;
+    return (
+      <Warning
+        title={'Warning'}
+        message={
+          "You currently don't have any accounts. Create your first account or import another account to get started."
+        }
+        isDanger={false}
+      />
+    );
   };
 
   // @ts-ignore

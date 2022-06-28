@@ -16,6 +16,7 @@ export type RootStackParamList = {
   ImportSecretPhrase: undefined;
   NetworksSetting: undefined;
   SendFund: undefined;
+  Languages: undefined;
 };
 
 export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];

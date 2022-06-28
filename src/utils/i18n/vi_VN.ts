@@ -1,4 +1,4 @@
-export default {
+export const vi = {
   copied: 'Copied',
   unknown: '<unknown>',
   inputFileText: '{{name}} ({{size}} bytes)',
@@ -131,7 +131,7 @@ export default {
   chooseFileText: 'Drag and drop the file here',
   networkSearchPlaceholder: 'Search network...',
   showZeroBalance: 'Show Zero Balances',
-  settings: 'Settings',
+  settings: 'Cài đặt',
   noPasswordMessage: 'Please fill repeat password',
   noAccountMessage: 'You currently don\'t have any accounts. Create your first account or import another account to get started.',
   nextStep: 'Next Step',

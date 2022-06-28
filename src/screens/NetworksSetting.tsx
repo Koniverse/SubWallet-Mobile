@@ -9,7 +9,6 @@ import { Search } from 'components/Search';
 import { ContainerHorizontalPadding, sharedStyles } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { Warning } from 'components/Warning';
-import i18n from 'utils/i18n';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
 import { useToast } from 'react-native-toast-notifications';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -60,7 +59,7 @@ export const NetworksSetting = () => {
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.noAccountText} isDanger={false} />;
+    return <Warning title={'Warning'} message={'No network'} isDanger={false} />;
   };
 
   const filterNetwork = useCallback(() => {

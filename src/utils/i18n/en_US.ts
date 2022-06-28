@@ -1,4 +1,4 @@
-export default {
+export const en = {
   copied: 'Copied',
   unknown: '<unknown>',
   inputFileText: '{{name}} ({{size}} bytes)',
