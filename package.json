@@ -17,6 +17,9 @@
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/react-native-fontawesome": "^0.2.7",
     "@polkadot/reactnative-identicon": "^2.2.1",
+    "@polkadot/util-crypto": "^9.6.2",
+    "@polkadot/wasm-crypto": "^6.1.5",
+    "@subwallet/extension-koni-base": "0.4.6-1",
     "@react-native-async-storage/async-storage": "^1.17.6",
     "@react-native-clipboard/clipboard": "^1.10.0",
     "@react-native-masked-view/masked-view": "^0.2.6",
@@ -63,7 +66,6 @@
     "@babel/runtime": "^7.12.5",
     "@polkadot/types": "^8.3.2",
     "@react-native-community/eslint-config": "^2.0.0",
-    "@subwallet/extension-koni-base": "0.4.6-1",
     "@types/jest": "^26.0.23",
     "@types/react-native": "^0.67.3",
     "@types/react-native-vector-icons": "^6.4.10",
@@ -86,8 +88,6 @@
     "metro-react-native-babel-preset": "^0.67.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
-    "react-native-crypto": "^2.2.0",
-    "react-native-randombytes": "^3.6.1",
     "react-test-renderer": "17.0.2",
     "readable-stream": "^3.6.0",
     "stream-browserify": "^3.0.0",
@@ -101,10 +101,9 @@
   },
   "resolutions": {
     "@types/react": "^17",
-    "@polkadot/util": "^9.2.1",
+    "@polkadot/util": "^9.6.2",
     "@polkadot/api": "^8.4.2",
-    "@polkadot/util-crypto": "^9.2.1",
-    "@polkadot/wasm-crypto": "^6.1.1"
+    "@polkadot/util-crypto": "^9.6.2"
   },
   "jest": {
     "preset": "react-native",

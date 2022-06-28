@@ -30,8 +30,6 @@ export const Home = () => {
   const swThemeColor = useSubWalletTheme().colors;
   const a = useSelector(state => state);
 
-  console.log('123123123123123123123', a);
-
   return (
     <Tab.Navigator
       initialRouteName={'Crypto'}
