@@ -23,6 +23,10 @@ interface Props {
   onPressSendFundBtn: () => void;
 }
 
+const containerStyle: StyleProp<any> = {
+  paddingBottom: 0,
+};
+
 const tokenHistoryHeader: StyleProp<any> = {
   flexDirection: 'row',
   flex: 1,
@@ -87,6 +91,7 @@ export const TokenHistoryScreen = ({
       onPressBack={onPressBack}
       backgroundColor={ColorMap.dark2}
       title={''}
+      style={containerStyle}
       headerContent={renderHeaderContent}>
       <>
         <View style={balanceContainer}>

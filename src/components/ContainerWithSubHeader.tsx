@@ -1,11 +1,12 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp, ViewProps } from 'react-native';
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   children: JSX.Element;
+  style?: StyleProp<any>;
 }
 
 const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgroundColor?: string) => {
@@ -16,11 +17,11 @@ const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgro
   };
 };
 
-export const ContainerWithSubHeader = ({ children, ...subHeaderProps }: ContainerWithSubHeaderProps) => {
+export const ContainerWithSubHeader = ({ children, style, ...subHeaderProps }: ContainerWithSubHeaderProps) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={getContainerStyle(subHeaderProps.backgroundColor)}>
+      style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>

@@ -13,6 +13,7 @@ import { BalancesVisibility } from 'components/BalancesVisibility';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork } from 'types/ui-types';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   totalValue: BigN;
@@ -30,7 +31,7 @@ interface Props {
 const balanceContainer: StyleProp<any> = {
   paddingHorizontal: 16,
   alignItems: 'center',
-  backgroundColor: '#222222',
+  backgroundColor: ColorMap.dark2,
   paddingTop: 21,
 };
 
@@ -114,7 +115,10 @@ export const ChainListScreen = ({
         <View style={balanceContainer}>
           <BalancesVisibility value={totalValue} symbol={'$'} />
 
-          <ActionButtonContainer onPressSendFundBtn={onPressSendFundBtn} openReceiveModal={() => onShoHideReceiveModal(true)} />
+          <ActionButtonContainer
+            onPressSendFundBtn={onPressSendFundBtn}
+            openReceiveModal={() => onShoHideReceiveModal(true)}
+          />
         </View>
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />

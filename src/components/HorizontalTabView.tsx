@@ -14,7 +14,7 @@ const tabTitle: StyleProp<any> = {
   ...FontSemiBold,
 };
 const tabBar: StyleProp<any> = {
-  backgroundColor: '#222222',
+  backgroundColor: ColorMap.dark2,
   marginLeft: 16,
   marginRight: 16,
 };

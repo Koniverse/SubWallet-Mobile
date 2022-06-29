@@ -31,10 +31,14 @@ interface Props {
   ) => void;
 }
 
+const containerStyle: StyleProp<any> = {
+  paddingBottom: 0,
+};
+
 const balanceContainer: StyleProp<any> = {
   paddingHorizontal: 16,
   alignItems: 'center',
-  backgroundColor: '#222222',
+  backgroundColor: ColorMap.dark2,
   paddingTop: 21,
 };
 
@@ -112,6 +116,7 @@ export const ChainDetailScreen = ({
       headerContent={renderHeaderContent}
       showRightBtn
       rightIcon={SlidersHorizontal}
+      style={containerStyle}
       onPressRightIcon={() => {}}>
       <>
         <View style={balanceContainer}>
