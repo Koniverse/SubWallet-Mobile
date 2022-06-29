@@ -85,7 +85,7 @@ export const ChainDetailScreen = ({
             color: ColorMap.disabled,
             paddingLeft: 4,
           }}>
-          {`(${toShort(selectedNetworkInfo.address, 4, 4)})`}
+          {`(${toShort(selectedNetworkInfo.formattedAddress, 4, 4)})`}
         </Text>
       </View>
     );

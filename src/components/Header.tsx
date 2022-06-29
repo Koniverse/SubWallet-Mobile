@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
-import { toShort } from 'utils/index';
+import reformatAddress, { toShort } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -44,8 +44,12 @@ const actionButtonStyle: StyleProp<any> = {
 
 export const Header = ({ navigation }: Props) => {
   // const Logo = useSVG().Logo;
-  const accountStore = useSelector((state: RootState) => state.accounts);
-  const currentAccount = accountStore.currentAccount;
+  const {
+    currentNetwork,
+    accounts: { currentAccount },
+  } = useSelector((state: RootState) => state);
+  const formattedAddress =
+    !!currentAccount?.address && reformatAddress(currentAccount.address, currentNetwork.networkPrefix);
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
@@ -61,7 +65,8 @@ export const Header = ({ navigation }: Props) => {
         <Text style={accountName} numberOfLines={1}>
           {currentAccount ? currentAccount.name : ''}
         </Text>
-        <Text style={accountAddress}>{`(${toShort(currentAccount?.address || '', 4, 4)})`}</Text>
+
+        {!!formattedAddress && <Text style={accountAddress}>{`(${toShort(formattedAddress, 4, 4)})`}</Text>}
       </View>
 
       <View style={{ flexDirection: 'row' }}>

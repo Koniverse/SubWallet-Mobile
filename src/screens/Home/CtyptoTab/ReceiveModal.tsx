@@ -4,7 +4,7 @@ import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import QRCode from 'react-native-qrcode-svg';
-import { getNetworkLogo, toShort } from 'utils/index';
+import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
 import { IconButton } from 'components/IconButton';
 import { CopySimple } from 'phosphor-react-native';
 import { SubmitButton } from 'components/SubmitButton';
@@ -76,7 +76,7 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible }: Props) =>
   const toast = useToast();
   const {
     accounts: { currentAccountAddress },
-    currentNetwork: { networkKey },
+    currentNetwork: { networkKey, networkPrefix },
   } = useSelector((state: RootState) => state);
   const copyToClipboard = useCallback(
     (text: string) => {
@@ -85,6 +85,7 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible }: Props) =>
     },
     [toast],
   );
+  const formattedAddress = reformatAddress(currentAccountAddress, networkPrefix);
 
   return (
     <SubWalletModal
@@ -93,17 +94,17 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible }: Props) =>
       onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
         <Text style={receiveModalTitle}>Receive Asset</Text>
-        <QRCode value={currentAccountAddress} size={180} />
+        <QRCode value={formattedAddress} size={180} />
         <Text style={receiveModalGuide}>Scan address to receive payment</Text>
 
         <View style={receiveModalAddressWrapper}>
           {getNetworkLogo(networkKey, 20)}
-          <Text style={receiveModalAddressText}>{toShort(currentAccountAddress, 12, 12)}</Text>
+          <Text style={receiveModalAddressText}>{toShort(formattedAddress, 12, 12)}</Text>
           <IconButton
             style={receiveModalCopyBtn}
             icon={CopySimple}
             color={ColorMap.disabled}
-            onPress={() => copyToClipboard(currentAccountAddress)}
+            onPress={() => copyToClipboard(formattedAddress)}
           />
         </View>
 

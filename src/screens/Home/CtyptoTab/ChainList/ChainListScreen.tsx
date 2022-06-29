@@ -14,6 +14,7 @@ import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { ColorMap } from 'styles/color';
+import reformatAddress from 'utils/index';
 
 interface Props {
   totalValue: BigN;
@@ -53,7 +54,7 @@ function getAccountInfoByNetwork(
     networkPrefix: networkMetadata.ss58Format,
     networkLogo: networkKey,
     networkIconTheme: networkMetadata.isEthereum ? 'ethereum' : networkMetadata.icon || 'polkadot',
-    formattedAddress: address,
+    formattedAddress: reformatAddress(address, networkMetadata.ss58Format),
   };
 }
 
