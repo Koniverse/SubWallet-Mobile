@@ -4,7 +4,7 @@ import { BalanceVal } from 'components/BalanceVal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { toggleBalancesVisibility } from '../messaging';
-import { sharedStyles } from 'styles/sharedStyles';
+import {FontBold, sharedStyles} from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import { ColorMap } from 'styles/color';
 

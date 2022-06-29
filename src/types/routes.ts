@@ -1,6 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
+  LockScreen: undefined;
   FirstScreen: undefined;
   Home: undefined;
   CreateAccount: undefined;
@@ -17,6 +18,8 @@ export type RootStackParamList = {
   NetworksSetting: undefined;
   SendFund: undefined;
   Languages: undefined;
+  Security: undefined;
+  PinCode: undefined;
 };
 
 export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];

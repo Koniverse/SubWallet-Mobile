@@ -30,6 +30,9 @@ import { SendFund } from 'screens/Sending';
 import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { Security } from 'screens/Settings/Security';
+import {PinCode} from "screens/Settings/Security/PinCode";
+import {LockScreen} from "screens/LockScreen";
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
@@ -42,6 +45,7 @@ export const App = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
   const {
+    settingData: { pinCode },
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
 
@@ -58,11 +62,12 @@ export const App = () => {
           <ThemeContext.Provider value={theme}>
             <NavigationContainer ref={navigationRef} theme={theme}>
               <Stack.Navigator
-                initialRouteName={accounts && accounts.length ? 'Home' : 'FirstScreen'}
+                initialRouteName={!!pinCode ? 'LockScreen' : accounts && accounts.length ? 'Home' : 'FirstScreen'}
                 screenOptions={{
                   animation: 'fade_from_bottom',
                 }}>
                 <Stack.Group screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="LockScreen" component={LockScreen} />
                   <Stack.Screen name="FirstScreen" component={FirstScreen} />
                   <Stack.Screen name="Home" component={Home} />
                   <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ title: 'Create Account' }} />
@@ -94,6 +99,8 @@ export const App = () => {
                   />
                   <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
                   <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />
+                  <Stack.Screen name="Security" component={Security} options={{ title: 'Security' }} />
+                  <Stack.Screen name="PinCode" component={PinCode} options={{ title: 'PinCode' }} />
                 </Stack.Group>
                 <Stack.Group
                   screenOptions={{
