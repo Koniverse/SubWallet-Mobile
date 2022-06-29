@@ -42,6 +42,7 @@ export const Settings = () => {
         icon: ShieldCheck,
         title: 'Security',
         hasRightArrow: true,
+        onPress: () => navigation.navigate('Security'),
       },
       {
         icon: GlobeHemisphereWest,

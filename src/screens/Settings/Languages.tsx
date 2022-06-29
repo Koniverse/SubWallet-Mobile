@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SelectScreen } from 'components/SelectScreen';
 import { FlatList } from 'react-native';
 import getLanguageOptions from 'utils/getLanguageOptions';
@@ -9,7 +9,7 @@ import { RootNavigationProps } from 'types/routes';
 import RNRestart from 'react-native-restart';
 import i18n from 'utils/i18n/i18n';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateSettingData } from 'stores/SettingData';
+import { updateLanguage } from 'stores/SettingData';
 import { RootState } from 'stores/index';
 
 export const Languages = () => {
@@ -27,7 +27,7 @@ export const Languages = () => {
         label={item.text}
         isSelected={item.value === language}
         onPress={() => {
-          dispatch(updateSettingData(item.value));
+          dispatch(updateLanguage(item.value));
           i18n.setLanguage(item.value);
           setTimeout(() => {
             RNRestart.Restart();

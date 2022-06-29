@@ -1,6 +1,9 @@
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
+import i18n from 'utils/i18n/i18n';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   openReceiveModal: () => void;
@@ -17,11 +20,21 @@ const actionButtonWrapper: StyleProp<any> = {
 };
 
 export const ActionButtonContainer = ({ openReceiveModal, style, onPressSendFundBtn }: Props) => {
+  const {
+    currentNetwork: { networkKey },
+  } = useSelector((state: RootState) => state);
+
   return (
     <View style={[actionButtonWrapper, style]}>
-      <ActionButton label="Receive" iconSize={24} iconName={'ReceiveIcon'} onPress={openReceiveModal} />
-      <ActionButton label="Send" iconSize={24} iconName={'SendIcon'} onPress={onPressSendFundBtn} />
-      <ActionButton label="Swap" iconSize={24} iconName={'SwapIcon'} />
+      <ActionButton label={i18n.receive} iconSize={24} iconName={'ReceiveIcon'} onPress={openReceiveModal} />
+      <ActionButton
+        disabled={networkKey === 'all'}
+        label={i18n.send}
+        iconSize={24}
+        iconName={'SendIcon'}
+        onPress={onPressSendFundBtn}
+      />
+      <ActionButton label={i18n.swap} iconSize={24} iconName={'SwapIcon'} />
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import { StyleProp, View, ViewProps } from 'react-native';
+import { StyleProp, Text, View, ViewProps } from 'react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import Identicon from '@polkadot/reactnative-identicon';
 // import Avatar from 'react-native-boring-avatars';
