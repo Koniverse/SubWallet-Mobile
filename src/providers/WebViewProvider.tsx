@@ -15,7 +15,7 @@ import {
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { updateAccounts, updateCurrentAccount } from 'stores/Accounts';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
 import { useToast } from 'react-native-toast-notifications';
@@ -23,6 +23,8 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { updateSettings } from 'stores/Settings';
 import { updateChainRegistry } from 'stores/ChainRegistry';
 import { updateBalance } from 'stores/Balance';
+import moment from 'moment';
+import { RootState } from 'stores/index';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -44,6 +46,17 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const dispatch = useDispatch();
   const [status, setStatus] = useState('init');
   const toast = useToast();
+  const {
+    settingData: { language },
+  } = useSelector((state: RootState) => state);
+
+  const setupI18n = (userLang: string) => {
+    const i18nModule = '../utils/i18n/i18n';
+    return import(i18nModule).then(({ default: i18n }) => {
+      i18n.setLanguage(userLang);
+      moment.locale(userLang.split('_')[0]);
+    });
+  };
 
   const onMessage = useCallback(
     (data: NativeSyntheticEvent<WebViewMessage>) => {
@@ -51,6 +64,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
       listenMessage(JSON.parse(data.nativeEvent.data), data => {
         // @ts-ignore
         if (data.id === '0' && data.response?.status) {
+          setupI18n(language);
           // @ts-ignore
           const webViewStatus = data.response?.status as string;
           setStatus(webViewStatus);
@@ -63,12 +77,11 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         }
       });
     },
-    [toast],
+    [language, toast],
   );
 
   const onWebViewLoaded = useCallback(() => {
     console.debug('Web View Loaded');
-
     subscribeNetworkMap(networkMap => {
       console.debug('networkMapLength');
       dispatch(updateNetworkMap(networkMap));

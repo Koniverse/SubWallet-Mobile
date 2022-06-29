@@ -8,7 +8,6 @@ import { RootState } from 'stores/index';
 import { Search } from 'components/Search';
 import { sharedStyles } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
-import i18n from 'utils/i18n';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { tieAccount } from '../messaging';
@@ -85,7 +84,7 @@ export const NetworkSelect = () => {
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.noAccountText} isDanger={false} />;
+    return <Warning title={'Warning'} message={'no network'} isDanger={false} />;
   };
 
   return (

@@ -3,13 +3,9 @@ import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { EditAccountInputText } from 'components/EditAccountInputText';
-import { PasswordInput } from 'components/PasswordInput';
 import { SubmitButton } from 'components/SubmitButton';
-
-const containerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  marginBottom: 8,
-};
+import { Warning } from 'components/Warning';
+import { PasswordField } from 'components/Field/Password';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -29,10 +25,33 @@ interface Props {
   onCreateAccount: (curName: string, password: string) => void;
 }
 
+function checkPasswordTooShort(password: string | null) {
+  return !!(password && password.length < 6);
+}
+
 export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) => {
   const [name, setName] = useState<string>('');
   const [pass1, setPass1] = useState<string | null>(null);
   const [pass2, setPass2] = useState<string | null>(null);
+  const [pass2Dirty, setPass2Dirty] = useState<boolean>(false);
+  const isSecondPasswordValid = !!(pass2 && pass2.length > 5) && pass2Dirty && pass1 !== pass2;
+
+  const onChangePass1 = (curPass1: string) => {
+    if (curPass1 && curPass1.length) {
+      setPass1(curPass1);
+    } else {
+      setPass1(null);
+    }
+  };
+
+  const onChangePass2 = (curPass2: string) => {
+    setPass2Dirty(true);
+    if (curPass2 && curPass2.length) {
+      setPass2(curPass2);
+    } else {
+      setPass2(null);
+    }
+  };
 
   return (
     <View style={sharedStyles.layoutContainer}>
@@ -45,17 +64,23 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
           onChangeText={text => setName(text)}
           editAccountInputStyle={{ marginBottom: 8 }}
         />
-        <PasswordInput
+        <PasswordField
           label={'Wallet Password'}
-          onChangeText={curPass1 => setPass1(curPass1)}
-          containerStyle={containerStyle}
+          onChangeText={onChangePass1}
+          value={pass1 || ''}
+          isError={checkPasswordTooShort(pass1)}
         />
 
-        <PasswordInput
+        <PasswordField
           label={'Repeat Wallet Password'}
-          onChangeText={curPass2 => setPass2(curPass2)}
-          containerStyle={containerStyle}
+          onChangeText={onChangePass2}
+          value={pass2 || ''}
+          isError={checkPasswordTooShort(pass2) || pass1 !== pass2}
         />
+
+        {!pass2 && pass2Dirty && <Warning isDanger message={'Please fill repeat password'} />}
+
+        {isSecondPasswordValid && <Warning isDanger message={'Passwords do not match'} />}
       </View>
       <View>
         <SubmitButton

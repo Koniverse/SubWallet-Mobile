@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleProp, TextInput, TextInputProps, View} from 'react-native';
+import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
 import { MagnifyingGlass, X } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
@@ -13,12 +13,11 @@ const searchContainerStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   borderRadius: 5,
   alignItems: 'center',
-  paddingVertical: 14,
   paddingRight: 16,
   paddingLeft: 16,
   flexDirection: 'row',
   height: 48,
-}
+};
 
 export const Search = ({ onSearch, searchText, style }: Props) => {
   const SearchIcon = MagnifyingGlass;

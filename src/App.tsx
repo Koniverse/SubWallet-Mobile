@@ -21,19 +21,19 @@ import { EditAccount } from 'screens/EditAccount';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { ViewPrivateKey } from 'screens/ViewPrivateKey';
-import { Settings } from 'screens/Settings';
 import { NetworkSelect } from 'screens/NetworkSelect';
 import { FirstScreen } from 'screens/FirstScreen';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { SendFund } from 'screens/Sending';
+import { Settings } from 'screens/Settings';
+import { Languages } from 'screens/Settings/Languages';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
 });
-
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -93,6 +93,7 @@ export const App = () => {
                     options={{ title: 'Import Secret Phrase' }}
                   />
                   <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
+                  <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />
                 </Stack.Group>
                 <Stack.Group
                   screenOptions={{

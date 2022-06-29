@@ -6,9 +6,12 @@ import { ContainerHorizontalPadding, FontMedium, FontSemiBold, FontSize2, shared
 import { getIcon } from 'utils/index';
 import { TransferResultType } from 'types/tx';
 import { ColorMap } from 'styles/color';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'types/routes';
 
 interface Props {
   txResult: TransferResultType;
+  onResend: () => void;
 }
 
 const bodyAreaStyle: StyleProp<any> = {
@@ -39,18 +42,17 @@ const subtitleStyle: StyleProp<any> = {
   textAlign: 'center',
 };
 
-const submitButton1Style: StyleProp<any> = {
-
-};
+const submitButton1Style: StyleProp<any> = {};
 
 const submitButton2Style: StyleProp<any> = {
   marginTop: 16,
 };
 
-export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError } }: Props) => {
+export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError }, onResend }: Props) => {
+  const navigation = useNavigation<RootNavigationProps>();
+
   return (
-    <ContainerWithSubHeader onPressBack={() => {
-    }} title={isTxSuccess ? 'Success' : 'Failed' }>
+    <ContainerWithSubHeader onPressBack={() => {}} title={isTxSuccess ? 'Success' : 'Failed'}>
       <View style={sharedStyles.layoutContainer}>
         <View style={bodyAreaStyle}>
           {isTxSuccess && (
@@ -82,7 +84,7 @@ export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError
                 title={'Back to Home'}
                 backgroundColor={ColorMap.dark2}
                 style={submitButton1Style}
-                onPress={() => {}}
+                onPress={() => navigation.navigate('Home')}
               />
               <SubmitButton title={'View in Explorer'} style={submitButton2Style} onPress={() => {}} />
             </>
@@ -93,7 +95,7 @@ export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError
                 title={'Resend'}
                 backgroundColor={ColorMap.dark2}
                 style={submitButton1Style}
-                onPress={() => {}}
+                onPress={onResend}
               />
             </>
           )}
