@@ -8,6 +8,7 @@ import {
   subscribeAccountsWithCurrentAddress,
   subscribeBalance,
   subscribeChainRegistry,
+  subscribeHistory,
   subscribeNetworkMap,
   subscribePrice,
   subscribeSettings,
@@ -25,6 +26,7 @@ import { updateChainRegistry } from 'stores/ChainRegistry';
 import { updateBalance } from 'stores/Balance';
 import moment from 'moment';
 import { RootState } from 'stores/index';
+import { updateTransactionHistory } from 'stores/TransactionHistory';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -120,6 +122,12 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
       dispatch(updatePrice(price));
     }).then(price => {
       dispatch(updatePrice(price));
+    });
+
+    subscribeHistory(map => {
+      dispatch(updateTransactionHistory(map));
+    }).then(map => {
+      dispatch(updateTransactionHistory(map));
     });
   }, [dispatch]);
 

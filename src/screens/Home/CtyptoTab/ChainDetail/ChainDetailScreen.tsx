@@ -95,7 +95,7 @@ export const ChainDetailScreen = ({
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'history':
-        return <HistoryTab />;
+        return <HistoryTab networkKey={selectedNetworkInfo.networkKey} />;
       case 'tokens':
       default:
         return (
@@ -122,7 +122,10 @@ export const ChainDetailScreen = ({
         <View style={balanceContainer}>
           <BalanceVal value={getTotalConvertedBalanceValue(selectedBalanceInfo)} startWithSymbol symbol={'$'} />
 
-          <ActionButtonContainer onPressSendFundBtn={onPressSendFundBtn} openReceiveModal={() => onShoHideReceiveModal(true)} />
+          <ActionButtonContainer
+            onPressSendFundBtn={onPressSendFundBtn}
+            openReceiveModal={() => onShoHideReceiveModal(true)}
+          />
         </View>
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />

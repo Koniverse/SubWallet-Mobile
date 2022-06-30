@@ -11,6 +11,7 @@ type BalanceViewProps = {
   withComma?: boolean;
   withSymbol?: boolean;
   balanceValTextStyle?: object;
+  style?: StyleProp<any>;
 };
 
 const balanceValWrapper: StyleProp<any> = {
@@ -30,6 +31,7 @@ export const BalanceVal = ({
   value,
   withComma = true,
   withSymbol = true,
+  style,
 }: BalanceViewProps) => {
   let [prefix, postfix] = value.toString().split('.');
 
@@ -46,7 +48,7 @@ export const BalanceVal = ({
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (
-    <View style={balanceValWrapper}>
+    <View style={[balanceValWrapper, style]}>
       <Text style={[balanceValText, balanceValTextStyle]}>{startWithSymbol && withSymbol && symbolView}</Text>
       <Text style={[balanceValText, balanceValTextStyle]}>
         {withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}.
