@@ -12,11 +12,9 @@ import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
-import { PasswordInput } from 'components/PasswordInput';
 import { Warning } from 'components/Warning';
-// import RNFetchBlob from 'rn-fetch-blob';
+import { PasswordField } from 'components/Field/Password';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -115,20 +113,24 @@ export const RestoreJson = () => {
       });
   };
 
+  const onChangeText = (text: string) => {
+    setFileError(false);
+    setIsPasswordError(false);
+    setPassword(text);
+  };
+
   return (
     <SubScreenContainer title={'Restore JSON'} navigation={navigation}>
       <View style={[sharedStyles.blockContent, { flex: 1 }]}>
         <View style={bodyAreaStyle}>
           <InputFile onChangeResult={_onChangeFile} />
-          <PasswordInput
+          <PasswordField
             label={'Wallet Password'}
-            containerStyle={{ backgroundColor: ColorMap.dark2, marginBottom: 8 }}
-            onChangeText={setPassword}
+            onChangeText={onChangeText}
             value={password}
+            isError={!!password && password.length < 6}
           />
-          {isPasswordError && (
-            <Warning title={'Error!'} message={'Unable to decode using the supplied passphrase'} isDanger />
-          )}
+          {isPasswordError && <Warning message={'Unable to decode using the supplied passphrase'} isDanger />}
           {isFileError && <Warning title={'Error!'} message={'Invalid Json file'} isDanger />}
         </View>
 

@@ -174,7 +174,7 @@ export function getGenesisOptionsByAddressType(
   const result: NetworkSelectOption[] = [];
 
   if (isAccountAll(address)) {
-    const [isContainOnlySubstrate, isContainOnlyEtherum] = [false, true];
+    const [isContainOnlySubstrate, isContainOnlyEtherum] = analysisAccounts(accounts);
 
     if (isContainOnlySubstrate) {
       genesisOptions.forEach(o => {

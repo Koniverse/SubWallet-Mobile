@@ -6,12 +6,14 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ArchiveTray, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
-import {useNavigation} from "@react-navigation/native";
-import {RootNavigationProps} from "types/routes";
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'types/routes';
+import SplashScreen from 'react-native-splash-screen';
 
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
+  SplashScreen.hide();
 
   return (
     <View style={{ width: '100%', height: 100, flex: 1 }}>

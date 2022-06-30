@@ -7,10 +7,10 @@ import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
 import { ActionItem } from 'components/ActionItem';
 import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { PinCode } from 'screens/Settings/Security/PinCode';
-import {updatePinCode} from "stores/SettingData";
+import { updatePinCode } from 'stores/SettingData';
 
 const ViewStep = {
   SECURITY: 1,
@@ -22,7 +22,6 @@ export const Security = () => {
   const {
     settingData: { pinCode },
   } = useSelector((state: RootState) => state);
-  // const isEnabledPinCode = !!pinCode;
   const [isEnabledPinCode, setEnabledPinCode] = useState<boolean>(!!pinCode);
   const [isEnabledFaceId, setEnabledFaceId] = useState<boolean>(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.SECURITY);

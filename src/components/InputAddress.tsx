@@ -31,6 +31,7 @@ const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
 
 const getInputLabelStyle: StyleProp<any> = (textTransform?: string) => {
   return {
+    paddingTop: 2,
     textTransform: textTransform,
     ...sharedStyles.smallText,
     ...FontSize0,
@@ -72,9 +73,9 @@ export const InputAddress = (inputAddressProps: InputProps) => {
   return (
     <TouchableOpacity style={getInputContainerStyle(containerStyle)} onPress={onChangeInputAddress}>
       <Text style={getInputLabelStyle(textTransform)}>{label}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          <SubWalletAvatar address={receiveAddress || ''} size={20} />
+          <SubWalletAvatar address={receiveAddress || ''} size={16} style={{ borderColor: 'transparent' }} />
           {isBlurInputAddress ? (
             <TextInput
               autoFocus={true}

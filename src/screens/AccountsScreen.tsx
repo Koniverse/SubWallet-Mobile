@@ -77,7 +77,7 @@ export const AccountsScreen = () => {
 
   const renderFooterComponent = () => {
     return (
-      <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+      <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
         <SubmitButton backgroundColor={theme.background2} title={'Add / Connect Account'} onPress={onCreateAccount} />
       </View>
     );

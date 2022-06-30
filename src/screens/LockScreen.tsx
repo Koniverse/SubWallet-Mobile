@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Text, View } from 'react-native';
-import { FontBold, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { PinCodeField } from 'components/PinCodeField';
@@ -32,7 +32,7 @@ export const LockScreen = () => {
     } else {
       setError('');
     }
-  }, [pinCode, value]);
+  }, [accounts, navigation, pinCode, value]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

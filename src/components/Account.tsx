@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCurrentAccount } from 'stores/Accounts';
 import { RootNavigationProps } from 'types/routes';
-import { accountAllRecoded, defaultRecoded } from 'utils/index';
+import { accountAllRecoded, defaultRecoded, recodeAddress } from 'utils/index';
 import { RootState } from 'stores/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { Recoded } from 'types/ui-types';
@@ -23,6 +23,7 @@ export interface AccountProps extends AccountJson {
   isShowBanner?: boolean;
   isShowAddress?: boolean;
   showCopyBtn?: boolean;
+  showSelectedIcon?: boolean;
 }
 
 const accountNameStyle: StyleProp<any> = {
@@ -53,21 +54,23 @@ const nameWrapper: StyleProp<any> = {
   alignItems: 'center',
 };
 
+const chainTagStyle: StyleProp<any> = {};
+
 export const Account = ({
   name,
   address,
-  isExternal,
-  isHardware,
   genesisHash,
-  isShowBanner = true,
   isShowAddress = true,
   showCopyBtn = true,
+  showSelectedIcon = true,
   type: givenType,
 }: AccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
-  const { accounts, networkMap } = useSelector((state: RootState) => state);
-  const accountList = accounts.accounts;
+  const {
+    accounts: { accounts },
+    networkMap,
+  } = useSelector((state: RootState) => state);
   const [{ account, formatted, genesisHash: recodedGenesis, isEthereum, prefix }, setRecoded] =
     useState<Recoded>(defaultRecoded);
   const getNetworkInfoByGenesisHash = useCallback(
@@ -111,16 +114,9 @@ export const Account = ({
       return;
     }
 
-    setRecoded({
-      account: {
-        address: '5DnVVG5afXqUSa6wyMEbecAtWckTTNFrbb7jy1z4gCfR6Ljf',
-      },
-      formatted: '5DnVVG5afXqUSa6wyMEbecAtWckTTNFrbb7jy1z4gCfR6Ljf',
-      prefix: 42,
-      isEthereum: false,
-    });
+    setRecoded(recodeAddress(address, accounts, networkInfo, givenType));
     //TODO: change recoded
-  }, [accountList, _isAccountAll, address, networkInfo, givenType]);
+  }, [accounts, _isAccountAll, address, networkInfo, givenType]);
 
   useEffect((): void => {
     if (currentAccountAddress === address) {
@@ -168,7 +164,7 @@ export const Account = ({
         <Text style={accountNameStyle} numberOfLines={1}>
           {name}
         </Text>
-        {isSelected && <CircleWavyCheck size={20} color={'#42C59A'} weight={'bold'} />}
+        {showSelectedIcon && isSelected && <CircleWavyCheck size={20} color={'#42C59A'} weight={'bold'} />}
       </View>
     );
   };
@@ -200,11 +196,11 @@ export const Account = ({
             )}
           </View>
         </View>
-        {networkInfo?.genesisHash && isShowBanner && (
-          <div className="account-info-banner account-info-chain" data-field="chain">
-            {networkInfo.chain.replace(' Relay Chain', '')}
-          </div>
-        )}
+        {/*{networkInfo?.genesisHash && isShowBanner && (*/}
+        {/*  <View style={chainTagStyle} data-field="chain">*/}
+        {/*    <Text>{networkInfo.chain.replace(' Relay Chain', '')}</Text>*/}
+        {/*  </View>*/}
+        {/*)}*/}
       </View>
     </TouchableOpacity>
   );

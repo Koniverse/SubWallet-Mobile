@@ -14,6 +14,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { RootRouteProps } from 'types/routes';
+import {PasswordField} from "components/Field/Password";
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -30,7 +31,7 @@ const footerAreaStyle: StyleProp<any> = {
   marginRight: -4,
   flexDirection: 'row',
   paddingTop: 12,
-  paddingBottom: 38,
+  paddingBottom: 18,
 };
 
 const warningBlockStyle: StyleProp<any> = {
@@ -38,6 +39,7 @@ const warningBlockStyle: StyleProp<any> = {
   backgroundColor: ColorMap.warningOverlay,
   paddingBottom: 14,
   paddingTop: 17,
+  marginBottom: 16,
 };
 
 const warningBlockTextStyle: StyleProp<any> = {
@@ -56,7 +58,6 @@ const privateBlockStyle: StyleProp<any> = {
   ...sharedStyles.blockContent,
   height: 238,
   backgroundColor: ColorMap.dark2,
-  marginTop: 16,
   marginBottom: 16,
 };
 
@@ -74,11 +75,6 @@ const privateBlockTextStyle: StyleProp<any> = {
 
 const privateBlockIconStyle: StyleProp<any> = {
   alignItems: 'center',
-};
-
-const passwordInputStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  marginTop: 16,
 };
 
 const copyButtonWrapperStyle: StyleProp<any> = {
@@ -173,13 +169,15 @@ export const ViewPrivateKey = () => {
 
           {currentViewStep === ViewStep.ENTER_PW && (
             <>
-              <PasswordInput
+              <PasswordField
                 label={'password for this account'}
-                containerStyle={passwordInputStyle}
-                onBlur={onSetPassword}
                 onChangeText={onTypePassword}
+                onBlur={onSetPassword}
                 onEndEditing={onSetPassword}
+                isError={!!password && password.length < 6}
+                value={password}
               />
+
               {!!errorMessage && (
                 <Text style={{ ...sharedStyles.mainText, color: ColorMap.danger, marginTop: 10 }}>{errorMessage}</Text>
               )}

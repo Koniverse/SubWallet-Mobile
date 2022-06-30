@@ -31,8 +31,7 @@ import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Security } from 'screens/Settings/Security';
-import {PinCode} from "screens/Settings/Security/PinCode";
-import {LockScreen} from "screens/LockScreen";
+import { LockScreen } from 'screens/LockScreen';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
@@ -100,7 +99,6 @@ export const App = () => {
                   <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
                   <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />
                   <Stack.Screen name="Security" component={Security} options={{ title: 'Security' }} />
-                  <Stack.Screen name="PinCode" component={PinCode} options={{ title: 'PinCode' }} />
                 </Stack.Group>
                 <Stack.Group
                   screenOptions={{

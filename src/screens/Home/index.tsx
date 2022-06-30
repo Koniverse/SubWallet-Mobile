@@ -9,16 +9,15 @@ import { TouchableHighlight } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoTab } from 'screens/Home/CtyptoTab';
-import { RestoreJson } from 'screens/RestoreJson';
 import { FontMedium } from 'styles/sharedStyles';
+import { BrowserTab } from 'screens/Home/BrowserTab';
 
 type HomeStackParamList = {
   Crypto: undefined;
   NFT: undefined;
   Crowdloans: undefined;
   Staking: undefined;
-  Transfers: undefined;
-  Restore: undefined;
+  Browser: undefined;
 };
 
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
@@ -107,8 +106,8 @@ export const Home = () => {
         }}
       />
       <Tab.Screen
-        name={'Restore'}
-        component={RestoreJson}
+        name={'Browser'}
+        component={BrowserTab}
         options={{
           tabBarIcon: ({ color, size }) => {
             return <GlobeSimple size={size} color={color} weight={'bold'} />;

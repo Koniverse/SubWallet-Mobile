@@ -5,7 +5,7 @@ import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { Eye, EyeSlash } from 'phosphor-react-native';
-import {Warning} from "components/Warning";
+import { Warning } from 'components/Warning';
 
 interface Props extends FieldBaseProps {
   onChangeText?: (text: string) => void;

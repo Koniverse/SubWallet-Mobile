@@ -33,7 +33,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Confirmation } from 'screens/Sending/Confirmation';
 import { TransferResultType } from 'types/tx';
 import { SendFundResult } from 'screens/Sending/SendFundResult';
-// import { checkAddress } from '@polkadot/phishing';
+import { checkAddress } from '@polkadot/phishing';
 import { ResponseCheckTransfer } from '@subwallet/extension-base/background/KoniTypes';
 
 const NetworkLogoWrapperStyle: StyleProp<any> = {
@@ -49,6 +49,13 @@ const NetworkLogoWrapperStyle: StyleProp<any> = {
   marginBottom: 16,
 };
 
+function getUseMaxButtonTextStyle(disabled: boolean) {
+  return {
+    color: disabled? ColorMap.disabled : ColorMap.primary,
+    ...sharedStyles.mainText,
+    ...FontMedium,
+  };
+}
 const ViewStep = {
   SEND_FUND: 1,
   CONFIRMATION: 2,
@@ -74,7 +81,7 @@ export const SendFund = () => {
   const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
   const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
   const [isGasRequiredExceedsError, setGasRequiredExceedsError] = useState<boolean>(false);
-  // const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
+  const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
   const mainTokenInfo = getMainTokenInfo(networkKey, chainRegistry);
@@ -88,14 +95,6 @@ export const SendFund = () => {
     null,
     null,
   ]);
-  // const [maxTransfer, noFees] = getMaxTransferAndNoFees(
-  //   fee,
-  //   feeSymbol,
-  //   selectedToken,
-  //   mainTokenInfo.symbol,
-  //   senderFreeBalance,
-  //   existentialDeposit,
-  // );
   const isSameAddress = !!receiveAddress && !!currentAccountAddress && receiveAddress === currentAccountAddress;
   const canToggleAll = !!isSupportTransferAll && !!senderFreeBalance && !reference && !!receiveAddress;
   const amountGtAvailableBalance =
@@ -104,6 +103,7 @@ export const SendFund = () => {
     !!rawAmount &&
     isSupportTransfer &&
     !isGasRequiredExceedsError &&
+    !!recipientPhish &&
     !!receiveAddress &&
     !isSameAddress &&
     !amountGtAvailableBalance;
@@ -112,7 +112,6 @@ export const SendFund = () => {
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
   const amount = Math.floor(Number(rawAmount));
-  console.log('amount', amount);
 
   const _doCheckTransfer = useCallback(
     (isConfirmTransferAll: boolean, thenCb: (rs: ResponseCheckTransfer) => void, catchCb: (rs: Error) => void) => {
@@ -212,24 +211,24 @@ export const SendFund = () => {
     };
   }, [networkKey, selectedToken]);
 
-  // useEffect(() => {
-  //   let isSync = true;
-  //
-  //   if (receiveAddress) {
-  //     checkAddress(receiveAddress)
-  //       .then(v => {
-  //         if (isSync) {
-  //           setRecipientPhish(v);
-  //         }
-  //       })
-  //       .catch(e => console.log(e));
-  //   }
-  //
-  //   return () => {
-  //     isSync = false;
-  //     setRecipientPhish(null);
-  //   };
-  // }, [receiveAddress]);
+  useEffect(() => {
+    let isSync = true;
+
+    if (receiveAddress) {
+      checkAddress(receiveAddress)
+        .then(v => {
+          if (isSync) {
+            setRecipientPhish(v);
+          }
+        })
+        .catch(e => console.log('e', e));
+    }
+
+    return () => {
+      isSync = false;
+      setRecipientPhish(null);
+    };
+  }, [receiveAddress]);
 
   const onChangeAmount = (val?: string) => {
     setRawAmount(val);
@@ -303,6 +302,7 @@ export const SendFund = () => {
 
                     <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(networkKey, 34)}</View>
                     <InputBalance
+                      placeholder={'0'}
                       maxValue={senderFreeBalance}
                       onChange={onChangeAmount}
                       decimals={balanceFormat[0]}
@@ -327,13 +327,9 @@ export const SendFund = () => {
                         <FormatBalance format={balanceFormat} value={senderFreeBalance} />
                       </View>
 
-                      {canToggleAll && (
-                        <TouchableOpacity onPress={() => onUpdateInputBalance()}>
-                          <Text style={{ color: ColorMap.primary, ...sharedStyles.mainText, ...FontMedium }}>
-                            Use Max
-                          </Text>
-                        </TouchableOpacity>
-                      )}
+                      <TouchableOpacity onPress={() => onUpdateInputBalance()} disabled={!canToggleAll}>
+                        <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>Use Max</Text>
+                      </TouchableOpacity>
                     </View>
 
                     <SubmitButton
