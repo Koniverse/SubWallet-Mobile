@@ -54,12 +54,12 @@ const chainBalanceSeparator: StyleProp<any> = {
 };
 
 export const TokenChainBalance = ({
-  onPress,
   selectNetworkKey,
   tokenBalanceSymbol,
   tokenBalanceValue,
   convertedBalanceValue,
   defaultNetworkKey,
+  ...wrapperProps
 }: Props) => {
   const {
     price: { tokenPriceMap },
@@ -69,7 +69,7 @@ export const TokenChainBalance = ({
     : BN_ZERO;
 
   return (
-    <TouchableOpacity style={{ width: '100%' }} onPress={onPress}>
+    <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={chainBalanceMainArea}>
         <View style={chainBalancePart1}>
           {getNetworkLogo(selectNetworkKey.toLowerCase(), 40, defaultNetworkKey)}
