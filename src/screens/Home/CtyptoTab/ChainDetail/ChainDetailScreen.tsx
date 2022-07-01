@@ -12,9 +12,9 @@ import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import BigN from 'bignumber.js';
-import { BalanceVal } from 'components/BalanceVal';
 import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
+import { BalancesVisibility } from 'components/BalancesVisibility';
 
 interface Props {
   onPressBack: () => void;
@@ -120,7 +120,7 @@ export const ChainDetailScreen = ({
       onPressRightIcon={() => {}}>
       <>
         <View style={balanceContainer}>
-          <BalanceVal value={getTotalConvertedBalanceValue(selectedBalanceInfo)} startWithSymbol symbol={'$'} />
+          <BalancesVisibility value={getTotalConvertedBalanceValue(selectedBalanceInfo)} symbol={'$'} />
 
           <ActionButtonContainer
             onPressSendFundBtn={onPressSendFundBtn}

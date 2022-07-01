@@ -10,6 +10,9 @@ import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceVal } from 'components/BalanceVal';
 import BigN from 'bignumber.js';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
+import { BalancesVisibility } from 'components/BalancesVisibility';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   onPressBack: () => void;
@@ -66,6 +69,10 @@ export const TokenHistoryScreen = ({
   tokenHistorySymbol,
   onPressSendFundBtn,
 }: Props) => {
+  const {
+    settings: { isShowBalance },
+  } = useSelector((state: RootState) => state);
+
   const renderHeaderContent = () => {
     return (
       <View style={tokenHistoryHeader}>
@@ -95,16 +102,21 @@ export const TokenHistoryScreen = ({
       headerContent={renderHeaderContent}>
       <>
         <View style={balanceContainer}>
-          <BalanceVal value={tokenBalanceValue} symbol={tokenHistorySymbol} />
+          <BalancesVisibility value={tokenBalanceValue} startWithSymbol={false} symbol={tokenHistorySymbol} />
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={convertedBalanceStyle}>{'('}</Text>
-            <BalanceVal
-              value={tokenConvertedValue}
-              startWithSymbol
-              symbol={'$'}
-              balanceValTextStyle={convertedBalanceStyle}
-            />
+            {isShowBalance ? (
+              <BalanceVal
+                value={tokenConvertedValue}
+                startWithSymbol
+                symbol={'$'}
+                balanceValTextStyle={convertedBalanceStyle}
+              />
+            ) : (
+              <Text style={convertedBalanceStyle}>{'******'}</Text>
+            )}
+
             <Text style={convertedBalanceStyle}>{')'}</Text>
           </View>
 

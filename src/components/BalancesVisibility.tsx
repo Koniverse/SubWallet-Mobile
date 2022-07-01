@@ -11,6 +11,7 @@ import { ColorMap } from 'styles/color';
 type Props = {
   value: BigN;
   symbol: string;
+  startWithSymbol?: boolean;
 };
 
 const wrapperStyle: StyleProp<any> = {
@@ -22,7 +23,7 @@ const textStyle: StyleProp<any> = {
   color: ColorMap.light,
 };
 
-export const BalancesVisibility = ({ value, symbol }: Props) => {
+export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Props) => {
   const {
     settings: { isShowBalance },
   } = useSelector((state: RootState) => state);
@@ -38,7 +39,7 @@ export const BalancesVisibility = ({ value, symbol }: Props) => {
   return (
     <TouchableOpacity onPress={() => _toggleBalances()} style={wrapperStyle}>
       {isShowBalance ? (
-        <BalanceVal value={value} startWithSymbol symbol={symbol} />
+        <BalanceVal value={value} startWithSymbol={startWithSymbol} symbol={symbol} />
       ) : (
         <Text style={textStyle}>******</Text>
       )}
