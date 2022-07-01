@@ -7,7 +7,6 @@ import { StyleProp, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
-import { HistoryTab } from 'screens/Home/CtyptoTab/ChainDetail/HistoryTab';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
@@ -15,6 +14,7 @@ import { BalanceInfo } from '../../../../types';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
+import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 
 interface Props {
   onPressBack: () => void;

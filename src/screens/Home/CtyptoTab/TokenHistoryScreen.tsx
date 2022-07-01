@@ -1,8 +1,7 @@
 import React from 'react';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
 import { ActionButtonContainer } from 'screens/Home/CtyptoTab/ActionButtonContainer';
-import { ScrollView, StyleProp, Text, View } from 'react-native';
-import { TokenHistoryItem } from 'components/TokenHistoryItem';
+import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
@@ -10,6 +9,7 @@ import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceVal } from 'components/BalanceVal';
 import BigN from 'bignumber.js';
+import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 
 interface Props {
   onPressBack: () => void;
@@ -115,9 +115,9 @@ export const TokenHistoryScreen = ({
           />
         </View>
 
-        <ScrollView style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
-          <TokenHistoryItem isLoading={false} isReceiveHistory={true} />
-        </ScrollView>
+        <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
+          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenName} />
+        </View>
 
         <ReceiveModal receiveModalVisible={receiveModalVisible} onChangeVisible={() => onShoHideReceiveModal(false)} />
       </>

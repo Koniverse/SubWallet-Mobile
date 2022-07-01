@@ -32,7 +32,6 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
           convertedBalanceValue={convertedBalanceValue}
           selectNetworkKey={selectedNetworkInfo.networkKey}
           tokenBalanceSymbol={selectedBalanceInfo.symbol}
-          disabled
           onPress={() =>
             onPressTokenItem(
               selectedBalanceInfo.symbol,
@@ -57,13 +56,12 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
                 selectNetworkKey={children.key}
                 tokenBalanceSymbol={children.symbol}
                 defaultNetworkKey={selectedNetworkInfo.networkKey}
-                disabled
                 onPress={() =>
                   onPressTokenItem(
                     children.symbol,
                     children.balanceValue,
                     children.convertedBalanceValue,
-                    selectedBalanceInfo.symbol,
+                    children.symbol,
                   )
                 }
               />

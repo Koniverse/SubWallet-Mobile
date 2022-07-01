@@ -60,4 +60,5 @@ export const Images = {
   loading: require('./loading.gif'),
   stackingEmptyList: require('./stacking-empty-list.png'),
   loadingScreen: require('./loading-background.jpg'),
+  historyEmpty: require('./transaction-history-coming-soon.png'),
 };
