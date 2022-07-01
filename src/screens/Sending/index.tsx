@@ -1,9 +1,9 @@
 import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
-import { Keyboard, StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, ScrollView, StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { InputAddress } from 'components/InputAddress';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { getNetworkLogo } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -51,7 +51,7 @@ const NetworkLogoWrapperStyle: StyleProp<any> = {
 
 function getUseMaxButtonTextStyle(disabled: boolean) {
   return {
-    color: disabled? ColorMap.disabled : ColorMap.primary,
+    color: disabled ? ColorMap.disabled : ColorMap.primary,
     ...sharedStyles.mainText,
     ...FontMedium,
   };
@@ -103,10 +103,21 @@ export const SendFund = () => {
     !!rawAmount &&
     isSupportTransfer &&
     !isGasRequiredExceedsError &&
-    !!recipientPhish &&
+    !recipientPhish &&
     !!receiveAddress &&
     !isSameAddress &&
     !amountGtAvailableBalance;
+
+  console.log(
+    '!!rawAmount',
+    !!rawAmount,
+    isSupportTransfer,
+    !isGasRequiredExceedsError,
+    !recipientPhish,
+    !!receiveAddress,
+    !isSameAddress,
+    !amountGtAvailableBalance,
+  );
   const [currentViewStep, setCurrentStep] = useState(ViewStep.SEND_FUND);
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
@@ -289,28 +300,30 @@ export const SendFund = () => {
                   setBlurInputAddress(false);
                 }}>
                 <View style={{ ...sharedStyles.layoutContainer }}>
-                  <View style={{ alignItems: 'center', flex: 1 }}>
-                    <InputAddress
-                      label={'Sent to address'}
-                      onFocus={() => setBlurInputAddress(true)}
-                      onBlur={() => setBlurInputAddress(false)}
-                      onChangeText={text => setReceiveAddress(text)}
-                      receiveAddress={receiveAddress}
-                      onChangeInputAddress={() => setBlurInputAddress(true)}
-                      isBlurInputAddress={isBlurInputAddress}
-                    />
+                  <ScrollView>
+                    <View style={{ alignItems: 'center', flex: 1 }}>
+                      <InputAddress
+                        label={'Sent to address'}
+                        onFocus={() => setBlurInputAddress(true)}
+                        onBlur={() => setBlurInputAddress(false)}
+                        onChangeText={text => setReceiveAddress(text)}
+                        receiveAddress={receiveAddress}
+                        onChangeInputAddress={() => setBlurInputAddress(true)}
+                        isBlurInputAddress={isBlurInputAddress}
+                      />
 
-                    <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(networkKey, 34)}</View>
-                    <InputBalance
-                      placeholder={'0'}
-                      maxValue={senderFreeBalance}
-                      onChange={onChangeAmount}
-                      decimals={balanceFormat[0]}
-                      ref={inputBalanceRef}
-                      siSymbol={selectedToken}
-                    />
-                    {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} />}
-                  </View>
+                      <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(networkKey, 34)}</View>
+                      <InputBalance
+                        placeholder={'0'}
+                        maxValue={senderFreeBalance}
+                        onChange={onChangeAmount}
+                        decimals={balanceFormat[0]}
+                        ref={inputBalanceRef}
+                        siSymbol={selectedToken}
+                      />
+                      {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} />}
+                    </View>
+                  </ScrollView>
 
                   <View>
                     <View
@@ -335,7 +348,7 @@ export const SendFund = () => {
                     <SubmitButton
                       disabled={!canMakeTransfer}
                       title={'Continue'}
-                      style={{ width: '100%', marginBottom: 22 }}
+                      style={{ width: '100%', ...MarginBottomForSubmitButton }}
                       onPress={() => setCurrentStep(ViewStep.CONFIRMATION)}
                     />
                   </View>

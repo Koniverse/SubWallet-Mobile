@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { GestureResponderEvent, StyleProp, Text, View } from 'react-native';
+import { GestureResponderEvent, ScrollView, StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
-import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
 import { LeftIconButton } from 'components/LeftIconButton';
@@ -9,7 +9,6 @@ import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
-
 interface Props {
   onPressSubmit: (event: GestureResponderEvent) => void;
   seed: string;
@@ -19,7 +18,9 @@ const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
 };
 
-const footerAreaStyle: StyleProp<any> = {};
+const footerAreaStyle: StyleProp<any> = {
+  marginTop: 8,
+};
 
 const infoBlockStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -47,6 +48,7 @@ const seedWordStyle = {
 
 const copyButtonWrapperStyle: StyleProp<any> = {
   alignItems: 'center',
+  marginBottom: 24,
 };
 
 const renderSeedWord = (word: string, index: number) => {
@@ -69,24 +71,24 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
   return (
     <View style={sharedStyles.layoutContainer}>
       <View style={bodyAreaStyle}>
-        <View style={infoBlockStyle}>
-          <Text style={infoTextStyle}>
-            Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
-            assets.
-          </Text>
-        </View>
-        <View style={phraseBlockStyle}>{seed.split(' ').map(renderSeedWord)}</View>
-        <View style={copyButtonWrapperStyle}>
-          <LeftIconButton icon={CopySimple} title={'Copy to Clipboard'} onPress={() => copyToClipboard(seed)} />
-        </View>
+        <ScrollView style={{ ...ScrollViewStyle }}>
+          <View style={infoBlockStyle}>
+            <Text style={infoTextStyle}>
+              Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
+              assets.
+            </Text>
+          </View>
+          <View style={phraseBlockStyle}>{seed.split(' ').map(renderSeedWord)}</View>
+          <View style={copyButtonWrapperStyle}>
+            <LeftIconButton icon={CopySimple} title={'Copy to Clipboard'} onPress={() => copyToClipboard(seed)} />
+          </View>
+          <Warning
+            title={'Do not share your private key!'}
+            message={'If someone has your private key they will have full control of your account'}
+          />
+        </ScrollView>
       </View>
       <View style={footerAreaStyle}>
-        <Warning
-          title={'Do not share your private key!'}
-          message={'If someone has your private key they will have full control of your account'}
-          style={{ marginBottom: 16 }}
-        />
-
         <SubmitButton title={'Continue'} onPress={onPressSubmit} />
       </View>
     </View>

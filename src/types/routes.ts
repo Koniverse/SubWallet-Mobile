@@ -5,7 +5,6 @@ export type RootStackParamList = {
   FirstScreen: undefined;
   Home: undefined;
   CreateAccount: undefined;
-  AccountList: undefined;
   QrScanner: undefined;
   AccountsScreen: undefined;
   EditAccount: { address: string; name: string };

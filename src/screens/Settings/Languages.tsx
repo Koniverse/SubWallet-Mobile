@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SelectScreen } from 'components/SelectScreen';
-import { FlatList } from 'react-native';
+import { FlatList, StyleProp, View } from 'react-native';
 import getLanguageOptions from 'utils/getLanguageOptions';
 import { SelectItem } from 'components/SelectItem';
 import { SubmitButton } from 'components/SubmitButton';
@@ -11,6 +11,12 @@ import i18n from 'utils/i18n/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateLanguage } from 'stores/SettingData';
 import { RootState } from 'stores/index';
+import { ScrollViewStyle } from 'styles/sharedStyles';
+
+const footerAreaStyle: StyleProp<any> = {
+  marginTop: 8,
+  marginBottom: 18,
+};
 
 export const Languages = () => {
   const {
@@ -19,6 +25,8 @@ export const Languages = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const languageOptions = getLanguageOptions();
   const dispatch = useDispatch();
+  const [searchString, setSearchString] = useState<string>('');
+  const filteredLanguageOption = languageOptions.filter(opt => opt.text.includes(searchString));
 
   // @ts-ignore
   const renderItem = ({ item }) => {
@@ -38,16 +46,18 @@ export const Languages = () => {
   };
 
   return (
-    <SelectScreen title={'Languages'}>
-      <>
-        <FlatList data={languageOptions} renderItem={renderItem} />
-        <SubmitButton
-          title={'Done'}
-          onPress={() => {
-            navigation.navigate('Settings');
-          }}
-        />
-      </>
+    <SelectScreen title={'Languages'} searchString={searchString} onChangeSearchText={setSearchString}>
+      <View style={{ flex: 1 }}>
+        <FlatList data={filteredLanguageOption} renderItem={renderItem} style={{ ...ScrollViewStyle }} />
+        <View style={footerAreaStyle}>
+          <SubmitButton
+            title={'Done'}
+            onPress={() => {
+              navigation.navigate('Settings');
+            }}
+          />
+        </View>
+      </View>
     </SelectScreen>
   );
 };

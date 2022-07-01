@@ -27,7 +27,7 @@ function getWrapperStyle(seedWordProps: SeedWordProps): StyleProp<any> {
     borderColor: backgroundColor || ColorMap.dark2,
     paddingLeft: prefixText ? 7 : 9,
     paddingRight: 9,
-    minWidth: 106,
+    // minWidth: 106,
   };
 
   if (isActivated) {

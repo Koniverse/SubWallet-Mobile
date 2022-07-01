@@ -19,13 +19,15 @@ const blockContentStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   paddingHorizontal: 16,
-  paddingBottom: 10,
-  paddingTop: 4,
+  paddingBottom: 8,
 };
 
 function getInputStyle(isError: boolean) {
   return {
     ...FontSize2,
+    paddingTop: 0,
+    paddingBottom: 0,
+    height: 25,
     flex: 1,
     paddingRight: 16,
     ...FontMedium,

@@ -108,7 +108,7 @@ export const EditAccount = () => {
           title={'Export JSON'}
           icon={FileText}
           hasRightArrow
-          onPress={() => navigation.navigate('RestoreJson')}
+          onPress={() => {}}
         />
         <ActionItem
           style={{ width: '100%' }}

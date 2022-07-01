@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
-import { sharedStyles } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { RequestCheckTransfer, TransferStep } from '@subwallet/extension-base/background/KoniTypes';
 import { AddressField } from 'components/Field/Address';
 import { useSelector } from 'react-redux';
@@ -129,7 +129,7 @@ export const Confirmation = ({
       <SubmitButton
         disabled={!password || password.length < 6}
         isBusy={isBusy}
-        style={{ marginBottom: 18, marginHorizontal: 16, marginTop: 16 }}
+        style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 8 }}
         title={'Confirm'}
         onPress={_doTransfer}
       />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImageBackground, Text, View } from 'react-native';
+import { ImageBackground, SafeAreaView, Text, View } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
@@ -8,15 +8,13 @@ import { ArchiveTray, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
-import SplashScreen from 'react-native-splash-screen';
 
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
-  SplashScreen.hide();
 
   return (
-    <View style={{ width: '100%', height: 100, flex: 1 }}>
+    <View style={{ width: '100%', flex: 1 }}>
       <ImageBackground
         source={Images.loadingScreen}
         resizeMode={'cover'}
@@ -25,10 +23,11 @@ export const FirstScreen = () => {
           justifyContent: 'flex-end',
           alignItems: 'center',
           paddingHorizontal: 16,
-          paddingBottom: 45,
+          paddingBottom: 22,
           position: 'relative',
         }}>
-        <View style={{ paddingBottom: 98 }}>
+        <SafeAreaView />
+        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
           {
             // @ts-ignore
             <SVGImages.SubWallet2 width={230} height={230} />
@@ -66,6 +65,7 @@ export const FirstScreen = () => {
           modalVisible={importSelectModalVisible}
           onChangeModalVisible={() => setSelectModalVisible(false)}
         />
+        <SafeAreaView />
       </ImageBackground>
     </View>
   );

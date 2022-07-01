@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
+import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 import { MagnifyingGlass, X } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
@@ -7,6 +7,7 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 interface Props extends TextInputProps {
   onSearch: (text: string) => void;
   searchText: string;
+  onClearSearchString: () => void;
 }
 
 const searchContainerStyle: StyleProp<any> = {
@@ -19,7 +20,7 @@ const searchContainerStyle: StyleProp<any> = {
   height: 48,
 };
 
-export const Search = ({ onSearch, searchText, style }: Props) => {
+export const Search = ({ onSearch, searchText, style, onClearSearchString }: Props) => {
   const SearchIcon = MagnifyingGlass;
   const CancelIcon = X;
 
@@ -39,8 +40,13 @@ export const Search = ({ onSearch, searchText, style }: Props) => {
         onChangeText={text => onSearch(text)}
         placeholder={'Search'}
         placeholderTextColor={ColorMap.disabled}
+        value={searchText}
       />
-      {!!searchText && <CancelIcon size={20} color={ColorMap.light} weight={'bold'} />}
+      {!!searchText && (
+        <TouchableOpacity onPress={onClearSearchString}>
+          <CancelIcon size={20} color={ColorMap.light} weight={'bold'} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

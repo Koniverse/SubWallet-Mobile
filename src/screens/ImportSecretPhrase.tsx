@@ -1,17 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleProp,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
 import { createAccountSuriV2, validateSeedV2 } from '../messaging';
 import { SUBSTRATE_ACCOUNT_TYPE } from '../constant';
@@ -21,10 +13,12 @@ import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordC
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
+  ...ScrollViewStyle,
 };
 
 const footerAreaStyle: StyleProp<any> = {
   paddingTop: 12,
+  ...MarginBottomForSubmitButton,
 };
 
 const titleStyle: StyleProp<any> = {
@@ -68,7 +62,7 @@ export const ImportSecretPhrase = () => {
         setAccount({ address, suri, genesis: '' });
         setError('');
       })
-      .catch((e) => {
+      .catch(e => {
         setAccount(null);
         console.log('e', e);
         setError('Invalid mnemonic seed');
@@ -105,7 +99,7 @@ export const ImportSecretPhrase = () => {
       <>
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={sharedStyles.layoutContainer}>
-            <View style={bodyAreaStyle}>
+            <ScrollView style={bodyAreaStyle}>
               <Text style={titleStyle}>
                 Restore an existing wallet account with your 12 or 24-word secret recovery phrase
               </Text>
@@ -115,7 +109,7 @@ export const ImportSecretPhrase = () => {
                   setSeed(text);
                 }}
               />
-            </View>
+            </ScrollView>
             <View style={footerAreaStyle}>
               <SubmitButton
                 disabled={!seed || !!error}

@@ -16,7 +16,7 @@ function getWrapperStyle(style: StyleProp<any> = {}): StyleProp<any> {
     paddingTop: 14,
     paddingBottom: 14,
     backgroundColor: ColorMap.dark2,
-    minHeight: 211,
+    minHeight: 170,
     ...style,
   };
 }

@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
@@ -17,6 +17,8 @@ export const FontSize3 = { fontSize: 18 };
 export const FontSize4 = { fontSize: 20 };
 export const FontSize5 = { fontSize: 40 };
 export const ContainerHorizontalPadding = { paddingLeft: 16, paddingRight: 16 };
+export const MarginBottomForSubmitButton = { marginBottom: Platform.OS === 'ios' ? 18 : 0 };
+export const ScrollViewStyle = { marginLeft: -16, marginRight: -16, ...ContainerHorizontalPadding };
 
 const smallText = {
   ...FontSize1,

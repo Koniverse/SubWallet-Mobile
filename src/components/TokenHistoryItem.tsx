@@ -74,7 +74,7 @@ const getIconStyle: (item: TransactionHistoryItemType) => StyleProp<any> = item 
       ? 'rgba(66, 197, 154, 0.15)'
       : item.isSuccess
       ? 'rgba(0, 75, 255, 0.15)'
-      : 'rgb(245, 0, 14, 0.15)';
+      : 'rgba(245, 0, 14, 0.15)';
 
   return {
     ...baseStyle,
@@ -154,7 +154,7 @@ export const TokenHistoryItem = ({ item, registry, isSupportScanExplorer, ...wra
               <HistoryReceiveIcon color={'rgba(66, 197, 154, 0.6)'} size={20} weight={'bold'} />
             ) : (
               <HistorySendIcon
-                color={item.isSuccess ? 'rgba(0, 75, 255, 0.6)' : 'rgb(245, 0, 14, 0.6)'}
+                color={item.isSuccess ? 'rgba(0, 75, 255, 0.6)' : 'rgba(245, 0, 14, 0.6)'}
                 size={20}
                 weight={'bold'}
               />

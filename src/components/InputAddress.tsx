@@ -43,10 +43,12 @@ const getInputLabelStyle: StyleProp<any> = (textTransform?: string) => {
 const inputStyle: StyleProp<any> = {
   ...FontSize2,
   flex: 1,
+  paddingTop: 0,
+  paddingBottom: 0,
   paddingHorizontal: 4,
+  height: 25,
   ...FontMedium,
   color: ColorMap.light,
-  textAlignVertical: 'top',
 };
 
 const textInputStyle: StyleProp<any> = {
@@ -54,8 +56,8 @@ const textInputStyle: StyleProp<any> = {
   flex: 1,
   paddingHorizontal: 4,
   ...FontMedium,
+  height: 25,
   color: ColorMap.light,
-  textAlignVertical: 'top',
 };
 
 export const InputAddress = (inputAddressProps: InputProps) => {

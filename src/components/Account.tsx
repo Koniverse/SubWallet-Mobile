@@ -24,6 +24,7 @@ export interface AccountProps extends AccountJson {
   isShowAddress?: boolean;
   showCopyBtn?: boolean;
   showSelectedIcon?: boolean;
+  isDisabled?: boolean;
 }
 
 const accountNameStyle: StyleProp<any> = {
@@ -54,8 +55,6 @@ const nameWrapper: StyleProp<any> = {
   alignItems: 'center',
 };
 
-const chainTagStyle: StyleProp<any> = {};
-
 export const Account = ({
   name,
   address,
@@ -63,6 +62,7 @@ export const Account = ({
   isShowAddress = true,
   showCopyBtn = true,
   showSelectedIcon = true,
+  isDisabled = false,
   type: givenType,
 }: AccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -171,12 +171,12 @@ export const Account = ({
 
   return (
     <TouchableOpacity
-      style={{ flex: 1 }}
       onPress={() => {
         selectAccount(address);
-      }}>
+      }}
+      disabled={isDisabled}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
-        <SubWalletAvatar address={address} size={42} />
+        <SubWalletAvatar address={address} size={34} />
         <View style={{ marginLeft: 16 }}>
           <Name />
 

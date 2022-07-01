@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp, ViewProps } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp } from 'react-native';
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
@@ -20,7 +20,7 @@ const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgro
 export const ContainerWithSubHeader = ({ children, style, ...subHeaderProps }: ContainerWithSubHeaderProps) => {
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />

@@ -1,20 +1,27 @@
 import React, { useCallback, useState } from 'react';
-import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
 import { CopySimple, FingerprintSimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import {
+  ContainerHorizontalPadding,
+  FontBold,
+  FontMedium,
+  MarginBottomForSubmitButton,
+  ScrollViewStyle,
+  sharedStyles,
+} from 'styles/sharedStyles';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
-import { PasswordInput } from 'components/PasswordInput';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { RootRouteProps } from 'types/routes';
-import {PasswordField} from "components/Field/Password";
+import { PasswordField } from 'components/Field/Password';
+import { Warning } from 'components/Warning';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -23,7 +30,7 @@ const layoutContainerStyle: StyleProp<any> = {
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
-  paddingTop: 8,
+  ...ScrollViewStyle,
 };
 
 const footerAreaStyle: StyleProp<any> = {
@@ -31,7 +38,7 @@ const footerAreaStyle: StyleProp<any> = {
   marginRight: -4,
   flexDirection: 'row',
   paddingTop: 12,
-  paddingBottom: 18,
+  ...MarginBottomForSubmitButton,
 };
 
 const warningBlockStyle: StyleProp<any> = {
@@ -143,7 +150,7 @@ export const ViewPrivateKey = () => {
   return (
     <SubScreenContainer navigation={navigation} title={'Your Private Key'}>
       <View style={layoutContainerStyle}>
-        <View style={bodyAreaStyle}>
+        <ScrollView style={bodyAreaStyle}>
           <View style={warningBlockStyle}>
             <Text style={warningBlockTitleStyle}>Do not share your private key!</Text>
             <Text style={warningBlockTextStyle}>
@@ -179,7 +186,7 @@ export const ViewPrivateKey = () => {
               />
 
               {!!errorMessage && (
-                <Text style={{ ...sharedStyles.mainText, color: ColorMap.danger, marginTop: 10 }}>{errorMessage}</Text>
+                <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 10 }} message={errorMessage} />
               )}
             </>
           )}
@@ -200,7 +207,7 @@ export const ViewPrivateKey = () => {
               />
             </View>
           )}
-        </View>
+        </ScrollView>
 
         <View style={footerAreaStyle}>
           <SubmitButton title={'Done'} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />

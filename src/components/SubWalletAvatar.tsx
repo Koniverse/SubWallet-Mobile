@@ -1,7 +1,8 @@
-import { StyleProp, Text, View, ViewProps } from 'react-native';
+import { StyleProp, View, ViewProps } from 'react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import Identicon from '@polkadot/reactnative-identicon';
-// import Avatar from 'react-native-boring-avatars';
+// @ts-ignore
+import Avatar from 'react-native-boring-avatars';
 import React from 'react';
 import { useSVG } from 'hooks/useSVG';
 
@@ -19,20 +20,16 @@ const wrapperStyle: StyleProp<any> = {
 };
 
 export const SubWalletAvatar = ({ address, size, ...viewProp }: AvatarProps) => {
-  const Logo = useSVG().Logo;
-
   return (
     <View style={wrapperStyle} {...viewProp}>
       {address === ALL_ACCOUNT_KEY ? (
-        // @ts-ignore
-        <Logo.AllAccount width={size} height={size} />
+        <Avatar
+          colors={['#5F545C', '#EB7072', '#F5BA90', '#F5E2B8', '#A2CAA5']}
+          name={address}
+          size={size}
+          variant={'beam'}
+        />
       ) : (
-        // <Avatar
-        //   colors={['#5F545C', '#EB7072', '#F5BA90', '#F5E2B8', '#A2CAA5']}
-        //   name={address}
-        //   size={size}
-        //   variant={'beam'}
-        // />
         <Identicon value={address} size={size} theme={'polkadot'} />
       )}
     </View>

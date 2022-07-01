@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -9,16 +9,22 @@ import { sharedStyles } from 'styles/sharedStyles';
 interface Props {
   children: JSX.Element;
   title: string;
+  searchString: string;
+  onChangeSearchText: (text: string) => void;
 }
 
-export const SelectScreen = ({ children, title }: Props) => {
+export const SelectScreen = ({ children, title, searchString, onChangeSearchText }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [searchString, setSearchString] = useState('');
 
   return (
     <SubScreenContainer navigation={navigation} title={title}>
       <View style={{ ...sharedStyles.layoutContainer }}>
-        <Search onSearch={setSearchString} searchText={searchString} />
+        <Search
+          onClearSearchString={() => onChangeSearchText('')}
+          onSearch={onChangeSearchText}
+          searchText={searchString}
+          style={{ marginBottom: 8 }}
+        />
         {children}
       </View>
     </SubScreenContainer>

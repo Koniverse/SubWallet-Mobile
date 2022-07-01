@@ -1,20 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { SubScreenContainer } from 'components/SubScreenContainer';
-import { View, FlatList } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Search } from 'components/Search';
-import { ContainerHorizontalPadding, sharedStyles } from 'styles/sharedStyles';
+import { ScrollViewStyle } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { Warning } from 'components/Warning';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
 import { useToast } from 'react-native-toast-notifications';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { SelectScreen } from 'components/SelectScreen';
 
 export const NetworksSetting = () => {
-  const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
@@ -77,18 +73,15 @@ export const NetworksSetting = () => {
   const filteredNetworkMap = filterNetwork();
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Network Setting'}>
-      <View style={{ ...sharedStyles.layoutContainer, paddingLeft: 0, paddingRight: 0 }}>
-        <Search onSearch={setSearchString} searchText={searchString} style={{ marginLeft: 16, marginRight: 16 }} />
-        <FlatList
-          style={{ flex: 1, ...ContainerHorizontalPadding }}
-          keyboardShouldPersistTaps={'handled'}
-          data={Object.values(filteredNetworkMap)}
-          renderItem={renderItem}
-          ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.key}
-        />
-      </View>
-    </SubScreenContainer>
+    <SelectScreen title={'Network Setting'} searchString={searchString} onChangeSearchText={setSearchString}>
+      <FlatList
+        style={{ ...ScrollViewStyle }}
+        keyboardShouldPersistTaps={'handled'}
+        data={Object.values(filteredNetworkMap)}
+        renderItem={renderItem}
+        ListEmptyComponent={renderListEmptyComponent}
+        keyExtractor={item => item.key}
+      />
+    </SelectScreen>
   );
 };

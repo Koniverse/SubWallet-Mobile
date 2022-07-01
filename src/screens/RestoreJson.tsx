@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Platform, StyleProp, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Platform, ScrollView, StyleProp, View } from 'react-native';
 import { InputFile } from 'components/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
@@ -11,14 +11,17 @@ import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging'
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { sharedStyles } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { RootNavigationProps } from 'types/routes';
 import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
+import { Account } from 'components/Account';
+import { ColorMap } from 'styles/color';
 
-const bodyAreaStyle: StyleProp<any> = {
-  flex: 1,
-  paddingTop: 8,
+const footerAreaStyle: StyleProp<any> = {
+  marginTop: 8,
+  marginHorizontal: 16,
+  ...MarginBottomForSubmitButton,
 };
 
 export const RestoreJson = () => {
@@ -68,7 +71,7 @@ export const RestoreJson = () => {
     setFileError(false);
     setIsPasswordError(false);
     setPassword('');
-    setAccountsInfo([]);
+    setAccountsInfo(() => []);
 
     fileInfo = fileInfo as Array<DocumentPickerResponse>;
     const fileUri = Platform.OS === 'ios' ? decodeURIComponent(fileInfo[0].uri) : fileInfo[0].uri;
@@ -83,7 +86,7 @@ export const RestoreJson = () => {
       });
   };
 
-  const _onRestore = () => {
+  const _onRestore = useCallback(() => {
     if (!file) {
       return;
     }
@@ -103,7 +106,7 @@ export const RestoreJson = () => {
         setIsBusy(false);
         setIsPasswordError(false);
         setPassword('');
-        setAccountsInfo([]);
+        setAccountsInfo(() => []);
         navigation.navigate('Home');
       })
       .catch(e => {
@@ -111,7 +114,7 @@ export const RestoreJson = () => {
         setIsBusy(false);
         setIsPasswordError(true);
       });
-  };
+  }, [accountsInfo, file, navigation, password]);
 
   const onChangeText = (text: string) => {
     setFileError(false);
@@ -119,11 +122,32 @@ export const RestoreJson = () => {
     setPassword(text);
   };
 
+  const renderAccount = useCallback(() => {
+    return (
+      <>
+        {accountsInfo.map(account => (
+          <View
+            key={account.address}
+            style={{ backgroundColor: ColorMap.dark2, marginBottom: 8, borderRadius: 5, paddingHorizontal: 16 }}>
+            <Account
+              address={account.address}
+              name={account.name}
+              showCopyBtn={false}
+              showSelectedIcon={false}
+              isDisabled
+            />
+          </View>
+        ))}
+      </>
+    );
+  }, [accountsInfo]);
+
   return (
     <SubScreenContainer title={'Restore JSON'} navigation={navigation}>
-      <View style={[sharedStyles.blockContent, { flex: 1 }]}>
-        <View style={bodyAreaStyle}>
+      <View style={{ flex: 1 }}>
+        <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <InputFile onChangeResult={_onChangeFile} />
+          {renderAccount()}
           <PasswordField
             label={'Wallet Password'}
             onChangeText={onChangeText}
@@ -132,9 +156,9 @@ export const RestoreJson = () => {
           />
           {isPasswordError && <Warning message={'Unable to decode using the supplied passphrase'} isDanger />}
           {isFileError && <Warning title={'Error!'} message={'Invalid Json file'} isDanger />}
-        </View>
+        </ScrollView>
 
-        <View>
+        <View style={footerAreaStyle}>
           <SubmitButton
             isBusy={isBusy}
             title={'Import an Account'}

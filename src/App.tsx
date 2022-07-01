@@ -11,7 +11,6 @@ import { StatusBar } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { AccountList } from 'screens/AccountList';
 import { QrScanner } from 'screens/QrScanner';
 import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
@@ -72,7 +71,6 @@ export const App = () => {
                   <Stack.Screen name="FirstScreen" component={FirstScreen} />
                   <Stack.Screen name="Home" component={Home} />
                   <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ title: 'Create Account' }} />
-                  <Stack.Screen name="AccountList" component={AccountList} options={{ title: 'Account List' }} />
                   <Stack.Screen
                     name="AccountsScreen"
                     component={AccountsScreen}

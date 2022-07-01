@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
@@ -9,6 +9,12 @@ import { PasswordField } from 'components/Field/Password';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
+  ...ScrollViewStyle,
+};
+
+const footerAreaStyle: StyleProp<any> = {
+  marginTop: 8,
+  ...MarginBottomForSubmitButton,
 };
 
 const titleStyle: StyleProp<any> = {
@@ -55,7 +61,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
 
   return (
     <View style={sharedStyles.layoutContainer}>
-      <View style={bodyAreaStyle}>
+      <ScrollView style={bodyAreaStyle}>
         <Text style={titleStyle}>Name will be used only locally in this application. You can edit it later</Text>
 
         <EditAccountInputText
@@ -81,8 +87,8 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
         {!pass2 && pass2Dirty && <Warning isDanger message={'Please fill repeat password'} />}
 
         {isSecondPasswordValid && <Warning isDanger message={'Passwords do not match'} />}
-      </View>
-      <View>
+      </ScrollView>
+      <View style={footerAreaStyle}>
         <SubmitButton
           disabled={!pass1 || !pass2 || pass1 !== pass2}
           isBusy={isBusy}

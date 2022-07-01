@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SubScreenContainer } from 'components/SubScreenContainer';
-import { View, FlatList } from 'react-native';
+import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Search } from 'components/Search';
-import { sharedStyles } from 'styles/sharedStyles';
+import { ScrollViewStyle } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
@@ -14,6 +12,7 @@ import { tieAccount } from '../messaging';
 import { updateCurrentNetwork } from 'stores/updater';
 import { getGenesisOptionsByAddressType } from 'utils/index';
 import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
+import { SelectScreen } from 'components/SelectScreen';
 
 export const NetworkSelect = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -88,18 +87,21 @@ export const NetworkSelect = () => {
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Select Network'}>
-      <View style={{ ...sharedStyles.layoutContainer }}>
-        <Search onSearch={setSearchString} searchText={searchString} />
-        <FlatList
-          style={{ flex: 1, paddingTop: 9 }}
-          keyboardShouldPersistTaps={'handled'}
-          data={filteredGenesisOptions}
-          renderItem={renderItem}
-          ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.networkKey}
-        />
-      </View>
-    </SubScreenContainer>
+    <SelectScreen title={'Select Network'} searchString={searchString} onChangeSearchText={setSearchString}>
+      <FlatList
+        style={{ ...ScrollViewStyle }}
+        keyboardShouldPersistTaps={'handled'}
+        data={filteredGenesisOptions}
+        renderItem={renderItem}
+        ListEmptyComponent={renderListEmptyComponent}
+        keyExtractor={item => item.networkKey}
+      />
+    </SelectScreen>
+    // <SubScreenContainer navigation={navigation} title={'Select Network'}>
+    //   <View style={{ ...sharedStyles.layoutContainer }}>
+    //     <Search onSearch={setSearchString} searchText={searchString} />
+    //
+    //   </View>
+    // </SubScreenContainer>
   );
 };
