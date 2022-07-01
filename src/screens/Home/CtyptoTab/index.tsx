@@ -105,6 +105,7 @@ export const CryptoTab = () => {
           networkMetadataMap={networkMetadataMap}
           showedNetworks={showedNetworks}
           totalValue={totalBalanceValue}
+          onPressTokenItem={onPressTokenItem}
         />
       )}
 

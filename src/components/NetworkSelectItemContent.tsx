@@ -36,13 +36,18 @@ const itemTextStyle: StyleProp<any> = {
   ...FontSemiBold,
 };
 
+const logoWrapperStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.light,
+  borderRadius: 28,
+};
+
 export const NetworkSelectItemContent = ({ itemKey, itemName, isSelected }: Props) => {
   const CheckIcon = CircleWavyCheck;
   return (
     <View>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          {getNetworkLogo(itemKey, 28)}
+          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 28)}</View>
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 

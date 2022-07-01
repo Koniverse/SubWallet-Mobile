@@ -18,7 +18,7 @@ interface Props {
   ) => void;
 }
 
-// todo: remove disabled, then handle onPress
+// todo: merge with TokensTab component in ChainList
 export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
   const tokenBalanceValue = selectedBalanceInfo.balanceValue;
   const convertedBalanceValue = selectedBalanceInfo.convertedBalanceValue;

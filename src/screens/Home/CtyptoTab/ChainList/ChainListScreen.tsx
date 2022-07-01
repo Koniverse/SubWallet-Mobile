@@ -27,6 +27,12 @@ interface Props {
   networkMetadataMap: Record<string, NetWorkMetadataDef>;
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
   onPressSendFundBtn: () => void;
+  onPressTokenItem: (
+    tokenName: string,
+    tokenBalanceValue: BigN,
+    tokenConvertedValue: BigN,
+    tokenSymbol: string,
+  ) => void;
 }
 
 const balanceContainer: StyleProp<any> = {
@@ -85,6 +91,7 @@ export const ChainListScreen = ({
   networkBalanceMaps,
   onPressChainItem,
   onPressSendFundBtn,
+  onPressTokenItem,
 }: Props) => {
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,
@@ -96,7 +103,13 @@ export const ChainListScreen = ({
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'tokens':
-        return <TokensTab accountInfoByNetworkMap={accountInfoByNetworkMap} networkBalanceMaps={networkBalanceMaps} />;
+        return (
+          <TokensTab
+            accountInfoByNetworkMap={accountInfoByNetworkMap}
+            networkBalanceMaps={networkBalanceMaps}
+            onPressTokenItem={onPressTokenItem}
+          />
+        );
       case 'chains':
       default:
         return (

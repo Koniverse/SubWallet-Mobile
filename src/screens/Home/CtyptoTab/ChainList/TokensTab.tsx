@@ -10,6 +10,12 @@ import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
+  onPressTokenItem: (
+    tokenName: string,
+    tokenBalanceValue: BigN,
+    tokenConvertedValue: BigN,
+    tokenSymbol: string,
+  ) => void;
 }
 
 type TokenArrayType = {
@@ -20,7 +26,7 @@ type TokenArrayType = {
   defaultNetworkKey?: string;
 };
 
-export const TokensTab = ({ networkBalanceMaps }: Props) => {
+export const TokensTab = ({ networkBalanceMaps, onPressTokenItem }: Props) => {
   let tokenArray: TokenArrayType[] = [];
 
   Object.keys(networkBalanceMaps).forEach(networkKey => {
@@ -59,6 +65,14 @@ export const TokensTab = ({ networkBalanceMaps }: Props) => {
                 convertedBalanceValue={token.convertedBalanceValue}
                 selectNetworkKey={token.selectNetworkKey}
                 tokenBalanceSymbol={token.tokenBalanceSymbol}
+                onPress={() =>
+                  onPressTokenItem(
+                    token.tokenBalanceSymbol,
+                    token.tokenBalanceValue,
+                    token.convertedBalanceValue,
+                    token.tokenBalanceSymbol,
+                  )
+                }
               />
             );
           }
