@@ -100,6 +100,9 @@ export function recodeAddress(
 
 export function getNetworkLogo(networkKey: string, size: number, defaultLogo = 'default') {
   // @ts-ignore
+  const imgSrc = Images[networkKey];
+
+  // @ts-ignore
   if (SvgLogosMap[networkKey]) {
     const style = {
       borderRadius: size / 2,
@@ -116,17 +119,12 @@ export function getNetworkLogo(networkKey: string, size: number, defaultLogo = '
     };
 
     if (networkKey === 'interlay') {
-      return getIcon(networkKey, size, '#FFF', styleWithBgc);
+      return getIcon(networkKey, size, undefined, styleWithBgc);
     }
 
-    return getIcon(networkKey, size, '#FFF', style);
-  } else if (Images[networkKey]) {
-    return (
-      <Image
-        style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }}
-        source={Images[networkKey]}
-      />
-    );
+    return getIcon(networkKey, size, undefined, style);
+  } else if (imgSrc) {
+    return <Image style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }} source={imgSrc} />;
   }
 
   return getIcon(defaultLogo, size);

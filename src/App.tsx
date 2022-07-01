@@ -32,11 +32,13 @@ import { Languages } from 'screens/Settings/Languages';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Security } from 'screens/Settings/Security';
 import { LockScreen } from 'screens/LockScreen';
+import SplashScreen from 'react-native-splash-screen';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
 });
 export const App = () => {
+  SplashScreen.hide();
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   // const isDarkMode = useColorScheme() === 'dark';

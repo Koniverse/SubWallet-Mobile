@@ -35,12 +35,17 @@ const itemTextStyle: StyleProp<any> = {
   ...FontSemiBold,
 };
 
+const logoWrapperStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.light,
+  borderRadius: 40,
+};
+
 export const NetworkAndTokenToggleItem = ({ itemKey, itemName, isEnabled, onValueChange }: Props) => {
   return (
     <View>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View>{getNetworkLogo(itemKey, 40)}</View>
+          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 40)}</View>
 
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
