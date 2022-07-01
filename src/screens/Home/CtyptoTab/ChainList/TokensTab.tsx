@@ -5,7 +5,7 @@ import { BalanceInfo } from '../../../../types';
 import { BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
 import { TokenChainBalance } from 'components/TokenChainBalance';
-import {ChainBalanceSkeleton} from "components/ChainBalanceSkeleton";
+import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
@@ -46,7 +46,7 @@ export const TokensTab = ({ networkBalanceMaps }: Props) => {
   });
 
   return (
-    <ScrollView>
+    <ScrollView style={{ paddingTop: 8 }}>
       {tokenArray &&
         tokenArray.map((token, index) => {
           if (!networkBalanceMaps) {

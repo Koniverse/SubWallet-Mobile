@@ -23,7 +23,7 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
   const tokenBalanceValue = selectedBalanceInfo.balanceValue;
   const convertedBalanceValue = selectedBalanceInfo.convertedBalanceValue;
   return (
-    <ScrollView>
+    <ScrollView style={{ paddingTop: 8 }}>
       {!(selectedNetworkInfo && selectedBalanceInfo) ? (
         <ChainBalanceSkeleton />
       ) : (

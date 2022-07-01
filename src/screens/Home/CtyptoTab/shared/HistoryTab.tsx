@@ -96,7 +96,7 @@ const ContentComponent = ({ items, registryMap, token }: ContentProps) => {
     return <TokenHistoryItem item={item} key={item.extrinsicHash} registry={registry} />;
   };
 
-  return <ScrollView>{items.map(renderItem)}</ScrollView>;
+  return <ScrollView style={{ paddingTop: 8 }}>{items.map(renderItem)}</ScrollView>;
 };
 
 export const HistoryTab = ({ networkKey, token }: Props) => {
