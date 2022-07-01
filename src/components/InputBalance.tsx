@@ -87,7 +87,7 @@ const getOutputValuesFromString: (input: string, power: number) => [string, bool
 };
 
 const getInputValuesFromString: (input: string, power: number) => string = (input: string, power: number) => {
-  let valueBigN = new BigN(input);
+  let valueBigN = new BigN(isValidInput(input) ? input : '0');
   valueBigN = valueBigN.div(new BigN(10).pow(power));
   return valueBigN.toFixed();
 };
