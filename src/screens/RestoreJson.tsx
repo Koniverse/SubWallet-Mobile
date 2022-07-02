@@ -17,6 +17,7 @@ import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
 import { Account } from 'components/Account';
 import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -143,7 +144,7 @@ export const RestoreJson = () => {
   }, [accountsInfo]);
 
   return (
-    <SubScreenContainer title={'Restore JSON'} navigation={navigation}>
+    <SubScreenContainer title={i18n.common.importFromJson} navigation={navigation}>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <InputFile onChangeResult={_onChangeFile} />
@@ -154,8 +155,8 @@ export const RestoreJson = () => {
             value={password}
             isError={!!password && password.length < 6}
           />
-          {isPasswordError && <Warning message={'Unable to decode using the supplied passphrase'} isDanger />}
-          {isFileError && <Warning title={'Error!'} message={'Invalid Json file'} isDanger />}
+          {isPasswordError && <Warning message={i18n.warningMessage.unableDecode} isDanger />}
+          {isFileError && <Warning title={'Error!'} message={i18n.warningMessage.invalidJsonFile} isDanger />}
         </ScrollView>
 
         <View style={footerAreaStyle}>

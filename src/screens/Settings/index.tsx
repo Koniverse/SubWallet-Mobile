@@ -40,84 +40,84 @@ export const Settings = () => {
     [
       {
         icon: ShieldCheck,
-        title: 'Security',
+        title: i18n.settings.security,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Security'),
       },
       {
         icon: GlobeHemisphereWest,
-        title: 'Languages',
+        title: i18n.settings.languages,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Languages'),
       },
       {
         icon: BellRinging,
-        title: 'Notifications',
+        title: i18n.settings.notifications,
         hasRightArrow: true,
       },
     ],
     [
       {
         icon: GitFork,
-        title: 'Networks',
+        title: i18n.settings.networks,
         hasRightArrow: true,
       },
       {
         icon: Coin,
-        title: 'Manage EVM Tokens',
+        title: i18n.settings.manageEvmTokens,
         hasRightArrow: true,
       },
     ],
     [
       {
         icon: TelegramLogo,
-        title: 'Telegram',
+        title: i18n.settings.telegram,
         hasRightArrow: true,
       },
       {
         icon: TwitterLogo,
-        title: 'Twitter',
+        title: i18n.settings.twitter,
         hasRightArrow: true,
       },
       {
         icon: DiscordLogo,
-        title: 'Discord',
+        title: i18n.settings.discord,
         hasRightArrow: true,
       },
     ],
     [
       {
         icon: Globe,
-        title: 'Website',
+        title: i18n.settings.website,
         hasRightArrow: true,
       },
       {
         icon: FileText,
-        title: 'Documentation',
+        title: i18n.settings.documentation,
         hasRightArrow: true,
       },
       {
         icon: FileText,
-        title: 'Terms of Service',
+        title: i18n.settings.termOfService,
         hasRightArrow: true,
       },
       {
         icon: FileText,
-        title: 'Privacy Policy',
+        title: i18n.settings.privacyPolicy,
         hasRightArrow: true,
       },
     ],
     [
       {
         icon: SignOut,
-        title: 'Logout',
+        title: i18n.settings.logout,
         hasRightArrow: true,
       },
     ],
   ];
 
   return (
-    <SubScreenContainer title={i18n.settings} navigation={navigation}>
+    <SubScreenContainer title={i18n.settings.settings} navigation={navigation}>
       <ScrollView style={{ paddingHorizontal: 16, paddingTop: 16, flex: 1, marginBottom: 45 }}>
         <ActionItem
           icon={ShieldCheck}

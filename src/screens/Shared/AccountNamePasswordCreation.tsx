@@ -6,6 +6,7 @@ import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
+import i18n from 'utils/i18n/i18n';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -84,9 +85,9 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
           isError={checkPasswordTooShort(pass2) || pass1 !== pass2}
         />
 
-        {!pass2 && pass2Dirty && <Warning isDanger message={'Please fill repeat password'} />}
+        {!pass2 && pass2Dirty && <Warning isDanger message={i18n.warningMessage.noPasswordMessage} />}
 
-        {isSecondPasswordValid && <Warning isDanger message={'Passwords do not match'} />}
+        {isSecondPasswordValid && <Warning isDanger message={i18n.warningMessage.doNotMatchPasswordWarning} />}
       </ScrollView>
       <View style={footerAreaStyle}>
         <SubmitButton

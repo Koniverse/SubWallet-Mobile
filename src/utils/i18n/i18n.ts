@@ -10,16 +10,4 @@ const i18n = new LocalizedStrings({
   },
 });
 
-// const i18n = new LocalizedString({
-//   en: {
-//     settings: 'Settings',
-//   },
-//   vi: {
-//     settings: 'Cài đặt',
-//   },
-// });
-
-// export const VI_VN = 'vi_VN';
-// export const EN_US = 'en_US';
-
 export default i18n;

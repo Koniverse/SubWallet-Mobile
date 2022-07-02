@@ -10,6 +10,7 @@ import { SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 import { SubmitButton } from 'components/SubmitButton';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
+import i18n from "utils/i18n/i18n";
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -95,7 +96,7 @@ export const ImportSecretPhrase = () => {
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} title={'Import Secret Phrase'}>
+    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.common.importSecretPhrase}>
       <>
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={sharedStyles.layoutContainer}>

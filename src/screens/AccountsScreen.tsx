@@ -13,6 +13,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import i18n from 'utils/i18n/i18n';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -38,15 +39,7 @@ export const AccountsScreen = () => {
   const theme = useSubWalletTheme().colors;
 
   const renderListEmptyComponent = () => {
-    return (
-      <Warning
-        title={'Warning'}
-        message={
-          "You currently don't have any accounts. Create your first account or import another account to get started."
-        }
-        isDanger={false}
-      />
-    );
+    return <Warning title={'Warning'} message={i18n.warningMessage.noAccountText} isDanger={false} />;
   };
 
   // @ts-ignore
@@ -78,13 +71,21 @@ export const AccountsScreen = () => {
   const renderFooterComponent = () => {
     return (
       <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
-        <SubmitButton backgroundColor={theme.background2} title={'Add / Connect Account'} onPress={onCreateAccount} />
+        <SubmitButton
+          backgroundColor={theme.background2}
+          title={i18n.common.addOrConnectAccount}
+          onPress={onCreateAccount}
+        />
       </View>
     );
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Accounts'} rightIcon={Plus} onPressRightIcon={onCreateAccount}>
+    <SubScreenContainer
+      navigation={navigation}
+      title={i18n.settings.accounts}
+      rightIcon={Plus}
+      onPressRightIcon={onCreateAccount}>
       <View style={accountsWrapper}>
         <FlatList
           style={{ paddingHorizontal: 16, flex: 1 }}

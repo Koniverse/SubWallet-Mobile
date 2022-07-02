@@ -26,15 +26,15 @@ export const ActionButtonContainer = ({ openReceiveModal, style, onPressSendFund
 
   return (
     <View style={[actionButtonWrapper, style]}>
-      <ActionButton label={i18n.receive} iconSize={24} iconName={'ReceiveIcon'} onPress={openReceiveModal} />
+      <ActionButton label={i18n.cryptoTab.receive} iconSize={24} iconName={'ReceiveIcon'} onPress={openReceiveModal} />
       <ActionButton
         disabled={networkKey === 'all'}
-        label={i18n.send}
+        label={i18n.cryptoTab.send}
         iconSize={24}
         iconName={'SendIcon'}
         onPress={onPressSendFundBtn}
       />
-      <ActionButton label={i18n.swap} iconSize={24} iconName={'SwapIcon'} />
+      <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} />
     </View>
   );
 };

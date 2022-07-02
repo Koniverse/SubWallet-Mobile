@@ -281,7 +281,7 @@ export const SendFund = () => {
         );
         if (inputBalanceRef && inputBalanceRef.current) {
           // @ts-ignore
-          inputBalanceRef.current.onChange(curMaxTransfer);
+          inputBalanceRef.current.onChange(curMaxTransfer.toString());
         }
       },
       err => console.log('There is problem when checkTransfer', err),
@@ -380,7 +380,7 @@ export const SendFund = () => {
           </>
         </ContainerWithSubHeader>
       ) : (
-        <SendFundResult txResult={txResult} onResend={_onResend} />
+        <SendFundResult networkKey={networkKey} txResult={txResult} onResend={_onResend} />
       )}
     </>
   );

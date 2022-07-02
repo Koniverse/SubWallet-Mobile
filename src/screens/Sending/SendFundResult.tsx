@@ -1,27 +1,39 @@
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { StyleProp, Text, View } from 'react-native';
+import { Linking, ScrollView, StyleProp, Text, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import React from 'react';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold, FontSize2, sharedStyles } from 'styles/sharedStyles';
+import {
+  FontMedium,
+  FontSemiBold,
+  FontSize2,
+  MarginBottomForSubmitButton,
+  ScrollViewStyle,
+  sharedStyles,
+} from 'styles/sharedStyles';
 import { getIcon } from 'utils/index';
 import { TransferResultType } from 'types/tx';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
+import { TransferError } from '@subwallet/extension-base/background/KoniTypes';
+import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
+import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   txResult: TransferResultType;
   onResend: () => void;
+  networkKey: string;
 }
 
 const bodyAreaStyle: StyleProp<any> = {
-  ...ContainerHorizontalPadding,
   alignItems: 'center',
   flex: 1,
-  paddingTop: 100,
 };
 
-const footerAreaStyle: StyleProp<any> = {};
+const footerAreaStyle: StyleProp<any> = {
+  marginTop: 8,
+};
 
 const imageStyle: StyleProp<any> = {
   marginBottom: 24,
@@ -40,16 +52,38 @@ const subtitleStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.disabled,
   textAlign: 'center',
+  marginBottom: 16,
+  paddingHorizontal: 16,
 };
 
 const submitButton1Style: StyleProp<any> = {};
 
-const submitButton2Style: StyleProp<any> = {
-  marginTop: 16,
-};
-
-export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError }, onResend }: Props) => {
+export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSuccess, txError }, onResend }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const isSupportScanExplorer = useSupportScanExplorer(networkKey);
+  const isScanExplorerTxUrl = useScanExplorerTxUrl(networkKey, extrinsicHash);
+  const renderErrorMessage = (error: Array<TransferError>) => {
+    return error.map(err => (
+      <Text key={err.code} style={{ ...sharedStyles.mainText, color: ColorMap.danger, textAlign: 'center' }}>
+        {err.message}
+      </Text>
+    ));
+  };
+
+  const viewTransactionBtn = (hash?: string) => {
+    if (!hash) {
+      return null;
+    }
+
+    return (
+      <SubmitButton
+        style={{ ...MarginBottomForSubmitButton, marginTop: 16 }}
+        disabled={!(isSupportScanExplorer && isScanExplorerTxUrl)}
+        title={'View in Explorer'}
+        onPress={() => Linking.openURL(isScanExplorerTxUrl)}
+      />
+    );
+  };
 
   return (
     <ContainerWithSubHeader onPressBack={() => {}} title={isTxSuccess ? 'Success' : 'Failed'}>
@@ -60,20 +94,21 @@ export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError
               {getIcon('SuccessStatus', 200, undefined, imageStyle)}
 
               <Text style={titleStyle}>Transaction Successful</Text>
-              <Text style={subtitleStyle}>
-                Your request has been confirmed. You can track its progress on the Transaction History page.
-              </Text>
+              <Text style={subtitleStyle}>{i18n.common.transferSuccessMessage}</Text>
             </>
           )}
           {!isTxSuccess && (
-            <>
+            <ScrollView
+              style={{ flex: 1, ...ScrollViewStyle }}
+              contentContainerStyle={{ alignItems: 'center', paddingTop: 100 }}>
               {getIcon('FailStatus', 200, undefined, imageStyle)}
 
               <Text style={titleStyle}>Transaction Fail</Text>
               <Text style={subtitleStyle}>
-                There was a problem with your request. You can track its progress on the Transaction History page.
+                {extrinsicHash ? i18n.common.transferFailMessage1 : i18n.common.transferFailMessage2}
               </Text>
-            </>
+              {!!(txError && txError.length) && renderErrorMessage(txError)}
+            </ScrollView>
           )}
         </View>
 
@@ -86,7 +121,7 @@ export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError
                 style={submitButton1Style}
                 onPress={() => navigation.navigate('Home')}
               />
-              <SubmitButton title={'View in Explorer'} style={submitButton2Style} onPress={() => {}} />
+              {/*{viewTransactionBtn(extrinsicHash)}*/}
             </>
           )}
           {!isTxSuccess && (
@@ -99,6 +134,8 @@ export const SendFundResult = ({ txResult: { extrinsicHash, isTxSuccess, txError
               />
             </>
           )}
+
+          {viewTransactionBtn(extrinsicHash)}
         </View>
       </View>
     </ContainerWithSubHeader>

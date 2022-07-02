@@ -9,6 +9,7 @@ import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 interface Props {
   onPressSubmit: (event: GestureResponderEvent) => void;
   seed: string;
@@ -82,10 +83,7 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
           <View style={copyButtonWrapperStyle}>
             <LeftIconButton icon={CopySimple} title={'Copy to Clipboard'} onPress={() => copyToClipboard(seed)} />
           </View>
-          <Warning
-            title={'Do not share your private key!'}
-            message={'If someone has your private key they will have full control of your account'}
-          />
+          <Warning title={i18n.warningTitle.doNotSharePrivateKey} message={i18n.warningMessage.privateKeyWarning} />
         </ScrollView>
       </View>
       <View style={footerAreaStyle}>

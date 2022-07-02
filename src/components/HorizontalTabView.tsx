@@ -19,7 +19,7 @@ const tabBar: StyleProp<any> = {
   marginRight: 16,
 };
 const tabBarIndicator: StyleProp<any> = {
-  backgroundColor: '#FFF',
+  backgroundColor: ColorMap.light,
 };
 
 export const HorizontalTabView = ({ renderScene, routes }: Props) => {

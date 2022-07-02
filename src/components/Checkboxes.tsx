@@ -3,6 +3,7 @@ import { StyleProp, View } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { CheckBoxesType } from 'types/ui-types';
 import { getIcon } from 'utils/index';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   dataList: CheckBoxesType[];
@@ -55,8 +56,8 @@ export const Checkboxes = ({ dataList, onChangeCallback }: Props) => {
           onPress={() => {
             _onChangeItemValue(item.value);
           }}
-          checkedIcon={getIcon('CheckBoxFilledIcon', 16, '#FFF')}
-          uncheckedIcon={getIcon('CheckBoxIcon', 16, '#FFF')}
+          checkedIcon={getIcon('CheckBoxFilledIcon', 16, ColorMap.light)}
+          uncheckedIcon={getIcon('CheckBoxIcon', 16, ColorMap.light)}
           containerStyle={checkBoxItemContainer}
         />
 

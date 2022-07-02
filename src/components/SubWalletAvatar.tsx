@@ -4,7 +4,7 @@ import Identicon from '@polkadot/reactnative-identicon';
 // @ts-ignore
 import Avatar from 'react-native-boring-avatars';
 import React from 'react';
-import { useSVG } from 'hooks/useSVG';
+import { ColorMap } from 'styles/color';
 
 interface AvatarProps extends ViewProps {
   address: string;
@@ -14,7 +14,7 @@ interface AvatarProps extends ViewProps {
 const wrapperStyle: StyleProp<any> = {
   borderStyle: 'solid',
   borderWidth: 2,
-  borderColor: '#004BFF',
+  borderColor: ColorMap.secondary,
   borderRadius: 40,
   padding: 2,
 };

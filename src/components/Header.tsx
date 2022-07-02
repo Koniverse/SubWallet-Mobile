@@ -16,7 +16,7 @@ interface Props {
 }
 
 const headerWrapper: StyleProp<any> = {
-  backgroundColor: '#222222',
+  backgroundColor: ColorMap.dark2,
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -71,11 +71,11 @@ export const Header = ({ navigation }: Props) => {
 
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('NetworksSetting')}>
-          <SlidersHorizontal size={20} color={'#FFF'} weight={'bold'} />
+          <SlidersHorizontal size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
 
         <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('NetworkSelect')}>
-          <MagnifyingGlass size={20} color={'#FFF'} weight={'bold'} />
+          <MagnifyingGlass size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
       </View>
     </View>
