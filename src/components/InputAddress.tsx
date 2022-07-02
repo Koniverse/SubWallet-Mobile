@@ -52,7 +52,7 @@ const inputStyle: StyleProp<any> = {
 };
 
 const textInputStyle: StyleProp<any> = {
-  ...FontSize2,
+  ...sharedStyles.mainText,
   flex: 1,
   paddingHorizontal: 4,
   ...FontMedium,

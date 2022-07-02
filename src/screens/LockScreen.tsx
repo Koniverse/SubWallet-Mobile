@@ -8,6 +8,7 @@ import { Warning } from 'components/Warning';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
+import i18n from 'utils/i18n/i18n';
 
 export const LockScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -46,10 +47,10 @@ export const LockScreen = () => {
             paddingTop: 80,
             paddingBottom: 11,
           }}>
-          Welcome Back!
+          {i18n.common.welcomeBack}
         </Text>
         <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingBottom: 77 }}>
-          Enter the PIN to unlock
+          {i18n.common.enterPinToUnlock}
         </Text>
         <PinCodeField value={value} setValue={setValue} isPinCodeValid={!error} />
 

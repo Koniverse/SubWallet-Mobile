@@ -15,6 +15,7 @@ import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import reformatAddress from 'utils/index';
+import {AppState} from "react-native";
 
 const ViewStep = {
   CHAIN_LIST: 1,
@@ -94,6 +95,19 @@ export const CryptoTab = () => {
     selectedTokenSymbol: '',
   });
   const deps = selectedNetworkInfo?.networkKey;
+
+  let lastTimestamp = 0;
+  const onAppStateChange = (state: string) => {
+    if (state === 'background') {
+      lastTimestamp = Date.now();
+    } else if (state === 'active') {
+      if (Date.now() - lastTimestamp > 5 * 60 * 1000) {
+        console.log('show pin code');
+      }
+    }
+  };
+
+  AppState.addEventListener('change', onAppStateChange);
 
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { IconProps } from 'phosphor-react-native';
+import { ColorMap } from 'styles/color';
 
 interface Props extends TouchableOpacityProps {
   icon: (iconProps: IconProps) => JSX.Element;
@@ -19,7 +20,7 @@ export const IconButton = (iconButtonProps: Props) => {
 
   return (
     <TouchableOpacity {...iconButtonProps} style={[iconButtonWrapper, style]}>
-      <Icon size={20} color={color || '#fff'} weight={'bold'} />
+      <Icon size={20} color={color || ColorMap.light} weight={'bold'} />
     </TouchableOpacity>
   );
 };

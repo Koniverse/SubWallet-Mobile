@@ -41,7 +41,7 @@ const checkedIconWrapperStyle: StyleProp<any> = {
 const checkedIconStyle: StyleProp<any> = {
   width: 6,
   height: 6,
-  backgroundColor: '#FFF',
+  backgroundColor: ColorMap.light,
   borderRadius: 3,
 };
 

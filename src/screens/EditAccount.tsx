@@ -14,6 +14,7 @@ import { useToast } from 'react-native-toast-notifications';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ActionItem } from 'components/ActionItem';
 import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 
 const editAccountAddressItem: StyleProp<any> = {
   borderRadius: 5,
@@ -60,7 +61,7 @@ export const EditAccount = () => {
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Edit Account'}>
+    <SubScreenContainer navigation={navigation} title={i18n.settings.editAccount}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
         <View style={{ paddingVertical: 24 }}>
           {
@@ -98,21 +99,21 @@ export const EditAccount = () => {
 
         <ActionItem
           style={{ width: '100%', marginBottom: 4 }}
-          title={'Export Private Key'}
+          title={i18n.settings.exportPrivateKey}
           icon={Key}
           hasRightArrow
           onPress={onExportPrivateKey}
         />
         <ActionItem
           style={{ width: '100%', marginBottom: 16 }}
-          title={'Export JSON'}
+          title={i18n.settings.exportJson}
           icon={FileText}
           hasRightArrow
           onPress={() => {}}
         />
         <ActionItem
           style={{ width: '100%' }}
-          title={'Remove Account'}
+          title={i18n.settings.removeAccount}
           icon={Trash}
           color={theme.notification_danger}
           onPress={onRemoveAccount}

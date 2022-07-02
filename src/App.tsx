@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { StatusBar } from 'react-native';
+import { AppState, StatusBar } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';

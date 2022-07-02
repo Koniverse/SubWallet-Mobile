@@ -23,6 +23,116 @@ export const accountAllRecoded: Recoded = {
   isEthereum: false,
 };
 
+export const subscanByNetworkKey: Record<string, string> = {
+  acala: 'https://acala.subscan.io',
+  // 'altair': 'https://altair.subscan.io',
+  astar: 'https://astar.subscan.io',
+  // 'basilisk': 'https://basilisk.subscan.io',
+  bifrost: 'https://bifrost.subscan.io',
+  calamari: 'https://calamari.subscan.io',
+  centrifuge: 'https://centrifuge.subscan.io',
+  clover: 'https://clover.subscan.io',
+  // 'coinversation': 'https://coinversation.subscan.io',
+  // 'composableFinance': 'https://composableFinance.subscan.io',
+  crust: 'https://crust.subscan.io',
+  darwinia: 'https://darwinia.subscan.io',
+  edgeware: 'https://edgeware.subscan.io',
+  // 'efinity': 'https://efinity.subscan.io/',
+  equilibrium: 'https://equilibrium.subscan.io',
+  // 'genshiro': 'https://genshiro.subscan.io',
+  heiko: 'https://parallel-heiko.subscan.io',
+  hydradx: 'https://hydradx.subscan.io',
+  // 'interlay': 'https://interlay.subscan.io',
+  karura: 'https://karura.subscan.io',
+  khala: 'https://khala.subscan.io',
+  kilt: 'https://spiritnet.subscan.io',
+  kintsugi: 'https://kintsugi.subscan.io',
+  kusama: 'https://kusama.subscan.io',
+  // 'litentry': 'https://litentry.subscan.io',
+  // 'manta': 'https://manta.subscan.io',
+  // moonbeam: 'https://moonbeam.subscan.io',
+  // moonriver: 'https://moonriver.subscan.io',
+  // 'nodle': 'https://nodle.subscan.io',
+  parallel: 'https://parallel.subscan.io',
+  // 'phala': 'https://phala.subscan.io',
+  picasso: 'https://picasso.subscan.io',
+  pichiu: 'https://pichiu.subscan.io',
+  // 'pioneer': 'https://pioneer.subscan.io',
+  polkadot: 'https://polkadot.subscan.io',
+  quartz: 'https://quartz.subscan.io',
+  sakura: 'https://sakura.subscan.io',
+  // 'shadow': 'https://shadow.subscan.io',
+  shiden: 'https://shiden.subscan.io',
+  sora: 'https://sora.subscan.io',
+  statemine: 'https://statemine.subscan.io',
+  subgame: 'https://subgame.subscan.io',
+  statemint: 'https://statemint.subscan.io',
+  // 'subsocial': 'https://subsocial.subscan.io',
+  zeitgeist: 'https://zeitgeist.subscan.io',
+  westend: 'https://westend.subscan.io',
+  rococo: 'https://rococo.subscan.io',
+  robonomics: 'https://robonomics.subscan.io',
+  // moonbase: 'https://moonbase.subscan.io',
+  dolphin: 'https://dolphin.subscan.io/',
+  encointer: 'https://encointer.subscan.io/',
+  chainx: 'https://chainx.subscan.io/',
+  litmus: 'https://litmus.subscan.io/',
+};
+
+export const moonbeamScanUrl = 'https://moonbeam.moonscan.io';
+
+export const moonriverScanUrl = 'https://moonriver.moonscan.io';
+
+export const moonbaseScanUrl = 'https://moonbase.moonscan.io';
+
+export function isSupportSubscan(networkKey: string): boolean {
+  return !!subscanByNetworkKey[networkKey];
+}
+
+export function isSupportScanExplorer(networkKey: string): boolean {
+  return ['moonbeam', 'moonriver', 'moonbase'].includes(networkKey) || isSupportSubscan(networkKey);
+}
+
+export function getScanExplorerTransactionHistoryUrl(networkKey: string, hash: string): string {
+  if (networkKey === 'moonbeam') {
+    return `${moonbeamScanUrl}/tx/${hash}`;
+  }
+
+  if (networkKey === 'moonriver') {
+    return `${moonriverScanUrl}/tx/${hash}`;
+  }
+
+  if (networkKey === 'moonbase') {
+    return `${moonbaseScanUrl}/tx/${hash}`;
+  }
+
+  if (!subscanByNetworkKey[networkKey]) {
+    return '';
+  }
+
+  return `${subscanByNetworkKey[networkKey]}/extrinsic/${hash}`;
+}
+
+export function getScanExplorerAddressInfoUrl (networkKey: string, address: string): string {
+  if (networkKey === 'moonbeam') {
+    return `${moonbeamScanUrl}/address/${address}`;
+  }
+
+  if (networkKey === 'moonriver') {
+    return `${moonriverScanUrl}/address/${address}`;
+  }
+
+  if (networkKey === 'moonbase') {
+    return `${moonbaseScanUrl}/address/${address}`;
+  }
+
+  if (!subscanByNetworkKey[networkKey]) {
+    return '';
+  }
+
+  return `${subscanByNetworkKey[networkKey]}/account/${address}`;
+}
+
 export const notDef = (x: any) => x === null || typeof x === 'undefined';
 export const isDef = (x: any) => !notDef(x);
 export const nonEmptyArr = (x: any) => Array.isArray(x) && x.length > 0;
@@ -124,7 +234,12 @@ export function getNetworkLogo(networkKey: string, size: number, defaultLogo = '
 
     return getIcon(networkKey, size, undefined, style);
   } else if (imgSrc) {
-    return <Image style={{ width: size, height: size, borderRadius: size, backgroundColor: '#FFF' }} source={imgSrc} />;
+    return (
+      <Image
+        style={{ width: size, height: size, borderRadius: size, backgroundColor: ColorMap.light }}
+        source={imgSrc}
+      />
+    );
   }
 
   return getIcon(defaultLogo, size);

@@ -6,6 +6,7 @@ import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   onChangeText?: (text: string) => void;
@@ -67,7 +68,9 @@ export const PasswordField = ({ onChangeText, onEndEditing, onBlur, value, isErr
         </View>
       </FieldBase>
 
-      {!!isPasswordTooShort && <Warning isDanger message={'Password is too short'} style={{ marginBottom: 8 }} />}
+      {!!isPasswordTooShort && (
+        <Warning isDanger message={i18n.warningMessage.passwordTooShort} style={{ marginBottom: 8 }} />
+      )}
     </>
   );
 };

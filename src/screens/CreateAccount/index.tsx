@@ -7,6 +7,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { createAccountSuriV2, createSeedV2 } from '../../messaging';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
+import i18n from 'utils/i18n/i18n';
 
 export const SUBSTRATE_ACCOUNT_TYPE: KeypairType = 'sr25519';
 
@@ -18,12 +19,12 @@ const ViewStep = {
 
 function getHeaderTitle(viewStep: number) {
   if (viewStep === ViewStep.INIT_SP) {
-    return 'Your Secret Phrase';
+    return i18n.common.yourSecretPhrase;
   } else if (viewStep === ViewStep.VERIFY_SP) {
-    return 'Verify Secret Phrase';
+    return i18n.common.verifySecretPhrase;
   }
 
-  return 'Create Wallet Name';
+  return i18n.common.createWalletName;
 }
 
 export const CreateAccount = () => {
@@ -65,7 +66,7 @@ export const CreateAccount = () => {
     if (curName && password && seed) {
       setIsBusy(true);
       createAccountSuriV2(curName, password, seed, true, [SUBSTRATE_ACCOUNT_TYPE], '')
-        .then((response) => {
+        .then(response => {
           navigation.navigate('Home');
         })
         .catch((error: Error): void => {
