@@ -70,7 +70,7 @@ export const CryptoTab = () => {
     accounts: { accounts, currentAccountAddress },
     currentNetwork,
   } = useSelector((state: RootState) => state);
-  const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.CHAIN_LIST);
+  const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
@@ -107,15 +107,17 @@ export const CryptoTab = () => {
       selectedNetworkInfo: info,
       selectBalanceInfo: balanceInfo,
     }));
-    setCurrentViewStep(ViewStep.NETWORK_DETAIL);
+    setViewStep([ViewStep.CHAIN_LIST, ViewStep.NETWORK_DETAIL]);
   };
 
   const onPressBack = () => {
-    if (currentViewStep === ViewStep.NETWORK_DETAIL) {
-      setCurrentViewStep(ViewStep.CHAIN_LIST);
-    } else if (currentViewStep === ViewStep.TOKEN_HISTORY) {
-      setCurrentViewStep(ViewStep.NETWORK_DETAIL);
-    }
+    setViewStep(([prevPrevStep, prevCurrentStep]) => {
+      if (prevPrevStep === ViewStep.NETWORK_DETAIL) {
+        return [ViewStep.CHAIN_LIST, ViewStep.NETWORK_DETAIL];
+      }
+
+      return [prevCurrentStep, prevPrevStep];
+    });
   };
 
   const onPressTokenItem = useCallback(
@@ -147,7 +149,9 @@ export const CryptoTab = () => {
         }));
       }
 
-      setCurrentViewStep(ViewStep.TOKEN_HISTORY);
+      setViewStep(([, prvCurrentStep]) => {
+        return [prvCurrentStep, ViewStep.TOKEN_HISTORY];
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps],
@@ -185,6 +189,7 @@ export const CryptoTab = () => {
           onPressTokenItem={onPressTokenItem}
         />
       )}
+
       {currentViewStep === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
         <TokenHistoryScreen
           onPressBack={onPressBack}
