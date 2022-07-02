@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImageBackground, SafeAreaView, Text, View } from 'react-native';
+import { ImageBackground, Platform, SafeAreaView, Text, View } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
@@ -23,7 +23,7 @@ export const FirstScreen = () => {
           justifyContent: 'flex-end',
           alignItems: 'center',
           paddingHorizontal: 16,
-          paddingBottom: 22,
+          paddingBottom: Platform.OS === 'ios' ? 42 : 20,
           position: 'relative',
         }}>
         <SafeAreaView />

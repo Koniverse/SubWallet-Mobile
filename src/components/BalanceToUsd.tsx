@@ -13,18 +13,23 @@ const textStyle: StyleProp<any> = {
 
 interface Props {
   amountToUsd: BigN;
+  isShowBalance: boolean;
 }
 
-export const BalanceToUsd = ({ amountToUsd }: Props) => {
+export const BalanceToUsd = ({ amountToUsd, isShowBalance }: Props) => {
   return (
     <View style={{ flexDirection: 'row', marginTop: 8 }}>
       <Text style={textStyle}>(</Text>
-      <BalanceVal
-        balanceValTextStyle={[textStyle, { marginTop: 1 }]}
-        value={`${amountToUsd}`}
-        symbol={'$'}
-        startWithSymbol
-      />
+      {isShowBalance ? (
+        <BalanceVal
+          balanceValTextStyle={[textStyle, { marginTop: 1 }]}
+          value={`${amountToUsd}`}
+          symbol={'$'}
+          startWithSymbol
+        />
+      ) : (
+        <Text style={[textStyle, { marginTop: 1 }]}>{'******'}</Text>
+      )}
       <Text style={textStyle}>)</Text>
     </View>
   );

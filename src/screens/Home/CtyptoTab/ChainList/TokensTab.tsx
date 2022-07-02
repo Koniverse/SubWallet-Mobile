@@ -15,6 +15,8 @@ interface Props {
     tokenBalanceValue: BigN,
     tokenConvertedValue: BigN,
     tokenSymbol: string,
+    info?: AccountInfoByNetwork,
+    balanceInfo?: BalanceInfo,
   ) => void;
 }
 
@@ -26,7 +28,7 @@ type TokenArrayType = {
   defaultNetworkKey?: string;
 };
 
-export const TokensTab = ({ networkBalanceMaps, onPressTokenItem }: Props) => {
+export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
   let tokenArray: TokenArrayType[] = [];
 
   Object.keys(networkBalanceMaps).forEach(networkKey => {
@@ -45,38 +47,47 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem }: Props) => {
           tokenBalanceValue: children.balanceValue,
           convertedBalanceValue: children.convertedBalanceValue || BN_ZERO,
           tokenBalanceSymbol: children.symbol,
-          defaultNetworkKey: networkBalanceInfo.symbol,
+          defaultNetworkKey: networkKey,
         }),
       );
     }
   });
 
+  const renderItem = (token: TokenArrayType, index: number) => {
+    const info = accountInfoByNetworkMap[token.defaultNetworkKey || token.selectNetworkKey];
+    const balanceInfo = networkBalanceMaps[token.defaultNetworkKey || token.selectNetworkKey];
+    console.log('balanceInfo', balanceInfo);
+    if (!balanceInfo) {
+      return <ChainBalanceSkeleton key={info.key} />;
+    } else {
+      return (
+        <TokenChainBalance
+          key={`${token.selectNetworkKey}-${index}`}
+          tokenBalanceValue={token.tokenBalanceValue}
+          convertedBalanceValue={token.convertedBalanceValue}
+          selectNetworkKey={token.selectNetworkKey}
+          tokenBalanceSymbol={token.tokenBalanceSymbol}
+          defaultNetworkKey={token.defaultNetworkKey}
+          onPress={() =>
+            onPressTokenItem(
+              token.tokenBalanceSymbol,
+              token.tokenBalanceValue,
+              token.convertedBalanceValue,
+              token.tokenBalanceSymbol,
+              info,
+              balanceInfo,
+            )
+          }
+        />
+      );
+    }
+  };
+
+  console.log('tokenArray', tokenArray);
+
   return (
     <ScrollView style={{ paddingTop: 8 }}>
-      {tokenArray &&
-        tokenArray.map((token, index) => {
-          if (!networkBalanceMaps) {
-            return <ChainBalanceSkeleton key={`${token.selectNetworkKey}-${index}`} />;
-          } else {
-            return (
-              <TokenChainBalance
-                key={`${token.selectNetworkKey}-${index}`}
-                tokenBalanceValue={token.tokenBalanceValue}
-                convertedBalanceValue={token.convertedBalanceValue}
-                selectNetworkKey={token.selectNetworkKey}
-                tokenBalanceSymbol={token.tokenBalanceSymbol}
-                onPress={() =>
-                  onPressTokenItem(
-                    token.tokenBalanceSymbol,
-                    token.tokenBalanceValue,
-                    token.convertedBalanceValue,
-                    token.tokenBalanceSymbol,
-                  )
-                }
-              />
-            );
-          }
-        })}
+      {tokenArray && tokenArray.map((token, index) => renderItem(token, index))}
     </ScrollView>
   );
 };

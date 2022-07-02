@@ -7,24 +7,20 @@ import { RootStackParamList } from 'types/routes';
 import { ActionButtonContainer } from 'screens/Home/CtyptoTab/ActionButtonContainer';
 import { ChainsTab } from 'screens/Home/CtyptoTab/ChainList/ChainsTab';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainList/TokensTab';
-import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import { StyleProp, View } from 'react-native';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { ColorMap } from 'styles/color';
-import reformatAddress from 'utils/index';
-
 interface Props {
+  accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
   totalValue: BigN;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   onShoHideReceiveModal: (isShowModal: boolean) => void;
   receiveModalVisible: boolean;
-  currentAccountAddress: string;
   showedNetworks: string[];
   networkBalanceMaps: Record<string, BalanceInfo>;
-  networkMetadataMap: Record<string, NetWorkMetadataDef>;
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
   onPressSendFundBtn: () => void;
   onPressTokenItem: (
@@ -32,6 +28,8 @@ interface Props {
     tokenBalanceValue: BigN,
     tokenConvertedValue: BigN,
     tokenSymbol: string,
+    info?: AccountInfoByNetwork,
+    balanceInfo?: BalanceInfo,
   ) => void;
 }
 
@@ -47,58 +45,18 @@ const ROUTES = [
   { key: 'tokens', title: 'Tokens' },
 ];
 
-function getAccountInfoByNetwork(
-  address: string,
-  networkKey: string,
-  networkMetadata: NetWorkMetadataDef,
-): AccountInfoByNetwork {
-  return {
-    address,
-    key: networkKey,
-    networkKey,
-    networkDisplayName: networkMetadata.chain,
-    networkPrefix: networkMetadata.ss58Format,
-    networkLogo: networkKey,
-    networkIconTheme: networkMetadata.isEthereum ? 'ethereum' : networkMetadata.icon || 'polkadot',
-    formattedAddress: reformatAddress(address, networkMetadata.ss58Format),
-  };
-}
-
-function getAccountInfoByNetworkMap(
-  address: string,
-  networkKeys: string[],
-  networkMetadataMap: Record<string, NetWorkMetadataDef>,
-): Record<string, AccountInfoByNetwork> {
-  const result: Record<string, AccountInfoByNetwork> = {};
-
-  networkKeys.forEach(n => {
-    if (networkMetadataMap[n]) {
-      result[n] = getAccountInfoByNetwork(address, n, networkMetadataMap[n]);
-    }
-  });
-
-  return result;
-}
-
 export const ChainListScreen = ({
+  accountInfoByNetworkMap,
   totalValue,
   navigation,
   onShoHideReceiveModal,
   receiveModalVisible,
-  currentAccountAddress,
   showedNetworks,
-  networkMetadataMap,
   networkBalanceMaps,
   onPressChainItem,
   onPressSendFundBtn,
   onPressTokenItem,
 }: Props) => {
-  const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
-    currentAccountAddress,
-    showedNetworks,
-    networkMetadataMap,
-  );
-
   // @ts-ignore
   const renderScene = ({ route }) => {
     switch (route.key) {
@@ -115,8 +73,8 @@ export const ChainListScreen = ({
         return (
           <ChainsTab
             onPressChainItem={onPressChainItem}
-            networkBalanceMaps={networkBalanceMaps}
             networkKeys={showedNetworks}
+            networkBalanceMaps={networkBalanceMaps}
             accountInfoByNetworkMap={accountInfoByNetworkMap}
           />
         );

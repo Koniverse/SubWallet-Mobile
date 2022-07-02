@@ -321,7 +321,7 @@ export const SendFund = () => {
                         ref={inputBalanceRef}
                         siSymbol={selectedToken}
                       />
-                      {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} />}
+                      {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
                     </View>
                   </ScrollView>
 

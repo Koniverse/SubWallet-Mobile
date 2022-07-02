@@ -5,14 +5,14 @@ import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { AccountInfoByNetwork } from 'types/ui-types';
-import { BalanceVal } from 'components/BalanceVal';
 import BigN from 'bignumber.js';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { BalanceToUsd } from 'components/BalanceToUsd';
 
 interface Props {
   onPressBack: () => void;
@@ -48,14 +48,8 @@ const tokenHistoryHeaderTitle: StyleProp<any> = {
 const balanceContainer: StyleProp<any> = {
   paddingHorizontal: 16,
   alignItems: 'center',
-  backgroundColor: '#222222',
+  backgroundColor: ColorMap.dark2,
   paddingTop: 21,
-};
-
-const convertedBalanceStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.primary,
 };
 
 export const TokenHistoryScreen = ({
@@ -104,21 +98,7 @@ export const TokenHistoryScreen = ({
         <View style={balanceContainer}>
           <BalancesVisibility value={tokenBalanceValue} startWithSymbol={false} symbol={tokenHistorySymbol} />
 
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={convertedBalanceStyle}>{'('}</Text>
-            {isShowBalance ? (
-              <BalanceVal
-                value={tokenConvertedValue}
-                startWithSymbol
-                symbol={'$'}
-                balanceValTextStyle={convertedBalanceStyle}
-              />
-            ) : (
-              <Text style={convertedBalanceStyle}>{'******'}</Text>
-            )}
-
-            <Text style={convertedBalanceStyle}>{')'}</Text>
-          </View>
+          <BalanceToUsd amountToUsd={tokenConvertedValue} isShowBalance={isShowBalance} />
 
           <ActionButtonContainer
             onPressSendFundBtn={onPressSendFundBtn}
