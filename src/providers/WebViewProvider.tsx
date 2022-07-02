@@ -19,7 +19,7 @@ import { updateAccounts, updateCurrentAccount } from 'stores/Accounts';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
-import { useToast } from 'react-native-toast-notifications';
+// import { useToast } from 'react-native-toast-notifications';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { updateSettings } from 'stores/Settings';
 import { updateChainRegistry } from 'stores/ChainRegistry';
@@ -27,6 +27,7 @@ import { updateBalance } from 'stores/Balance';
 import moment from 'moment';
 import { RootState } from 'stores/index';
 import { updateTransactionHistory } from 'stores/TransactionHistory';
+import SplashScreen from 'react-native-splash-screen';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -47,7 +48,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const webRef = useRef<WebView>();
   const dispatch = useDispatch();
   const [status, setStatus] = useState('init');
-  const toast = useToast();
+  // const toast = useToast();
   const {
     settingData: { language },
   } = useSelector((state: RootState) => state);
@@ -70,16 +71,19 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           // @ts-ignore
           const webViewStatus = data.response?.status as string;
           setStatus(webViewStatus);
-          toast.show(webViewStatus, {
-            type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
-          });
+          // toast.show(webViewStatus, {
+          //   type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
+          // });
+          if (webViewStatus === 'crypto_ready') {
+            SplashScreen.hide();
+          }
           return true;
         } else {
           return false;
         }
       });
     },
-    [language, toast],
+    [language],
   );
 
   const onWebViewLoaded = useCallback(() => {

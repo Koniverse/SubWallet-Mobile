@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { AppState, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -31,13 +31,12 @@ import { Languages } from 'screens/Settings/Languages';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Security } from 'screens/Settings/Security';
 import { LockScreen } from 'screens/LockScreen';
-import SplashScreen from 'react-native-splash-screen';
+import { ExportJson } from 'screens/ExportJson';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
 });
 export const App = () => {
-  SplashScreen.hide();
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   // const isDarkMode = useColorScheme() === 'dark';
@@ -99,6 +98,7 @@ export const App = () => {
                   <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
                   <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />
                   <Stack.Screen name="Security" component={Security} options={{ title: 'Security' }} />
+                  <Stack.Screen name="ExportJson" component={ExportJson} options={{ title: 'Export Json' }} />
                 </Stack.Group>
                 <Stack.Group
                   screenOptions={{

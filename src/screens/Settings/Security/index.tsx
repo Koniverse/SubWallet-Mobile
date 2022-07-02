@@ -10,7 +10,7 @@ import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { PinCode } from 'screens/Settings/Security/PinCode';
-import { updatePinCode } from 'stores/SettingData';
+import { updatePinCode, updatePinCodeEnable } from 'stores/SettingData';
 
 const ViewStep = {
   SECURITY: 1,
@@ -20,9 +20,9 @@ const ViewStep = {
 
 export const Security = () => {
   const {
-    settingData: { pinCode },
+    settingData: { pinCode, pinCodeEnabled },
   } = useSelector((state: RootState) => state);
-  const [isEnabledPinCode, setEnabledPinCode] = useState<boolean>(!!pinCode);
+  const [isEnabledPinCode, setEnabledPinCode] = useState<boolean>(!!pinCode && pinCodeEnabled);
   const [isEnabledFaceId, setEnabledFaceId] = useState<boolean>(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.SECURITY);
   const [pinCode1, setPinCode1] = useState<string>('');
@@ -31,13 +31,10 @@ export const Security = () => {
   const dispatch = useDispatch();
 
   const onValueChangePinCode = () => {
-    if (!isEnabledPinCode) {
-      setEnabledPinCode(true);
-      if (!pinCode) {
-        setCurrentViewStep(ViewStep.PIN_CODE);
-      }
-    } else {
-      setEnabledPinCode(false);
+    setEnabledPinCode(!isEnabledPinCode);
+    dispatch(updatePinCodeEnable(!isEnabledPinCode));
+    if (!pinCode) {
+      setCurrentViewStep(ViewStep.PIN_CODE);
     }
   };
 

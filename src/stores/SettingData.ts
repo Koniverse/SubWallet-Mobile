@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type SettingDataType = {
   language: string;
   pinCode: string;
+  pinCodeEnabled: boolean;
 };
 
 const SETTING_DATA_STORE_DEFAULT: SettingDataType = {
   language: 'en',
   pinCode: '',
+  pinCodeEnabled: false,
 };
 
 const settingDataSlice = createSlice({
@@ -20,8 +22,11 @@ const settingDataSlice = createSlice({
     updatePinCode(state, action: PayloadAction<string>) {
       state.pinCode = action.payload;
     },
+    updatePinCodeEnable(state, action: PayloadAction<boolean>) {
+      state.pinCodeEnabled = action.payload;
+    },
   },
 });
 
-export const { updateLanguage, updatePinCode } = settingDataSlice.actions;
+export const { updateLanguage, updatePinCode, updatePinCodeEnable } = settingDataSlice.actions;
 export default settingDataSlice.reducer;

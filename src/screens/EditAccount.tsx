@@ -54,6 +54,11 @@ export const EditAccount = () => {
     // @ts-ignore
     navigation.navigate('ExportPrivateKey', { address: data.address });
   };
+  //
+  // const onExportJson = () => {
+  //   // @ts-ignore
+  //   navigation.navigate('ExportJson', { address: data.address });
+  // };
 
   const onRemoveAccount = () => {
     // @ts-ignore
