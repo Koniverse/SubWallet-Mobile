@@ -147,6 +147,8 @@ export const ViewPrivateKey = () => {
     navigation.goBack();
   };
 
+  const isPasswordError = !password || password.length < 6;
+
   return (
     <SubScreenContainer navigation={navigation} title={'Your Private Key'}>
       <View style={layoutContainerStyle}>
@@ -181,7 +183,7 @@ export const ViewPrivateKey = () => {
                 onChangeText={onTypePassword}
                 onBlur={onSetPassword}
                 onEndEditing={onSetPassword}
-                isError={!!password && password.length < 6}
+                isError={isPasswordError}
                 value={password}
               />
 
@@ -210,7 +212,17 @@ export const ViewPrivateKey = () => {
         </ScrollView>
 
         <View style={footerAreaStyle}>
-          <SubmitButton title={'Done'} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />
+          {currentViewStep === ViewStep.ENTER_PW ? (
+            <SubmitButton
+              title={'Continue'}
+              disabled={isPasswordError}
+              isBusy={isBusy}
+              style={buttonStyle}
+              onPress={onSetPassword}
+            />
+          ) : (
+            <SubmitButton title={'Done'} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />
+          )}
         </View>
       </View>
     </SubScreenContainer>
