@@ -137,7 +137,6 @@ export const ViewPrivateKey = () => {
         setCurrentViewStep(ViewStep.SHOW_PK);
       })
       .catch((error: Error) => {
-        console.log(error);
         setErrorMessage(error.message);
         setIsBusy(false);
       });

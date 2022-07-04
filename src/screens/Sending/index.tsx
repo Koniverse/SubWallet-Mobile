@@ -236,7 +236,6 @@ export const SendFund = () => {
       checkAddress(receiveAddress)
         .then(v => {
           if (isSync) {
-            console.log('asdasd', v);
             setRecipientPhish(v);
           }
         })

@@ -83,7 +83,6 @@ export const RestoreJson = () => {
       })
       .catch(err => {
         setFileError(true);
-        console.log('Err======', err.message, err.code);
       });
   };
 
@@ -111,7 +110,6 @@ export const RestoreJson = () => {
         navigation.navigate('Home');
       })
       .catch(e => {
-        console.log('Restore error', e);
         setIsBusy(false);
         setIsPasswordError(true);
       });

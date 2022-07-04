@@ -36,7 +36,6 @@ export const Confirmation = ({
   const [isBusy, setBusy] = useState(false);
   const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
   const [errorArr, setErrorArr] = useState<string[]>([]);
-  console.log('requestPayload', requestPayload);
   const _doTransfer = useCallback(
     (): void => {
       setBusy(true);
@@ -55,7 +54,6 @@ export const Confirmation = ({
                 extrinsicHash: rs.extrinsicHash,
               });
             } else if (rs.step === TransferStep.ERROR.valueOf()) {
-              console.log('123', rs);
               onChangeResult({
                 isShowTxResult: true,
                 isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),

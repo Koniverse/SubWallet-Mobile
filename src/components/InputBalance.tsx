@@ -18,7 +18,6 @@ export interface InputBalanceProps {
 }
 
 const isValidInput = (input: string) => {
-  console.log('input', input);
   return !(isNaN(parseFloat(input)) || !input.match(/^-?\d*(\.\d+)?$/));
 };
 

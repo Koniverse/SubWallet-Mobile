@@ -49,8 +49,6 @@ export const ExportJson = ({ address, closeModal }: Props) => {
     setErrorMessage('');
   };
 
-  console.log('errorMessage', errorMessage);
-
   const onSetPassword = () => {
     setIsBusy(true);
     exportAccount(address, password)

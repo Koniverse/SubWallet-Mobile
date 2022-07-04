@@ -65,7 +65,6 @@ export const ImportSecretPhrase = () => {
       })
       .catch(e => {
         setAccount(null);
-        console.log('e', e);
         setError('Invalid mnemonic seed');
       });
   }, [seed]);
