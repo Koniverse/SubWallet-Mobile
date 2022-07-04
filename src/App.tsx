@@ -44,7 +44,7 @@ export const App = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
   const {
-    settingData: { pinCode },
+    settingData: { pinCode, pinCodeEnabled },
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
 
@@ -61,7 +61,9 @@ export const App = () => {
           <ThemeContext.Provider value={theme}>
             <NavigationContainer ref={navigationRef} theme={theme}>
               <Stack.Navigator
-                initialRouteName={!!pinCode ? 'LockScreen' : accounts && accounts.length ? 'Home' : 'FirstScreen'}
+                initialRouteName={
+                  !!pinCode && pinCodeEnabled ? 'LockScreen' : accounts && accounts.length ? 'Home' : 'FirstScreen'
+                }
                 screenOptions={{
                   animation: 'fade_from_bottom',
                 }}>
