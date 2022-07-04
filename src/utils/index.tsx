@@ -113,7 +113,7 @@ export function getScanExplorerTransactionHistoryUrl(networkKey: string, hash: s
   return `${subscanByNetworkKey[networkKey]}/extrinsic/${hash}`;
 }
 
-export function getScanExplorerAddressInfoUrl (networkKey: string, address: string): string {
+export function getScanExplorerAddressInfoUrl(networkKey: string, address: string): string {
   if (networkKey === 'moonbeam') {
     return `${moonbeamScanUrl}/address/${address}`;
   }
@@ -208,6 +208,7 @@ export function recodeAddress(
   };
 }
 
+// @ts-ignore
 export function getNetworkLogo(networkKey: string, size: number, defaultLogo = 'default') {
   // @ts-ignore
   const imgSrc = Images[networkKey];
@@ -242,7 +243,7 @@ export function getNetworkLogo(networkKey: string, size: number, defaultLogo = '
     );
   }
 
-  return getIcon(defaultLogo, size);
+  return getNetworkLogo(defaultLogo, size);
 }
 
 export function shuffleArray(array: any[]) {
