@@ -1,10 +1,12 @@
-import { StyleProp, View, ViewProps } from 'react-native';
+import { Image, StyleProp, View, ViewProps } from 'react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import Identicon from '@polkadot/reactnative-identicon';
 // @ts-ignore
 import Avatar from 'react-native-boring-avatars';
 import React from 'react';
 import { ColorMap } from 'styles/color';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { toDataUrl } from 'utils/blockies';
 
 interface AvatarProps extends ViewProps {
   address: string;
@@ -19,7 +21,17 @@ const wrapperStyle: StyleProp<any> = {
   padding: 2,
 };
 
+function getEthereumIdenticonStyle(size: number): StyleProp<any> {
+  return {
+    width: size,
+    height: size,
+    borderRadius: size,
+  };
+}
+
 export const SubWalletAvatar = ({ address, size, ...viewProp }: AvatarProps) => {
+  const isEthereum = isEthereumAddress(address);
+
   return (
     <View style={wrapperStyle} {...viewProp}>
       {address === ALL_ACCOUNT_KEY ? (
@@ -29,6 +41,8 @@ export const SubWalletAvatar = ({ address, size, ...viewProp }: AvatarProps) => 
           size={size}
           variant={'beam'}
         />
+      ) : isEthereum ? (
+        <Image source={{ uri: toDataUrl(address) }} style={getEthereumIdenticonStyle(size)} />
       ) : (
         <Identicon value={address} size={size} theme={'polkadot'} />
       )}
