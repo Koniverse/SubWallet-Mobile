@@ -56,7 +56,6 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
   const renderItem = (token: TokenArrayType, index: number) => {
     const info = accountInfoByNetworkMap[token.defaultNetworkKey || token.selectNetworkKey];
     const balanceInfo = networkBalanceMaps[token.defaultNetworkKey || token.selectNetworkKey];
-    console.log('balanceInfo', balanceInfo);
     if (!balanceInfo) {
       return <ChainBalanceSkeleton key={info.key} />;
     } else {
@@ -82,8 +81,6 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
       );
     }
   };
-
-  console.log('tokenArray', tokenArray);
 
   return (
     <ScrollView style={{ paddingTop: 8 }}>

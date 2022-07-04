@@ -3,8 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { Keyboard, ScrollView, StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { InputAddress } from 'components/InputAddress';
-import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { getNetworkLogo } from 'utils/index';
+import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { getEthereumChains, getNetworkLogo } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
@@ -35,6 +35,9 @@ import { TransferResultType } from 'types/tx';
 import { SendFundResult } from 'screens/Sending/SendFundResult';
 import { checkAddress } from '@polkadot/phishing';
 import { ResponseCheckTransfer } from '@subwallet/extension-base/background/KoniTypes';
+import { Warning } from 'components/Warning';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import i18n from 'utils/i18n/i18n';
 
 const NetworkLogoWrapperStyle: StyleProp<any> = {
   borderRadius: 20,
@@ -47,6 +50,10 @@ const NetworkLogoWrapperStyle: StyleProp<any> = {
   alignItems: 'center',
   marginTop: 48,
   marginBottom: 16,
+};
+
+const WarningStyle: StyleProp<any> = {
+  marginBottom: 8,
 };
 
 function getUseMaxButtonTextStyle(disabled: boolean) {
@@ -68,6 +75,7 @@ export const SendFund = () => {
     accounts: { currentAccountAddress },
     chainRegistry,
     price: { tokenPriceMap },
+    networkMap,
   } = useSelector((state: RootState) => state);
   const [receiveAddress, setReceiveAddress] = useState<string>('');
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
@@ -99,6 +107,19 @@ export const SendFund = () => {
   const canToggleAll = !!isSupportTransferAll && !!senderFreeBalance && !reference && !!receiveAddress;
   const amountGtAvailableBalance =
     !!rawAmount && !!senderFreeBalance && new BigN(rawAmount).gt(new BigN(senderFreeBalance));
+  const [currentViewStep, setCurrentStep] = useState(ViewStep.SEND_FUND);
+  const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
+  const { isShowTxResult } = txResult;
+  const inputBalanceRef = createRef();
+  const amount = Math.floor(Number(rawAmount));
+  const ethereumChains = getEthereumChains(networkMap);
+  const isNotSameAddressAndTokenType =
+    (isEthereumAddress(currentAccountAddress) && !ethereumChains.includes(networkKey)) ||
+    (!isEthereumAddress(currentAccountAddress) && ethereumChains.includes(networkKey));
+  const isNotSameAddressType =
+    (isEthereumAddress(currentAccountAddress) && !!receiveAddress && !isEthereumAddress(receiveAddress)) ||
+    (!isEthereumAddress(currentAccountAddress) && !!receiveAddress && isEthereumAddress(receiveAddress));
+
   const canMakeTransfer =
     !!rawAmount &&
     isSupportTransfer &&
@@ -106,23 +127,9 @@ export const SendFund = () => {
     !recipientPhish &&
     !!receiveAddress &&
     !isSameAddress &&
+    !isNotSameAddressAndTokenType &&
+    !isNotSameAddressType &&
     !amountGtAvailableBalance;
-
-  console.log(
-    '!!rawAmount',
-    !!rawAmount,
-    isSupportTransfer,
-    !isGasRequiredExceedsError,
-    !recipientPhish,
-    !!receiveAddress,
-    !isSameAddress,
-    !amountGtAvailableBalance,
-  );
-  const [currentViewStep, setCurrentStep] = useState(ViewStep.SEND_FUND);
-  const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
-  const { isShowTxResult } = txResult;
-  const inputBalanceRef = createRef();
-  const amount = Math.floor(Number(rawAmount));
 
   const _doCheckTransfer = useCallback(
     (isConfirmTransferAll: boolean, thenCb: (rs: ResponseCheckTransfer) => void, catchCb: (rs: Error) => void) => {
@@ -229,6 +236,7 @@ export const SendFund = () => {
       checkAddress(receiveAddress)
         .then(v => {
           if (isSync) {
+            console.log('asdasd', v);
             setRecipientPhish(v);
           }
         })
@@ -300,9 +308,10 @@ export const SendFund = () => {
                   setBlurInputAddress(false);
                 }}>
                 <View style={{ ...sharedStyles.layoutContainer }}>
-                  <ScrollView>
+                  <ScrollView style={{ ...ScrollViewStyle }}>
                     <View style={{ alignItems: 'center', flex: 1 }}>
                       <InputAddress
+                        containerStyle={{ marginBottom: 8 }}
                         label={'Sent to address'}
                         onFocus={() => setBlurInputAddress(true)}
                         onBlur={() => setBlurInputAddress(false)}
@@ -311,6 +320,30 @@ export const SendFund = () => {
                         onChangeInputAddress={() => setBlurInputAddress(true)}
                         isBlurInputAddress={isBlurInputAddress}
                       />
+
+                      {isSameAddress && (
+                        <Warning isDanger style={WarningStyle} message={i18n.warningMessage.isNotSameAddress} />
+                      )}
+
+                      {!!recipientPhish && (
+                        <Warning
+                          style={WarningStyle}
+                          isDanger
+                          message={`${i18n.warningMessage.recipientPhish} ${recipientPhish}`}
+                        />
+                      )}
+
+                      {isNotSameAddressAndTokenType && (
+                        <Warning
+                          style={WarningStyle}
+                          isDanger
+                          message={i18n.warningMessage.isNotSameAddressAndTokenType}
+                        />
+                      )}
+
+                      {isNotSameAddressType && (
+                        <Warning style={WarningStyle} isDanger message={i18n.warningMessage.isNotSameAddress} />
+                      )}
 
                       <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(networkKey, 34)}</View>
                       <InputBalance

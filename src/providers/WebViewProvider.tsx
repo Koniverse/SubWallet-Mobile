@@ -74,9 +74,9 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           // toast.show(webViewStatus, {
           //   type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
           // });
-          if (webViewStatus === 'crypto_ready') {
+          // if (webViewStatus === 'crypto_ready') {
             SplashScreen.hide();
-          }
+          // }
           return true;
         } else {
           return false;

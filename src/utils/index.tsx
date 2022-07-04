@@ -330,3 +330,15 @@ export function reformatBalance(value: string | BN, decimals: number, token: str
     si.power === 0 ? token : `${si.text} ${token}`,
   ];
 }
+
+export function getEthereumChains(networkMap: Record<string, NetworkJson>): string[] {
+  const result: string[] = [];
+
+  Object.keys(networkMap).forEach(k => {
+    if (networkMap[k].isEthereum) {
+      result.push(k);
+    }
+  });
+
+  return result;
+}

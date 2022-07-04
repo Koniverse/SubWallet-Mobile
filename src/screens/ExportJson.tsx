@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleProp, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleProp, Text, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import {
-  ContainerHorizontalPadding,
-  MarginBottomForSubmitButton,
-  ScrollViewStyle,
-  sharedStyles,
-} from 'styles/sharedStyles';
+import { FontSemiBold, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { useToast } from 'react-native-toast-notifications';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
@@ -16,10 +11,10 @@ import * as RNFS from 'react-native-fs';
 
 interface Props {
   address: string;
+  closeModal: (isShowModal: boolean) => void;
 }
 
 const layoutContainerStyle: StyleProp<any> = {
-  ...ContainerHorizontalPadding,
   flex: 1,
 };
 
@@ -29,24 +24,21 @@ const bodyAreaStyle: StyleProp<any> = {
 };
 
 const footerAreaStyle: StyleProp<any> = {
-  marginLeft: -4,
-  marginRight: -4,
   flexDirection: 'row',
-  paddingTop: 12,
-  ...MarginBottomForSubmitButton,
+  marginBottom: 40,
 };
 
 const passwordFieldStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark1,
   borderRadius: 5,
+  marginBottom: 8,
 };
 
 const buttonStyle: StyleProp<any> = {
-  margin: 4,
-  flex: 1,
+  width: '100%',
 };
 
-export const ExportJson = ({ address }: Props) => {
+export const ExportJson = ({ address, closeModal }: Props) => {
   const toast = useToast();
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
@@ -57,27 +49,30 @@ export const ExportJson = ({ address }: Props) => {
     setErrorMessage('');
   };
 
+  console.log('errorMessage', errorMessage);
+
   const onSetPassword = () => {
     setIsBusy(true);
     exportAccount(address, password)
       .then(({ exportedJson }) => {
-        console.log('exportedJson', exportedJson);
+        const baseDir = Platform.OS === 'android' ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath;
 
-        const filePath = RNFS.DownloadDirectoryPath + `/${exportedJson.address}.json`;
+        const filePath = baseDir + `/${exportedJson.address}.json`;
 
         RNFS.writeFile(filePath, JSON.stringify(exportedJson), 'utf8')
           .then(success => {
             console.log('FILE WRITTEN!', success);
             toast.show('Export successfully');
             setIsBusy(false);
+            closeModal(false);
           })
           .catch(err => {
-            console.log(err.message);
+            setErrorMessage(err.error);
             setIsBusy(false);
           });
       })
       .catch((error: Error) => {
-        console.log('error----', error);
+        setErrorMessage(error.message);
         setIsBusy(false);
       });
   };
@@ -85,39 +80,56 @@ export const ExportJson = ({ address }: Props) => {
   const isPasswordError = !password || password.length < 6;
 
   return (
-    <View style={{ flex: 1, backgroundColor: ColorMap.dark2 }}>
-      <View style={layoutContainerStyle}>
-        <ScrollView style={bodyAreaStyle}>
-          <Warning
-            title={'Do not share your private key!'}
-            message={'If someone has your private key they will have full control of your account'}
-          />
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={18}>
+      <SafeAreaView
+        style={{
+          backgroundColor: ColorMap.dark2,
+          height: '100%',
+        }}>
+        <View style={layoutContainerStyle}>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: ColorMap.light,
+              ...sharedStyles.mediumText,
+              ...FontSemiBold,
+              paddingBottom: 16,
+            }}>
+            Export Account
+          </Text>
 
-          <PasswordField
-            label={'PASSWORD FOR THIS ACCOUNT'}
-            onChangeText={onTypePassword}
-            onBlur={onSetPassword}
-            onEndEditing={onSetPassword}
-            isError={isPasswordError}
-            value={password}
-            style={passwordFieldStyle}
-          />
+          <ScrollView style={bodyAreaStyle}>
+            <Warning
+              title={'Do not share your private key!'}
+              message={'If someone has your private key they will have full control of your account'}
+              style={{ marginBottom: 16 }}
+            />
 
-          {!!errorMessage && (
-            <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 10 }} message={errorMessage} />
-          )}
-        </ScrollView>
+            <PasswordField
+              label={'PASSWORD FOR THIS ACCOUNT'}
+              onChangeText={onTypePassword}
+              onBlur={onSetPassword}
+              onEndEditing={onSetPassword}
+              isError={isPasswordError}
+              value={password}
+              style={passwordFieldStyle}
+            />
 
-        <View style={footerAreaStyle}>
-          <SubmitButton
-            title={'Continue'}
-            disabled={isPasswordError}
-            isBusy={isBusy}
-            style={buttonStyle}
-            onPress={onSetPassword}
-          />
+            {!!errorMessage && (
+              <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 0 }} message={errorMessage} />
+            )}
+          </ScrollView>
+          <View style={footerAreaStyle}>
+            <SubmitButton
+              title={'Continue'}
+              disabled={isPasswordError}
+              isBusy={isBusy}
+              style={buttonStyle}
+              onPress={onSetPassword}
+            />
+          </View>
         </View>
-      </View>
-    </View>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };

@@ -4,11 +4,12 @@ import { Images, SVGImages } from 'assets/index';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { ArchiveTray, UserCirclePlus } from 'phosphor-react-native';
+import { ArchiveTray, Article, FileArrowUp, LockKey, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps, RootStackParamList } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
+import { AccountActionType } from 'types/ui-types';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -29,6 +30,24 @@ const firstScreenNotificationStyle: StyleProp<any> = {
   paddingTop: 56,
   ...FontMedium,
 };
+
+const SECRET_TYPE: AccountActionType[] = [
+  {
+    icon: Article,
+    title: i18n.common.secretPhrase,
+    navigationName: 'ImportSecretPhrase' as keyof RootStackParamList,
+  },
+  {
+    icon: LockKey,
+    title: i18n.common.privateKey,
+    navigationName: 'RestoreJson' as keyof RootStackParamList,
+  },
+  {
+    icon: FileArrowUp,
+    title: i18n.common.jsonFile,
+    navigationName: 'RestoreJson' as keyof RootStackParamList,
+  },
+];
 
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -63,6 +82,8 @@ export const FirstScreen = () => {
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenNotification}</Text>
 
         <SelectImportAccountModal
+          modalHeight={256}
+          secretTypeList={SECRET_TYPE}
           modalVisible={importSelectModalVisible}
           onChangeModalVisible={() => setSelectModalVisible(false)}
         />

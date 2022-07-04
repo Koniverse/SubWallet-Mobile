@@ -1,5 +1,7 @@
 import { AccountJson } from "@subwallet/extension-base/background/types";
 import React from "react";
+import {IconProps} from "phosphor-react-native";
+import {RootStackParamList} from "types/routes";
 
 export type BalanceFormatType = [number, string, string | undefined];
 export type BitLength = 8 | 16 | 32 | 64 | 128 | 256;
@@ -25,4 +27,10 @@ export type AccountInfoByNetwork = {
   networkIconTheme: string;
   address: string;
   formattedAddress: string;
+};
+
+export type AccountActionType = {
+  icon: ({ weight, color, size, style, mirrored }: IconProps) => JSX.Element;
+  title: string;
+  navigationName: keyof RootStackParamList;
 };
