@@ -79,7 +79,6 @@ export const SendFund = () => {
   } = useSelector((state: RootState) => state);
   const [receiveAddress, setReceiveAddress] = useState<string>('');
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
-  const [isBlurInputAddress, setBlurInputAddress] = useState<boolean>(false);
   const selectedTokenMap = chainRegistry[networkKey].tokenMap;
   const selectedMainToken = Object.values(selectedTokenMap).find(val => val.isMainToken);
   const selectedToken = selectedMainToken ? selectedMainToken.name : Object.keys(selectedTokenMap)[0];
@@ -260,6 +259,10 @@ export const SendFund = () => {
     }
   };
 
+  const onChangeReceiverAddress = (receiverAddress: string | null, currentTextValue: string) => {
+    console.log('receiverAddress', receiverAddress, currentTextValue);
+  };
+
   const _onChangeResult = (curTxResult: TransferResultType) => {
     setTxResult(curTxResult);
   };
@@ -304,7 +307,6 @@ export const SendFund = () => {
               <TouchableWithoutFeedback
                 onPress={() => {
                   Keyboard.dismiss();
-                  setBlurInputAddress(false);
                 }}>
                 <View style={{ ...sharedStyles.layoutContainer }}>
                   <ScrollView style={{ ...ScrollViewStyle }}>
@@ -312,12 +314,7 @@ export const SendFund = () => {
                       <InputAddress
                         containerStyle={{ marginBottom: 8 }}
                         label={'Sent to address'}
-                        onFocus={() => setBlurInputAddress(true)}
-                        onBlur={() => setBlurInputAddress(false)}
-                        onChangeText={text => setReceiveAddress(text)}
-                        receiveAddress={receiveAddress}
-                        onChangeInputAddress={() => setBlurInputAddress(true)}
-                        isBlurInputAddress={isBlurInputAddress}
+                        onChange={onChangeReceiverAddress}
                       />
 
                       {isSameAddress && (

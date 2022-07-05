@@ -1,20 +1,18 @@
-import React from 'react';
-import { StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import { FontSize0, sharedStyles, FontMedium, FontSize2 } from 'styles/sharedStyles';
+import React, { useState } from 'react';
+import { StyleProp, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 import { QrCode } from 'phosphor-react-native';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { toShort } from 'utils/index';
+import reformatAddress, { toShort } from 'utils/index';
+import { isAddress } from '@polkadot/util-crypto';
 
-interface InputProps extends TextInputProps {
+interface InputProps {
   label: string;
   containerStyle?: StyleProp<any>;
-  textTransform?: string;
-  receiveAddress: string;
-  isBlurInputAddress: boolean;
-  onChangeInputAddress: () => void;
+  onChange: (output: string | null, currentValue: string) => void;
 }
 
 const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
@@ -25,19 +23,24 @@ const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
     paddingHorizontal: 16,
     paddingTop: 4,
     height: 64,
+    position: 'relative',
     ...style,
   };
 };
 
-const getInputLabelStyle: StyleProp<any> = (textTransform?: string) => {
-  return {
-    paddingTop: 2,
-    textTransform: textTransform,
-    ...sharedStyles.smallText,
-    ...FontSize0,
-    ...FontMedium,
-    color: ColorMap.disabled,
-  };
+const inputLabelStyle: StyleProp<any> = {
+  paddingTop: 2,
+  ...sharedStyles.smallText,
+  ...FontSize0,
+  ...FontMedium,
+  color: ColorMap.disabled,
+};
+
+const identiconPlaceholderStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.disabled,
+  borderRadius: 16,
+  width: 16,
+  height: 16,
 };
 
 const inputStyle: StyleProp<any> = {
@@ -46,58 +49,84 @@ const inputStyle: StyleProp<any> = {
   paddingTop: 0,
   paddingBottom: 0,
   paddingHorizontal: 4,
+  paddingRight: 40,
   height: 25,
   ...FontMedium,
   color: ColorMap.light,
 };
 
-const textInputStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  flex: 1,
-  paddingHorizontal: 4,
-  ...FontMedium,
-  height: 25,
-  color: ColorMap.light,
+const getTextInputStyle = (isAddressValid: boolean) => {
+  return {
+    ...sharedStyles.mainText,
+    flex: 1,
+    paddingHorizontal: 4,
+    ...FontMedium,
+    height: 25,
+    color: isAddressValid ? ColorMap.light : ColorMap.danger,
+  };
+};
+
+const qrButtonStyle: StyleProp<any> = {
+  position: 'absolute',
+  right: 6,
+  bottom: 2,
+  width: 40,
+  height: 40,
+  justifyContent: 'center',
+  alignItems: 'center',
 };
 
 export const InputAddress = (inputAddressProps: InputProps) => {
-  const {
-    containerStyle,
-    label,
-    textTransform = 'none',
-    receiveAddress,
-    isBlurInputAddress,
-    onChangeInputAddress,
-    onChangeText,
-  } = inputAddressProps;
+  const { containerStyle, label, onChange } = inputAddressProps;
+  const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const theme = useSubWalletTheme().colors;
+  const [address, setAddress] = useState<string>('');
+  const isAddressValid = isAddress(address);
+  const onChangeInputText = (text: string) => {
+    setAddress(text);
+  };
+  const onPressContainer = () => {
+    setInputBlur(false);
+  };
+  const onInputBlur = () => {
+    setInputBlur(true);
+    if (isAddressValid) {
+      onChange(reformatAddress(address, 42), address);
+    } else {
+      onChange(null, address);
+    }
+  };
 
   return (
-    <TouchableOpacity style={getInputContainerStyle(containerStyle)} onPress={onChangeInputAddress}>
-      <Text style={getInputLabelStyle(textTransform)}>{label}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          <SubWalletAvatar address={receiveAddress || ''} size={16} style={{ borderColor: 'transparent' }} />
-          {isBlurInputAddress ? (
+    <View style={getInputContainerStyle(containerStyle)}>
+      <TouchableOpacity activeOpacity={1} onPress={onPressContainer}>
+        <Text style={inputLabelStyle}>{label}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
+          {isAddressValid ? (
+            <SubWalletAvatar address={address || ''} size={16} style={{ borderColor: 'transparent' }} />
+          ) : (
+            <View style={identiconPlaceholderStyle} />
+          )}
+          {!isInputBlur ? (
             <TextInput
               autoFocus={true}
               style={inputStyle}
               placeholderTextColor={theme.textColor2}
               selectionColor={theme.textColor2}
               blurOnSubmit={false}
-              value={receiveAddress}
-              onChangeText={onChangeText}
-              {...inputAddressProps}
+              value={address}
+              onBlur={onInputBlur}
+              onChangeText={onChangeInputText}
             />
           ) : (
-            <Text style={textInputStyle}>{toShort(receiveAddress, 9, 9)}</Text>
+            <Text style={getTextInputStyle(isAddressValid)}>{toShort(address, 9, 9)}</Text>
           )}
         </View>
+      </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => {}}>
-          <QrCode color={ColorMap.disabled} weight={'bold'} size={20} />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={qrButtonStyle} onPress={() => {}}>
+        <QrCode color={ColorMap.disabled} weight={'bold'} size={20} />
+      </TouchableOpacity>
+    </View>
   );
 };
