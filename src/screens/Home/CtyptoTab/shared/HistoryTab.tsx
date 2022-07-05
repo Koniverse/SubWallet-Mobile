@@ -60,6 +60,44 @@ function getItems(
   return result.sort((a, b) => b.time - a.time);
 }
 
+function getReadyItems(
+  readyNetworks: string[],
+  items: TransactionHistoryItemType[],
+  registryMap: Record<string, ChainRegistry>,
+  token?: string,
+): TransactionHistoryItemType[] {
+  return items.filter(item => {
+    if (!readyNetworks.includes(item.networkKey)) {
+      return false;
+    }
+
+    const { networkKey } = item;
+    const registry = registryMap[networkKey];
+
+    if (
+      (item.changeSymbol && !registry.tokenMap[item.changeSymbol]) ||
+      (item.feeSymbol && !registry.tokenMap[item.feeSymbol])
+    ) {
+      return false;
+    }
+
+    if (token) {
+      if (!registry.tokenMap[token]) {
+        return false;
+      }
+
+      const isForMainToken = !item.changeSymbol && registry.tokenMap[token].isMainToken;
+      const isForSubToken = item.changeSymbol && item.changeSymbol === token;
+
+      if (!(isForMainToken || isForSubToken)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
 const EmptyList = () => {
   return (
     <View style={emptyListContainerStyle}>
@@ -68,30 +106,10 @@ const EmptyList = () => {
   );
 };
 
-const ContentComponent = ({ items, registryMap, token }: ContentProps) => {
+const ContentComponent = ({ items, registryMap }: ContentProps) => {
   const renderItem = (item: TransactionHistoryItemType) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
-
-    if (
-      (item.changeSymbol && !registry.tokenMap[item.changeSymbol]) ||
-      (item.feeSymbol && !registry.tokenMap[item.feeSymbol])
-    ) {
-      return null;
-    }
-
-    if (token) {
-      if (!registry.tokenMap[token]) {
-        return null;
-      }
-
-      const isForMainToken = !item.changeSymbol && registry.tokenMap[token].isMainToken;
-      const isForSubToken = item.changeSymbol && item.changeSymbol === token;
-
-      if (!(isForMainToken || isForSubToken)) {
-        return null;
-      }
-    }
 
     return <TokenHistoryItem item={item} key={item.extrinsicHash} registry={registry} />;
   };
@@ -106,11 +124,11 @@ export const HistoryTab = ({ networkKey, token }: Props) => {
   } = useSelector((state: RootState) => state);
   const readyNetworks = getReadyNetwork(registryMap);
   const items = getItems(networkKey, historyMap);
-  const readyItems = items.filter(i => readyNetworks.includes(i.networkKey));
+  const readyItems = getReadyItems(readyNetworks, items, registryMap, token);
 
   if (!readyItems.length) {
     return <EmptyList />;
   }
 
-  return <ContentComponent items={readyItems} registryMap={registryMap} token={token} />;
+  return <ContentComponent items={readyItems} registryMap={registryMap} />;
 };
