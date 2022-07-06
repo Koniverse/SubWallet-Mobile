@@ -38,22 +38,22 @@ const SECRET_TYPE: AccountActionType[] = [
   {
     icon: UserCirclePlus,
     title: i18n.common.createWalletName,
-    navigationName: 'CreateAccount' as keyof RootStackParamList,
+    navigationName: 'CreateAccount',
   },
   {
     icon: Article,
     title: i18n.common.secretPhrase,
-    navigationName: 'ImportSecretPhrase' as keyof RootStackParamList,
+    navigationName: 'ImportSecretPhrase',
   },
   {
     icon: LockKey,
     title: i18n.common.privateKey,
-    navigationName: 'RestoreJson' as keyof RootStackParamList,
+    navigationName: 'ImportPrivateKey',
   },
   {
     icon: FileArrowUp,
     title: i18n.common.jsonFile,
-    navigationName: 'RestoreJson' as keyof RootStackParamList,
+    navigationName: 'RestoreJson',
   },
 ];
 

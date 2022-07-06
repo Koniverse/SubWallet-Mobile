@@ -40,7 +40,7 @@ const SECRET_TYPE: AccountActionType[] = [
   {
     icon: LockKey,
     title: i18n.common.privateKey,
-    navigationName: 'RestoreJson' as keyof RootStackParamList,
+    navigationName: 'ImportPrivateKey' as keyof RootStackParamList,
   },
   {
     icon: FileArrowUp,

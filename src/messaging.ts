@@ -69,7 +69,9 @@ import {
   RequestFreeBalance,
   RequestTransferExistentialDeposit,
   RequestTransferCheckReferenceCount,
-  RequestTransferCheckSupporting, SupportTransferResponse,
+  RequestTransferCheckSupporting,
+  SupportTransferResponse,
+  ResponsePrivateKeyValidateV2,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
 import { getId } from '@subwallet/extension-base/utils/getId';
@@ -410,6 +412,10 @@ export async function validateSeedV2(suri: string, types: Array<KeypairType>): P
   return sendMessage('pri(seed.validateV2)', { suri, types });
 }
 
+export async function validateMetamaskPrivateKeyV2(suri: string, types: Array<KeypairType>): Promise<ResponsePrivateKeyValidateV2> {
+  return sendMessage('pri(privateKey.validateV2)', {suri, types});
+}
+
 export async function validateDerivationPath(
   parentAddress: string,
   suri: string,
@@ -480,7 +486,10 @@ export async function cancelSubscription(request: string): Promise<boolean> {
   return sendMessage('pri(subscription.cancel)', request);
 }
 
-export async function subscribeFreeBalance(request: RequestFreeBalance, callback: (balance: string) => void): Promise<string> {
+export async function subscribeFreeBalance(
+  request: RequestFreeBalance,
+  callback: (balance: string) => void,
+): Promise<string> {
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 

@@ -6,7 +6,9 @@ install! 'cocoapods', :deterministic_uuids => false
 
 target 'SubWalletMobile' do
   config = use_native_modules!
-
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+  pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
   # Flags change depending on the env values.
   flags = get_default_flags()
 
@@ -29,7 +31,7 @@ target 'SubWalletMobile' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable the next line.
-  use_flipper!()
+  use_flipper!({ 'Flipper' => '0.152.0' })
 
   post_install do |installer|
     react_native_post_install(installer)

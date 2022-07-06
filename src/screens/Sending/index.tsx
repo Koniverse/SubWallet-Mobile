@@ -38,6 +38,7 @@ import { ResponseCheckTransfer } from '@subwallet/extension-base/background/Koni
 import { Warning } from 'components/Warning';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
+import { QrScannerScreen } from 'screens/QrScannerScreen';
 
 const NetworkLogoWrapperStyle: StyleProp<any> = {
   borderRadius: 20,
@@ -77,7 +78,7 @@ export const SendFund = () => {
     price: { tokenPriceMap },
     networkMap,
   } = useSelector((state: RootState) => state);
-  const [receiveAddress, setReceiveAddress] = useState<string>('');
+  const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
   const selectedTokenMap = chainRegistry[networkKey].tokenMap;
   const selectedMainToken = Object.values(selectedTokenMap).find(val => val.isMainToken);
@@ -110,14 +111,17 @@ export const SendFund = () => {
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
+  const inputAddressRef = createRef();
   const amount = Math.floor(Number(rawAmount));
   const ethereumChains = getEthereumChains(networkMap);
   const isNotSameAddressAndTokenType =
     (isEthereumAddress(currentAccountAddress) && !ethereumChains.includes(networkKey)) ||
     (!isEthereumAddress(currentAccountAddress) && ethereumChains.includes(networkKey));
-  const isNotSameAddressType =
-    (isEthereumAddress(currentAccountAddress) && !!receiveAddress && !isEthereumAddress(receiveAddress)) ||
-    (!isEthereumAddress(currentAccountAddress) && !!receiveAddress && isEthereumAddress(receiveAddress));
+
+  const receiveAddressType = isEthereumAddress(receiveAddress || '') ? 'Ethereum' : 'Substrate';
+  const senderAddressType = isEthereumAddress(currentAccountAddress || '') ? 'Ethereum' : 'Substrate';
+  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
+  const isNotSameAddressType = !!receiveAddress && senderAddressType !== receiveAddressType;
 
   const canMakeTransfer =
     !!rawAmount &&
@@ -132,16 +136,18 @@ export const SendFund = () => {
 
   const _doCheckTransfer = useCallback(
     (isConfirmTransferAll: boolean, thenCb: (rs: ResponseCheckTransfer) => void, catchCb: (rs: Error) => void) => {
-      checkTransfer({
-        networkKey: networkKey,
-        from: currentAccountAddress,
-        to: receiveAddress,
-        transferAll: canToggleAll && isConfirmTransferAll,
-        token: selectedToken,
-        value: amount.toString(),
-      })
-        .then(thenCb)
-        .catch(catchCb);
+      if (receiveAddress) {
+        checkTransfer({
+          networkKey: networkKey,
+          from: currentAccountAddress,
+          to: receiveAddress,
+          transferAll: canToggleAll && isConfirmTransferAll,
+          token: selectedToken,
+          value: amount.toString(),
+        })
+          .then(thenCb)
+          .catch(catchCb);
+      }
     },
     [amount, canToggleAll, currentAccountAddress, networkKey, receiveAddress, selectedToken],
   );
@@ -260,7 +266,7 @@ export const SendFund = () => {
   };
 
   const onChangeReceiverAddress = (receiverAddress: string | null, currentTextValue: string) => {
-    console.log('receiverAddress', receiverAddress, currentTextValue);
+    setReceiveAddress([receiverAddress, currentTextValue]);
   };
 
   const _onChangeResult = (curTxResult: TransferResultType) => {
@@ -273,7 +279,7 @@ export const SendFund = () => {
       isShowTxResult: false,
       txError: undefined,
     });
-    setReceiveAddress('');
+    setReceiveAddress([null, '']);
     setCurrentStep(ViewStep.SEND_FUND);
   }, []);
 
@@ -298,6 +304,13 @@ export const SendFund = () => {
     );
   };
 
+  const onUpdateInputAddress = (text: string) => {
+    if (inputAddressRef && inputAddressRef.current) {
+      // @ts-ignore
+      inputAddressRef.current.onChange(text);
+    }
+  };
+
   return (
     <>
       {!isShowTxResult ? (
@@ -312,6 +325,8 @@ export const SendFund = () => {
                   <ScrollView style={{ ...ScrollViewStyle }}>
                     <View style={{ alignItems: 'center', flex: 1 }}>
                       <InputAddress
+                        ref={inputAddressRef}
+                        onPressQrButton={() => setShowQrModalVisible(true)}
                         containerStyle={{ marginBottom: 8 }}
                         label={'Sent to address'}
                         onChange={onChangeReceiverAddress}
@@ -329,16 +344,12 @@ export const SendFund = () => {
                         />
                       )}
 
-                      {isNotSameAddressAndTokenType && (
+                      {isNotSameAddressType && (
                         <Warning
                           style={WarningStyle}
                           isDanger
-                          message={i18n.warningMessage.isNotSameAddressAndTokenType}
+                          message={i18n.warningMessage.recipientAddressMustBe + senderAddressType + ' type'}
                         />
-                      )}
-
-                      {isNotSameAddressType && (
-                        <Warning style={WarningStyle} isDanger message={i18n.warningMessage.isNotSameAddress} />
                       )}
 
                       <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(networkKey, 34)}</View>
@@ -381,6 +392,12 @@ export const SendFund = () => {
                       onPress={() => setCurrentStep(ViewStep.CONFIRMATION)}
                     />
                   </View>
+
+                  <QrScannerScreen
+                    qrModalVisible={isShowQrModalVisible}
+                    onPressCancel={() => setShowQrModalVisible(false)}
+                    onChangeAddress={(text) => onUpdateInputAddress(text)}
+                  />
                 </View>
               </TouchableWithoutFeedback>
             )}
@@ -391,7 +408,7 @@ export const SendFund = () => {
                 requestPayload={{
                   networkKey: networkKey,
                   from: currentAccountAddress,
-                  to: receiveAddress,
+                  to: currentReceiveAddress,
                   transferAll: false,
                   token: selectedToken,
                   value: amount.toString(),

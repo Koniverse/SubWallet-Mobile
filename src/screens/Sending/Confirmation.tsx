@@ -108,7 +108,7 @@ export const Confirmation = ({
           <NetworkField label={'Network'} networkKey={requestPayload.networkKey} />
           <TextField label={'Account'} text={currentAccount?.name || ''} />
           <AddressField label={'Send from Address'} address={requestPayload.from} />
-          <AddressField label={'Send to Address'} address={requestPayload.to} />
+          <AddressField label={'Send to Address'} address={requestPayload.to} autoFormat={false} />
           <BalanceField label={'Network Fee'} value={fee || '0'} token={feeSymbol} decimal={feeDecimals} />
           <PasswordField
             label={'Password'}

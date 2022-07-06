@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { StyleProp, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,6 +13,7 @@ interface InputProps {
   label: string;
   containerStyle?: StyleProp<any>;
   onChange: (output: string | null, currentValue: string) => void;
+  onPressQrButton: () => void;
 }
 
 const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
@@ -76,8 +77,8 @@ const qrButtonStyle: StyleProp<any> = {
   alignItems: 'center',
 };
 
-export const InputAddress = (inputAddressProps: InputProps) => {
-  const { containerStyle, label, onChange } = inputAddressProps;
+const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
+  const { containerStyle, label, onChange, onPressQrButton } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const theme = useSubWalletTheme().colors;
   const [address, setAddress] = useState<string>('');
@@ -96,6 +97,18 @@ export const InputAddress = (inputAddressProps: InputProps) => {
       onChange(null, address);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    onChange: (input: string) => {
+      setAddress(input);
+      setInputBlur(true);
+      if (isAddress(input)) {
+        onChange(reformatAddress(input, 42), address);
+      } else {
+        onChange(null, input);
+      }
+    },
+  }));
 
   return (
     <View style={getInputContainerStyle(containerStyle)}>
@@ -124,9 +137,11 @@ export const InputAddress = (inputAddressProps: InputProps) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={qrButtonStyle} onPress={() => {}}>
+      <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={qrButtonStyle} onPress={onPressQrButton}>
         <QrCode color={ColorMap.disabled} weight={'bold'} size={20} />
       </TouchableOpacity>
     </View>
   );
 };
+
+export const InputAddress = forwardRef(Component);

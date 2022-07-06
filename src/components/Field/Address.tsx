@@ -12,6 +12,7 @@ import { RootState } from 'stores/index';
 
 interface Props extends FieldBaseProps {
   address: string;
+  autoFormat?: boolean;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -41,9 +42,9 @@ const infoIconStyle: StyleProp<any> = {
 };
 
 // todo: onPress infoIcon
-export const AddressField = ({ address, ...fieldBase }: Props) => {
+export const AddressField = ({ address, autoFormat = true, ...fieldBase }: Props) => {
   const { currentNetwork } = useSelector((state: RootState) => state);
-  const formattedAddress = reformatAddress(address, currentNetwork.networkPrefix);
+  const formattedAddress = autoFormat ? reformatAddress(address, currentNetwork.networkPrefix) : address;
 
   return (
     <FieldBase {...fieldBase}>

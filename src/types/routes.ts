@@ -14,6 +14,7 @@ export type RootStackParamList = {
   Settings: undefined;
   NetworkSelect: undefined;
   ImportSecretPhrase: undefined;
+  ImportPrivateKey: undefined;
   NetworksSetting: undefined;
   SendFund: undefined;
   Languages: undefined;

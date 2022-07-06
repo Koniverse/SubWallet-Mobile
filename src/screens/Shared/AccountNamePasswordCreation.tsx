@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
-import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubmitButton } from 'components/SubmitButton';
-import { Warning } from 'components/Warning';
-import { PasswordField } from 'components/Field/Password';
-import i18n from 'utils/i18n/i18n';
+import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -32,16 +29,16 @@ interface Props {
   onCreateAccount: (curName: string, password: string) => void;
 }
 
-function checkPasswordTooShort(password: string | null) {
-  return !!(password && password.length < 6);
-}
-
 export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) => {
   const [name, setName] = useState<string>('');
   const [pass1, setPass1] = useState<string | null>(null);
   const [pass2, setPass2] = useState<string | null>(null);
   const [pass2Dirty, setPass2Dirty] = useState<boolean>(false);
   const isSecondPasswordValid = !!(pass2 && pass2.length > 5) && pass2Dirty && pass1 !== pass2;
+
+  const onChangeName = (text: string) => {
+    setName(text);
+  };
 
   const onChangePass1 = (curPass1: string) => {
     if (curPass1 && curPass1.length) {
@@ -65,29 +62,16 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
       <ScrollView style={bodyAreaStyle}>
         <Text style={titleStyle}>Name will be used only locally in this application. You can edit it later</Text>
 
-        <EditAccountInputText
-          label={'Wallet Name'}
-          inputValue={name}
-          onChangeText={text => setName(text)}
-          editAccountInputStyle={{ marginBottom: 8 }}
+        <AccountNameAndPasswordArea
+          name={name}
+          onChangeName={onChangeName}
+          onChangePass1={onChangePass1}
+          onChangePass2={onChangePass2}
+          isSecondPasswordValid={isSecondPasswordValid}
+          pass1={pass1}
+          pass2={pass2}
+          pass2Dirty={pass2Dirty}
         />
-        <PasswordField
-          label={'Wallet Password'}
-          onChangeText={onChangePass1}
-          value={pass1 || ''}
-          isError={checkPasswordTooShort(pass1)}
-        />
-
-        <PasswordField
-          label={'Repeat Wallet Password'}
-          onChangeText={onChangePass2}
-          value={pass2 || ''}
-          isError={checkPasswordTooShort(pass2) || pass1 !== pass2}
-        />
-
-        {!pass2 && pass2Dirty && <Warning isDanger message={i18n.warningMessage.noPasswordMessage} />}
-
-        {isSecondPasswordValid && <Warning isDanger message={i18n.warningMessage.doNotMatchPasswordWarning} />}
       </ScrollView>
       <View style={footerAreaStyle}>
         <SubmitButton

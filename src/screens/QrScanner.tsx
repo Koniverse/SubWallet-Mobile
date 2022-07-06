@@ -6,9 +6,12 @@ import { QrValue } from 'types/QRScanner';
 import { Background } from 'styles/color';
 import { Button } from 'components/Button';
 
-export const QrScanner = () => {
+interface Props {
+  setContent: (data: QrValue) => void;
+}
+
+export const QrScanner = ({ setContent }: Props) => {
   const [lastFrame, setLastFrame] = useState<QrValue>(undefined);
-  const [content, setContent] = useState<QrValue>('');
   const qrContext = useContext(QrScannerContext);
   let camera: RNCamera;
 
@@ -47,6 +50,7 @@ export const QrScanner = () => {
       style={{
         alignItems: 'center',
         height: '100%',
+        width: '100%',
         justifyContent: 'center',
       }}>
       <RNCamera
@@ -61,8 +65,7 @@ export const QrScanner = () => {
           <View style={[Background.transparentDark, { paddingTop: 12, paddingBottom: 12 }]}>
             <Text style={{ textAlign: 'center' }}>QR Scanner</Text>
           </View>
-          <View style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-            {!!content && <Text style={[Background.transparentDark, { padding: 8 }]}>{content}</Text>}
+          <View style={{ position: 'absolute', bottom: 18, width: '100%' }}>
             <View style={[Background.transparentDark, { flexDirection: 'row', padding: 20 }]}>
               <Button style={{ flex: 1, marginRight: 8 }} color="secondary" title={'OK'} onPress={onOk} />
               <Button style={{ flex: 1 }} title={'Continue'} onPress={onContinue} />

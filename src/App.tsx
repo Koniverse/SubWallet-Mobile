@@ -32,6 +32,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Security } from 'screens/Settings/Security';
 import { LockScreen } from 'screens/LockScreen';
 import { ExportJson } from 'screens/ExportJson';
+import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
@@ -96,6 +97,11 @@ export const App = () => {
                     name="ImportSecretPhrase"
                     component={ImportSecretPhrase}
                     options={{ title: 'Import Secret Phrase' }}
+                  />
+                  <Stack.Screen
+                    name="ImportPrivateKey"
+                    component={ImportPrivateKey}
+                    options={{ title: 'Import Private Key' }}
                   />
                   <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
                   <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />

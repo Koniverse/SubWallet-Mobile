@@ -10,6 +10,7 @@ export const vi = {
     verifySecretPhrase: 'Verify Secret Phrase',
     createWalletName: 'Create Wallet Name',
     importSecretPhrase: 'Import Secret Phrase',
+    importPrivateKey: 'Import Private Key',
     secretPhrase: 'Secret Phrase',
     privateKey: 'Private Key',
     jsonFile: 'JSON file',
@@ -20,6 +21,7 @@ export const vi = {
     transferFailMessage1:
       'There was a problem with your request. You can track its progress on the Transaction History page.',
     transferFailMessage2: 'There was a problem with your request.',
+    selectQrCodeFromGallery: 'Select  QR Code from Gallery',
   },
   cryptoTab: {
     receive: 'Receive',
@@ -62,7 +64,8 @@ export const vi = {
     isNotSameAddress: 'The recipient address is the same as the sender address.',
     recipientPhish: 'The recipient is associated with a known phishing site on',
     isNotSameAddressAndTokenType: 'Transfer is not supported for this type of account and token',
-    isNotSameAddressType: 'The recipient address must be same type as the sender address.',
+    recipientAddressMustBe: 'The recipient address must be ',
+    setQRCodeInTheCenterOfTheSquare: 'Scan QR Code in the center of the square',
   },
   copied: 'Copied',
   unknown: '<unknown>',
