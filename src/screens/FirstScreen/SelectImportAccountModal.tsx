@@ -21,6 +21,7 @@ const modalTitle: StyleProp<any> = {
   ...FontBold,
   color: ColorMap.light,
   paddingBottom: 16,
+  textAlign: 'center',
 };
 
 export const SelectImportAccountModal = ({ secretTypeList, modalVisible, onChangeModalVisible, modalHeight }: Props) => {

@@ -24,6 +24,7 @@ function getWrapperStyle(style: StyleProp<any> = {}): StyleProp<any> {
 const innerViewStyle: StyleProp<any> = {
   flexDirection: 'row',
   flexWrap: 'wrap',
+  justifyContent: 'center',
 };
 
 const seedWordStyle = {

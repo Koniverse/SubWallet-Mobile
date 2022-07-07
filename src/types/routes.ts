@@ -19,6 +19,7 @@ export type RootStackParamList = {
   SendFund: undefined;
   Languages: undefined;
   Security: undefined;
+  PinCode: { isEditablePinCode: boolean };
   ExportJson: undefined;
 };
 

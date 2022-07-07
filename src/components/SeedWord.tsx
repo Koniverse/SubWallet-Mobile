@@ -25,8 +25,8 @@ function getWrapperStyle(seedWordProps: SeedWordProps): StyleProp<any> {
     borderWidth: 1,
     backgroundColor: backgroundColor || ColorMap.dark2,
     borderColor: backgroundColor || ColorMap.dark2,
-    paddingLeft: prefixText ? 7 : 9,
-    paddingRight: 9,
+    paddingLeft: prefixText ? 12 : 12,
+    paddingRight: 12,
     // minWidth: 106,
   };
 

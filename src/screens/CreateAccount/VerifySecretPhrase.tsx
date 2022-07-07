@@ -38,6 +38,7 @@ const phraseBlockStyle: StyleProp<any> = {
   paddingLeft: 14,
   paddingRight: 14,
   flexDirection: 'row',
+  justifyContent: 'center',
   flexWrap: 'wrap',
   marginBottom: 24,
 };

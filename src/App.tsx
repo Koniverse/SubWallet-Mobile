@@ -33,6 +33,7 @@ import { Security } from 'screens/Settings/Security';
 import { LockScreen } from 'screens/LockScreen';
 import { ExportJson } from 'screens/ExportJson';
 import { ImportPrivateKey } from 'screens/ImportPrivateKey';
+import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
@@ -106,6 +107,7 @@ export const App = () => {
                   <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
                   <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />
                   <Stack.Screen name="Security" component={Security} options={{ title: 'Security' }} />
+                  <Stack.Screen name="PinCode" component={PinCodeScreen} options={{ title: 'Pin Code' }} />
                   <Stack.Screen name="ExportJson" component={ExportJson} options={{ title: 'Export Json' }} />
                 </Stack.Group>
                 <Stack.Group

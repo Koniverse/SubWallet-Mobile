@@ -6,40 +6,20 @@ import { ScrollViewStyle } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { Warning } from 'components/Warning';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
-import { useToast } from 'react-native-toast-notifications';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { SelectScreen } from 'components/SelectScreen';
 
 export const NetworksSetting = () => {
-  const toast = useToast();
   const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
 
-  const handleShowStateConfirm = useCallback(
-    (item: NetworkJson, resp: boolean) => {
-      if (resp) {
-        toast.show(`${item.chain} has ${item.active ? 'disconnected' : 'connected'} successfully`);
-      } else {
-        toast.show(`${item.chain} has failed to ${item.active ? 'disconnect' : 'connect'}`);
-      }
-    },
-    [toast],
-  );
-
-  const onToggleItem = useCallback(
-    (item: NetworkJson) => {
-      if (item.active) {
-        disableNetworkMap(item.key)
-          .then(({ success }) => handleShowStateConfirm(item, success))
-          .catch(console.error);
-      } else {
-        enableNetworkMap(item.key)
-          .then(resp => handleShowStateConfirm(item, resp))
-          .catch(console.error);
-      }
-    },
-    [handleShowStateConfirm],
-  );
+  const onToggleItem = useCallback((item: NetworkJson) => {
+    if (item.active) {
+      disableNetworkMap(item.key).catch(console.error);
+    } else {
+      enableNetworkMap(item.key).catch(console.error);
+    }
+  }, []);
 
   // @ts-ignore
   const renderItem = ({ item }) => {

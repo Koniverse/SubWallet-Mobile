@@ -41,6 +41,7 @@ const phraseBlockStyle: StyleProp<any> = {
   flexDirection: 'row',
   flexWrap: 'wrap',
   marginBottom: 24,
+  justifyContent: 'center',
 };
 
 const seedWordStyle = {
