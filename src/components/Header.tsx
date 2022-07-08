@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
-import reformatAddress, { toShort } from 'utils/index';
+import reformatAddress, { getGenesisOptionsByAddressType, toShort } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
+import { NetworkSelect } from 'screens/NetworkSelect';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import { tieAccount } from '../messaging';
+import { updateCurrentNetwork } from 'stores/updater';
+import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
+import { NetworksSetting } from 'screens/NetworksSetting';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -46,10 +52,35 @@ export const Header = ({ navigation }: Props) => {
   // const Logo = useSVG().Logo;
   const {
     currentNetwork,
-    accounts: { currentAccount },
+    accounts: { currentAccount, currentAccountAddress, accounts },
   } = useSelector((state: RootState) => state);
+  const [networkSelectModal, setNetworkSelectModal] = useState<boolean>(false);
+  const [networkSettingModal, setNetworkSettingModal] = useState<boolean>(false);
   const formattedAddress =
     !!currentAccount?.address && reformatAddress(currentAccount.address, currentNetwork.networkPrefix);
+  const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
+  const onChangeNetwork = useCallback(
+    async (item: NetworkSelectOption): Promise<void> => {
+      if (currentAccount) {
+        if (!isAccountAll(currentAccount.address)) {
+          await tieAccount(currentAccount.address, item.value || null);
+        } else {
+          // window.localStorage.setItem('accountAllNetworkGenesisHash', genesisHash);
+        }
+
+        updateCurrentNetwork({
+          networkPrefix: item.networkPrefix,
+          icon: item.icon,
+          genesisHash: item.value,
+          networkKey: item.networkKey,
+          isEthereum: item.isEthereum,
+        });
+
+        setNetworkSelectModal(false);
+      }
+    },
+    [currentAccount],
+  );
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
@@ -70,14 +101,29 @@ export const Header = ({ navigation }: Props) => {
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('NetworksSetting')}>
+        <TouchableOpacity style={actionButtonStyle} onPress={() => setNetworkSettingModal(true)}>
           <SlidersHorizontal size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={actionButtonStyle} onPress={() => navigation.navigate('NetworkSelect')}>
+        <TouchableOpacity style={actionButtonStyle} onPress={() => setNetworkSelectModal(true)}>
           <MagnifyingGlass size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
       </View>
+
+      <NetworkSelect
+        modalVisible={networkSelectModal}
+        onChangeModalVisible={() => setNetworkSelectModal(false)}
+        genesisOptions={genesisOptions}
+        onPressBack={() => setNetworkSelectModal(false)}
+        onChangeNetwork={onChangeNetwork}
+        selectedNetwork={currentNetwork.networkKey}
+      />
+
+      <NetworksSetting
+        modalVisible={networkSettingModal}
+        onChangeModalVisible={() => setNetworkSettingModal(false)}
+        onPressBack={() => setNetworkSettingModal(false)}
+      />
     </View>
   );
 };

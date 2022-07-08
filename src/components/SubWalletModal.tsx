@@ -7,6 +7,7 @@ interface Props {
   modalVisible: boolean;
   onChangeModalVisible: () => void;
   modalStyle?: object;
+  onModalHide?: () => void;
 }
 
 const subWalletModalContainer: StyleProp<any> = {
@@ -27,10 +28,11 @@ const subWalletModalSeparator: StyleProp<any> = {
   marginBottom: 19,
 };
 
-export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, modalStyle }: Props) => {
+export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, modalStyle, onModalHide }: Props) => {
   return (
     <Modal
       isVisible={modalVisible}
+      onModalHide={onModalHide}
       swipeDirection="down"
       style={{ margin: 0 }}
       backdropColor={'rgba(22, 22, 22, 0.8)'}

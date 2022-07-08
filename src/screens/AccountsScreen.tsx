@@ -11,7 +11,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import { RootNavigationProps, RootStackParamList } from 'types/routes';
+import { RootNavigationProps } from 'types/routes';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
@@ -34,35 +34,47 @@ const accountItemSeparator: StyleProp<any> = {
   marginLeft: 50,
 };
 
-const SECRET_TYPE: AccountActionType[] = [
-  {
-    icon: UserCirclePlus,
-    title: i18n.common.createWalletName,
-    navigationName: 'CreateAccount',
-  },
-  {
-    icon: Article,
-    title: i18n.common.secretPhrase,
-    navigationName: 'ImportSecretPhrase',
-  },
-  {
-    icon: LockKey,
-    title: i18n.common.privateKey,
-    navigationName: 'ImportPrivateKey',
-  },
-  {
-    icon: FileArrowUp,
-    title: i18n.common.jsonFile,
-    navigationName: 'RestoreJson',
-  },
-];
-
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
   const theme = useSubWalletTheme().colors;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const SECRET_TYPE: AccountActionType[] = [
+    {
+      icon: UserCirclePlus,
+      title: i18n.common.createWalletName,
+      onCLickButton: () => {
+        navigation.navigate('CreateAccount');
+        setModalVisible(false);
+      },
+    },
+    {
+      icon: Article,
+      title: i18n.common.secretPhrase,
+      onCLickButton: () => {
+        navigation.navigate('ImportSecretPhrase');
+        setModalVisible(false);
+      },
+    },
+    {
+      icon: LockKey,
+      title: i18n.common.privateKey,
+      onCLickButton: () => {
+        navigation.navigate('ImportPrivateKey');
+        setModalVisible(false);
+      },
+    },
+    {
+      icon: FileArrowUp,
+      title: i18n.common.jsonFile,
+      onCLickButton: () => {
+        navigation.navigate('RestoreJson');
+        setModalVisible(false);
+      },
+    },
+  ];
 
   const renderListEmptyComponent = () => {
     return <Warning title={'Warning'} message={i18n.warningMessage.noAccountText} isDanger={false} />;

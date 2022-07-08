@@ -8,14 +8,37 @@ import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainList/ChainListScreen';
 import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetail/ChainDetailScreen';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
-import { AccountInfoByNetwork } from 'types/ui-types';
+import { AccountActionType, AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
 import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
-import reformatAddress from 'utils/index';
-// import {AppState} from "react-native";
+import reformatAddress, { getGenesisOptionsByAddressType, TokenArrayType } from 'utils/index';
+import { AppState, StyleProp, View } from 'react-native';
+import { BalancesVisibility } from 'components/BalancesVisibility';
+import { ActionButtonContainer } from 'screens/Home/CtyptoTab/ActionButtonContainer';
+import { ColorMap } from 'styles/color';
+import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
+import { getTotalConvertedBalanceValue } from './utils';
+import { BalanceToUsd } from 'components/BalanceToUsd';
+import { Article, FirstAidKit, Shuffle } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
+import { NetworkSelect } from 'screens/NetworkSelect';
+import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
+import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
+import { TokenSelect } from 'screens/TokenSelect';
+
+const balanceContainer: StyleProp<any> = {
+  paddingHorizontal: 16,
+  alignItems: 'center',
+  backgroundColor: ColorMap.dark2,
+  paddingTop: 21,
+};
+
+const actionButtonContainerStyle: StyleProp<any> = {
+  paddingTop: 25,
+};
 
 const ViewStep = {
   CHAIN_LIST: 1,
@@ -23,10 +46,16 @@ const ViewStep = {
   TOKEN_HISTORY: 3,
 };
 
+type SendFundInfoType = {
+  selectedSendNetwork: string | null;
+  selectedSendToken: string | null;
+};
+
 interface NetworkInfo {
   selectedNetworkInfo: AccountInfoByNetwork | undefined;
   selectBalanceInfo: BalanceInfo | undefined;
   selectedTokenName: string;
+  networkBalanceValue: BigN;
   tokenBalanceValue: BigN;
   tokenConvertedValue: BigN;
   selectedTokenSymbol: string;
@@ -69,18 +98,27 @@ export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
     accounts: { accounts, currentAccountAddress },
+    settings: { isShowBalance },
     currentNetwork,
   } = useSelector((state: RootState) => state);
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
+  const [sendFundTypeModal, setSendFundTypeModal] = useState<boolean>(false);
+  const [selectNetworkModal, setSelectNetworkModal] = useState<boolean>(false);
+  const [selectTokenModal, setSelectTokenModal] = useState<boolean>(false);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
+  const [{ selectedSendNetwork, selectedSendToken }, setSendFundInfo] = useState<SendFundInfoType>({
+    selectedSendNetwork: null,
+    selectedSendToken: null,
+  });
   const [
     {
       selectedNetworkInfo,
       selectBalanceInfo,
       selectedTokenName,
+      networkBalanceValue,
       tokenBalanceValue,
       tokenConvertedValue,
       selectedTokenSymbol,
@@ -90,24 +128,35 @@ export const CryptoTab = () => {
     selectedNetworkInfo: undefined,
     selectBalanceInfo: undefined,
     selectedTokenName: '',
+    networkBalanceValue: BN_ZERO,
     tokenBalanceValue: BN_ZERO,
     tokenConvertedValue: BN_ZERO,
     selectedTokenSymbol: '',
   });
   const deps = selectedNetworkInfo?.networkKey;
-
-  // let lastTimestamp = 0;
-  // const onAppStateChange = (state: string) => {
-  //   if (state === 'background') {
-  //     lastTimestamp = Date.now();
-  //   } else if (state === 'active') {
-  //     if (Date.now() - lastTimestamp > 5 * 60 * 1000) {
-  //       console.log('show pin code');
-  //     }
-  //   }
-  // };
-  //
-  // AppState.addEventListener('change', onAppStateChange);
+  const SEND_FUND_TYPE: AccountActionType[] = [
+    {
+      icon: Article,
+      title: i18n.common.singleChain,
+      onCLickButton: () => {
+        setSendFundTypeModal(false);
+        // setTimeout(() => {
+        //   setSelectNetworkModal(true);
+        // }, 300);
+      },
+    },
+    {
+      icon: Shuffle,
+      title: i18n.common.crossChain,
+      onCLickButton: () => {},
+    },
+    {
+      icon: FirstAidKit,
+      title: i18n.common.charityDonate,
+      onCLickButton: () => {},
+    },
+  ];
+  const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
 
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,
@@ -118,6 +167,7 @@ export const CryptoTab = () => {
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
     setSelectNetwork(prevState => ({
       ...prevState,
+      networkBalanceValue: getTotalConvertedBalanceValue(balanceInfo),
       selectedNetworkInfo: info,
       selectBalanceInfo: balanceInfo,
     }));
@@ -132,6 +182,24 @@ export const CryptoTab = () => {
 
       return [prevCurrentStep, prevPrevStep];
     });
+  };
+
+  const onChangeNetwork = (item: NetworkSelectOption) => {
+    setSendFundInfo(prevState => ({
+      ...prevState,
+      selectedSendNetwork: item.networkKey,
+    }));
+    setSelectNetworkModal(false);
+    // setTimeout(() => {
+    //   setSelectTokenModal(true);
+    // }, 400);
+  };
+
+  const onChangeToken = (item: TokenArrayType) => {
+    setSendFundInfo(prevState => ({
+      ...prevState,
+      selectedSendToken: item.tokenBalanceSymbol,
+    }));
   };
 
   const onPressTokenItem = useCallback(
@@ -172,7 +240,52 @@ export const CryptoTab = () => {
   );
 
   const onPressSendFundBtn = () => {
-    navigation.navigate('SendFund');
+    setSendFundTypeModal(true);
+  };
+
+  const onPressNetworkSelectBack = () => {
+    setSelectNetworkModal(false);
+    setSendFundInfo(prevState => ({
+      ...prevState,
+      selectedSendNetwork: null,
+    }));
+    // setTimeout(() => {
+    //   setSendFundTypeModal(true);
+    // }, 400);
+  };
+
+  const onPressTokenSelectBack = () => {
+    setSelectTokenModal(false);
+    setSendFundInfo(prevState => ({
+      ...prevState,
+      selectedSendToken: null,
+    }));
+    // setTimeout(() => {
+    //   setSelectNetworkModal(true);
+    // }, 400);
+  };
+
+  const renderBalanceContainerComponent = (
+    balanceValue: BigN,
+    accountButtonContainerStyle?: StyleProp<any>,
+    amountToUsd?: BigN,
+    isShowBalanceToUsd = false,
+    startWithSymbol = true,
+    symbol = '$',
+  ) => {
+    return () => (
+      <View style={balanceContainer}>
+        <BalancesVisibility value={balanceValue} symbol={symbol} startWithSymbol={startWithSymbol} />
+
+        {isShowBalanceToUsd && amountToUsd && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={isShowBalance} />}
+
+        <ActionButtonContainer
+          onPressSendFundBtn={onPressSendFundBtn}
+          openReceiveModal={() => setReceiveModalVisible(true)}
+          style={accountButtonContainerStyle}
+        />
+      </View>
+    );
   };
 
   return (
@@ -181,42 +294,67 @@ export const CryptoTab = () => {
         <ChainListScreen
           accountInfoByNetworkMap={accountInfoByNetworkMap}
           onPressChainItem={onPressChainItem}
-          onPressSendFundBtn={onPressSendFundBtn}
           navigation={navigation}
-          onShoHideReceiveModal={setReceiveModalVisible}
-          receiveModalVisible={receiveModalVisible}
           networkBalanceMaps={networkBalanceMaps}
           showedNetworks={showedNetworks}
-          totalValue={totalBalanceValue}
           onPressTokenItem={onPressTokenItem}
+          balanceBlockComponent={renderBalanceContainerComponent(totalBalanceValue)}
         />
       )}
 
       {currentViewStep === ViewStep.NETWORK_DETAIL && selectedNetworkInfo && selectBalanceInfo && (
         <ChainDetailScreen
           onPressBack={onPressBack}
-          onShoHideReceiveModal={setReceiveModalVisible}
-          receiveModalVisible={receiveModalVisible}
-          onPressSendFundBtn={onPressSendFundBtn}
           selectedNetworkInfo={selectedNetworkInfo}
           selectedBalanceInfo={selectBalanceInfo}
           onPressTokenItem={onPressTokenItem}
+          balanceBlockComponent={renderBalanceContainerComponent(networkBalanceValue)}
         />
       )}
 
       {currentViewStep === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
         <TokenHistoryScreen
+          balanceBlockComponent={renderBalanceContainerComponent(
+            tokenBalanceValue,
+            actionButtonContainerStyle,
+            tokenConvertedValue,
+            true,
+            false,
+            selectedTokenSymbol,
+          )}
           onPressBack={onPressBack}
-          onShoHideReceiveModal={setReceiveModalVisible}
-          receiveModalVisible={receiveModalVisible}
           selectedTokenName={selectedTokenName}
-          onPressSendFundBtn={onPressSendFundBtn}
-          tokenBalanceValue={tokenBalanceValue}
-          tokenConvertedValue={tokenConvertedValue}
-          tokenHistorySymbol={selectedTokenSymbol}
           selectedNetworkInfo={selectedNetworkInfo}
         />
       )}
+
+      <SelectImportAccountModal
+        onModalHide={() => setSelectNetworkModal(true)}
+        secretTypeList={SEND_FUND_TYPE}
+        modalVisible={sendFundTypeModal}
+        onChangeModalVisible={() => setSendFundTypeModal(false)}
+        modalHeight={256}
+      />
+
+      <NetworkSelect
+        modalVisible={selectNetworkModal}
+        onChangeModalVisible={() => setSelectNetworkModal(false)}
+        genesisOptions={genesisOptions}
+        onPressBack={() => onPressNetworkSelectBack()}
+        onChangeNetwork={onChangeNetwork}
+        selectedNetwork={selectedSendNetwork || ''}
+      />
+
+      <TokenSelect
+        modalVisible={selectTokenModal}
+        onChangeModalVisible={() => setSelectTokenModal(false)}
+        onPressBack={() => onPressTokenSelectBack()}
+        onChangeToken={onChangeToken}
+        selectedNetwork={selectedSendNetwork || ''}
+        selectedToken={selectedSendToken || ''}
+      />
+
+      <ReceiveModal receiveModalVisible={receiveModalVisible} onChangeVisible={() => setReceiveModalVisible(false)} />
     </>
   );
 };

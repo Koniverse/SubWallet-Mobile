@@ -8,8 +8,15 @@ import { Warning } from 'components/Warning';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { SelectScreen } from 'components/SelectScreen';
+import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 
-export const NetworksSetting = () => {
+interface Props {
+  modalVisible: boolean;
+  onPressBack: () => void;
+  onChangeModalVisible: () => void;
+}
+
+export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisible }: Props) => {
   const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
 
@@ -53,15 +60,21 @@ export const NetworksSetting = () => {
   const filteredNetworkMap = filterNetwork();
 
   return (
-    <SelectScreen title={'Network Setting'} searchString={searchString} onChangeSearchText={setSearchString}>
-      <FlatList
-        style={{ ...ScrollViewStyle }}
-        keyboardShouldPersistTaps={'handled'}
-        data={Object.values(filteredNetworkMap)}
-        renderItem={renderItem}
-        ListEmptyComponent={renderListEmptyComponent}
-        keyExtractor={item => item.key}
-      />
-    </SelectScreen>
+    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
+      <SelectScreen
+        onPressBack={onPressBack}
+        title={'Network Setting'}
+        searchString={searchString}
+        onChangeSearchText={setSearchString}>
+        <FlatList
+          style={{ ...ScrollViewStyle }}
+          keyboardShouldPersistTaps={'handled'}
+          data={Object.values(filteredNetworkMap)}
+          renderItem={renderItem}
+          ListEmptyComponent={renderListEmptyComponent}
+          keyExtractor={item => item.key}
+        />
+      </SelectScreen>
+    </SubWalletFullSizeModal>
   );
 };

@@ -14,6 +14,9 @@ export const en = {
     secretPhrase: 'Secret Phrase',
     privateKey: 'Private Key',
     jsonFile: 'JSON file',
+    singleChain: 'Single Chain',
+    crossChain: 'Cross Chain (XCM)',
+    charityDonate: 'Charity Donate',
     selectYourSecretFile: 'Select your secret type',
     importFromJson: 'Import From JSON',
     transferSuccessMessage:

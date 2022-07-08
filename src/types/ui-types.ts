@@ -32,5 +32,5 @@ export type AccountInfoByNetwork = {
 export type AccountActionType = {
   icon: ({ weight, color, size, style, mirrored }: IconProps) => JSX.Element;
   title: string;
-  navigationName: keyof RootStackParamList;
+  onCLickButton: () => void;
 };

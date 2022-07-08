@@ -12,6 +12,9 @@ import { Image } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
 import { BN, formatBalance } from '@polkadot/util';
+import { BN_ZERO } from 'utils/chainBalances';
+import BigN from 'bignumber.js';
+import {BalanceInfo} from "../types";
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -21,6 +24,14 @@ export const accountAllRecoded: Recoded = {
   formatted: ALL_ACCOUNT_KEY,
   prefix: 42,
   isEthereum: false,
+};
+
+export type TokenArrayType = {
+  selectNetworkKey: string;
+  tokenBalanceValue: BigN;
+  convertedBalanceValue: BigN;
+  tokenBalanceSymbol: string;
+  defaultNetworkKey?: string;
 };
 
 export const subscanByNetworkKey: Record<string, string> = {
@@ -341,4 +352,32 @@ export function getEthereumChains(networkMap: Record<string, NetworkJson>): stri
   });
 
   return result;
+}
+
+export function getSelectedTokenList(networkBalanceMaps: Record<string, BalanceInfo>) {
+  let tokenArray: TokenArrayType[] = [];
+
+  Object.keys(networkBalanceMaps).forEach(networkKey => {
+    const networkBalanceInfo = networkBalanceMaps[networkKey];
+    tokenArray.push({
+      selectNetworkKey: networkKey,
+      tokenBalanceValue: networkBalanceInfo.balanceValue,
+      convertedBalanceValue: networkBalanceInfo.convertedBalanceValue,
+      tokenBalanceSymbol: networkBalanceInfo.symbol,
+    });
+
+    if (networkBalanceInfo.childrenBalances && networkBalanceInfo.childrenBalances.length) {
+      networkBalanceInfo.childrenBalances.forEach(children =>
+        tokenArray.push({
+          selectNetworkKey: children.key,
+          tokenBalanceValue: children.balanceValue,
+          convertedBalanceValue: children.convertedBalanceValue || BN_ZERO,
+          tokenBalanceSymbol: children.symbol,
+          defaultNetworkKey: networkKey,
+        }),
+      );
+    }
+  });
+
+  return tokenArray;
 }

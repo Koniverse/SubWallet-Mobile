@@ -1,23 +1,20 @@
 import React from 'react';
-import { SubScreenContainer } from 'components/SubScreenContainer';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
 import { Search } from 'components/Search';
 import { sharedStyles } from 'styles/sharedStyles';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
 interface Props {
   children: JSX.Element;
   title: string;
   searchString: string;
+  onPressBack: () => void;
   onChangeSearchText: (text: string) => void;
 }
 
-export const SelectScreen = ({ children, title, searchString, onChangeSearchText }: Props) => {
-  const navigation = useNavigation<RootNavigationProps>();
-
+export const SelectScreen = ({ children, title, searchString, onChangeSearchText, onPressBack }: Props) => {
   return (
-    <SubScreenContainer navigation={navigation} title={title}>
+    <ContainerWithSubHeader onPressBack={onPressBack} title={title} style={{ width: '100%', paddingTop: 0 }}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
           onClearSearchString={() => onChangeSearchText('')}
@@ -27,6 +24,6 @@ export const SelectScreen = ({ children, title, searchString, onChangeSearchText
         />
         {children}
       </View>
-    </SubScreenContainer>
+    </ContainerWithSubHeader>
   );
 };

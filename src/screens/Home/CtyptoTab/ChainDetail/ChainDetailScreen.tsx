@@ -1,7 +1,5 @@
 import React from 'react';
 import { HorizontalTabView } from 'components/HorizontalTabView';
-import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
-import { ActionButtonContainer } from 'screens/Home/CtyptoTab/ActionButtonContainer';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainDetail/TokensTab';
 import { StyleProp, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -12,34 +10,23 @@ import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import BigN from 'bignumber.js';
-import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
-import { BalancesVisibility } from 'components/BalancesVisibility';
 
 interface Props {
   onPressBack: () => void;
-  onShoHideReceiveModal: (isShowModal: boolean) => void;
-  receiveModalVisible: boolean;
   selectedNetworkInfo: AccountInfoByNetwork;
   selectedBalanceInfo: BalanceInfo;
-  onPressSendFundBtn: () => void;
   onPressTokenItem: (
     tokenName: string,
     tokenBalanceValue: BigN,
     tokenConvertedValue: BigN,
     tokenSymbol: string,
   ) => void;
+  balanceBlockComponent: () => JSX.Element;
 }
 
 const containerStyle: StyleProp<any> = {
   paddingBottom: 0,
-};
-
-const balanceContainer: StyleProp<any> = {
-  paddingHorizontal: 16,
-  alignItems: 'center',
-  backgroundColor: ColorMap.dark2,
-  paddingTop: 21,
 };
 
 const chainDetailHeader: StyleProp<any> = {
@@ -64,12 +51,10 @@ const ROUTES = [
 
 export const ChainDetailScreen = ({
   onPressBack,
-  onShoHideReceiveModal,
-  receiveModalVisible,
   selectedNetworkInfo,
   selectedBalanceInfo,
   onPressTokenItem,
-  onPressSendFundBtn,
+  balanceBlockComponent: BalanceBlock,
 }: Props) => {
   const renderHeaderContent = () => {
     return (
@@ -119,18 +104,9 @@ export const ChainDetailScreen = ({
       style={containerStyle}
       onPressRightIcon={() => {}}>
       <>
-        <View style={balanceContainer}>
-          <BalancesVisibility value={getTotalConvertedBalanceValue(selectedBalanceInfo)} symbol={'$'} />
-
-          <ActionButtonContainer
-            onPressSendFundBtn={onPressSendFundBtn}
-            openReceiveModal={() => onShoHideReceiveModal(true)}
-          />
-        </View>
+        <BalanceBlock />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
-
-        <ReceiveModal receiveModalVisible={receiveModalVisible} onChangeVisible={() => onShoHideReceiveModal(false)} />
       </>
     </ContainerWithSubHeader>
   );

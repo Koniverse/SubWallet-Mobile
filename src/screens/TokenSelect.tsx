@@ -3,40 +3,43 @@ import { FlatList } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
-import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
+import { getSelectedTokenList, TokenArrayType } from 'utils/index';
 import { SelectScreen } from 'components/SelectScreen';
+import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 
 interface Props {
   modalVisible: boolean;
-  genesisOptions: NetworkSelectOption[];
   onPressBack: () => void;
-  onChangeNetwork: (item: NetworkSelectOption) => void;
-  selectedNetwork: string;
   onChangeModalVisible: () => void;
+  onChangeToken: (token: TokenArrayType) => void;
+  selectedNetwork: string;
+  selectedToken: string;
 }
 
-export const NetworkSelect = ({
-  genesisOptions,
+export const TokenSelect = ({
   onPressBack,
-  onChangeNetwork,
+  onChangeToken,
   selectedNetwork,
+  selectedToken,
   modalVisible,
   onChangeModalVisible,
 }: Props) => {
   const [searchString, setSearchString] = useState('');
-  const [filteredGenesisOptions, setFilteredGenesisOption] = useState<NetworkSelectOption[]>(genesisOptions);
+  const { networkBalanceMaps } = useAccountBalance(selectedNetwork, [selectedNetwork]);
+  const tokenList = getSelectedTokenList(networkBalanceMaps);
+  const [filteredOptions, setFilteredOption] = useState<TokenArrayType[]>(tokenList);
 
-  const dep = genesisOptions.toString();
+  const dep = tokenList.toString();
 
   useEffect(() => {
     if (searchString) {
       const lowerCaseSearchString = searchString.toLowerCase();
-      setFilteredGenesisOption(
-        genesisOptions.filter(network => network.text.toLowerCase().includes(lowerCaseSearchString)),
+      setFilteredOption(
+        tokenList.filter(token => token.tokenBalanceSymbol.toLowerCase().includes(lowerCaseSearchString)),
       );
     } else {
-      setFilteredGenesisOption(genesisOptions);
+      setFilteredOption(tokenList);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dep, searchString]);
@@ -45,11 +48,11 @@ export const NetworkSelect = ({
   const renderItem = ({ item }) => {
     return (
       <NetworkSelectItem
-        key={item.value}
-        itemName={item.text}
-        itemKey={item.networkKey}
-        isSelected={item.networkKey === selectedNetwork}
-        onSelectNetwork={() => onChangeNetwork(item)}
+        key={item.tokenBalanceSymbol}
+        itemName={item.tokenBalanceSymbol}
+        itemKey={item.selectNetworkKey}
+        isSelected={item.tokenBalanceSymbol === selectedToken}
+        onSelectNetwork={() => onChangeToken(item)}
       />
     );
   };
@@ -68,10 +71,10 @@ export const NetworkSelect = ({
         <FlatList
           style={{ ...ScrollViewStyle }}
           keyboardShouldPersistTaps={'handled'}
-          data={filteredGenesisOptions}
+          data={filteredOptions}
           renderItem={renderItem}
           ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.networkKey}
+          keyExtractor={item => item.tokenBalanceSymbol}
         />
       </SelectScreen>
     </SubWalletFullSizeModal>

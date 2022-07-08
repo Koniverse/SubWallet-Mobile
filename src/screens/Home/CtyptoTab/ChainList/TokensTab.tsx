@@ -2,10 +2,10 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
-import { BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
+import { getSelectedTokenList } from 'utils/index';
 
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
@@ -29,29 +29,7 @@ type TokenArrayType = {
 };
 
 export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
-  let tokenArray: TokenArrayType[] = [];
-
-  Object.keys(networkBalanceMaps).forEach(networkKey => {
-    const networkBalanceInfo = networkBalanceMaps[networkKey];
-    tokenArray.push({
-      selectNetworkKey: networkKey,
-      tokenBalanceValue: networkBalanceInfo.balanceValue,
-      convertedBalanceValue: networkBalanceInfo.convertedBalanceValue,
-      tokenBalanceSymbol: networkBalanceInfo.symbol,
-    });
-
-    if (networkBalanceInfo.childrenBalances && networkBalanceInfo.childrenBalances.length) {
-      networkBalanceInfo.childrenBalances.forEach(children =>
-        tokenArray.push({
-          selectNetworkKey: children.key,
-          tokenBalanceValue: children.balanceValue,
-          convertedBalanceValue: children.convertedBalanceValue || BN_ZERO,
-          tokenBalanceSymbol: children.symbol,
-          defaultNetworkKey: networkKey,
-        }),
-      );
-    }
-  });
+  const tokenArray = getSelectedTokenList(networkBalanceMaps);
 
   const renderItem = (token: TokenArrayType, index: number) => {
     const info = accountInfoByNetworkMap[token.defaultNetworkKey || token.selectNetworkKey];
