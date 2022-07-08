@@ -13,9 +13,9 @@ import { BalanceInfo } from '../../../types';
 import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
-import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
-import reformatAddress, { getGenesisOptionsByAddressType, TokenArrayType } from 'utils/index';
-import { AppState, StyleProp, View } from 'react-native';
+import { NetWorkMetadataDef, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import reformatAddress, { getGenesisOptionsByAddressType } from 'utils/index';
+import { Alert, StyleProp, View } from 'react-native';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import { ActionButtonContainer } from 'screens/Home/CtyptoTab/ActionButtonContainer';
 import { ColorMap } from 'styles/color';
@@ -46,9 +46,9 @@ const ViewStep = {
   TOKEN_HISTORY: 3,
 };
 
-type SendFundInfoType = {
-  selectedSendNetwork: string | null;
-  selectedSendToken: string | null;
+type SelectedResultType = {
+  selectedNetworkKey?: string;
+  selectedToken?: string;
 };
 
 interface NetworkInfo {
@@ -60,6 +60,11 @@ interface NetworkInfo {
   tokenConvertedValue: BigN;
   selectedTokenSymbol: string;
 }
+
+type ModalActionType<T> = {
+  onChange?: (item: T) => void;
+  onBack?: () => void;
+};
 
 function getAccountInfoByNetwork(
   address: string,
@@ -109,10 +114,7 @@ export const CryptoTab = () => {
   const [selectNetworkModal, setSelectNetworkModal] = useState<boolean>(false);
   const [selectTokenModal, setSelectTokenModal] = useState<boolean>(false);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
-  const [{ selectedSendNetwork, selectedSendToken }, setSendFundInfo] = useState<SendFundInfoType>({
-    selectedSendNetwork: null,
-    selectedSendToken: null,
-  });
+  const [{ selectedNetworkKey, selectedToken }, setSelectedResult] = useState<SelectedResultType>({});
   const [
     {
       selectedNetworkInfo,
@@ -134,15 +136,67 @@ export const CryptoTab = () => {
     selectedTokenSymbol: '',
   });
   const deps = selectedNetworkInfo?.networkKey;
+  const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
+  const [{ onChange: onChangeNetworkSelect, onBack: onBackNetworkSelect }, setNetworkSelectAction] = useState<
+    ModalActionType<NetworkSelectOption>
+  >({});
+  const [{ onChange: onChangeTokenSelect, onBack: onBackTokenSelect }, setTokenSelectAction] = useState<
+    ModalActionType<TokenInfo>
+  >({});
+
   const SEND_FUND_TYPE: AccountActionType[] = [
     {
       icon: Article,
       title: i18n.common.singleChain,
       onCLickButton: () => {
         setSendFundTypeModal(false);
-        // setTimeout(() => {
-        //   setSelectNetworkModal(true);
-        // }, 300);
+        setNetworkSelectAction({
+          onChange: item => {
+            setSelectNetworkModal(false);
+            setSelectedResult({ selectedNetworkKey: item.networkKey });
+            setTokenSelectAction({
+              onChange: item1 => {
+                setSelectedResult(prev => {
+                  const result = {
+                    ...prev,
+                    selectedToken: item1.symbol,
+                  };
+
+                  Alert.alert(
+                    'Send Fund',
+                    `selectedNetworkKey is ${result.selectedNetworkKey}, selectedToken is ${result.selectedToken}`,
+                  );
+
+                  return {};
+                });
+
+                setSelectTokenModal(false);
+              },
+              onBack: () => {
+                setSelectedResult(prev => ({
+                  selectedNetworkKey: prev.selectedNetworkKey,
+                }));
+                setSelectTokenModal(false);
+                setTimeout(() => {
+                  setSelectNetworkModal(true);
+                }, 300);
+              },
+            });
+            setTimeout(() => {
+              setSelectTokenModal(true);
+            }, 300);
+          },
+          onBack: () => {
+            setSelectNetworkModal(false);
+            setSelectedResult({});
+            setTimeout(() => {
+              setSendFundTypeModal(true);
+            }, 300);
+          },
+        });
+        setTimeout(() => {
+          setSelectNetworkModal(true);
+        }, 300);
       },
     },
     {
@@ -156,7 +210,6 @@ export const CryptoTab = () => {
       onCLickButton: () => {},
     },
   ];
-  const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
 
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,
@@ -185,7 +238,7 @@ export const CryptoTab = () => {
   };
 
   const onChangeNetwork = (item: NetworkSelectOption) => {
-    setSendFundInfo(prevState => ({
+    setSelectedResult(prevState => ({
       ...prevState,
       selectedSendNetwork: item.networkKey,
     }));
@@ -195,11 +248,11 @@ export const CryptoTab = () => {
     // }, 400);
   };
 
-  const onChangeToken = (item: TokenArrayType) => {
-    setSendFundInfo(prevState => ({
-      ...prevState,
-      selectedSendToken: item.tokenBalanceSymbol,
-    }));
+  const onChangeToken = (item: TokenInfo) => {
+    // setSendFundInfo(prevState => ({
+    //   ...prevState,
+    //   selectedSendToken: item.tokenBalanceSymbol,
+    // }));
   };
 
   const onPressTokenItem = useCallback(
@@ -245,7 +298,7 @@ export const CryptoTab = () => {
 
   const onPressNetworkSelectBack = () => {
     setSelectNetworkModal(false);
-    setSendFundInfo(prevState => ({
+    setSelectedResult(prevState => ({
       ...prevState,
       selectedSendNetwork: null,
     }));
@@ -256,13 +309,36 @@ export const CryptoTab = () => {
 
   const onPressTokenSelectBack = () => {
     setSelectTokenModal(false);
-    setSendFundInfo(prevState => ({
+    setSelectedResult(prevState => ({
       ...prevState,
       selectedSendToken: null,
     }));
     // setTimeout(() => {
     //   setSelectNetworkModal(true);
     // }, 400);
+  };
+
+  const onPressReceiveButton = () => {
+    // Alert.alert('title', '123123123123');
+    // setReceiveModalVisible(true)
+    if (currentNetwork.networkKey === 'all') {
+      setNetworkSelectAction({
+        onChange: item => {
+          setSelectNetworkModal(false);
+          Alert.alert('Receiver', `Network Key is ${item.networkKey}, Newwork Prefix is ${item.networkPrefix}`);
+        },
+        onBack: () => {
+          setNetworkSelectAction({});
+          setSelectNetworkModal(false);
+        },
+      });
+      setSelectNetworkModal(true);
+    } else {
+      Alert.alert(
+        'Receiver',
+        `Network Key is ${currentNetwork.networkKey}, Newwork Prefix is ${currentNetwork.networkPrefix}`,
+      );
+    }
   };
 
   const renderBalanceContainerComponent = (
@@ -281,7 +357,7 @@ export const CryptoTab = () => {
 
         <ActionButtonContainer
           onPressSendFundBtn={onPressSendFundBtn}
-          openReceiveModal={() => setReceiveModalVisible(true)}
+          openReceiveModal={onPressReceiveButton}
           style={accountButtonContainerStyle}
         />
       </View>
@@ -329,7 +405,7 @@ export const CryptoTab = () => {
       )}
 
       <SelectImportAccountModal
-        onModalHide={() => setSelectNetworkModal(true)}
+        onModalHide={() => {}}
         secretTypeList={SEND_FUND_TYPE}
         modalVisible={sendFundTypeModal}
         onChangeModalVisible={() => setSendFundTypeModal(false)}
@@ -340,18 +416,18 @@ export const CryptoTab = () => {
         modalVisible={selectNetworkModal}
         onChangeModalVisible={() => setSelectNetworkModal(false)}
         genesisOptions={genesisOptions}
-        onPressBack={() => onPressNetworkSelectBack()}
-        onChangeNetwork={onChangeNetwork}
-        selectedNetwork={selectedSendNetwork || ''}
+        onPressBack={onBackNetworkSelect}
+        onChangeNetwork={onChangeNetworkSelect}
+        selectedNetwork={selectedNetworkKey || ''}
       />
 
       <TokenSelect
         modalVisible={selectTokenModal}
         onChangeModalVisible={() => setSelectTokenModal(false)}
-        onPressBack={() => onPressTokenSelectBack()}
-        onChangeToken={onChangeToken}
-        selectedNetwork={selectedSendNetwork || ''}
-        selectedToken={selectedSendToken || ''}
+        onPressBack={onBackTokenSelect}
+        onChangeToken={onChangeTokenSelect}
+        selectedNetwork={selectedNetworkKey || ''}
+        selectedToken={selectedToken || ''}
       />
 
       <ReceiveModal receiveModalVisible={receiveModalVisible} onChangeVisible={() => setReceiveModalVisible(false)} />

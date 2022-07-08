@@ -10,8 +10,8 @@ import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 interface Props {
   modalVisible: boolean;
   genesisOptions: NetworkSelectOption[];
-  onPressBack: () => void;
-  onChangeNetwork: (item: NetworkSelectOption) => void;
+  onPressBack?: () => void;
+  onChangeNetwork?: (item: NetworkSelectOption) => void;
   selectedNetwork: string;
   onChangeModalVisible: () => void;
 }
@@ -49,7 +49,7 @@ export const NetworkSelect = ({
         itemName={item.text}
         itemKey={item.networkKey}
         isSelected={item.networkKey === selectedNetwork}
-        onSelectNetwork={() => onChangeNetwork(item)}
+        onSelectNetwork={() => onChangeNetwork && onChangeNetwork(item)}
       />
     );
   };
@@ -61,7 +61,7 @@ export const NetworkSelect = ({
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
-        onPressBack={onPressBack}
+        onPressBack={onPressBack || (() => {})}
         title={'Select Network'}
         searchString={searchString}
         onChangeSearchText={setSearchString}>

@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
-import { getSelectedTokenList, TokenArrayType } from 'utils/index';
 import { SelectScreen } from 'components/SelectScreen';
-import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { ChainRegistry, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   modalVisible: boolean;
-  onPressBack: () => void;
+  onPressBack?: () => void;
   onChangeModalVisible: () => void;
-  onChangeToken: (token: TokenArrayType) => void;
+  onChangeToken?: (token: TokenInfo) => void;
   selectedNetwork: string;
   selectedToken: string;
+}
+
+function getTokenList(networkKey: string, chainRegistryMap: Record<string, ChainRegistry>): TokenInfo[] {
+  if (!chainRegistryMap[networkKey]) {
+    return [];
+  }
+
+  return Object.values(chainRegistryMap[networkKey].tokenMap);
 }
 
 export const TokenSelect = ({
@@ -26,33 +35,30 @@ export const TokenSelect = ({
   onChangeModalVisible,
 }: Props) => {
   const [searchString, setSearchString] = useState('');
-  const { networkBalanceMaps } = useAccountBalance(selectedNetwork, [selectedNetwork]);
-  const tokenList = getSelectedTokenList(networkBalanceMaps);
-  const [filteredOptions, setFilteredOption] = useState<TokenArrayType[]>(tokenList);
+  const { chainRegistry: chainRegistryMap } = useSelector((state: RootState) => state);
+  const tokenList = getTokenList(selectedNetwork, chainRegistryMap);
+  const [filteredOptions, setFilteredOption] = useState<TokenInfo[]>(tokenList);
 
   const dep = tokenList.toString();
 
   useEffect(() => {
     if (searchString) {
       const lowerCaseSearchString = searchString.toLowerCase();
-      setFilteredOption(
-        tokenList.filter(token => token.tokenBalanceSymbol.toLowerCase().includes(lowerCaseSearchString)),
-      );
+      setFilteredOption(tokenList.filter(token => token.symbol.toLowerCase().includes(lowerCaseSearchString)));
     } else {
       setFilteredOption(tokenList);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dep, searchString]);
 
-  // @ts-ignore
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: ListRenderItemInfo<TokenInfo>) => {
     return (
       <NetworkSelectItem
-        key={item.tokenBalanceSymbol}
-        itemName={item.tokenBalanceSymbol}
-        itemKey={item.selectNetworkKey}
-        isSelected={item.tokenBalanceSymbol === selectedToken}
-        onSelectNetwork={() => onChangeToken(item)}
+        key={item.symbol}
+        itemName={item.symbolAlt || item.symbol}
+        itemKey={item.symbol}
+        isSelected={item.symbol === selectedToken}
+        onSelectNetwork={() => onChangeToken && onChangeToken(item)}
       />
     );
   };
@@ -64,7 +70,7 @@ export const TokenSelect = ({
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
-        onPressBack={onPressBack}
+        onPressBack={onPressBack || (() => {})}
         title={'Select Network'}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
@@ -74,7 +80,7 @@ export const TokenSelect = ({
           data={filteredOptions}
           renderItem={renderItem}
           ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.tokenBalanceSymbol}
+          keyExtractor={item => item.symbol}
         />
       </SelectScreen>
     </SubWalletFullSizeModal>
