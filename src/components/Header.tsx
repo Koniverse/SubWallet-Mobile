@@ -62,7 +62,7 @@ export const Header = ({ navigation }: Props) => {
     async (item: NetworkSelectOption): Promise<void> => {
       if (currentAccount) {
         await tieAccount(currentAccount.address, item.value || null);
-        await triggerAccountsSubscription();
+        triggerAccountsSubscription().catch(console.log);
 
         updateCurrentNetwork({
           networkPrefix: item.networkPrefix,

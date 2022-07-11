@@ -3,7 +3,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootNavigationProps } from 'types/routes';
 import { accountAllRecoded, defaultRecoded, recodeAddress } from 'utils/index';
 import { RootState } from 'stores/index';
@@ -16,6 +16,7 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
+import { updateCurrentAccount } from 'stores/Accounts';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -65,6 +66,7 @@ export const Account = ({
   type: givenType,
 }: AccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const dispatch = useDispatch();
   const {
     accounts: { accounts },
     networkMap,
@@ -142,20 +144,17 @@ export const Account = ({
     (accAddress: string) => {
       setSelected(true);
 
-      saveCurrentAccountAddress({ address: accAddress }, () => {
-        // dispatch(updateCurrentAccount(rs.address));
-        triggerAccountsSubscription()
-          .catch(e => {
-            console.error('There is a problem when trigger Accounts Subscription', e);
-          })
-          .finally(() => {
-            navigation.navigate('Home');
-          });
+      saveCurrentAccountAddress({ address: accAddress }, rs => {
+        triggerAccountsSubscription().catch(e => {
+          console.error('There is a problem when trigger Accounts Subscription', e);
+        });
+        dispatch(updateCurrentAccount(rs.address));
+        navigation.navigate('Home');
       })
         .then(console.log)
         .catch(console.error);
     },
-    [navigation],
+    [dispatch, navigation],
   );
 
   // const removeAccount = (accAddress: string) => {

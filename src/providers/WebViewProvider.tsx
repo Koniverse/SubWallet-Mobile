@@ -15,7 +15,7 @@ import {
 } from '../messaging';
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import { upsertCurrentAccount } from 'stores/Accounts';
+import { updateAccounts, upsertCurrentAccount } from 'stores/Accounts';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
@@ -97,6 +97,9 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
 
     subscribeAccountsWithCurrentAddress(rs => {
       const { accounts, currentAddress, currentGenesisHash } = rs;
+
+      dispatch(updateAccounts(accounts));
+
       if (accounts && accounts.length) {
         let selectedAcc = accounts.find(acc => acc.address === currentAddress);
 
