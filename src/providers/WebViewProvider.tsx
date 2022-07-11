@@ -15,12 +15,11 @@ import {
 } from '../messaging';
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import { updateAccounts, updateCurrentAccount } from 'stores/Accounts';
+import { upsertCurrentAccount } from 'stores/Accounts';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
 // import { useToast } from 'react-native-toast-notifications';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { updateSettings } from 'stores/Settings';
 import { updateChainRegistry } from 'stores/ChainRegistry';
 import { updateBalance } from 'stores/Balance';
@@ -28,6 +27,8 @@ import moment from 'moment';
 import { RootState } from 'stores/index';
 import { updateTransactionHistory } from 'stores/TransactionHistory';
 import SplashScreen from 'react-native-splash-screen';
+import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { AccountJson } from '@subwallet/extension-base/background/types';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -89,20 +90,34 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const onWebViewLoaded = useCallback(() => {
     console.debug('Web View Loaded');
     subscribeNetworkMap(networkMap => {
-      console.debug('networkMapLength');
       dispatch(updateNetworkMap(networkMap));
     }).then(networkMap => {
-      console.debug('networkMapLength', networkMap);
       dispatch(updateNetworkMap(networkMap));
     });
 
     subscribeAccountsWithCurrentAddress(rs => {
-      dispatch(updateAccounts(rs.accounts));
-      if (rs.currentAddress) {
-        console.debug(rs.currentAddress);
-        dispatch(updateCurrentAccount(rs.currentAddress));
-      } else {
-        saveCurrentAccountAddress({ address: ALL_ACCOUNT_KEY }, () => {});
+      const { accounts, currentAddress, currentGenesisHash } = rs;
+      if (accounts && accounts.length) {
+        let selectedAcc = accounts.find(acc => acc.address === currentAddress);
+
+        if (!selectedAcc) {
+          selectedAcc = accounts[0];
+          selectedAcc.genesisHash = currentGenesisHash;
+
+          const accountInfo = {
+            address: selectedAcc.address,
+            currentGenesisHash,
+          } as CurrentAccountInfo;
+
+          saveCurrentAccountAddress(accountInfo, () => {
+            dispatch(upsertCurrentAccount(selectedAcc as AccountJson));
+          }).catch(e => {
+            console.error('There is a problem when set Current Account', e);
+          });
+        } else {
+          selectedAcc.genesisHash = currentGenesisHash;
+          dispatch(upsertCurrentAccount(selectedAcc));
+        }
       }
     });
 

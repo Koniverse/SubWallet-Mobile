@@ -11,8 +11,7 @@ import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
 import { NetworkSelect } from 'screens/NetworkSelect';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
-import { tieAccount } from '../messaging';
+import { tieAccount, triggerAccountsSubscription } from '../messaging';
 import { updateCurrentNetwork } from 'stores/updater';
 import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { NetworksSetting } from 'screens/NetworksSetting';
@@ -62,11 +61,8 @@ export const Header = ({ navigation }: Props) => {
   const onChangeNetwork = useCallback(
     async (item: NetworkSelectOption): Promise<void> => {
       if (currentAccount) {
-        if (!isAccountAll(currentAccount.address)) {
-          await tieAccount(currentAccount.address, item.value || null);
-        } else {
-          // window.localStorage.setItem('accountAllNetworkGenesisHash', genesisHash);
-        }
+        await tieAccount(currentAccount.address, item.value || null);
+        await triggerAccountsSubscription();
 
         updateCurrentNetwork({
           networkPrefix: item.networkPrefix,

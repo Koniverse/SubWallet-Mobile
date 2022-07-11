@@ -20,6 +20,7 @@ import type {
   SigningRequest,
   SubscriptionMessageTypes,
 } from '@subwallet/extension-base/background/types';
+import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
 import type { Message } from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@polkadot/keyring/types';
 import type { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
@@ -29,22 +30,20 @@ import type { KeypairType } from '@polkadot/util-crypto/types';
 import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
   AccountsWithCurrentAddress,
-  ApiInitStatus,
   BalanceJson,
   ChainRegistry,
   CrowdloanJson,
   CurrentAccountInfo,
-  EvmNftSubmitTransaction,
+  DisableNetworkResponse,
   EvmNftTransaction,
   EvmNftTransactionRequest,
-  EvmNftTransactionResponse,
   NetworkJson,
-  NetWorkMetadataDef,
   NftCollectionJson,
   NftJson,
   NftTransferExtra,
   PriceJson,
   RequestCheckTransfer,
+  RequestFreeBalance,
   RequestNftForceUpdate,
   RequestSettingsType,
   RequestSubscribeBalance,
@@ -55,25 +54,22 @@ import {
   RequestSubscribeStaking,
   RequestSubscribeStakingReward,
   RequestTransfer,
+  RequestTransferCheckReferenceCount,
+  RequestTransferCheckSupporting,
+  RequestTransferExistentialDeposit,
   ResponseAccountCreateSuriV2,
   ResponseCheckTransfer,
+  ResponsePrivateKeyValidateV2,
   ResponseSeedCreateV2,
   ResponseSeedValidateV2,
   ResponseSettingsType,
   ResponseTransfer,
   StakingJson,
   StakingRewardJson,
+  SupportTransferResponse,
   TransactionHistoryItemType,
   TransferError,
-  DisableNetworkResponse,
-  RequestFreeBalance,
-  RequestTransferExistentialDeposit,
-  RequestTransferCheckReferenceCount,
-  RequestTransferCheckSupporting,
-  SupportTransferResponse,
-  ResponsePrivateKeyValidateV2,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { MutableRefObject } from 'react';
 import WebView from 'react-native-webview';
@@ -94,7 +90,7 @@ export const setViewRef = (viewRef: MutableRefObject<WebView | undefined>) => {
 
 export const listenMessage = (data: Message['data'], handleUnknown?: (data: Message['data']) => boolean): void => {
   const handler = handlers[data.id];
-  console.debug(data);
+
   if (!handler) {
     let unknownHandled = false;
     if (handleUnknown) {
@@ -124,7 +120,6 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
 // @ts-ignore
 export const postMessage = ({ id, message, request }) => {
   const injection = 'window.postMessage(' + JSON.stringify({ id, message, request }) + ')';
-  console.debug(injection);
   webviewRef.current?.injectJavaScript(injection);
 };
 
@@ -581,10 +576,6 @@ export async function subscribeChainRegistry(
   return sendMessage('pri(chainRegistry.getSubscription)', null, callback);
 }
 
-export async function getAllNetworkMetadata(): Promise<NetWorkMetadataDef[]> {
-  return sendMessage('pri(networkMetadata.list)');
-}
-
 export async function disableNetworkMap(networkKey: string): Promise<DisableNetworkResponse> {
   return sendMessage('pri(networkMap.disableOne)', networkKey);
 }
@@ -606,10 +597,6 @@ export async function updateTransactionHistory(
   callback: (items: TransactionHistoryItemType[]) => void,
 ): Promise<boolean> {
   return sendMessage('pri(transaction.history.add)', { address, networkKey, item }, callback);
-}
-
-export async function initApi(networkKey: string): Promise<ApiInitStatus> {
-  return sendMessage('pri(api.init)', { networkKey });
 }
 
 export async function getNft(account: string): Promise<NftJson> {
@@ -688,9 +675,9 @@ export async function evmNftGetTransaction(request: EvmNftTransactionRequest): P
   return sendMessage('pri(evmNft.getTransaction)', request);
 }
 
-export async function evmNftSubmitTransaction(
-  request: EvmNftSubmitTransaction,
-  callback: (data: EvmNftTransactionResponse) => void,
-): Promise<EvmNftTransactionResponse> {
-  return sendMessage('pri(evmNft.submitTransaction)', request, callback);
-}
+// export async function evmNftSubmitTransaction(
+//   request: EvmNftSubmitTransaction,
+//   callback: (data: EvmNftTransactionResponse) => void,
+// ): Promise<EvmNftTransactionResponse> {
+//   return sendMessage('pri(evmNft.submitTransaction)', request, callback);
+// }

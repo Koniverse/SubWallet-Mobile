@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
@@ -41,8 +41,7 @@ export const NetworkSelect = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dep, searchString]);
 
-  // @ts-ignore
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: ListRenderItemInfo<NetworkSelectOption>) => {
     return (
       <NetworkSelectItem
         key={item.value}

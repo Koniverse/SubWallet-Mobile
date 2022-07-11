@@ -21,8 +21,12 @@ const accountsSlice = createSlice({
       state.currentAccountAddress = action.payload;
       state.currentAccount = state.accounts.find(acc => acc.address === state.currentAccountAddress);
     },
+    upsertCurrentAccount(state, action: PayloadAction<AccountJson>) {
+      state.currentAccountAddress = action.payload.address;
+      state.currentAccount = action.payload;
+    }
   },
 });
 
-export const { updateAccounts, updateCurrentAccount } = accountsSlice.actions;
+export const { updateAccounts, updateCurrentAccount, upsertCurrentAccount } = accountsSlice.actions;
 export default accountsSlice.reducer;

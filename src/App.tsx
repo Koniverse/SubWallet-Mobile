@@ -34,6 +34,7 @@ import { LockScreen } from 'screens/LockScreen';
 import { ExportJson } from 'screens/ExportJson';
 import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
+import Rendering from './Rendering';
 
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
@@ -61,6 +62,7 @@ export const App = () => {
       <WebViewProvider>
         <QrScannerProvider navigationRef={navigationRef}>
           <ThemeContext.Provider value={theme}>
+            <Rendering />
             <NavigationContainer ref={navigationRef} theme={theme}>
               <Stack.Navigator
                 initialRouteName={
