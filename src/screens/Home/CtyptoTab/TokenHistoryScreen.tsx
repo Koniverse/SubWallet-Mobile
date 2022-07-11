@@ -4,14 +4,15 @@ import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { AccountInfoByNetwork } from 'types/ui-types';
+import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
+import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 
 interface Props {
   onPressBack: () => void;
   selectedTokenName: string;
   selectedNetworkInfo: AccountInfoByNetwork;
-  balanceBlockComponent: () => JSX.Element;
+  balanceContainerProps: BalanceContainerType;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -37,8 +38,10 @@ export const TokenHistoryScreen = ({
   onPressBack,
   selectedTokenName,
   selectedNetworkInfo,
-  balanceBlockComponent: BalanceBlock,
+  balanceContainerProps,
 }: Props) => {
+  const { balanceValue, accountButtonContainerStyle, isShowBalanceToUsd, symbol, startWithSymbol, amountToUsd } =
+    balanceContainerProps;
   const renderHeaderContent = () => {
     return (
       <View style={tokenHistoryHeader}>
@@ -67,7 +70,14 @@ export const TokenHistoryScreen = ({
       style={containerStyle}
       headerContent={renderHeaderContent}>
       <>
-        <BalanceBlock />
+        <BalanceBlock
+          balanceValue={balanceValue}
+          symbol={symbol}
+          startWithSymbol={startWithSymbol}
+          accountButtonContainerStyle={accountButtonContainerStyle}
+          isShowBalanceToUsd={isShowBalanceToUsd}
+          amountToUsd={amountToUsd}
+        />
 
         <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
           <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenName} />

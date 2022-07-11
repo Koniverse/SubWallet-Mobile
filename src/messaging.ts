@@ -170,21 +170,21 @@ export async function saveCurrentAccountAddress(
 }
 
 export async function toggleBalancesVisibility(callback: (data: RequestSettingsType) => void): Promise<boolean> {
-  return sendMessage('pri(currentAccount.changeBalancesVisibility)', null, callback);
+  return sendMessage('pri(settings.changeBalancesVisibility)', null, callback);
 }
 
 export async function saveAccountAllLogo(
   accountAllLogo: string,
   callback: (data: RequestSettingsType) => void,
 ): Promise<boolean> {
-  return sendMessage('pri(currentAccount.saveAccountAllLogo)', accountAllLogo, callback);
+  return sendMessage('pri(settings.saveAccountAllLogo)', accountAllLogo, callback);
 }
 
 export async function subscribeSettings(
   data: RequestSubscribeBalancesVisibility,
   callback: (data: ResponseSettingsType) => void,
 ): Promise<ResponseSettingsType> {
-  return sendMessage('pri(currentAccount.subscribeSettings)', data, callback);
+  return sendMessage('pri(settings.subscribe)', data, callback);
 }
 
 export async function tieAccount(address: string, genesisHash: string | null): Promise<boolean> {
@@ -331,13 +331,13 @@ export async function rejectMetaRequest(id: string): Promise<boolean> {
 }
 
 export async function subscribeAccounts(cb: (accounts: AccountJson[]) => void): Promise<boolean> {
-  return sendMessage('pri(accounts.subscribe)', null, cb);
+  return sendMessage('pri(accounts.subscribe)', {}, cb);
 }
 
 export async function subscribeAccountsWithCurrentAddress(
   cb: (data: AccountsWithCurrentAddress) => void,
 ): Promise<boolean> {
-  return sendMessage('pri(accounts.subscribeWithCurrentAddress)', null, cb);
+  return sendMessage('pri(accounts.subscribeWithCurrentAddress)', {}, cb);
 }
 
 export async function triggerAccountsSubscription(): Promise<boolean> {
@@ -412,8 +412,11 @@ export async function validateSeedV2(suri: string, types: Array<KeypairType>): P
   return sendMessage('pri(seed.validateV2)', { suri, types });
 }
 
-export async function validateMetamaskPrivateKeyV2(suri: string, types: Array<KeypairType>): Promise<ResponsePrivateKeyValidateV2> {
-  return sendMessage('pri(privateKey.validateV2)', {suri, types});
+export async function validateMetamaskPrivateKeyV2(
+  suri: string,
+  types: Array<KeypairType>,
+): Promise<ResponsePrivateKeyValidateV2> {
+  return sendMessage('pri(privateKey.validateV2)', { suri, types });
 }
 
 export async function validateDerivationPath(

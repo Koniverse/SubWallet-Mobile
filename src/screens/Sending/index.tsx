@@ -1,6 +1,6 @@
 import React, { createRef, useCallback, useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { Keyboard, ScrollView, StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { InputAddress } from 'components/InputAddress';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
@@ -71,6 +71,8 @@ const ViewStep = {
 
 export const SendFund = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const route = useRoute<RootRouteProps>();
+  const data = route.params;
   const {
     currentNetwork: { networkKey },
     accounts: { currentAccountAddress },
@@ -78,13 +80,15 @@ export const SendFund = () => {
     price: { tokenPriceMap },
     networkMap,
   } = useSelector((state: RootState) => state);
+  // @ts-ignore
+  const selectedNetworkKey = data ? data.selectedNetwork : networkKey;
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
-  const selectedTokenMap = chainRegistry[networkKey].tokenMap;
+  const selectedTokenMap = chainRegistry[selectedNetworkKey].tokenMap;
   const selectedMainToken = Object.values(selectedTokenMap).find(val => val.isMainToken);
   const selectedToken = selectedMainToken ? selectedMainToken.name : Object.keys(selectedTokenMap)[0];
-  const senderFreeBalance = useFreeBalance(networkKey, currentAccountAddress, selectedToken);
-  const balanceFormat: BalanceFormatType = getBalanceFormat(networkKey, selectedToken, chainRegistry);
+  const senderFreeBalance = useFreeBalance(selectedNetworkKey, currentAccountAddress, selectedToken);
+  const balanceFormat: BalanceFormatType = getBalanceFormat(selectedNetworkKey, selectedToken, chainRegistry);
   const tokenPrice = tokenPriceMap[selectedToken.toLowerCase()] || 0;
   const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
   const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
@@ -92,11 +96,11 @@ export const SendFund = () => {
   const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
-  const mainTokenInfo = getMainTokenInfo(networkKey, chainRegistry);
+  const mainTokenInfo = getMainTokenInfo(selectedNetworkKey, chainRegistry);
   const feeDecimal: number | null = feeSymbol
     ? feeSymbol === selectedToken
       ? balanceFormat[0]
-      : getBalanceFormat(networkKey, feeSymbol, chainRegistry)[0]
+      : getBalanceFormat(selectedNetworkKey, feeSymbol, chainRegistry)[0]
     : null;
   const [reference, setReference] = useState<boolean | null>(null);
   const [[isSupportTransfer, isSupportTransferAll], setTransferSupport] = useState<[boolean, boolean] | [null, null]>([
@@ -115,8 +119,8 @@ export const SendFund = () => {
   const amount = Math.floor(Number(rawAmount));
   const ethereumChains = getEthereumChains(networkMap);
   const isNotSameAddressAndTokenType =
-    (isEthereumAddress(currentAccountAddress) && !ethereumChains.includes(networkKey)) ||
-    (!isEthereumAddress(currentAccountAddress) && ethereumChains.includes(networkKey));
+    (isEthereumAddress(currentAccountAddress) && !ethereumChains.includes(selectedNetworkKey)) ||
+    (!isEthereumAddress(currentAccountAddress) && ethereumChains.includes(selectedNetworkKey));
 
   const receiveAddressType = isEthereumAddress(receiveAddress || '') ? 'Ethereum' : 'Substrate';
   const senderAddressType = isEthereumAddress(currentAccountAddress || '') ? 'Ethereum' : 'Substrate';
@@ -138,7 +142,7 @@ export const SendFund = () => {
     (isConfirmTransferAll: boolean, thenCb: (rs: ResponseCheckTransfer) => void, catchCb: (rs: Error) => void) => {
       if (receiveAddress) {
         checkTransfer({
-          networkKey: networkKey,
+          networkKey: selectedNetworkKey,
           from: currentAccountAddress,
           to: receiveAddress,
           transferAll: canToggleAll && isConfirmTransferAll,
@@ -149,7 +153,7 @@ export const SendFund = () => {
           .catch(catchCb);
       }
     },
-    [amount, canToggleAll, currentAccountAddress, networkKey, receiveAddress, selectedToken],
+    [amount, canToggleAll, currentAccountAddress, selectedNetworkKey, receiveAddress, selectedToken],
   );
 
   useEffect(() => {
@@ -181,12 +185,12 @@ export const SendFund = () => {
     return () => {
       isSync = false;
     };
-  }, [_doCheckTransfer, canToggleAll, currentAccountAddress, networkKey, rawAmount, receiveAddress, selectedToken]);
+  }, [_doCheckTransfer, canToggleAll, currentAccountAddress, rawAmount, receiveAddress, selectedToken]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferCheckReferenceCount({ address: currentAccountAddress, networkKey })
+    transferCheckReferenceCount({ address: currentAccountAddress, networkKey: selectedNetworkKey })
       .then(res => {
         if (isSync) {
           setReference(res);
@@ -198,12 +202,12 @@ export const SendFund = () => {
       isSync = false;
       setReference(null);
     };
-  }, [currentAccountAddress, networkKey]);
+  }, [currentAccountAddress, selectedNetworkKey]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferGetExistentialDeposit({ networkKey, token: selectedToken })
+    transferGetExistentialDeposit({ networkKey: selectedNetworkKey, token: selectedToken })
       .then(rs => {
         if (isSync) {
           setExistentialDeposit(rs);
@@ -215,12 +219,12 @@ export const SendFund = () => {
       isSync = false;
       setExistentialDeposit('0');
     };
-  }, [networkKey, selectedToken]);
+  }, [selectedNetworkKey, selectedToken]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferCheckSupporting({ networkKey, token: selectedToken })
+    transferCheckSupporting({ networkKey: selectedNetworkKey, token: selectedToken })
       .then(res => {
         if (isSync) {
           setTransferSupport([res.supportTransfer, res.supportTransferAll]);
@@ -232,7 +236,7 @@ export const SendFund = () => {
       isSync = false;
       setTransferSupport([null, null]);
     };
-  }, [networkKey, selectedToken]);
+  }, [selectedNetworkKey, selectedToken]);
 
   useEffect(() => {
     let isSync = true;
@@ -352,7 +356,7 @@ export const SendFund = () => {
                         />
                       )}
 
-                      <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(networkKey, 34)}</View>
+                      <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(selectedNetworkKey, 34)}</View>
                       <InputBalance
                         placeholder={'0'}
                         maxValue={senderFreeBalance}
@@ -396,7 +400,7 @@ export const SendFund = () => {
                   <QrScannerScreen
                     qrModalVisible={isShowQrModalVisible}
                     onPressCancel={() => setShowQrModalVisible(false)}
-                    onChangeAddress={(text) => onUpdateInputAddress(text)}
+                    onChangeAddress={text => onUpdateInputAddress(text)}
                   />
                 </View>
               </TouchableWithoutFeedback>
@@ -406,7 +410,7 @@ export const SendFund = () => {
               <Confirmation
                 balanceFormat={balanceFormat}
                 requestPayload={{
-                  networkKey: networkKey,
+                  networkKey: selectedNetworkKey,
                   from: currentAccountAddress,
                   to: currentReceiveAddress,
                   transferAll: false,
@@ -419,14 +423,14 @@ export const SendFund = () => {
                   feeDecimal,
                   feeSymbol,
                   mainTokenInfo,
-                  chainRegistry[networkKey].tokenMap,
+                  chainRegistry[selectedNetworkKey].tokenMap,
                 )}
               />
             )}
           </>
         </ContainerWithSubHeader>
       ) : (
-        <SendFundResult networkKey={networkKey} txResult={txResult} onResend={_onResend} />
+        <SendFundResult networkKey={selectedNetworkKey} txResult={txResult} onResend={_onResend} />
       )}
     </>
   );

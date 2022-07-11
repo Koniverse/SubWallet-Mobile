@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import QRCode from 'react-native-qrcode-svg';
@@ -12,10 +12,14 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
 
 interface Props {
   receiveModalVisible: boolean;
   onChangeVisible: () => void;
+  networkKey: string;
+  networkPrefix: number;
+  openChangeNetworkModal: () => void;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -72,11 +76,17 @@ const receiveModalExplorerBtn: StyleProp<any> = {
   marginRight: 8,
 };
 
-export const ReceiveModal = ({ receiveModalVisible, onChangeVisible }: Props) => {
+export const ReceiveModal = ({
+  receiveModalVisible,
+  onChangeVisible,
+  networkKey,
+  networkPrefix,
+  openChangeNetworkModal,
+}: Props) => {
   const toast = useToast();
   const {
     accounts: { currentAccountAddress },
-    currentNetwork: { networkKey, networkPrefix },
+    currentNetwork,
   } = useSelector((state: RootState) => state);
   const copyToClipboard = useCallback(
     (text: string) => {
@@ -98,7 +108,16 @@ export const ReceiveModal = ({ receiveModalVisible, onChangeVisible }: Props) =>
         <Text style={receiveModalGuide}>Scan address to receive payment</Text>
 
         <View style={receiveModalAddressWrapper}>
-          {getNetworkLogo(networkKey, 20)}
+          <TouchableOpacity
+            activeOpacity={BUTTON_ACTIVE_OPACITY}
+            disabled={currentNetwork.networkKey !== 'all'}
+            onPress={() => {
+              onChangeVisible();
+              openChangeNetworkModal();
+            }}>
+            {getNetworkLogo(networkKey, 20)}
+          </TouchableOpacity>
+
           <Text style={receiveModalAddressText}>{toShort(formattedAddress, 12, 12)}</Text>
           <IconButton
             style={receiveModalCopyBtn}

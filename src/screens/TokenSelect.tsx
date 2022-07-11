@@ -56,9 +56,10 @@ export const TokenSelect = ({
       <NetworkSelectItem
         key={item.symbol}
         itemName={item.symbolAlt || item.symbol}
-        itemKey={item.symbol}
+        itemKey={item.isMainToken ? selectedNetwork : item.symbol.toLowerCase()}
         isSelected={item.symbol === selectedToken}
         onSelectNetwork={() => onChangeToken && onChangeToken(item)}
+        defaultItemKey={selectedNetwork}
       />
     );
   };
@@ -71,7 +72,7 @@ export const TokenSelect = ({
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
         onPressBack={onPressBack || (() => {})}
-        title={'Select Network'}
+        title={'Select Token'}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
         <FlatList

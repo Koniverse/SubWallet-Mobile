@@ -7,7 +7,8 @@ import { ChainsTab } from 'screens/Home/CtyptoTab/ChainList/ChainsTab';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainList/TokensTab';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
-import { AccountInfoByNetwork } from 'types/ui-types';
+import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
+import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 interface Props {
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -22,7 +23,7 @@ interface Props {
     info?: AccountInfoByNetwork,
     balanceInfo?: BalanceInfo,
   ) => void;
-  balanceBlockComponent: () => JSX.Element;
+  balanceContainerProps: BalanceContainerType;
 }
 
 const ROUTES = [
@@ -37,7 +38,7 @@ export const ChainListScreen = ({
   networkBalanceMaps,
   onPressChainItem,
   onPressTokenItem,
-  balanceBlockComponent: BalanceBlock,
+  balanceContainerProps,
 }: Props) => {
   // @ts-ignore
   const renderScene = ({ route }) => {
@@ -66,7 +67,7 @@ export const ChainListScreen = ({
   return (
     <MainScreenContainer navigation={navigation}>
       <>
-        <BalanceBlock />
+        <BalanceBlock balanceValue={balanceContainerProps.balanceValue} />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
       </>

@@ -1,7 +1,8 @@
-import { AccountJson } from "@subwallet/extension-base/background/types";
-import React from "react";
-import {IconProps} from "phosphor-react-native";
-import {RootStackParamList} from "types/routes";
+import { AccountJson } from '@subwallet/extension-base/background/types';
+import React from 'react';
+import { IconProps } from 'phosphor-react-native';
+import BigN from 'bignumber.js';
+import { StyleProp } from 'react-native';
 
 export type BalanceFormatType = [number, string, string | undefined];
 export type BitLength = 8 | 16 | 32 | 64 | 128 | 256;
@@ -16,6 +17,15 @@ export interface Recoded {
 export interface CheckBoxesType {
   value: string;
   labelComponent: React.ReactNode;
+}
+
+export interface BalanceContainerType {
+  balanceValue: BigN;
+  accountButtonContainerStyle?: StyleProp<any>;
+  amountToUsd?: BigN;
+  isShowBalanceToUsd?: boolean;
+  startWithSymbol?: boolean;
+  symbol?: string;
 }
 
 export type AccountInfoByNetwork = {

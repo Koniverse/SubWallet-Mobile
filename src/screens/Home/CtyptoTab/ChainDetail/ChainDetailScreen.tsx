@@ -7,10 +7,11 @@ import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { AccountInfoByNetwork } from 'types/ui-types';
+import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import BigN from 'bignumber.js';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
+import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 
 interface Props {
   onPressBack: () => void;
@@ -22,7 +23,7 @@ interface Props {
     tokenConvertedValue: BigN,
     tokenSymbol: string,
   ) => void;
-  balanceBlockComponent: () => JSX.Element;
+  balanceContainerProps: BalanceContainerType;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -54,7 +55,7 @@ export const ChainDetailScreen = ({
   selectedNetworkInfo,
   selectedBalanceInfo,
   onPressTokenItem,
-  balanceBlockComponent: BalanceBlock,
+  balanceContainerProps,
 }: Props) => {
   const renderHeaderContent = () => {
     return (
@@ -104,7 +105,7 @@ export const ChainDetailScreen = ({
       style={containerStyle}
       onPressRightIcon={() => {}}>
       <>
-        <BalanceBlock />
+        <BalanceBlock balanceValue={balanceContainerProps.balanceValue} />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
       </>

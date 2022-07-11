@@ -120,6 +120,8 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
 
     subscribeSettings(null, settings => {
       dispatch(updateSettings(settings));
+    }).then(rs => {
+      dispatch(updateSettings(rs));
     });
 
     subscribePrice(null, price => {
