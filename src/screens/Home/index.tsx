@@ -33,7 +33,9 @@ export const Home = () => {
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
-          let customStyle = {};
+          let customStyle = {
+            opacity: !props.accessibilityState?.selected ? 0.2 : 1,
+          };
           if (props.accessibilityState?.selected) {
             customStyle = {
               ...customStyle,
@@ -45,8 +47,11 @@ export const Home = () => {
           }
           // @ts-ignore
           props.style = [[...props.style], customStyle];
-
-          return <TouchableHighlight {...props} />;
+          if (!props.accessibilityState?.selected) {
+            return <TouchableHighlight disabled={true} {...props} />;
+          } else {
+            return <TouchableHighlight {...props} />;
+          }
         },
         tabBarIconStyle: {
           marginTop: 10,
