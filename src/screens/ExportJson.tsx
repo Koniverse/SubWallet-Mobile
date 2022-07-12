@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleProp, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
-import { useToast } from 'react-native-toast-notifications';
+import { FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
 import { exportAccount } from '../messaging';
-import * as RNFS from 'react-native-fs';
+import { LeftIconButton } from 'components/LeftIconButton';
+import { CopySimple } from 'phosphor-react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 interface Props {
   address: string;
@@ -16,6 +17,7 @@ interface Props {
 
 const layoutContainerStyle: StyleProp<any> = {
   flex: 1,
+  position: 'relative',
 };
 
 const bodyAreaStyle: StyleProp<any> = {
@@ -34,15 +36,28 @@ const passwordFieldStyle: StyleProp<any> = {
   marginBottom: 8,
 };
 
+const privateBlockStyle: StyleProp<any> = {
+  ...sharedStyles.blockContent,
+  backgroundColor: ColorMap.dark1,
+  marginBottom: 16,
+};
+
+const privateBlockTextStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.disabled,
+};
+
 const buttonStyle: StyleProp<any> = {
   width: '100%',
 };
 
 export const ExportJson = ({ address, closeModal }: Props) => {
-  const toast = useToast();
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fileContent, setFileContent] = useState('');
+  const [isShowToast, setShowToast] = useState(false);
 
   const onTypePassword = (pass: string) => {
     setPassword(pass);
@@ -53,27 +68,20 @@ export const ExportJson = ({ address, closeModal }: Props) => {
     setIsBusy(true);
     exportAccount(address, password)
       .then(({ exportedJson }) => {
-        const baseDir = Platform.OS === 'android' ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath;
-
-        const filePath = baseDir + `/${exportedJson.address}.json`;
-
-        RNFS.writeFile(filePath, JSON.stringify(exportedJson), 'utf8')
-          .then(success => {
-            console.log('FILE WRITTEN!', success);
-            toast.show('Export successfully');
-            setIsBusy(false);
-            closeModal(false);
-          })
-          .catch(err => {
-            setErrorMessage(err.error);
-            setIsBusy(false);
-          });
+        setFileContent(JSON.stringify(exportedJson));
+        setIsBusy(false);
       })
       .catch((error: Error) => {
         setErrorMessage(error.message);
         setIsBusy(false);
       });
   };
+
+  const copyToClipboard = useCallback((text: string) => {
+    Clipboard.setString(text);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 1000);
+  }, []);
 
   const isPasswordError = !password || password.length < 6;
 
@@ -83,8 +91,24 @@ export const ExportJson = ({ address, closeModal }: Props) => {
         style={{
           backgroundColor: ColorMap.dark2,
           height: '100%',
+          width: '100%',
         }}>
         <View style={layoutContainerStyle}>
+          {isShowToast && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 25,
+                left: 0,
+                right: 0,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <View style={{ backgroundColor: ColorMap.notification, padding: 5, borderRadius: 5 }}>
+                <Text style={{ color: ColorMap.light }}>Copied to Clipboard</Text>
+              </View>
+            </View>
+          )}
           <Text
             style={{
               textAlign: 'center',
@@ -96,34 +120,54 @@ export const ExportJson = ({ address, closeModal }: Props) => {
             Export Account
           </Text>
 
-          <ScrollView style={bodyAreaStyle}>
+          <View style={bodyAreaStyle}>
             <Warning
               title={'Do not share your private key!'}
               message={'If someone has your private key they will have full control of your account'}
               style={{ marginBottom: 16 }}
             />
 
-            <PasswordField
-              label={'PASSWORD FOR THIS ACCOUNT'}
-              onChangeText={onTypePassword}
-              onBlur={onSetPassword}
-              onEndEditing={onSetPassword}
-              isError={isPasswordError}
-              value={password}
-              style={passwordFieldStyle}
-            />
+            {!!fileContent && (
+              <>
+                <View style={privateBlockStyle}>
+                  <Text style={privateBlockTextStyle} numberOfLines={4}>
+                    {fileContent}
+                  </Text>
+                </View>
+
+                <View style={{ alignItems: 'center' }}>
+                  <LeftIconButton
+                    icon={CopySimple}
+                    title={'Copy to Clipboard'}
+                    onPress={() => copyToClipboard(fileContent)}
+                  />
+                </View>
+              </>
+            )}
+
+            {!fileContent && (
+              <PasswordField
+                label={'PASSWORD FOR THIS ACCOUNT'}
+                onChangeText={onTypePassword}
+                onBlur={onSetPassword}
+                onEndEditing={onSetPassword}
+                isError={isPasswordError}
+                value={password}
+                style={passwordFieldStyle}
+              />
+            )}
 
             {!!errorMessage && (
               <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 0 }} message={errorMessage} />
             )}
-          </ScrollView>
+          </View>
           <View style={footerAreaStyle}>
             <SubmitButton
-              title={'Continue'}
+              title={!!fileContent ? '' : 'Continue'}
               disabled={isPasswordError}
               isBusy={isBusy}
               style={buttonStyle}
-              onPress={onSetPassword}
+              onPress={!!fileContent ? () => closeModal(false) : onSetPassword}
             />
           </View>
         </View>

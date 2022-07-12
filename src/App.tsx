@@ -1,13 +1,13 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-import React from 'react';
+import React, { useEffect } from 'react';
 import { WebViewProvider } from 'providers/WebViewProvider';
 import { RootState } from './stores';
 import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { StatusBar } from 'react-native';
+import { AppState, StatusBar } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -39,6 +39,9 @@ import Rendering from './Rendering';
 cryptoWaitReady().then(rs => {
   console.debug('crypto-ready', rs);
 });
+
+let lastTimestamp = 0;
+
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -47,9 +50,34 @@ export const App = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
   const {
-    settingData: { pinCode, pinCodeEnabled },
+    settingData: { pinCode, pinCodeEnabled, autoLockTime },
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
+
+  useEffect(() => {
+    const onAppStateChange = (state: string) => {
+      if (!pinCodeEnabled) {
+        return;
+      }
+
+      if (state === 'background') {
+        lastTimestamp = Date.now();
+      } else if (state === 'active') {
+        if (!autoLockTime) {
+          return;
+        } else {
+          if (Date.now() - lastTimestamp > autoLockTime) {
+            navigationRef.navigate('LockScreen');
+          }
+        }
+      }
+    };
+
+    const listener = AppState.addEventListener('change', onAppStateChange);
+    return () => {
+      listener.remove();
+    };
+  }, [autoLockTime, navigationRef, pinCodeEnabled]);
 
   return (
     <ToastProvider
