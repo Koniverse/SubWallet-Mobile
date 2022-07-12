@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AccountJson } from '@subwallet/extension-base/background/types';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 
 const ACCOUNT_STORE_DEFAULT: {
   accounts: AccountJson[];
@@ -7,7 +8,7 @@ const ACCOUNT_STORE_DEFAULT: {
   currentAccount?: AccountJson;
 } = {
   accounts: [],
-  currentAccountAddress: 'all',
+  currentAccountAddress: ALL_ACCOUNT_KEY,
 };
 
 const accountsSlice = createSlice({
