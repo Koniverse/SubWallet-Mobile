@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
 import { Recoded } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
@@ -8,13 +8,13 @@ import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/back
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { decodeAddress, isEthereumAddress, ethereumEncode, encodeAddress } from '@polkadot/util-crypto';
 import { SvgLogosMap } from 'assets/logo';
-import { Image } from 'react-native';
+import { Image, View } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
 import { BN, formatBalance } from '@polkadot/util';
 import { BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
-import {BalanceInfo} from "../types";
+import { BalanceInfo } from '../types';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -152,7 +152,11 @@ export const isEmptyArray = (x: any) => !Array.isArray(x) || (Array.isArray(x) &
 export const getIcon = (iconName: string, size: number, color?: string, style?: object) => {
   // @ts-ignore
   const IconComponent = SVGImages[iconName];
-  return <IconComponent width={size} height={size} color={color} style={style} />;
+  return (
+    <Suspense fallback={<View style={{ width: size, height: size }} />}>
+      <IconComponent width={size} height={size} color={color} style={style} />
+    </Suspense>
+  );
 };
 
 export function toShort(text: string, preLength = 6, sufLength = 6): string {
@@ -237,7 +241,7 @@ export function getNetworkLogo(networkKey: string, size: number, defaultLogo = '
 
     const styleWithBgc = {
       ...style,
-      backgroundColor: ColorMap.light,
+      backgroundColor: ColorMap.disabled,
     };
 
     if (networkKey === 'interlay') {

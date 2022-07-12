@@ -1,9 +1,8 @@
-// Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
 declare module '*.svg' {
-  const url: string;
-  export default url;
+  import React from 'react';
+  import { SvgProps } from 'react-native-svg';
+  const content: React.FC<SvgProps>;
+  export default content;
 }
 
 declare module '*.png' {

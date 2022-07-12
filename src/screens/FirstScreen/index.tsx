@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { SubmitButton } from 'components/SubmitButton';
@@ -68,8 +68,9 @@ export const FirstScreen = () => {
         <SafeAreaView />
         <View style={logoStyle}>
           {
-            // @ts-ignore
-            <SVGImages.SubWallet2 width={230} height={230} />
+            <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
+              <SVGImages.SubWallet2 width={230} height={230} />
+            </Suspense>
           }
         </View>
 
