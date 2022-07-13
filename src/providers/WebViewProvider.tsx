@@ -29,6 +29,7 @@ import { updateTransactionHistory } from 'stores/TransactionHistory';
 import SplashScreen from 'react-native-splash-screen';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
+import {EN_US} from "utils/i18n/i18n";
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -57,7 +58,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const setupI18n = (userLang: string) => {
     const i18nModule = '../utils/i18n/i18n';
     return import(i18nModule).then(({ default: i18n }) => {
-      i18n.setLanguage(userLang);
+      i18n.setLanguage(userLang || EN_US);
       moment.locale(userLang.split('_')[0]);
     });
   };

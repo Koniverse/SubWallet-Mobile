@@ -2,7 +2,7 @@ import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from '
 import React from 'react';
 import { CaretRight, IconProps } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import {FontMedium, FontSemiBold, sharedStyles} from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
 
 interface ActionItemProps extends TouchableOpacityProps {
@@ -70,16 +70,6 @@ const arrowStyle: StyleProp<any> = {
   right: 16,
 };
 
-const disabledOverlay: StyleProp<any> = {
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  left: 0,
-  bottom: 0,
-  borderRadius: 5,
-  backgroundColor: ColorMap.disabledOverlay,
-};
-
 export const ActionItem = (actionProps: ActionItemProps) => {
   const {
     icon: Icon,
@@ -113,8 +103,6 @@ export const ActionItem = (actionProps: ActionItemProps) => {
           <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />
         </View>
       )}
-
-      {actionProps.disabled && <View style={disabledOverlay} />}
     </TouchableOpacity>
   );
 };

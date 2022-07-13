@@ -7,19 +7,21 @@ import {FontMedium, FontSemiBold, sharedStyles} from "styles/sharedStyles";
 interface Props extends TouchableOpacityProps {
   label: string;
   isSelected: boolean;
+  showSeparator?: boolean;
 }
 
 const selectItemSeparator: StyleProp<any> = {
   width: '100%',
   height: 1,
   backgroundColor: ColorMap.dark2,
+
 };
 
-export const SelectItem = ({ label, isSelected, onPress }: Props) => {
+export const SelectItem = ({ label, isSelected, onPress, showSeparator = true }: Props) => {
   const CheckIcon = CircleWavyCheck;
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
         <Text
           style={{
             ...sharedStyles.mediumText,
@@ -33,7 +35,7 @@ export const SelectItem = ({ label, isSelected, onPress }: Props) => {
         {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
       </View>
 
-      <View style={selectItemSeparator} />
+      {showSeparator && <View style={selectItemSeparator} />}
     </TouchableOpacity>
   );
 };

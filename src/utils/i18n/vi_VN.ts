@@ -1,4 +1,4 @@
-export const vi = {
+export default {
   common: {
     welcomeBack: 'Welcome Back!',
     enterPinToUnlock: 'Enter the PIN to unlock',
@@ -18,6 +18,7 @@ export const vi = {
     crossChain: 'Cross Chain (XCM)',
     charityDonate: 'Charity Donate',
     selectYourSecretFile: 'Select your secret type',
+    autoLock: 'Auto-Lock',
     importFromJson: 'Import From JSON',
     transferSuccessMessage:
       'Your request has been confirmed. You can track its progress on the Transaction History page.',

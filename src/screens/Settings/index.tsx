@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView, StyleProp, Text } from 'react-native';
+import { Linking, ScrollView, StyleProp, Text } from 'react-native';
 import { ActionItem } from 'components/ActionItem';
 import {
   BellRinging,
@@ -11,6 +11,7 @@ import {
   GitFork,
   Globe,
   GlobeHemisphereWest,
+  IconProps,
   ShieldCheck,
   SignOut,
   TelegramLogo,
@@ -22,6 +23,15 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
+import {
+  DISCORD_URL,
+  PRIVACY_AND_POLICY_URL,
+  TELEGRAM_URL,
+  TERMS_OF_SERVICE_URL,
+  TWITTER_URL,
+  WEBSITE_URL,
+  WIKI_URL,
+} from '../../constant';
 
 const settingTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -30,13 +40,22 @@ const settingTitleStyle: StyleProp<any> = {
   paddingVertical: 12,
 };
 
+type settingItemType = {
+  icon: ({ weight, color, size, style, mirrored }: IconProps) => JSX.Element;
+  title: string;
+  hasRightArrow: boolean;
+  onPress: () => void;
+  disabled?: boolean;
+};
+
 export const Settings = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
     accounts: { currentAccount },
+    settingData: { pinCodeEnabled },
   } = useSelector((state: RootState) => state);
 
-  const settingList = [
+  const settingList: settingItemType[][] = [
     [
       {
         icon: ShieldCheck,
@@ -49,11 +68,14 @@ export const Settings = () => {
         title: i18n.settings.languages,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Languages'),
+        disabled: true,
       },
       {
         icon: BellRinging,
         title: i18n.settings.notifications,
         hasRightArrow: true,
+        onPress: () => {},
+        disabled: true,
       },
     ],
     [
@@ -61,11 +83,13 @@ export const Settings = () => {
         icon: GitFork,
         title: i18n.settings.networks,
         hasRightArrow: true,
+        onPress: () => {},
       },
       {
         icon: Coin,
         title: i18n.settings.manageEvmTokens,
         hasRightArrow: true,
+        onPress: () => {},
       },
     ],
     [
@@ -73,16 +97,19 @@ export const Settings = () => {
         icon: TelegramLogo,
         title: i18n.settings.telegram,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(TELEGRAM_URL),
       },
       {
         icon: TwitterLogo,
         title: i18n.settings.twitter,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(TWITTER_URL),
       },
       {
         icon: DiscordLogo,
         title: i18n.settings.discord,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(DISCORD_URL),
       },
     ],
     [
@@ -90,21 +117,25 @@ export const Settings = () => {
         icon: Globe,
         title: i18n.settings.website,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(WEBSITE_URL),
       },
       {
         icon: FileText,
         title: i18n.settings.documentation,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(WIKI_URL),
       },
       {
         icon: FileText,
         title: i18n.settings.termOfService,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(TERMS_OF_SERVICE_URL),
       },
       {
         icon: FileText,
         title: i18n.settings.privacyPolicy,
         hasRightArrow: true,
+        onPress: () => Linking.openURL(PRIVACY_AND_POLICY_URL),
       },
     ],
     [
@@ -112,13 +143,15 @@ export const Settings = () => {
         icon: SignOut,
         title: i18n.settings.logout,
         hasRightArrow: true,
+        onPress: () => navigation.navigate('LockScreen'),
+        disabled: !pinCodeEnabled,
       },
     ],
   ];
 
   return (
     <SubScreenContainer title={i18n.settings.settings} navigation={navigation}>
-      <ScrollView style={{ paddingHorizontal: 16, paddingTop: 16, flex: 1, marginBottom: 45 }}>
+      <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 45 }}>
         <ActionItem
           icon={ShieldCheck}
           showIcon={false}
@@ -138,6 +171,8 @@ export const Settings = () => {
             title={setting.title}
             hasRightArrow={setting.hasRightArrow}
             onPress={setting.onPress}
+            disabled={setting.disabled}
+            color={setting.disabled ? ColorMap.disabledTextColor : ColorMap.light}
           />
         ))}
 
@@ -146,10 +181,13 @@ export const Settings = () => {
         {settingList[1].map(setting => (
           <ActionItem
             key={setting.title}
+            disabled={true}
+            color={ColorMap.disabledTextColor}
             style={{ marginBottom: 4 }}
             icon={setting.icon}
             title={setting.title}
             hasRightArrow={setting.hasRightArrow}
+            onPress={setting?.onPress}
           />
         ))}
 
@@ -162,6 +200,7 @@ export const Settings = () => {
             icon={setting.icon}
             title={setting.title}
             hasRightArrow={setting.hasRightArrow}
+            onPress={setting.onPress}
           />
         ))}
 
@@ -174,6 +213,7 @@ export const Settings = () => {
             icon={setting.icon}
             title={setting.title}
             hasRightArrow={setting.hasRightArrow}
+            onPress={setting.onPress}
           />
         ))}
 
@@ -184,6 +224,9 @@ export const Settings = () => {
             icon={setting.icon}
             title={setting.title}
             hasRightArrow={setting.hasRightArrow}
+            onPress={setting.onPress}
+            disabled={setting.disabled}
+            color={setting.disabled ? ColorMap.disabledTextColor : ColorMap.light}
           />
         ))}
       </ScrollView>

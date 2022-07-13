@@ -11,6 +11,7 @@ export const ColorMap = {
   danger: '#F5000E',
   disabled: '#999',
   warning: '#E7B917',
+  disabledTextColor: 'rgba(255, 255, 255, 0.4)',
   notification: 'rgba(0, 0, 0, 0.8)',
   disabledOverlay: 'rgba(0, 7, 45, 0.7)',
   dangerOverlay: 'rgba(245, 0, 14, 0.12)',

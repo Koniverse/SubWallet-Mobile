@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateLanguage } from 'stores/SettingData';
 import { RootState } from 'stores/index';
 import { ScrollViewStyle } from 'styles/sharedStyles';
+import moment from 'moment';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -26,36 +27,43 @@ export const Languages = () => {
   const languageOptions = getLanguageOptions();
   const dispatch = useDispatch();
   const [searchString, setSearchString] = useState<string>('');
+  const [selectedLang, setSelectedLang] = useState<string>(language);
   const filteredLanguageOption = languageOptions.filter(opt => opt.text.includes(searchString));
+
+  const onPressDone = () => {
+    if (language === selectedLang) {
+      navigation.navigate('Settings');
+    } else {
+      i18n.setLanguage(selectedLang);
+      moment.locale(selectedLang.split('_')[0]);
+      dispatch(updateLanguage(selectedLang));
+      setTimeout(() => {
+        RNRestart.Restart();
+      }, 500);
+    }
+  };
 
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
       <SelectItem
         label={item.text}
-        isSelected={item.value === language}
-        onPress={() => {
-          dispatch(updateLanguage(item.value));
-          i18n.setLanguage(item.value);
-          setTimeout(() => {
-            RNRestart.Restart();
-          }, 500);
-        }}
+        isSelected={item.value === selectedLang}
+        onPress={() => setSelectedLang(item.value)}
       />
     );
   };
 
   return (
-    <SelectScreen title={'Languages'} searchString={searchString} onChangeSearchText={setSearchString}>
+    <SelectScreen
+      title={'Languages'}
+      searchString={searchString}
+      onChangeSearchText={setSearchString}
+      onPressBack={() => navigation.goBack()}>
       <View style={{ flex: 1 }}>
         <FlatList data={filteredLanguageOption} renderItem={renderItem} style={{ ...ScrollViewStyle }} />
         <View style={footerAreaStyle}>
-          <SubmitButton
-            title={'Done'}
-            onPress={() => {
-              navigation.navigate('Settings');
-            }}
-          />
+          <SubmitButton title={'Done'} onPress={onPressDone} />
         </View>
       </View>
     </SelectScreen>

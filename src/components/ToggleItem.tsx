@@ -7,6 +7,7 @@ interface Props extends ViewProps {
   label: string;
   isEnabled: boolean;
   onValueChange: () => void;
+  disabled?: boolean;
 }
 
 const toggleItemWrapperStyle: StyleProp<any> = {
@@ -26,11 +27,18 @@ const toggleItemTextStyle: StyleProp<any> = {
   paddingVertical: 14,
 };
 
-export const ToggleItem = ({ label, isEnabled, onValueChange, style }: Props) => {
+export const ToggleItem = ({ label, isEnabled, onValueChange, style, disabled }: Props) => {
   return (
     <View style={[toggleItemWrapperStyle, style]}>
-      <Text style={toggleItemTextStyle}>{label}</Text>
-      <Switch ios_backgroundColor="rgba(120,120,128,0.32)" value={isEnabled} onValueChange={onValueChange} />
+      <Text style={[toggleItemTextStyle, { color: disabled ? ColorMap.disabledTextColor : ColorMap.light }]}>
+        {label}
+      </Text>
+      <Switch
+        ios_backgroundColor="rgba(120,120,128,0.32)"
+        value={isEnabled}
+        onValueChange={onValueChange}
+        disabled={disabled}
+      />
     </View>
   );
 };

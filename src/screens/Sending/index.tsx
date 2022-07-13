@@ -82,11 +82,13 @@ export const SendFund = () => {
   } = useSelector((state: RootState) => state);
   // @ts-ignore
   const selectedNetworkKey = data ? data.selectedNetwork : networkKey;
+  const selectedTokenMap = chainRegistry[selectedNetworkKey].tokenMap;
+  const mainToken = Object.values(selectedTokenMap).find(val => val.isMainToken);
+  const defaultToken = mainToken ? mainToken.name : Object.keys(selectedTokenMap)[0];
+  // @ts-ignore
+  const selectedToken = data ? (data.selectedToken as tring) : defaultToken;
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
-  const selectedTokenMap = chainRegistry[selectedNetworkKey].tokenMap;
-  const selectedMainToken = Object.values(selectedTokenMap).find(val => val.isMainToken);
-  const selectedToken = selectedMainToken ? selectedMainToken.name : Object.keys(selectedTokenMap)[0];
   const senderFreeBalance = useFreeBalance(selectedNetworkKey, currentAccountAddress, selectedToken);
   const balanceFormat: BalanceFormatType = getBalanceFormat(selectedNetworkKey, selectedToken, chainRegistry);
   const tokenPrice = tokenPriceMap[selectedToken.toLowerCase()] || 0;

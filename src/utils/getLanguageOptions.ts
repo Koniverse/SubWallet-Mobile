@@ -1,6 +1,8 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { EN_US, VI_VN } from 'utils/i18n/i18n';
+
 interface Option {
   info?: string;
   isDisabled?: boolean;
@@ -14,11 +16,11 @@ export default function getLanguageOptions(): Option[] {
     // default/native
     {
       text: 'English',
-      value: 'en',
+      value: EN_US,
     },
     {
       text: 'Vietnamese',
-      value: 'vi',
+      value: VI_VN,
     },
     {
       text: 'Chinies',

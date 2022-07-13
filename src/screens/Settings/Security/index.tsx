@@ -42,7 +42,7 @@ export const Security = () => {
       value: 60 * 1000,
     },
     {
-      text: 'If left for 15minutes',
+      text: 'If left for 15 minutes',
       value: 15 * 60 * 1000,
     },
     {
@@ -75,20 +75,27 @@ export const Security = () => {
     setEnabledFaceId(!isEnabledFaceId);
   };
 
+  const onChangeAutoLockTime = (value: number | undefined) => {
+    dispatch(updateAutoLockTime(value));
+    setIsShowAutoLockModal(false);
+  };
+
   return (
     <SubScreenContainer title={'Security'} navigation={navigation}>
-      <View style={{ ...sharedStyles.layoutContainer }}>
+      <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <ToggleItem label={'PIN Code'} isEnabled={pinCodeEnabled} onValueChange={onValueChangePinCode} />
         <ToggleItem
           style={{ marginBottom: 16 }}
           label={'Face ID'}
           isEnabled={isEnabledFaceId}
+          disabled={true}
           onValueChange={onValueChangeFaceId}
         />
 
         <ActionItem
           disabled={!pinCode}
           style={{ marginBottom: 4 }}
+          color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           icon={Key}
           title={'Change your PIN code'}
           hasRightArrow
@@ -97,6 +104,8 @@ export const Security = () => {
 
         <ActionItem
           style={{ marginBottom: 4 }}
+          disabled={true}
+          color={ColorMap.disabledTextColor}
           icon={GlobeHemisphereWest}
           title={'Manage Dapp Access'}
           hasRightArrow
@@ -108,22 +117,26 @@ export const Security = () => {
           icon={LockKeyOpen}
           title={'App Lock'}
           hasRightArrow
+          disabled={!pinCode}
+          color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           onPress={() => setIsShowAutoLockModal(true)}
         />
         <SubWalletModal
           modalVisible={iShowAutoLockModal}
           onChangeModalVisible={() => setIsShowAutoLockModal(false)}
           modalStyle={{ height: 412 }}>
-          <Text style={modalTitle}>{i18n.common.selectYourSecretFile}</Text>
-          {AUTO_LOCK_LIST.map(item => (
-            <SelectItem
-              isSelected={autoLockTime === item.value}
-              label={item.text}
-              onPress={() => {
-                dispatch(updateAutoLockTime(item.value));
-              }}
-            />
-          ))}
+          <View style={{ width: '100%' }}>
+            <Text style={modalTitle}>{i18n.common.autoLock}</Text>
+            {AUTO_LOCK_LIST.map(item => (
+              <SelectItem
+                key={item.text}
+                isSelected={autoLockTime === item.value}
+                label={item.text}
+                showSeparator={false}
+                onPress={() => onChangeAutoLockTime(item.value)}
+              />
+            ))}
+          </View>
         </SubWalletModal>
       </View>
     </SubScreenContainer>
