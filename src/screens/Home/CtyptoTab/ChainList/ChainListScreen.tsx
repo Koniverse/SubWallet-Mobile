@@ -67,7 +67,7 @@ export const ChainListScreen = ({
   return (
     <MainScreenContainer navigation={navigation}>
       <>
-        <BalanceBlock balanceValue={balanceContainerProps.balanceValue} />
+        <BalanceBlock {...balanceContainerProps} />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
       </>

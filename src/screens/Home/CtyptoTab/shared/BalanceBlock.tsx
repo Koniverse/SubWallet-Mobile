@@ -22,6 +22,7 @@ export const BalanceBlock = ({
   isShowBalanceToUsd = false,
   startWithSymbol = true,
   symbol = '$',
+  selectionProvider,
 }: BalanceContainerType) => {
   const {
     settings: { isShowBalance },
@@ -33,7 +34,7 @@ export const BalanceBlock = ({
 
       {isShowBalanceToUsd && amountToUsd && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={isShowBalance} />}
 
-      <ActionButtonContainer style={accountButtonContainerStyle} />
+      <ActionButtonContainer style={accountButtonContainerStyle} selectionProvider={selectionProvider} />
     </View>
   );
 };

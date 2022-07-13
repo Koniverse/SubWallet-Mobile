@@ -105,7 +105,7 @@ export const ChainDetailScreen = ({
       style={containerStyle}
       onPressRightIcon={() => {}}>
       <>
-        <BalanceBlock balanceValue={balanceContainerProps.balanceValue} />
+        <BalanceBlock {...balanceContainerProps} />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
       </>

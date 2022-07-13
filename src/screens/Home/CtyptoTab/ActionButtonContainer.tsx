@@ -6,7 +6,7 @@ import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccoun
 import { NetworkSelect } from 'screens/NetworkSelect';
 import { TokenSelect } from 'screens/TokenSelect';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
-import { AccountActionType } from 'types/ui-types';
+import { AccountActionType, SelectionProviderProps } from 'types/ui-types';
 import { Article, FirstAidKit, Shuffle } from 'phosphor-react-native';
 import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { HIDE_MODAL_DURATION } from '../../../constant';
 
-interface Props {
+interface Props extends SelectionProviderProps {
   style?: object;
 }
 
@@ -40,7 +40,7 @@ const actionButtonWrapper: StyleProp<any> = {
   paddingBottom: 25,
 };
 
-export const ActionButtonContainer = ({ style }: Props) => {
+export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const {
     accounts: { accounts, currentAccountAddress },
     currentNetwork,
@@ -110,7 +110,23 @@ export const ActionButtonContainer = ({ style }: Props) => {
 
   const onClickButtonSingleChain = () => {
     setSendFundTypeModal(false);
-    if (currentNetwork.networkKey === 'all') {
+    if (selectionProvider) {
+      const { selectedNetworkKey: _selectedNetworkKey, selectedToken: _selectedToken } = selectionProvider;
+      if (_selectedToken) {
+        setSelectTokenModal(false);
+        navigation.navigate('SendFund', {
+          selectedNetwork: _selectedNetworkKey,
+          selectedToken: _selectedToken,
+        });
+      } else {
+        setSelectedResult({ selectedNetworkKey: _selectedNetworkKey });
+        setTokenSelectAction({
+          onChange: item1 => onChangeSendToken(item1, _selectedNetworkKey),
+          onBack: onPressTokenSelectBack,
+        });
+        actionWithSetTimeout(() => setSelectTokenModal(true));
+      }
+    } else if (currentNetwork.networkKey === 'all') {
       setNetworkSelectAction({
         onChange: item => onChangeSendNetwork(item),
         onBack: onPressSendNetworkSelectBack,

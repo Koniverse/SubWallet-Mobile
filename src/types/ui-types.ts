@@ -19,7 +19,11 @@ export interface CheckBoxesType {
   labelComponent: React.ReactNode;
 }
 
-export interface BalanceContainerType {
+export interface SelectionProviderProps {
+  selectionProvider?: { selectedNetworkKey: string; selectedToken?: string };
+}
+
+export interface BalanceContainerType extends SelectionProviderProps {
   balanceValue: BigN;
   accountButtonContainerStyle?: StyleProp<any>;
   amountToUsd?: BigN;

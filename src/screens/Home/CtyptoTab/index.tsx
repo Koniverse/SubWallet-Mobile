@@ -177,7 +177,6 @@ export const CryptoTab = () => {
           showedNetworks={showedNetworks}
           onPressTokenItem={onPressTokenItem}
           balanceContainerProps={{ balanceValue: totalBalanceValue }}
-          // balanceBlockComponent={renderBalanceContainerComponent(totalBalanceValue)}
         />
       )}
 
@@ -187,8 +186,10 @@ export const CryptoTab = () => {
           selectedNetworkInfo={selectedNetworkInfo}
           selectedBalanceInfo={selectBalanceInfo}
           onPressTokenItem={onPressTokenItem}
-          balanceContainerProps={{ balanceValue: networkBalanceValue }}
-          // balanceBlockComponent={renderBalanceContainerComponent(networkBalanceValue)}
+          balanceContainerProps={{
+            balanceValue: networkBalanceValue,
+            selectionProvider: { selectedNetworkKey: selectedNetworkInfo.networkKey },
+          }}
         />
       )}
 
@@ -201,6 +202,10 @@ export const CryptoTab = () => {
             isShowBalanceToUsd: true,
             startWithSymbol: false,
             symbol: selectedTokenSymbol,
+            selectionProvider: {
+              selectedNetworkKey: selectedNetworkInfo.networkKey,
+              selectedToken: selectedTokenSymbol,
+            },
           }}
           onPressBack={onPressBack}
           selectedTokenName={selectedTokenName}

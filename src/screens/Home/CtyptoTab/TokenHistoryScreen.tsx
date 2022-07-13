@@ -40,8 +40,6 @@ export const TokenHistoryScreen = ({
   selectedNetworkInfo,
   balanceContainerProps,
 }: Props) => {
-  const { balanceValue, accountButtonContainerStyle, isShowBalanceToUsd, symbol, startWithSymbol, amountToUsd } =
-    balanceContainerProps;
   const renderHeaderContent = () => {
     return (
       <View style={tokenHistoryHeader}>
@@ -70,14 +68,7 @@ export const TokenHistoryScreen = ({
       style={containerStyle}
       headerContent={renderHeaderContent}>
       <>
-        <BalanceBlock
-          balanceValue={balanceValue}
-          symbol={symbol}
-          startWithSymbol={startWithSymbol}
-          accountButtonContainerStyle={accountButtonContainerStyle}
-          isShowBalanceToUsd={isShowBalanceToUsd}
-          amountToUsd={amountToUsd}
-        />
+        <BalanceBlock {...balanceContainerProps} />
 
         <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
           <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenName} />
