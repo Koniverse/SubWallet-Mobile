@@ -135,7 +135,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
 
   const onChangeWithSi = useCallback(
     (input: string, curSi: SiDef) => {
-      setInputValue(input);
+      setInputValue(input.replace(',', '.'));
 
       if (onChange) {
         const [outputValue, isValid] = getOutputValuesFromString(input, decimals + curSi.power);
