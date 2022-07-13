@@ -163,7 +163,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
           </View>
           <View style={footerAreaStyle}>
             <SubmitButton
-              title={!!fileContent ? '' : 'Continue'}
+              title={!!fileContent ? 'Done' : 'Continue'}
               disabled={isPasswordError}
               isBusy={isBusy}
               style={buttonStyle}

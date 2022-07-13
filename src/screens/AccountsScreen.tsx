@@ -25,6 +25,7 @@ const accountItemContainer: StyleProp<any> = {
   alignItems: 'center',
   justifyContent: 'space-between',
   paddingVertical: 11,
+  flex: 1,
 };
 
 const accountItemSeparator: StyleProp<any> = {

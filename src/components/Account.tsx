@@ -174,6 +174,7 @@ export const Account = ({
 
   return (
     <TouchableOpacity
+      style={{ flex: 1 }}
       onPress={() => {
         selectAccount(address);
       }}
