@@ -1,4 +1,5 @@
 import React from 'react';
+import { ImageLogosMap } from 'assets/logo';
 
 const CryptoLogo = React.lazy(() => import('./home-tab-icon/crypto.svg'));
 const NFTLogo = React.lazy(() => import('./home-tab-icon/nfts.svg'));
@@ -18,7 +19,6 @@ const CheckBoxIcon = React.lazy(() => import('./checkbox.svg'));
 const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
 const SuccessStatus = React.lazy(() => import('./success-status.svg'));
 const FailStatus = React.lazy(() => import('./fail-status.svg'));
-import { ImageLogosMap, SvgLogosMap } from 'assets/logo';
 
 export const HomeTabIcon = {
   crypto: CryptoLogo,
@@ -34,7 +34,6 @@ export const Logo = {
 };
 
 export const SVGImages = {
-  ...SvgLogosMap,
   HomeTabIcon,
   Logo,
   ReceiveIcon: ReceiveIcon,

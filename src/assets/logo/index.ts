@@ -1,201 +1,136 @@
-import React from 'react';
-
-const AcalaLogo = React.lazy(() => import('./acala.svg'));
-const AusdLogo = React.lazy(() => import('./ausd.svg'));
-const DotLogo = React.lazy(() => import('./dot.svg'));
-const LdotLogo = React.lazy(() => import('./ldot.svg'));
-const LcdotLogo = React.lazy(() => import('./lcdot.svg'));
-const AltairLogo = React.lazy(() => import('./altair.svg'));
-const CloverLogo = React.lazy(() => import('./clover.svg'));
-const CrabLogo = React.lazy(() => import('./crab.svg'));
-const CrustLogo = React.lazy(() => import('./crust.svg'));
-const EfinityLogo = React.lazy(() => import('./efinity.svg'));
-const EquilibriumLogo = React.lazy(() => import('./equilibrium.svg'));
-const GenshiroLogo = React.lazy(() => import('./genshiro.svg'));
-const HydradxLogo = React.lazy(() => import('./hydradx.svg'));
-const IntegriteeLogo = React.lazy(() => import('./integritee.svg'));
-const InterlayLogo = React.lazy(() => import('./interlay.svg'));
-const KaruraLogo = React.lazy(() => import('./karura.svg'));
-const KusamaLogo = React.lazy(() => import('./kusama.svg'));
-const MantaLogo = React.lazy(() => import('./manta.svg'));
-const DolphinLogo = React.lazy(() => import('./dolphin.svg'));
-const MoonriverLogo = React.lazy(() => import('./moonriver.svg'));
-const ParallelLogo = React.lazy(() => import('./parallel.svg'));
-const PhalaLogo = React.lazy(() => import('./phala.svg'));
-const PicassoLogo = React.lazy(() => import('./picasso.svg'));
-const PolkadotLogo = React.lazy(() => import('./polkadot.svg'));
-const SakuraLogo = React.lazy(() => import('./sakura.svg'));
-const ShadowLogo = React.lazy(() => import('./shadow.svg'));
-const SoraLogo = React.lazy(() => import('./sora-substrate.svg'));
-const StatemineLogo = React.lazy(() => import('./statemine.svg'));
-const SubgameLogo = React.lazy(() => import('./subgame.svg'));
-const SubsocialLogo = React.lazy(() => import('./subsocial.svg'));
-const KoniLogo = React.lazy(() => import('./koni.svg'));
-const WestendLogo = React.lazy(() => import('./westend.svg'));
-const RobonomicsLogo = React.lazy(() => import('./robonomics.svg'));
-const OdysseyLogo = React.lazy(() => import('./odyssey.svg'));
-const AlephLogo = React.lazy(() => import('./aleph.svg'));
-const BitcountryLogo = React.lazy(() => import('./bitcountry.svg'));
-const UniqueLogo = React.lazy(() => import('./unique.network.svg'));
-const BncLogo = React.lazy(() => import('./bnc.svg'));
-const KusdLogo = React.lazy(() => import('./kusd.svg'));
-const LksmLogo = React.lazy(() => import('./lksm.svg'));
-const TaiLogo = React.lazy(() => import('./tai.svg'));
-const VsksmLogo = React.lazy(() => import('./vsksm.svg'));
-const MangataxLogo = React.lazy(() => import('./mangatax.svg'));
-const ChainxLogo = React.lazy(() => import('./chainx.svg'));
-const EncointerLogo = React.lazy(() => import('./encointer.svg'));
-const BtcLogo = React.lazy(() => import('./btc.svg'));
-const EthLogo = React.lazy(() => import('./eth.svg'));
-const BnbLogo = React.lazy(() => import('./bnb.svg'));
-const UsdtLogo = React.lazy(() => import('./usdt.svg'));
-const UsdcLogo = React.lazy(() => import('./usdc.svg'));
-const BusdLogo = React.lazy(() => import('./busd.svg'));
-const ShibLogo = React.lazy(() => import('./shib.svg'));
-const DaiLogo = React.lazy(() => import('./dai.svg'));
-const WbtcLogo = React.lazy(() => import('./wbtc.svg'));
-const GlintLogo = React.lazy(() => import('./glint.svg'));
-const StellaLogo = React.lazy(() => import('./stella.svg'));
-const BillLogo = React.lazy(() => import('./bill.svg'));
-const BifrostLogo = React.lazy(() => import('./bifrost.svg'));
-const DefaultLogo = React.lazy(() => import('./default.svg'));
-
-export const SvgLogosMap = {
-  acala: AcalaLogo,
-  acala_testnet: AcalaLogo,
-  ausd: AusdLogo,
-  dot: DotLogo,
-  ldot: LdotLogo,
-  lcdot: LcdotLogo,
-  altair: AltairLogo,
-  bifrost: BifrostLogo,
-  bifrost_testnet: BifrostLogo,
-  clover: CloverLogo,
-  crab: CrabLogo,
-  crust: CrustLogo,
-  efinity: EfinityLogo,
-  equilibrium_parachain: EquilibriumLogo,
-  genshiro: GenshiroLogo,
-  genshiro_testnet: GenshiroLogo,
-  hydradx: HydradxLogo,
-  integritee: IntegriteeLogo,
-  interlay: InterlayLogo,
-  karura: KaruraLogo,
-  kusama: KusamaLogo,
-  manta: MantaLogo,
-  dolphin: DolphinLogo,
-  parallel: ParallelLogo,
-  phala: PhalaLogo,
-  picasso: PicassoLogo,
-  polkadot: PolkadotLogo,
-  sakura: SakuraLogo,
-  shadow: ShadowLogo,
-  'sora-substrate': SoraLogo,
-  statemine: StatemineLogo,
-  subgame: SubgameLogo,
-  statemint: StatemineLogo,
-  subsocial_x: SubsocialLogo,
-  subsocial: SubsocialLogo,
-  koni: KoniLogo,
-  westend: WestendLogo,
-  robonomics: RobonomicsLogo,
-  odyssey: OdysseyLogo,
-  aleph: AlephLogo,
-  alephTest: AlephLogo,
-  bitcountry: BitcountryLogo,
-  unique_network: UniqueLogo,
-  pha: PhalaLogo,
-  bnc: BncLogo,
-  kusd: KusdLogo,
-  lksm: LksmLogo,
-  tai: TaiLogo,
-  vsksm: VsksmLogo,
-  ksm: KusamaLogo,
-  kar: KaruraLogo,
-  mangatax: MangataxLogo,
-  mangatax_para: MangataxLogo,
-  chainx: ChainxLogo,
-  encointer: EncointerLogo,
-  btc: BtcLogo,
-  eth: EthLogo,
-  bnb: BnbLogo,
-  usdt: UsdtLogo,
-  usdc: UsdcLogo,
-  busd: BusdLogo,
-  shib: ShibLogo,
-  dai: DaiLogo,
-  wbtc: WbtcLogo,
-  weth: EthLogo,
-  glint: GlintLogo,
-  share: GlintLogo,
-  stella: StellaLogo,
-  movr: MoonriverLogo,
-  bill: BillLogo,
-  xcksm: KusamaLogo,
-  xckar: KaruraLogo,
-  xcbnc: BifrostLogo,
-  xcausd: AusdLogo,
-  default: DefaultLogo,
-};
-
 export const ImageLogosMap = {
+  'sora-substrate': require('./sora-substrate.png'),
+  acala: require('./acala.png'),
+  acala_testnet: require('./acala.png'),
+  aleph: require('./aleph.png'),
+  alephTest: require('./aleph.png'),
+  altair: require('./altair.png'),
+  aris: require('./aris.png'),
   astar: require('./astar.png'),
   astarEvm: require('./astar.png'),
+  ausd: require('./ausd.png'),
   basilisk: require('./basilisk.png'),
+  beans: require('./beans.png'),
+  bifrost: require('./bifrost.png'),
+  bifrost_testnet: require('./bifrost.png'),
+  bill: require('./bill.png'),
+  bitcountry: require('./bitcountry.png'),
+  bnb: require('./bnb.png'),
+  bnc: require('./bnc.png'),
+  btc: require('./btc.png'),
+  busd: require('./busd.png'),
   calamari: require('./calamari.png'),
   centrifuge: require('./centrifuge.png'),
+  chainx: require('./chainx.png'),
+  chaos: require('./chaosdao.jpeg'),
+  chrwna: require('./chrwna.png'),
+  clover: require('./clover.png'),
   coinversation: require('./coinversation.png'),
   composableFinance: require('./composableFinance.png'),
+  crab: require('./crab.png'),
+  crust: require('./crust.png'),
+  csg: require('./csg.png'),
+  csm: require('./csm.png'),
+  cws: require('./cws.png'),
+  dai: require('./dai.png'),
   darwinia: require('./darwinia.png'),
+  default: require('./default.png'),
+  dolphin: require('./dolphin.png'),
+  dot: require('./dot.png'),
   edgeware: require('./edgeware.png'),
-  heiko: require('./heiko.png'),
-  kilt: require('./kilt.png'),
-  kintsugi: require('./kintsugi.png'),
-  kintsugi_test: require('./kintsugi.png'),
-  litentry: require('./litentry.png'),
-  moonbeam: require('./moonbeam.png'),
-  pichiu: require('./pichiu.png'),
-  pioneer: require('./pioneer.png'),
-  quartz: require('./quartz.png'),
-  shiden: require('./shiden.png'),
-  shidenEvm: require('./shiden.png'),
-  zeitgeist: require('./zeitgeist.png'),
-  opal: require('./opal.png'),
-  moonbase: require('./moonbase.png'),
-  kbtc: require('./kbtc.png'),
-  kint: require('./kint.png'),
-  zlk: require('./zenlink.png'),
-  neumann: require('./oak_network.png'),
-  turing: require('./turing.png'),
-  litmus: require('./litmus.png'),
-  pkex: require('./pkex.png'),
-  sdn: require('./shiden.png'),
-  jpyc: require('./jpyc.png'),
-  beans: require('./beans.png'),
-  xstella: require('./xstella.png'),
-  vesolar: require('./flare.png'),
+  efinity: require('./efinity.png'),
+  encointer: require('./encointer.png'),
+  equilibrium_parachain: require('./equilibrium.png'),
+  eth: require('./eth.png'),
   flare: require('./flare.png'),
-  mfam: require('./mfam.png'),
-  solar: require('./solar.png'),
   frax: require('./frax.png'),
   fxs: require('./frax.png'),
-  cws: require('./cws.png'),
-  rib: require('./rib.png'),
-  csg: require('./csg.png'),
-  qtz: require('./quartz.png'),
-  csm: require('./csm.png'),
-  aris: require('./aris.png'),
-  kico: require('./kico.png'),
+  genshiro: require('./genshiro.png'),
+  genshiro_testnet: require('./genshiro.png'),
+  glint: require('./glint.png'),
+  heiko: require('./heiko.png'),
   hko: require('./hko.png'),
-  rococo: require('./rococo.png'),
-  nodle: require('./nodle.png'),
-  moonriver: require('./moonriver.png'),
+  hydradx: require('./hydradx.png'),
+  integritee: require('./integritee.png'),
+  interlay: require('./interlay.png'),
+  jpyc: require('./jpyc.png'),
+  kar: require('./karura.png'),
+  karura: require('./karura.png'),
+  kbtc: require('./kbtc.png'),
   khala: require('./khala.png'),
+  kico: require('./kico.png'),
+  kilt: require('./kilt.png'),
+  kint: require('./kint.png'),
+  kintsugi: require('./kintsugi.png'),
+  kintsugi_test: require('./kintsugi.png'),
+  koni: require('./koni.png'),
+  ksm: require('./kusama.png'),
+  kusama: require('./kusama.png'),
+  kusd: require('./kusd.png'),
+  lcdot: require('./lcdot.png'),
+  ldot: require('./ldot.png'),
+  litentry: require('./litentry.png'),
+  litmus: require('./litmus.png'),
+  lksm: require('./lksm.png'),
+  mangatax: require('./mangatax.png'),
+  mangatax_para: require('./mangatax.png'),
+  manta: require('./manta.png'),
+  mfam: require('./mfam.png'),
+  moonbase: require('./moonbase.png'),
+  moonbeam: require('./moonbeam.png'),
+  moonriver: require('./moonriver.png'),
+  movr: require('./moonriver.png'),
+  neumann: require('./oak_network.png'),
+  nodle: require('./nodle.png'),
+  odyssey: require('./odyssey.png'),
+  opal: require('./opal.png'),
+  parallel: require('./parallel.png'),
+  pha: require('./phala.png'),
+  phala: require('./phala.png'),
+  picasso: require('./picasso.png'),
+  pichiu: require('./pichiu.png'),
+  pioneer: require('./pioneer.png'),
+  pkex: require('./pkex.png'),
   polkadex: require('./polkadex.png'),
-  xckint: require('./kintsugi.png'),
-  chrwna: require('./chrwna.png'),
+  polkadot: require('./polkadot.png'),
+  qtz: require('./quartz.png'),
+  quartz: require('./quartz.png'),
+  rib: require('./rib.png'),
   rmrk: require('./rmrk.jpg'),
+  robonomics: require('./robonomics.png'),
+  rococo: require('./rococo.png'),
+  sakura: require('./sakura.png'),
+  sdn: require('./shiden.png'),
+  shadow: require('./shadow.png'),
+  share: require('./glint.png'),
+  shib: require('./shib.png'),
+  shiden: require('./shiden.png'),
+  shidenEvm: require('./shiden.png'),
+  solar: require('./solar.png'),
+  statemine: require('./statemine.png'),
+  statemint: require('./statemine.png'),
+  stella: require('./stella.png'),
+  subgame: require('./subgame.png'),
+  subsocial: require('./subsocial.png'),
+  subsocial_x: require('./subsocial.png'),
+  tai: require('./tai.png'),
+  turing: require('./turing.png'),
   ukraine: require('./ukraine.jpg'),
+  unique_network: require('./unique.network.png'),
+  usdc: require('./usdc.png'),
+  usdt: require('./usdt.png'),
+  vesolar: require('./flare.png'),
+  vsksm: require('./vsksm.png'),
+  wbtc: require('./wbtc.png'),
+  westend: require('./westend.png'),
+  weth: require('./eth.png'),
+  xcausd: require('./ausd.png'),
+  xcbnc: require('./bifrost.png'),
+  xckar: require('./karura.png'),
+  xckint: require('./kintsugi.png'),
+  xcksm: require('./kusama.png'),
   xcrmrk: require('./rmrk.jpg'),
-  chaos: require('./chaosdao.jpeg'),
+  xstella: require('./xstella.png'),
+  zeitgeist: require('./zeitgeist.png'),
+  zlk: require('./zenlink.png'),
 };

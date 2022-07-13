@@ -7,7 +7,6 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { decodeAddress, isEthereumAddress, ethereumEncode, encodeAddress } from '@polkadot/util-crypto';
-import { SvgLogosMap } from 'assets/logo';
 import { Image, View } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
@@ -228,28 +227,7 @@ export function getNetworkLogo(networkKey: string, size: number, defaultLogo = '
   // @ts-ignore
   const imgSrc = Images[networkKey];
 
-  // @ts-ignore
-  if (SvgLogosMap[networkKey]) {
-    const style = {
-      borderRadius: size / 2,
-      width: size,
-      height: size,
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'hidden',
-    };
-
-    const styleWithBgc = {
-      ...style,
-      backgroundColor: ColorMap.disabled,
-    };
-
-    if (networkKey === 'interlay') {
-      return getIcon(networkKey, size, undefined, styleWithBgc);
-    }
-
-    return getIcon(networkKey, size, undefined, style);
-  } else if (imgSrc) {
+  if (imgSrc) {
     return (
       <Image
         style={{ width: size, height: size, borderRadius: size, backgroundColor: ColorMap.light }}
