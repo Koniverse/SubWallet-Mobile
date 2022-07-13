@@ -24,7 +24,9 @@ const accountsSlice = createSlice({
     },
     upsertCurrentAccount(state, action: PayloadAction<AccountJson>) {
       state.currentAccountAddress = action.payload.address;
-      state.currentAccount = action.payload;
+      const currentAccount = state.accounts.find(acc => acc.address === state.currentAccountAddress) as AccountJson;
+      currentAccount.genesisHash = action.payload.genesisHash;
+      state.currentAccount = currentAccount;
     },
   },
 });

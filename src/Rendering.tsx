@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getGenesisOptionsByAddressType } from 'utils/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import useGenesisHashOptions from 'hooks/useGenesisHashOptions';
 import { updateCurrentNetwork } from 'stores/updater';
 import { tieAccount } from './messaging';
@@ -15,7 +14,6 @@ function Rendering(): React.ReactElement {
   } = useSelector((state: RootState) => state);
 
   const genesisOptions = getGenesisOptionsByAddressType(account?.address, accounts, useGenesisHashOptions());
-  const _isAccountAll = account && isAccountAll(account.address);
 
   useEffect(() => {
     let isSync = true;
@@ -48,7 +46,7 @@ function Rendering(): React.ReactElement {
     return () => {
       isSync = false;
     };
-  }, [account, account?.genesisHash, _isAccountAll, genesisOptions]);
+  }, [account, account?.genesisHash, genesisOptions]);
 
   return <></>;
 }

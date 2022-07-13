@@ -99,8 +99,6 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
     subscribeAccountsWithCurrentAddress(rs => {
       const { accounts, currentAddress, currentGenesisHash } = rs;
 
-      dispatch(updateAccounts(accounts));
-
       if (accounts && accounts.length) {
         let selectedAcc = accounts.find(acc => acc.address === currentAddress);
 
@@ -122,6 +120,8 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           selectedAcc.genesisHash = currentGenesisHash;
           dispatch(upsertCurrentAccount(selectedAcc));
         }
+      } else {
+        dispatch(updateAccounts([]));
       }
     });
 

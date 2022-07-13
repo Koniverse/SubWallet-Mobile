@@ -12,9 +12,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
 import { NetworkSelect } from 'screens/NetworkSelect';
 import { tieAccount, triggerAccountsSubscription } from '../messaging';
-import { updateCurrentNetwork } from 'stores/updater';
 import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { NetworksSetting } from 'screens/NetworksSetting';
+import { upsertCurrentAccount } from 'stores/Accounts';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -64,13 +64,7 @@ export const Header = ({ navigation }: Props) => {
         await tieAccount(currentAccount.address, item.value || null);
         triggerAccountsSubscription().catch(console.log);
 
-        updateCurrentNetwork({
-          networkPrefix: item.networkPrefix,
-          icon: item.icon,
-          genesisHash: item.value,
-          networkKey: item.networkKey,
-          isEthereum: item.isEthereum,
-        });
+        upsertCurrentAccount({ ...currentAccount, genesisHash: item.value || null });
 
         setNetworkSelectModal(false);
       }
