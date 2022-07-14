@@ -117,6 +117,7 @@ export const Confirmation = ({
               setPassword(text);
               setKeyringErr(false);
             }}
+            isBusy={isBusy}
             isError={isKeyringErr || password.length < 6}
           />
 

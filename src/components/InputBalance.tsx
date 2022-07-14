@@ -161,7 +161,11 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
   );
 
   useImperativeHandle(ref, () => ({
-    onChange: (input: string) => {
+    onChange: (input?: string) => {
+      if (!input) {
+        return;
+      }
+
       const _inputValue = getInputValuesFromString(input, decimals + si.power);
       _onChange(_inputValue);
     },

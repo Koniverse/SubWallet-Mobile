@@ -11,6 +11,7 @@ import { isAddress } from '@polkadot/util-crypto';
 
 interface InputProps {
   label: string;
+  value: string;
   containerStyle?: StyleProp<any>;
   onChange: (output: string | null, currentValue: string) => void;
   onPressQrButton: () => void;
@@ -78,10 +79,10 @@ const qrButtonStyle: StyleProp<any> = {
 };
 
 const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
-  const { containerStyle, label, onChange, onPressQrButton } = inputAddressProps;
+  const { containerStyle, label, onChange, onPressQrButton, value } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const theme = useSubWalletTheme().colors;
-  const [address, setAddress] = useState<string>('');
+  const [address, setAddress] = useState<string>(value);
   const isAddressValid = isAddress(address);
   const onChangeInputText = (text: string) => {
     setAddress(text);

@@ -163,7 +163,7 @@ export const SendFund = () => {
   useEffect(() => {
     let isSync = true;
 
-    if (receiveAddress) {
+    if (receiveAddress && rawAmount) {
       _doCheckTransfer(
         false,
         rs => {
@@ -261,6 +261,17 @@ export const SendFund = () => {
     };
   }, [receiveAddress]);
 
+  useEffect(() => {
+    let isSync = true;
+    if (isSync && inputBalanceRef.current) {
+      // @ts-ignore
+      inputBalanceRef.current.onChange(rawAmount);
+    }
+    return () => {
+      isSync = false;
+    };
+  }, [inputBalanceRef, rawAmount]);
+
   const onChangeAmount = (val?: string) => {
     setRawAmount(val);
   };
@@ -345,6 +356,7 @@ export const SendFund = () => {
                         onPressQrButton={onPressQrButton}
                         containerStyle={{ marginBottom: 8 }}
                         label={'Sent to address'}
+                        value={currentReceiveAddress}
                         onChange={onChangeReceiverAddress}
                       />
 
