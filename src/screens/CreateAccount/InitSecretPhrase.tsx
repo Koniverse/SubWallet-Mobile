@@ -1,7 +1,13 @@
 import React, { useCallback } from 'react';
 import { GestureResponderEvent, ScrollView, StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
-import { ContainerHorizontalPadding, FontMedium, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import {
+  ContainerHorizontalPadding,
+  FontMedium,
+  MarginBottomForSubmitButton,
+  ScrollViewStyle,
+  sharedStyles
+} from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
 import { LeftIconButton } from 'components/LeftIconButton';
@@ -21,6 +27,7 @@ const bodyAreaStyle: StyleProp<any> = {
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
+  ...MarginBottomForSubmitButton,
 };
 
 const infoBlockStyle: StyleProp<any> = {
