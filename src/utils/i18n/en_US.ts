@@ -1,4 +1,4 @@
-export default {
+export const en = {
   common: {
     welcomeBack: 'Welcome Back!',
     enterPinToUnlock: 'Enter the PIN to unlock',

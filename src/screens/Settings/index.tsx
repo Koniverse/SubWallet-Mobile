@@ -68,7 +68,7 @@ export const Settings = () => {
         title: i18n.settings.languages,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Languages'),
-        disabled: true,
+        // disabled: true,
       },
       {
         icon: BellRinging,

@@ -50,6 +50,7 @@ export const EditAccount = () => {
   const copyToClipboard = useCallback(
     (text: string) => {
       Clipboard.setString(text);
+      toast.hideAll();
       toast.show('Copied to Clipboard');
     },
     [toast],

@@ -5,10 +5,8 @@ import { getGenesisOptionsByAddressType } from 'utils/index';
 import useGenesisHashOptions from 'hooks/useGenesisHashOptions';
 import { updateCurrentNetwork } from 'stores/updater';
 import { tieAccount } from './messaging';
-import SplashScreen from 'react-native-splash-screen';
 
 function Rendering(): React.ReactElement {
-  SplashScreen.hide();
   const {
     accounts: { accounts, currentAccount: account },
   } = useSelector((state: RootState) => state);

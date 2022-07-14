@@ -37,11 +37,21 @@ const rectangleContainer: StyleProp<any> = {
 };
 
 const topOverlay: StyleProp<any> = {
-  height: deviceWidth * 0.7,
+  flex: 1,
+  height: deviceWidth,
   width: deviceWidth,
   backgroundColor: overlayColor,
   paddingTop: statusBarHeight,
   position: 'relative',
+};
+
+const bottomOverlay: StyleProp<any> = {
+  flex: 1,
+  height: deviceWidth,
+  width: deviceWidth,
+  backgroundColor: overlayColor,
+  justifyContent: 'center',
+  alignItems: 'center',
 };
 
 const centerText: StyleProp<any> = {
@@ -150,6 +160,7 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
 
               <View style={leftAndRightOverlay} />
             </View>
+            <View style={bottomOverlay} />
           </View>
         }
       />

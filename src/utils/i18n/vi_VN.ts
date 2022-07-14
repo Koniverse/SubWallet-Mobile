@@ -1,4 +1,4 @@
-export default {
+export const vi = {
   common: {
     welcomeBack: 'Welcome Back!',
     enterPinToUnlock: 'Enter the PIN to unlock',

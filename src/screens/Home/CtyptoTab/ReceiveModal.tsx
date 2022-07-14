@@ -91,6 +91,7 @@ export const ReceiveModal = ({
   const copyToClipboard = useCallback(
     (text: string) => {
       Clipboard.setString(text);
+      toast.hideAll();
       toast.show('Copied to clipboard');
     },
     [toast],
