@@ -26,6 +26,9 @@ export const en = {
       'There was a problem with your request. You can track its progress on the Transaction History page.',
     transferFailMessage2: 'There was a problem with your request.',
     selectQrCodeFromGallery: 'Select QR Code from Gallery',
+    notify: 'Notification!',
+    cannotScanQRCodeWithoutPermission: 'Please grant Camera access to scan QR code',
+    goToSetting: 'Go to Setting',
   },
   cryptoTab: {
     receive: 'Receive',

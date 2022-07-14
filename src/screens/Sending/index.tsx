@@ -39,6 +39,8 @@ import { Warning } from 'components/Warning';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { RESULTS } from 'react-native-permissions';
+import { requestCameraPermission } from 'utils/validators';
 
 const NetworkLogoWrapperStyle: StyleProp<any> = {
   borderRadius: 20,
@@ -317,6 +319,14 @@ export const SendFund = () => {
     }
   };
 
+  const onPressQrButton = async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      setShowQrModalVisible(true);
+    }
+  };
+
   return (
     <>
       {!isShowTxResult ? (
@@ -332,7 +342,7 @@ export const SendFund = () => {
                     <View style={{ alignItems: 'center', flex: 1 }}>
                       <InputAddress
                         ref={inputAddressRef}
-                        onPressQrButton={() => setShowQrModalVisible(true)}
+                        onPressQrButton={onPressQrButton}
                         containerStyle={{ marginBottom: 8 }}
                         label={'Sent to address'}
                         onChange={onChangeReceiverAddress}
