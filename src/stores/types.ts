@@ -6,6 +6,12 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 
+export type AccountsStoreType = {
+  accounts: AccountJson[];
+  currentAccountAddress: string;
+  currentAccount?: AccountJson;
+};
+
 export type CurrentAccountType = {
   account?: AccountJson | null;
 };

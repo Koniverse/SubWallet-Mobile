@@ -15,7 +15,7 @@ import {
 } from '../messaging';
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import { updateAccounts, upsertCurrentAccount } from 'stores/Accounts';
+import { updateAccounts, updateAccountsAndCurrentAccount } from 'stores/Accounts';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
@@ -29,7 +29,7 @@ import { updateTransactionHistory } from 'stores/TransactionHistory';
 import SplashScreen from 'react-native-splash-screen';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import {EN_US} from "utils/i18n/i18n";
+import { EN_US } from 'utils/i18n/i18n';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -112,13 +112,18 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           } as CurrentAccountInfo;
 
           saveCurrentAccountAddress(accountInfo, () => {
-            dispatch(upsertCurrentAccount(selectedAcc as AccountJson));
+            dispatch(
+              updateAccountsAndCurrentAccount({
+                accounts,
+                currentAccountAddress: (selectedAcc as AccountJson).address,
+              }),
+            );
           }).catch(e => {
             console.error('There is a problem when set Current Account', e);
           });
         } else {
           selectedAcc.genesisHash = currentGenesisHash;
-          dispatch(upsertCurrentAccount(selectedAcc));
+          dispatch(updateAccountsAndCurrentAccount({ accounts, currentAccountAddress: selectedAcc.address }));
         }
       } else {
         dispatch(updateAccounts([]));

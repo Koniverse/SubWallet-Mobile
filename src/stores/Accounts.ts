@@ -1,12 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { AccountsStoreType } from 'stores/types';
 
-const ACCOUNT_STORE_DEFAULT: {
-  accounts: AccountJson[];
-  currentAccountAddress: string;
-  currentAccount?: AccountJson;
-} = {
+const ACCOUNT_STORE_DEFAULT: AccountsStoreType = {
   accounts: [],
   currentAccountAddress: ALL_ACCOUNT_KEY,
 };
@@ -22,14 +19,20 @@ const accountsSlice = createSlice({
       state.currentAccountAddress = action.payload;
       state.currentAccount = state.accounts.find(acc => acc.address === state.currentAccountAddress);
     },
+    updateAccountsAndCurrentAccount(state, action: PayloadAction<AccountsStoreType>) {
+      const { accounts, currentAccountAddress } = action.payload;
+
+      state.accounts = accounts;
+      state.currentAccountAddress = currentAccountAddress;
+      state.currentAccount = accounts.find(acc => acc.address === currentAccountAddress);
+    },
     upsertCurrentAccount(state, action: PayloadAction<AccountJson>) {
       state.currentAccountAddress = action.payload.address;
-      const currentAccount = state.accounts.find(acc => acc.address === state.currentAccountAddress) as AccountJson;
-      currentAccount.genesisHash = action.payload.genesisHash;
-      state.currentAccount = currentAccount;
+      state.currentAccount = action.payload;
     },
   },
 });
 
-export const { updateAccounts, updateCurrentAccount, upsertCurrentAccount } = accountsSlice.actions;
+export const { updateAccounts, updateCurrentAccount, updateAccountsAndCurrentAccount, upsertCurrentAccount } =
+  accountsSlice.actions;
 export default accountsSlice.reducer;

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from 'types/routes';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
@@ -53,6 +53,7 @@ export const Header = ({ navigation }: Props) => {
     currentNetwork,
     accounts: { currentAccount, currentAccountAddress, accounts },
   } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
   const [networkSelectModal, setNetworkSelectModal] = useState<boolean>(false);
   const [networkSettingModal, setNetworkSettingModal] = useState<boolean>(false);
   const formattedAddress =
@@ -64,12 +65,12 @@ export const Header = ({ navigation }: Props) => {
         await tieAccount(currentAccount.address, item.value || null);
         triggerAccountsSubscription().catch(console.log);
 
-        upsertCurrentAccount({ ...currentAccount, genesisHash: item.value || null });
+        dispatch(upsertCurrentAccount({ ...currentAccount, genesisHash: item.value || null }));
 
         setNetworkSelectModal(false);
       }
     },
-    [currentAccount],
+    [currentAccount, dispatch],
   );
 
   return (
