@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ScrollViewStyle } from 'styles/sharedStyles';
@@ -28,11 +28,10 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
     }
   }, []);
 
-  // @ts-ignore
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {
     return (
       <NetworkAndTokenToggleItem
-        key={item.key}
+        key={`${item.key}-${item.chain}`}
         itemName={item.chain}
         itemKey={item.key}
         isEnabled={item.active}
@@ -72,7 +71,7 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
           data={Object.values(filteredNetworkMap)}
           renderItem={renderItem}
           ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.key}
+          keyExtractor={item => `${item.key}-${item.chain}`}
         />
       </SelectScreen>
     </SubWalletFullSizeModal>
