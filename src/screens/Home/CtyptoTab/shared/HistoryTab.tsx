@@ -101,7 +101,7 @@ function getReadyItems(
 const EmptyList = () => {
   return (
     <View style={emptyListContainerStyle}>
-      <Image source={Images.historyEmpty} />
+      {/*<Image source={Images.historyEmpty} />*/}
     </View>
   );
 };
