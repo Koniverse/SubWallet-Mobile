@@ -422,6 +422,8 @@ export const SendFund = () => {
                   </View>
 
                   <QrScannerScreen
+                    networkKey={selectedNetworkKey}
+                    token={selectedToken}
                     qrModalVisible={isShowQrModalVisible}
                     onPressCancel={() => setShowQrModalVisible(false)}
                     onChangeAddress={text => onUpdateInputAddress(text)}

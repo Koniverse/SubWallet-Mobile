@@ -16,6 +16,7 @@ import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -109,7 +110,7 @@ export const AccountsScreen = () => {
 
   const renderFooterComponent = () => {
     return (
-      <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
+      <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
         <SubmitButton
           backgroundColor={theme.background2}
           title={i18n.common.addOrConnectAccount}

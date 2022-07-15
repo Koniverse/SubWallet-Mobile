@@ -13,12 +13,14 @@ export interface SubHeaderProps {
   onPressBack: (event: GestureResponderEvent) => void;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
+  disableRightButton?: boolean;
   headerContent?: () => JSX.Element;
   backgroundColor?: string;
 }
 
 function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
   return {
+    marginTop: 13.5,
     backgroundColor: backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
@@ -41,6 +43,7 @@ export const SubHeader = ({
   onPressRightIcon,
   title,
   backgroundColor,
+  disableRightButton,
 }: SubHeaderProps) => {
   const swThemeColor = useSubWalletTheme().colors;
   const styles = useMemo(
@@ -69,7 +72,13 @@ export const SubHeader = ({
       <IconButton icon={ArrowLeft} onPress={onPressBack} style={{ position: 'absolute', left: 16, top: 0 }} />
 
       {!!rightIcon && (
-        <IconButton icon={rightIcon} onPress={onPressRightIcon} style={{ position: 'absolute', right: 16, top: 0 }} />
+        <IconButton
+          icon={rightIcon}
+          onPress={onPressRightIcon}
+          style={{ position: 'absolute', right: 16, top: 0 }}
+          disabled={disableRightButton}
+          color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
+        />
       )}
     </View>
   );

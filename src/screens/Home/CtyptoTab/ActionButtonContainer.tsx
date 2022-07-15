@@ -176,7 +176,11 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   };
 
   const onPressReceiveButton = () => {
-    if (currentNetwork.networkKey === 'all') {
+    if (selectionProvider) {
+      const { selectedNetworkKey: _selectedNetworkKey } = selectionProvider;
+      setSelectedResult({ selectedNetworkKey: _selectedNetworkKey });
+      setReceiveModalVisible(true);
+    } else if (currentNetwork.networkKey === 'all') {
       setNetworkSelectAction({
         onChange: item => onChangeReceiveNetwork(item.networkKey, item.networkPrefix),
         onBack: onPressReceiveNetworkSelectBack,

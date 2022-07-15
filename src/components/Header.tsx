@@ -26,6 +26,7 @@ const headerWrapper: StyleProp<any> = {
   alignItems: 'center',
   justifyContent: 'space-between',
   height: 40,
+  marginTop: 13.5,
 };
 
 const accountName: StyleProp<any> = {

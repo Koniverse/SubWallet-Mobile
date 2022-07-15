@@ -59,7 +59,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
     const i18nModule = '../utils/i18n/i18n';
     return import(i18nModule).then(({ default: i18n }) => {
       i18n.setLanguage(userLang || EN_US);
-      moment.locale(userLang.split('_')[0]);
+      moment.locale(userLang);
     });
   };
 
@@ -70,6 +70,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         // @ts-ignore
         if (data.id === '0' && data.response?.status) {
           setupI18n(language);
+          SplashScreen.hide();
           // @ts-ignore
           const webViewStatus = data.response?.status as string;
           setStatus(webViewStatus);
@@ -77,7 +78,6 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           //   type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
           // });
           if (webViewStatus === 'crypto_ready') {
-            SplashScreen.hide();
           }
           return true;
         } else {

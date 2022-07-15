@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GestureResponderEvent, StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { SeedPhraseArea } from 'components/SeedPhraseArea';
 import { SubmitButton } from 'components/SubmitButton';
 import { shuffleArray } from 'utils/index';
@@ -16,7 +16,9 @@ const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
 };
 
-const footerAreaStyle: StyleProp<any> = {};
+const footerAreaStyle: StyleProp<any> = {
+  ...MarginBottomForSubmitButton,
+};
 
 const infoBlockStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,

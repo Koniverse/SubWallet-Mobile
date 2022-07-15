@@ -103,6 +103,7 @@ export const ChainDetailScreen = ({
       showRightBtn
       rightIcon={SlidersHorizontal}
       style={containerStyle}
+      disableRightButton={true}
       onPressRightIcon={() => {}}>
       <>
         <BalanceBlock {...balanceContainerProps} />

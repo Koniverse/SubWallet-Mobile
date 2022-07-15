@@ -1,24 +1,23 @@
 import React from 'react';
 import { StatusBar, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { BUTTON_ACTIVE_OPACITY, deviceHeight, deviceWidth, statusBarHeight } from '../constant';
+import { BUTTON_ACTIVE_OPACITY, deviceHeight, deviceWidth } from '../constant';
 import { X } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import * as Animatable from 'react-native-animatable';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { BarCodeReadEvent } from 'react-native-camera';
 import i18n from 'utils/i18n/i18n';
+import { getNetworkLogo } from 'utils/index';
 import Modal from 'react-native-modal';
 
-const overlayColor = 'rgba(0,0,0,0.5)'; // this gives us a black color with a 50% transparency
+const overlayColor = 'rgba(34, 34, 34, 0.5)'; // this gives us a black color with a 50% transparency
 
-const rectDimensions = deviceWidth * 0.65; // this is equivalent to 255 from a 393 device width
+const rectDimensions = deviceWidth * 0.64; // this is equivalent to 255 from a 393 device width
 const rectBorderWidth = deviceWidth * 0.005; // this is equivalent to 2 from a 393 device width
 const rectBorderColor = 'transparent';
-
-const scanBarWidth = deviceWidth * 0.64; // this is equivalent to 180 from a 393 device width
-const scanBarHeight = deviceWidth * 0.005; //this is equivalent to 1 from a 393 device width
+const topOverlayHeight = (deviceHeight - rectDimensions) * 0.35;
+const bottomOverlayHeight = (deviceHeight - rectDimensions) * 0.65;
 
 const containerStyle: StyleProp<any> = {
   margin: 0,
@@ -37,17 +36,14 @@ const rectangleContainer: StyleProp<any> = {
 };
 
 const topOverlay: StyleProp<any> = {
-  flex: 1,
-  height: deviceWidth,
+  height: topOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
-  paddingTop: statusBarHeight,
-  position: 'relative',
+  paddingTop: STATUS_BAR_HEIGHT + 12.5,
 };
 
 const bottomOverlay: StyleProp<any> = {
-  flex: 1,
-  height: deviceWidth,
+  height: bottomOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
   justifyContent: 'center',
@@ -55,11 +51,12 @@ const bottomOverlay: StyleProp<any> = {
 };
 
 const centerText: StyleProp<any> = {
-  ...sharedStyles.mainText,
+  ...sharedStyles.mediumText,
   color: ColorMap.light,
   justifyContent: 'center',
   alignItems: 'center',
   textAlign: 'center',
+  ...FontSemiBold,
 };
 
 const leftAndRightOverlay: StyleProp<any> = {
@@ -78,30 +75,32 @@ const rectangle: StyleProp<any> = {
   backgroundColor: 'transparent',
 };
 
-const scanBar: StyleProp<any> = {
-  width: scanBarWidth,
-  height: scanBarHeight,
-  backgroundColor: ColorMap.primary,
+const headerStyle: StyleProp<any> = {
+  flexDirection: 'row',
+  width: '100%',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const cancelButtonStyle: StyleProp<any> = {
+  position: 'absolute',
+  right: 16,
+  zIndex: 10,
+  width: 40,
+  height: 40,
+  justifyContent: 'center',
+  alignItems: 'center',
 };
 
 interface Props {
   onPressCancel: () => void;
   onChangeAddress: (data: string) => void;
   qrModalVisible: boolean;
+  networkKey: string;
+  token: string;
 }
 
-export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible }: Props) => {
-  const makeSlideOutTranslation = (translationType: string, fromValue: number) => {
-    return {
-      from: {
-        [translationType]: deviceWidth * 0.32,
-      },
-      to: {
-        [translationType]: fromValue,
-      },
-    };
-  };
-
+export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible, networkKey, token }: Props) => {
   const onSuccess = (e: BarCodeReadEvent) => {
     try {
       onChangeAddress(e.data);
@@ -112,8 +111,8 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
   };
 
   return (
-    <Modal isVisible={qrModalVisible} hideModalContentWhileAnimating style={{ flex: 1, width: '100%', margin: 0 }}>
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={'transparent'} translucent={true} />
+    <Modal isVisible={qrModalVisible} style={{ flex: 1, width: '100%', margin: 0 }}>
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
       <QRCodeScanner
         reactivate={true}
         reactivateTimeout={5000}
@@ -127,15 +126,14 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
         customMarker={
           <View style={rectangleContainer}>
             <View style={topOverlay}>
-              <TouchableOpacity
-                activeOpacity={BUTTON_ACTIVE_OPACITY}
-                style={{ position: 'absolute', left: 16, top: STATUS_BAR_HEIGHT + 20, zIndex: 10 }}
-                onPress={onPressCancel}>
-                <X size={20} weight={'bold'} color={'#FFF'} />
-              </TouchableOpacity>
-
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: 22 }}>
-                <Text style={centerText}>{i18n.warningMessage.setQRCodeInTheCenterOfTheSquare}</Text>
+              <View style={headerStyle}>
+                <Text style={{ ...sharedStyles.mediumText, color: ColorMap.light, ...FontSemiBold }}>Scan QR Code</Text>
+                <TouchableOpacity
+                  activeOpacity={BUTTON_ACTIVE_OPACITY}
+                  style={cancelButtonStyle}
+                  onPress={onPressCancel}>
+                  <X size={20} weight={'bold'} color={'#FFF'} />
+                </TouchableOpacity>
               </View>
             </View>
             <View style={{ flexDirection: 'row', backgroundColor: 'transparent', height: rectDimensions }}>
@@ -145,22 +143,32 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
                 <BarcodeFinder
                   width={rectDimensions}
                   height={rectDimensions}
-                  borderColor={ColorMap.primary}
+                  borderColor={ColorMap.light}
                   borderWidth={2}
-                />
-                <Animatable.View
-                  style={scanBar}
-                  direction="alternate-reverse"
-                  iterationCount="infinite"
-                  duration={2000}
-                  easing="linear"
-                  animation={makeSlideOutTranslation('translateY', deviceWidth * -0.32)}
                 />
               </View>
 
               <View style={leftAndRightOverlay} />
             </View>
-            <View style={bottomOverlay} />
+            <View style={bottomOverlay}>
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: 22 }}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 20,
+                    borderWidth: 2,
+                    borderColor: ColorMap.secondary,
+                    marginBottom: 16,
+                  }}>
+                  {getNetworkLogo(networkKey, 34)}
+                </View>
+
+                <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.toAddressToSendFunds}`}</Text>
+              </View>
+            </View>
           </View>
         }
       />

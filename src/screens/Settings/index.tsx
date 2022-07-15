@@ -68,7 +68,7 @@ export const Settings = () => {
         title: i18n.settings.languages,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Languages'),
-        // disabled: true,
+        disabled: true,
       },
       {
         icon: BellRinging,
@@ -220,7 +220,7 @@ export const Settings = () => {
         {settingList[4].map(setting => (
           <ActionItem
             key={setting.title}
-            style={{ marginTop: 23, marginBottom: 44 }}
+            style={{ marginTop: 23 }}
             icon={setting.icon}
             title={setting.title}
             hasRightArrow={setting.hasRightArrow}

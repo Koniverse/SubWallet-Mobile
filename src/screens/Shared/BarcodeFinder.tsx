@@ -27,36 +27,9 @@ const topLeftEdge: StyleProp<any> = {
   position: 'absolute',
   top: 0,
   left: 0,
-  borderTopLeftRadius: 3,
-  width: 20,
-  height: 20,
-};
-
-const topRightEdge: StyleProp<any> = {
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  borderTopRightRadius: 3,
-  width: 20,
-  height: 20,
-};
-
-const bottomLeftEdge: StyleProp<any> = {
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  borderBottomLeftRadius: 3,
-  width: 20,
-  height: 20,
-};
-
-const bottomRightEdge: StyleProp<any> = {
-  position: 'absolute',
-  bottom: 0,
-  right: 0,
-  borderBottomRightRadius: 3,
-  width: 20,
-  height: 20,
+  borderStyle: 'dashed',
+  width: '100%',
+  height: '100%',
 };
 
 export const BarcodeFinder = ({ width, height, borderColor, borderWidth }: Props) => {
@@ -65,41 +38,10 @@ export const BarcodeFinder = ({ width, height, borderColor, borderWidth }: Props
       <View style={[finder, { width, height }]}>
         <View
           style={[
-            { borderColor: borderColor },
             topLeftEdge,
             {
-              borderLeftWidth: borderWidth,
-              borderTopWidth: borderWidth,
-            },
-          ]}
-        />
-        <View
-          style={[
-            { borderColor: borderColor },
-            topRightEdge,
-            {
-              borderRightWidth: borderWidth,
-              borderTopWidth: borderWidth,
-            },
-          ]}
-        />
-        <View
-          style={[
-            { borderColor: borderColor },
-            bottomLeftEdge,
-            {
-              borderLeftWidth: borderWidth,
-              borderBottomWidth: borderWidth,
-            },
-          ]}
-        />
-        <View
-          style={[
-            { borderColor: borderColor },
-            bottomRightEdge,
-            {
-              borderRightWidth: borderWidth,
-              borderBottomWidth: borderWidth,
+              borderColor: borderColor,
+              borderWidth: borderWidth,
             },
           ]}
         />

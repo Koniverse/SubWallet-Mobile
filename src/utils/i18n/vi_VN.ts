@@ -29,6 +29,8 @@ export const vi = {
     notify: 'Notification!',
     cannotScanQRCodeWithoutPermission: 'Please grant Camera access to scan QR code',
     goToSetting: 'Go to Setting',
+    scan: 'Scan',
+    toAddressToSendFunds: 'address to send funds',
   },
   cryptoTab: {
     receive: 'Receive',
@@ -72,7 +74,6 @@ export const vi = {
     recipientPhish: 'The recipient is associated with a known phishing site on',
     isNotSameAddressAndTokenType: 'Transfer is not supported for this type of account and token',
     recipientAddressMustBe: 'The recipient address must be ',
-    setQRCodeInTheCenterOfTheSquare: 'Scan QR Code in the center of the square',
   },
   copied: 'Copied',
   unknown: '<unknown>',
