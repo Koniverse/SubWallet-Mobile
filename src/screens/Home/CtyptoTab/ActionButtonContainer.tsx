@@ -45,6 +45,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     accounts: { accounts, currentAccountAddress },
     currentNetwork,
   } = useSelector((state: RootState) => state);
+  const isAccountAll = currentAccountAddress === 'ALL';
   const navigation = useNavigation<RootNavigationProps>();
   const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
@@ -194,9 +195,16 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
           iconSize={24}
           iconName={'ReceiveIcon'}
           onPress={onPressReceiveButton}
+          disabled={isAccountAll}
         />
-        <ActionButton label={i18n.cryptoTab.send} iconSize={24} iconName={'SendIcon'} onPress={onPressSendFundBtn} />
-        <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} />
+        <ActionButton
+          label={i18n.cryptoTab.send}
+          iconSize={24}
+          iconName={'SendIcon'}
+          onPress={onPressSendFundBtn}
+          disabled={isAccountAll}
+        />
+        <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} disabled={true} />
       </View>
 
       <SelectImportAccountModal

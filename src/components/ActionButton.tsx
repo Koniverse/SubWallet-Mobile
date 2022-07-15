@@ -30,7 +30,7 @@ const buttonWrapperStyle: StyleProp<any> = {
 
 function getButtonTextStyle(disabled: boolean) {
   return {
-    color: disabled ? ColorMap.disabled : ColorMap.light,
+    color: disabled ? ColorMap.disabledTextColor : ColorMap.light,
     fontSize: 15,
     lineHeight: 26,
     ...FontMedium,

@@ -1,18 +1,18 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontBold, FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import QRCode from 'react-native-qrcode-svg';
 import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
 import { IconButton } from 'components/IconButton';
 import { CopySimple } from 'phosphor-react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
+import { BUTTON_ACTIVE_OPACITY, deviceHeight } from '../../../constant';
+import Toast from 'react-native-toast-notifications';
 
 interface Props {
   receiveModalVisible: boolean;
@@ -83,19 +83,20 @@ export const ReceiveModal = ({
   networkPrefix,
   openChangeNetworkModal,
 }: Props) => {
-  const toast = useToast();
+  const toastRef = useRef();
   const {
     accounts: { currentAccountAddress },
     currentNetwork,
   } = useSelector((state: RootState) => state);
-  const copyToClipboard = useCallback(
-    (text: string) => {
-      Clipboard.setString(text);
-      toast.hideAll();
-      toast.show('Copied to clipboard');
-    },
-    [toast],
-  );
+  const copyToClipboard = useCallback((text: string) => {
+    Clipboard.setString(text);
+    if (toastRef.current) {
+      // @ts-ignore
+      toastRef.current.hideAll();
+      // @ts-ignore
+      toastRef.current.show('Copied to clipboard');
+    }
+  }, []);
   const formattedAddress = reformatAddress(currentAccountAddress, networkPrefix);
 
   return (
@@ -132,6 +133,10 @@ export const ReceiveModal = ({
           <SubmitButton title={'Explorer'} backgroundColor={ColorMap.dark2} style={receiveModalExplorerBtn} />
           <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={'Share'} />
         </View>
+        {
+          // @ts-ignore
+          <Toast ref={toastRef} placement={'bottom'} offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 120} />
+        }
       </View>
     </SubWalletModal>
   );
