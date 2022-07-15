@@ -16,7 +16,7 @@ const overlayColor = 'rgba(34, 34, 34, 0.5)'; // this gives us a black color wit
 const rectDimensions = deviceWidth * 0.64; // this is equivalent to 255 from a 393 device width
 const rectBorderWidth = deviceWidth * 0.005; // this is equivalent to 2 from a 393 device width
 const rectBorderColor = 'transparent';
-const topOverlayHeight = (deviceHeight - rectDimensions) * 0.35;
+const topOverlayHeight = (deviceHeight - rectDimensions) * 0.4;
 const bottomOverlayHeight = (deviceHeight - rectDimensions) * 0.65;
 
 const containerStyle: StyleProp<any> = {
@@ -36,6 +36,7 @@ const rectangleContainer: StyleProp<any> = {
 };
 
 const topOverlay: StyleProp<any> = {
+  // flex: 1,
   height: topOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
@@ -43,6 +44,7 @@ const topOverlay: StyleProp<any> = {
 };
 
 const bottomOverlay: StyleProp<any> = {
+  flex: 1,
   height: bottomOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
