@@ -57,10 +57,6 @@
 		<string>fonts/FontAwesome5_Regular.ttf</string>
 		<string>fonts/FontAwesome5_Solid.ttf</string>
 	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string></string>
-	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

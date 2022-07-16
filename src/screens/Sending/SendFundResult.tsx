@@ -29,6 +29,7 @@ interface Props {
 const bodyAreaStyle: StyleProp<any> = {
   alignItems: 'center',
   flex: 1,
+  paddingTop: 100,
 };
 
 const footerAreaStyle: StyleProp<any> = {

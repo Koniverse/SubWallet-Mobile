@@ -1,9 +1,9 @@
 import React, { Suspense, useState } from 'react';
-import { ImageBackground, Platform, SafeAreaView, StyleProp, Text, View } from 'react-native';
+import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, Text, View } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { ArchiveTray, Article, FileArrowUp, LockKey, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
@@ -64,6 +64,7 @@ export const FirstScreen = () => {
 
   return (
     <View style={{ width: '100%', flex: 1 }}>
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       <ImageBackground source={Images.loadingScreen} resizeMode={'cover'} style={imageBackgroundStyle}>
         <SafeAreaView />
         <View style={logoStyle}>

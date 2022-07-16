@@ -11,6 +11,8 @@ import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'p
 import { CryptoTab } from 'screens/Home/CtyptoTab';
 import { FontMedium } from 'styles/sharedStyles';
 import { BrowserTab } from 'screens/Home/BrowserTab';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BOTTOM_BAR_HEIGHT } from '../../constant';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -26,6 +28,7 @@ export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route']
 export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const swThemeColor = useSubWalletTheme().colors;
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
@@ -57,7 +60,7 @@ export const Home = () => {
           marginTop: 10,
         },
         tabBarLabelStyle: {
-          paddingBottom: 32,
+          paddingBottom: insets.bottom + 2,
           fontSize: 12,
           lineHeight: 25,
           ...FontMedium,
@@ -69,7 +72,7 @@ export const Home = () => {
           borderTopWidth: 1,
           paddingLeft: 16,
           paddingRight: 16,
-          height: 92,
+          height: BOTTOM_BAR_HEIGHT + insets.bottom,
         },
         tabBarActiveTintColor: swThemeColor.secondary,
         tabBarInactiveTintColor: swThemeColor.textColor,
@@ -78,8 +81,8 @@ export const Home = () => {
         name={'Crypto'}
         component={CryptoTab}
         options={{
-          tabBarIcon: ({ color, size }) => {
-            return <CurrencyCircleDollar size={size} color={color} weight={'bold'} />;
+          tabBarIcon: ({ color }) => {
+            return <CurrencyCircleDollar size={24} color={color} weight={'bold'} />;
           },
         }}
       />
@@ -87,8 +90,8 @@ export const Home = () => {
         name={'NFT'}
         component={NFTTab}
         options={{
-          tabBarIcon: ({ color, size }) => {
-            return <Aperture size={size} color={color} weight={'bold'} />;
+          tabBarIcon: ({ color }) => {
+            return <Aperture size={24} color={color} weight={'bold'} />;
           },
         }}
       />
@@ -96,8 +99,8 @@ export const Home = () => {
         name={'Crowdloans'}
         component={CrowdloansTab}
         options={{
-          tabBarIcon: ({ color, size }) => {
-            return <Rocket size={size} color={color} weight={'bold'} />;
+          tabBarIcon: ({ color }) => {
+            return <Rocket size={24} color={color} weight={'bold'} />;
           },
         }}
       />
@@ -105,8 +108,8 @@ export const Home = () => {
         name={'Staking'}
         component={StakingTab}
         options={{
-          tabBarIcon: ({ color, size }) => {
-            return <Database size={size} color={color} weight={'bold'} />;
+          tabBarIcon: ({ color }) => {
+            return <Database size={24} color={color} weight={'bold'} />;
           },
         }}
       />
@@ -114,8 +117,8 @@ export const Home = () => {
         name={'Browser'}
         component={BrowserTab}
         options={{
-          tabBarIcon: ({ color, size }) => {
-            return <GlobeSimple size={size} color={color} weight={'bold'} />;
+          tabBarIcon: ({ color }) => {
+            return <GlobeSimple size={24} color={color} weight={'bold'} />;
           },
         }}
       />
