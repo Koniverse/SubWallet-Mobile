@@ -1,5 +1,5 @@
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Linking, ScrollView, StyleProp, Text, View } from 'react-native';
+import { Linking, ScrollView, StyleProp, Text, View, Image } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import React from 'react';
 import {
@@ -10,7 +10,6 @@ import {
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
-import { getIcon } from 'utils/index';
 import { TransferResultType } from 'types/tx';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +18,7 @@ import { TransferError } from '@subwallet/extension-base/background/KoniTypes';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import i18n from 'utils/i18n/i18n';
+import { Images } from 'assets/index';
 
 interface Props {
   txResult: TransferResultType;
@@ -29,7 +29,7 @@ interface Props {
 const bodyAreaStyle: StyleProp<any> = {
   alignItems: 'center',
   flex: 1,
-  paddingTop: 100,
+  // paddingTop: 100,
 };
 
 const footerAreaStyle: StyleProp<any> = {
@@ -37,6 +37,7 @@ const footerAreaStyle: StyleProp<any> = {
 };
 
 const imageStyle: StyleProp<any> = {
+  width: 200,
   marginBottom: 24,
 };
 
@@ -57,7 +58,9 @@ const subtitleStyle: StyleProp<any> = {
   paddingHorizontal: 16,
 };
 
-const submitButton1Style: StyleProp<any> = {};
+const submitButton1Style: StyleProp<any> = {
+  ...MarginBottomForSubmitButton,
+};
 
 export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSuccess, txError }, onResend }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -87,22 +90,22 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={() => {}} title={isTxSuccess ? 'Success' : 'Failed'}>
+    <ContainerWithSubHeader onPressBack={() => navigation.navigate('Home')} title={isTxSuccess ? 'Success' : 'Failed'}>
       <View style={sharedStyles.layoutContainer}>
         <View style={bodyAreaStyle}>
           {isTxSuccess && (
-            <>
-              {getIcon('SuccessStatus', 200, undefined, imageStyle)}
+            <View style={{ alignItems: 'center', paddingTop: 100 }}>
+              <Image source={Images.successStatusImg} style={imageStyle} />
 
               <Text style={titleStyle}>Transaction Successful</Text>
               <Text style={subtitleStyle}>{i18n.common.transferSuccessMessage}</Text>
-            </>
+            </View>
           )}
           {!isTxSuccess && (
             <ScrollView
               style={{ flex: 1, ...ScrollViewStyle }}
               contentContainerStyle={{ alignItems: 'center', paddingTop: 100 }}>
-              {getIcon('FailStatus', 200, undefined, imageStyle)}
+              <Image source={Images.failStatusImg} style={imageStyle} />
 
               <Text style={titleStyle}>Transaction Fail</Text>
               <Text style={subtitleStyle}>

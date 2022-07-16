@@ -7,9 +7,11 @@ import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/share
 import { ArchiveTray, Article, FileArrowUp, LockKey, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps, RootStackParamList } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 import { AccountActionType } from 'types/ui-types';
+import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../../constant';
+import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -34,22 +36,29 @@ const firstScreenNotificationStyle: StyleProp<any> = {
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
-
+  const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
+  const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
   const SECRET_TYPE: AccountActionType[] = [
     {
       icon: Article,
       title: i18n.common.secretPhrase,
       onCLickButton: () => {
-        navigation.navigate('ImportSecretPhrase');
+        setSelectedAction('ImportSecretPhrase');
         setSelectModalVisible(false);
+        setTimeout(() => {
+          setSelectTypeModalVisible(true);
+        }, HIDE_MODAL_DURATION);
       },
     },
     {
       icon: LockKey,
       title: i18n.common.privateKey,
       onCLickButton: () => {
-        navigation.navigate('ImportPrivateKey');
+        setSelectedAction('ImportPrivateKey');
         setSelectModalVisible(false);
+        setTimeout(() => {
+          setSelectTypeModalVisible(true);
+        }, HIDE_MODAL_DURATION);
       },
     },
     {
@@ -61,6 +70,16 @@ export const FirstScreen = () => {
       },
     },
   ];
+
+  const onSelectSubstrateAccount = () => {
+    setSelectTypeModalVisible(false);
+    !!selectedAction && navigation.navigate(selectedAction, { keyTypes: SUBSTRATE_ACCOUNT_TYPE });
+  };
+
+  const onSelectEvmAccount = () => {
+    setSelectTypeModalVisible(false);
+    !!selectedAction && navigation.navigate(selectedAction, { keyTypes: EVM_ACCOUNT_TYPE });
+  };
 
   return (
     <View style={{ width: '100%', flex: 1 }}>
@@ -79,7 +98,10 @@ export const FirstScreen = () => {
           leftIcon={UserCirclePlus}
           title={i18n.common.createNewWalletAccount}
           style={{ marginBottom: 16, width: '100%' }}
-          onPress={() => navigation.navigate('CreateAccount')}
+          onPress={() => {
+            setSelectedAction('CreateAccount');
+            setSelectTypeModalVisible(true);
+          }}
         />
 
         <SubmitButton
@@ -87,7 +109,9 @@ export const FirstScreen = () => {
           title={i18n.common.alreadyHaveAWalletAccount}
           style={{ width: '100%' }}
           backgroundColor={ColorMap.primary}
-          onPress={() => setSelectModalVisible(true)}
+          onPress={() => {
+            setSelectModalVisible(true);
+          }}
         />
 
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenNotification}</Text>
@@ -97,6 +121,14 @@ export const FirstScreen = () => {
           secretTypeList={SECRET_TYPE}
           modalVisible={importSelectModalVisible}
           onChangeModalVisible={() => setSelectModalVisible(false)}
+        />
+
+        <SelectAccountTypeModal
+          modalVisible={selectTypeModalVisible}
+          onChangeModalVisible={() => setSelectTypeModalVisible(false)}
+          modalHeight={206}
+          onSelectSubstrateAccount={onSelectSubstrateAccount}
+          onSelectEvmAccount={onSelectEvmAccount}
         />
         <SafeAreaView />
       </ImageBackground>

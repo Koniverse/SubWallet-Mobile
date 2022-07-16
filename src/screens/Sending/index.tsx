@@ -328,6 +328,7 @@ export const SendFund = () => {
       // @ts-ignore
       inputAddressRef.current.onChange(text);
     }
+    setReceiveAddress([text, text]);
   };
 
   const onPressQrButton = async () => {

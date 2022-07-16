@@ -1,10 +1,11 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
   FirstScreen: undefined;
   Home: undefined;
-  CreateAccount: undefined;
+  CreateAccount: { keyTypes: KeypairType };
   QrScanner: undefined;
   AccountsScreen: undefined;
   EditAccount: { address: string; name: string };
@@ -13,8 +14,8 @@ export type RootStackParamList = {
   ExportPrivateKey: undefined;
   Settings: undefined;
   NetworkSelect: undefined;
-  ImportSecretPhrase: undefined;
-  ImportPrivateKey: undefined;
+  ImportSecretPhrase: { keyTypes: KeypairType };
+  ImportPrivateKey: { keyTypes: KeypairType };
   NetworksSetting: undefined;
   SendFund: { selectedNetwork: string; selectedToken: string };
   Languages: undefined;

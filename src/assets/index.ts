@@ -17,8 +17,6 @@ const WarningIcon = React.lazy(() => import('./warning.svg'));
 const DangerIcon = React.lazy(() => import('./danger.svg'));
 const CheckBoxIcon = React.lazy(() => import('./checkbox.svg'));
 const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
-const SuccessStatus = React.lazy(() => import('./success-status.svg'));
-const FailStatus = React.lazy(() => import('./fail-status.svg'));
 
 export const HomeTabIcon = {
   crypto: CryptoLogo,
@@ -45,14 +43,14 @@ export const SVGImages = {
   CheckBoxIcon: CheckBoxIcon,
   CheckBoxFilledIcon: CheckBoxFilledIcon,
   SubWallet2: SubWalletLogo2,
-  SuccessStatus,
-  FailStatus,
 };
 
 export const Images = {
   ...ImageLogosMap,
   loading: require('./loading.gif'),
   stackingEmptyList: require('./stacking-empty-list.png'),
+  successStatusImg: require('./success-status.png'),
+  failStatusImg: require('./fail-status.png'),
   loadingScreen: require('./loading-background.jpg'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
 };

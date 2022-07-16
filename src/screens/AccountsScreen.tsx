@@ -11,12 +11,14 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps, RootStackParamList } from 'types/routes';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
+import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -42,41 +44,61 @@ export const AccountsScreen = () => {
   const accounts = accountStore.accounts;
   const theme = useSubWalletTheme().colors;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-
+  const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
+  const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
   const SECRET_TYPE: AccountActionType[] = [
     {
       icon: UserCirclePlus,
       title: i18n.common.createWalletName,
       onCLickButton: () => {
-        navigation.navigate('CreateAccount');
+        setSelectedAction('CreateAccount');
         setModalVisible(false);
+        setTimeout(() => {
+          setSelectTypeModalVisible(true);
+        }, HIDE_MODAL_DURATION);
       },
     },
     {
       icon: Article,
-      title: i18n.common.secretPhrase,
+      title: i18n.common.importSecretPhrase,
       onCLickButton: () => {
-        navigation.navigate('ImportSecretPhrase');
+        setSelectedAction('ImportSecretPhrase');
         setModalVisible(false);
+        setTimeout(() => {
+          setSelectTypeModalVisible(true);
+        }, HIDE_MODAL_DURATION);
       },
     },
     {
       icon: LockKey,
-      title: i18n.common.privateKey,
+      title: i18n.common.importPrivateKey,
       onCLickButton: () => {
-        navigation.navigate('ImportPrivateKey');
+        setSelectedAction('ImportPrivateKey');
         setModalVisible(false);
+        setTimeout(() => {
+          setSelectTypeModalVisible(true);
+        }, HIDE_MODAL_DURATION);
       },
     },
     {
       icon: FileArrowUp,
-      title: i18n.common.jsonFile,
+      title: i18n.common.importFromJson,
       onCLickButton: () => {
         navigation.navigate('RestoreJson');
         setModalVisible(false);
       },
     },
   ];
+
+  const onSelectSubstrateAccount = () => {
+    setSelectTypeModalVisible(false);
+    !!selectedAction && navigation.navigate(selectedAction, { keyTypes: SUBSTRATE_ACCOUNT_TYPE });
+  };
+
+  const onSelectEvmAccount = () => {
+    setSelectTypeModalVisible(false);
+    !!selectedAction && navigation.navigate(selectedAction, { keyTypes: EVM_ACCOUNT_TYPE });
+  };
 
   const renderListEmptyComponent = () => {
     return <Warning title={'Warning'} message={i18n.warningMessage.noAccountText} isDanger={false} />;
@@ -143,6 +165,14 @@ export const AccountsScreen = () => {
           secretTypeList={SECRET_TYPE}
           modalVisible={modalVisible}
           onChangeModalVisible={() => setModalVisible(false)}
+        />
+
+        <SelectAccountTypeModal
+          modalVisible={selectTypeModalVisible}
+          onChangeModalVisible={() => setSelectTypeModalVisible(false)}
+          modalHeight={206}
+          onSelectSubstrateAccount={onSelectSubstrateAccount}
+          onSelectEvmAccount={onSelectEvmAccount}
         />
       </View>
     </SubScreenContainer>

@@ -1,15 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { ScrollView, StyleProp, View } from 'react-native';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging';
-import { KeypairType } from '@polkadot/util-crypto/types';
-import { EVM_ACCOUNT_TYPE } from '../constant';
 import { Textarea } from 'components/Textarea';
 import { Warning } from 'components/Warning';
 
@@ -18,8 +16,6 @@ const footerAreaStyle: StyleProp<any> = {
   marginHorizontal: 16,
   ...MarginBottomForSubmitButton,
 };
-
-const KEYTYPES: KeypairType[] = [EVM_ACCOUNT_TYPE];
 
 export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -32,6 +28,9 @@ export const ImportPrivateKey = () => {
   const [pass2, setPass2] = useState<string | null>(null);
   const [pass2Dirty, setPass2Dirty] = useState<boolean>(false);
   const isSecondPasswordValid = !!(pass2 && pass2.length > 5) && pass2Dirty && pass1 !== pass2;
+  const route = useRoute<RootRouteProps>();
+  // @ts-ignore
+  const { keyTypes } = route.params;
 
   const onChangePrivateKey = (text: string) => {
     setAutoCorrectPrivateKey('');
@@ -43,7 +42,7 @@ export const ImportPrivateKey = () => {
       return;
     }
 
-    validateMetamaskPrivateKeyV2(privateKey, KEYTYPES)
+    validateMetamaskPrivateKeyV2(privateKey, [keyTypes])
       .then(({ autoAddPrefix }) => {
         let suri = `${privateKey || ''}`;
         if (autoAddPrefix) {
@@ -55,13 +54,13 @@ export const ImportPrivateKey = () => {
       .catch(() => {
         setError('Not a valid private key');
       });
-  }, [privateKey]);
+  }, [keyTypes, privateKey]);
 
   const _onImport = useCallback(
     (accountName: string, password: string): void => {
       if (accountName && password) {
         setIsBusy(true);
-        createAccountSuriV2(name, password, autoCorrectPrivateKey, false, KEYTYPES)
+        createAccountSuriV2(name, password, autoCorrectPrivateKey, false, [keyTypes])
           .then(() => {
             navigation.navigate('Home');
           })
@@ -70,7 +69,7 @@ export const ImportPrivateKey = () => {
           });
       }
     },
-    [autoCorrectPrivateKey, name, navigation],
+    [autoCorrectPrivateKey, keyTypes, name, navigation],
   );
 
   const onChangeName = (text: string) => {

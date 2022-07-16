@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
 import { createAccountSuriV2, validateSeedV2 } from '../messaging';
-import { SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 import { SubmitButton } from 'components/SubmitButton';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
 import i18n from 'utils/i18n/i18n';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -49,6 +49,9 @@ export const ImportSecretPhrase = () => {
   const [error, setError] = useState<string>('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [isBusy, setBusy] = useState(false);
+  const route = useRoute<RootRouteProps>();
+  // @ts-ignore
+  const { keyTypes } = route.params;
 
   useEffect(() => {
     if (!seed) {
@@ -57,9 +60,9 @@ export const ImportSecretPhrase = () => {
 
     const suri = `${seed || ''}`;
 
-    validateSeedV2(seed, [SUBSTRATE_ACCOUNT_TYPE])
+    validateSeedV2(seed, [keyTypes])
       .then(({ addressMap }) => {
-        const address = addressMap[SUBSTRATE_ACCOUNT_TYPE];
+        const address = addressMap[keyTypes as KeypairType];
         setAccount({ address, suri, genesis: '' });
         setError('');
       })
@@ -67,14 +70,14 @@ export const ImportSecretPhrase = () => {
         setAccount(null);
         setError('Invalid mnemonic seed');
       });
-  }, [seed]);
+  }, [keyTypes, seed]);
 
   const _onImportSeed = useCallback(
     (curName: string, password: string): void => {
       if (curName && password && account) {
         setBusy(true);
 
-        createAccountSuriV2(curName, password, account.suri, true, [SUBSTRATE_ACCOUNT_TYPE], '')
+        createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
           .then(() => {
             navigation.navigate('Home');
           })
@@ -83,7 +86,7 @@ export const ImportSecretPhrase = () => {
           });
       }
     },
-    [account, navigation],
+    [account, keyTypes, navigation],
   );
 
   const onPressBack = () => {

@@ -1,10 +1,14 @@
 import React from 'react';
-import { Image, ScrollView, StyleProp, View } from 'react-native';
+import { Image, ScrollView, StyleProp, Text, View } from 'react-native';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
 import { Images } from 'assets/index';
+import { ListDashes } from 'phosphor-react-native';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ColorMap } from 'styles/color';
+import i18n from "utils/i18n/i18n";
 
 interface Props {
   networkKey: string;
@@ -18,9 +22,16 @@ interface ContentProps {
 }
 
 const emptyListContainerStyle: StyleProp<any> = {
-  alignItems: 'center',
+  paddingTop: 111,
   flex: 1,
-  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const emptyListTextStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  color: ColorMap.light,
+  ...FontMedium,
+  paddingTop: 15,
 };
 
 function getReadyNetwork(registryMap: Record<string, ChainRegistry>): string[] {
@@ -102,6 +113,8 @@ const EmptyList = () => {
   return (
     <View style={emptyListContainerStyle}>
       {/*<Image source={Images.historyEmpty} />*/}
+      <ListDashes size={80} color={'rgba(255, 255, 255, 0.3)'} weight={'thin'} />
+      <Text style={emptyListTextStyle}>{i18n.common.emptyTransactionListMessage}</Text>
     </View>
   );
 };

@@ -8,7 +8,7 @@ export const en = {
     firstScreenNotification: 'By continuing, you agree to our Terms and Privacy Policy',
     yourSecretPhrase: 'Your Secret Phrase',
     verifySecretPhrase: 'Verify Secret Phrase',
-    createWalletName: 'Create Wallet Name',
+    createWalletName: 'Create New Account',
     importSecretPhrase: 'Import Secret Phrase',
     importPrivateKey: 'Import Private Key',
     secretPhrase: 'Secret Phrase',
@@ -17,7 +17,8 @@ export const en = {
     singleChain: 'Single Chain',
     crossChain: 'Cross Chain (XCM)',
     charityDonate: 'Charity Donate',
-    selectYourSecretFile: 'Select your secret type',
+    selectTheType: 'Select the type',
+    selectAccountType: 'Select account type',
     autoLock: 'Auto-Lock',
     importFromJson: 'Import From JSON',
     transferSuccessMessage:
@@ -31,6 +32,7 @@ export const en = {
     goToSetting: 'Go to Setting',
     scan: 'Scan',
     toAddressToSendFunds: 'address to send funds',
+    emptyTransactionListMessage: 'Your transactions will appear here',
   },
   cryptoTab: {
     receive: 'Receive',

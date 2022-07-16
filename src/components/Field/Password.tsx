@@ -45,6 +45,7 @@ export const PasswordField = ({ onChangeText, onEndEditing, onBlur, value, isErr
       <FieldBase {...fieldBase}>
         <View style={blockContentStyle}>
           <TextInput
+            autoFocus
             style={getInputStyle(!!isError)}
             placeholderTextColor={ColorMap.disabled}
             selectionColor={ColorMap.disabled}

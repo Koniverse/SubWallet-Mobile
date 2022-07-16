@@ -17,7 +17,8 @@ export const vi = {
     singleChain: 'Single Chain',
     crossChain: 'Cross Chain (XCM)',
     charityDonate: 'Charity Donate',
-    selectYourSecretFile: 'Select your secret type',
+    selectTheType: 'Select the type',
+    selectAccountType: 'Select account type',
     autoLock: 'Auto-Lock',
     importFromJson: 'Import From JSON',
     transferSuccessMessage:
@@ -31,6 +32,7 @@ export const vi = {
     goToSetting: 'Go to Setting',
     scan: 'Scan',
     toAddressToSendFunds: 'address to send funds',
+    emptyTransactionListMessage: 'Your transactions will appear here',
   },
   cryptoTab: {
     receive: 'Receive',

@@ -1,18 +1,20 @@
 import React from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
-import { StyleProp, Text, View } from 'react-native';
+import { Image, StyleProp, Text, View } from 'react-native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';
 import i18n from 'utils/i18n/i18n';
 import { AccountActionType } from 'types/ui-types';
+import { ImageLogosMap } from 'assets/logo';
 
 interface Props {
   modalVisible: boolean;
   onChangeModalVisible: () => void;
-  secretTypeList: AccountActionType[];
   modalHeight: number;
   onModalHide?: () => void;
+  onSelectSubstrateAccount: () => void;
+  onSelectEvmAccount: () => void;
 }
 
 const modalTitle: StyleProp<any> = {
@@ -23,13 +25,27 @@ const modalTitle: StyleProp<any> = {
   textAlign: 'center',
 };
 
-export const SelectImportAccountModal = ({
-  secretTypeList,
+export const SelectAccountTypeModal = ({
   modalVisible,
   onChangeModalVisible,
   modalHeight,
   onModalHide,
+  onSelectSubstrateAccount,
+  onSelectEvmAccount,
 }: Props) => {
+  const ACCOUNT_TYPE: AccountActionType[] = [
+    {
+      icon: () => <Image source={ImageLogosMap.polkadot} style={{ width: 16, height: 16 }} />,
+      title: 'Substrate Account',
+      onCLickButton: onSelectSubstrateAccount,
+    },
+    {
+      icon: () => <Image source={ImageLogosMap.eth} style={{ width: 16, height: 16 }} />,
+      title: 'EVM Account',
+      onCLickButton: onSelectEvmAccount,
+    },
+  ];
+
   return (
     <SubWalletModal
       modalVisible={modalVisible}
@@ -37,8 +53,8 @@ export const SelectImportAccountModal = ({
       onChangeModalVisible={onChangeModalVisible}
       modalStyle={{ height: modalHeight }}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.common.selectTheType}</Text>
-        {secretTypeList.map(item => (
+        <Text style={modalTitle}>{i18n.common.selectAccountType}</Text>
+        {ACCOUNT_TYPE.map(item => (
           <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
         ))}
       </View>

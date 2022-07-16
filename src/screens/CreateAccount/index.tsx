@@ -3,13 +3,10 @@ import { InitSecretPhrase } from 'screens/CreateAccount/InitSecretPhrase';
 import { VerifySecretPhrase } from 'screens/CreateAccount/VerifySecretPhrase';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { createAccountSuriV2, createSeedV2 } from '../../messaging';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
-
-export const SUBSTRATE_ACCOUNT_TYPE: KeypairType = 'sr25519';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -29,20 +26,21 @@ function getHeaderTitle(viewStep: number) {
 
 export const CreateAccount = () => {
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.INIT_SP);
-  const [address, setAddress] = useState<null | string>(null);
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
+  const route = useRoute<RootRouteProps>();
+  // @ts-ignore
+  const { keyTypes } = route.params;
 
   useEffect((): void => {
-    createSeedV2(undefined, undefined, [SUBSTRATE_ACCOUNT_TYPE])
+    createSeedV2(undefined, undefined, [keyTypes])
       .then((response): void => {
         // @ts-ignore
-        setAddress(response.addressMap[SUBSTRATE_ACCOUNT_TYPE]);
         setSeed(response.seed);
       })
       .catch(console.error);
-  }, []);
+  }, [keyTypes]);
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.INIT_SP) {
@@ -65,8 +63,8 @@ export const CreateAccount = () => {
   const onCreateAccount = (curName: string, password: string) => {
     if (curName && password && seed) {
       setIsBusy(true);
-      createAccountSuriV2(curName, password, seed, true, [SUBSTRATE_ACCOUNT_TYPE], '')
-        .then(response => {
+      createAccountSuriV2(curName, password, seed, true, [keyTypes], '')
+        .then(() => {
           navigation.navigate('Home');
         })
         .catch((error: Error): void => {

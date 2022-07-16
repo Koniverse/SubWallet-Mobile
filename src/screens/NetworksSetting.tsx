@@ -16,6 +16,12 @@ interface Props {
   onChangeModalVisible: () => void;
 }
 
+const sortNetworkList = (list: NetworkJson[]): NetworkJson[] => {
+  return list.sort((x, y) => {
+    return x.active === y.active ? 0 : x.active ? -1 : 1;
+  });
+};
+
 export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisible }: Props) => {
   const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
@@ -56,7 +62,7 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
     return _filteredNetworkMap;
   }, [networkMap, searchString]);
 
-  const filteredNetworkMap = filterNetwork();
+  const filteredNetworkMap = sortNetworkList(Object.values(filterNetwork()));
 
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
@@ -68,7 +74,7 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
         <FlatList
           style={{ ...ScrollViewStyle }}
           keyboardShouldPersistTaps={'handled'}
-          data={Object.values(filteredNetworkMap)}
+          data={filteredNetworkMap}
           renderItem={renderItem}
           ListEmptyComponent={renderListEmptyComponent}
           keyExtractor={item => `${item.key}-${item.chain}`}
