@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent, ScrollView, StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
 import {
@@ -6,7 +6,7 @@ import {
   FontMedium,
   MarginBottomForSubmitButton,
   ScrollViewStyle,
-  sharedStyles
+  sharedStyles,
 } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
@@ -16,6 +16,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import { SeedWordDataType } from 'screens/CreateAccount/types';
 interface Props {
   onPressSubmit: (event: GestureResponderEvent) => void;
   seed: string;
@@ -60,14 +61,22 @@ const copyButtonWrapperStyle: StyleProp<any> = {
   marginBottom: 24,
 };
 
-const renderSeedWord = (word: string, index: number) => {
-  return (
-    <SeedWord style={seedWordStyle} key={word} prefixText={`${index + 1}`.padStart(2, '0')} title={word} disabled />
-  );
+const renderSeedWord = (item: SeedWordDataType) => {
+  return <SeedWord style={seedWordStyle} key={item.key} prefixText={item.prefixText} title={item.title} disabled />;
 };
 
 export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
   const toast = useToast();
+
+  const seedItems = useMemo<SeedWordDataType[]>(() => {
+    return seed.split(' ').map((word, index) => {
+      return {
+        key: `${index}-${word}`,
+        title: word,
+        prefixText: `${index + 1}`.padStart(2, '0'),
+      };
+    });
+  }, [seed]);
 
   const copyToClipboard = useCallback(
     (text: string) => {
@@ -88,7 +97,7 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
               assets.
             </Text>
           </View>
-          <View style={phraseBlockStyle}>{seed.split(' ').map(renderSeedWord)}</View>
+          <View style={phraseBlockStyle}>{seedItems.map(renderSeedWord)}</View>
           <View style={copyButtonWrapperStyle}>
             <LeftIconButton icon={CopySimple} title={'Copy to Clipboard'} onPress={() => copyToClipboard(seed)} />
           </View>

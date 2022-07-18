@@ -3,10 +3,19 @@ import React from 'react';
 import { ColorMap } from 'styles/color';
 import { SeedWord } from 'components/SeedWord';
 
+export type SelectedWordType = {
+  wordKey: string;
+  word: string;
+};
+
 interface SeedPhraseAreaProps extends ViewProps {
-  onTapWord: (word: string) => void;
+  onTapWord: (word: string, wordKey: string) => void;
   originWords: string[];
-  currentWords: string[];
+  currentWords: SelectedWordType[];
+}
+
+export function getWordKey(word: string, index: number) {
+  return `${index}-${word}`;
 }
 
 function getWrapperStyle(style: StyleProp<any> = {}): StyleProp<any> {
@@ -31,31 +40,39 @@ const seedWordStyle = {
   margin: 2,
 };
 
+const isWordCorrect = (word: string, index: number, originWords: string[]) => {
+  const currentOriginWord = originWords[index];
+
+  return !!(currentOriginWord && currentOriginWord === word);
+};
+
 export const SeedPhraseArea = (seedPhraseAreaProps: SeedPhraseAreaProps) => {
   const { currentWords, originWords, onTapWord, style } = seedPhraseAreaProps;
 
-  const _onTapWord = (word: string) => {
+  const _onTapWord = (word: string, wordKey: string) => {
     return () => {
-      onTapWord(word);
+      onTapWord(word, wordKey);
     };
   };
 
-  const renderSeedWord = (word: string, index: number) => {
+  const renderSeedWord = (item: SelectedWordType, index: number) => {
+    const { wordKey, word } = item;
+
     return (
       <SeedWord
         style={seedWordStyle}
         backgroundColor={ColorMap.dark1}
-        key={word}
+        key={wordKey}
         title={word}
-        isError={index !== originWords.indexOf(word)}
-        onPress={_onTapWord(word)}
+        isError={!isWordCorrect(word, index, originWords)}
+        onPress={_onTapWord(word, wordKey)}
       />
     );
   };
 
   return (
     <View style={getWrapperStyle(style)}>
-      <View style={innerViewStyle}>{currentWords.map((word, index) => renderSeedWord(word, index))}</View>
+      <View style={innerViewStyle}>{currentWords.map(renderSeedWord)}</View>
     </View>
   );
 };

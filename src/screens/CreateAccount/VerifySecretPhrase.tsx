@@ -3,7 +3,7 @@ import { GestureResponderEvent, StyleProp, Text, View } from 'react-native';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { SeedPhraseArea } from 'components/SeedPhraseArea';
+import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhraseArea';
 import { SubmitButton } from 'components/SubmitButton';
 import { shuffleArray } from 'utils/index';
 
@@ -49,12 +49,12 @@ const seedWordStyle = {
   margin: 2,
 };
 
-const isCorrectWord = (selectedWords: string[], seed: string) => {
-  return selectedWords.join(' ') === seed;
+const isCorrectWord = (selectedWords: SelectedWordType[], seed: string) => {
+  return selectedWords.map(item => item.word).join(' ') === seed;
 };
 
 export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
-  const [selectedWords, setSelectedWords] = useState<string[]>([]);
+  const [selectedWords, setSelectedWords] = useState<SelectedWordType[]>([]);
   const [shuffleWords, setShuffleWords] = useState<string[] | null>(null);
   const seedWords: string[] = seed.split(' ');
 
@@ -64,28 +64,32 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
     setShuffleWords(words);
   }, [seed]);
 
-  const onSelectWord = (word: string) => {
+  const onSelectWord = (word: string, wordKey: string) => {
     return () => {
-      const newSelectedWord: string[] = [...selectedWords];
-      newSelectedWord.push(word);
+      const newSelectedWord: SelectedWordType[] = [...selectedWords];
+      newSelectedWord.push({ word, wordKey });
       setSelectedWords(newSelectedWord);
     };
   };
 
-  const onUnSelectWord = (word: string) => {
-    const newSelectedWord: string[] = selectedWords.filter(w => w !== word);
+  const onUnSelectWord = (word: string, wordKey: string) => {
+    const newSelectedWord: SelectedWordType[] = selectedWords.filter(
+      item => !(item.word === word && item.wordKey === wordKey),
+    );
 
     setSelectedWords(newSelectedWord);
   };
 
-  const renderSeedWord = (word: string) => {
+  const renderSeedWord = (word: string, index: number) => {
+    const wordKey = getWordKey(word, index);
+
     return (
       <SeedWord
         style={seedWordStyle}
-        key={word}
+        key={wordKey}
         title={word}
-        onPress={onSelectWord(word)}
-        isActivated={selectedWords.includes(word)}
+        onPress={onSelectWord(word, wordKey)}
+        isActivated={selectedWords.some(item => item.word === word && item.wordKey === wordKey)}
       />
     );
   };
@@ -105,7 +109,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
           originWords={seedWords}
           style={phraseAreaStyle}
         />
-        <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(word => renderSeedWord(word))}</View>
+        <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
       </View>
       <View style={footerAreaStyle}>
         <SubmitButton disabled={!isCorrectWord(selectedWords, seed)} title={'Continue'} onPress={onPressSubmit} />
