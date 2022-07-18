@@ -17,7 +17,7 @@ export const vi = {
     singleChain: 'Single Chain',
     crossChain: 'Cross Chain (XCM)',
     charityDonate: 'Charity Donate',
-    selectTheType: 'Select the type',
+    selectYourImport: 'Select Your Import',
     selectAccountType: 'Select account type',
     autoLock: 'Auto-Lock',
     importFromJson: 'Import From JSON',

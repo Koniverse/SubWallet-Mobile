@@ -37,7 +37,7 @@ export const SelectImportAccountModal = ({
       onChangeModalVisible={onChangeModalVisible}
       modalStyle={{ height: modalHeight }}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.common.selectTheType}</Text>
+        <Text style={modalTitle}>{i18n.common.selectYourImport}</Text>
         {secretTypeList.map(item => (
           <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
         ))}

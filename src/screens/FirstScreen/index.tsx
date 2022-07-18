@@ -41,7 +41,7 @@ export const FirstScreen = () => {
   const SECRET_TYPE: AccountActionType[] = [
     {
       icon: Article,
-      title: i18n.common.secretPhrase,
+      title: i18n.common.importSecretPhrase,
       onCLickButton: () => {
         setSelectedAction('ImportSecretPhrase');
         setSelectModalVisible(false);
@@ -52,7 +52,7 @@ export const FirstScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.common.privateKey,
+      title: i18n.common.importPrivateKey,
       onCLickButton: () => {
         setSelectedAction('ImportPrivateKey');
         setSelectModalVisible(false);
@@ -63,7 +63,7 @@ export const FirstScreen = () => {
     },
     {
       icon: FileArrowUp,
-      title: i18n.common.jsonFile,
+      title: i18n.common.importFromJson,
       onCLickButton: () => {
         navigation.navigate('RestoreJson');
         setSelectModalVisible(false);

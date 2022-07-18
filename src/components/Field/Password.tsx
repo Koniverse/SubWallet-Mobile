@@ -15,6 +15,7 @@ interface Props extends FieldBaseProps {
   value?: string;
   isError?: boolean;
   isBusy?: boolean;
+  autoFocus?: boolean;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -37,7 +38,16 @@ function getInputStyle(isError: boolean) {
   };
 }
 
-export const PasswordField = ({ onChangeText, onEndEditing, onBlur, value, isError, isBusy, ...fieldBase }: Props) => {
+export const PasswordField = ({
+  onChangeText,
+  onEndEditing,
+  onBlur,
+  value,
+  isError,
+  isBusy,
+  autoFocus = true,
+  ...fieldBase
+}: Props) => {
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
   const isPasswordTooShort = value && value.length < 6;
   return (
@@ -45,7 +55,7 @@ export const PasswordField = ({ onChangeText, onEndEditing, onBlur, value, isErr
       <FieldBase {...fieldBase}>
         <View style={blockContentStyle}>
           <TextInput
-            autoFocus
+            autoFocus={autoFocus}
             style={getInputStyle(!!isError)}
             placeholderTextColor={ColorMap.disabled}
             selectionColor={ColorMap.disabled}

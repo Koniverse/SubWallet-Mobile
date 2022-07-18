@@ -122,7 +122,6 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
               <SubmitButton
                 title={'Back to Home'}
                 backgroundColor={ColorMap.dark2}
-                style={submitButton1Style}
                 onPress={() => navigation.navigate('Home')}
               />
               {/*{viewTransactionBtn(extrinsicHash)}*/}

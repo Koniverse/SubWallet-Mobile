@@ -98,15 +98,17 @@ export const ImportPrivateKey = () => {
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea
+            autoFocus={true}
             style={{ height: 94, marginBottom: 8, paddingTop: 16 }}
             onChangeText={onChangePrivateKey}
             value={autoCorrectPrivateKey || privateKey || ''}
             onBlur={() => validatePrivateKey()}
           />
 
-          {!!error && <Warning message={error} isDanger />}
+          {!!error && <Warning style={{ marginBottom: 8 }} message={error} isDanger />}
 
           <AccountNameAndPasswordArea
+            autoFocusFirstField={false}
             name={name}
             pass1={pass1}
             pass2={pass2}
