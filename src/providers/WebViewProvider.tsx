@@ -15,7 +15,7 @@ import {
 } from '../messaging';
 import { NativeSyntheticEvent, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import { updateAccounts, updateAccountsAndCurrentAccount } from 'stores/Accounts';
+import { updateAccountsAndCurrentAccount } from 'stores/Accounts';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
 import { updateNetworkMap } from 'stores/NetworkMap';
@@ -122,8 +122,6 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           selectedAcc.genesisHash = currentGenesisHash;
           dispatch(updateAccountsAndCurrentAccount({ accounts, currentAccountAddress: selectedAcc.address }));
         }
-      } else {
-        dispatch(updateAccounts([]));
       }
     });
 
