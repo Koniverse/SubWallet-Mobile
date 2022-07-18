@@ -70,14 +70,11 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         // @ts-ignore
         if (data.id === '0' && data.response?.status) {
           setupI18n(language);
-          SplashScreen.hide();
           // @ts-ignore
           const webViewStatus = data.response?.status as string;
           setStatus(webViewStatus);
-          // toast.show(webViewStatus, {
-          //   type: webViewStatus === 'crypto_ready' ? 'success' : 'normal',
-          // });
           if (webViewStatus === 'crypto_ready') {
+            SplashScreen.hide();
           }
           return true;
         } else {

@@ -60,7 +60,7 @@ export const Home = () => {
           marginTop: 10,
         },
         tabBarLabelStyle: {
-          paddingBottom: 20,
+          paddingBottom: insets.bottom && insets.bottom - 12,
           fontSize: 10,
           lineHeight: 25,
           ...FontMedium,
@@ -72,7 +72,7 @@ export const Home = () => {
           borderTopWidth: 1,
           paddingLeft: 16,
           paddingRight: 16,
-          height: BOTTOM_BAR_HEIGHT + insets.bottom - 15,
+          height: BOTTOM_BAR_HEIGHT + (insets.bottom ? insets.bottom - 15 : insets.bottom),
         },
         tabBarActiveTintColor: swThemeColor.secondary,
         tabBarInactiveTintColor: swThemeColor.textColor,
