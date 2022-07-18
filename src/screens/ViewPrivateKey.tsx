@@ -26,6 +26,7 @@ import { Warning } from 'components/Warning';
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
   flex: 1,
+  marginTop: 8,
 };
 
 const bodyAreaStyle: StyleProp<any> = {

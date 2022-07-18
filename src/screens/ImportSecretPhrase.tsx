@@ -108,6 +108,7 @@ export const ImportSecretPhrase = () => {
               </Text>
 
               <Textarea
+                autoFocus={true}
                 onChangeText={text => {
                   setSeed(text);
                 }}

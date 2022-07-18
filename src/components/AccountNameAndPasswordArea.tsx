@@ -17,6 +17,7 @@ interface Props {
   onChangePass2: (curPass: string) => void;
   pass2Dirty: boolean;
   isSecondPasswordValid: boolean;
+  autoFocusFirstField?: boolean;
 }
 
 export const AccountNameAndPasswordArea = ({
@@ -28,16 +29,19 @@ export const AccountNameAndPasswordArea = ({
   onChangePass2,
   pass2Dirty,
   isSecondPasswordValid,
+  autoFocusFirstField,
 }: Props) => {
   return (
     <>
       <EditAccountInputText
+        autoFocus={autoFocusFirstField}
         label={'Wallet Name'}
         inputValue={name}
         onChangeText={onChangeName}
         editAccountInputStyle={{ marginBottom: 8 }}
       />
       <PasswordField
+        autoFocus={false}
         label={'Wallet Password'}
         onChangeText={onChangePass1}
         value={pass1 || ''}
@@ -45,6 +49,7 @@ export const AccountNameAndPasswordArea = ({
       />
 
       <PasswordField
+        autoFocus={false}
         label={'Repeat Wallet Password'}
         onChangeText={onChangePass2}
         value={pass2 || ''}

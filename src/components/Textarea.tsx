@@ -10,9 +10,10 @@ const textAreaWrapper: StyleProp<any> = {
 };
 
 export const Textarea = (textAreaProps: TextInputProps) => {
-  const { style, onChangeText, value, onBlur, onEndEditing } = textAreaProps;
+  const { style, onChangeText, value, onBlur, onEndEditing, autoFocus } = textAreaProps;
   return (
     <TextInput
+      autoFocus={autoFocus}
       autoCapitalize="none"
       style={[sharedStyles.inputAreaStyle, textAreaWrapper, style]}
       multiline={true}

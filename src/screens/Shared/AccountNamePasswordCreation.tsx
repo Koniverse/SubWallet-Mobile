@@ -71,6 +71,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
           pass1={pass1}
           pass2={pass2}
           pass2Dirty={pass2Dirty}
+          autoFocusFirstField
         />
       </ScrollView>
       <View style={footerAreaStyle}>

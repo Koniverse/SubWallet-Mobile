@@ -36,8 +36,20 @@ export const PinCodeScreen = () => {
     navigation.navigate('LockScreen');
   };
 
+  const onPressBack = () => {
+    if (currentViewStep === ViewStep.VALIDATE_PIN_CODE) {
+      navigation.navigate('Security');
+    } else if (currentViewStep === ViewStep.PIN_CODE) {
+      navigation.navigate('Security');
+    } else {
+      setCurrentViewStep(ViewStep.PIN_CODE);
+      setTitle('New PIN Code');
+      setRepeatPinCode('');
+    }
+  };
+
   return (
-    <ContainerWithSubHeader title={title} onPressBack={() => {}}>
+    <ContainerWithSubHeader title={title} onPressBack={onPressBack}>
       <>
         {currentViewStep === ViewStep.VALIDATE_PIN_CODE && (
           <PinCode
@@ -57,14 +69,7 @@ export const PinCodeScreen = () => {
             pinCode={newPinCode}
             onChangePinCode={setNewPinCode}
             onPressBack={() => {
-              // @ts-ignore
-              if (data && data.isEditablePinCode) {
-                setCurrentViewStep(ViewStep.VALIDATE_PIN_CODE);
-                setNewPinCode('');
-                setTitle('PIN Code');
-              } else {
-                navigation.navigate('Security');
-              }
+              navigation.navigate('Security');
             }}
             onPressContinue={() => {
               setCurrentViewStep(ViewStep.REPEAT_PIN_CODE);
@@ -78,7 +83,7 @@ export const PinCodeScreen = () => {
           <PinCode
             onPressBack={() => {
               setCurrentViewStep(ViewStep.PIN_CODE);
-              setTitle('PIN Code');
+              setTitle('New PIN Code');
               setRepeatPinCode('');
             }}
             onPressContinue={onSavePinCode}
