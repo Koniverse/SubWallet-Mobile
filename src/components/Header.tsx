@@ -63,12 +63,11 @@ export const Header = ({ navigation }: Props) => {
   const onChangeNetwork = useCallback(
     async (item: NetworkSelectOption): Promise<void> => {
       if (currentAccount) {
+        setNetworkSelectModal(false);
         await tieAccount(currentAccount.address, item.value || null);
         triggerAccountsSubscription().catch(console.log);
 
         dispatch(upsertCurrentAccount({ ...currentAccount, genesisHash: item.value || null }));
-
-        setNetworkSelectModal(false);
       }
     },
     [currentAccount, dispatch],

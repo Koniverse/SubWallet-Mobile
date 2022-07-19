@@ -144,15 +144,15 @@ export const Account = ({
     (accAddress: string) => {
       setSelected(true);
 
-      saveCurrentAccountAddress({ address: accAddress }, rs => {
+      saveCurrentAccountAddress({ address: accAddress }, () => {
         triggerAccountsSubscription().catch(e => {
           console.error('There is a problem when trigger Accounts Subscription', e);
         });
-        dispatch(updateCurrentAccount(rs.address));
-        navigation.navigate('Home');
       })
         .then(console.log)
         .catch(console.error);
+      dispatch(updateCurrentAccount(accAddress));
+      navigation.navigate('Home');
     },
     [dispatch, navigation],
   );
