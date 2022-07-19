@@ -45,6 +45,7 @@ const ERROR_HANDLE_SCRIPT = `
 `;
 
 const baseUrl = 'https://wallet-runner.subwallet.app/';
+const myHtmlFile = require('./../../web-runner-core/index.html');
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
@@ -169,7 +170,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           onLoadEnd={onWebViewLoaded}
           injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
           onMessage={onMessage}
-          source={{ uri: `${baseUrl}/index.html`, baseUrl }}
+          source={myHtmlFile}
           javaScriptEnabled={true}
         />
       </View>
