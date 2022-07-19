@@ -13,8 +13,8 @@ import {
   subscribePrice,
   subscribeSettings,
 } from '../messaging';
-import { NativeSyntheticEvent, View } from 'react-native';
-import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
+import { NativeSyntheticEvent, Platform, View } from 'react-native';
+import { WebViewMessage, WebViewSource } from 'react-native-webview/lib/WebViewTypes';
 import { updateAccountsAndCurrentAccount } from 'stores/Accounts';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePrice } from 'stores/Price';
@@ -44,8 +44,10 @@ const ERROR_HANDLE_SCRIPT = `
     true;
 `;
 
-const baseUrl = 'https://wallet-runner.subwallet.app/';
-const myHtmlFile = require('./../../web-runner-core/index.html');
+const webViewSrc: WebViewSource =
+  Platform.OS === 'ios'
+    ? require('./../../web-runner-core/index.html')
+    : { uri: 'file:///android_asset/web-runner-core/index.html' };
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
@@ -170,8 +172,12 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           onLoadEnd={onWebViewLoaded}
           injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
           onMessage={onMessage}
-          source={myHtmlFile}
+          source={webViewSrc}
           javaScriptEnabled={true}
+          allowFileAccess={true}
+          allowUniversalAccessFromFileURLs={true}
+          allowFileAccessFromFileURLs={true}
+          domStorageEnabled={true}
         />
       </View>
       {children}
