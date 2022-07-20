@@ -68,7 +68,7 @@ export const Account = ({
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
   const {
-    accounts: { accounts },
+    accounts: { accounts, currentAccountAddress },
     networkMap,
   } = useSelector((state: RootState) => state);
   const [{ account, formatted, genesisHash: recodedGenesis, isEthereum, prefix }, setRecoded] =
@@ -98,9 +98,6 @@ export const Account = ({
   const _isAccountAll = address && isAccountAll(address);
   const networkInfo = getNetworkInfoByGenesisHash(genesisHash || recodedGenesis);
   const [isSelected, setSelected] = useState(false);
-  const {
-    accounts: { currentAccountAddress },
-  } = useSelector((state: RootState) => state);
   useEffect((): void => {
     if (!address) {
       setRecoded(defaultRecoded);
@@ -142,19 +139,22 @@ export const Account = ({
 
   const selectAccount = useCallback(
     (accAddress: string) => {
-      setSelected(true);
+      if (currentAccountAddress !== accAddress) {
+        setSelected(true);
 
-      saveCurrentAccountAddress({ address: accAddress }, () => {
-        triggerAccountsSubscription().catch(e => {
-          console.error('There is a problem when trigger Accounts Subscription', e);
-        });
-      })
-        .then(console.log)
-        .catch(console.error);
-      dispatch(updateCurrentAccount(accAddress));
+        saveCurrentAccountAddress({ address: accAddress }, () => {
+          triggerAccountsSubscription().catch(e => {
+            console.error('There is a problem when trigger Accounts Subscription', e);
+          });
+        })
+          .then(console.log)
+          .catch(console.error);
+        dispatch(updateCurrentAccount(accAddress));
+      }
+
       navigation.navigate('Home');
     },
-    [dispatch, navigation],
+    [dispatch, navigation, currentAccountAddress],
   );
 
   // const removeAccount = (accAddress: string) => {

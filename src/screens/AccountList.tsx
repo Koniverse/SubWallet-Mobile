@@ -1,6 +1,4 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ScrollView, View } from 'react-native';
@@ -9,7 +7,6 @@ import { Button } from 'components/Button';
 import { SpaceStyle } from 'styles/space';
 
 export const AccountList = () => {
-  const navigation = useNavigation<RootNavigationProps>();
   const accountStore = useSelector((state: RootState) => state.accounts);
   const accounts = accountStore.accounts;
 
@@ -21,12 +18,7 @@ export const AccountList = () => {
             <Account key={acc.address} name={acc.name || ''} address={acc.address} />
           ))}
         </View>
-        <Button
-          title="Create Account"
-          onPress={() => {
-            navigation.navigate('CreateAccount');
-          }}
-        />
+        <Button title="Create Account" onPress={() => {}} />
       </View>
     </ScrollView>
   );

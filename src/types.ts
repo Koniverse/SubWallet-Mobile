@@ -18,7 +18,7 @@ export type AccountInfoItem = {
   tokenDecimals: number[];
   tokenSymbols: string[];
   balanceItem: BalanceItem;
-}
+};
 
 export type BalanceSubInfo = {
   key: string;
