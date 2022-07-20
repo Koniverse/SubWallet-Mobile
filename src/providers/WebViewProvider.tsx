@@ -1,10 +1,13 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { WebViewContext } from './contexts';
 import WebView from 'react-native-webview';
-import { listenMessage, setViewRef, } from '../messaging';
+import { listenMessage, setViewRef } from '../messaging';
 import { NativeSyntheticEvent, Platform, View } from 'react-native';
-import { WebViewMessage, WebViewSource } from 'react-native-webview/lib/WebViewTypes';
+import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import SplashScreen from 'react-native-splash-screen';
+import * as RNFS from 'react-native-fs';
+// @ts-ignore
+import StaticServer from 'react-native-static-server';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -18,15 +21,49 @@ const ERROR_HANDLE_SCRIPT = `
     };
     true;
 `;
+const getPath = () => {
+  return Platform.OS === 'android' ? RNFS.DocumentDirectoryPath + '/www' : RNFS.MainBundlePath + '/www';
+};
 
-const webViewSrc: WebViewSource =
-  Platform.OS === 'ios'
-    ? require('./../../web-runner-core/index.html')
-    : { uri: 'file:///android_asset/web-runner-core/index.html' };
+// const moveAndroidFiles = async () => {
+//   if (Platform.OS === 'android') {
+//     await RNFS.mkdir(RNFS.DocumentDirectoryPath + '/www');
+//     const files = ['www/index.html', 'www/index.css', 'www/index.js'];
+//     for (const file of files) {
+//       await RNFS.copyFileAssets(file, RNFS.DocumentDirectoryPath + '/' + file);
+//     }
+//   }
+// };
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
+  let path = getPath();
+  const [webViewUrl, setWebViewUrl] = useState<string>('');
+  const [server] = useState(new StaticServer(1312, path));
+
   const [status, setStatus] = useState('init');
+
+  useEffect(() => {
+    let isSync = true;
+
+    server.start().then((serverUrl: string) => {
+      console.log(serverUrl);
+      if (isSync) {
+        if (Platform.OS === 'ios') {
+          setWebViewUrl(`${serverUrl}/index.html`);
+        } else {
+          setWebViewUrl('file:///android_asset/web-runner-core/index.html');
+        }
+      }
+    });
+
+    return () => {
+      if (server && server.isRunning()) {
+        server.stop();
+      }
+      isSync = false;
+    };
+  }, [server]);
 
   const onMessage = useCallback((data: NativeSyntheticEvent<WebViewMessage>) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -58,7 +95,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           ref={webRef}
           injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
           onMessage={onMessage}
-          source={webViewSrc}
+          source={{ uri: webViewUrl }}
           javaScriptEnabled={true}
           allowFileAccess={true}
           allowUniversalAccessFromFileURLs={true}

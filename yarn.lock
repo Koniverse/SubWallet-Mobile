@@ -11724,6 +11724,11 @@ react-native-splash-screen@^3.3.0:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.3.0.tgz#3af71ed17afe50fee69590a45aec399d071ead02"
   integrity sha512-rGjt6HkoSXxMqH4SQUJ1gnPQlPJV8+J47+4yhgTIan4bVvAwJhEeJH7wWt9hXSdH4+VfwTS0GTaflj1Tw83IhA==
 
+react-native-static-server@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-static-server/-/react-native-static-server-0.5.0.tgz#4b396082bfe7dfdbba6fe7d7de894de5ba4ebadb"
+  integrity sha512-RGteckPoBZq48p9Y8V67bjZGPxLHKkEOAffLSUJiGC7hkx+H+zuekqCR+04F30NuWB7y+nb8N7Qld2RGjX5DNg==
+
 react-native-status-bar-height@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.6.0.tgz#b6afd25b6e3d533c43d0fcdcfd5cafd775592cea"
@@ -12271,11 +12276,6 @@ rn-fetch-blob@^0.12.0:
   dependencies:
     base-64 "0.1.0"
     glob "7.0.6"
-
-rn-qr-generator@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/rn-qr-generator/-/rn-qr-generator-1.2.0.tgz#c604f3c1379652b65c697a4b19c9a696bc60e96e"
-  integrity sha512-eymfK0yHZ//iEz9WhTA39jHYZzH4h8uBFRgDVxpr/JBKLp0gvjkQF0chX5lwVtc6MYK97cWeJ8SDsLHR2Ti2lw==
 
 rsvp@^4.8.4:
   version "4.8.5"
