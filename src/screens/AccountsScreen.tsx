@@ -71,13 +71,10 @@ export const AccountsScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.common.importPrivateKey,
+      title: i18n.common.importEVMPrivateKey,
       onCLickButton: () => {
-        setSelectedAction('ImportPrivateKey');
+        navigation.navigate('ImportPrivateKey');
         setModalVisible(false);
-        setTimeout(() => {
-          setSelectTypeModalVisible(true);
-        }, HIDE_MODAL_DURATION);
       },
     },
     {

@@ -27,7 +27,6 @@ import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { SendFund } from 'screens/Sending';
 import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Security } from 'screens/Settings/Security';
 import { LockScreen } from 'screens/LockScreen';
 import { ExportJson } from 'screens/ExportJson';
@@ -36,10 +35,6 @@ import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import Rendering from './Rendering';
 import useSetupStore from 'hooks/store/useSetupStore';
 import useSetupI18n from 'hooks/useSetupI18n';
-
-cryptoWaitReady().then(rs => {
-  console.debug('crypto-ready', rs);
-});
 
 let lastTimestamp = 0;
 

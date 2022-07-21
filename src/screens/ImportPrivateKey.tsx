@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'types/routes';
 import { ScrollView, StyleProp, View } from 'react-native';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
@@ -10,6 +10,7 @@ import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordAre
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging';
 import { Textarea } from 'components/Textarea';
 import { Warning } from 'components/Warning';
+import { EVM_ACCOUNT_TYPE } from '../constant';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -28,13 +29,14 @@ export const ImportPrivateKey = () => {
   const [pass2, setPass2] = useState<string | null>(null);
   const [pass2Dirty, setPass2Dirty] = useState<boolean>(false);
   const isSecondPasswordValid = !!(pass2 && pass2.length > 5) && pass2Dirty && pass1 !== pass2;
-  const route = useRoute<RootRouteProps>();
-  // @ts-ignore
-  const { keyTypes } = route.params;
 
   const onChangePrivateKey = (text: string) => {
     setAutoCorrectPrivateKey('');
     setPrivateKey(text);
+
+    if (error) {
+      setError('');
+    }
   };
 
   const validatePrivateKey = useCallback(() => {
@@ -42,7 +44,7 @@ export const ImportPrivateKey = () => {
       return;
     }
 
-    validateMetamaskPrivateKeyV2(privateKey, [keyTypes])
+    validateMetamaskPrivateKeyV2(privateKey, [EVM_ACCOUNT_TYPE])
       .then(({ autoAddPrefix }) => {
         let suri = `${privateKey || ''}`;
         if (autoAddPrefix) {
@@ -52,15 +54,15 @@ export const ImportPrivateKey = () => {
         setError('');
       })
       .catch(() => {
-        setError('Not a valid private key');
+        setError(i18n.warningMessage.notAValidEVMPrivateKey);
       });
-  }, [keyTypes, privateKey]);
+  }, [privateKey]);
 
   const _onImport = useCallback(
     (accountName: string, password: string): void => {
       if (accountName && password) {
         setIsBusy(true);
-        createAccountSuriV2(name, password, autoCorrectPrivateKey, false, [keyTypes])
+        createAccountSuriV2(name, password, autoCorrectPrivateKey, false, [EVM_ACCOUNT_TYPE])
           .then(() => {
             navigation.navigate('Home');
           })
@@ -69,7 +71,7 @@ export const ImportPrivateKey = () => {
           });
       }
     },
-    [autoCorrectPrivateKey, keyTypes, name, navigation],
+    [autoCorrectPrivateKey, name, navigation],
   );
 
   const onChangeName = (text: string) => {
@@ -94,7 +96,7 @@ export const ImportPrivateKey = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.common.importPrivateKey} navigation={navigation}>
+    <SubScreenContainer title={i18n.common.importEVMPrivateKey} navigation={navigation}>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea
@@ -102,7 +104,7 @@ export const ImportPrivateKey = () => {
             style={{ height: 94, marginBottom: 8, paddingTop: 16 }}
             onChangeText={onChangePrivateKey}
             value={autoCorrectPrivateKey || privateKey || ''}
-            onBlur={() => validatePrivateKey()}
+            onBlur={validatePrivateKey}
           />
 
           {!!error && <Warning style={{ marginBottom: 8 }} message={error} isDanger />}

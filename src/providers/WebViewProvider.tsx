@@ -7,7 +7,7 @@ import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import SplashScreen from 'react-native-splash-screen';
 import * as RNFS from 'react-native-fs';
 // @ts-ignore
-import StaticServer from 'react-native-static-server';
+import StaticServer from '@dr.pogodin/react-native-static-server';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;

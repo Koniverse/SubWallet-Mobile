@@ -15,7 +15,7 @@ export type RootStackParamList = {
   Settings: undefined;
   NetworkSelect: undefined;
   ImportSecretPhrase: { keyTypes: KeypairType };
-  ImportPrivateKey: { keyTypes: KeypairType };
+  ImportPrivateKey: undefined;
   NetworksSetting: undefined;
   SendFund: { selectedNetwork: string; selectedToken: string };
   Languages: undefined;

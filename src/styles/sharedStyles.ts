@@ -84,6 +84,7 @@ export const sharedStyles = StyleSheet.create({
 
   inputAreaStyle: {
     ...textInput,
+    textAlignVertical: 'top',
     height: 192,
   },
 });

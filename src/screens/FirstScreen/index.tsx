@@ -52,13 +52,10 @@ export const FirstScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.common.importPrivateKey,
+      title: i18n.common.importEVMPrivateKey,
       onCLickButton: () => {
-        setSelectedAction('ImportPrivateKey');
+        navigation.navigate('ImportPrivateKey');
         setSelectModalVisible(false);
-        setTimeout(() => {
-          setSelectTypeModalVisible(true);
-        }, HIDE_MODAL_DURATION);
       },
     },
     {
