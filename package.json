@@ -31,7 +31,6 @@
     "@reduxjs/toolkit": "^1.8.1",
     "@subwallet/extension-base": "0.4.6-1",
     "@subwallet/extension-koni-base": "0.4.6-1",
-    "@dr.pogodin/react-native-static-server": "0.5.5",
     "boring-avatars": "^1.6.3",
     "i18next": "^21.6.5",
     "moment": "^2.29.3",
