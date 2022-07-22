@@ -26,7 +26,6 @@ export const NetworkSelect = ({
 }: Props) => {
   const [searchString, setSearchString] = useState('');
   const [filteredGenesisOptions, setFilteredGenesisOption] = useState<NetworkSelectOption[]>(genesisOptions);
-
   const dep = genesisOptions.toString();
 
   useEffect(() => {

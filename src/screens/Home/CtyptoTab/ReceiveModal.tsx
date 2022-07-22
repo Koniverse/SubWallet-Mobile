@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
@@ -87,6 +87,7 @@ export const ReceiveModal = ({
   const {
     accounts: { currentAccountAddress },
     currentNetwork,
+    networkMap,
   } = useSelector((state: RootState) => state);
   const copyToClipboard = useCallback((text: string) => {
     Clipboard.setString(text);
@@ -97,8 +98,11 @@ export const ReceiveModal = ({
       toastRef.current.show('Copied to clipboard');
     }
   }, []);
-  const formattedAddress = reformatAddress(currentAccountAddress, networkPrefix);
+  const formattedAddress = useMemo(() => {
+    const networkInfo = networkMap[networkKey];
 
+    return reformatAddress(currentAccountAddress, networkPrefix, networkInfo?.isEthereum);
+  }, [networkMap, networkKey, currentAccountAddress, networkPrefix]);
   return (
     <SubWalletModal
       modalStyle={{ height: 496 }}

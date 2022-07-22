@@ -144,11 +144,10 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   };
 
   const onChangeReceiveNetwork = (networkKey: string, networkPrefix: number) => {
-    setSelectedResult(prevState => ({
-      ...prevState,
+    setSelectedResult({
       selectedNetworkKey: networkKey,
       selectedNetworkPrefix: networkPrefix,
-    }));
+    });
     setSelectNetworkModal(false);
     actionWithSetTimeout(() => setReceiveModalVisible(true));
   };
@@ -239,7 +238,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
 
       <ReceiveModal
         networkKey={selectedNetworkKey || currentNetwork.networkKey}
-        networkPrefix={selectedNetworkPrefix || currentNetwork.networkPrefix}
+        networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : currentNetwork.networkPrefix}
         receiveModalVisible={receiveModalVisible}
         onChangeVisible={() => {
           setReceiveModalVisible(false);
