@@ -5,6 +5,7 @@ import { listenMessage, setViewRef } from '../messaging';
 import { NativeSyntheticEvent, Platform, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import SplashScreen from 'react-native-splash-screen';
+
 interface WebViewProviderProps {
   children?: React.ReactNode;
   viewRef?: MutableRefObject<WebView | undefined>;
