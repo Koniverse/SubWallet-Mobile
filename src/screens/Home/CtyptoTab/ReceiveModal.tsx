@@ -109,7 +109,7 @@ export const ReceiveModal = ({
       modalVisible={receiveModalVisible}
       onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
-        <Text style={receiveModalTitle}>Receive Asset</Text>
+        <Text style={receiveModalTitle}>Receive</Text>
         <QRCode value={formattedAddress} size={180} />
         <Text style={receiveModalGuide}>Scan address to receive payment</Text>
 

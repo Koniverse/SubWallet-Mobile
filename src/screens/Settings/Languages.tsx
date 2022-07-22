@@ -57,7 +57,7 @@ export const Languages = () => {
 
   return (
     <SelectScreen
-      title={'Languages'}
+      title={'Language'}
       searchString={searchString}
       onChangeSearchText={setSearchString}
       onPressBack={() => navigation.goBack()}>

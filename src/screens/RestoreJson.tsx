@@ -160,7 +160,7 @@ export const RestoreJson = () => {
         <View style={footerAreaStyle}>
           <SubmitButton
             isBusy={isBusy}
-            title={'Import an Account'}
+            title={'Import Account'}
             onPress={_onRestore}
             disabled={isFileError || isPasswordError || !password || !file}
           />

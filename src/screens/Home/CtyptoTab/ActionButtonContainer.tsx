@@ -211,7 +211,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
       </View>
 
       <SelectImportAccountModal
-        onModalHide={() => {}}
+        modalTitle={i18n.common.selectSendingMethod}
         secretTypeList={SEND_FUND_TYPE}
         modalVisible={sendFundTypeModal}
         onChangeModalVisible={() => setSendFundTypeModal(false)}

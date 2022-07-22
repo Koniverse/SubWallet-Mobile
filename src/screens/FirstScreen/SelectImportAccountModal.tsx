@@ -4,10 +4,10 @@ import { StyleProp, Text, View } from 'react-native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';
-import i18n from 'utils/i18n/i18n';
 import { AccountActionType } from 'types/ui-types';
 
 interface Props {
+  modalTitle: string;
   modalVisible: boolean;
   onChangeModalVisible: () => void;
   secretTypeList: AccountActionType[];
@@ -15,7 +15,7 @@ interface Props {
   onModalHide?: () => void;
 }
 
-const modalTitle: StyleProp<any> = {
+const modalTitleStyle: StyleProp<any> = {
   ...sharedStyles.mediumText,
   ...FontBold,
   color: ColorMap.light,
@@ -29,6 +29,7 @@ export const SelectImportAccountModal = ({
   onChangeModalVisible,
   modalHeight,
   onModalHide,
+  modalTitle,
 }: Props) => {
   return (
     <SubWalletModal
@@ -37,7 +38,7 @@ export const SelectImportAccountModal = ({
       onChangeModalVisible={onChangeModalVisible}
       modalStyle={{ height: modalHeight }}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.common.selectYourImport}</Text>
+        <Text style={modalTitleStyle}>{modalTitle}</Text>
         {secretTypeList.map(item => (
           <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
         ))}

@@ -129,7 +129,7 @@ export const Confirmation = ({
         disabled={!password || password.length < 6}
         isBusy={isBusy}
         style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 8 }}
-        title={'Confirm'}
+        title={'Send'}
         onPress={_doTransfer}
       />
     </>

@@ -4,6 +4,7 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
+import i18n from "utils/i18n/i18n";
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -60,7 +61,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
   return (
     <View style={sharedStyles.layoutContainer}>
       <ScrollView style={bodyAreaStyle}>
-        <Text style={titleStyle}>Name will be used only locally in this application. You can edit it later</Text>
+        <Text style={titleStyle}>{i18n.common.createWalletNotification}</Text>
 
         <AccountNameAndPasswordArea
           name={name}

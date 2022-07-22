@@ -41,10 +41,7 @@ export const InputFile = ({ onChangeResult }: Props) => {
   return (
     <TouchableOpacity style={inputFileContainer} onPress={onChangeFile}>
       <FileArrowUp size={32} weight={'regular'} color={ColorMap.light} />
-      <Text style={inputFileLabel}>Please paste content from JSON file</Text>
-      <Text style={{ ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium }}>
-        you exported from Polkadot.js to this box
-      </Text>
+      <Text style={inputFileLabel}>Paste your JSON file here</Text>
     </TouchableOpacity>
   );
 };

@@ -356,7 +356,7 @@ export const SendFund = () => {
                         ref={inputAddressRef}
                         onPressQrButton={onPressQrButton}
                         containerStyle={{ marginBottom: 8 }}
-                        label={'Sent to address'}
+                        label={'Send to Address'}
                         value={currentReceiveAddress}
                         onChange={onChangeReceiverAddress}
                       />
@@ -410,7 +410,7 @@ export const SendFund = () => {
                       </View>
 
                       <TouchableOpacity onPress={() => onUpdateInputBalance()} disabled={!canToggleAll}>
-                        <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>Use Max</Text>
+                        <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>Max</Text>
                       </TouchableOpacity>
                     </View>
 

@@ -92,16 +92,13 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
       <View style={bodyAreaStyle}>
         <ScrollView style={{ ...ScrollViewStyle }}>
           <View style={infoBlockStyle}>
-            <Text style={infoTextStyle}>
-              Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
-              assets.
-            </Text>
+            <Text style={infoTextStyle}>{i18n.warningMessage.initSecretPhrase}</Text>
           </View>
           <View style={phraseBlockStyle}>{seedItems.map(renderSeedWord)}</View>
           <View style={copyButtonWrapperStyle}>
             <LeftIconButton icon={CopySimple} title={'Copy to Clipboard'} onPress={() => copyToClipboard(seed)} />
           </View>
-          <Warning title={i18n.warningTitle.doNotSharePrivateKey} message={i18n.warningMessage.privateKeyWarning} />
+          <Warning title={i18n.warningTitle.doNotShareSecretPhrase} message={i18n.warningMessage.secretPhraseWarning} />
         </ScrollView>
       </View>
       <View style={footerAreaStyle}>

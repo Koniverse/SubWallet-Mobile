@@ -28,7 +28,7 @@ const firstScreenNotificationStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   color: ColorMap.light,
   textAlign: 'center',
-  paddingHorizontal: 60,
+  paddingHorizontal: 42,
   paddingTop: 56,
   ...FontMedium,
 };
@@ -103,17 +103,19 @@ export const FirstScreen = () => {
 
         <SubmitButton
           leftIcon={ArchiveTray}
-          title={i18n.common.alreadyHaveAWalletAccount}
+          title={i18n.common.importExistingWallet}
           style={{ width: '100%' }}
           backgroundColor={ColorMap.primary}
           onPress={() => {
             setSelectModalVisible(true);
           }}
         />
-
-        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenNotification}</Text>
-
+        {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
+        <Text style={firstScreenNotificationStyle}>
+          {'By continuing, you agree to our Terms & Conditions and Privacy Policy'}
+        </Text>
         <SelectImportAccountModal
+          modalTitle={i18n.common.selectYourImport}
           modalHeight={256}
           secretTypeList={SECRET_TYPE}
           modalVisible={importSelectModalVisible}

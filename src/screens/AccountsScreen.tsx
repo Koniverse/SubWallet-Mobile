@@ -132,7 +132,7 @@ export const AccountsScreen = () => {
       <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
         <SubmitButton
           backgroundColor={theme.background2}
-          title={i18n.common.addOrConnectAccount}
+          title={i18n.common.addAccount}
           onPress={onCreateAccount}
         />
       </View>
@@ -142,7 +142,7 @@ export const AccountsScreen = () => {
   return (
     <SubScreenContainer
       navigation={navigation}
-      title={i18n.settings.accounts}
+      title={i18n.settings.account}
       rightIcon={Plus}
       onPressRightIcon={onCreateAccount}>
       <View style={accountsWrapper}>
@@ -158,6 +158,7 @@ export const AccountsScreen = () => {
         {renderFooterComponent()}
 
         <SelectImportAccountModal
+          modalTitle={i18n.common.connectYourAccount}
           modalHeight={308}
           secretTypeList={SECRET_TYPE}
           modalVisible={modalVisible}

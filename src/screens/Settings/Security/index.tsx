@@ -38,7 +38,7 @@ export const Security = () => {
       value: 0,
     },
     {
-      text: 'If left for 1 minutes',
+      text: 'If left for 1 minute',
       value: 60 * 1000,
     },
     {
@@ -54,7 +54,7 @@ export const Security = () => {
       value: 60 * 60 * 1000,
     },
     {
-      text: 'Close App',
+      text: 'When close app',
       value: undefined,
     },
   ];
@@ -97,7 +97,7 @@ export const Security = () => {
           style={{ marginBottom: 4 }}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           icon={Key}
-          title={'Change your PIN code'}
+          title={'Change PIN code'}
           hasRightArrow
           onPress={() => navigation.navigate('PinCode', { isEditablePinCode: true })}
         />
@@ -107,7 +107,7 @@ export const Security = () => {
           disabled={true}
           color={ColorMap.disabledTextColor}
           icon={GlobeHemisphereWest}
-          title={'Manage Dapp Access'}
+          title={'Dapp'}
           hasRightArrow
           onPress={() => {}}
         />
@@ -115,7 +115,7 @@ export const Security = () => {
         <ActionItem
           style={{ marginBottom: 4 }}
           icon={LockKeyOpen}
-          title={'App Lock'}
+          title={'Manage Auto-Lock'}
           hasRightArrow
           disabled={!pinCode}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}

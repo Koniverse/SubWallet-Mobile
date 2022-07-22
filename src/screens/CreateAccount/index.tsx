@@ -20,8 +20,7 @@ function getHeaderTitle(viewStep: number) {
   } else if (viewStep === ViewStep.VERIFY_SP) {
     return i18n.common.verifySecretPhrase;
   }
-
-  return i18n.common.createWalletName;
+  return i18n.common.nameYourWallet;
 }
 
 export const CreateAccount = () => {

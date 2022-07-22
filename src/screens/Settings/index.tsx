@@ -65,7 +65,7 @@ export const Settings = () => {
       },
       {
         icon: GlobeHemisphereWest,
-        title: i18n.settings.languages,
+        title: i18n.settings.language,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Languages'),
         disabled: true,
@@ -87,7 +87,7 @@ export const Settings = () => {
       },
       {
         icon: Coin,
-        title: i18n.settings.manageEvmTokens,
+        title: i18n.settings.tokens,
         hasRightArrow: true,
         onPress: () => {},
       },
@@ -155,7 +155,7 @@ export const Settings = () => {
         <ActionItem
           icon={ShieldCheck}
           showIcon={false}
-          title={'Account'}
+          title={'Accounts'}
           subTitle={currentAccount ? currentAccount.name : ''}
           hasRightArrow
           paddingLeft={16}
@@ -176,7 +176,7 @@ export const Settings = () => {
           />
         ))}
 
-        <Text style={settingTitleStyle}>Network & Assets</Text>
+        <Text style={settingTitleStyle}>Networks & Assets</Text>
 
         {settingList[1].map(setting => (
           <ActionItem

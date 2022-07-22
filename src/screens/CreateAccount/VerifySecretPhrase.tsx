@@ -99,8 +99,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
       <View style={bodyAreaStyle}>
         <View style={infoBlockStyle}>
           <Text style={infoTextStyle}>
-            Write down your wallet’s secret phrase and keep it in a safe place. Keep it carefully to not lose your
-            assets.
+            Fill in the words in the correct order to prove that you have saved your secret phrase.
           </Text>
         </View>
         <SeedPhraseArea

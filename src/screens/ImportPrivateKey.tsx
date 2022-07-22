@@ -125,7 +125,7 @@ export const ImportPrivateKey = () => {
         <View style={footerAreaStyle}>
           <SubmitButton
             isBusy={isBusy}
-            title={'Import an Account'}
+            title={'Import Account'}
             onPress={() => _onImport(name, pass1 || '')}
             disabled={!pass1 || !pass2 || pass1 !== pass2 || !!error}
           />

@@ -11,6 +11,7 @@ import { forgetAccount } from '../messaging';
 import { toShort } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import i18n from 'utils/i18n/i18n';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -106,10 +107,7 @@ export const RemoveAccount = () => {
             </View>
             <Text style={text1Style}>Remove Account</Text>
             <Text style={{ ...text1Style, marginBottom: 8 }}>({displayAddress})</Text>
-            <Text style={text2Style}>
-              You are about to remove the account. This means that you will not be able to access it via this app
-              anymore. anymore. If you wish to recover it, you would need to use the seed.
-            </Text>
+            <Text style={text2Style}>{i18n.warningMessage.removeAccountWarning}</Text>
           </View>
         </View>
 
