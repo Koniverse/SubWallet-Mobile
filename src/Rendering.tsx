@@ -6,6 +6,7 @@ import useGenesisHashOptions from 'hooks/useGenesisHashOptions';
 import { updateCurrentNetwork } from 'stores/updater';
 import { tieAccount } from './messaging';
 
+// todo: make use of this component later
 function Rendering(): React.ReactElement {
   const {
     accounts: { accounts, currentAccount: account },

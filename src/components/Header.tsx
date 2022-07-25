@@ -1,23 +1,20 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from 'types/routes';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
-import reformatAddress, { getGenesisOptionsByAddressType, toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
-import { NetworkSelect } from 'screens/NetworkSelect';
-import { tieAccount, triggerAccountsSubscription } from '../messaging';
-import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { NetworksSetting } from 'screens/NetworksSetting';
-import { upsertCurrentAccount } from 'stores/Accounts';
 
-interface Props {
+export interface HeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
+  onPressSearchButton?: () => void;
 }
 
 const headerWrapper: StyleProp<any> = {
@@ -48,30 +45,15 @@ const actionButtonStyle: StyleProp<any> = {
   alignItems: 'center',
 };
 
-export const Header = ({ navigation }: Props) => {
-  // const Logo = useSVG().Logo;
+export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
   const {
-    currentNetwork,
-    accounts: { currentAccount, currentAccountAddress, accounts },
+    accounts: { currentAccount },
   } = useSelector((state: RootState) => state);
-  const dispatch = useDispatch();
-  const [networkSelectModal, setNetworkSelectModal] = useState<boolean>(false);
   const [networkSettingModal, setNetworkSettingModal] = useState<boolean>(false);
-  const formattedAddress =
-    !!currentAccount?.address && reformatAddress(currentAccount.address, currentNetwork.networkPrefix);
-  const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
-  const onChangeNetwork = useCallback(
-    async (item: NetworkSelectOption): Promise<void> => {
-      if (currentAccount) {
-        setNetworkSelectModal(false);
-        await tieAccount(currentAccount.address, item.value || null);
-        triggerAccountsSubscription().catch(console.log);
 
-        dispatch(upsertCurrentAccount({ ...currentAccount, genesisHash: item.value || null }));
-      }
-    },
-    [currentAccount, dispatch],
-  );
+  const _onPressSearchButton = () => {
+    onPressSearchButton && onPressSearchButton();
+  };
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
@@ -88,7 +70,9 @@ export const Header = ({ navigation }: Props) => {
           {currentAccount ? currentAccount.name : ''}
         </Text>
 
-        {!!formattedAddress && <Text style={accountAddress}>{`(${toShort(formattedAddress, 4, 4)})`}</Text>}
+        {!!currentAccount?.address && (
+          <Text style={accountAddress}>{`(${toShort(currentAccount?.address, 4, 4)})`}</Text>
+        )}
       </View>
 
       <View style={{ flexDirection: 'row' }}>
@@ -96,19 +80,10 @@ export const Header = ({ navigation }: Props) => {
           <SlidersHorizontal size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={actionButtonStyle} onPress={() => setNetworkSelectModal(true)}>
+        <TouchableOpacity style={actionButtonStyle} onPress={_onPressSearchButton}>
           <MagnifyingGlass size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
       </View>
-
-      <NetworkSelect
-        modalVisible={networkSelectModal}
-        onChangeModalVisible={() => setNetworkSelectModal(false)}
-        genesisOptions={genesisOptions}
-        onPressBack={() => setNetworkSelectModal(false)}
-        onChangeNetwork={onChangeNetwork}
-        selectedNetwork={currentNetwork.networkKey}
-      />
 
       <NetworksSetting
         modalVisible={networkSettingModal}

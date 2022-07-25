@@ -1,14 +1,11 @@
 import React from 'react';
 import { SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
-import { Header } from 'components/Header';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from 'types/routes';
+import { Header, HeaderProps } from 'components/Header';
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 
-interface Props {
+interface Props extends HeaderProps {
   children: JSX.Element;
-  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -16,13 +13,13 @@ const containerStyle: StyleProp<any> = {
   ...sharedStyles.container,
 };
 
-export const MainScreenContainer = ({ children, navigation }: Props) => {
+export const MainScreenContainer = ({ children, navigation, onPressSearchButton }: Props) => {
   return (
     <View style={containerStyle}>
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
-      <Header navigation={navigation} />
+      <Header navigation={navigation} onPressSearchButton={onPressSearchButton} />
       {children}
       <SafeAreaView />
     </View>
