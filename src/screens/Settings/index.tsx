@@ -32,6 +32,7 @@ import {
   WEBSITE_URL,
   WIKI_URL,
 } from '../../constant';
+import { useToast } from 'react-native-toast-notifications';
 
 const settingTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -50,10 +51,16 @@ type settingItemType = {
 
 export const Settings = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const toast = useToast();
   const {
     accounts: { currentAccount },
     settingData: { pinCodeEnabled },
   } = useSelector((state: RootState) => state);
+
+  const onPressComingSoonFeature = () => {
+    toast.hideAll();
+    toast.show('Coming Soon');
+  };
 
   const settingList: settingItemType[][] = [
     [
@@ -67,15 +74,13 @@ export const Settings = () => {
         icon: GlobeHemisphereWest,
         title: i18n.settings.language,
         hasRightArrow: true,
-        onPress: () => navigation.navigate('Languages'),
-        disabled: true,
+        onPress: onPressComingSoonFeature,
       },
       {
         icon: BellRinging,
         title: i18n.settings.notifications,
         hasRightArrow: true,
-        onPress: () => {},
-        disabled: true,
+        onPress: onPressComingSoonFeature,
       },
     ],
     [
@@ -83,13 +88,13 @@ export const Settings = () => {
         icon: GitFork,
         title: i18n.settings.networks,
         hasRightArrow: true,
-        onPress: () => {},
+        onPress: onPressComingSoonFeature,
       },
       {
         icon: Coin,
         title: i18n.settings.tokens,
         hasRightArrow: true,
-        onPress: () => {},
+        onPress: onPressComingSoonFeature,
       },
     ],
     [
@@ -181,8 +186,6 @@ export const Settings = () => {
         {settingList[1].map(setting => (
           <ActionItem
             key={setting.title}
-            disabled={true}
-            color={ColorMap.disabledTextColor}
             style={{ marginBottom: 4 }}
             icon={setting.icon}
             title={setting.title}

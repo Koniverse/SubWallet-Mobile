@@ -16,6 +16,7 @@ import { getGenesisOptionsByAddressType } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { HIDE_MODAL_DURATION } from '../../../constant';
+import { useToast } from 'react-native-toast-notifications';
 
 interface Props extends SelectionProviderProps {
   style?: object;
@@ -45,6 +46,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     accounts: { accounts, currentAccountAddress },
     currentNetwork,
   } = useSelector((state: RootState) => state);
+  const toast = useToast();
   const isAccountAll = currentAccountAddress === 'ALL';
   const navigation = useNavigation<RootNavigationProps>();
   const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
@@ -190,6 +192,11 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     }
   };
 
+  const onPressSwapBtn = () => {
+    toast.hideAll();
+    toast.show('Coming Soon');
+  };
+
   return (
     <>
       <View style={[actionButtonWrapper, style]}>
@@ -207,7 +214,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
           onPress={onPressSendFundBtn}
           disabled={isAccountAll}
         />
-        <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} disabled={true} />
+        <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} onPress={onPressSwapBtn} />
       </View>
 
       <SelectImportAccountModal

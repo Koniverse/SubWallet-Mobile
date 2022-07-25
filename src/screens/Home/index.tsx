@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NFTTab } from './NFTTab';
 import { CrowdloansTab } from './CrowdloansTab';
@@ -13,6 +13,7 @@ import { FontMedium } from 'styles/sharedStyles';
 import { BrowserTab } from 'screens/Home/BrowserTab';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT } from '../../constant';
+import { useToast } from 'react-native-toast-notifications';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -29,6 +30,12 @@ export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const swThemeColor = useSubWalletTheme().colors;
   const insets = useSafeAreaInsets();
+  const toast = useToast();
+
+  const onPressComingSoonTab = useCallback(() => {
+    toast.hideAll();
+    toast.show('Coming Soon');
+  }, [toast]);
 
   return (
     <Tab.Navigator
@@ -37,7 +44,7 @@ export const Home = () => {
         headerShown: false,
         tabBarButton: props => {
           let customStyle = {
-            opacity: !props.accessibilityState?.selected ? 0.2 : 1,
+            // opacity: !props.accessibilityState?.selected ? 0.2 : 1,
           };
           if (props.accessibilityState?.selected) {
             customStyle = {
@@ -51,7 +58,7 @@ export const Home = () => {
           // @ts-ignore
           props.style = [[...props.style], customStyle];
           if (!props.accessibilityState?.selected) {
-            return <TouchableHighlight disabled={true} {...props} />;
+            return <TouchableHighlight {...props} onPress={() => onPressComingSoonTab()} />;
           } else {
             return <TouchableHighlight {...props} />;
           }
