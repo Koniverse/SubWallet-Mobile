@@ -17,6 +17,7 @@ import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTyp
 import reformatAddress from 'utils/index';
 import { StyleProp } from 'react-native';
 import { getTotalConvertedBalanceValue } from './utils';
+import { TokenSelect } from 'screens/TokenSelect';
 
 const actionButtonContainerStyle: StyleProp<any> = {
   paddingTop: 25,
@@ -80,6 +81,7 @@ export const CryptoTab = () => {
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
+  const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
   const [
     {
@@ -170,6 +172,7 @@ export const CryptoTab = () => {
     <>
       {currentViewStep === ViewStep.CHAIN_LIST && (
         <ChainListScreen
+          onPressSearchButton={() => setTokenSelectModal(true)}
           accountInfoByNetworkMap={accountInfoByNetworkMap}
           onPressChainItem={onPressChainItem}
           navigation={navigation}
@@ -212,6 +215,13 @@ export const CryptoTab = () => {
           selectedNetworkInfo={selectedNetworkInfo}
         />
       )}
+
+      <TokenSelect
+        selectedNetwork={'all'}
+        modalVisible={tokenSelectModal}
+        onChangeModalVisible={() => setTokenSelectModal(false)}
+        onPressBack={() => setTokenSelectModal(false)}
+      />
     </>
   );
 };

@@ -40,6 +40,7 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
       return (
         <TokenChainBalance
           key={`${token.selectNetworkKey}-${index}`}
+          networkDisplayName={info.networkDisplayName}
           tokenBalanceValue={token.tokenBalanceValue}
           convertedBalanceValue={token.convertedBalanceValue}
           selectNetworkKey={token.selectNetworkKey}

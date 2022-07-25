@@ -10,6 +10,7 @@ import { RootState } from 'stores/index';
 import BigN from 'bignumber.js';
 
 interface Props extends TouchableOpacityProps {
+  networkDisplayName: string;
   selectNetworkKey: string;
   tokenBalanceValue: BigN;
   convertedBalanceValue: BigN;
@@ -54,6 +55,7 @@ const chainBalanceSeparator: StyleProp<any> = {
 };
 
 export const TokenChainBalance = ({
+  networkDisplayName,
   selectNetworkKey,
   tokenBalanceSymbol,
   tokenBalanceValue,
@@ -74,7 +76,15 @@ export const TokenChainBalance = ({
         <View style={chainBalancePart1}>
           {getNetworkLogo(selectNetworkKey.toLowerCase(), 40, defaultNetworkKey)}
           <View style={chainBalanceMetaWrapper}>
-            <Text style={textStyle}>{tokenBalanceSymbol}</Text>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              <Text style={textStyle}>{tokenBalanceSymbol}</Text>
+              <Text style={textStyle}> (</Text>
+              <Text style={[textStyle, { maxWidth: 130 }]} numberOfLines={1}>
+                {networkDisplayName.replace(' Relay Chain', '')}
+              </Text>
+              <Text style={textStyle}>)</Text>
+            </View>
+
             <Text style={[subTextStyle, { color: ColorMap.primary }]}>{`$${reformatPrice}`}</Text>
           </View>
         </View>

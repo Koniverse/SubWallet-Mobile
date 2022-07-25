@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
 import { Recoded } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
@@ -362,4 +362,33 @@ export function getSelectedTokenList(networkBalanceMaps: Record<string, BalanceI
   });
 
   return tokenArray;
+}
+
+export function getActiveToken(
+  chainRegistryMap: Record<string, ChainRegistry>,
+  networkMap: Record<string, NetworkJson>,
+): TokenInfo[] {
+  const options: TokenInfo[] = [];
+  const activatedNetworks: string[] = [];
+
+  Object.keys(networkMap).forEach(networkKey => {
+    if (networkMap[networkKey].active) {
+      activatedNetworks.push(networkKey);
+    }
+  });
+
+  Object.keys(chainRegistryMap).forEach(networkKey => {
+    if (!activatedNetworks.includes(networkKey)) {
+      return;
+    }
+
+    Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
+      const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
+      console.log('123123', chainRegistryMap[networkKey].tokenMap);
+
+      options.push(tokenInfo);
+    });
+  });
+
+  return options;
 }

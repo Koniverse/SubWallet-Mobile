@@ -8,6 +8,7 @@ import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainRegistry, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { getActiveToken } from 'utils/index';
 
 interface Props {
   modalVisible: boolean;
@@ -15,7 +16,7 @@ interface Props {
   onChangeModalVisible: () => void;
   onChangeToken?: (token: TokenInfo) => void;
   selectedNetwork: string;
-  selectedToken: string;
+  selectedToken?: string;
 }
 
 function getTokenList(networkKey: string, chainRegistryMap: Record<string, ChainRegistry>): TokenInfo[] {
@@ -35,8 +36,12 @@ export const TokenSelect = ({
   onChangeModalVisible,
 }: Props) => {
   const [searchString, setSearchString] = useState('');
-  const { chainRegistry: chainRegistryMap } = useSelector((state: RootState) => state);
-  const tokenList = getTokenList(selectedNetwork, chainRegistryMap);
+  const { chainRegistry: chainRegistryMap, networkMap } = useSelector((state: RootState) => state);
+
+  const tokenList =
+    selectedNetwork === 'all'
+      ? getActiveToken(chainRegistryMap, networkMap)
+      : getTokenList(selectedNetwork, chainRegistryMap);
   const [filteredOptions, setFilteredOption] = useState<TokenInfo[]>(tokenList);
 
   const dep = tokenList.toString();
@@ -44,7 +49,9 @@ export const TokenSelect = ({
   useEffect(() => {
     if (searchString) {
       const lowerCaseSearchString = searchString.toLowerCase();
-      setFilteredOption(tokenList.filter(token => token.symbol.toLowerCase().includes(lowerCaseSearchString)));
+      setFilteredOption(
+        tokenList.filter((token: { symbol: string }) => token.symbol.toLowerCase().includes(lowerCaseSearchString)),
+      );
     } else {
       setFilteredOption(tokenList);
     }

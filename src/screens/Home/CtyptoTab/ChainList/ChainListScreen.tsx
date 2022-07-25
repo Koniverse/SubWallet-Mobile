@@ -10,6 +10,7 @@ import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 interface Props {
+  onPressSearchButton?: () => void;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   showedNetworks: string[];
@@ -27,11 +28,12 @@ interface Props {
 }
 
 const ROUTES = [
-  { key: 'chains', title: 'Chains' },
   { key: 'tokens', title: 'Tokens' },
+  { key: 'chains', title: 'Chains' },
 ];
 
 export const ChainListScreen = ({
+  onPressSearchButton,
   accountInfoByNetworkMap,
   navigation,
   showedNetworks,
@@ -65,7 +67,7 @@ export const ChainListScreen = ({
   };
 
   return (
-    <MainScreenContainer navigation={navigation}>
+    <MainScreenContainer navigation={navigation} onPressSearchButton={onPressSearchButton}>
       <>
         <BalanceBlock {...balanceContainerProps} />
 
