@@ -11,8 +11,6 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
 import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
-import BigN from 'bignumber.js';
-import { BN_ZERO } from 'utils/chainBalances';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import reformatAddress from 'utils/index';
 import { TokenSelect } from 'screens/TokenSelect';
@@ -23,11 +21,9 @@ const ViewStep = {
   TOKEN_HISTORY: 3,
 };
 
-interface NetworkInfo {
-  selectedNetworkInfo: AccountInfoByNetwork | undefined;
+interface SelectionInfo {
+  selectedNetworkInfo?: AccountInfoByNetwork;
   selectedTokenName: string;
-  tokenBalanceValue: BigN;
-  tokenConvertedValue: BigN;
   selectedTokenSymbol: string;
 }
 
@@ -74,14 +70,8 @@ export const CryptoTab = () => {
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance('all', showedNetworks);
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
-  const [
-    { selectedNetworkInfo, selectedTokenName, tokenBalanceValue, tokenConvertedValue, selectedTokenSymbol },
-    setSelectNetwork,
-  ] = useState<NetworkInfo>({
-    selectedNetworkInfo: undefined,
+  const [{ selectedNetworkInfo, selectedTokenName, selectedTokenSymbol }, setSelectionInfo] = useState<SelectionInfo>({
     selectedTokenName: '',
-    tokenBalanceValue: BN_ZERO,
-    tokenConvertedValue: BN_ZERO,
     selectedTokenSymbol: '',
   });
   const deps = selectedNetworkInfo?.networkKey;
@@ -93,7 +83,7 @@ export const CryptoTab = () => {
   );
 
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
-    setSelectNetwork(prevState => ({
+    setSelectionInfo(prevState => ({
       ...prevState,
       selectedNetworkInfo: info,
       selectBalanceInfo: balanceInfo,
@@ -114,13 +104,13 @@ export const CryptoTab = () => {
   const onPressTokenItem = useCallback(
     (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => {
       if (!info) {
-        setSelectNetwork(prev => ({
+        setSelectionInfo(prev => ({
           ...prev,
           selectedTokenName: tokenName,
           selectedTokenSymbol: tokenSymbol,
         }));
       } else {
-        setSelectNetwork(prev => ({
+        setSelectionInfo(prev => ({
           ...prev,
           selectedNetworkInfo: info,
           selectedTokenName: tokenName,
