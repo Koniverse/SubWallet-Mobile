@@ -28,6 +28,7 @@ const chainBalanceMainArea: StyleProp<any> = {
 const chainBalancePart1: StyleProp<any> = {
   flexDirection: 'row',
   paddingLeft: 16,
+  paddingRight: 2,
 };
 const textStyle: StyleProp<any> = {
   ...sharedStyles.mediumText,
@@ -46,6 +47,7 @@ const chainBalanceMetaWrapper: StyleProp<any> = {
 const chainBalancePart2: StyleProp<any> = {
   alignItems: 'flex-end',
   paddingRight: 16,
+  paddingLeft: 2,
 };
 const chainBalanceSeparator: StyleProp<any> = {
   borderBottomWidth: 1,
@@ -79,7 +81,7 @@ export const TokenChainBalance = ({
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <Text style={textStyle}>{tokenBalanceSymbol}</Text>
               <Text style={textStyle}> (</Text>
-              <Text style={[textStyle, { maxWidth: 130 }]} numberOfLines={1}>
+              <Text style={[textStyle, { maxWidth: 100 }]} numberOfLines={1}>
                 {networkDisplayName.replace(' Relay Chain', '')}
               </Text>
               <Text style={textStyle}>)</Text>

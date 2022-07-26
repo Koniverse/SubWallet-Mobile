@@ -83,7 +83,7 @@ export const TokenSelect = ({
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={'no network'} isDanger={false} />;
+    return <Warning title={'Warning'} message={'No Token Available'} isDanger={false} />;
   };
 
   return (
