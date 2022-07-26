@@ -1,16 +1,16 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import {FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles, STATUS_BAR_HEIGHT} from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
 import { exportAccount } from '../messaging';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Toast from "react-native-toast-notifications";
-import {deviceHeight} from "../constant";
+import Toast from 'react-native-toast-notifications';
+import { deviceHeight } from '../constant';
 
 interface Props {
   address: string;
@@ -155,17 +155,23 @@ export const ExportJson = ({ address, closeModal }: Props) => {
           </View>
           <View style={footerAreaStyle}>
             <SubmitButton
-              title={!!fileContent ? 'Done' : 'Continue'}
+              title={fileContent ? 'Done' : 'Continue'}
               disabled={isPasswordError}
               isBusy={isBusy}
               style={buttonStyle}
-              onPress={!!fileContent ? () => closeModal(false) : onSetPassword}
+              onPress={fileContent ? () => closeModal(false) : onSetPassword}
             />
           </View>
 
           {
             // @ts-ignore
-            <Toast duration={1500} normalColor={ColorMap.notification} ref={toastRef} placement={'bottom'} offsetBottom={OFFSET_BOTTOM} />
+            <Toast
+              duration={1500}
+              normalColor={ColorMap.notification}
+              ref={toastRef}
+              placement={'bottom'}
+              offsetBottom={OFFSET_BOTTOM}
+            />
           }
         </View>
       </SafeAreaView>
