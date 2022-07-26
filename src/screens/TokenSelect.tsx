@@ -7,66 +7,77 @@ import { SelectScreen } from 'components/SelectScreen';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ChainRegistry, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { getActiveToken } from 'utils/index';
+import { getTokenItemOptions } from 'utils/index';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { TokenItemType } from 'types/ui-types';
 
 interface Props {
   modalVisible: boolean;
   onPressBack?: () => void;
   onChangeModalVisible: () => void;
-  onChangeToken?: (token: TokenInfo) => void;
-  selectedNetwork: string;
+  onChangeToken?: (item: TokenItemType) => void;
+  filteredNetworkKey?: string;
+  selectedNetworkKey?: string;
   selectedToken?: string;
-}
-
-function getTokenList(networkKey: string, chainRegistryMap: Record<string, ChainRegistry>): TokenInfo[] {
-  if (!chainRegistryMap[networkKey]) {
-    return [];
-  }
-
-  return Object.values(chainRegistryMap[networkKey].tokenMap);
 }
 
 export const TokenSelect = ({
   onPressBack,
   onChangeToken,
-  selectedNetwork,
+  filteredNetworkKey,
+  selectedNetworkKey,
   selectedToken,
   modalVisible,
   onChangeModalVisible,
 }: Props) => {
   const [searchString, setSearchString] = useState('');
-  const { chainRegistry: chainRegistryMap, networkMap } = useSelector((state: RootState) => state);
+  const {
+    chainRegistry: chainRegistryMap,
+    networkMap,
+    accounts: { currentAccountAddress },
+  } = useSelector((state: RootState) => state);
 
-  const tokenList =
-    selectedNetwork === 'all'
-      ? getActiveToken(chainRegistryMap, networkMap)
-      : getTokenList(selectedNetwork, chainRegistryMap);
-  const [filteredOptions, setFilteredOption] = useState<TokenInfo[]>(tokenList);
+  const tokenOptionsType = isAccountAll(currentAccountAddress)
+    ? undefined
+    : isEthereumAddress(currentAccountAddress)
+    ? 'ETHEREUM'
+    : 'SUBSTRATE';
 
-  const dep = tokenList.toString();
+  const tokenOptions = getTokenItemOptions(chainRegistryMap, networkMap, tokenOptionsType, filteredNetworkKey);
+  const [filteredOptions, setFilteredOption] = useState<TokenItemType[]>(tokenOptions);
+
+  const dep = tokenOptions.toString();
 
   useEffect(() => {
     if (searchString) {
       const lowerCaseSearchString = searchString.toLowerCase();
       setFilteredOption(
-        tokenList.filter((token: { symbol: string }) => token.symbol.toLowerCase().includes(lowerCaseSearchString)),
+        tokenOptions.filter(
+          ({ displayedSymbol, networkDisplayName }) =>
+            displayedSymbol.toLowerCase().includes(lowerCaseSearchString) ||
+            networkDisplayName.toLowerCase().includes(lowerCaseSearchString),
+        ),
       );
     } else {
-      setFilteredOption(tokenList);
+      setFilteredOption(tokenOptions);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dep, searchString]);
 
-  const renderItem = ({ item }: ListRenderItemInfo<TokenInfo>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<TokenItemType>) => {
+    const { symbol, networkKey, displayedSymbol, isMainToken, networkDisplayName } = item;
+
     return (
       <NetworkSelectItem
-        key={item.symbol}
-        itemName={item.symbolAlt || item.symbol}
-        itemKey={item.isMainToken ? selectedNetwork : item.symbol.toLowerCase()}
-        isSelected={item.symbol === selectedToken}
+        key={`${symbol}-${networkKey}`}
+        itemName={`${displayedSymbol} (${networkDisplayName})`}
+        itemKey={isMainToken ? networkKey : symbol.toLowerCase()}
+        isSelected={
+          !!selectedToken && !!selectedNetworkKey && symbol === selectedToken && networkKey === selectedNetworkKey
+        }
         onSelectNetwork={() => onChangeToken && onChangeToken(item)}
-        defaultItemKey={selectedNetwork}
+        defaultItemKey={networkKey}
       />
     );
   };
@@ -88,7 +99,6 @@ export const TokenSelect = ({
           data={filteredOptions}
           renderItem={renderItem}
           ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.symbol}
         />
       </SelectScreen>
     </SubWalletFullSizeModal>

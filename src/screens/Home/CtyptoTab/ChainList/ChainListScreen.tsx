@@ -7,8 +7,9 @@ import { ChainsTab } from 'screens/Home/CtyptoTab/ChainList/ChainsTab';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainList/TokensTab';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
-import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
+import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
+
 interface Props {
   onPressSearchButton?: () => void;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
@@ -16,15 +17,8 @@ interface Props {
   showedNetworks: string[];
   networkBalanceMaps: Record<string, BalanceInfo>;
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
-  onPressTokenItem: (
-    tokenName: string,
-    tokenBalanceValue: BigN,
-    tokenConvertedValue: BigN,
-    tokenSymbol: string,
-    info?: AccountInfoByNetwork,
-    balanceInfo?: BalanceInfo,
-  ) => void;
-  balanceContainerProps: BalanceContainerType;
+  onPressTokenItem: (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => void;
+  totalBalanceValue: BigN;
 }
 
 const ROUTES = [
@@ -40,7 +34,7 @@ export const ChainListScreen = ({
   networkBalanceMaps,
   onPressChainItem,
   onPressTokenItem,
-  balanceContainerProps,
+  totalBalanceValue,
 }: Props) => {
   // @ts-ignore
   const renderScene = ({ route }) => {
@@ -69,7 +63,7 @@ export const ChainListScreen = ({
   return (
     <MainScreenContainer navigation={navigation} onPressSearchButton={onPressSearchButton}>
       <>
-        <BalanceBlock {...balanceContainerProps} />
+        <BalanceBlock balanceValue={totalBalanceValue} />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
       </>

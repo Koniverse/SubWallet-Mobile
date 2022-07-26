@@ -25,7 +25,7 @@ export interface SelectionProviderProps {
 
 export interface BalanceContainerType extends SelectionProviderProps {
   balanceValue: BigN;
-  accountButtonContainerStyle?: StyleProp<any>;
+  actionButtonContainerStyle?: StyleProp<any>;
   amountToUsd?: BigN;
   isShowBalanceToUsd?: boolean;
   startWithSymbol?: boolean;
@@ -48,3 +48,22 @@ export type AccountActionType = {
   title: string;
   onCLickButton: () => void;
 };
+
+export interface TokenItemType {
+  networkKey: string;
+  networkDisplayName: string;
+  symbol: string;
+  displayedSymbol: string;
+  decimals: number;
+  isMainToken: boolean;
+  specialOption?: object;
+}
+
+export interface TokenBalanceItemType {
+  selectNetworkKey: string;
+  balanceValue: BigN;
+  convertedBalanceValue: BigN;
+  symbol: string;
+  displayedSymbol: string;
+  defaultNetworkKey?: string;
+}

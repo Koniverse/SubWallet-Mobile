@@ -4,15 +4,18 @@ import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
+import { AccountInfoByNetwork } from 'types/ui-types';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
+import { BalanceInfo } from '../../../types';
+import BigN from 'bignumber.js';
 
 interface Props {
   onPressBack: () => void;
   selectedTokenName: string;
+  selectedTokenSymbol: string;
+  networkBalanceMaps: Record<string, BalanceInfo>;
   selectedNetworkInfo: AccountInfoByNetwork;
-  balanceContainerProps: BalanceContainerType;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -34,12 +37,47 @@ const tokenHistoryHeaderTitle: StyleProp<any> = {
   maxWidth: 150,
 };
 
+const actionButtonContainerStyle: StyleProp<any> = {
+  paddingTop: 25,
+};
+
+// value, converted value
+function getTokenBalanceValue(
+  networkKey: string,
+  token: string,
+  networkBalanceMaps: Record<string, BalanceInfo>,
+): [BigN, BigN] {
+  if (networkBalanceMaps[networkKey]) {
+    const balanceInfo = networkBalanceMaps[networkKey];
+    if (balanceInfo.symbol === token) {
+      return [balanceInfo.balanceValue, balanceInfo.convertedBalanceValue];
+    }
+
+    if (balanceInfo.childrenBalances) {
+      const childrenBalanceInfo = balanceInfo.childrenBalances.find(i => i.symbol === token);
+
+      if (childrenBalanceInfo) {
+        return [childrenBalanceInfo.balanceValue, childrenBalanceInfo.convertedBalanceValue];
+      }
+    }
+  }
+
+  return [new BigN(0), new BigN(0)];
+}
+
 export const TokenHistoryScreen = ({
   onPressBack,
   selectedTokenName,
+  selectedTokenSymbol,
   selectedNetworkInfo,
-  balanceContainerProps,
+  networkBalanceMaps,
 }: Props) => {
+  const [balanceValue, convertedBalanceValue] = getTokenBalanceValue(
+    selectedNetworkInfo.networkKey,
+    selectedTokenSymbol,
+    networkBalanceMaps,
+  );
+
   const renderHeaderContent = () => {
     return (
       <View style={tokenHistoryHeader}>
@@ -68,10 +106,21 @@ export const TokenHistoryScreen = ({
       style={containerStyle}
       headerContent={renderHeaderContent}>
       <>
-        <BalanceBlock {...balanceContainerProps} />
+        <BalanceBlock
+          isShowBalanceToUsd
+          startWithSymbol={false}
+          actionButtonContainerStyle={actionButtonContainerStyle}
+          symbol={selectedTokenName}
+          balanceValue={balanceValue}
+          amountToUsd={convertedBalanceValue}
+          selectionProvider={{
+            selectedNetworkKey: selectedNetworkInfo.networkKey,
+            selectedToken: selectedTokenSymbol,
+          }}
+        />
 
         <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
-          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenName} />
+          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
         </View>
       </>
     </ContainerWithSubHeader>

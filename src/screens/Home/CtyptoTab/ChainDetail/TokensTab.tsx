@@ -4,21 +4,14 @@ import { TokenChainBalance } from 'components/TokenChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { BN_ZERO } from 'utils/chainBalances';
-import BigN from 'bignumber.js';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 
 interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
   selectedBalanceInfo: BalanceInfo;
-  onPressTokenItem: (
-    tokenName: string,
-    tokenBalanceValue: BigN,
-    tokenConvertedValue: BigN,
-    tokenSymbol: string,
-  ) => void;
+  onPressTokenItem: (tokenName: string, tokenSymbol: string) => void;
 }
 
-// todo: merge with TokensTab component in ChainList
 export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
   const tokenBalanceValue = selectedBalanceInfo.balanceValue;
   const convertedBalanceValue = selectedBalanceInfo.convertedBalanceValue;
@@ -28,18 +21,12 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
         <ChainBalanceSkeleton />
       ) : (
         <TokenChainBalance
+          networkDisplayName={selectedNetworkInfo.networkDisplayName}
           tokenBalanceValue={tokenBalanceValue}
           convertedBalanceValue={convertedBalanceValue}
           selectNetworkKey={selectedNetworkInfo.networkKey}
           tokenBalanceSymbol={selectedBalanceInfo.symbol}
-          onPress={() =>
-            onPressTokenItem(
-              selectedBalanceInfo.symbol,
-              selectedBalanceInfo.balanceValue,
-              selectedBalanceInfo.convertedBalanceValue,
-              selectedBalanceInfo.symbol,
-            )
-          }
+          onPress={() => onPressTokenItem(selectedBalanceInfo.displayedSymbol, selectedBalanceInfo.symbol)}
         />
       )}
 
@@ -51,19 +38,13 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
             return (
               <TokenChainBalance
                 key={children.key}
+                networkDisplayName={selectedNetworkInfo.networkDisplayName}
                 tokenBalanceValue={children.balanceValue}
                 convertedBalanceValue={children.convertedBalanceValue || BN_ZERO}
                 selectNetworkKey={children.key}
                 tokenBalanceSymbol={children.symbol}
                 defaultNetworkKey={selectedNetworkInfo.networkKey}
-                onPress={() =>
-                  onPressTokenItem(
-                    children.symbol,
-                    children.balanceValue,
-                    children.convertedBalanceValue,
-                    children.symbol,
-                  )
-                }
+                onPress={() => onPressTokenItem(children.displayedSymbol, children.symbol)}
               />
             );
           }

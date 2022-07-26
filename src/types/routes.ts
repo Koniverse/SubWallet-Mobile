@@ -17,7 +17,7 @@ export type RootStackParamList = {
   ImportSecretPhrase: { keyTypes: KeypairType };
   ImportPrivateKey: undefined;
   NetworksSetting: undefined;
-  SendFund: { selectedNetwork: string; selectedToken: string };
+  SendFund: { selectedNetworkKey: string; selectedToken: string };
   Languages: undefined;
   Security: undefined;
   PinCode: { isEditablePinCode: boolean };

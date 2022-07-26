@@ -24,12 +24,14 @@ export type BalanceSubInfo = {
   key: string;
   label: string;
   symbol: string;
+  displayedSymbol: string;
   balanceValue: BigN;
   convertedBalanceValue: BigN;
 };
 
 export type BalanceInfo = {
   symbol: string;
+  displayedSymbol: string;
   balanceValue: BigN;
   convertedBalanceValue: BigN;
   detailBalances: BalanceSubInfo[];

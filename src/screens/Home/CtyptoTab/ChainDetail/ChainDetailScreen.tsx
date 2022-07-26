@@ -7,23 +7,17 @@ import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { AccountInfoByNetwork, BalanceContainerType } from 'types/ui-types';
+import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
-import BigN from 'bignumber.js';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
+import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
 
 interface Props {
   onPressBack: () => void;
   selectedNetworkInfo: AccountInfoByNetwork;
-  selectedBalanceInfo: BalanceInfo;
-  onPressTokenItem: (
-    tokenName: string,
-    tokenBalanceValue: BigN,
-    tokenConvertedValue: BigN,
-    tokenSymbol: string,
-  ) => void;
-  balanceContainerProps: BalanceContainerType;
+  onPressTokenItem: (tokenName: string, tokenSymbol: string) => void;
+  networkBalanceMaps: Record<string, BalanceInfo>;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -53,10 +47,10 @@ const ROUTES = [
 export const ChainDetailScreen = ({
   onPressBack,
   selectedNetworkInfo,
-  selectedBalanceInfo,
   onPressTokenItem,
-  balanceContainerProps,
+  networkBalanceMaps,
 }: Props) => {
+  const currentBalanceInfo = networkBalanceMaps[selectedNetworkInfo.networkKey];
   const renderHeaderContent = () => {
     return (
       <View style={chainDetailHeader}>
@@ -87,7 +81,7 @@ export const ChainDetailScreen = ({
         return (
           <TokensTab
             selectedNetworkInfo={selectedNetworkInfo}
-            selectedBalanceInfo={selectedBalanceInfo}
+            selectedBalanceInfo={currentBalanceInfo}
             onPressTokenItem={onPressTokenItem}
           />
         );
@@ -106,7 +100,10 @@ export const ChainDetailScreen = ({
       disableRightButton={true}
       onPressRightIcon={() => {}}>
       <>
-        <BalanceBlock {...balanceContainerProps} />
+        <BalanceBlock
+          balanceValue={getTotalConvertedBalanceValue(currentBalanceInfo)}
+          selectionProvider={{ selectedNetworkKey: selectedNetworkInfo.networkKey }}
+        />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
       </>

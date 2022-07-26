@@ -17,7 +17,7 @@ const balanceContainer: StyleProp<any> = {
 
 export const BalanceBlock = ({
   balanceValue,
-  accountButtonContainerStyle,
+  actionButtonContainerStyle,
   amountToUsd,
   isShowBalanceToUsd = false,
   startWithSymbol = true,
@@ -34,7 +34,7 @@ export const BalanceBlock = ({
 
       {isShowBalanceToUsd && amountToUsd && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={isShowBalance} />}
 
-      <ActionButtonContainer style={accountButtonContainerStyle} selectionProvider={selectionProvider} />
+      <ActionButtonContainer style={actionButtonContainerStyle} selectionProvider={selectionProvider} />
     </View>
   );
 };

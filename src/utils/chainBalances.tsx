@@ -67,6 +67,7 @@ export const parseBalancesInfo = (
 
   const decimals = tokenDecimals && !isEmptyArray(tokenDecimals) ? tokenDecimals[0] : 0;
   const symbol = tokenSymbols && !isEmptyArray(tokenSymbols) ? tokenSymbols[0] : '';
+  const displayedSymbol = tokenMap[symbol]?.symbolAlt || symbol;
 
   const {
     children: balanceChildren,
@@ -106,6 +107,7 @@ export const parseBalancesInfo = (
       key,
       label,
       symbol,
+      displayedSymbol,
       convertedBalanceValue,
       balanceValue,
     });
@@ -136,6 +138,7 @@ export const parseBalancesInfo = (
         key: _token,
         label: '',
         symbol: _token,
+        displayedSymbol: tokenMap[_token]?.symbolAlt || _token,
         convertedBalanceValue,
         balanceValue,
       });
@@ -144,6 +147,7 @@ export const parseBalancesInfo = (
 
   return {
     symbol,
+    displayedSymbol,
     balanceValue: totalBalanceValue,
     convertedBalanceValue: totalConvertedBalanceValue,
     detailBalances,

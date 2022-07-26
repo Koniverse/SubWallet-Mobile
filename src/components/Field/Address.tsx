@@ -7,12 +7,10 @@ import { ColorMap } from 'styles/color';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { Info } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 
 interface Props extends FieldBaseProps {
   address: string;
-  autoFormat?: boolean;
+  networkPrefix?: number;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -42,9 +40,8 @@ const infoIconStyle: StyleProp<any> = {
 };
 
 // todo: onPress infoIcon
-export const AddressField = ({ address, autoFormat = true, ...fieldBase }: Props) => {
-  const { currentNetwork } = useSelector((state: RootState) => state);
-  const formattedAddress = autoFormat ? reformatAddress(address, currentNetwork.networkPrefix) : address;
+export const AddressField = ({ address, networkPrefix, ...fieldBase }: Props) => {
+  const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
 
   return (
     <FieldBase {...fieldBase}>

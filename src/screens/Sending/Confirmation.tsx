@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { RequestCheckTransfer, TransferStep } from '@subwallet/extension-base/background/KoniTypes';
+import { NetworkJson, RequestCheckTransfer, TransferStep } from '@subwallet/extension-base/background/KoniTypes';
 import { AddressField } from 'components/Field/Address';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -23,6 +23,14 @@ interface Props {
   onChangeResult: (txResult: TransferResultType) => void;
 }
 
+function getNetworkPrefix(networkKey: string, networkMap: Record<string, NetworkJson>): number | undefined {
+  if (networkMap[networkKey]) {
+    return networkMap[networkKey].ss58Format;
+  }
+
+  return;
+}
+
 export const Confirmation = ({
   balanceFormat,
   requestPayload,
@@ -31,11 +39,13 @@ export const Confirmation = ({
 }: Props) => {
   const {
     accounts: { currentAccount },
+    networkMap,
   } = useSelector((state: RootState) => state);
   const [password, setPassword] = useState<string>('');
   const [isBusy, setBusy] = useState(false);
   const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
   const [errorArr, setErrorArr] = useState<string[]>([]);
+  const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
   const _doTransfer = useCallback(
     (): void => {
       setBusy(true);
@@ -107,8 +117,8 @@ export const Confirmation = ({
           />
           <NetworkField label={'Network'} networkKey={requestPayload.networkKey} />
           <TextField label={'Account'} text={currentAccount?.name || ''} />
-          <AddressField label={'Send from Address'} address={requestPayload.from} />
-          <AddressField label={'Send to Address'} address={requestPayload.to} autoFormat={false} />
+          <AddressField label={'Send from Address'} address={requestPayload.from} networkPrefix={networkPrefix} />
+          <AddressField label={'Send to Address'} address={requestPayload.to} />
           <BalanceField label={'Network Fee'} value={fee || '0'} token={feeSymbol} decimal={feeDecimals} />
           <PasswordField
             label={'Password'}

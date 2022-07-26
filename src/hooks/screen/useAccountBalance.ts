@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BalanceInfo } from '../../types';
 import BigN from 'bignumber.js';
-import { APIItemState, ChainRegistry, NetWorkGroup, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { APIItemState, ChainRegistry, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { BN_ZERO, parseBalancesInfo } from 'utils/chainBalances';
 
 function getMainTokenInfo(chainRegistry: ChainRegistry): TokenInfo {
@@ -20,7 +20,7 @@ function getTokenSymbols(chainRegistry: ChainRegistry): string[] {
       return;
     }
 
-    result.push(tokenMap[t].symbolAlt || tokenMap[t].symbol);
+    result.push(tokenMap[t].symbol);
   });
 
   return result;
@@ -51,6 +51,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
     if (balanceItem.state.valueOf() === APIItemState.NOT_SUPPORT.valueOf()) {
       networkBalanceMaps[networkKey] = {
         symbol: 'Unit',
+        displayedSymbol: 'Unit',
         balanceValue: BN_ZERO,
         convertedBalanceValue: BN_ZERO,
         detailBalances: [],

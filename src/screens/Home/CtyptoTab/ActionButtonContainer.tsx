@@ -6,10 +6,9 @@ import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccoun
 import { NetworkSelect } from 'screens/NetworkSelect';
 import { TokenSelect } from 'screens/TokenSelect';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
-import { AccountActionType, SelectionProviderProps } from 'types/ui-types';
+import { AccountActionType, SelectionProviderProps, TokenItemType } from 'types/ui-types';
 import { Article, FirstAidKit, Shuffle } from 'phosphor-react-native';
 import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
-import { TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getGenesisOptionsByAddressType } from 'utils/index';
@@ -17,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { HIDE_MODAL_DURATION } from '../../../constant';
 import { useToast } from 'react-native-toast-notifications';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 
 interface Props extends SelectionProviderProps {
   style?: object;
@@ -44,34 +44,26 @@ const actionButtonWrapper: StyleProp<any> = {
 export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const {
     accounts: { accounts, currentAccountAddress },
-    currentNetwork,
   } = useSelector((state: RootState) => state);
   const toast = useToast();
-  const isAccountAll = currentAccountAddress === 'ALL';
+  const _isAccountAll = isAccountAll(currentAccountAddress);
   const navigation = useNavigation<RootNavigationProps>();
   const genesisOptions = getGenesisOptionsByAddressType(currentAccountAddress, accounts, useGenesisHashOptions());
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
   const [sendFundTypeModal, setSendFundTypeModal] = useState<boolean>(false);
   const [selectNetworkModal, setSelectNetworkModal] = useState<boolean>(false);
   const [selectTokenModal, setSelectTokenModal] = useState<boolean>(false);
-  const [{ selectedNetworkKey, selectedToken, selectedNetworkPrefix }, setSelectedResult] =
-    useState<SelectedResultType>({});
+  const [{ selectedNetworkKey, selectedNetworkPrefix }, setSelectedResult] = useState<SelectedResultType>({});
   const filteredGenesisOptions = genesisOptions.filter(opt => opt.networkKey !== 'all');
   const [{ onChange: onChangeNetworkSelect, onBack: onBackNetworkSelect }, setNetworkSelectAction] = useState<
     ModalActionType<NetworkSelectOption>
   >({});
   const [{ onChange: onChangeTokenSelect, onBack: onBackTokenSelect }, setTokenSelectAction] = useState<
-    ModalActionType<TokenInfo>
+    ModalActionType<TokenItemType>
   >({});
 
   const actionWithSetTimeout = (action: () => void) => {
     setTimeout(action, HIDE_MODAL_DURATION);
-  };
-
-  const onPressSendNetworkSelectBack = () => {
-    setSelectNetworkModal(false);
-    setSelectedResult({});
-    actionWithSetTimeout(() => setSendFundTypeModal(true));
   };
 
   const onPressReceiveNetworkSelectBack = () => {
@@ -80,69 +72,38 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   };
 
   const onPressTokenSelectBack = () => {
-    setSelectedResult({});
     setSelectTokenModal(false);
 
-    if (currentNetwork.networkKey === 'all') {
-      actionWithSetTimeout(() => setSelectNetworkModal(true));
-    } else {
-      actionWithSetTimeout(() => setSendFundTypeModal(true));
-    }
+    // actionWithSetTimeout(() => setSendFundTypeModal(true));
   };
 
-  const onChangeSendNetwork = (item: NetworkSelectOption) => {
-    setSelectNetworkModal(false);
-    setSelectedResult({ selectedNetworkKey: item.networkKey });
-    setTokenSelectAction({
-      onChange: item1 => {
-        onChangeSendToken(item1, item.networkKey);
-      },
-      onBack: onPressTokenSelectBack,
-    });
-    actionWithSetTimeout(() => setSelectTokenModal(true));
-  };
-
-  const onChangeSendToken = (item1: TokenInfo, networkKey?: string) => {
+  const onChangeSendToken = ({ networkKey, symbol }: TokenItemType) => {
     setSelectedResult({});
     setSelectTokenModal(false);
     navigation.navigate('SendFund', {
-      selectedNetwork: networkKey || currentNetwork.networkKey,
-      selectedToken: item1.symbol,
+      selectedNetworkKey: networkKey,
+      selectedToken: symbol,
     });
   };
 
   const onClickButtonSingleChain = () => {
     setSendFundTypeModal(false);
-    if (selectionProvider) {
+    if (selectionProvider && selectionProvider.selectedToken) {
       const { selectedNetworkKey: _selectedNetworkKey, selectedToken: _selectedToken } = selectionProvider;
-      if (_selectedToken) {
-        setSelectTokenModal(false);
-        navigation.navigate('SendFund', {
-          selectedNetwork: _selectedNetworkKey,
-          selectedToken: _selectedToken,
-        });
-      } else {
-        setSelectedResult({ selectedNetworkKey: _selectedNetworkKey });
-        setTokenSelectAction({
-          onChange: item1 => onChangeSendToken(item1, _selectedNetworkKey),
-          onBack: onPressTokenSelectBack,
-        });
-        actionWithSetTimeout(() => setSelectTokenModal(true));
-      }
-    } else if (currentNetwork.networkKey === 'all') {
-      setNetworkSelectAction({
-        onChange: item => onChangeSendNetwork(item),
-        onBack: onPressSendNetworkSelectBack,
+      setSelectTokenModal(false);
+      navigation.navigate('SendFund', {
+        selectedNetworkKey: _selectedNetworkKey,
+        selectedToken: _selectedToken,
       });
-      actionWithSetTimeout(() => setSelectNetworkModal(true));
-    } else {
-      setSelectedResult({ selectedNetworkKey: currentNetwork.networkKey });
-      setTokenSelectAction({
-        onChange: item1 => onChangeSendToken(item1),
-        onBack: onPressTokenSelectBack,
-      });
-      actionWithSetTimeout(() => setSelectTokenModal(true));
+
+      return;
     }
+
+    setTokenSelectAction({
+      onChange: onChangeSendToken,
+      onBack: onPressTokenSelectBack,
+    });
+    actionWithSetTimeout(() => setSelectTokenModal(true));
   };
 
   const onChangeReceiveNetwork = (networkKey: string, networkPrefix: number) => {
@@ -181,14 +142,12 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
       const { selectedNetworkKey: _selectedNetworkKey } = selectionProvider;
       setSelectedResult({ selectedNetworkKey: _selectedNetworkKey });
       setReceiveModalVisible(true);
-    } else if (currentNetwork.networkKey === 'all') {
+    } else {
       setNetworkSelectAction({
         onChange: item => onChangeReceiveNetwork(item.networkKey, item.networkPrefix),
         onBack: onPressReceiveNetworkSelectBack,
       });
       setSelectNetworkModal(true);
-    } else {
-      setReceiveModalVisible(true);
     }
   };
 
@@ -205,16 +164,22 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
           iconSize={24}
           iconName={'ReceiveIcon'}
           onPress={onPressReceiveButton}
-          disabled={isAccountAll}
+          disabled={_isAccountAll}
         />
         <ActionButton
           label={i18n.cryptoTab.send}
           iconSize={24}
           iconName={'SendIcon'}
           onPress={onPressSendFundBtn}
-          disabled={isAccountAll}
+          disabled={_isAccountAll}
         />
-        <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} onPress={onPressSwapBtn} />
+        <ActionButton
+          label={i18n.cryptoTab.swap}
+          iconSize={24}
+          iconName={'SwapIcon'}
+          onPress={onPressSwapBtn}
+          disabled={_isAccountAll}
+        />
       </View>
 
       <SelectImportAccountModal
@@ -239,13 +204,12 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
         onChangeModalVisible={() => setSelectTokenModal(false)}
         onPressBack={onBackTokenSelect}
         onChangeToken={onChangeTokenSelect}
-        selectedNetwork={selectedNetworkKey || ''}
-        selectedToken={selectedToken || ''}
+        filteredNetworkKey={selectionProvider ? selectionProvider.selectedNetworkKey : undefined}
       />
 
       <ReceiveModal
-        networkKey={selectedNetworkKey || currentNetwork.networkKey}
-        networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : currentNetwork.networkPrefix}
+        networkKey={selectedNetworkKey || 'all'}
+        networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : -1}
         receiveModalVisible={receiveModalVisible}
         onChangeVisible={() => {
           setReceiveModalVisible(false);

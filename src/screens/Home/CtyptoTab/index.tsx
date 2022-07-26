@@ -8,20 +8,14 @@ import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainList/ChainListScreen';
 import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetail/ChainDetailScreen';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
-import { AccountInfoByNetwork } from 'types/ui-types';
+import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
 import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import reformatAddress from 'utils/index';
-import { StyleProp } from 'react-native';
-import { getTotalConvertedBalanceValue } from './utils';
 import { TokenSelect } from 'screens/TokenSelect';
-
-const actionButtonContainerStyle: StyleProp<any> = {
-  paddingTop: 25,
-};
 
 const ViewStep = {
   CHAIN_LIST: 1,
@@ -31,9 +25,7 @@ const ViewStep = {
 
 interface NetworkInfo {
   selectedNetworkInfo: AccountInfoByNetwork | undefined;
-  selectBalanceInfo: BalanceInfo | undefined;
   selectedTokenName: string;
-  networkBalanceValue: BigN;
   tokenBalanceValue: BigN;
   tokenConvertedValue: BigN;
   selectedTokenSymbol: string;
@@ -76,29 +68,18 @@ export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
     accounts: { accounts, currentAccountAddress },
-    currentNetwork,
   } = useSelector((state: RootState) => state);
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const networkMetadataMap = useGetNetworkMetadata();
-  const showedNetworks = useShowedNetworks(currentNetwork.networkKey, currentAccountAddress, accounts);
+  const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
+  const { networkBalanceMaps, totalBalanceValue } = useAccountBalance('all', showedNetworks);
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
-  const { networkBalanceMaps, totalBalanceValue } = useAccountBalance(currentNetwork.networkKey, showedNetworks);
   const [
-    {
-      selectedNetworkInfo,
-      selectBalanceInfo,
-      selectedTokenName,
-      networkBalanceValue,
-      tokenBalanceValue,
-      tokenConvertedValue,
-      selectedTokenSymbol,
-    },
+    { selectedNetworkInfo, selectedTokenName, tokenBalanceValue, tokenConvertedValue, selectedTokenSymbol },
     setSelectNetwork,
   ] = useState<NetworkInfo>({
     selectedNetworkInfo: undefined,
-    selectBalanceInfo: undefined,
     selectedTokenName: '',
-    networkBalanceValue: BN_ZERO,
     tokenBalanceValue: BN_ZERO,
     tokenConvertedValue: BN_ZERO,
     selectedTokenSymbol: '',
@@ -114,7 +95,6 @@ export const CryptoTab = () => {
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
     setSelectNetwork(prevState => ({
       ...prevState,
-      networkBalanceValue: getTotalConvertedBalanceValue(balanceInfo),
       selectedNetworkInfo: info,
       selectBalanceInfo: balanceInfo,
     }));
@@ -132,30 +112,18 @@ export const CryptoTab = () => {
   };
 
   const onPressTokenItem = useCallback(
-    (
-      tokenName: string,
-      balanceValue: BigN,
-      convertedValue: BigN,
-      tokenSymbol: string,
-      info?: AccountInfoByNetwork,
-      balanceInfo?: BalanceInfo,
-    ) => {
-      if (!info || !balanceInfo) {
+    (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => {
+      if (!info) {
         setSelectNetwork(prev => ({
           ...prev,
           selectedTokenName: tokenName,
-          tokenBalanceValue: balanceValue,
-          tokenConvertedValue: convertedValue,
           selectedTokenSymbol: tokenSymbol,
         }));
       } else {
         setSelectNetwork(prev => ({
           ...prev,
           selectedNetworkInfo: info,
-          selectBalanceInfo: balanceInfo,
           selectedTokenName: tokenName,
-          tokenBalanceValue: balanceValue,
-          tokenConvertedValue: convertedValue,
           selectedTokenSymbol: tokenSymbol,
         }));
       }
@@ -168,6 +136,12 @@ export const CryptoTab = () => {
     [deps],
   );
 
+  const onChangeTokenSelectModalItem = ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
+    const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
+    onPressTokenItem(displayedSymbol, symbol, _selectedNetworkInfo);
+    setTokenSelectModal(false);
+  };
+
   return (
     <>
       {currentViewStep === ViewStep.CHAIN_LIST && (
@@ -179,48 +153,38 @@ export const CryptoTab = () => {
           networkBalanceMaps={networkBalanceMaps}
           showedNetworks={showedNetworks}
           onPressTokenItem={onPressTokenItem}
-          balanceContainerProps={{ balanceValue: totalBalanceValue }}
+          totalBalanceValue={totalBalanceValue}
         />
       )}
 
-      {currentViewStep === ViewStep.NETWORK_DETAIL && selectedNetworkInfo && selectBalanceInfo && (
+      {currentViewStep === ViewStep.NETWORK_DETAIL && selectedNetworkInfo && (
         <ChainDetailScreen
           onPressBack={onPressBack}
+          networkBalanceMaps={networkBalanceMaps}
           selectedNetworkInfo={selectedNetworkInfo}
-          selectedBalanceInfo={selectBalanceInfo}
           onPressTokenItem={onPressTokenItem}
-          balanceContainerProps={{
-            balanceValue: networkBalanceValue,
-            selectionProvider: { selectedNetworkKey: selectedNetworkInfo.networkKey },
-          }}
         />
       )}
 
       {currentViewStep === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
         <TokenHistoryScreen
-          balanceContainerProps={{
-            balanceValue: tokenBalanceValue,
-            accountButtonContainerStyle: actionButtonContainerStyle,
-            amountToUsd: tokenConvertedValue,
-            isShowBalanceToUsd: true,
-            startWithSymbol: false,
-            symbol: selectedTokenSymbol,
-            selectionProvider: {
-              selectedNetworkKey: selectedNetworkInfo.networkKey,
-              selectedToken: selectedTokenSymbol,
-            },
-          }}
           onPressBack={onPressBack}
+          networkBalanceMaps={networkBalanceMaps}
           selectedTokenName={selectedTokenName}
+          selectedTokenSymbol={selectedTokenSymbol}
           selectedNetworkInfo={selectedNetworkInfo}
         />
       )}
 
       <TokenSelect
-        selectedNetwork={'all'}
+        selectedNetworkKey={'all'}
         modalVisible={tokenSelectModal}
+        onChangeToken={onChangeTokenSelectModalItem}
         onChangeModalVisible={() => setTokenSelectModal(false)}
-        onPressBack={() => setTokenSelectModal(false)}
+        onPressBack={() => {
+          setTokenSelectModal(false);
+          onPressBack();
+        }}
       />
     </>
   );

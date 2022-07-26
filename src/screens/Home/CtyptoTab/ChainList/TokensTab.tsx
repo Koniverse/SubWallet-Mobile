@@ -1,69 +1,39 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { AccountInfoByNetwork } from 'types/ui-types';
+import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
-import BigN from 'bignumber.js';
 import { TokenChainBalance } from 'components/TokenChainBalance';
-import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
-import { getSelectedTokenList } from 'utils/index';
+import { getTokenBalanceItems } from 'utils/index';
 
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
-  onPressTokenItem: (
-    tokenName: string,
-    tokenBalanceValue: BigN,
-    tokenConvertedValue: BigN,
-    tokenSymbol: string,
-    info?: AccountInfoByNetwork,
-    balanceInfo?: BalanceInfo,
-  ) => void;
+  onPressTokenItem: (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => void;
 }
 
-type TokenArrayType = {
-  selectNetworkKey: string;
-  tokenBalanceValue: BigN;
-  convertedBalanceValue: BigN;
-  tokenBalanceSymbol: string;
-  defaultNetworkKey?: string;
-};
-
 export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
-  const tokenArray = getSelectedTokenList(networkBalanceMaps);
+  const tokenBalanceItems = getTokenBalanceItems(networkBalanceMaps);
 
-  const renderItem = (token: TokenArrayType, index: number) => {
-    const info = accountInfoByNetworkMap[token.defaultNetworkKey || token.selectNetworkKey];
-    const balanceInfo = networkBalanceMaps[token.defaultNetworkKey || token.selectNetworkKey];
-    if (!balanceInfo) {
-      return <ChainBalanceSkeleton key={info.key} />;
-    } else {
-      return (
-        <TokenChainBalance
-          key={`${token.selectNetworkKey}-${index}`}
-          networkDisplayName={info.networkDisplayName}
-          tokenBalanceValue={token.tokenBalanceValue}
-          convertedBalanceValue={token.convertedBalanceValue}
-          selectNetworkKey={token.selectNetworkKey}
-          tokenBalanceSymbol={token.tokenBalanceSymbol}
-          defaultNetworkKey={token.defaultNetworkKey}
-          onPress={() =>
-            onPressTokenItem(
-              token.tokenBalanceSymbol,
-              token.tokenBalanceValue,
-              token.convertedBalanceValue,
-              token.tokenBalanceSymbol,
-              info,
-              balanceInfo,
-            )
-          }
-        />
-      );
-    }
+  const renderItem = (item: TokenBalanceItemType, index: number) => {
+    const info = accountInfoByNetworkMap[item.defaultNetworkKey || item.selectNetworkKey];
+
+    return (
+      <TokenChainBalance
+        key={`${item.selectNetworkKey}-${index}`}
+        networkDisplayName={info.networkDisplayName}
+        tokenBalanceValue={item.balanceValue}
+        convertedBalanceValue={item.convertedBalanceValue}
+        selectNetworkKey={item.selectNetworkKey}
+        tokenBalanceSymbol={item.displayedSymbol}
+        defaultNetworkKey={item.defaultNetworkKey}
+        onPress={() => onPressTokenItem(item.displayedSymbol, item.symbol, info)}
+      />
+    );
   };
 
   return (
     <ScrollView style={{ paddingTop: 8 }}>
-      {tokenArray && tokenArray.map((token, index) => renderItem(token, index))}
+      {tokenBalanceItems && tokenBalanceItems.map((item, index) => renderItem(item, index))}
     </ScrollView>
   );
 };

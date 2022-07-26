@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
-import { Recoded } from 'types/ui-types';
+import { Recoded, TokenBalanceItemType, TokenItemType } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
@@ -12,7 +12,6 @@ import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
 import { BN, formatBalance } from '@polkadot/util';
 import { BN_ZERO } from 'utils/chainBalances';
-import BigN from 'bignumber.js';
 import { BalanceInfo } from '../types';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
@@ -23,14 +22,6 @@ export const accountAllRecoded: Recoded = {
   formatted: ALL_ACCOUNT_KEY,
   prefix: 42,
   isEthereum: false,
-};
-
-export type TokenArrayType = {
-  selectNetworkKey: string;
-  tokenBalanceValue: BigN;
-  convertedBalanceValue: BigN;
-  tokenBalanceSymbol: string;
-  defaultNetworkKey?: string;
 };
 
 export const subscanByNetworkKey: Record<string, string> = {
@@ -336,32 +327,34 @@ export function getEthereumChains(networkMap: Record<string, NetworkJson>): stri
   return result;
 }
 
-export function getSelectedTokenList(networkBalanceMaps: Record<string, BalanceInfo>) {
-  let tokenArray: TokenArrayType[] = [];
+export function getTokenBalanceItems(networkBalanceMaps: Record<string, BalanceInfo>): TokenBalanceItemType[] {
+  const items: TokenBalanceItemType[] = [];
 
   Object.keys(networkBalanceMaps).forEach(networkKey => {
     const networkBalanceInfo = networkBalanceMaps[networkKey];
-    tokenArray.push({
+    items.push({
       selectNetworkKey: networkKey,
-      tokenBalanceValue: networkBalanceInfo.balanceValue,
+      balanceValue: networkBalanceInfo.balanceValue,
       convertedBalanceValue: networkBalanceInfo.convertedBalanceValue,
-      tokenBalanceSymbol: networkBalanceInfo.symbol,
+      symbol: networkBalanceInfo.symbol,
+      displayedSymbol: networkBalanceInfo.displayedSymbol,
     });
 
     if (networkBalanceInfo.childrenBalances && networkBalanceInfo.childrenBalances.length) {
       networkBalanceInfo.childrenBalances.forEach(children =>
-        tokenArray.push({
+        items.push({
           selectNetworkKey: children.key,
-          tokenBalanceValue: children.balanceValue,
+          balanceValue: children.balanceValue,
           convertedBalanceValue: children.convertedBalanceValue || BN_ZERO,
-          tokenBalanceSymbol: children.symbol,
+          symbol: children.symbol,
+          displayedSymbol: children.displayedSymbol,
           defaultNetworkKey: networkKey,
         }),
       );
     }
   });
 
-  return tokenArray;
+  return items;
 }
 
 export function getActiveToken(
@@ -384,9 +377,68 @@ export function getActiveToken(
 
     Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
       const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
-      console.log('123123', chainRegistryMap[networkKey].tokenMap);
 
       options.push(tokenInfo);
+    });
+  });
+
+  return options;
+}
+
+export function getTokenItemOptions(
+  chainRegistryMap: Record<string, ChainRegistry>,
+  networkMap: Record<string, NetworkJson>,
+  type: 'ALL' | 'ETHEREUM' | 'SUBSTRATE' = 'ALL',
+  filteredNetworkKey?: string,
+): TokenItemType[] {
+  const options: TokenItemType[] = [];
+  const activatedNetworks: string[] = [];
+
+  if (filteredNetworkKey) {
+    if (!networkMap[filteredNetworkKey] || !networkMap[filteredNetworkKey].active) {
+      return [];
+    }
+
+    if (
+      (type === 'ETHEREUM' && networkMap[filteredNetworkKey].isEthereum) ||
+      (type === 'SUBSTRATE' && !networkMap[filteredNetworkKey].isEthereum) ||
+      type === 'ALL'
+    ) {
+      activatedNetworks.push(filteredNetworkKey);
+    }
+  } else {
+    Object.keys(networkMap).forEach(networkKey => {
+      if (!networkMap[networkKey].active) {
+        return;
+      }
+
+      if (
+        (type === 'ETHEREUM' && networkMap[networkKey].isEthereum) ||
+        (type === 'SUBSTRATE' && !networkMap[networkKey].isEthereum) ||
+        type === 'ALL'
+      ) {
+        activatedNetworks.push(networkKey);
+      }
+    });
+  }
+
+  Object.keys(chainRegistryMap).forEach(networkKey => {
+    if (!activatedNetworks.includes(networkKey)) {
+      return;
+    }
+
+    Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
+      const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
+
+      options.push({
+        networkKey: networkKey,
+        networkDisplayName: networkMap[networkKey].chain.replace(' Relay Chain', ''),
+        symbol: tokenInfo.symbol,
+        displayedSymbol: tokenInfo.symbolAlt || tokenInfo.symbol,
+        decimals: tokenInfo.decimals,
+        isMainToken: tokenInfo.isMainToken,
+        specialOption: tokenInfo?.specialOption,
+      });
     });
   });
 

@@ -86,7 +86,6 @@ export const ReceiveModal = ({
   const toastRef = useRef();
   const {
     accounts: { currentAccountAddress },
-    currentNetwork,
     networkMap,
   } = useSelector((state: RootState) => state);
   const copyToClipboard = useCallback((text: string) => {
@@ -116,7 +115,6 @@ export const ReceiveModal = ({
         <View style={receiveModalAddressWrapper}>
           <TouchableOpacity
             activeOpacity={BUTTON_ACTIVE_OPACITY}
-            disabled={currentNetwork.networkKey !== 'all'}
             onPress={() => {
               onChangeVisible();
               openChangeNetworkModal();

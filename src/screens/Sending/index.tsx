@@ -76,19 +76,13 @@ export const SendFund = () => {
   const route = useRoute<RootRouteProps>();
   const data = route.params;
   const {
-    currentNetwork: { networkKey },
     accounts: { currentAccountAddress },
     chainRegistry,
     price: { tokenPriceMap },
     networkMap,
   } = useSelector((state: RootState) => state);
   // @ts-ignore
-  const selectedNetworkKey = data ? data.selectedNetwork : networkKey;
-  const selectedTokenMap = chainRegistry[selectedNetworkKey].tokenMap;
-  const mainToken = Object.values(selectedTokenMap).find(val => val.isMainToken);
-  const defaultToken = mainToken ? mainToken.name : Object.keys(selectedTokenMap)[0];
-  // @ts-ignore
-  const selectedToken = data ? (data.selectedToken as tring) : defaultToken;
+  const { selectedNetworkKey, selectedToken } = data;
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
   const senderFreeBalance = useFreeBalance(selectedNetworkKey, currentAccountAddress, selectedToken);
