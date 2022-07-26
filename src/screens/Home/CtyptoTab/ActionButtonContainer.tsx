@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
@@ -115,6 +115,16 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     actionWithSetTimeout(() => setReceiveModalVisible(true));
   };
 
+  const toastRef = useRef();
+  const _onClickButton = () => {
+    if (toastRef.current) {
+      // @ts-ignore
+      toastRef.current.hideAll();
+      // @ts-ignore
+      toastRef.current.show('Coming Soon');
+    }
+  };
+
   const SEND_FUND_TYPE: AccountActionType[] = [
     {
       icon: Article,
@@ -124,12 +134,12 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     {
       icon: Shuffle,
       title: i18n.common.crossChain,
-      onCLickButton: () => {},
+      onCLickButton: _onClickButton,
     },
     {
       icon: FirstAidKit,
       title: i18n.common.charityDonate,
-      onCLickButton: () => {},
+      onCLickButton: _onClickButton,
     },
   ];
 
@@ -188,6 +198,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
         modalVisible={sendFundTypeModal}
         onChangeModalVisible={() => setSendFundTypeModal(false)}
         modalHeight={256}
+        toastRef={toastRef}
       />
 
       <NetworkSelect

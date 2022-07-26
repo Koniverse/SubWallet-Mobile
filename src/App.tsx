@@ -79,11 +79,12 @@ export const App = () => {
 
   return (
     <ToastProvider
+      duration={1500}
       placement="top"
       normalColor={theme.colors.notification}
       successColor={theme.colors.primary}
       warningColor={theme.colors.notification_warning}
-      offsetTop={STATUS_BAR_HEIGHT + 10}
+      offsetTop={STATUS_BAR_HEIGHT + 40}
       dangerColor={theme.colors.notification_danger}>
       <QrScannerProvider navigationRef={navigationRef}>
         <ThemeContext.Provider value={theme}>

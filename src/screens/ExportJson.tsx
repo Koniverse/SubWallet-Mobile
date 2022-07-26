@@ -1,14 +1,16 @@
-import React, { useCallback, useState } from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import {FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles, STATUS_BAR_HEIGHT} from 'styles/sharedStyles';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
 import { exportAccount } from '../messaging';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from "react-native-toast-notifications";
+import {deviceHeight} from "../constant";
 
 interface Props {
   address: string;
@@ -52,13 +54,14 @@ const buttonStyle: StyleProp<any> = {
   width: '100%',
 };
 
+const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
+
 export const ExportJson = ({ address, closeModal }: Props) => {
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fileContent, setFileContent] = useState('');
-  const [isShowToast, setShowToast] = useState(false);
-
+  const toastRef = useRef();
   const onTypePassword = (pass: string) => {
     setPassword(pass);
     setErrorMessage('');
@@ -79,8 +82,12 @@ export const ExportJson = ({ address, closeModal }: Props) => {
 
   const copyToClipboard = useCallback((text: string) => {
     Clipboard.setString(text);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 1000);
+    if (toastRef.current) {
+      // @ts-ignore
+      toastRef.current.hideAll();
+      // @ts-ignore
+      toastRef.current.show('Copied to clipboard');
+    }
   }, []);
 
   const isPasswordError = !password || password.length < 6;
@@ -94,21 +101,6 @@ export const ExportJson = ({ address, closeModal }: Props) => {
           width: '100%',
         }}>
         <View style={layoutContainerStyle}>
-          {isShowToast && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 25,
-                left: 0,
-                right: 0,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <View style={{ backgroundColor: ColorMap.notification, padding: 5, borderRadius: 5 }}>
-                <Text style={{ color: ColorMap.light }}>Copied to Clipboard</Text>
-              </View>
-            </View>
-          )}
           <Text
             style={{
               textAlign: 'center',
@@ -170,6 +162,11 @@ export const ExportJson = ({ address, closeModal }: Props) => {
               onPress={!!fileContent ? () => closeModal(false) : onSetPassword}
             />
           </View>
+
+          {
+            // @ts-ignore
+            <Toast duration={1500} normalColor={ColorMap.notification} ref={toastRef} placement={'bottom'} offsetBottom={OFFSET_BOTTOM} />
+          }
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>

@@ -1,10 +1,12 @@
 import React from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { StyleProp, Text, View } from 'react-native';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
+import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';
 import { AccountActionType } from 'types/ui-types';
+import { deviceHeight } from '../../constant';
+import Toast from 'react-native-toast-notifications';
 
 interface Props {
   modalTitle: string;
@@ -13,6 +15,7 @@ interface Props {
   secretTypeList: AccountActionType[];
   modalHeight: number;
   onModalHide?: () => void;
+  toastRef?: React.MutableRefObject<undefined>;
 }
 
 const modalTitleStyle: StyleProp<any> = {
@@ -30,6 +33,7 @@ export const SelectImportAccountModal = ({
   modalHeight,
   onModalHide,
   modalTitle,
+  toastRef,
 }: Props) => {
   return (
     <SubWalletModal
@@ -43,6 +47,12 @@ export const SelectImportAccountModal = ({
           <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
         ))}
       </View>
+
+      {
+        // @ts-ignore
+        <Toast duration={1500} normalColor={ColorMap.notification} ref={toastRef} placement={'bottom'} offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
+        />
+      }
     </SubWalletModal>
   );
 };

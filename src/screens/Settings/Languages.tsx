@@ -29,7 +29,6 @@ export const Languages = () => {
   const [searchString, setSearchString] = useState<string>('');
   const [selectedLang, setSelectedLang] = useState<string>(language);
   const filteredLanguageOption = languageOptions.filter(opt => opt.text.includes(searchString));
-  console.log('language', language);
 
   const onPressDone = () => {
     if (language === selectedLang) {

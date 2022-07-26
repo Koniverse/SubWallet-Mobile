@@ -11,6 +11,7 @@ import { getTokenItemOptions } from 'utils/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { TokenItemType } from 'types/ui-types';
+import i18n from "utils/i18n/i18n";
 
 interface Props {
   modalVisible: boolean;
@@ -83,7 +84,7 @@ export const TokenSelect = ({
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={'No Token Available'} isDanger={false} />;
+    return <Warning title={'Warning'} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />;
   };
 
   return (

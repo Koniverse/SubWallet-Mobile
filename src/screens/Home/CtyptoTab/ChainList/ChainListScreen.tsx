@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { MainScreenContainer } from 'components/MainScreenContainer';
 import { HorizontalTabView } from 'components/HorizontalTabView';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,6 +9,9 @@ import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
+import { WebViewContext } from 'providers/contexts';
+import { RefreshControl, ScrollView } from 'react-native';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   onPressSearchButton?: () => void;
@@ -36,6 +39,18 @@ export const ChainListScreen = ({
   onPressTokenItem,
   totalBalanceValue,
 }: Props) => {
+  const [refreshing, setRefreshing] = useState(false);
+  const { viewRef } = useContext(WebViewContext);
+  const onRefresh = () => {
+    setRefreshing(true);
+    if (viewRef && viewRef.current) {
+      viewRef.current.reload();
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   // @ts-ignore
   const renderScene = ({ route }) => {
     switch (route.key) {
@@ -62,11 +77,13 @@ export const ChainListScreen = ({
 
   return (
     <MainScreenContainer navigation={navigation} onPressSearchButton={onPressSearchButton}>
-      <>
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
         <BalanceBlock balanceValue={totalBalanceValue} />
 
         <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
-      </>
+      </ScrollView>
     </MainScreenContainer>
   );
 };
