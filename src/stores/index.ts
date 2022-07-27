@@ -15,7 +15,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['settingData', 'accounts', 'currentNetwork', 'settings'],
+  whitelist: ['settingData', 'accounts', 'currentNetwork', 'settings', 'chainRegistry'],
 };
 
 const rootReducer = combineReducers({
