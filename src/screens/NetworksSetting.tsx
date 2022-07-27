@@ -37,6 +37,7 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
   const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {
     return (
       <NetworkAndTokenToggleItem
+        isDisableSwitching={item.key === 'polkadot' || item.key === 'kusama'}
         key={`${item.key}-${item.chain}`}
         itemName={item.chain}
         itemKey={item.key}

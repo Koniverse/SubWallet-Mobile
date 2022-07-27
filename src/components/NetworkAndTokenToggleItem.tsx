@@ -8,6 +8,7 @@ interface Props {
   itemKey: string;
   isEnabled: boolean;
   onValueChange: () => void;
+  isDisableSwitching?: boolean;
 }
 
 const itemArea: StyleProp<any> = {
@@ -40,7 +41,13 @@ const logoWrapperStyle: StyleProp<any> = {
   borderRadius: 40,
 };
 
-export const NetworkAndTokenToggleItem = ({ itemKey, itemName, isEnabled, onValueChange }: Props) => {
+export const NetworkAndTokenToggleItem = ({
+  itemKey,
+  itemName,
+  isEnabled,
+  onValueChange,
+  isDisableSwitching,
+}: Props) => {
   return (
     <View>
       <View style={itemArea}>
@@ -50,7 +57,12 @@ export const NetworkAndTokenToggleItem = ({ itemKey, itemName, isEnabled, onValu
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 
-        <Switch ios_backgroundColor="rgba(120,120,128,0.32)" value={isEnabled} onValueChange={onValueChange} />
+        <Switch
+          disabled={isDisableSwitching}
+          ios_backgroundColor="rgba(120,120,128,0.32)"
+          value={isEnabled}
+          onValueChange={onValueChange}
+        />
       </View>
 
       <View style={itemSeparator} />
