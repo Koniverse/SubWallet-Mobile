@@ -13,8 +13,8 @@ interface Props {
 }
 
 export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
-  const tokenBalanceValue = selectedBalanceInfo.balanceValue;
-  const convertedBalanceValue = selectedBalanceInfo.convertedBalanceValue;
+  const tokenBalanceValue = selectedBalanceInfo ? selectedBalanceInfo.balanceValue : BN_ZERO;
+  const convertedBalanceValue = selectedBalanceInfo ? selectedBalanceInfo.convertedBalanceValue : BN_ZERO;
   return (
     <ScrollView style={{ paddingTop: 8 }}>
       {!(selectedNetworkInfo && selectedBalanceInfo) ? (

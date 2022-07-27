@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { RefreshControl, ScrollView, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
@@ -9,6 +9,7 @@ import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 import { BalanceInfo } from '../../../types';
 import BigN from 'bignumber.js';
+import { WebViewContext } from 'providers/contexts';
 
 interface Props {
   onPressBack: () => void;
@@ -78,6 +79,19 @@ export const TokenHistoryScreen = ({
     networkBalanceMaps,
   );
 
+  const [refreshing, setRefreshing] = useState(false);
+  const { viewRef } = useContext(WebViewContext);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    if (viewRef && viewRef.current) {
+      viewRef.current.reload();
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   const renderHeaderContent = () => {
     return (
       <View style={tokenHistoryHeader}>
@@ -105,24 +119,28 @@ export const TokenHistoryScreen = ({
       title={''}
       style={containerStyle}
       headerContent={renderHeaderContent}>
-      <>
-        <BalanceBlock
-          isShowBalanceToUsd
-          startWithSymbol={false}
-          actionButtonContainerStyle={actionButtonContainerStyle}
-          symbol={selectedTokenName}
-          balanceValue={balanceValue}
-          amountToUsd={convertedBalanceValue}
-          selectionProvider={{
-            selectedNetworkKey: selectedNetworkInfo.networkKey,
-            selectedToken: selectedTokenSymbol,
-          }}
-        />
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
+        <>
+          <BalanceBlock
+            isShowBalanceToUsd
+            startWithSymbol={false}
+            actionButtonContainerStyle={actionButtonContainerStyle}
+            symbol={selectedTokenName}
+            balanceValue={balanceValue}
+            amountToUsd={convertedBalanceValue}
+            selectionProvider={{
+              selectedNetworkKey: selectedNetworkInfo.networkKey,
+              selectedToken: selectedTokenSymbol,
+            }}
+          />
 
-        <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
-          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
-        </View>
-      </>
+          <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
+            <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
+          </View>
+        </>
+      </ScrollView>
     </ContainerWithSubHeader>
   );
 };

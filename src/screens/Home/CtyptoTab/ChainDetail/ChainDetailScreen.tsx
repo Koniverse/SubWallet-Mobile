@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { HorizontalTabView } from 'components/HorizontalTabView';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainDetail/TokensTab';
-import { StyleProp, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleProp, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
@@ -12,6 +12,8 @@ import { BalanceInfo } from '../../../../types';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
+import { WebViewContext } from 'providers/contexts';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props {
   onPressBack: () => void;
@@ -51,6 +53,8 @@ export const ChainDetailScreen = ({
   networkBalanceMaps,
 }: Props) => {
   const currentBalanceInfo = networkBalanceMaps[selectedNetworkInfo.networkKey];
+  const [refreshing, setRefreshing] = useState(false);
+  const { viewRef } = useContext(WebViewContext);
   const renderHeaderContent = () => {
     return (
       <View style={chainDetailHeader}>
@@ -88,6 +92,16 @@ export const ChainDetailScreen = ({
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    if (viewRef && viewRef.current) {
+      viewRef.current.reload();
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   return (
     <ContainerWithSubHeader
       onPressBack={onPressBack}
@@ -99,14 +113,18 @@ export const ChainDetailScreen = ({
       style={containerStyle}
       disableRightButton={true}
       onPressRightIcon={() => {}}>
-      <>
-        <BalanceBlock
-          balanceValue={getTotalConvertedBalanceValue(currentBalanceInfo)}
-          selectionProvider={{ selectedNetworkKey: selectedNetworkInfo.networkKey }}
-        />
+      <ScrollView
+        contentContainerStyle={{ flex: 1 }}
+        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
+        <>
+          <BalanceBlock
+            balanceValue={getTotalConvertedBalanceValue(currentBalanceInfo)}
+            selectionProvider={{ selectedNetworkKey: selectedNetworkInfo.networkKey }}
+          />
 
-        <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
-      </>
+          <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
+        </>
+      </ScrollView>
     </ContainerWithSubHeader>
   );
 };

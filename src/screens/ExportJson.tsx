@@ -165,12 +165,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
 
           {
             // @ts-ignore
-            <Toast
-              duration={1500}
-              normalColor={ColorMap.notification}
-              ref={toastRef}
-              placement={'bottom'}
-              offsetBottom={OFFSET_BOTTOM}
+            <Toast duration={1500} normalColor={ColorMap.notification} ref={toastRef} placement={'bottom'} offsetBottom={OFFSET_BOTTOM}
             />
           }
         </View>
