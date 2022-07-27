@@ -16,7 +16,7 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
   const renderChainBalanceItem = (networkKey: string) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
-    if (!balanceInfo) {
+    if (!balanceInfo.isReady) {
       return <ChainBalanceSkeleton key={info.key} />;
     } else {
       return (

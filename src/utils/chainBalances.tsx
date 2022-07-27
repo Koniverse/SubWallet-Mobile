@@ -61,6 +61,7 @@ export const parseBalancesInfo = (
   balanceInfo: AccountInfoItem,
   tokenMap: Record<string, TokenInfo>,
   networkJson: NetworkJson,
+  isReady: boolean,
 ): BalanceInfo => {
   const { balanceItem, networkKey, tokenDecimals, tokenSymbols } = balanceInfo;
   const ignoreTestnetPrice = networkJson.groups.includes('TEST_NET');
@@ -152,5 +153,6 @@ export const parseBalancesInfo = (
     convertedBalanceValue: totalConvertedBalanceValue,
     detailBalances,
     childrenBalances,
+    isReady,
   };
 };

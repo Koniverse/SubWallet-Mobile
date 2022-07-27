@@ -66,4 +66,5 @@ export interface TokenBalanceItemType {
   symbol: string;
   displayedSymbol: string;
   defaultNetworkKey?: string;
+  isReady: boolean;
 }

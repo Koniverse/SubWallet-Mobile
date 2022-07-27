@@ -36,4 +36,5 @@ export type BalanceInfo = {
   convertedBalanceValue: BigN;
   detailBalances: BalanceSubInfo[];
   childrenBalances: BalanceSubInfo[];
+  isReady: boolean;
 };

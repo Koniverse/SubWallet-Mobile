@@ -8,7 +8,7 @@ import { Images } from 'assets/index';
 import { ListDashes } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import i18n from "utils/i18n/i18n";
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   networkKey: string;

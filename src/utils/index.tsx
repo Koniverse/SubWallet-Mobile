@@ -338,6 +338,7 @@ export function getTokenBalanceItems(networkBalanceMaps: Record<string, BalanceI
       convertedBalanceValue: networkBalanceInfo.convertedBalanceValue,
       symbol: networkBalanceInfo.symbol,
       displayedSymbol: networkBalanceInfo.displayedSymbol,
+      isReady: networkBalanceInfo.isReady,
     });
 
     if (networkBalanceInfo.childrenBalances && networkBalanceInfo.childrenBalances.length) {
@@ -349,6 +350,7 @@ export function getTokenBalanceItems(networkBalanceMaps: Record<string, BalanceI
           symbol: children.symbol,
           displayedSymbol: children.displayedSymbol,
           defaultNetworkKey: networkKey,
+          isReady: networkBalanceInfo.isReady,
         }),
       );
     }

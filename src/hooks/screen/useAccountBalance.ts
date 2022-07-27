@@ -56,14 +56,15 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
         convertedBalanceValue: BN_ZERO,
         detailBalances: [],
         childrenBalances: [],
+        isReady: true,
       };
 
       return;
     }
 
-    if (balanceItem.state.valueOf() !== APIItemState.READY.valueOf()) {
-      return;
-    }
+    // if (balanceItem.state.valueOf() !== APIItemState.READY.valueOf()) {
+    //   return;
+    // }
 
     const mainTokenInfo = getMainTokenInfo(registry);
     let tokenDecimals, tokenSymbols;
@@ -87,15 +88,18 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
       },
       registry.tokenMap,
       networkMap[networkKey],
+      balanceItem.state.valueOf() === APIItemState.READY.valueOf()
     );
 
     networkBalanceMaps[networkKey] = balanceInfo;
-    totalBalanceValue = totalBalanceValue.plus(balanceInfo.convertedBalanceValue);
+    if (balanceInfo.isReady) {
+      totalBalanceValue = totalBalanceValue.plus(balanceInfo.convertedBalanceValue);
 
-    if (balanceInfo.childrenBalances && balanceInfo.childrenBalances.length) {
-      balanceInfo.childrenBalances.forEach(c => {
-        totalBalanceValue = totalBalanceValue.plus(c.convertedBalanceValue);
-      });
+      if (balanceInfo.childrenBalances && balanceInfo.childrenBalances.length) {
+        balanceInfo.childrenBalances.forEach(c => {
+          totalBalanceValue = totalBalanceValue.plus(c.convertedBalanceValue);
+        });
+      }
     }
   });
 
