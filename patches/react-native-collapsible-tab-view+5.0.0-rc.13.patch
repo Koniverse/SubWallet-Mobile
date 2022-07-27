@@ -1,0 +1,45 @@
+diff --git a/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/Indicator.tsx b/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/Indicator.tsx
+index bd654de..043fa27 100644
+--- a/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/Indicator.tsx
++++ b/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/Indicator.tsx
+@@ -56,16 +56,23 @@ const Indicator: React.FC<IndicatorProps> = ({
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [fadeIn])
+ 
+-  return <Animated.View style={[stylez, styles.indicator, style]} />
++  return (
++    <Animated.View style={[stylez, styles.indicator]}>
++      <Animated.View style={[styles.indicatorContent, style]} />
++    </Animated.View>
++  )
+ }
+ 
+ const styles = StyleSheet.create({
+   indicator: {
+     height: 2,
+-    backgroundColor: '#2196f3',
+     position: 'absolute',
+     bottom: 0,
+   },
++  indicatorContent: {
++    backgroundColor: '#2196f3',
++    flex: 1
++  },
+ })
+ 
+ export { Indicator }
+diff --git a/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/TabItem.tsx b/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/TabItem.tsx
+index 1578508..0d10674 100644
+--- a/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/TabItem.tsx
++++ b/node_modules/react-native-collapsible-tab-view/src/MaterialTabBar/TabItem.tsx
+@@ -29,8 +29,8 @@ export const MaterialTabItem = <T extends TabName = string>(
+     labelStyle,
+     activeColor = DEFAULT_COLOR,
+     inactiveColor = DEFAULT_COLOR,
+-    inactiveOpacity = 0.7,
+-    pressColor = '#DDDDDD',
++    inactiveOpacity = 1,
++    pressColor = 'transparent',
+     pressOpacity = Platform.OS === 'ios' ? 0.2 : 1,
+     ...rest
+   } = props
