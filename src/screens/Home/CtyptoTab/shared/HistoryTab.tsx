@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
+import { ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -8,6 +8,7 @@ import { ListDashes } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import * as Tabs from 'react-native-collapsible-tab-view';
 
 interface Props {
   networkKey: string;
@@ -127,7 +128,13 @@ const ContentComponent = ({ items, registryMap }: ContentProps) => {
   };
 
   return (
-    <FlatList style={{ paddingTop: 8 }} keyboardShouldPersistTaps={'handled'} data={items} renderItem={renderItem} />
+    <Tabs.FlatList
+      nestedScrollEnabled
+      style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }}
+      keyboardShouldPersistTaps={'handled'}
+      data={items}
+      renderItem={renderItem}
+    />
   );
 };
 

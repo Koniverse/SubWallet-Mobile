@@ -1,9 +1,12 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { ChainBalance } from 'components/ChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
+import * as Tabs from 'react-native-collapsible-tab-view';
+import { ColorMap } from 'styles/color';
+import { useRefresh } from 'hooks/useRefresh';
 
 interface Props {
   networkKeys: string[];
@@ -13,6 +16,7 @@ interface Props {
 }
 
 export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, accountInfoByNetworkMap }: Props) => {
+  const [isRefreshing, startRefreshing] = useRefresh();
   const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
@@ -31,11 +35,15 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
   };
 
   return (
-    <FlatList
-      style={{ paddingTop: 8 }}
+    <Tabs.FlatList
+      nestedScrollEnabled
+      style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }}
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}
       renderItem={renderItem}
+      refreshControl={
+        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
+      }
     />
   );
 };

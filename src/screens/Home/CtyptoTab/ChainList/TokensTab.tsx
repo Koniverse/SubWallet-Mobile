@@ -1,10 +1,13 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import {FlatList, ListRenderItemInfo, RefreshControl} from 'react-native';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import { getTokenBalanceItems } from 'utils/index';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
+import * as Tabs from 'react-native-collapsible-tab-view';
+import {ColorMap} from "styles/color";
+import {useRefresh} from "hooks/useRefresh";
 
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
@@ -14,7 +17,7 @@ interface Props {
 
 export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
   const tokenBalanceItems = getTokenBalanceItems(networkBalanceMaps);
-
+  const [isRefreshing, startRefreshing] = useRefresh();
   const renderItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (!item.isReady) {
       return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
@@ -37,11 +40,15 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
   };
 
   return (
-    <FlatList
-      style={{ paddingTop: 8 }}
+    <Tabs.FlatList
+      nestedScrollEnabled
+      style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }}
       keyboardShouldPersistTaps={'handled'}
       data={tokenBalanceItems}
       renderItem={renderItem}
+      refreshControl={
+        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
+      }
     />
   );
 };

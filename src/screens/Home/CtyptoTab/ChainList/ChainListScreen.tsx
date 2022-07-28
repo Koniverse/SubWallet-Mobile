@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react';
+import React from 'react';
 import { MainScreenContainer } from 'components/MainScreenContainer';
-import { HorizontalTabView } from 'components/HorizontalTabView';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
 import { ChainsTab } from 'screens/Home/CtyptoTab/ChainList/ChainsTab';
@@ -9,9 +8,9 @@ import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
-import { WebViewContext } from 'providers/contexts';
-import { RefreshControl, ScrollView } from 'react-native';
+import { Tabs, MaterialTabBar, MaterialTabBarProps } from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
 interface Props {
   onPressSearchButton?: () => void;
@@ -24,11 +23,6 @@ interface Props {
   totalBalanceValue: BigN;
 }
 
-const ROUTES = [
-  { key: 'tokens', title: 'Tokens' },
-  { key: 'chains', title: 'Chains' },
-];
-
 export const ChainListScreen = ({
   onPressSearchButton,
   accountInfoByNetworkMap,
@@ -39,51 +33,44 @@ export const ChainListScreen = ({
   onPressTokenItem,
   totalBalanceValue,
 }: Props) => {
-  const [refreshing, setRefreshing] = useState(false);
-  const { viewRef } = useContext(WebViewContext);
-  const onRefresh = () => {
-    setRefreshing(true);
-    if (viewRef && viewRef.current) {
-      viewRef.current.reload();
-    }
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  };
+  const renderTabBar = (props: MaterialTabBarProps<any>) => (
+    <MaterialTabBar
+      {...props}
+      activeColor={ColorMap.light}
+      inactiveColor={ColorMap.light}
+      indicatorStyle={{ backgroundColor: ColorMap.light, marginHorizontal: 16 }}
+      tabStyle={{ backgroundColor: ColorMap.dark2 }}
+      style={{ backgroundColor: ColorMap.dark2 }}
+      labelStyle={{ ...sharedStyles.mediumText, ...FontSemiBold }}
+    />
+  );
 
-  // @ts-ignore
-  const renderScene = ({ route }) => {
-    switch (route.key) {
-      case 'tokens':
-        return (
+  return (
+    <MainScreenContainer navigation={navigation} onPressSearchButton={onPressSearchButton}>
+      <Tabs.Container
+        lazy
+        allowHeaderOverscroll={true}
+        renderTabBar={renderTabBar}
+        renderHeader={() => {
+          return <BalanceBlock balanceValue={totalBalanceValue} />;
+        }}
+        snapThreshold={0.5}>
+        <Tabs.Tab name="token" label="Token">
           <TokensTab
             accountInfoByNetworkMap={accountInfoByNetworkMap}
             networkBalanceMaps={networkBalanceMaps}
             onPressTokenItem={onPressTokenItem}
           />
-        );
-      case 'chains':
-      default:
-        return (
+        </Tabs.Tab>
+        <Tabs.Tab name="chain" label="Chain">
           <ChainsTab
             onPressChainItem={onPressChainItem}
             networkKeys={showedNetworks}
             networkBalanceMaps={networkBalanceMaps}
             accountInfoByNetworkMap={accountInfoByNetworkMap}
           />
-        );
-    }
-  };
-
-  return (
-    <MainScreenContainer navigation={navigation} onPressSearchButton={onPressSearchButton}>
-      <ScrollView
-        contentContainerStyle={{ flex: 1 }}
-        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
-        <BalanceBlock balanceValue={totalBalanceValue} />
-
-        <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
-      </ScrollView>
+        </Tabs.Tab>
+      </Tabs.Container>
     </MainScreenContainer>
   );
 };

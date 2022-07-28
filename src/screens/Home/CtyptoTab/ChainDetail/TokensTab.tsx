@@ -5,6 +5,8 @@ import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { BN_ZERO } from 'utils/chainBalances';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
+import * as Tabs from 'react-native-collapsible-tab-view';
+import {ColorMap} from "styles/color";
 
 interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
@@ -63,6 +65,6 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
   }
 
   return (
-    <FlatList style={{ paddingTop: 8 }} keyboardShouldPersistTaps={'handled'} data={items} renderItem={renderItem} />
+    <Tabs.FlatList nestedScrollEnabled style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }} keyboardShouldPersistTaps={'handled'} data={items} renderItem={renderItem} />
   );
 };

@@ -20,13 +20,13 @@ export interface SubHeaderProps {
 
 function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
   return {
-    marginTop: 13.5,
     backgroundColor: backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     position: 'relative',
     height: 40,
+    zIndex: 10,
   };
 }
 

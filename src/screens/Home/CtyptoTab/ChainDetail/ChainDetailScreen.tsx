@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react';
-import { HorizontalTabView } from 'components/HorizontalTabView';
+import React from 'react';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainDetail/TokensTab';
-import { RefreshControl, ScrollView, StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
@@ -12,8 +11,7 @@ import { BalanceInfo } from '../../../../types';
 import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 import { getTotalConvertedBalanceValue } from 'screens/Home/CtyptoTab/utils';
-import { WebViewContext } from 'providers/contexts';
-import { BN_ZERO } from 'utils/chainBalances';
+import { MaterialTabBar, MaterialTabBarProps, Tabs } from 'react-native-collapsible-tab-view';
 
 interface Props {
   onPressBack: () => void;
@@ -41,11 +39,6 @@ const chainDetailHeaderTitle: StyleProp<any> = {
   maxWidth: 150,
 };
 
-const ROUTES = [
-  { key: 'tokens', title: 'Tokens' },
-  { key: 'history', title: 'History' },
-];
-
 export const ChainDetailScreen = ({
   onPressBack,
   selectedNetworkInfo,
@@ -53,8 +46,6 @@ export const ChainDetailScreen = ({
   networkBalanceMaps,
 }: Props) => {
   const currentBalanceInfo = networkBalanceMaps[selectedNetworkInfo.networkKey];
-  const [refreshing, setRefreshing] = useState(false);
-  const { viewRef } = useContext(WebViewContext);
   const renderHeaderContent = () => {
     return (
       <View style={chainDetailHeader}>
@@ -75,32 +66,17 @@ export const ChainDetailScreen = ({
     );
   };
 
-  // @ts-ignore
-  const renderScene = ({ route }) => {
-    switch (route.key) {
-      case 'history':
-        return <HistoryTab networkKey={selectedNetworkInfo.networkKey} />;
-      case 'tokens':
-      default:
-        return (
-          <TokensTab
-            selectedNetworkInfo={selectedNetworkInfo}
-            selectedBalanceInfo={currentBalanceInfo}
-            onPressTokenItem={onPressTokenItem}
-          />
-        );
-    }
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    if (viewRef && viewRef.current) {
-      viewRef.current.reload();
-    }
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  };
+  const renderTabBar = (props: MaterialTabBarProps<any>) => (
+    <MaterialTabBar
+      {...props}
+      activeColor={ColorMap.light}
+      inactiveColor={ColorMap.light}
+      indicatorStyle={{ backgroundColor: ColorMap.light, marginHorizontal: 16 }}
+      tabStyle={{ backgroundColor: ColorMap.dark2 }}
+      style={{ backgroundColor: ColorMap.dark2 }}
+      labelStyle={{ ...sharedStyles.mediumText, ...FontSemiBold }}
+    />
+  );
 
   return (
     <ContainerWithSubHeader
@@ -113,18 +89,30 @@ export const ChainDetailScreen = ({
       style={containerStyle}
       disableRightButton={true}
       onPressRightIcon={() => {}}>
-      <ScrollView
-        contentContainerStyle={{ flex: 1 }}
-        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
-        <>
-          <BalanceBlock
-            balanceValue={getTotalConvertedBalanceValue(currentBalanceInfo)}
-            selectionProvider={{ selectedNetworkKey: selectedNetworkInfo.networkKey }}
+      <Tabs.Container
+        lazy
+        allowHeaderOverscroll={true}
+        renderTabBar={renderTabBar}
+        renderHeader={() => {
+          return (
+            <BalanceBlock
+              balanceValue={getTotalConvertedBalanceValue(currentBalanceInfo)}
+              selectionProvider={{ selectedNetworkKey: selectedNetworkInfo.networkKey }}
+            />
+          );
+        }}
+        snapThreshold={0.5}>
+        <Tabs.Tab name="token" label="Token">
+          <TokensTab
+            selectedNetworkInfo={selectedNetworkInfo}
+            selectedBalanceInfo={currentBalanceInfo}
+            onPressTokenItem={onPressTokenItem}
           />
-
-          <HorizontalTabView routes={ROUTES} renderScene={renderScene} />
-        </>
-      </ScrollView>
+        </Tabs.Tab>
+        <Tabs.Tab name="chain" label="History">
+          <HistoryTab networkKey={selectedNetworkInfo.networkKey} />
+        </Tabs.Tab>
+      </Tabs.Container>
     </ContainerWithSubHeader>
   );
 };
