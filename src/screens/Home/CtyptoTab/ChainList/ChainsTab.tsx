@@ -7,6 +7,7 @@ import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
+import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 
 interface Props {
   networkKeys: string[];
@@ -37,7 +38,8 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
   return (
     <Tabs.FlatList
       nestedScrollEnabled
-      style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }}
+      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
+      style={{ ...CollapsibleFlatListStyle }}
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}
       renderItem={renderItem}

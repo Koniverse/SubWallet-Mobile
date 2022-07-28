@@ -1,12 +1,14 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { BN_ZERO } from 'utils/chainBalances';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import {ColorMap} from "styles/color";
+import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
+import { ColorMap } from 'styles/color';
+import { useRefresh } from 'hooks/useRefresh';
 
 interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
@@ -44,7 +46,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
 
 export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
   const items = getItems(selectedNetworkInfo, selectedBalanceInfo);
-
+  const [isRefreshing, startRefreshing] = useRefresh();
   function renderItem({ item }: ListRenderItemInfo<TokenBalanceItemType>) {
     if (!item.isReady) {
       return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
@@ -65,6 +67,16 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
   }
 
   return (
-    <Tabs.FlatList nestedScrollEnabled style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }} keyboardShouldPersistTaps={'handled'} data={items} renderItem={renderItem} />
+    <Tabs.FlatList
+      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
+      nestedScrollEnabled
+      style={{ ...CollapsibleFlatListStyle }}
+      keyboardShouldPersistTaps={'handled'}
+      data={items}
+      renderItem={renderItem}
+      refreshControl={
+        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
+      }
+    />
   );
 };

@@ -1,13 +1,14 @@
 import React from 'react';
-import {FlatList, ListRenderItemInfo, RefreshControl} from 'react-native';
+import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import { getTokenBalanceItems } from 'utils/index';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import {ColorMap} from "styles/color";
-import {useRefresh} from "hooks/useRefresh";
+import { ColorMap } from 'styles/color';
+import { useRefresh } from 'hooks/useRefresh';
+import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
@@ -42,12 +43,18 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
   return (
     <Tabs.FlatList
       nestedScrollEnabled
-      style={{ paddingTop: 8, backgroundColor: ColorMap.dark1 }}
+      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
+      style={{ ...CollapsibleFlatListStyle }}
       keyboardShouldPersistTaps={'handled'}
       data={tokenBalanceItems}
       renderItem={renderItem}
       refreshControl={
-        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
+        <RefreshControl
+          style={{ backgroundColor: ColorMap.dark2 }}
+          tintColor={ColorMap.light}
+          refreshing={isRefreshing}
+          onRefresh={startRefreshing}
+        />
       }
     />
   );

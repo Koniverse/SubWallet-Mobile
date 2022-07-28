@@ -85,6 +85,7 @@ export const ChainDetailScreen = ({
       title={''}
       headerContent={renderHeaderContent}
       showRightBtn
+      statusBarColor={ColorMap.dark2}
       rightIcon={SlidersHorizontal}
       style={containerStyle}
       disableRightButton={true}
@@ -110,7 +111,7 @@ export const ChainDetailScreen = ({
           />
         </Tabs.Tab>
         <Tabs.Tab name="chain" label="History">
-          <HistoryTab networkKey={selectedNetworkInfo.networkKey} />
+          <HistoryTab networkKey={selectedNetworkInfo.networkKey} isUseCollapsibleTabView />
         </Tabs.Tab>
       </Tabs.Container>
     </ContainerWithSubHeader>

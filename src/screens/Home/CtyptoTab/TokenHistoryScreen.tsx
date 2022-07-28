@@ -117,6 +117,7 @@ export const TokenHistoryScreen = ({
       onPressBack={onPressBack}
       backgroundColor={ColorMap.dark2}
       title={''}
+      statusBarColor={ColorMap.dark2}
       style={containerStyle}
       headerContent={renderHeaderContent}>
       <ScrollView

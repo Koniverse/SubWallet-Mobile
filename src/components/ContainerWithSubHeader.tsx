@@ -1,12 +1,14 @@
 import React from 'react';
-import {KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp, View} from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
-import { sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { statusBarHeight } from '../constant';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   children: JSX.Element;
   style?: StyleProp<any>;
+  statusBarColor?: string;
 }
 
 const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgroundColor?: string) => {
@@ -17,12 +19,18 @@ const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgro
   };
 };
 
-export const ContainerWithSubHeader = ({ children, style, ...subHeaderProps }: ContainerWithSubHeaderProps) => {
+export const ContainerWithSubHeader = ({
+  children,
+  style,
+  statusBarColor = ColorMap.dark1,
+  ...subHeaderProps
+}: ContainerWithSubHeaderProps) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
-      <SafeAreaView style={{ backgroundColor: ColorMap.dark2, position: 'relative', zIndex: 10 }}>
+      <SafeAreaView style={{ backgroundColor: statusBarColor, position: 'relative', zIndex: 10 }}>
+        <View style={{ height: Platform.OS === 'android' ? statusBarHeight : 0 }} />
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
         <View style={{ height: 13.5 }} />
       </SafeAreaView>
