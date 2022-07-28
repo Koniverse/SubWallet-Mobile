@@ -12,7 +12,7 @@ export const useRefresh = () => {
           viewRef.current.reload();
         }
       }
-    }, 500);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [isRefreshing]);

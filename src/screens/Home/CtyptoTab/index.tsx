@@ -173,7 +173,6 @@ export const CryptoTab = () => {
         onChangeModalVisible={() => setTokenSelectModal(false)}
         onPressBack={() => {
           setTokenSelectModal(false);
-          onPressBack();
         }}
       />
     </>

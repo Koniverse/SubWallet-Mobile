@@ -37,6 +37,7 @@ export const Search = ({ onSearch, searchText, style, onClearSearchString }: Pro
           flexDirection: 'row',
           flex: 1,
         }}
+        autoFocus
         onChangeText={text => onSearch(text)}
         placeholder={'Search'}
         placeholderTextColor={ColorMap.disabled}

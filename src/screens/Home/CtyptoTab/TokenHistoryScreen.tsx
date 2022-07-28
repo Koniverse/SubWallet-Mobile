@@ -121,6 +121,7 @@ export const TokenHistoryScreen = ({
       style={containerStyle}
       headerContent={renderHeaderContent}>
       <ScrollView
+        nestedScrollEnabled
         contentContainerStyle={{ flex: 1 }}
         refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
         <>

@@ -1,6 +1,7 @@
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleProp, StyleSheet } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { ColorMap } from 'styles/color';
+import { statusBarHeight } from '../constant';
 
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
@@ -21,6 +22,18 @@ export const ContainerHorizontalPadding = { paddingLeft: 16, paddingRight: 16 };
 export const MarginBottomForSubmitButton = { marginBottom: Platform.OS === 'ios' ? 18 : 0 };
 export const ScrollViewStyle = { marginLeft: -16, marginRight: -16, ...ContainerHorizontalPadding };
 export const CollapsibleFlatListStyle = { paddingTop: 8, backgroundColor: ColorMap.dark2 };
+
+export const getStatusBarPlaceholderStyle = (backgroundColor = ColorMap.dark1): StyleProp<any> => {
+  return {
+    top: 0,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: statusBarHeight + 13.5,
+    backgroundColor: backgroundColor,
+    zIndex: 10,
+  };
+};
 
 const smallText = {
   ...FontSize1,
