@@ -1,6 +1,6 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { RootState } from './stores';
 import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -34,6 +34,7 @@ import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import useSetupStore from 'hooks/store/useSetupStore';
 import useSetupI18n from 'hooks/useSetupI18n';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 let lastTimestamp = 0;
 
@@ -43,6 +44,7 @@ export const App = () => {
     settingData: { pinCode, pinCodeEnabled, autoLockTime, language },
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
+  const [isCryptoReady, setCryptoReady] = useState<boolean>(false);
   useSetupStore(status);
   useSetupI18n(language, status);
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
@@ -51,6 +53,12 @@ export const App = () => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
+
+  useEffect(() => {
+    cryptoWaitReady().then(() => {
+      setCryptoReady(true);
+    });
+  }, []);
 
   useEffect(() => {
     const onAppStateChange = (state: string) => {
@@ -76,6 +84,10 @@ export const App = () => {
       listener.remove();
     };
   }, [autoLockTime, navigationRef, pinCodeEnabled]);
+
+  if (!isCryptoReady) {
+    return <></>;
+  }
 
   return (
     <ToastProvider
