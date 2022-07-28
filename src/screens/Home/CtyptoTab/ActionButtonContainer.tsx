@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
@@ -44,6 +44,7 @@ const actionButtonWrapper: StyleProp<any> = {
 export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const {
     accounts: { accounts, currentAccountAddress },
+    networkMap,
   } = useSelector((state: RootState) => state);
   const toast = useToast();
   const _isAccountAll = isAccountAll(currentAccountAddress);
@@ -150,7 +151,8 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const onPressReceiveButton = () => {
     if (selectionProvider) {
       const { selectedNetworkKey: _selectedNetworkKey } = selectionProvider;
-      setSelectedResult({ selectedNetworkKey: _selectedNetworkKey });
+      const _selectedNetworkPrefix = networkMap[_selectedNetworkKey].ss58Format;
+      setSelectedResult({ selectedNetworkKey: _selectedNetworkKey, selectedNetworkPrefix: _selectedNetworkPrefix });
       setReceiveModalVisible(true);
     } else {
       setNetworkSelectAction({
