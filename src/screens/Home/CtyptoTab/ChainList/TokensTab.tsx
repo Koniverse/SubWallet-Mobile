@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { TokenChainBalance } from 'components/TokenChainBalance';
@@ -15,7 +15,7 @@ interface Props {
 export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
   const tokenBalanceItems = getTokenBalanceItems(networkBalanceMaps);
 
-  const renderItem = (item: TokenBalanceItemType) => {
+  const renderItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (!item.isReady) {
       return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
     }
@@ -36,5 +36,12 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
     );
   };
 
-  return <ScrollView style={{ paddingTop: 8 }}>{tokenBalanceItems && tokenBalanceItems.map(renderItem)}</ScrollView>;
+  return (
+    <FlatList
+      style={{ paddingTop: 8 }}
+      keyboardShouldPersistTaps={'handled'}
+      data={tokenBalanceItems}
+      renderItem={renderItem}
+    />
+  );
 };

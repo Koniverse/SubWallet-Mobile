@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ChainBalance } from 'components/ChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, accountInfoByNetworkMap }: Props) => {
-  const renderChainBalanceItem = (networkKey: string) => {
+  const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
     if (!balanceInfo || !balanceInfo.isReady) {
@@ -30,5 +30,12 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
     }
   };
 
-  return <ScrollView style={{ paddingTop: 8 }}>{networkKeys.map(key => renderChainBalanceItem(key))}</ScrollView>;
+  return (
+    <FlatList
+      style={{ paddingTop: 8 }}
+      keyboardShouldPersistTaps={'handled'}
+      data={networkKeys}
+      renderItem={renderItem}
+    />
+  );
 };

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Image, ScrollView, StyleProp, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
-import { Images } from 'assets/index';
 import { ListDashes } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -120,14 +119,16 @@ const EmptyList = () => {
 };
 
 const ContentComponent = ({ items, registryMap }: ContentProps) => {
-  const renderItem = (item: TransactionHistoryItemType) => {
+  const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
 
     return <TokenHistoryItem item={item} key={item.extrinsicHash} registry={registry} />;
   };
 
-  return <ScrollView style={{ paddingTop: 8 }}>{items.map(renderItem)}</ScrollView>;
+  return (
+    <FlatList style={{ paddingTop: 8 }} keyboardShouldPersistTaps={'handled'} data={items} renderItem={renderItem} />
+  );
 };
 
 export const HistoryTab = ({ networkKey, token }: Props) => {
