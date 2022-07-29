@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { FlatList, ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
+import React from 'react';
+import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -21,7 +21,6 @@ interface ContentProps {
   registryMap: Record<string, ChainRegistry>;
   items: TransactionHistoryItemType[];
   token?: string;
-  isUseCollapsibleTabView?: boolean;
 }
 
 const emptyListContainerStyle: StyleProp<any> = {
@@ -122,9 +121,8 @@ const EmptyList = () => {
   );
 };
 
-const ContentComponent = ({ items, registryMap, isUseCollapsibleTabView }: ContentProps) => {
+const ContentComponent = ({ items, registryMap }: ContentProps) => {
   const [isRefreshing, startRefreshing] = useRefresh();
-  const [isEnabled, setEnabled] = useState(true);
   const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
@@ -132,27 +130,11 @@ const ContentComponent = ({ items, registryMap, isUseCollapsibleTabView }: Conte
     return <TokenHistoryItem item={item} key={item.extrinsicHash} registry={registry} />;
   };
 
-  if (isUseCollapsibleTabView) {
-    return (
-      <Tabs.FlatList
-        nestedScrollEnabled
-        contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
-        style={{ ...CollapsibleFlatListStyle }}
-        keyboardShouldPersistTaps={'handled'}
-        data={items}
-        renderItem={renderItem}
-        refreshControl={
-          <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
-        }
-        ListEmptyComponent={<EmptyList />}
-      />
-    );
-  }
-
   return (
-    <FlatList
-      style={{ backgroundColor: ColorMap.dark1 }}
-      scrollEnabled={isEnabled}
+    <Tabs.FlatList
+      nestedScrollEnabled
+      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
+      style={{ ...CollapsibleFlatListStyle }}
       keyboardShouldPersistTaps={'handled'}
       data={items}
       renderItem={renderItem}
@@ -164,7 +146,7 @@ const ContentComponent = ({ items, registryMap, isUseCollapsibleTabView }: Conte
   );
 };
 
-export const HistoryTab = ({ networkKey, token, isUseCollapsibleTabView = false }: Props) => {
+export const HistoryTab = ({ networkKey, token }: Props) => {
   const {
     chainRegistry: registryMap,
     transactionHistory: { historyMap },
@@ -173,7 +155,5 @@ export const HistoryTab = ({ networkKey, token, isUseCollapsibleTabView = false 
   const items = getItems(networkKey, historyMap);
   const readyItems = getReadyItems(readyNetworks, items, registryMap, token);
 
-  return (
-    <ContentComponent items={readyItems} registryMap={registryMap} isUseCollapsibleTabView={isUseCollapsibleTabView} />
-  );
+  return <ContentComponent items={readyItems} registryMap={registryMap} />;
 };

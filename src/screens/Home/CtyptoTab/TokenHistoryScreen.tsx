@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -9,7 +9,7 @@ import { HistoryTab } from 'screens/Home/CtyptoTab/shared/HistoryTab';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
 import { BalanceInfo } from '../../../types';
 import BigN from 'bignumber.js';
-import { WebViewContext } from 'providers/contexts';
+import * as Tabs from 'react-native-collapsible-tab-view';
 
 interface Props {
   onPressBack: () => void;
@@ -79,19 +79,6 @@ export const TokenHistoryScreen = ({
     networkBalanceMaps,
   );
 
-  const [refreshing, setRefreshing] = useState(false);
-  const { viewRef } = useContext(WebViewContext);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    if (viewRef && viewRef.current) {
-      viewRef.current.reload();
-    }
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  };
-
   const renderHeaderContent = () => {
     return (
       <View style={tokenHistoryHeader}>
@@ -120,24 +107,30 @@ export const TokenHistoryScreen = ({
       statusBarColor={ColorMap.dark2}
       style={containerStyle}
       headerContent={renderHeaderContent}>
-      <View style={{ flex: 1 }}>
-        <BalanceBlock
-          isShowBalanceToUsd
-          startWithSymbol={false}
-          actionButtonContainerStyle={actionButtonContainerStyle}
-          symbol={selectedTokenName}
-          balanceValue={balanceValue}
-          amountToUsd={convertedBalanceValue}
-          selectionProvider={{
-            selectedNetworkKey: selectedNetworkInfo.networkKey,
-            selectedToken: selectedTokenSymbol,
-          }}
-        />
-
-        <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
-          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
-        </View>
-      </View>
+      <Tabs.Container
+        lazy
+        allowHeaderOverscroll={true}
+        renderTabBar={() => <></>}
+        renderHeader={() => {
+          return (
+            <BalanceBlock
+              isShowBalanceToUsd
+              startWithSymbol={false}
+              actionButtonContainerStyle={actionButtonContainerStyle}
+              symbol={selectedTokenName}
+              balanceValue={balanceValue}
+              amountToUsd={convertedBalanceValue}
+              selectionProvider={{
+                selectedNetworkKey: selectedNetworkInfo.networkKey,
+                selectedToken: selectedTokenSymbol,
+              }}
+            />
+          );
+        }}>
+        <Tabs.Tab name="history">
+          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} isUseCollapsibleTabView />
+        </Tabs.Tab>
+      </Tabs.Container>
     </ContainerWithSubHeader>
   );
 };
