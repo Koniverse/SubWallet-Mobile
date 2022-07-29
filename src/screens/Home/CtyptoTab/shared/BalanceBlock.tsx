@@ -29,7 +29,7 @@ export const BalanceBlock = ({
   } = useSelector((state: RootState) => state);
 
   return (
-    <View style={balanceContainer}>
+    <View style={balanceContainer} pointerEvents="box-none">
       <BalancesVisibility value={balanceValue} symbol={symbol} startWithSymbol={startWithSymbol} />
 
       {isShowBalanceToUsd && amountToUsd && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={isShowBalance} />}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { Linking, StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { ArrowDown, ArrowUp } from 'phosphor-react-native';
@@ -8,11 +8,12 @@ import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-
 import { customFormatDate } from 'utils/customFormatDate';
 import { BalanceVal } from 'components/BalanceVal';
 import { getBalances } from 'utils/chainBalances';
+import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
+import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 
 interface Props extends TouchableOpacityProps {
   item: TransactionHistoryItemType;
   registry: ChainRegistry;
-  isSupportScanExplorer?: boolean;
 }
 
 const tokenHistoryMainArea: StyleProp<any> = {
@@ -124,7 +125,7 @@ function getDecimalsAndSymbolInfo(item: TransactionHistoryItemType, registry: Ch
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const TokenHistoryItem = ({ item, registry, isSupportScanExplorer, ...wrapperProp }: Props) => {
+export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
   const HistorySendIcon = ArrowUp;
   const HistoryReceiveIcon = ArrowDown;
   // todo: do i18n here
@@ -143,10 +144,16 @@ export const TokenHistoryItem = ({ item, registry, isSupportScanExplorer, ...wra
     decimals: feeDecimals,
     symbol: feeSymbol,
   });
+  const isSupportScanExplorer = useSupportScanExplorer(item.networkKey);
+  const scanExplorerUrl = useScanExplorerTxUrl(item.networkKey, item.extrinsicHash);
 
   //todo: do something with isSupportScanExplorer
   return (
-    <TouchableOpacity style={{ width: '100%' }} disabled {...wrapperProp}>
+    <TouchableOpacity
+      style={{ width: '100%' }}
+      disabled={!isSupportScanExplorer || !scanExplorerUrl}
+      {...wrapperProp}
+      onPress={() => Linking.openURL(scanExplorerUrl)}>
       <View style={tokenHistoryMainArea}>
         <View style={tokenHistoryPart1}>
           <View style={getIconStyle(item)}>

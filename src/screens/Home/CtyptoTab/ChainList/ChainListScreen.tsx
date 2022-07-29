@@ -8,7 +8,7 @@ import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceBlock } from 'screens/Home/CtyptoTab/shared/BalanceBlock';
-import { Tabs, MaterialTabBar, MaterialTabBarProps } from 'react-native-collapsible-tab-view';
+import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
@@ -33,9 +33,10 @@ export const ChainListScreen = ({
   onPressTokenItem,
   totalBalanceValue,
 }: Props) => {
-  const renderTabBar = (props: MaterialTabBarProps<any>) => (
-    <MaterialTabBar
+  const renderTabBar = (props: Tabs.MaterialTabBarProps<any>) => (
+    <Tabs.MaterialTabBar
       {...props}
+      // scrollEnabled
       activeColor={ColorMap.light}
       inactiveColor={ColorMap.light}
       indicatorStyle={{ backgroundColor: ColorMap.light, marginHorizontal: 16 }}
@@ -53,8 +54,7 @@ export const ChainListScreen = ({
         renderTabBar={renderTabBar}
         renderHeader={() => {
           return <BalanceBlock balanceValue={totalBalanceValue} />;
-        }}
-        snapThreshold={0.5}>
+        }}>
         <Tabs.Tab name="token" label="Token">
           <TokensTab
             accountInfoByNetworkMap={accountInfoByNetworkMap}

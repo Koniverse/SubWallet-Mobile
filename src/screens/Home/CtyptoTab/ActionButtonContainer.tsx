@@ -170,7 +170,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
 
   return (
     <>
-      <View style={[actionButtonWrapper, style]}>
+      <View style={[actionButtonWrapper, style]} pointerEvents="box-none">
         <ActionButton
           label={i18n.cryptoTab.receive}
           iconSize={24}

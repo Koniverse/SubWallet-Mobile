@@ -82,7 +82,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
     return (
       <SubmitButton
         style={{ ...MarginBottomForSubmitButton, marginTop: 16 }}
-        disabled={!(isSupportScanExplorer && isScanExplorerTxUrl)}
+        disabled={!isSupportScanExplorer || !isScanExplorerTxUrl}
         title={'View in Explorer'}
         onPress={() => Linking.openURL(isScanExplorerTxUrl)}
       />

@@ -20,13 +20,13 @@ const injectedJS = `
   }
 `;
 
-const ERROR_HANDLE_SCRIPT = `
-    window.onerror = function(message, sourcefile, lineno, colno, error) {
-      alert("Message: " + message + " - Source: " + sourcefile + " Line: " + lineno + ":" + colno);
-      return true;
-    };
-    true;
-`;
+// const ERROR_HANDLE_SCRIPT = `
+//     window.onerror = function(message, sourcefile, lineno, colno, error) {
+//       alert("Message: " + message + " - Source: " + sourcefile + " Line: " + lineno + ":" + colno);
+//       return true;
+//     };
+//     true;
+// `;
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
@@ -61,7 +61,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         <WebView
           // @ts-ignore
           ref={webRef}
-          injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
+          // injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
           onMessage={onMessage}
           source={{ uri: sourceUri }}
           originWhitelist={['*']}

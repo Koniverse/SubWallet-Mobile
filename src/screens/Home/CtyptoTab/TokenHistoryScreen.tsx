@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { RefreshControl, ScrollView, StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';
@@ -120,29 +120,24 @@ export const TokenHistoryScreen = ({
       statusBarColor={ColorMap.dark2}
       style={containerStyle}
       headerContent={renderHeaderContent}>
-      <ScrollView
-        nestedScrollEnabled
-        contentContainerStyle={{ flex: 1 }}
-        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={refreshing} onRefresh={onRefresh} />}>
-        <>
-          <BalanceBlock
-            isShowBalanceToUsd
-            startWithSymbol={false}
-            actionButtonContainerStyle={actionButtonContainerStyle}
-            symbol={selectedTokenName}
-            balanceValue={balanceValue}
-            amountToUsd={convertedBalanceValue}
-            selectionProvider={{
-              selectedNetworkKey: selectedNetworkInfo.networkKey,
-              selectedToken: selectedTokenSymbol,
-            }}
-          />
+      <View style={{ flex: 1 }}>
+        <BalanceBlock
+          isShowBalanceToUsd
+          startWithSymbol={false}
+          actionButtonContainerStyle={actionButtonContainerStyle}
+          symbol={selectedTokenName}
+          balanceValue={balanceValue}
+          amountToUsd={convertedBalanceValue}
+          selectionProvider={{
+            selectedNetworkKey: selectedNetworkInfo.networkKey,
+            selectedToken: selectedTokenSymbol,
+          }}
+        />
 
-          <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
-            <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
-          </View>
-        </>
-      </ScrollView>
+        <View style={{ backgroundColor: ColorMap.dark1, flex: 1 }}>
+          <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
+        </View>
+      </View>
     </ContainerWithSubHeader>
   );
 };

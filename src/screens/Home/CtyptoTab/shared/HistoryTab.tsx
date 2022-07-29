@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { FlatList, ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
 import { useSelector } from 'react-redux';
@@ -124,6 +124,7 @@ const EmptyList = () => {
 
 const ContentComponent = ({ items, registryMap, isUseCollapsibleTabView }: ContentProps) => {
   const [isRefreshing, startRefreshing] = useRefresh();
+  const [isEnabled, setEnabled] = useState(true);
   const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
@@ -150,9 +151,8 @@ const ContentComponent = ({ items, registryMap, isUseCollapsibleTabView }: Conte
 
   return (
     <FlatList
-      nestedScrollEnabled
-      contentContainerStyle={{ backgroundColor: ColorMap.dark1, flex: 1 }}
-      style={{ ...CollapsibleFlatListStyle }}
+      style={{ backgroundColor: ColorMap.dark1 }}
+      scrollEnabled={isEnabled}
       keyboardShouldPersistTaps={'handled'}
       data={items}
       renderItem={renderItem}
@@ -172,10 +172,6 @@ export const HistoryTab = ({ networkKey, token, isUseCollapsibleTabView = false 
   const readyNetworks = getReadyNetwork(registryMap);
   const items = getItems(networkKey, historyMap);
   const readyItems = getReadyItems(readyNetworks, items, registryMap, token);
-
-  // if (!readyItems.length) {
-  //   return <EmptyList />;
-  // }
 
   return (
     <ContentComponent items={readyItems} registryMap={registryMap} isUseCollapsibleTabView={isUseCollapsibleTabView} />
