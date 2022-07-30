@@ -336,6 +336,7 @@ export const InputNumber = ({
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
       <TextInput
+        autoCorrect={false}
         style={getInputStyle(value, ColorMap.light, 10)}
         keyboardType={'decimal-pad'}
         defaultValue={value}

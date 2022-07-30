@@ -403,7 +403,7 @@ export const SendFund = () => {
                         <FormatBalance format={balanceFormat} value={senderFreeBalance} />
                       </View>
 
-                      <TouchableOpacity onPress={() => onUpdateInputBalance()} disabled={!canToggleAll}>
+                      <TouchableOpacity onPress={onUpdateInputBalance} disabled={!canToggleAll}>
                         <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>Max</Text>
                       </TouchableOpacity>
                     </View>

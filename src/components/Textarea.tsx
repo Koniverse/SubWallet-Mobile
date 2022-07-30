@@ -13,6 +13,7 @@ export const Textarea = (textAreaProps: TextInputProps) => {
   const { style, onChangeText, value, onBlur, onEndEditing, autoFocus } = textAreaProps;
   return (
     <TextInput
+      autoCorrect={false}
       autoFocus={autoFocus}
       autoCapitalize="none"
       style={[sharedStyles.inputAreaStyle, textAreaWrapper, style]}

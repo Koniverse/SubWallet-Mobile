@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { SubmitButton } from 'components/SubmitButton';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { PinCodeField } from 'components/PinCodeField';
+import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
+import { CELL_COUNT } from '../../../constant';
 
 const bottomAreaStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -24,10 +25,11 @@ interface Props {
 }
 
 export const PinCode = ({ pinCode, onChangePinCode, onPressBack, onPressContinue, isPinCodeValid }: Props) => {
+  const ref = useBlurOnFulfill({ value: pinCode, cellCount: CELL_COUNT });
   return (
     <>
       <View style={{ flex: 1, justifyContent: 'center' }}>
-        <PinCodeField value={pinCode} setValue={onChangePinCode} isPinCodeValid={isPinCodeValid} />
+        <PinCodeField value={pinCode} setValue={onChangePinCode} isPinCodeValid={isPinCodeValid} pinCodeRef={ref} />
       </View>
       <View style={bottomAreaStyle}>
         <SubmitButton title={'Cancel'} style={cancelButtonStyle} onPress={onPressBack} />

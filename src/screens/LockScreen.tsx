@@ -9,6 +9,8 @@ import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
+import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
+import { CELL_COUNT } from '../constant';
 
 export const LockScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -18,10 +20,19 @@ export const LockScreen = () => {
   } = useSelector((state: RootState) => state);
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      ref && ref.current && ref.current.focus();
+    });
+
+    return unsubscribe;
+  }, [navigation, ref]);
 
   useEffect(() => {
     if (value.length > 5) {
       if (value === pinCode) {
+        setValue('');
         if (accounts && accounts.length) {
           navigation.navigate('Home');
         } else {
@@ -52,7 +63,7 @@ export const LockScreen = () => {
         <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingBottom: 77 }}>
           {i18n.common.enterPinToUnlock}
         </Text>
-        <PinCodeField value={value} setValue={setValue} isPinCodeValid={!error} />
+        <PinCodeField value={value} setValue={setValue} isPinCodeValid={!error} pinCodeRef={ref} />
 
         {!!error && <Warning style={{ marginTop: 16 }} isDanger message={error} />}
       </View>

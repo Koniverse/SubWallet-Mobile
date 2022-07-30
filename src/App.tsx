@@ -69,7 +69,7 @@ export const App = () => {
       if (state === 'background') {
         lastTimestamp = Date.now();
       } else if (state === 'active') {
-        if (!autoLockTime) {
+        if (autoLockTime === undefined) {
           return;
         } else {
           if (Date.now() - lastTimestamp > autoLockTime) {

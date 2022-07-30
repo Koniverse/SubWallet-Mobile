@@ -55,6 +55,7 @@ export const PasswordField = ({
       <FieldBase {...fieldBase}>
         <View style={blockContentStyle}>
           <TextInput
+            autoCorrect={false}
             autoFocus={autoFocus}
             style={getInputStyle(!!isError)}
             placeholderTextColor={ColorMap.disabled}

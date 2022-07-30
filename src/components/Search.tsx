@@ -8,6 +8,8 @@ interface Props extends TextInputProps {
   onSearch: (text: string) => void;
   searchText: string;
   onClearSearchString: () => void;
+  autoFocus?: boolean;
+  searchRef?: React.RefObject<TextInput>;
 }
 
 const searchContainerStyle: StyleProp<any> = {
@@ -20,7 +22,7 @@ const searchContainerStyle: StyleProp<any> = {
   height: 48,
 };
 
-export const Search = ({ onSearch, searchText, style, onClearSearchString }: Props) => {
+export const Search = ({ onSearch, searchText, style, onClearSearchString, autoFocus, searchRef }: Props) => {
   const SearchIcon = MagnifyingGlass;
   const CancelIcon = X;
 
@@ -28,6 +30,7 @@ export const Search = ({ onSearch, searchText, style, onClearSearchString }: Pro
     <View style={[searchContainerStyle, style]}>
       <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
       <TextInput
+        ref={searchRef}
         style={{
           marginHorizontal: 8,
           ...sharedStyles.mainText,
@@ -37,7 +40,8 @@ export const Search = ({ onSearch, searchText, style, onClearSearchString }: Pro
           flexDirection: 'row',
           flex: 1,
         }}
-        autoFocus
+        autoCorrect={false}
+        autoFocus={autoFocus}
         onChangeText={text => onSearch(text)}
         placeholder={'Search'}
         placeholderTextColor={ColorMap.disabled}

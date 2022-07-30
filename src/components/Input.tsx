@@ -18,6 +18,7 @@ export const Input = (inputProps: InputProps) => {
 
   return (
     <TextInput
+      autoCorrect={false}
       style={[sharedStyles.textInput, inputContainer]}
       placeholderTextColor={theme.textColor2}
       selectionColor={theme.textColor2}
