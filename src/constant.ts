@@ -22,3 +22,4 @@ export enum BitLengthOption {
   CHAIN_SPEC = 128,
   NORMAL_NUMBERS = 32,
 }
+export const CELL_COUNT = 6;

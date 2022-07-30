@@ -54,6 +54,7 @@ export const PasswordInput = (inputProps: InputProps) => {
       <Text style={getInputLabelStyle(textTransform)}>{label}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TextInput
+          autoCorrect={false}
           style={inputStyle}
           placeholderTextColor={theme.textColor2}
           selectionColor={theme.textColor2}

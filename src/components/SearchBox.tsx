@@ -44,6 +44,7 @@ export const SearchBox = ({ autoFocus }: Props) => {
   return (
     <View style={searchBoxContainer}>
       <TextInput
+        autoCorrect={false}
         style={searchBoxText}
         autoFocus={autoFocus || true}
         placeholder={'Search...'}

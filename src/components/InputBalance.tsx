@@ -188,6 +188,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
       <TextInput
+        autoCorrect={false}
         style={getInputStyle(inputValue, props, si.power)}
         keyboardType={'decimal-pad'}
         defaultValue={inputValue}

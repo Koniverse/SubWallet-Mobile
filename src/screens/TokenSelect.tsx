@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import {FlatList, Keyboard, ListRenderItemInfo} from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
@@ -11,7 +11,7 @@ import { getTokenItemOptions } from 'utils/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { TokenItemType } from 'types/ui-types';
-import i18n from "utils/i18n/i18n";
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;

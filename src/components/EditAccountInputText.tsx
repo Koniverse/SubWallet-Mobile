@@ -44,6 +44,7 @@ export const EditAccountInputText = (inputProps: Props) => {
     <View style={[inputWrapper, editAccountInputStyle]}>
       <Text style={labelStyle}>{label}</Text>
       <TextInput
+        autoCorrect={false}
         style={[inputStyle, outerInputStyle]}
         value={inputValue}
         {...inputProps}

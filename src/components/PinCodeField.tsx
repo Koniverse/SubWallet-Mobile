@@ -4,14 +4,12 @@ import {
   Cursor,
   isLastFilledCell,
   MaskSymbol,
-  useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, TextInput, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontBold } from 'styles/sharedStyles';
-
-const CELL_COUNT = 6;
+import { CELL_COUNT } from '../constant';
 
 const codeFiledRoot: StyleProp<any> = {
   marginTop: 20,
@@ -49,10 +47,10 @@ interface Props {
   value: string;
   setValue: (text: string) => void;
   isPinCodeValid?: boolean;
+  pinCodeRef?: React.RefObject<TextInput>;
 }
 
-export const PinCodeField = ({ value, setValue, isPinCodeValid }: Props) => {
-  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+export const PinCodeField = ({ value, setValue, isPinCodeValid, pinCodeRef }: Props) => {
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
     setValue,
@@ -85,7 +83,7 @@ export const PinCodeField = ({ value, setValue, isPinCodeValid }: Props) => {
 
   return (
     <CodeField
-      ref={ref}
+      ref={pinCodeRef}
       {...props}
       value={value}
       onChangeText={setValue}

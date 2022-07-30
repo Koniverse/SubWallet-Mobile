@@ -92,7 +92,7 @@ export const TokenChainBalance = ({
         </View>
 
         <View style={chainBalancePart2}>
-          <BalanceVal balanceValTextStyle={textStyle} symbol={tokenBalanceSymbol} value={tokenBalanceValue} />
+          <BalanceVal balanceValTextStyle={textStyle} startWithSymbol symbol={''} value={tokenBalanceValue} />
           <BalanceVal balanceValTextStyle={subTextStyle} startWithSymbol symbol={'$'} value={convertedBalanceValue} />
         </View>
       </View>
