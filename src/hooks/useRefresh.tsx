@@ -5,17 +5,17 @@ export const useRefresh = () => {
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const { viewRef } = useContext(WebViewContext);
   React.useEffect(() => {
+    if (viewRef && viewRef.current) {
+      viewRef.current.reload();
+    }
     const timer = setTimeout(() => {
       if (isRefreshing) {
         setIsRefreshing(false);
-        if (viewRef && viewRef.current) {
-          viewRef.current.reload();
-        }
       }
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isRefreshing]);
+  }, [isRefreshing, viewRef]);
 
   return [
     isRefreshing,
