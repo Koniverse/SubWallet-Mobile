@@ -37,6 +37,7 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
 
   return (
     <Tabs.FlatList
+      showsVerticalScrollIndicator={false}
       nestedScrollEnabled
       contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
       style={{ ...CollapsibleFlatListStyle }}

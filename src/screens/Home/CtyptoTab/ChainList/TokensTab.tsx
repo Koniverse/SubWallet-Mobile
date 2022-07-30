@@ -43,6 +43,7 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
   return (
     <Tabs.FlatList
       nestedScrollEnabled
+      showsVerticalScrollIndicator={false}
       contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
       style={{ ...CollapsibleFlatListStyle }}
       keyboardShouldPersistTaps={'handled'}

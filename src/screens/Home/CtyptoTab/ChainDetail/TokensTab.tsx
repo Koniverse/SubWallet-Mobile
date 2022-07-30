@@ -68,6 +68,7 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
 
   return (
     <Tabs.FlatList
+      showsVerticalScrollIndicator={false}
       contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
       nestedScrollEnabled
       style={{ ...CollapsibleFlatListStyle }}

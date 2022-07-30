@@ -91,6 +91,7 @@ export const SendFund = () => {
   const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
   const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
   const [isGasRequiredExceedsError, setGasRequiredExceedsError] = useState<boolean>(false);
+  const [backupAmount, setBackupAmount] = useState<string | undefined>(undefined);
   const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
@@ -256,16 +257,12 @@ export const SendFund = () => {
   }, [receiveAddress]);
 
   useEffect(() => {
-    let isSync = true;
-    if (isSync && inputBalanceRef.current) {
+    if (currentViewStep === ViewStep.SEND_FUND && inputBalanceRef.current) {
       // @ts-ignore
-      inputBalanceRef.current.onChange(rawAmount);
+      inputBalanceRef.current.onChange(backupAmount);
     }
-    return () => {
-      isSync = false;
-    };
-  }, [inputBalanceRef, rawAmount]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentViewStep, backupAmount, inputBalanceRef.current]);
   const onChangeAmount = (val?: string) => {
     setRawAmount(val);
   };
@@ -273,6 +270,7 @@ export const SendFund = () => {
   const onPressBack = () => {
     if (currentViewStep === ViewStep.CONFIRMATION) {
       setCurrentStep(ViewStep.SEND_FUND);
+      setBackupAmount(rawAmount);
     } else {
       navigation.goBack();
     }

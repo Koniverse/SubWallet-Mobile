@@ -132,6 +132,7 @@ const ContentComponent = ({ items, registryMap }: ContentProps) => {
 
   return (
     <Tabs.FlatList
+      showsVerticalScrollIndicator={false}
       nestedScrollEnabled
       contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
       style={{ ...CollapsibleFlatListStyle }}
