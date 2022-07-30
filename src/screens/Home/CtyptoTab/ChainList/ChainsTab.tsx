@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, accountInfoByNetworkMap }: Props) => {
-  const [isRefreshing, startRefreshing] = useRefresh();
+  const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMaps[networkKey];
@@ -43,9 +43,7 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, a
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}
       renderItem={renderItem}
-      refreshControl={
-        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
-      }
+      refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
     />
   );
 };

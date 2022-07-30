@@ -11,6 +11,7 @@ interface WebViewProviderProps {
   viewRef?: MutableRefObject<WebView | undefined>;
 }
 
+// Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 const params = 'platform=' + Platform.OS;
 const injectedJS = `
   if (!window.location.search) {
@@ -19,14 +20,6 @@ const injectedJS = `
     link.click();
   }
 `;
-
-// const ERROR_HANDLE_SCRIPT = `
-//     window.onerror = function(message, sourcefile, lineno, colno, error) {
-//       alert("Message: " + message + " - Source: " + sourcefile + " Line: " + lineno + ":" + colno);
-//       return true;
-//     };
-//     true;
-// `;
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
@@ -41,6 +34,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         // @ts-ignore
         const webViewStatus = data.response?.status as string;
         setStatus(webViewStatus);
+        console.debug(`### Web View Status: ${webViewStatus}`);
         if (webViewStatus === 'crypto_ready') {
           SplashScreen.hide();
         }
@@ -66,8 +60,8 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           source={{ uri: sourceUri }}
           originWhitelist={['*']}
           injectedJavaScript={injectedJS}
-          onError={e => console.log('----- WebView error', e)}
-          onHttpError={e => console.log('----- WebView HttpError', e)}
+          onError={e => console.debug('----- WebView error', e)}
+          onHttpError={e => console.debug('----- WebView HttpError', e)}
           javaScriptEnabled={true}
           allowFileAccess={true}
           allowUniversalAccessFromFileURLs={true}

@@ -18,7 +18,7 @@ interface Props {
 
 export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
   const tokenBalanceItems = getTokenBalanceItems(networkBalanceMaps);
-  const [isRefreshing, startRefreshing] = useRefresh();
+  const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (!item.isReady) {
       return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
@@ -52,8 +52,8 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
         <RefreshControl
           style={{ backgroundColor: ColorMap.dark2 }}
           tintColor={ColorMap.light}
-          refreshing={isRefreshing}
-          onRefresh={startRefreshing}
+          refreshing={isRefresh}
+          onRefresh={refresh}
         />
       }
     />

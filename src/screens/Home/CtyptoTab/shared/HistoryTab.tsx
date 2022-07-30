@@ -122,7 +122,7 @@ const EmptyList = () => {
 };
 
 const ContentComponent = ({ items, registryMap }: ContentProps) => {
-  const [isRefreshing, startRefreshing] = useRefresh();
+  const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
@@ -138,9 +138,7 @@ const ContentComponent = ({ items, registryMap }: ContentProps) => {
       keyboardShouldPersistTaps={'handled'}
       data={items}
       renderItem={renderItem}
-      refreshControl={
-        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
-      }
+      refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
       ListEmptyComponent={<EmptyList />}
     />
   );

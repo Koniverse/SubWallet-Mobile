@@ -46,7 +46,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
 
 export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
   const items = getItems(selectedNetworkInfo, selectedBalanceInfo);
-  const [isRefreshing, startRefreshing] = useRefresh();
+  const [isRefresh, refresh] = useRefresh();
   function renderItem({ item }: ListRenderItemInfo<TokenBalanceItemType>) {
     if (!item.isReady) {
       return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
@@ -74,9 +74,7 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
       keyboardShouldPersistTaps={'handled'}
       data={items}
       renderItem={renderItem}
-      refreshControl={
-        <RefreshControl tintColor={ColorMap.light} refreshing={isRefreshing} onRefresh={startRefreshing} />
-      }
+      refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
     />
   );
 };

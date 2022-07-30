@@ -1,26 +1,23 @@
-import React, { useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { WebViewContext } from 'providers/contexts';
 
 export const useRefresh = () => {
-  const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const { viewRef } = useContext(WebViewContext);
-  React.useEffect(() => {
-    if (viewRef && viewRef.current) {
-      viewRef.current.reload();
-    }
-    const timer = setTimeout(() => {
-      if (isRefreshing) {
-        setIsRefreshing(false);
-      }
-    }, 2000);
+  const [isRefresh, setIsRefresh] = React.useState(false);
+  const { viewRef, status } = useContext(WebViewContext);
 
-    return () => clearTimeout(timer);
-  }, [isRefreshing, viewRef]);
+  const refeshWebview = useCallback(() => {
+    viewRef?.current?.reload();
+  }, [viewRef]);
+
+  React.useEffect(() => {
+    setIsRefresh(status !== 'crypto_ready');
+  }, [status]);
 
   return [
-    isRefreshing,
+    isRefresh,
     () => {
-      setIsRefreshing(true);
+      setIsRefresh(true);
+      refeshWebview();
     },
   ] as const;
 };
