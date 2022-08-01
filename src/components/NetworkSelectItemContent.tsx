@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from '../components/Text';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';

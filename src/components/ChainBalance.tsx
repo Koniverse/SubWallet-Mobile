@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
+import Text from 'components/Text';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';

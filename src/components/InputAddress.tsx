@@ -1,5 +1,6 @@
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { StyleProp, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
+import Text from '../components/Text';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';

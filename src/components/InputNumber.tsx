@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleProp, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
+import Text from '../components/Text';
 import { FontBold, FontSize1, FontSize3, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';

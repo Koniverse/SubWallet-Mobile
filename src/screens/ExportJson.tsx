@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { PasswordField } from 'components/Field/Password';

@@ -6,7 +6,8 @@ import {
   MaskSymbol,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { StyleProp, Text, TextInput, View } from 'react-native';
+import { StyleProp, TextInput, View } from 'react-native';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontBold } from 'styles/sharedStyles';
 import { CELL_COUNT } from '../constant';

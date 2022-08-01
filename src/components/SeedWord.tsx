@@ -1,5 +1,6 @@
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import React from 'react';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Linking, StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { Linking, StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { ArrowDown, ArrowUp } from 'phosphor-react-native';
 import { toShort } from 'utils/index';

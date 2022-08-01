@@ -1,8 +1,9 @@
 import React from 'react';
-import {StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View} from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { CircleWavyCheck } from 'phosphor-react-native';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
-import {FontMedium, FontSemiBold, sharedStyles} from "styles/sharedStyles";
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
 interface Props extends TouchableOpacityProps {
   label: string;

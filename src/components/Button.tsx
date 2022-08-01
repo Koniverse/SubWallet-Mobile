@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedbackProps, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableWithoutFeedbackProps, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import Text from '../components/Text';
 
 interface ButtonProps extends TouchableWithoutFeedbackProps {
   title: string;

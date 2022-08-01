@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, TouchableOpacity, View } from 'react-native';
+import Text from '../components/Text';
 import { RootStackParamList } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';

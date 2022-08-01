@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleProp, Text, TextInput, TextInputProps, View } from 'react-native';
+import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import Text from '../components/Text';
 
 interface Props extends TextInputProps {
   inputValue: string;

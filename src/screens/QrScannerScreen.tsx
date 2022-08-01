@@ -1,5 +1,6 @@
 import React from 'react';
-import { StatusBar, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleProp, TouchableOpacity, View } from 'react-native';
+import Text from 'components/Text';
 import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BUTTON_ACTIVE_OPACITY, deviceHeight, deviceWidth } from '../constant';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getNetworkLogo } from 'utils/index';

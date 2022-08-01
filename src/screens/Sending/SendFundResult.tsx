@@ -1,6 +1,7 @@
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Linking, ScrollView, StyleProp, Text, View, Image } from 'react-native';
+import { Linking, ScrollView, StyleProp, View, Image } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
+import Text from '../../components/Text';
 import React from 'react';
 import {
   FontMedium,

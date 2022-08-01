@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { ColorMap } from 'styles/color';
+import Text from '../components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';

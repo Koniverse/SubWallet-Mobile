@@ -6,9 +6,10 @@ import React from 'react';
 
 import { BN, BN_ZERO, formatBalance } from '@polkadot/util';
 import { BalanceFormatType } from 'types/ui-types';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
-import {FontMedium, sharedStyles} from 'styles/sharedStyles';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 
 interface Props {
   children?: React.ReactNode;

@@ -1,5 +1,6 @@
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import React from 'react';
+import Text from '../components/Text';
 import { IconProps } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';

@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleProp, Text } from 'react-native';
+import { StyleProp } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
+import Text from '../../components/Text';
 
 interface Props extends FieldBaseProps {
   text: string;

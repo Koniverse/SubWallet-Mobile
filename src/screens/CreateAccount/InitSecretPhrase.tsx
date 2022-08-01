@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { GestureResponderEvent, ScrollView, StyleProp, Text, View } from 'react-native';
+import { GestureResponderEvent, ScrollView, StyleProp, View } from 'react-native';
+import Text from '../../components/Text';
 import { SeedWord } from 'components/SeedWord';
 import {
   ContainerHorizontalPadding,

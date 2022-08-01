@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleProp, Text, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { ColorMap } from 'styles/color';

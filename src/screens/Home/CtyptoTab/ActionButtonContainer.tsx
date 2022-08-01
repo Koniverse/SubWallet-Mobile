@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
@@ -62,6 +62,13 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const [{ onChange: onChangeTokenSelect, onBack: onBackTokenSelect }, setTokenSelectAction] = useState<
     ModalActionType<TokenItemType>
   >({});
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      setReceiveModalVisible(false);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const actionWithSetTimeout = (action: () => void) => {
     setTimeout(action, HIDE_MODAL_DURATION);

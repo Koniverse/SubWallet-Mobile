@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleProp, Switch, Text, View, ViewProps } from 'react-native';
+import { StyleProp, Switch, View, ViewProps } from 'react-native';
+import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 

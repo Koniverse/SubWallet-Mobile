@@ -1,7 +1,8 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import reformatAddress, { toShort } from 'utils/index';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';

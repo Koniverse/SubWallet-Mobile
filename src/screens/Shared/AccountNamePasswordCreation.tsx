@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleProp, Text, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
-import i18n from "utils/i18n/i18n";
+import i18n from 'utils/i18n/i18n';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,

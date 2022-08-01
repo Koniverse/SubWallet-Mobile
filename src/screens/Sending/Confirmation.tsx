@@ -21,6 +21,8 @@ interface Props {
   feeInfo: [string | null, number, string]; // fee, fee decimal, fee symbol
   balanceFormat: BalanceFormatType;
   onChangeResult: (txResult: TransferResultType) => void;
+  isBusy: boolean;
+  onChangeBusy: (isBusy: boolean) => void;
 }
 
 function getNetworkPrefix(networkKey: string, networkMap: Record<string, NetworkJson>): number | undefined {
@@ -36,19 +38,20 @@ export const Confirmation = ({
   requestPayload,
   onChangeResult,
   feeInfo: [fee, feeDecimals, feeSymbol],
+  isBusy,
+  onChangeBusy,
 }: Props) => {
   const {
     accounts: { currentAccount },
     networkMap,
   } = useSelector((state: RootState) => state);
   const [password, setPassword] = useState<string>('');
-  const [isBusy, setBusy] = useState(false);
   const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
   const [errorArr, setErrorArr] = useState<string[]>([]);
   const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
   const _doTransfer = useCallback(
     (): void => {
-      setBusy(true);
+      onChangeBusy(true);
 
       makeTransfer(
         {
@@ -84,7 +87,7 @@ export const Confirmation = ({
           setErrorArr(errorMessage);
 
           if (errorMessage && errorMessage.length) {
-            setBusy(false);
+            onChangeBusy(false);
           }
         })
         .catch(e => console.log('There is problem when makeTransfer', e));
@@ -106,6 +109,12 @@ export const Confirmation = ({
     return errorArr.map(err => <Warning isDanger key={err} message={err} />);
   };
 
+  const onChangePassword = (text: string) => {
+    setPassword(text);
+    setKeyringErr(false);
+    setErrorArr([]);
+  };
+
   return (
     <>
       <ScrollView style={{ ...sharedStyles.layoutContainer }}>
@@ -123,10 +132,7 @@ export const Confirmation = ({
           <PasswordField
             label={'Password'}
             value={password}
-            onChangeText={text => {
-              setPassword(text);
-              setKeyringErr(false);
-            }}
+            onChangeText={onChangePassword}
             isBusy={isBusy}
             isError={isKeyringErr || password.length < 6}
           />

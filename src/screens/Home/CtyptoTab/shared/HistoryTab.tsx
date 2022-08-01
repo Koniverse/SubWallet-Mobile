@@ -1,5 +1,6 @@
 import React from 'react';
-import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';

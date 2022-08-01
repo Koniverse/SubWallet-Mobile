@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { GestureResponderEvent, StyleProp, StyleSheet, Text, View } from 'react-native';
+import { GestureResponderEvent, StyleProp, StyleSheet, View } from 'react-native';
+import Text from '../components/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SpaceStyle } from 'styles/space';
 import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
@@ -11,6 +12,7 @@ export interface SubHeaderProps {
   showRightBtn?: boolean;
   title: string;
   onPressBack: (event: GestureResponderEvent) => void;
+  disabled?: boolean;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
   disableRightButton?: boolean;
@@ -39,6 +41,7 @@ const headerTitle: StyleProp<any> = {
 export const SubHeader = ({
   headerContent,
   onPressBack,
+  disabled,
   rightIcon,
   onPressRightIcon,
   title,
@@ -69,7 +72,13 @@ export const SubHeader = ({
         </View>
       )}
 
-      <IconButton icon={ArrowLeft} onPress={onPressBack} style={{ position: 'absolute', left: 16, top: 0 }} />
+      <IconButton
+        icon={ArrowLeft}
+        color={disabled ? ColorMap.disabled : ColorMap.light}
+        disabled={disabled}
+        onPress={onPressBack}
+        style={{ position: 'absolute', left: 16, top: 0 }}
+      />
 
       {!!rightIcon && (
         <IconButton

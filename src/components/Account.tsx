@@ -1,4 +1,5 @@
-import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, TouchableOpacity, View } from 'react-native';
+import Text from '../components/Text';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';

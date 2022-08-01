@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
-import { Linking, Share, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Share, StyleProp, TouchableOpacity, View } from 'react-native';
+import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontBold, FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import QRCode from 'react-native-qrcode-svg';

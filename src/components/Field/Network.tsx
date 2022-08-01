@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getNetworkLogo } from 'utils/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 

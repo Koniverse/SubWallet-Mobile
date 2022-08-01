@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { Dimensions, FlatList, StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Dimensions, FlatList, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import Text from 'components/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { SubWalletModal } from 'components/SubWalletModal';

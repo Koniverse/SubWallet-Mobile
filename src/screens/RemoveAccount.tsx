@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
 import { Trash } from 'phosphor-react-native';

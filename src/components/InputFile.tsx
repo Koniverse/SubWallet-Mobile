@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import DocumentPicker, { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
-import { StyleProp, Text, TouchableOpacity } from 'react-native';
+import { StyleProp, TouchableOpacity } from 'react-native';
+import Text from '../components/Text';
 import { FileArrowUp } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';

@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { StyleProp, Text, TouchableOpacity } from 'react-native';
+import { StyleProp, TouchableOpacity } from 'react-native';
+import Text from '../components/Text';
 import { BalanceVal } from 'components/BalanceVal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';

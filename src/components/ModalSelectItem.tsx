@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import Text from '../components/Text';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CircleWavyCheck } from 'phosphor-react-native';

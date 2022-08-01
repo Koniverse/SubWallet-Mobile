@@ -1,6 +1,7 @@
 import React from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
-import { Image, StyleProp, Text, View } from 'react-native';
+import { Image, StyleProp, View } from 'react-native';
+import Text from '../components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';

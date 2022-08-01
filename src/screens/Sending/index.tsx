@@ -1,8 +1,9 @@
 import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProps, RootRouteProps } from 'types/routes';
-import { Keyboard, ScrollView, StyleProp, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { InputAddress } from 'components/InputAddress';
+import Text from 'components/Text';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { getEthereumChains, getNetworkLogo } from 'utils/index';
 import { useSelector } from 'react-redux';
@@ -93,6 +94,7 @@ export const SendFund = () => {
   const [isGasRequiredExceedsError, setGasRequiredExceedsError] = useState<boolean>(false);
   const [backupAmount, setBackupAmount] = useState<string | undefined>(undefined);
   const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
+  const [isBusy, setBusy] = useState(false);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
   const mainTokenInfo = getMainTokenInfo(selectedNetworkKey, chainRegistry);
@@ -320,7 +322,6 @@ export const SendFund = () => {
       // @ts-ignore
       inputAddressRef.current.onChange(text);
     }
-    setReceiveAddress([text, text]);
   };
 
   const onPressQrButton = async () => {
@@ -334,7 +335,7 @@ export const SendFund = () => {
   return (
     <>
       {!isShowTxResult ? (
-        <ContainerWithSubHeader onPressBack={onPressBack} title={'Send Fund'}>
+        <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={'Send Fund'}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
               <TouchableWithoutFeedback
@@ -396,7 +397,7 @@ export const SendFund = () => {
                       }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={{ color: ColorMap.light, ...sharedStyles.mainText, ...FontMedium }}>
-                          Balance:{' '}
+                          Transferable:{' '}
                         </Text>
                         <FormatBalance format={balanceFormat} value={senderFreeBalance} />
                       </View>
@@ -444,6 +445,8 @@ export const SendFund = () => {
                   mainTokenInfo,
                   chainRegistry[selectedNetworkKey].tokenMap,
                 )}
+                isBusy={isBusy}
+                onChangeBusy={setBusy}
               />
             )}
           </>

@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getIcon } from 'utils/index';
+import Text from '../components/Text';
 import { FontMedium } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 

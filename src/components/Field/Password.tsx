@@ -72,12 +72,18 @@ export const PasswordField = ({
           />
 
           {isShowPassword ? (
-            <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowPassword(false)}>
-              <EyeSlash color={ColorMap.light} weight={'bold'} size={20} />
+            <TouchableOpacity
+              disabled={isBusy}
+              activeOpacity={BUTTON_ACTIVE_OPACITY}
+              onPress={() => setShowPassword(false)}>
+              <EyeSlash color={isBusy ? ColorMap.disabled : ColorMap.light} weight={'bold'} size={20} />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowPassword(true)}>
-              <Eye color={ColorMap.light} weight={'bold'} size={20} />
+            <TouchableOpacity
+              disabled={isBusy}
+              activeOpacity={BUTTON_ACTIVE_OPACITY}
+              onPress={() => setShowPassword(true)}>
+              <Eye color={isBusy ? ColorMap.disabled : ColorMap.light} weight={'bold'} size={20} />
             </TouchableOpacity>
           )}
         </View>

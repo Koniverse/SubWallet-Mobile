@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { GestureResponderEvent, StyleProp, Text, View } from 'react-native';
+import { GestureResponderEvent, StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';

@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
 import { CopySimple, FingerprintSimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
+import Text from '../components/Text';
 import {
   ContainerHorizontalPadding,
   FontBold,
@@ -182,8 +183,6 @@ export const ViewPrivateKey = () => {
               <PasswordField
                 label={'password for this account'}
                 onChangeText={onTypePassword}
-                onBlur={onSetPassword}
-                onEndEditing={onSetPassword}
                 isError={isPasswordError}
                 value={password}
               />

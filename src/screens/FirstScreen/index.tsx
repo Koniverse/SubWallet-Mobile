@@ -1,6 +1,7 @@
 import React, { Suspense, useState } from 'react';
-import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, Text, View } from 'react-native';
+import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
+import Text from '../../components/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';

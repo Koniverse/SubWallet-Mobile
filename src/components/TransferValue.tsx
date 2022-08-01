@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from '../components/Text';
 import { BalanceVal } from 'components/BalanceVal';
-import {FontBold, FontSize1, FontSize3, FontSize5, sharedStyles} from 'styles/sharedStyles';
+import { FontBold, FontSize1, FontSize3, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { reformatBalance } from 'utils/index';
 

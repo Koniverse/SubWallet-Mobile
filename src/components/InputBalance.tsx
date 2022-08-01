@@ -1,5 +1,6 @@
-import { FlatList, StyleProp, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
+import Text from '../components/Text';
 import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import { FontBold, FontSize1, FontSize3, sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';

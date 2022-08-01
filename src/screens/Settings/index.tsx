@@ -1,7 +1,8 @@
 import React from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { Linking, ScrollView, StyleProp, Text } from 'react-native';
+import { Linking, ScrollView, StyleProp } from 'react-native';
+import Text from 'components/Text';
 import { ActionItem } from 'components/ActionItem';
 import {
   BellRinging,

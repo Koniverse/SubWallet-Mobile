@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import Text from 'components/Text';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import { QrScannerContext } from 'providers/contexts';
 import { QrValue } from 'types/QRScanner';

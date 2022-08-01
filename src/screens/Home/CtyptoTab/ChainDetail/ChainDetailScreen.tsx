@@ -1,6 +1,7 @@
 import React from 'react';
 import { TokensTab } from 'screens/Home/CtyptoTab/ChainDetail/TokensTab';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
+import Text from 'components/Text';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, toShort } from 'utils/index';
