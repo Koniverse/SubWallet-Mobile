@@ -31,8 +31,7 @@ const injectedJS = `
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
-  // const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
-  const sourceUri = 'http://192.168.10.189:9000';
+  const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
   const [status, setStatus] = useState('init');
 
   const onMessage = (data: NativeSyntheticEvent<WebViewMessage>) => {
