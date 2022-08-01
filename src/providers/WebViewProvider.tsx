@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { WebViewContext } from './contexts';
 import WebView from 'react-native-webview';
 import { listenMessage, setViewRef } from '../messaging';
@@ -13,21 +13,24 @@ interface WebViewProviderProps {
 
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 const params = 'platform=' + Platform.OS;
-const injectedJS = `
-  // const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
-  // console = {
-  //     log: (...args) => consoleLog('log', [...args]),
-  //     debug: (...args) => consoleLog('debug', [...args]),
-  //     info: (...args) => consoleLog('info', [...args]),
-  //     warn: (...args) => consoleLog('warn', [...args]),
-  //     error: (...args) => consoleLog('error', [...args]),
-  // };
+let injectedJS = `
   if (!window.location.search) {
     var link = document.getElementById('progress-bar');
     link.href = './site/index.html?${params}';
     link.click();
   }
 `;
+// Show webview log in development environment
+if (__DEV__) {
+  injectedJS += `const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
+  console = {
+      log: (...args) => consoleLog('log', [...args]),
+      debug: (...args) => consoleLog('debug', [...args]),
+      info: (...args) => consoleLog('info', [...args]),
+      warn: (...args) => consoleLog('warn', [...args]),
+      error: (...args) => consoleLog('error', [...args]),
+  };`;
+}
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
