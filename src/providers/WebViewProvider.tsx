@@ -14,6 +14,14 @@ interface WebViewProviderProps {
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 const params = 'platform=' + Platform.OS;
 const injectedJS = `
+  // const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
+  // console = {
+  //     log: (...args) => consoleLog('log', [...args]),
+  //     debug: (...args) => consoleLog('debug', [...args]),
+  //     info: (...args) => consoleLog('info', [...args]),
+  //     warn: (...args) => consoleLog('warn', [...args]),
+  //     error: (...args) => consoleLog('error', [...args]),
+  // };
   if (!window.location.search) {
     var link = document.getElementById('progress-bar');
     link.href = './site/index.html?${params}';
@@ -23,10 +31,11 @@ const injectedJS = `
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
-  const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
+  // const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
+  const sourceUri = 'http://192.168.10.189:9000';
   const [status, setStatus] = useState('init');
 
-  const onMessage = useCallback((data: NativeSyntheticEvent<WebViewMessage>) => {
+  const onMessage = (data: NativeSyntheticEvent<WebViewMessage>) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     listenMessage(JSON.parse(data.nativeEvent.data), data => {
       // @ts-ignore
@@ -39,11 +48,15 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
           SplashScreen.hide();
         }
         return true;
+      } else if (data.id === '-1') {
+        // @ts-ignore
+        console.debug('Web View Console:', ...data.response);
+        return true;
       } else {
         return false;
       }
     });
-  }, []);
+  };
 
   useEffect(() => {
     setViewRef(webRef);
