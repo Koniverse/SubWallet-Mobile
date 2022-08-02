@@ -17,7 +17,7 @@ interface Props {
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   showedNetworks: string[];
-  networkBalanceMaps: Record<string, BalanceInfo>;
+  networkBalanceMap: Record<string, BalanceInfo>;
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
   onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
   totalBalanceValue: BigN;
@@ -28,7 +28,7 @@ export const ChainListScreen = ({
   accountInfoByNetworkMap,
   navigation,
   showedNetworks,
-  networkBalanceMaps,
+  networkBalanceMap,
   onPressChainItem,
   onPressTokenItem,
   totalBalanceValue,
@@ -58,7 +58,7 @@ export const ChainListScreen = ({
         <Tabs.Tab name="token" label="Token">
           <TokensTab
             accountInfoByNetworkMap={accountInfoByNetworkMap}
-            networkBalanceMaps={networkBalanceMaps}
+            networkBalanceMap={networkBalanceMap}
             onPressTokenItem={onPressTokenItem}
           />
         </Tabs.Tab>
@@ -66,7 +66,7 @@ export const ChainListScreen = ({
           <ChainsTab
             onPressChainItem={onPressChainItem}
             networkKeys={showedNetworks}
-            networkBalanceMaps={networkBalanceMaps}
+            networkBalanceMap={networkBalanceMap}
             accountInfoByNetworkMap={accountInfoByNetworkMap}
           />
         </Tabs.Tab>

@@ -12,15 +12,15 @@ import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 interface Props {
   networkKeys: string[];
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
-  networkBalanceMaps: Record<string, BalanceInfo>;
+  networkBalanceMap: Record<string, BalanceInfo>;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
 }
 
-export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMaps, accountInfoByNetworkMap }: Props) => {
+export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMap, accountInfoByNetworkMap }: Props) => {
   const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
-    const balanceInfo = networkBalanceMaps[networkKey];
+    const balanceInfo = networkBalanceMap[networkKey];
     if (!balanceInfo || !balanceInfo.isReady) {
       return <ChainBalanceSkeleton key={info.key} />;
     } else {

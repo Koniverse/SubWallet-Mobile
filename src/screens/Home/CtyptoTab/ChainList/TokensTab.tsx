@@ -10,13 +10,13 @@ import { useRefresh } from 'hooks/useRefresh';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 
 interface Props {
-  networkBalanceMaps: Record<string, BalanceInfo>;
+  networkBalanceMap: Record<string, BalanceInfo>;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
   onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
 }
 
-export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
-  const tokenBalanceItems = getTokenBalanceItems(networkBalanceMaps);
+export const TokensTab = ({ networkBalanceMap, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
+  const tokenBalanceItems = getTokenBalanceItems(networkBalanceMap);
   const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];

@@ -327,11 +327,11 @@ export function getEthereumChains(networkMap: Record<string, NetworkJson>): stri
   return result;
 }
 
-export function getTokenBalanceItems(networkBalanceMaps: Record<string, BalanceInfo>): TokenBalanceItemType[] {
+export function getTokenBalanceItems(networkBalanceMap: Record<string, BalanceInfo>): TokenBalanceItemType[] {
   const items: TokenBalanceItemType[] = [];
 
-  Object.keys(networkBalanceMaps).forEach(networkKey => {
-    const networkBalanceInfo = networkBalanceMaps[networkKey];
+  Object.keys(networkBalanceMap).forEach(networkKey => {
+    const networkBalanceInfo = networkBalanceMap[networkKey];
     items.push({
       networkKey,
       logoKey: networkKey,

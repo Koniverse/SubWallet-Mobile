@@ -3,5 +3,5 @@ import { BalanceInfo } from '../types';
 
 export type AccountBalanceType = {
   totalBalanceValue: BigN;
-  networkBalanceMaps: Record<string, BalanceInfo>;
+  networkBalanceMap: Record<string, BalanceInfo>;
 };

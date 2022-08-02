@@ -68,7 +68,7 @@ export const CryptoTab = () => {
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
-  const { networkBalanceMaps, totalBalanceValue } = useAccountBalance('all', showedNetworks);
+  const { networkBalanceMap, totalBalanceValue } = useAccountBalance('all', showedNetworks);
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
     useState<SelectionInfo>({
@@ -141,7 +141,7 @@ export const CryptoTab = () => {
           accountInfoByNetworkMap={accountInfoByNetworkMap}
           onPressChainItem={onPressChainItem}
           navigation={navigation}
-          networkBalanceMaps={networkBalanceMaps}
+          networkBalanceMap={networkBalanceMap}
           showedNetworks={showedNetworks}
           onPressTokenItem={onPressTokenItem}
           totalBalanceValue={totalBalanceValue}
@@ -151,7 +151,7 @@ export const CryptoTab = () => {
       {currentViewStep === ViewStep.NETWORK_DETAIL && selectedNetworkInfo && (
         <ChainDetailScreen
           onPressBack={onPressBack}
-          networkBalanceMaps={networkBalanceMaps}
+          networkBalanceMap={networkBalanceMap}
           selectedNetworkInfo={selectedNetworkInfo}
           onPressTokenItem={onPressTokenItem}
         />
@@ -160,7 +160,7 @@ export const CryptoTab = () => {
       {currentViewStep === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
         <TokenHistoryScreen
           onPressBack={onPressBack}
-          networkBalanceMaps={networkBalanceMaps}
+          networkBalanceMap={networkBalanceMap}
           selectedTokenDisplayName={selectedTokenDisplayName}
           selectedTokenSymbol={selectedTokenSymbol}
           selectedNetworkInfo={selectedNetworkInfo}

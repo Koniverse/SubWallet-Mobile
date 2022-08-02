@@ -38,7 +38,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
   const { priceMap, tokenPriceMap } = priceReducer;
 
   let totalBalanceValue = new BigN(0);
-  const networkBalanceMaps: Record<string, BalanceInfo> = {};
+  const networkBalanceMap: Record<string, BalanceInfo> = {};
 
   showedNetworks.forEach(networkKey => {
     const registry = chainRegistryMap[networkKey];
@@ -49,7 +49,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
     }
 
     if (balanceItem.state.valueOf() === APIItemState.NOT_SUPPORT.valueOf()) {
-      networkBalanceMaps[networkKey] = {
+      networkBalanceMap[networkKey] = {
         symbol: 'Unit',
         displayedSymbol: 'Unit',
         balanceValue: BN_ZERO,
@@ -91,7 +91,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
       balanceItem.state.valueOf() === APIItemState.READY.valueOf()
     );
 
-    networkBalanceMaps[networkKey] = balanceInfo;
+    networkBalanceMap[networkKey] = balanceInfo;
     if (balanceInfo.isReady) {
       totalBalanceValue = totalBalanceValue.plus(balanceInfo.convertedBalanceValue);
 
@@ -105,6 +105,6 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
 
   return {
     totalBalanceValue,
-    networkBalanceMaps,
+    networkBalanceMap,
   };
 }

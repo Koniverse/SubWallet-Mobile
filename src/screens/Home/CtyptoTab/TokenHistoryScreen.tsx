@@ -16,7 +16,7 @@ interface Props {
   onPressBack: () => void;
   selectedTokenDisplayName: string;
   selectedTokenSymbol: string;
-  networkBalanceMaps: Record<string, BalanceInfo>;
+  networkBalanceMap: Record<string, BalanceInfo>;
   selectedNetworkInfo: AccountInfoByNetwork;
 }
 
@@ -47,10 +47,10 @@ const actionButtonContainerStyle: StyleProp<any> = {
 function getTokenBalanceValue(
   networkKey: string,
   token: string,
-  networkBalanceMaps: Record<string, BalanceInfo>,
+  networkBalanceMap: Record<string, BalanceInfo>,
 ): [BigN, BigN] {
-  if (networkBalanceMaps[networkKey]) {
-    const balanceInfo = networkBalanceMaps[networkKey];
+  if (networkBalanceMap[networkKey]) {
+    const balanceInfo = networkBalanceMap[networkKey];
     if (balanceInfo.symbol === token) {
       return [balanceInfo.balanceValue, balanceInfo.convertedBalanceValue];
     }
@@ -72,12 +72,12 @@ export const TokenHistoryScreen = ({
   selectedTokenDisplayName,
   selectedTokenSymbol,
   selectedNetworkInfo,
-  networkBalanceMaps,
+  networkBalanceMap,
 }: Props) => {
   const [balanceValue, convertedBalanceValue] = getTokenBalanceValue(
     selectedNetworkInfo.networkKey,
     selectedTokenSymbol,
-    networkBalanceMaps,
+    networkBalanceMap,
   );
 
   const renderHeaderContent = () => {

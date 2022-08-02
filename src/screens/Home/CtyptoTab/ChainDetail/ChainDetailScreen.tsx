@@ -18,7 +18,7 @@ interface Props {
   onPressBack: () => void;
   selectedNetworkInfo: AccountInfoByNetwork;
   onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string) => void;
-  networkBalanceMaps: Record<string, BalanceInfo>;
+  networkBalanceMap: Record<string, BalanceInfo>;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -40,13 +40,8 @@ const chainDetailHeaderTitle: StyleProp<any> = {
   maxWidth: 150,
 };
 
-export const ChainDetailScreen = ({
-  onPressBack,
-  selectedNetworkInfo,
-  onPressTokenItem,
-  networkBalanceMaps,
-}: Props) => {
-  const currentBalanceInfo = networkBalanceMaps[selectedNetworkInfo.networkKey];
+export const ChainDetailScreen = ({ onPressBack, selectedNetworkInfo, onPressTokenItem, networkBalanceMap }: Props) => {
+  const currentBalanceInfo = networkBalanceMap[selectedNetworkInfo.networkKey];
   const renderHeaderContent = () => {
     return (
       <View style={chainDetailHeader}>
