@@ -13,7 +13,7 @@ import { useRefresh } from 'hooks/useRefresh';
 interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
   selectedBalanceInfo: BalanceInfo;
-  onPressTokenItem: (tokenName: string, tokenSymbol: string) => void;
+  onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string) => void;
 }
 
 function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo: BalanceInfo): TokenBalanceItemType[] {
@@ -56,12 +56,12 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
       <TokenChainBalance
         key={`${item.symbol}-${item.selectNetworkKey}`}
         networkDisplayName={selectedNetworkInfo.networkDisplayName}
-        tokenBalanceValue={item.balanceValue}
+        balanceValue={item.balanceValue}
         convertedBalanceValue={item.convertedBalanceValue}
         logoKey={item.selectNetworkKey}
-        tokenBalanceSymbol={item.displayedSymbol}
+        symbol={item.displayedSymbol}
         defaultLogoKey={item.defaultNetworkKey}
-        onPress={() => onPressTokenItem(item.displayedSymbol, item.symbol)}
+        onPress={() => onPressTokenItem(item.symbol, item.displayedSymbol)}
       />
     );
   }

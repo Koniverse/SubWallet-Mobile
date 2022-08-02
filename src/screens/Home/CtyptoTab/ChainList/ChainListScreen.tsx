@@ -19,7 +19,7 @@ interface Props {
   showedNetworks: string[];
   networkBalanceMaps: Record<string, BalanceInfo>;
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
-  onPressTokenItem: (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => void;
+  onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
   totalBalanceValue: BigN;
 }
 

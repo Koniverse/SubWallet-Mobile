@@ -23,7 +23,7 @@ const ViewStep = {
 
 interface SelectionInfo {
   selectedNetworkInfo?: AccountInfoByNetwork;
-  selectedTokenName: string;
+  selectedTokenDisplayName: string;
   selectedTokenSymbol: string;
 }
 
@@ -70,10 +70,11 @@ export const CryptoTab = () => {
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
   const { networkBalanceMaps, totalBalanceValue } = useAccountBalance('all', showedNetworks);
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
-  const [{ selectedNetworkInfo, selectedTokenName, selectedTokenSymbol }, setSelectionInfo] = useState<SelectionInfo>({
-    selectedTokenName: '',
-    selectedTokenSymbol: '',
-  });
+  const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
+    useState<SelectionInfo>({
+      selectedTokenDisplayName: '',
+      selectedTokenSymbol: '',
+    });
   const deps = selectedNetworkInfo?.networkKey;
 
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
@@ -102,18 +103,18 @@ export const CryptoTab = () => {
   };
 
   const onPressTokenItem = useCallback(
-    (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => {
+    (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => {
       if (!info) {
         setSelectionInfo(prev => ({
           ...prev,
-          selectedTokenName: tokenName,
+          selectedTokenDisplayName: tokenDisplayName,
           selectedTokenSymbol: tokenSymbol,
         }));
       } else {
         setSelectionInfo(prev => ({
           ...prev,
           selectedNetworkInfo: info,
-          selectedTokenName: tokenName,
+          selectedTokenDisplayName: tokenDisplayName,
           selectedTokenSymbol: tokenSymbol,
         }));
       }
@@ -128,7 +129,7 @@ export const CryptoTab = () => {
 
   const onChangeTokenSelectModalItem = ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
     const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
-    onPressTokenItem(displayedSymbol, symbol, _selectedNetworkInfo);
+    onPressTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
     setTokenSelectModal(false);
   };
 
@@ -160,7 +161,7 @@ export const CryptoTab = () => {
         <TokenHistoryScreen
           onPressBack={onPressBack}
           networkBalanceMaps={networkBalanceMaps}
-          selectedTokenName={selectedTokenName}
+          selectedTokenDisplayName={selectedTokenDisplayName}
           selectedTokenSymbol={selectedTokenSymbol}
           selectedNetworkInfo={selectedNetworkInfo}
         />

@@ -13,9 +13,9 @@ interface Props extends TouchableOpacityProps {
   networkDisplayName?: string;
   logoKey: string;
   defaultLogoKey?: string;
-  tokenBalanceValue: BigN;
+  balanceValue: BigN;
   convertedBalanceValue: BigN;
-  tokenBalanceSymbol: string;
+  symbol: string;
 }
 
 const chainBalanceMainArea: StyleProp<any> = {
@@ -59,8 +59,8 @@ const chainBalanceSeparator: StyleProp<any> = {
 export const TokenChainBalance = ({
   networkDisplayName,
   logoKey,
-  tokenBalanceSymbol,
-  tokenBalanceValue,
+  symbol,
+  balanceValue,
   convertedBalanceValue,
   defaultLogoKey,
   ...wrapperProps
@@ -68,8 +68,8 @@ export const TokenChainBalance = ({
   const {
     price: { tokenPriceMap },
   } = useSelector((state: RootState) => state);
-  const reformatPrice = tokenPriceMap[tokenBalanceSymbol.toLowerCase()]
-    ? tokenPriceMap[tokenBalanceSymbol.toLowerCase()].toString().replace('.', ',')
+  const reformatPrice = tokenPriceMap[symbol.toLowerCase()]
+    ? tokenPriceMap[symbol.toLowerCase()].toString().replace('.', ',')
     : BN_ZERO;
 
   return (
@@ -79,7 +79,7 @@ export const TokenChainBalance = ({
           {getNetworkLogo(logoKey, 40, defaultLogoKey)}
           <View style={chainBalanceMetaWrapper}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
-              <Text style={textStyle}>{tokenBalanceSymbol}</Text>
+              <Text style={textStyle}>{symbol}</Text>
               {!!networkDisplayName && (
                 <>
                   <Text style={textStyle}> (</Text>
@@ -96,7 +96,7 @@ export const TokenChainBalance = ({
         </View>
 
         <View style={chainBalancePart2}>
-          <BalanceVal balanceValTextStyle={textStyle} startWithSymbol symbol={''} value={tokenBalanceValue} />
+          <BalanceVal balanceValTextStyle={textStyle} startWithSymbol symbol={''} value={balanceValue} />
           <BalanceVal balanceValTextStyle={subTextStyle} startWithSymbol symbol={'$'} value={convertedBalanceValue} />
         </View>
       </View>

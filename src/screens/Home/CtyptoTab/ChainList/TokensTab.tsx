@@ -13,7 +13,7 @@ import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 interface Props {
   networkBalanceMaps: Record<string, BalanceInfo>;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
-  onPressTokenItem: (tokenName: string, tokenSymbol: string, info?: AccountInfoByNetwork) => void;
+  onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
 }
 
 export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
@@ -30,12 +30,12 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
       <TokenChainBalance
         key={`${item.symbol}-${item.selectNetworkKey}`}
         networkDisplayName={info.networkDisplayName}
-        tokenBalanceValue={item.balanceValue}
+        balanceValue={item.balanceValue}
         convertedBalanceValue={item.convertedBalanceValue}
         logoKey={item.selectNetworkKey}
-        tokenBalanceSymbol={item.displayedSymbol}
+        symbol={item.displayedSymbol}
         defaultLogoKey={item.defaultNetworkKey}
-        onPress={() => onPressTokenItem(item.displayedSymbol, item.symbol, info)}
+        onPress={() => onPressTokenItem(item.symbol, item.displayedSymbol, info)}
       />
     );
   };

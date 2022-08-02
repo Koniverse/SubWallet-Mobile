@@ -17,7 +17,7 @@ import { MaterialTabBar, MaterialTabBarProps, Tabs } from 'react-native-collapsi
 interface Props {
   onPressBack: () => void;
   selectedNetworkInfo: AccountInfoByNetwork;
-  onPressTokenItem: (tokenName: string, tokenSymbol: string) => void;
+  onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string) => void;
   networkBalanceMaps: Record<string, BalanceInfo>;
 }
 

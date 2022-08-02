@@ -14,7 +14,7 @@ import * as Tabs from 'react-native-collapsible-tab-view';
 
 interface Props {
   onPressBack: () => void;
-  selectedTokenName: string;
+  selectedTokenDisplayName: string;
   selectedTokenSymbol: string;
   networkBalanceMaps: Record<string, BalanceInfo>;
   selectedNetworkInfo: AccountInfoByNetwork;
@@ -69,7 +69,7 @@ function getTokenBalanceValue(
 
 export const TokenHistoryScreen = ({
   onPressBack,
-  selectedTokenName,
+  selectedTokenDisplayName,
   selectedTokenSymbol,
   selectedNetworkInfo,
   networkBalanceMaps,
@@ -94,7 +94,7 @@ export const TokenHistoryScreen = ({
             color: ColorMap.light,
             paddingLeft: 4,
           }}>
-          {`(${selectedTokenName})`}
+          {`(${selectedTokenDisplayName})`}
         </Text>
       </View>
     );
@@ -118,7 +118,7 @@ export const TokenHistoryScreen = ({
               isShowBalanceToUsd
               startWithSymbol={false}
               actionButtonContainerStyle={actionButtonContainerStyle}
-              symbol={selectedTokenName}
+              symbol={selectedTokenDisplayName}
               balanceValue={balanceValue}
               amountToUsd={convertedBalanceValue}
               selectionProvider={{
