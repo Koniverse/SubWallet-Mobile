@@ -105,7 +105,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
       setAddress(input);
       setInputBlur(true);
       if (isAddress(input)) {
-        onChange(reformatAddress(input, 42), address);
+        onChange(reformatAddress(input, 42), input);
       } else {
         onChange(null, input);
       }
