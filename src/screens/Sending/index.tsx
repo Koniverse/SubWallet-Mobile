@@ -42,6 +42,8 @@ import i18n from 'utils/i18n/i18n';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
 import { RESULTS } from 'react-native-permissions';
 import { requestCameraPermission } from 'utils/validators';
+import { SiDef } from '@polkadot/util/types';
+import { formatBalance } from '@polkadot/util';
 
 const NetworkLogoWrapperStyle: StyleProp<any> = {
   borderRadius: 20,
@@ -98,6 +100,7 @@ export const SendFund = () => {
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
   const mainTokenInfo = getMainTokenInfo(selectedNetworkKey, chainRegistry);
+  const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
   const feeDecimal: number | null = feeSymbol
     ? feeSymbol === selectedToken
       ? balanceFormat[0]
@@ -377,6 +380,8 @@ export const SendFund = () => {
                       <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(selectedNetworkKey, 34)}</View>
                       <InputBalance
                         placeholder={'0'}
+                        si={si}
+                        onChangeSi={setSi}
                         maxValue={senderFreeBalance}
                         onChange={onChangeAmount}
                         decimals={balanceFormat[0]}
@@ -445,6 +450,7 @@ export const SendFund = () => {
                   mainTokenInfo,
                   chainRegistry[selectedNetworkKey].tokenMap,
                 )}
+                si={si}
                 isBusy={isBusy}
                 onChangeBusy={setBusy}
               />

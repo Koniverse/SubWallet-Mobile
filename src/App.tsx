@@ -112,7 +112,7 @@ export const App = () => {
               <Stack.Group screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="LockScreen" component={LockScreen} />
                 <Stack.Screen name="FirstScreen" component={FirstScreen} />
-                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ title: 'Create Account' }} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} options={{ title: 'Account Screen' }} />
                 <Stack.Screen name="EditAccount" component={EditAccount} options={{ title: 'Edit Account' }} />

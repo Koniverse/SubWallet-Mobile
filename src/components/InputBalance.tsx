@@ -16,6 +16,8 @@ export interface InputBalanceProps {
   siSymbol: string;
   maxValue?: string;
   placeholder?: string;
+  si: SiDef;
+  onChangeSi: (si: SiDef) => void;
 }
 
 const isValidInput = (input: string) => {
@@ -128,9 +130,8 @@ const getDropdownTextStyle = (inputValue: string) => {
 };
 
 const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
-  const { onChange, decimals, siSymbol, placeholder } = props;
+  const { onChange, decimals, siSymbol, placeholder, onChangeSi, si } = props;
   const [inputValue, setInputValue] = useState<string>('');
-  const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
   const [isShowTokenList, setShowTokenList] = useState<boolean>(false);
   const siOptions = useMemo(() => getSiOptions(siSymbol, decimals), [decimals, siSymbol]);
 
@@ -154,11 +155,11 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
     (siUnit: string): void => {
       const curSi = formatBalance.findSi(siUnit);
 
-      setSi(curSi);
+      onChangeSi(curSi);
       onChangeWithSi(inputValue, curSi);
       setShowTokenList(false);
     },
-    [onChangeWithSi, inputValue],
+    [onChangeSi, onChangeWithSi, inputValue],
   );
 
   useImperativeHandle(ref, () => ({
@@ -178,7 +179,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
       <ModalSelectItem
         key={item.value}
         label={item.text}
-        isSelected={!!si && si.value === item.value}
+        isSelected={!!props.si && si.value === item.value}
         onPress={() => {
           onSelectSiUnit(item.value);
         }}
@@ -194,7 +195,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         keyboardType={'decimal-pad'}
         defaultValue={inputValue}
         onChangeText={_onChange}
-        maxLength={18}
+        maxLength={inputValue.includes('.') ? decimals + 2 : 10}
         placeholder={placeholder || ''}
         placeholderTextColor={ColorMap.disabled}
       />

@@ -3,7 +3,6 @@ import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { BalanceVal } from 'components/BalanceVal';
 import BigN from 'bignumber.js';
 
 const textStyle: StyleProp<any> = {
@@ -22,12 +21,7 @@ export const BalanceToUsd = ({ amountToUsd, isShowBalance }: Props) => {
     <View style={{ flexDirection: 'row', marginTop: 8 }}>
       <Text style={textStyle}>(</Text>
       {isShowBalance ? (
-        <BalanceVal
-          balanceValTextStyle={[textStyle, { marginTop: 1 }]}
-          value={`${amountToUsd}`}
-          symbol={'$'}
-          startWithSymbol
-        />
+        <Text style={[textStyle, { marginTop: 1 }]}>{`$${amountToUsd.toFixed()}`}</Text>
       ) : (
         <Text style={[textStyle, { marginTop: 1 }]}>{'******'}</Text>
       )}
