@@ -214,9 +214,9 @@ export function recodeAddress(
 }
 
 // @ts-ignore
-export function getNetworkLogo(networkKey: string, size: number, defaultLogo = 'default') {
+export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default') {
   // @ts-ignore
-  const imgSrc = Images[networkKey];
+  const imgSrc = Images[logoKey.toLowerCase()];
 
   if (imgSrc) {
     return (
@@ -227,7 +227,7 @@ export function getNetworkLogo(networkKey: string, size: number, defaultLogo = '
     );
   }
 
-  return getNetworkLogo(defaultLogo, size);
+  return getNetworkLogo(defaultLogoKey, size);
 }
 
 export function shuffleArray(array: any[]) {

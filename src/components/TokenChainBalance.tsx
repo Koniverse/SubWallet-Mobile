@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { getNetworkLogo } from 'utils/index';
-import Text from '../components/Text';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
@@ -11,12 +10,12 @@ import { RootState } from 'stores/index';
 import BigN from 'bignumber.js';
 
 interface Props extends TouchableOpacityProps {
-  networkDisplayName: string;
-  selectNetworkKey: string;
+  networkDisplayName?: string;
+  logoKey: string;
+  defaultLogoKey?: string;
   tokenBalanceValue: BigN;
   convertedBalanceValue: BigN;
   tokenBalanceSymbol: string;
-  defaultNetworkKey?: string;
 }
 
 const chainBalanceMainArea: StyleProp<any> = {
@@ -59,11 +58,11 @@ const chainBalanceSeparator: StyleProp<any> = {
 
 export const TokenChainBalance = ({
   networkDisplayName,
-  selectNetworkKey,
+  logoKey,
   tokenBalanceSymbol,
   tokenBalanceValue,
   convertedBalanceValue,
-  defaultNetworkKey,
+  defaultLogoKey,
   ...wrapperProps
 }: Props) => {
   const {
@@ -77,15 +76,19 @@ export const TokenChainBalance = ({
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={chainBalanceMainArea}>
         <View style={chainBalancePart1}>
-          {getNetworkLogo(selectNetworkKey.toLowerCase(), 40, defaultNetworkKey)}
+          {getNetworkLogo(logoKey, 40, defaultLogoKey)}
           <View style={chainBalanceMetaWrapper}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <Text style={textStyle}>{tokenBalanceSymbol}</Text>
-              <Text style={textStyle}> (</Text>
-              <Text style={[textStyle, { maxWidth: 100 }]} numberOfLines={1}>
-                {networkDisplayName.replace(' Relay Chain', '')}
-              </Text>
-              <Text style={textStyle}>)</Text>
+              {!!networkDisplayName && (
+                <>
+                  <Text style={textStyle}> (</Text>
+                  <Text style={[textStyle, { maxWidth: 100 }]} numberOfLines={1}>
+                    {networkDisplayName.replace(' Relay Chain', '')}
+                  </Text>
+                  <Text style={textStyle}>)</Text>
+                </>
+              )}
             </View>
 
             <Text style={[subTextStyle, { color: ColorMap.primary }]}>{`$${reformatPrice}`}</Text>

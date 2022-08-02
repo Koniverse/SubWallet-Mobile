@@ -32,9 +32,9 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
         networkDisplayName={info.networkDisplayName}
         tokenBalanceValue={item.balanceValue}
         convertedBalanceValue={item.convertedBalanceValue}
-        selectNetworkKey={item.selectNetworkKey}
+        logoKey={item.selectNetworkKey}
         tokenBalanceSymbol={item.displayedSymbol}
-        defaultNetworkKey={item.defaultNetworkKey}
+        defaultLogoKey={item.defaultNetworkKey}
         onPress={() => onPressTokenItem(item.displayedSymbol, item.symbol, info)}
       />
     );
