@@ -60,11 +60,11 @@ export interface TokenItemType {
 }
 
 export interface TokenBalanceItemType {
-  selectNetworkKey: string;
+  logoKey: string;
+  networkKey: string;
   balanceValue: BigN;
   convertedBalanceValue: BigN;
   symbol: string;
   displayedSymbol: string;
-  defaultNetworkKey?: string;
   isReady: boolean;
 }

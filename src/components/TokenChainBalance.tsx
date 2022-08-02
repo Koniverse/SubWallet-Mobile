@@ -7,15 +7,11 @@ import { BalanceVal } from 'components/BalanceVal';
 import { BN_ZERO } from 'utils/chainBalances';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import BigN from 'bignumber.js';
+import { TokenBalanceItemType } from 'types/ui-types';
+import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 
-interface Props extends TouchableOpacityProps {
+interface Props extends TokenBalanceItemType, TouchableOpacityProps {
   networkDisplayName?: string;
-  logoKey: string;
-  defaultLogoKey?: string;
-  balanceValue: BigN;
-  convertedBalanceValue: BigN;
-  symbol: string;
 }
 
 const chainBalanceMainArea: StyleProp<any> = {
@@ -57,12 +53,14 @@ const chainBalanceSeparator: StyleProp<any> = {
 };
 
 export const TokenChainBalance = ({
+  networkKey,
   networkDisplayName,
   logoKey,
   symbol,
+  displayedSymbol,
   balanceValue,
   convertedBalanceValue,
-  defaultLogoKey,
+  isReady,
   ...wrapperProps
 }: Props) => {
   const {
@@ -72,14 +70,18 @@ export const TokenChainBalance = ({
     ? tokenPriceMap[symbol.toLowerCase()].toString().replace('.', ',')
     : BN_ZERO;
 
+  if (!isReady) {
+    return <ChainBalanceSkeleton />;
+  }
+
   return (
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={chainBalanceMainArea}>
         <View style={chainBalancePart1}>
-          {getNetworkLogo(logoKey, 40, defaultLogoKey)}
+          {getNetworkLogo(logoKey, 40, networkKey)}
           <View style={chainBalanceMetaWrapper}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
-              <Text style={textStyle}>{symbol}</Text>
+              <Text style={textStyle}>{displayedSymbol}</Text>
               {!!networkDisplayName && (
                 <>
                   <Text style={textStyle}> (</Text>

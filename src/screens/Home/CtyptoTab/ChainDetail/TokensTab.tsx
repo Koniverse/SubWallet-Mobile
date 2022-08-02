@@ -4,7 +4,6 @@ import { TokenChainBalance } from 'components/TokenChainBalance';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { BN_ZERO } from 'utils/chainBalances';
-import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -20,7 +19,8 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
   const items: TokenBalanceItemType[] = [];
 
   items.push({
-    selectNetworkKey: selectedNetworkInfo.networkKey,
+    logoKey: selectedNetworkInfo.networkKey,
+    networkKey: selectedNetworkInfo.networkKey,
     balanceValue: selectedBalanceInfo?.balanceValue || BN_ZERO,
     convertedBalanceValue: selectedBalanceInfo?.balanceValue || BN_ZERO,
     symbol: selectedBalanceInfo?.symbol || 'Unit',
@@ -31,7 +31,8 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
   if (selectedBalanceInfo && selectedBalanceInfo.childrenBalances && selectedBalanceInfo.childrenBalances.length) {
     selectedBalanceInfo.childrenBalances.forEach(item => {
       items.push({
-        selectNetworkKey: selectedNetworkInfo.networkKey,
+        networkKey: selectedNetworkInfo.networkKey,
+        logoKey: item.symbol,
         balanceValue: item.balanceValue,
         convertedBalanceValue: item.balanceValue,
         symbol: item.symbol,
@@ -48,20 +49,12 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
   const items = getItems(selectedNetworkInfo, selectedBalanceInfo);
   const [isRefresh, refresh] = useRefresh();
   function renderItem({ item }: ListRenderItemInfo<TokenBalanceItemType>) {
-    if (!item.isReady) {
-      return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
-    }
-
     return (
       <TokenChainBalance
-        key={`${item.symbol}-${item.selectNetworkKey}`}
+        key={`${item.symbol}-${item.networkKey}`}
         networkDisplayName={selectedNetworkInfo.networkDisplayName}
-        balanceValue={item.balanceValue}
-        convertedBalanceValue={item.convertedBalanceValue}
-        logoKey={item.selectNetworkKey}
-        symbol={item.displayedSymbol}
-        defaultLogoKey={item.defaultNetworkKey}
         onPress={() => onPressTokenItem(item.symbol, item.displayedSymbol)}
+        {...item}
       />
     );
   }

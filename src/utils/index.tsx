@@ -333,7 +333,8 @@ export function getTokenBalanceItems(networkBalanceMaps: Record<string, BalanceI
   Object.keys(networkBalanceMaps).forEach(networkKey => {
     const networkBalanceInfo = networkBalanceMaps[networkKey];
     items.push({
-      selectNetworkKey: networkKey,
+      networkKey,
+      logoKey: networkKey,
       balanceValue: networkBalanceInfo.balanceValue,
       convertedBalanceValue: networkBalanceInfo.convertedBalanceValue,
       symbol: networkBalanceInfo.symbol,
@@ -344,12 +345,12 @@ export function getTokenBalanceItems(networkBalanceMaps: Record<string, BalanceI
     if (networkBalanceInfo.childrenBalances && networkBalanceInfo.childrenBalances.length) {
       networkBalanceInfo.childrenBalances.forEach(children =>
         items.push({
-          selectNetworkKey: children.key,
+          networkKey,
+          logoKey: children.symbol,
           balanceValue: children.balanceValue,
           convertedBalanceValue: children.convertedBalanceValue || BN_ZERO,
           symbol: children.symbol,
           displayedSymbol: children.displayedSymbol,
-          defaultNetworkKey: networkKey,
           isReady: networkBalanceInfo.isReady,
         }),
       );

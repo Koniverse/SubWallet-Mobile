@@ -4,7 +4,6 @@ import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import { getTokenBalanceItems } from 'utils/index';
-import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
@@ -20,22 +19,14 @@ export const TokensTab = ({ networkBalanceMaps, onPressTokenItem, accountInfoByN
   const tokenBalanceItems = getTokenBalanceItems(networkBalanceMaps);
   const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
-    if (!item.isReady) {
-      return <ChainBalanceSkeleton key={`${item.symbol}-${item.selectNetworkKey}`} />;
-    }
-
-    const info = accountInfoByNetworkMap[item.defaultNetworkKey || item.selectNetworkKey];
+    const info = accountInfoByNetworkMap[item.networkKey];
 
     return (
       <TokenChainBalance
-        key={`${item.symbol}-${item.selectNetworkKey}`}
+        key={`${item.symbol}-${item.networkKey}`}
         networkDisplayName={info.networkDisplayName}
-        balanceValue={item.balanceValue}
-        convertedBalanceValue={item.convertedBalanceValue}
-        logoKey={item.selectNetworkKey}
-        symbol={item.displayedSymbol}
-        defaultLogoKey={item.defaultNetworkKey}
         onPress={() => onPressTokenItem(item.symbol, item.displayedSymbol, info)}
+        {...item}
       />
     );
   };
