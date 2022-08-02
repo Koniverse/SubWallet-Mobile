@@ -77,13 +77,13 @@ export const parseBalancesInfo = (
     miscFrozen: frozenMisc,
     reserved: reservedBalance,
   } = balanceItem;
-  const transferableBalance = new BigN(freeBalance).minus(new BigN(frozenMisc)).toString();
+  const transferableBalance = new BigN(freeBalance || '0').minus(new BigN(frozenMisc || '0')).toString();
 
   const accountData = [
-    { key: 'free', label: 'Transferable', value: transferableBalance },
-    { key: 'reserved', label: 'Reserved balance', value: reservedBalance },
-    { key: 'locked', label: 'Locked balance', value: frozenMisc },
-    { key: 'frozen', label: 'Frozen fee', value: frozenFee },
+    { key: 'free', label: 'Transferable', value: transferableBalance || '0' },
+    { key: 'reserved', label: 'Reserved balance', value: reservedBalance || '0' },
+    { key: 'locked', label: 'Locked balance', value: frozenMisc || '0' },
+    { key: 'frozen', label: 'Frozen fee', value: frozenFee || '0' },
   ];
 
   const detailBalances: BalanceSubInfo[] = [];
