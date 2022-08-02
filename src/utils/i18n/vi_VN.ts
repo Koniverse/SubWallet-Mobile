@@ -61,6 +61,7 @@ export const vi = {
     documentation: 'Documentation',
     termOfService: 'Terms of Service',
     privacyPolicy: 'Privacy Policy',
+    webViewDebugger: 'Web View Debugger',
     logout: 'Logout',
     exportPrivateKey: 'Export Private Key',
     exportJson: 'Export JSON',

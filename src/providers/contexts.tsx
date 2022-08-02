@@ -8,6 +8,8 @@ const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
 const WebViewContext = React.createContext<{
   viewRef?: MutableRefObject<WebView | undefined>;
   status?: string;
+  url?: string;
+  version?: string;
 }>({});
 
 const QrScannerContext = React.createContext<{

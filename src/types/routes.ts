@@ -22,6 +22,7 @@ export type RootStackParamList = {
   Security: undefined;
   PinCode: { isEditablePinCode: boolean };
   ExportJson: undefined;
+  WebViewDebugger: undefined;
 };
 
 export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];

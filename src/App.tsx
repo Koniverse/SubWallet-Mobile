@@ -35,6 +35,7 @@ import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import useSetupStore from 'hooks/store/useSetupStore';
 import useSetupI18n from 'hooks/useSetupI18n';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { WebViewDebugger } from 'screens/WebViewDebugger';
 
 let lastTimestamp = 0;
 
@@ -144,6 +145,11 @@ export const App = () => {
                 <Stack.Screen name="Security" component={Security} options={{ title: 'Security' }} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} options={{ title: 'Pin Code' }} />
                 <Stack.Screen name="ExportJson" component={ExportJson} options={{ title: 'Export Json' }} />
+                <Stack.Screen
+                  name="WebViewDebugger"
+                  component={WebViewDebugger}
+                  options={{ title: 'Web View Debugger' }}
+                />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

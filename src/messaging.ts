@@ -106,6 +106,7 @@ import {
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { MutableRefObject } from 'react';
 import WebView from 'react-native-webview';
+import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -156,19 +157,19 @@ export const postMessage = ({ id, message, request }) => {
   webviewRef.current?.injectJavaScript(injection);
 };
 
-function sendMessage<TMessageType extends MessageTypesWithNullRequest>(
+export function sendMessage<TMessageType extends MessageTypesWithNullRequest>(
   message: TMessageType,
 ): Promise<ResponseTypes[TMessageType]>;
-function sendMessage<TMessageType extends MessageTypesWithNoSubscriptions>(
+export function sendMessage<TMessageType extends MessageTypesWithNoSubscriptions>(
   message: TMessageType,
   request: RequestTypes[TMessageType],
 ): Promise<ResponseTypes[TMessageType]>;
-function sendMessage<TMessageType extends MessageTypesWithSubscriptions>(
+export function sendMessage<TMessageType extends MessageTypesWithSubscriptions>(
   message: TMessageType,
   request: RequestTypes[TMessageType],
   subscriber: (data: SubscriptionMessageTypes[TMessageType]) => void,
 ): Promise<ResponseTypes[TMessageType]>;
-function sendMessage<TMessageType extends MessageTypes>(
+export function sendMessage<TMessageType extends MessageTypes>(
   message: TMessageType,
   request?: RequestTypes[TMessageType],
   subscriber?: (data: unknown) => void,

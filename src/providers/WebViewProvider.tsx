@@ -14,15 +14,29 @@ interface WebViewProviderProps {
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 const params = 'platform=' + Platform.OS;
 let injectedJS = `
+  // Redirect from loader
   if (!window.location.search) {
     var link = document.getElementById('progress-bar');
-    link.href = './site/index.html?${params}';
-    link.click();
+    if (link) {
+      link.href = './site/index.html?${params}';
+      link.click();    
+    }
   }
+
+  // Update config data
+  setTimeout(() => {
+    var info = {
+      url: window.location.href,
+      version: JSON.parse(localStorage.getItem('application') || '{}').version
+    }
+  
+    window.ReactNativeWebView.postMessage(JSON.stringify({id: '-2', 'response': info }))
+  }, 200);
 `;
 // Show webview log in development environment
 if (__DEV__) {
-  injectedJS += `const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
+  injectedJS += `
+  const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
   console = {
       log: (...args) => consoleLog('log', [...args]),
       debug: (...args) => consoleLog('debug', [...args]),
@@ -35,7 +49,10 @@ if (__DEV__) {
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
   const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
+  // const sourceUri = 'http://192.168.10.189:9000'; // Use for developing web runner real time
   const [status, setStatus] = useState('init');
+  const [version, setVersion] = useState('unknown');
+  const [url, setUrl] = useState(sourceUri);
 
   const onMessage = (data: NativeSyntheticEvent<WebViewMessage>) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -54,6 +71,13 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         // @ts-ignore
         console.debug('Web View Console:', ...data.response);
         return true;
+      } else if (data.id === '-2') {
+        // @ts-ignore
+        const info = data.response as { url: string; version: string };
+        console.debug('Web View Info:', info);
+        setUrl(info.url);
+        setVersion(info.version);
+        return true;
       } else {
         return false;
       }
@@ -65,7 +89,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   }, [webRef]);
 
   return (
-    <WebViewContext.Provider value={{ viewRef: webRef, status }}>
+    <WebViewContext.Provider value={{ viewRef: webRef, status, url, version }}>
       <View style={{ height: 0 }}>
         <WebView
           // @ts-ignore
