@@ -41,6 +41,7 @@ export type AccountInfoByNetwork = {
   networkIconTheme: string;
   address: string;
   formattedAddress: string;
+  isTestnet: boolean;
 };
 
 export type AccountActionType = {
@@ -69,4 +70,5 @@ export interface TokenBalanceItemType {
   symbol: string;
   displayedSymbol: string;
   isReady: boolean;
+  isTestnet: boolean;
 }

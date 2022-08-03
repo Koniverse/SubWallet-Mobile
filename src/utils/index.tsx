@@ -26,7 +26,7 @@ export const accountAllRecoded: Recoded = {
 
 // all keys must be lowercase
 export const tokenDisplayNameMap: Record<string, string> = {
-  asusd: 'aUSD',
+  ausd: 'aUSD',
 };
 
 export function getTokenNetworkKeyMap(): Record<string, string[]> {

@@ -4,11 +4,11 @@ import { getNetworkLogo } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
-import { BN_ZERO } from 'utils/chainBalances';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
 
@@ -50,6 +50,18 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
+function geFormattedPrice(symbol: string, tokenPriceMap: Record<string, number>, isTestnet: boolean): string {
+  if (!isTestnet) {
+    const _symbol = symbol.toLowerCase();
+
+    if (tokenPriceMap[_symbol]) {
+      return tokenPriceMap[_symbol].toString().replace('.', ',');
+    }
+  }
+
+  return '0';
+}
+
 export const TokenChainBalance = ({
   networkKey,
   networkDisplayName,
@@ -59,14 +71,13 @@ export const TokenChainBalance = ({
   balanceValue,
   convertedBalanceValue,
   isReady,
+  isTestnet,
   ...wrapperProps
 }: Props) => {
   const {
     price: { tokenPriceMap },
   } = useSelector((state: RootState) => state);
-  const reformatPrice = tokenPriceMap[symbol.toLowerCase()]
-    ? tokenPriceMap[symbol.toLowerCase()].toString().replace('.', ',')
-    : BN_ZERO;
+  const reformatPrice = geFormattedPrice(symbol, tokenPriceMap, isTestnet);
 
   if (!isReady) {
     return <ChainBalanceSkeleton />;
@@ -97,7 +108,12 @@ export const TokenChainBalance = ({
 
         <View style={chainBalancePart2}>
           <BalanceVal balanceValTextStyle={textStyle} startWithSymbol symbol={''} value={balanceValue} />
-          <BalanceVal balanceValTextStyle={subTextStyle} startWithSymbol symbol={'$'} value={convertedBalanceValue} />
+          <BalanceVal
+            balanceValTextStyle={subTextStyle}
+            startWithSymbol
+            symbol={'$'}
+            value={isTestnet ? BN_ZERO : convertedBalanceValue}
+          />
         </View>
       </View>
 

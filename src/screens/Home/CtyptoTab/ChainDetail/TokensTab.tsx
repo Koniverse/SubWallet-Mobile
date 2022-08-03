@@ -21,6 +21,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
 
   const symbol = selectedBalanceInfo?.symbol || 'Unit';
   const networkDisplayName = selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '');
+  const isTestnet = selectedNetworkInfo.isTestnet;
 
   items.push({
     id: getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol),
@@ -32,6 +33,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
     symbol,
     displayedSymbol: symbol,
     isReady: selectedNetworkInfo && selectedBalanceInfo && selectedBalanceInfo.isReady,
+    isTestnet,
   });
 
   if (selectedBalanceInfo && selectedBalanceInfo.childrenBalances && selectedBalanceInfo.childrenBalances.length) {
@@ -46,6 +48,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
         symbol: item.symbol,
         displayedSymbol: item.symbol,
         isReady: selectedNetworkInfo && selectedBalanceInfo && selectedBalanceInfo.isReady,
+        isTestnet,
       });
     });
   }

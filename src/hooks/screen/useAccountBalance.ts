@@ -101,6 +101,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
 
     const itemId = getTokenBalanceKey(networkKey, balanceInfo.symbol, isTestNet);
     const networkDisplayName = networkMap[networkKey].chain.replace(' Relay Chain', '');
+    const isTestnet = networkMap[networkKey].groups.includes('TEST_NET');
 
     tokenBalanceMap[itemId] = {
       id: itemId,
@@ -112,6 +113,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
       displayedSymbol: balanceInfo.displayedSymbol,
       symbol: balanceInfo.symbol,
       isReady: balanceInfo.isReady,
+      isTestnet,
     };
 
     if (balanceInfo.isReady) {
@@ -136,6 +138,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
           displayedSymbol: c.displayedSymbol,
           isReady: balanceInfo.isReady,
           symbol: c.symbol,
+          isTestnet,
         };
       });
     }

@@ -56,6 +56,7 @@ function getGroupListItems(
       symbol,
       displayedSymbol: tokenDisplayNameMap[symbol] || symbol.toUpperCase(),
       isReady: true,
+      isTestnet: !!isTestnet,
     };
 
     tokenGroupMap[tgKey].forEach(tbKey => {
@@ -81,7 +82,7 @@ function getGroupDetailItems(
       return tokenBalanceMap[tbKey];
     }
 
-    const [networkKey, symbol] = tbKey.split('|');
+    const [networkKey, symbol, isTestnet] = tbKey.split('|');
 
     return {
       id: tbKey,
@@ -92,6 +93,7 @@ function getGroupDetailItems(
       symbol,
       displayedSymbol: symbol,
       isReady: false,
+      isTestnet: !!isTestnet,
     } as TokenBalanceItemType;
   });
 }
