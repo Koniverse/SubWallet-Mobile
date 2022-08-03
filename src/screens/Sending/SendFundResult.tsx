@@ -82,7 +82,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
 
     return (
       <SubmitButton
-        style={{ ...MarginBottomForSubmitButton, marginTop: 16 }}
+        style={{ ...MarginBottomForSubmitButton }}
         disabled={!isSupportScanExplorer || !isScanExplorerTxUrl}
         title={'View in Explorer'}
         onPress={() => Linking.openURL(isScanExplorerTxUrl)}
@@ -123,6 +123,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
               <SubmitButton
                 title={'Back to Home'}
                 backgroundColor={ColorMap.dark2}
+                style={submitButton1Style}
                 onPress={() => navigation.navigate('Home')}
               />
               {/*{viewTransactionBtn(extrinsicHash)}*/}

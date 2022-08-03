@@ -10,8 +10,9 @@ import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from 
 import { Image, View } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
-import { BN, formatBalance } from '@polkadot/util';
 import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
+import { SiDef } from '@polkadot/util/types';
+import BigN from 'bignumber.js';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -339,13 +340,10 @@ export function getGenesisOptionsByAddressType(
   return result;
 }
 
-export function reformatBalance(value: string | BN, decimals: number, token: string): [string, string] {
-  const si = formatBalance.calcSi(value.toString(), decimals);
-
-  return [
-    formatBalance(value, { decimals, forceUnit: si.value, withSi: false }),
-    si.power === 0 ? token : `${si.text} ${token}`,
-  ];
+export function getBalanceWithSi(value: string, decimals: number, si: SiDef, token: string): [string, string] {
+  let valueBigN = new BigN(!isNaN(parseFloat(value)) ? value : '0');
+  valueBigN = valueBigN.div(new BigN(10).pow(decimals + si.power));
+  return [valueBigN.toFixed(), si.power === 0 ? token : `${si.text} ${token}`];
 }
 
 export function getEthereumChains(networkMap: Record<string, NetworkJson>): string[] {

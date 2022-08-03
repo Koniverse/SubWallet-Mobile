@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
@@ -7,10 +7,11 @@ import i18n from 'utils/i18n/i18n';
 import { sharedStyles } from 'styles/sharedStyles';
 import { WebViewContext } from 'providers/contexts';
 import { Button } from 'components/Button';
-import RNPickerSelect from 'react-native-picker-select';
 import { MessageTypes } from '@subwallet/extension-base/background/types';
 import { Textarea } from 'components/Textarea';
 import { sendMessage } from '../messaging';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Dropdown } from 'components/Dropdown';
 
 // @ts-ignore
 const METHOD_MAP: Record<MessageTypes, { default_input: string; subscription?: boolean }> = {
@@ -38,6 +39,11 @@ export const WebViewDebugger = () => {
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
   const [unsub, setUnsub] = useState<(() => void) | undefined>(undefined);
+  const themeColors = useSubWalletTheme().colors;
+
+  const containerStyle = { marginBottom: 30 };
+  const textStyle = { marginBottom: 10, color: themeColors.textColor };
+
   const onPressBack = () => {
     navigation.goBack();
   };
@@ -86,32 +92,30 @@ export const WebViewDebugger = () => {
 
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.settings.webViewDebugger}>
-      <View style={sharedStyles.layoutContainer}>
-        <View style={{ marginBottom: 30 }}>
-          <Text style={{ marginBottom: 10 }}>Status: {status}</Text>
-          <Text style={{ marginBottom: 10 }}>URL: {url}</Text>
-          <Text style={{ marginBottom: 10 }}>Version: {version}</Text>
+      <ScrollView style={{ ...sharedStyles.layoutContainer }}>
+        <View style={containerStyle}>
+          <Text style={textStyle}>Status: {status}</Text>
+          <Text style={textStyle}>URL: {url}</Text>
+          <Text style={textStyle}>Version: {version}</Text>
           <Button title={'Reload Background'} onPress={onPressReload} />
         </View>
-        <View style={{ marginBottom: 30 }}>
-          <Text style={{ marginBottom: 10 }}>Message</Text>
-          <RNPickerSelect
+        <View style={containerStyle}>
+          <Text style={textStyle}>Message</Text>
+          <Dropdown
             onValueChange={onChangeMethod}
             value={method}
             items={Object.keys(METHOD_MAP).map(k => ({ label: k, value: k }))}
           />
-          <Text style={{ marginBottom: 10 }}>Input</Text>
-          <Textarea value={input} style={{ marginBottom: 10, height: 80 }} onChangeText={onChangeInput} />
+          <Text style={textStyle}>Input</Text>
+          <Textarea value={input} style={{ ...textStyle, height: 80 }} onChangeText={onChangeInput} />
           <Button style={{ marginBottom: 5 }} title={'Send Message'} onPress={onSendMessage} />
           {unsub && (
-            <Text style={{ textAlign: 'center', marginBottom: 10 }}>
-              ................... Subscribing .................
-            </Text>
+            <Text style={{ textAlign: 'center', ...textStyle }}>................... Subscribing .................</Text>
           )}
-          <Textarea value={result} style={{ marginBottom: 10, height: 320 }} />
+          <Textarea value={result} style={{ ...textStyle, height: 320 }} />
           <Text style={{ color: 'red' }}>{error}</Text>
         </View>
-      </View>
+      </ScrollView>
     </ContainerWithSubHeader>
   );
 };

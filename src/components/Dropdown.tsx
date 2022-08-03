@@ -1,52 +1,49 @@
-import React, { useMemo, useState } from 'react';
-import RNPickerSelect from 'react-native-picker-select';
+import React, { useMemo } from 'react';
+import RNPickerSelect, { Item } from 'react-native-picker-select';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { ColorMap } from 'styles/color';
 
 interface Props {
-  placeholder: string;
+  placeholder?: string;
+  items: Item[];
+  value?: any;
+  onValueChange: (value: any, index: number) => void;
 }
 
-export const Dropdown = ({ placeholder }: Props) => {
-  const [dropdownValue, setDropdownValue] = useState('football');
-  const theme = useSubWalletTheme().colors;
+export const Dropdown = ({ placeholder, items, onValueChange, value }: Props) => {
   const styles = useMemo(
     () =>
       StyleSheet.create({
         inputIOS: {
           ...sharedStyles.textInput,
-          backgroundColor: theme.inputBackground,
-          color: theme.textColor,
+          backgroundColor: ColorMap.dark2,
+          color: ColorMap.light,
         },
         inputAndroid: {
           ...sharedStyles.textInput,
-          backgroundColor: theme.inputBackground,
-          color: theme.textColor,
+          backgroundColor: ColorMap.dark2,
+          color: ColorMap.light,
         },
         iconContainer: {
           top: 16,
           right: 12,
         },
       }),
-    [theme],
+    [],
   );
   return (
     <RNPickerSelect
       style={styles}
-      items={[
-        { label: 'Football', value: 'football' },
-        { label: 'Baseball', value: 'baseball' },
-        { label: 'Hockey', value: 'hockey' },
-      ]}
+      items={items}
       useNativeAndroidPickerStyle={false}
-      onValueChange={val => setDropdownValue(val)}
-      value={dropdownValue}
+      onValueChange={onValueChange}
+      value={value}
       placeholder={placeholder ? { label: placeholder, value: '' } : {}}
       Icon={() => {
-        return <FontAwesomeIcon icon={faChevronDown} size={16} color={theme.textColor2} />;
+        return <FontAwesomeIcon icon={faChevronDown} size={16} color={ColorMap.light} />;
       }}
     />
   );

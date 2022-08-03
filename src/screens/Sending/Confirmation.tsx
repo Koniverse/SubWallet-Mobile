@@ -15,6 +15,7 @@ import { TransferResultType } from 'types/tx';
 import { Warning } from 'components/Warning';
 import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';
+import { SiDef } from '@polkadot/util/types';
 
 interface Props {
   requestPayload: RequestCheckTransfer;
@@ -23,6 +24,7 @@ interface Props {
   onChangeResult: (txResult: TransferResultType) => void;
   isBusy: boolean;
   onChangeBusy: (isBusy: boolean) => void;
+  si: SiDef;
 }
 
 function getNetworkPrefix(networkKey: string, networkMap: Record<string, NetworkJson>): number | undefined {
@@ -39,6 +41,7 @@ export const Confirmation = ({
   onChangeResult,
   feeInfo: [fee, feeDecimals, feeSymbol],
   isBusy,
+  si,
   onChangeBusy,
 }: Props) => {
   const {
@@ -122,13 +125,14 @@ export const Confirmation = ({
           <TransferValue
             token={requestPayload.token || ''}
             value={requestPayload.value || '0'}
+            si={si}
             decimals={balanceFormat[0]}
           />
           <NetworkField label={'Network'} networkKey={requestPayload.networkKey} />
           <TextField label={'Account'} text={currentAccount?.name || ''} />
           <AddressField label={'Send from Address'} address={requestPayload.from} networkPrefix={networkPrefix} />
           <AddressField label={'Send to Address'} address={requestPayload.to} />
-          <BalanceField label={'Network Fee'} value={fee || '0'} token={feeSymbol} decimal={feeDecimals} />
+          <BalanceField label={'Network Fee'} value={fee || '0'} si={si} token={feeSymbol} decimal={feeDecimals} />
           <PasswordField
             label={'Password'}
             value={password}

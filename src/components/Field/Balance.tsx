@@ -1,16 +1,17 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
-import { reformatBalance } from 'utils/index';
+import { getBalanceWithSi } from 'utils/index';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { BN } from '@polkadot/util';
+import { SiDef } from '@polkadot/util/types';
 
 interface Props extends FieldBaseProps {
-  value: string | BN;
+  value: string;
   decimal: number;
   token: string;
+  si: SiDef;
 }
 
 const textStyle: StyleProp<any> = {
@@ -39,8 +40,8 @@ const unitStyle: StyleProp<any> = {
   paddingRight: 16,
 };
 
-export const BalanceField = ({ value, decimal, token, ...fieldBase }: Props) => {
-  const [balanceValue, balanceToken] = reformatBalance(value, decimal, token);
+export const BalanceField = ({ value, decimal, token, si, ...fieldBase }: Props) => {
+  const [balanceValue, balanceToken] = getBalanceWithSi(value, decimal, si, token);
 
   return (
     <FieldBase {...fieldBase}>
