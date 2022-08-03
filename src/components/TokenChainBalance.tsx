@@ -10,9 +10,7 @@ import { RootState } from 'stores/index';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 
-interface Props extends TokenBalanceItemType, TouchableOpacityProps {
-  networkDisplayName?: string;
-}
+interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
 
 const chainBalanceMainArea: StyleProp<any> = {
   flexDirection: 'row',
@@ -86,7 +84,7 @@ export const TokenChainBalance = ({
                 <>
                   <Text style={textStyle}> (</Text>
                   <Text style={[textStyle, { maxWidth: 100 }]} numberOfLines={1}>
-                    {networkDisplayName.replace(' Relay Chain', '')}
+                    {networkDisplayName}
                   </Text>
                   <Text style={textStyle}>)</Text>
                 </>

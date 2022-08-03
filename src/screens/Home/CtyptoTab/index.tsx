@@ -14,6 +14,7 @@ import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
 import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
 import reformatAddress from 'utils/index';
 import { TokenSelect } from 'screens/TokenSelect';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
 
 const ViewStep = {
   CHAIN_LIST: 1,
@@ -68,7 +69,8 @@ export const CryptoTab = () => {
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
-  const { networkBalanceMap, totalBalanceValue } = useAccountBalance('all', showedNetworks);
+  const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance('all', showedNetworks);
+  const tokenGroupMap = useTokenGroup();
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
     useState<SelectionInfo>({
@@ -145,6 +147,8 @@ export const CryptoTab = () => {
           showedNetworks={showedNetworks}
           onPressTokenItem={onPressTokenItem}
           totalBalanceValue={totalBalanceValue}
+          tokenBalanceMap={tokenBalanceMap}
+          tokenGroupMap={tokenGroupMap}
         />
       )}
 

@@ -1,18 +1,17 @@
 import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
-import { Recoded, TokenBalanceItemType, TokenItemType } from 'types/ui-types';
+import { Recoded, TokenItemType } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
-import { decodeAddress, isEthereumAddress, ethereumEncode, encodeAddress } from '@polkadot/util-crypto';
+import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
 import { Image, View } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
 import { BN, formatBalance } from '@polkadot/util';
-import { BN_ZERO } from 'utils/chainBalances';
-import { BalanceInfo } from '../types';
+import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -23,6 +22,40 @@ export const accountAllRecoded: Recoded = {
   prefix: 42,
   isEthereum: false,
 };
+
+// all keys must be lowercase
+export const tokenDisplayNameMap: Record<string, string> = {
+  asusd: 'aUSD',
+};
+
+export function getTokenNetworkKeyMap(): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+
+  Object.keys(PREDEFINED_NETWORKS).forEach(networkKey => {
+    let token = PREDEFINED_NETWORKS[networkKey].nativeToken;
+
+    if (!token) {
+      return;
+    }
+
+    token = token.toLowerCase();
+
+    if (!result[token]) {
+      result[token] = [networkKey];
+    } else {
+      result[token].push(networkKey);
+    }
+  });
+
+  return result;
+}
+
+// all keys must be lowercase
+export const tokenNetworkKeyMap: Record<string, string[]> = Object.assign(getTokenNetworkKeyMap(), {
+  intr: ['interlay'],
+  betadev: ['moonbase'],
+  ibtc: ['interlay'],
+});
 
 export const subscanByNetworkKey: Record<string, string> = {
   acala: 'https://acala.subscan.io',
@@ -327,37 +360,12 @@ export function getEthereumChains(networkMap: Record<string, NetworkJson>): stri
   return result;
 }
 
-export function getTokenBalanceItems(networkBalanceMap: Record<string, BalanceInfo>): TokenBalanceItemType[] {
-  const items: TokenBalanceItemType[] = [];
+export function getTokenGroupKey(token: string, isTestNet = false): string {
+  return `${token.toLowerCase()}${isTestNet ? '|test' : ''}`;
+}
 
-  Object.keys(networkBalanceMap).forEach(networkKey => {
-    const networkBalanceInfo = networkBalanceMap[networkKey];
-    items.push({
-      networkKey,
-      logoKey: networkKey,
-      balanceValue: networkBalanceInfo.balanceValue,
-      convertedBalanceValue: networkBalanceInfo.convertedBalanceValue,
-      symbol: networkBalanceInfo.symbol,
-      displayedSymbol: networkBalanceInfo.displayedSymbol,
-      isReady: networkBalanceInfo.isReady,
-    });
-
-    if (networkBalanceInfo.childrenBalances && networkBalanceInfo.childrenBalances.length) {
-      networkBalanceInfo.childrenBalances.forEach(children =>
-        items.push({
-          networkKey,
-          logoKey: children.symbol,
-          balanceValue: children.balanceValue,
-          convertedBalanceValue: children.convertedBalanceValue || BN_ZERO,
-          symbol: children.symbol,
-          displayedSymbol: children.displayedSymbol,
-          isReady: networkBalanceInfo.isReady,
-        }),
-      );
-    }
-  });
-
-  return items;
+export function getTokenBalanceKey(networkKey: string, token: string, isTestNet: boolean = false): string {
+  return `${networkKey}|${token}${isTestNet ? '|test' : ''}`;
 }
 
 export function getActiveToken(

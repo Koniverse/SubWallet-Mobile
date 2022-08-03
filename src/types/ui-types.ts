@@ -60,8 +60,10 @@ export interface TokenItemType {
 }
 
 export interface TokenBalanceItemType {
+  id: string;
   logoKey: string;
   networkKey: string;
+  networkDisplayName?: string;
   balanceValue: BigN;
   convertedBalanceValue: BigN;
   symbol: string;

@@ -1,35 +1,18 @@
 import React from 'react';
-import { ListRenderItemInfo, RefreshControl } from 'react-native';
-import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
-import { BalanceInfo } from '../../../../types';
-import { TokenChainBalance } from 'components/TokenChainBalance';
-import { getTokenBalanceItems } from 'utils/index';
+import { ListRenderItem, RefreshControl } from 'react-native';
+import { TokenBalanceItemType } from 'types/ui-types';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 
 interface Props {
-  networkBalanceMap: Record<string, BalanceInfo>;
-  accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
-  onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
+  items: TokenBalanceItemType[];
+  renderItem: ListRenderItem<TokenBalanceItemType> | null | undefined;
 }
 
-export const TokensTab = ({ networkBalanceMap, onPressTokenItem, accountInfoByNetworkMap }: Props) => {
-  const tokenBalanceItems = getTokenBalanceItems(networkBalanceMap);
+export const TokensTab = ({ items: tokenBalanceItems, renderItem }: Props) => {
   const [isRefresh, refresh] = useRefresh();
-  const renderItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
-    const info = accountInfoByNetworkMap[item.networkKey];
-
-    return (
-      <TokenChainBalance
-        key={`${item.symbol}-${item.networkKey}`}
-        networkDisplayName={info.networkDisplayName}
-        onPress={() => onPressTokenItem(item.symbol, item.displayedSymbol, info)}
-        {...item}
-      />
-    );
-  };
 
   return (
     <Tabs.FlatList

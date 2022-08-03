@@ -8,6 +8,7 @@ import * as Tabs from 'react-native-collapsible-tab-view';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
+import { getTokenBalanceKey } from 'utils/index';
 
 interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
@@ -18,23 +19,30 @@ interface Props {
 function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo: BalanceInfo): TokenBalanceItemType[] {
   const items: TokenBalanceItemType[] = [];
 
+  const symbol = selectedBalanceInfo?.symbol || 'Unit';
+  const networkDisplayName = selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '');
+
   items.push({
+    id: getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol),
     logoKey: selectedNetworkInfo.networkKey,
     networkKey: selectedNetworkInfo.networkKey,
+    networkDisplayName,
     balanceValue: selectedBalanceInfo?.balanceValue || BN_ZERO,
-    convertedBalanceValue: selectedBalanceInfo?.balanceValue || BN_ZERO,
-    symbol: selectedBalanceInfo?.symbol || 'Unit',
-    displayedSymbol: selectedBalanceInfo?.symbol || 'Unit',
+    convertedBalanceValue: selectedBalanceInfo?.convertedBalanceValue || BN_ZERO,
+    symbol,
+    displayedSymbol: symbol,
     isReady: selectedNetworkInfo && selectedBalanceInfo && selectedBalanceInfo.isReady,
   });
 
   if (selectedBalanceInfo && selectedBalanceInfo.childrenBalances && selectedBalanceInfo.childrenBalances.length) {
     selectedBalanceInfo.childrenBalances.forEach(item => {
       items.push({
+        id: getTokenBalanceKey(selectedNetworkInfo.networkKey, item.symbol),
         networkKey: selectedNetworkInfo.networkKey,
+        networkDisplayName,
         logoKey: item.symbol,
         balanceValue: item.balanceValue,
-        convertedBalanceValue: item.balanceValue,
+        convertedBalanceValue: item.convertedBalanceValue,
         symbol: item.symbol,
         displayedSymbol: item.symbol,
         isReady: selectedNetworkInfo && selectedBalanceInfo && selectedBalanceInfo.isReady,
@@ -52,7 +60,6 @@ export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTok
     return (
       <TokenChainBalance
         key={`${item.symbol}-${item.networkKey}`}
-        networkDisplayName={selectedNetworkInfo.networkDisplayName}
         onPress={() => onPressTokenItem(item.symbol, item.displayedSymbol)}
         {...item}
       />
