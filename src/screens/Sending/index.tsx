@@ -297,6 +297,7 @@ export const SendFund = () => {
     });
     setReceiveAddress([null, '']);
     setCurrentStep(ViewStep.SEND_FUND);
+    setBusy(false);
   }, []);
 
   const onUpdateInputBalance = () => {
