@@ -70,7 +70,7 @@ export const CryptoTab = () => {
   const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
   const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance('all', showedNetworks);
-  const tokenGroupMap = useTokenGroup();
+  const tokenGroupMap = useTokenGroup(showedNetworks);
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
     useState<SelectionInfo>({

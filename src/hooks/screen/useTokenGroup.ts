@@ -22,7 +22,29 @@ function isSameGroup(currentToken: string, comparedToken: string, isSameNetworkT
   return possibleTokens.includes(currentToken.toLowerCase()) && isSameNetworkType;
 }
 
-export default function useTokenGroup(): Record<string, string[]> {
+function getFilteredTokenGroupMap(
+  showedNetworks: string[],
+  tokenGroupMap: Record<string, string[]>,
+): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+
+  Object.keys(tokenGroupMap).forEach(tgKey => {
+    const filteredGroupItems = tokenGroupMap[tgKey].filter(tbKey => {
+      const [networkKey] = tbKey.split('|');
+
+      return showedNetworks.includes(networkKey);
+    });
+
+    if (filteredGroupItems.length) {
+      result[tgKey] = filteredGroupItems;
+    }
+  });
+
+  return result;
+}
+
+//todo: may need optimise this function
+export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
   const { chainRegistry: chainRegistryMap, networkMap } = useSelector((state: RootState) => state);
   const result: Record<string, string[]> = {};
   const tokenInfoMap: Record<string, TokenInfo> = {};
@@ -98,5 +120,9 @@ export default function useTokenGroup(): Record<string, string[]> {
     allocatedKeys.push(k);
   });
 
-  return result;
+  if (!showedNetworks) {
+    return result;
+  } else {
+    return getFilteredTokenGroupMap(showedNetworks, result);
+  }
 }

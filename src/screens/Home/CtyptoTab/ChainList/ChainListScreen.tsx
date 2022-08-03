@@ -17,6 +17,7 @@ import { SubHeader } from 'components/SubHeader';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import { ListRenderItemInfo } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props {
   onPressSearchButton?: () => void;
@@ -35,27 +36,6 @@ const ViewStep = {
   GROUP_LIST: 1,
   GROUP_DETAIL: 2,
 };
-
-function getFilteredTokenGroupMap(
-  showedNetworks: string[],
-  tokenGroupMap: Record<string, string[]>,
-): Record<string, string[]> {
-  const result: Record<string, string[]> = {};
-
-  Object.keys(tokenGroupMap).forEach(tgKey => {
-    const filteredGroupItems = tokenGroupMap[tgKey].filter(tbKey => {
-      const [networkKey] = tbKey.split('|');
-
-      return showedNetworks.includes(networkKey);
-    });
-
-    if (filteredGroupItems.length) {
-      result[tgKey] = filteredGroupItems;
-    }
-  });
-
-  return result;
-}
 
 function getGroupListItems(
   tokenGroupMap: Record<string, string[]>,
@@ -140,6 +120,34 @@ function getSubHeaderTitle(tgKey: string) {
   return tokenDisplayNameMap[symbol] || symbol.toUpperCase();
 }
 
+function getTotalBalanceValue(
+  viewStep: number,
+  currentTgKey: string,
+  totalBalanceValue: BigN,
+  tokenGroupMap: Record<string, string[]>,
+  tokenBalanceMap: Record<string, TokenBalanceItemType>,
+): BigN {
+  if (viewStep === ViewStep.GROUP_LIST) {
+    return totalBalanceValue;
+  }
+
+  if (viewStep === ViewStep.GROUP_DETAIL) {
+    if (currentTgKey && tokenGroupMap[currentTgKey]) {
+      let result = new BigN(0);
+
+      tokenGroupMap[currentTgKey].forEach(tbKey => {
+        if (tokenBalanceMap[tbKey] && tokenBalanceMap[tbKey].isReady) {
+          result = result.plus(tokenBalanceMap[tbKey].convertedBalanceValue);
+        }
+      });
+
+      return result;
+    }
+  }
+
+  return BN_ZERO;
+}
+
 export const ChainListScreen = ({
   onPressSearchButton,
   accountInfoByNetworkMap,
@@ -153,10 +161,16 @@ export const ChainListScreen = ({
   tokenBalanceMap,
 }: Props) => {
   const [viewStep, setViewStep] = useState<number>(ViewStep.GROUP_LIST);
-  const filteredTokenGroupMap = getFilteredTokenGroupMap(showedNetworks, tokenGroupMap);
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
-  const tokenBalanceItems = getTokenBalanceItems(viewStep, currentTgKey, filteredTokenGroupMap, tokenBalanceMap);
+  const tokenBalanceItems = getTokenBalanceItems(viewStep, currentTgKey, tokenGroupMap, tokenBalanceMap);
   const subHeaderTitle = getSubHeaderTitle(currentTgKey);
+  const _totalBalanceValue = getTotalBalanceValue(
+    viewStep,
+    currentTgKey,
+    totalBalanceValue,
+    tokenGroupMap,
+    tokenBalanceMap,
+  );
 
   const _onPressTokenItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
     if (viewStep === ViewStep.GROUP_LIST) {
@@ -218,7 +232,7 @@ export const ChainListScreen = ({
           allowHeaderOverscroll={true}
           renderTabBar={renderTabBar}
           renderHeader={() => {
-            return <BalanceBlock balanceValue={totalBalanceValue} />;
+            return <BalanceBlock balanceValue={_totalBalanceValue} />;
           }}>
           <Tabs.Tab name="token" label="Token">
             <TokensTab items={tokenBalanceItems} renderItem={renderTokenTabItem} />
