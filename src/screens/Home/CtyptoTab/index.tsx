@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
@@ -15,6 +15,7 @@ import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTyp
 import reformatAddress from 'utils/index';
 import { TokenSelect } from 'screens/TokenSelect';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
+import { BackHandler } from 'react-native';
 
 const ViewStep = {
   CHAIN_LIST: 1,
@@ -79,6 +80,24 @@ export const CryptoTab = () => {
       selectedTokenSymbol: '',
     });
   const deps = selectedNetworkInfo?.networkKey;
+
+  useEffect(() => {
+    const unsubscribeFocusScreen = navigation.addListener('focus', () => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    });
+
+    const unsubscribeBlurScreen = navigation.addListener('blur', () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    });
+
+    return () => {
+      unsubscribeFocusScreen();
+      unsubscribeBlurScreen();
+    };
+  }, [navigation]);
+  const handleBackButton = () => {
+    return true;
+  };
 
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,
