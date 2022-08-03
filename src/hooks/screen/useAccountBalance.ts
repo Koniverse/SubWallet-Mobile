@@ -52,7 +52,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
       return;
     }
 
-    const isTestNet = networkInfo.groups.includes('TEST_NET');
+    const isTestnet = networkInfo.groups.includes('TEST_NET');
 
     if (balanceItem.state.valueOf() === APIItemState.NOT_SUPPORT.valueOf()) {
       networkBalanceMap[networkKey] = {
@@ -99,9 +99,8 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
 
     networkBalanceMap[networkKey] = balanceInfo;
 
-    const itemId = getTokenBalanceKey(networkKey, balanceInfo.symbol, isTestNet);
+    const itemId = getTokenBalanceKey(networkKey, balanceInfo.symbol, isTestnet);
     const networkDisplayName = networkMap[networkKey].chain.replace(' Relay Chain', '');
-    const isTestnet = networkMap[networkKey].groups.includes('TEST_NET');
 
     tokenBalanceMap[itemId] = {
       id: itemId,
@@ -126,7 +125,7 @@ export default function useAccountBalance(currentNetworkKey: string, showedNetwo
           totalBalanceValue = totalBalanceValue.plus(c.convertedBalanceValue);
         }
 
-        const childItemId = getTokenBalanceKey(networkKey, c.symbol, isTestNet);
+        const childItemId = getTokenBalanceKey(networkKey, c.symbol, isTestnet);
 
         tokenBalanceMap[childItemId] = {
           id: childItemId,

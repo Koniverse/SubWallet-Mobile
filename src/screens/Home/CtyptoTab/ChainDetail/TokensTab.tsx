@@ -24,7 +24,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
   const isTestnet = selectedNetworkInfo.isTestnet;
 
   items.push({
-    id: getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol),
+    id: getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol, isTestnet),
     logoKey: selectedNetworkInfo.networkKey,
     networkKey: selectedNetworkInfo.networkKey,
     networkDisplayName,
@@ -39,7 +39,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
   if (selectedBalanceInfo && selectedBalanceInfo.childrenBalances && selectedBalanceInfo.childrenBalances.length) {
     selectedBalanceInfo.childrenBalances.forEach(item => {
       items.push({
-        id: getTokenBalanceKey(selectedNetworkInfo.networkKey, item.symbol),
+        id: getTokenBalanceKey(selectedNetworkInfo.networkKey, item.symbol, isTestnet),
         networkKey: selectedNetworkInfo.networkKey,
         networkDisplayName,
         logoKey: item.symbol,

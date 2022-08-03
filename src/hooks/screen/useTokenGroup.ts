@@ -6,8 +6,8 @@ import { getTokenBalanceKey, getTokenGroupKey } from 'utils/index';
 const KNOW_MAIN_KEYS = [getTokenGroupKey('DOT', true), getTokenGroupKey('KSM', true), getTokenGroupKey('STELLA')];
 const KNOW_PREFIXES = ['xcm', 'tai', 'xc', 'lc', 'vs', 'l', 'x', 't', 'h'];
 
-function updateResult(token: string, isTestNet: string, result: Record<string, string[]>, tbKey: string) {
-  const mKey = getTokenGroupKey(token, !!isTestNet);
+function updateResult(token: string, isTestnet: string, result: Record<string, string[]>, tbKey: string) {
+  const mKey = getTokenGroupKey(token, !!isTestnet);
 
   if (result[mKey]) {
     result[mKey].push(tbKey);
@@ -81,16 +81,16 @@ export default function useTokenGroup(showedNetworks?: string[]): Record<string,
   const tokenInfoMapKeys = Object.keys(tokenInfoMap);
 
   mainKeys.forEach(k => {
-    const [token, isTestNet] = k.split('|');
+    const [token, isTestnet] = k.split('|');
 
     tokenInfoMapKeys.forEach(_k => {
       if (allocatedKeys.includes(_k)) {
         return;
       }
 
-      const [, _token, _isTestNet] = _k.split('|');
+      const [, _token, _isTestnet] = _k.split('|');
 
-      if (isSameGroup(_token, token, isTestNet === _isTestNet)) {
+      if (isSameGroup(_token, token, isTestnet === _isTestnet)) {
         allocatedKeys.push(_k);
 
         if (!result[k]) {
@@ -107,14 +107,14 @@ export default function useTokenGroup(showedNetworks?: string[]): Record<string,
       return;
     }
 
-    const [, token, isTestNet] = k.split('|');
+    const [, token, isTestnet] = k.split('|');
 
     if (token.startsWith('xcm')) {
-      updateResult(token.substring(3), isTestNet, result, k);
+      updateResult(token.substring(3), isTestnet, result, k);
     } else if (token.startsWith('xc')) {
-      updateResult(token.substring(2), isTestNet, result, k);
+      updateResult(token.substring(2), isTestnet, result, k);
     } else {
-      updateResult(token, isTestNet, result, k);
+      updateResult(token, isTestnet, result, k);
     }
 
     allocatedKeys.push(k);

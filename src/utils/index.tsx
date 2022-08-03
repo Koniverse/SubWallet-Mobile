@@ -358,12 +358,12 @@ export function getEthereumChains(networkMap: Record<string, NetworkJson>): stri
   return result;
 }
 
-export function getTokenGroupKey(token: string, isTestNet = false): string {
-  return `${token.toLowerCase()}${isTestNet ? '|test' : ''}`;
+export function getTokenGroupKey(token: string, isTestnet = false): string {
+  return `${token.toLowerCase()}${isTestnet ? '|test' : ''}`;
 }
 
-export function getTokenBalanceKey(networkKey: string, token: string, isTestNet: boolean = false): string {
-  return `${networkKey}|${token}${isTestNet ? '|test' : ''}`;
+export function getTokenBalanceKey(networkKey: string, token: string, isTestnet: boolean = false): string {
+  return `${networkKey}|${token}${isTestnet ? '|test' : ''}`;
 }
 
 export function getActiveToken(
