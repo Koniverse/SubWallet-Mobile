@@ -28,7 +28,10 @@ function getTokenSymbols(chainRegistry: ChainRegistry): string[] {
   return result;
 }
 
-export default function useAccountBalance(currentNetworkKey: string, showedNetworks: string[]): AccountBalanceType {
+export default function useAccountBalance(
+  showedNetworks: string[],
+  tokenBalanceKeyPriceMap: Record<string, number>,
+): AccountBalanceType {
   const {
     balance: balanceReducer,
     chainRegistry: chainRegistryMap,

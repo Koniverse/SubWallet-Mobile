@@ -10,11 +10,11 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
 import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import reformatAddress from 'utils/index';
 import { TokenSelect } from 'screens/TokenSelect';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { BackHandler } from 'react-native';
+import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
+import useAccountInfoByNetworkMap from 'hooks/screen/Home/CtyptoTab/useAccountInfoByNetworkMap';
 
 const ViewStep = {
   CHAIN_LIST: 1,
@@ -28,36 +28,6 @@ interface SelectionInfo {
   selectedTokenSymbol: string;
 }
 
-function getAccountInfoByNetwork(address: string, networkKey: string, network: NetworkJson): AccountInfoByNetwork {
-  return {
-    address,
-    key: networkKey,
-    networkKey,
-    networkDisplayName: network.chain,
-    networkPrefix: network.ss58Format,
-    networkLogo: networkKey,
-    networkIconTheme: network.isEthereum ? 'ethereum' : network.icon || 'polkadot',
-    formattedAddress: reformatAddress(address, network.ss58Format),
-    isTestnet: network.groups.includes('TEST_NET'),
-  };
-}
-
-function getAccountInfoByNetworkMap(
-  address: string,
-  networkKeys: string[],
-  networkMap: Record<string, NetworkJson>,
-): Record<string, AccountInfoByNetwork> {
-  const result: Record<string, AccountInfoByNetwork> = {};
-
-  networkKeys.forEach(n => {
-    if (networkMap[n]) {
-      result[n] = getAccountInfoByNetwork(address, n, networkMap[n]);
-    }
-  });
-
-  return result;
-}
-
 export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
@@ -67,13 +37,22 @@ export const CryptoTab = () => {
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
   const tokenGroupMap = useTokenGroup(showedNetworks);
-  const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance('all', showedNetworks);
+  const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
+  const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance(
+    showedNetworks,
+    tokenBalanceKeyPriceMap,
+  );
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
     useState<SelectionInfo>({
       selectedTokenDisplayName: '',
       selectedTokenSymbol: '',
     });
+  const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = useAccountInfoByNetworkMap(
+    currentAccountAddress,
+    showedNetworks,
+    networkMap,
+  );
 
   useEffect(() => {
     const unsubscribeFocusScreen = navigation.addListener('focus', () => {
@@ -92,12 +71,6 @@ export const CryptoTab = () => {
   const handleBackButton = () => {
     return true;
   };
-
-  const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
-    currentAccountAddress,
-    showedNetworks,
-    networkMap,
-  );
 
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
     setSelectionInfo(prevState => ({
