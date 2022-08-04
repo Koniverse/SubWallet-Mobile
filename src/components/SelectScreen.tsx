@@ -30,7 +30,11 @@ export const SelectScreen = ({ children, title, searchString, onChangeSearchText
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={_onPressBack} title={title} style={{ width: '100%', paddingTop: 0 }}>
+    <ContainerWithSubHeader
+      onPressBack={_onPressBack}
+      title={title}
+      style={{ width: '100%', paddingTop: 0 }}
+      isShowPlaceHolder={false}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
           autoFocus={autoFocus}

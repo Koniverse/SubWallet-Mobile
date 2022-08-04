@@ -114,12 +114,12 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     actionWithSetTimeout(() => setSelectTokenModal(true));
   };
 
-  const onChangeReceiveNetwork = (networkKey: string, networkPrefix: number) => {
+  const onChangeReceiveToken = ({ networkKey }: TokenItemType) => {
     setSelectedResult({
       selectedNetworkKey: networkKey,
-      selectedNetworkPrefix: networkPrefix,
+      selectedNetworkPrefix: networkMap[networkKey].ss58Format,
     });
-    setSelectNetworkModal(false);
+    setSelectTokenModal(false);
     actionWithSetTimeout(() => setReceiveModalVisible(true));
   };
 
@@ -162,11 +162,11 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
       setSelectedResult({ selectedNetworkKey: _selectedNetworkKey, selectedNetworkPrefix: _selectedNetworkPrefix });
       setReceiveModalVisible(true);
     } else {
-      setNetworkSelectAction({
-        onChange: item => onChangeReceiveNetwork(item.networkKey, item.networkPrefix),
-        onBack: onPressReceiveNetworkSelectBack,
+      setTokenSelectAction({
+        onChange: onChangeReceiveToken,
+        onBack: onPressTokenSelectBack,
       });
-      setSelectNetworkModal(true);
+      actionWithSetTimeout(() => setSelectTokenModal(true));
     }
   };
 

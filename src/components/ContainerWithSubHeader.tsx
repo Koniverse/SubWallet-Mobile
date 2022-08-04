@@ -12,6 +12,7 @@ import {
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   children: JSX.Element;
   style?: StyleProp<any>;
+  isShowPlaceHolder?: boolean;
   statusBarColor?: string;
 }
 
@@ -27,6 +28,7 @@ const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgro
 export const ContainerWithSubHeader = ({
   children,
   style,
+  isShowPlaceHolder = true,
   statusBarColor = ColorMap.dark1,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
@@ -34,7 +36,7 @@ export const ContainerWithSubHeader = ({
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
-      <View style={getStatusBarPlaceholderStyle(statusBarColor)} />
+      {isShowPlaceHolder && <View style={getStatusBarPlaceholderStyle(statusBarColor)} />}
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
