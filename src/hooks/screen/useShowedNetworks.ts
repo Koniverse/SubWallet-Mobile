@@ -4,6 +4,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { getGenesisOptionsByAddressType } from 'utils/index';
+import { useMemo } from 'react';
 
 function getShowedNetworks(genesisOptions: NetworkSelectOption[], networkKey: string): string[] {
   if (networkKey === 'all') {
@@ -18,7 +19,13 @@ export default function useShowedNetworks(
   address: string,
   accounts: AccountJson[],
 ): string[] {
-  const genesisOptions = getGenesisOptionsByAddressType(address, accounts, useGenesisHashOptions());
+  const genesisHashOptions = useGenesisHashOptions();
+  const dep1 = JSON.stringify(accounts);
+  const dep2 = JSON.stringify(genesisHashOptions);
 
-  return getShowedNetworks(genesisOptions, currentNetworkKey);
+  return useMemo<string[]>(() => {
+    const genesisOptions = getGenesisOptionsByAddressType(address, accounts, genesisHashOptions);
+    return getShowedNetworks(genesisOptions, currentNetworkKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentNetworkKey, address, dep1, dep2]);
 }

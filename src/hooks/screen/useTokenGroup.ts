@@ -1,7 +1,8 @@
-import { TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getTokenBalanceKey, getTokenGroupKey } from 'utils/index';
+import { useMemo } from 'react';
 
 const KNOW_MAIN_KEYS = [getTokenGroupKey('DOT', true), getTokenGroupKey('KSM', true), getTokenGroupKey('STELLA')];
 const KNOW_PREFIXES = ['xcm', 'tai', 'xc', 'lc', 'vs', 'l', 'x', 't', 'h'];
@@ -43,9 +44,11 @@ function getFilteredTokenGroupMap(
   return result;
 }
 
-//todo: may need optimise this function
-export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
-  const { chainRegistry: chainRegistryMap, networkMap } = useSelector((state: RootState) => state);
+function getTokenGroup(
+  chainRegistryMap: Record<string, ChainRegistry>,
+  networkMap: Record<string, NetworkJson>,
+  showedNetworks?: string[],
+): Record<string, string[]> {
   const result: Record<string, string[]> = {};
   const tokenInfoMap: Record<string, TokenInfo> = {};
   const testNetKeys: string[] = [];
@@ -125,4 +128,17 @@ export default function useTokenGroup(showedNetworks?: string[]): Record<string,
   } else {
     return getFilteredTokenGroupMap(showedNetworks, result);
   }
+}
+
+export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
+  const { chainRegistry: chainRegistryMap, networkMap } = useSelector((state: RootState) => state);
+
+  const dep1 = JSON.stringify(chainRegistryMap);
+  const dep2 = JSON.stringify(networkMap);
+  const dep3 = showedNetworks ? JSON.stringify(chainRegistryMap) : undefined;
+
+  return useMemo<Record<string, string[]>>(() => {
+    return getTokenGroup(chainRegistryMap, networkMap, showedNetworks);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dep1, dep2, dep3]);
 }

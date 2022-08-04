@@ -3,7 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import useGetNetworkMetadata from 'hooks/screen/useGetNetworkMetadata';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainList/ChainListScreen';
 import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetail/ChainDetailScreen';
@@ -11,7 +10,7 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
 import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
-import { NetWorkMetadataDef } from '@subwallet/extension-base/background/KoniTypes';
+import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import reformatAddress from 'utils/index';
 import { TokenSelect } from 'screens/TokenSelect';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
@@ -28,34 +27,30 @@ interface SelectionInfo {
   selectedTokenSymbol: string;
 }
 
-function getAccountInfoByNetwork(
-  address: string,
-  networkKey: string,
-  networkMetadata: NetWorkMetadataDef,
-): AccountInfoByNetwork {
+function getAccountInfoByNetwork(address: string, networkKey: string, network: NetworkJson): AccountInfoByNetwork {
   return {
     address,
     key: networkKey,
     networkKey,
-    networkDisplayName: networkMetadata.chain,
-    networkPrefix: networkMetadata.ss58Format,
+    networkDisplayName: network.chain,
+    networkPrefix: network.ss58Format,
     networkLogo: networkKey,
-    networkIconTheme: networkMetadata.isEthereum ? 'ethereum' : networkMetadata.icon || 'polkadot',
-    formattedAddress: reformatAddress(address, networkMetadata.ss58Format),
-    isTestnet: networkMetadata.groups.includes('TEST_NET'),
+    networkIconTheme: network.isEthereum ? 'ethereum' : network.icon || 'polkadot',
+    formattedAddress: reformatAddress(address, network.ss58Format),
+    isTestnet: network.groups.includes('TEST_NET'),
   };
 }
 
 function getAccountInfoByNetworkMap(
   address: string,
   networkKeys: string[],
-  networkMetadataMap: Record<string, NetWorkMetadataDef>,
+  networkMap: Record<string, NetworkJson>,
 ): Record<string, AccountInfoByNetwork> {
   const result: Record<string, AccountInfoByNetwork> = {};
 
   networkKeys.forEach(n => {
-    if (networkMetadataMap[n]) {
-      result[n] = getAccountInfoByNetwork(address, n, networkMetadataMap[n]);
+    if (networkMap[n]) {
+      result[n] = getAccountInfoByNetwork(address, n, networkMap[n]);
     }
   });
 
@@ -66,24 +61,23 @@ export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
     accounts: { accounts, currentAccountAddress },
+    networkMap,
   } = useSelector((state: RootState) => state);
   const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
-  const networkMetadataMap = useGetNetworkMetadata();
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
-  const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance('all', showedNetworks);
   const tokenGroupMap = useTokenGroup(showedNetworks);
+  const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance('all', showedNetworks);
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
     useState<SelectionInfo>({
       selectedTokenDisplayName: '',
       selectedTokenSymbol: '',
     });
-  const deps = selectedNetworkInfo?.networkKey;
 
   const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = getAccountInfoByNetworkMap(
     currentAccountAddress,
     showedNetworks,
-    networkMetadataMap,
+    networkMap,
   );
 
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
@@ -104,6 +98,8 @@ export const CryptoTab = () => {
       return [prevCurrentStep, prevPrevStep];
     });
   };
+
+  const deps = selectedNetworkInfo?.networkKey;
 
   const onPressTokenItem = useCallback(
     (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => {

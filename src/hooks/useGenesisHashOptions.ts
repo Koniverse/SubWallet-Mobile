@@ -23,12 +23,13 @@ const RELAY_CHAIN = 'Relay Chain';
 
 export default function (): NetworkSelectOption[] {
   const { networkMap } = useSelector((state: RootState) => state);
-  const parsedChains = _getKnownHashes(networkMap);
+  const dep = JSON.stringify(networkMap);
 
-  const availableChains = parsedChains.filter(c => c.isAvailable);
+  return useMemo(() => {
+    const parsedChains = _getKnownHashes(networkMap);
+    const availableChains = parsedChains.filter(c => c.isAvailable);
 
-  return useMemo(
-    () => [
+    return [
       {
         text: 'Allow use on any chain',
         value: '',
@@ -69,7 +70,7 @@ export default function (): NetworkSelectOption[] {
         // remove the relay chains, they are at the top already
         .filter(({ text }) => !text.includes(RELAY_CHAIN))
         .sort((a, b) => a.text.localeCompare(b.text)),
-    ],
-    [availableChains],
-  );
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dep]);
 }
