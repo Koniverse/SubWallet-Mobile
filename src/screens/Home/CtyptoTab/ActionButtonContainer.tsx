@@ -225,6 +225,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
         onPressBack={onBackTokenSelect}
         onChangeToken={onChangeTokenSelect}
         filteredNetworkKey={selectionProvider ? selectionProvider.selectedNetworkKey : undefined}
+        address={currentAccountAddress}
       />
 
       <ReceiveModal

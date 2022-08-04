@@ -1,19 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import {FlatList, Keyboard, ListRenderItemInfo} from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { SelectScreen } from 'components/SelectScreen';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { getTokenItemOptions } from 'utils/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { TokenItemType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
+import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
+import useFilteredOptions from 'hooks/screen/TokenSelect/useFilteredOptions';
 
 interface Props {
+  address: string;
   modalVisible: boolean;
   onPressBack?: () => void;
   onChangeModalVisible: () => void;
@@ -24,6 +22,7 @@ interface Props {
 }
 
 export const TokenSelect = ({
+  address,
   onPressBack,
   onChangeToken,
   filteredNetworkKey,
@@ -33,38 +32,8 @@ export const TokenSelect = ({
   onChangeModalVisible,
 }: Props) => {
   const [searchString, setSearchString] = useState('');
-  const {
-    chainRegistry: chainRegistryMap,
-    networkMap,
-    accounts: { currentAccountAddress },
-  } = useSelector((state: RootState) => state);
-
-  const tokenOptionsType = isAccountAll(currentAccountAddress)
-    ? undefined
-    : isEthereumAddress(currentAccountAddress)
-    ? 'ETHEREUM'
-    : 'SUBSTRATE';
-
-  const tokenOptions = getTokenItemOptions(chainRegistryMap, networkMap, tokenOptionsType, filteredNetworkKey);
-  const [filteredOptions, setFilteredOption] = useState<TokenItemType[]>(tokenOptions);
-
-  const dep = tokenOptions.toString();
-
-  useEffect(() => {
-    if (searchString) {
-      const lowerCaseSearchString = searchString.toLowerCase();
-      setFilteredOption(
-        tokenOptions.filter(
-          ({ displayedSymbol, networkDisplayName }) =>
-            displayedSymbol.toLowerCase().includes(lowerCaseSearchString) ||
-            networkDisplayName.toLowerCase().includes(lowerCaseSearchString),
-        ),
-      );
-    } else {
-      setFilteredOption(tokenOptions);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep, searchString]);
+  const tokenOptions = useTokenOptions(address, filteredNetworkKey);
+  const filteredOptions = useFilteredOptions(tokenOptions, searchString);
 
   const renderItem = ({ item }: ListRenderItemInfo<TokenItemType>) => {
     const { symbol, networkKey, displayedSymbol, isMainToken, networkDisplayName } = item;

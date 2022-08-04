@@ -165,6 +165,7 @@ export const CryptoTab = () => {
       )}
 
       <TokenSelect
+        address={currentAccountAddress}
         selectedNetworkKey={'all'}
         modalVisible={tokenSelectModal}
         onChangeToken={onChangeTokenSelectModalItem}
