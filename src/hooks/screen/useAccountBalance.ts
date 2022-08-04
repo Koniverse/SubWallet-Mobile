@@ -3,10 +3,17 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BalanceInfo } from '../../types';
 import BigN from 'bignumber.js';
-import { APIItemState, ChainRegistry, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  APIItemState,
+  BalanceItem,
+  ChainRegistry,
+  NetworkJson,
+  TokenInfo,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { BN_ZERO, parseBalancesInfo } from 'utils/chainBalances';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { getTokenBalanceKey } from 'utils/index';
+import { useMemo } from 'react';
 
 function getMainTokenInfo(chainRegistry: ChainRegistry): TokenInfo {
   // chainRegistryMap always has main token
@@ -28,20 +35,13 @@ function getTokenSymbols(chainRegistry: ChainRegistry): string[] {
   return result;
 }
 
-export default function useAccountBalance(
+function getAccountBalance(
   showedNetworks: string[],
+  chainRegistryMap: Record<string, ChainRegistry>,
+  balanceMap: Record<string, BalanceItem>,
+  networkMap: Record<string, NetworkJson>,
   tokenBalanceKeyPriceMap: Record<string, number>,
 ): AccountBalanceType {
-  const {
-    balance: balanceReducer,
-    chainRegistry: chainRegistryMap,
-    networkMap,
-    price: priceReducer,
-  } = useSelector((state: RootState) => state);
-
-  const balanceMap = balanceReducer.details;
-  const { priceMap, tokenPriceMap } = priceReducer;
-
   let totalBalanceValue = new BigN(0);
   const networkBalanceMap: Record<string, BalanceInfo> = {};
   const tokenBalanceMap: Record<string, TokenBalanceItemType> = {};
@@ -71,10 +71,6 @@ export default function useAccountBalance(
       return;
     }
 
-    // if (balanceItem.state.valueOf() !== APIItemState.READY.valueOf()) {
-    //   return;
-    // }
-
     const mainTokenInfo = getMainTokenInfo(registry);
     let tokenDecimals, tokenSymbols;
 
@@ -87,8 +83,7 @@ export default function useAccountBalance(
     }
 
     const balanceInfo = parseBalancesInfo(
-      priceMap,
-      tokenPriceMap,
+      tokenBalanceKeyPriceMap,
       {
         networkKey,
         tokenDecimals,
@@ -151,4 +146,26 @@ export default function useAccountBalance(
     networkBalanceMap,
     tokenBalanceMap,
   };
+}
+
+export default function useAccountBalance(
+  showedNetworks: string[],
+  tokenBalanceKeyPriceMap: Record<string, number>,
+): AccountBalanceType {
+  const {
+    balance: { details: balanceMap },
+    chainRegistry: chainRegistryMap,
+    networkMap,
+  } = useSelector((state: RootState) => state);
+
+  const dep1 = JSON.stringify(balanceMap);
+  const dep2 = JSON.stringify(chainRegistryMap);
+  const dep3 = JSON.stringify(networkMap);
+  const dep4 = JSON.stringify(showedNetworks);
+  const dep5 = JSON.stringify(tokenBalanceKeyPriceMap);
+
+  return useMemo<AccountBalanceType>(() => {
+    return getAccountBalance(showedNetworks, chainRegistryMap, balanceMap, networkMap, tokenBalanceKeyPriceMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dep1, dep2, dep3, dep4, dep5]);
 }

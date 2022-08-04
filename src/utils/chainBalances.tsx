@@ -1,7 +1,7 @@
 import { AccountInfoItem, BalanceInfo, BalanceSubInfo } from '../types';
 import { NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
-import { isEmptyArray } from 'utils/index';
+import { getTokenBalanceKey, isEmptyArray } from 'utils/index';
 
 export const BN_TEN = new BigN(10);
 export const BN_ZERO = new BigN(0);
@@ -47,28 +47,27 @@ export const getBalances = ({ balance, decimals, price, symbol }: BalanceType): 
   };
 };
 
-function getTokenPrice(tokenPriceMap: Record<string, number>, token: string): number {
-  if (token === 'LCDOT') {
-    return (tokenPriceMap.dot || 0) * 0.6925;
-  }
-
-  return tokenPriceMap[token.toLowerCase()] || 0;
-}
+// function getTokenPrice(tokenPriceMap: Record<string, number>, token: string): number {
+//   if (token === 'LCDOT') {
+//     return (tokenPriceMap.dot || 0) * 0.6925;
+//   }
+//
+//   return tokenPriceMap[token.toLowerCase()] || 0;
+// }
 
 export const parseBalancesInfo = (
-  priceMap: Record<string, number>,
-  tokenPriceMap: Record<string, number>,
+  tokenBalanceKeyPriceMap: Record<string, number>,
   balanceInfo: AccountInfoItem,
   tokenMap: Record<string, TokenInfo>,
   networkJson: NetworkJson,
   isReady: boolean,
 ): BalanceInfo => {
   const { balanceItem, networkKey, tokenDecimals, tokenSymbols } = balanceInfo;
-  const ignoreTestnetPrice = networkJson.groups.includes('TEST_NET');
-
   const decimals = tokenDecimals && !isEmptyArray(tokenDecimals) ? tokenDecimals[0] : 0;
   const symbol = tokenSymbols && !isEmptyArray(tokenSymbols) ? tokenSymbols[0] : '';
   const displayedSymbol = tokenMap[symbol]?.symbolAlt || symbol;
+  const isTestnet = networkJson.groups.includes('TEST_NET');
+  const tbKey = getTokenBalanceKey(networkKey, symbol, isTestnet);
 
   const {
     children: balanceChildren,
@@ -96,7 +95,7 @@ export const parseBalancesInfo = (
       balance: value,
       decimals,
       symbol,
-      price: ignoreTestnetPrice ? 0 : priceMap[networkJson.coinGeckoKey || networkKey],
+      price: tokenBalanceKeyPriceMap[tbKey] || 0,
     });
 
     if (['free', 'reserved', 'locked'].includes(key)) {
@@ -119,27 +118,20 @@ export const parseBalancesInfo = (
   if (balanceChildren) {
     Object.keys(balanceChildren).forEach(token => {
       const item = balanceChildren[token];
-      const _token: string = tokenMap[token]?.symbolAlt || token;
-
-      let priceSymbol = token;
-
-      // Apply special case for xcToken of Moonbeam and Moonriver
-      if (['moonbeam', 'moonriver'].includes(networkKey) && token.toLowerCase().startsWith('xc')) {
-        priceSymbol = token.toLowerCase().replace('xc', '');
-      }
+      const childTbKey = getTokenBalanceKey(networkKey, token, isTestnet);
 
       const { balanceValue, convertedBalanceValue } = getBalances({
         balance: item.free,
         decimals: item.decimals,
-        symbol: _token,
-        price: ignoreTestnetPrice ? 0 : getTokenPrice(tokenPriceMap, priceSymbol),
+        symbol: token,
+        price: tokenBalanceKeyPriceMap[childTbKey] || 0,
       });
 
       childrenBalances.push({
-        key: _token,
+        key: token,
         label: '',
-        symbol: _token,
-        displayedSymbol: tokenMap[_token]?.symbolAlt || _token,
+        symbol: token,
+        displayedSymbol: tokenMap[token]?.symbolAlt || token,
         convertedBalanceValue,
         balanceValue,
       });
