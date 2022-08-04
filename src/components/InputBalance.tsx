@@ -116,6 +116,7 @@ const getInputStyle = (inputValue: string, props: InputBalanceProps, siPower: nu
     ...baseStyle,
     color: isValid ? ColorMap.light : ColorMap.danger,
     paddingRight: 10,
+    minWidth: 40,
   };
 };
 

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FlatList, StyleProp, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
 import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus } from 'phosphor-react-native';
@@ -19,6 +19,8 @@ import { AccountActionType } from 'types/ui-types';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../constant';
+import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
+import { updateCurrentAccount } from 'stores/Accounts';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -40,8 +42,10 @@ const accountItemSeparator: StyleProp<any> = {
 
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const accountStore = useSelector((state: RootState) => state.accounts);
-  const accounts = accountStore.accounts;
+  const {
+    accounts: { accounts, currentAccountAddress },
+  } = useSelector((state: RootState) => state);
+  const dispatch = useDispatch();
   const theme = useSubWalletTheme().colors;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
@@ -101,11 +105,38 @@ export const AccountsScreen = () => {
     return <Warning title={'Warning'} message={i18n.warningMessage.noAccountText} isDanger={false} />;
   };
 
+  const selectAccount = useCallback(
+    (accAddress: string) => {
+      if (currentAccountAddress !== accAddress) {
+        saveCurrentAccountAddress({ address: accAddress }, () => {
+          triggerAccountsSubscription().catch(e => {
+            console.error('There is a problem when trigger Accounts Subscription', e);
+          });
+        })
+          .then(console.log)
+          .catch(console.error);
+        dispatch(updateCurrentAccount(accAddress));
+      }
+
+      navigation.navigate('Home');
+    },
+    [dispatch, navigation, currentAccountAddress],
+  );
+
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
       <View style={accountItemContainer}>
-        <Account key={item.address} name={item.name || ''} address={item.address} showCopyBtn={false} />
+        <Account
+          key={item.address}
+          name={item.name || ''}
+          address={item.address}
+          showCopyBtn={false}
+          selectAccount={() => {
+            selectAccount(item.address);
+          }}
+          isSelected={currentAccountAddress === item.address}
+        />
 
         {!isAccountAll(item.address) && (
           <IconButton

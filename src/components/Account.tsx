@@ -2,10 +2,7 @@ import { StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from '../components/Text';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
-import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootNavigationProps } from 'types/routes';
+import { useSelector } from 'react-redux';
 import { accountAllRecoded, defaultRecoded, recodeAddress } from 'utils/index';
 import { RootState } from 'stores/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -17,7 +14,6 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
-import { updateCurrentAccount } from 'stores/Accounts';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -26,6 +22,8 @@ export interface AccountProps extends AccountJson {
   showCopyBtn?: boolean;
   showSelectedIcon?: boolean;
   isDisabled?: boolean;
+  isSelected?: boolean;
+  selectAccount?: (address: string) => void;
 }
 
 const accountNameStyle: StyleProp<any> = {
@@ -64,16 +62,15 @@ export const Account = ({
   showCopyBtn = true,
   showSelectedIcon = true,
   isDisabled = false,
+  isSelected,
+  selectAccount,
   type: givenType,
 }: AccountProps) => {
-  const navigation = useNavigation<RootNavigationProps>();
-  const dispatch = useDispatch();
   const {
-    accounts: { accounts, currentAccountAddress },
+    accounts: { accounts },
     networkMap,
   } = useSelector((state: RootState) => state);
-  const [{ account, formatted, genesisHash: recodedGenesis, isEthereum, prefix }, setRecoded] =
-    useState<Recoded>(defaultRecoded);
+  const [{ formatted, genesisHash: recodedGenesis }, setRecoded] = useState<Recoded>(defaultRecoded);
   const getNetworkInfoByGenesisHash = useCallback(
     (hash?: string | null): NetworkJson | null => {
       if (!hash) {
@@ -98,7 +95,7 @@ export const Account = ({
   );
   const _isAccountAll = address && isAccountAll(address);
   const networkInfo = getNetworkInfoByGenesisHash(genesisHash || recodedGenesis);
-  const [isSelected, setSelected] = useState(false);
+  // const [isSelected, setSelected] = useState(false);
   useEffect((): void => {
     if (!address) {
       setRecoded(defaultRecoded);
@@ -116,14 +113,6 @@ export const Account = ({
     //TODO: change recoded
   }, [accounts, _isAccountAll, address, networkInfo, givenType]);
 
-  useEffect((): void => {
-    if (currentAccountAddress === address) {
-      setSelected(true);
-    } else {
-      setSelected(false);
-    }
-  }, [address, currentAccountAddress]);
-
   const toShortAddress = (_address: string | null, halfLength?: number) => {
     const currentAddress = (_address || '').toString();
 
@@ -138,30 +127,6 @@ export const Account = ({
     Clipboard.setString(text);
   }, []);
 
-  const selectAccount = useCallback(
-    (accAddress: string) => {
-      if (currentAccountAddress !== accAddress) {
-        setSelected(true);
-
-        saveCurrentAccountAddress({ address: accAddress }, () => {
-          triggerAccountsSubscription().catch(e => {
-            console.error('There is a problem when trigger Accounts Subscription', e);
-          });
-        })
-          .then(console.log)
-          .catch(console.error);
-        dispatch(updateCurrentAccount(accAddress));
-      }
-
-      navigation.navigate('Home');
-    },
-    [dispatch, navigation, currentAccountAddress],
-  );
-
-  // const removeAccount = (accAddress: string) => {
-  //   forgetAccount(accAddress).then(console.log).catch(console.error);
-  // };
-
   const Name = () => {
     return (
       <View style={nameWrapper}>
@@ -174,12 +139,7 @@ export const Account = ({
   };
 
   return (
-    <TouchableOpacity
-      style={{ flex: 1 }}
-      onPress={() => {
-        selectAccount(address);
-      }}
-      disabled={isDisabled}>
+    <TouchableOpacity style={{ flex: 1 }} onPress={() => selectAccount && selectAccount(address)} disabled={isDisabled}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
         <SubWalletAvatar address={address} size={34} />
         <View style={{ marginLeft: 16 }}>

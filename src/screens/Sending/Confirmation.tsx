@@ -44,14 +44,16 @@ export const Confirmation = ({
   si,
   onChangeBusy,
 }: Props) => {
+  console.log(requestPayload);
   const {
-    accounts: { currentAccount },
+    accounts: { accounts },
     networkMap,
   } = useSelector((state: RootState) => state);
   const [password, setPassword] = useState<string>('');
   const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
   const [errorArr, setErrorArr] = useState<string[]>([]);
   const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
+  const accountName = accounts.find(acc => acc.address === requestPayload.from)?.name;
   const _doTransfer = useCallback(
     (): void => {
       onChangeBusy(true);
@@ -129,7 +131,7 @@ export const Confirmation = ({
             decimals={balanceFormat[0]}
           />
           <NetworkField label={'Network'} networkKey={requestPayload.networkKey} />
-          <TextField label={'Account'} text={currentAccount?.name || ''} />
+          <TextField label={'Account'} text={accountName || ''} />
           <AddressField label={'Send from Address'} address={requestPayload.from} networkPrefix={networkPrefix} />
           <AddressField label={'Send to Address'} address={requestPayload.to} />
           <BalanceField label={'Network Fee'} value={fee || '0'} si={si} token={feeSymbol} decimal={feeDecimals} />

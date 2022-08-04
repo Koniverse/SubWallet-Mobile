@@ -18,11 +18,13 @@ import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 
 interface Props {
+  selectedAddress?: string;
   receiveModalVisible: boolean;
   onChangeVisible: () => void;
   networkKey: string;
   networkPrefix: number;
   openChangeNetworkModal: () => void;
+  disableReselectButton?: boolean;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -80,11 +82,13 @@ const receiveModalExplorerBtn: StyleProp<any> = {
 };
 const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 export const ReceiveModal = ({
+  selectedAddress,
   receiveModalVisible,
   onChangeVisible,
   networkKey,
   networkPrefix,
   openChangeNetworkModal,
+  disableReselectButton,
 }: Props) => {
   const toastRef = useRef();
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
@@ -104,8 +108,8 @@ export const ReceiveModal = ({
   const formattedAddress = useMemo(() => {
     const networkInfo = networkMap[networkKey];
 
-    return reformatAddress(currentAccountAddress, networkPrefix, networkInfo?.isEthereum);
-  }, [networkMap, networkKey, currentAccountAddress, networkPrefix]);
+    return reformatAddress(selectedAddress || currentAccountAddress, networkPrefix, networkInfo?.isEthereum);
+  }, [networkMap, networkKey, selectedAddress, currentAccountAddress, networkPrefix]);
   const isSupportScanExplorer = useSupportScanExplorer(networkKey);
   const scanExplorerAddressUrl = useScanExplorerAddressUrl(networkKey, formattedAddress);
 
@@ -132,6 +136,7 @@ export const ReceiveModal = ({
 
         <View style={receiveModalAddressWrapper}>
           <TouchableOpacity
+            disabled={disableReselectButton}
             activeOpacity={BUTTON_ACTIVE_OPACITY}
             onPress={() => {
               onChangeVisible();

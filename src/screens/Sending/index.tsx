@@ -79,16 +79,15 @@ export const SendFund = () => {
   const route = useRoute<RootRouteProps>();
   const data = route.params;
   const {
-    accounts: { currentAccountAddress },
     chainRegistry,
     price: { tokenPriceMap },
     networkMap,
   } = useSelector((state: RootState) => state);
   // @ts-ignore
-  const { selectedNetworkKey, selectedToken } = data;
+  const { selectedAccount: senderAddress, selectedNetworkKey, selectedToken } = data;
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
-  const senderFreeBalance = useFreeBalance(selectedNetworkKey, currentAccountAddress, selectedToken);
+  const senderFreeBalance = useFreeBalance(selectedNetworkKey, senderAddress, selectedToken);
   const balanceFormat: BalanceFormatType = getBalanceFormat(selectedNetworkKey, selectedToken, chainRegistry);
   const tokenPrice = tokenPriceMap[selectedToken.toLowerCase()] || 0;
   const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
@@ -111,7 +110,7 @@ export const SendFund = () => {
     null,
     null,
   ]);
-  const isSameAddress = !!receiveAddress && !!currentAccountAddress && receiveAddress === currentAccountAddress;
+  const isSameAddress = !!receiveAddress && !!senderAddress && receiveAddress === senderAddress;
   const canToggleAll = !!isSupportTransferAll && !!senderFreeBalance && !reference && !!receiveAddress;
   const amountGtAvailableBalance =
     !!rawAmount && !!senderFreeBalance && new BigN(rawAmount).gt(new BigN(senderFreeBalance));
@@ -123,11 +122,11 @@ export const SendFund = () => {
   const amount = Math.floor(Number(rawAmount));
   const ethereumChains = getEthereumChains(networkMap);
   const isNotSameAddressAndTokenType =
-    (isEthereumAddress(currentAccountAddress) && !ethereumChains.includes(selectedNetworkKey)) ||
-    (!isEthereumAddress(currentAccountAddress) && ethereumChains.includes(selectedNetworkKey));
+    (isEthereumAddress(senderAddress) && !ethereumChains.includes(selectedNetworkKey)) ||
+    (!isEthereumAddress(senderAddress) && ethereumChains.includes(selectedNetworkKey));
 
   const receiveAddressType = isEthereumAddress(receiveAddress || '') ? 'Ethereum' : 'Substrate';
-  const senderAddressType = isEthereumAddress(currentAccountAddress || '') ? 'Ethereum' : 'Substrate';
+  const senderAddressType = isEthereumAddress(senderAddress || '') ? 'Ethereum' : 'Substrate';
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const isNotSameAddressType = !!receiveAddress && senderAddressType !== receiveAddressType;
 
@@ -147,7 +146,7 @@ export const SendFund = () => {
       if (receiveAddress) {
         checkTransfer({
           networkKey: selectedNetworkKey,
-          from: currentAccountAddress,
+          from: senderAddress,
           to: receiveAddress,
           transferAll: canToggleAll && isConfirmTransferAll,
           token: selectedToken,
@@ -157,7 +156,7 @@ export const SendFund = () => {
           .catch(catchCb);
       }
     },
-    [amount, canToggleAll, currentAccountAddress, selectedNetworkKey, receiveAddress, selectedToken],
+    [amount, canToggleAll, senderAddress, selectedNetworkKey, receiveAddress, selectedToken],
   );
 
   useEffect(() => {
@@ -189,12 +188,12 @@ export const SendFund = () => {
     return () => {
       isSync = false;
     };
-  }, [_doCheckTransfer, canToggleAll, currentAccountAddress, rawAmount, receiveAddress, selectedToken]);
+  }, [_doCheckTransfer, canToggleAll, senderAddress, rawAmount, receiveAddress, selectedToken]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferCheckReferenceCount({ address: currentAccountAddress, networkKey: selectedNetworkKey })
+    transferCheckReferenceCount({ address: senderAddress, networkKey: selectedNetworkKey })
       .then(res => {
         if (isSync) {
           setReference(res);
@@ -206,7 +205,7 @@ export const SendFund = () => {
       isSync = false;
       setReference(null);
     };
-  }, [currentAccountAddress, selectedNetworkKey]);
+  }, [senderAddress, selectedNetworkKey]);
 
   useEffect(() => {
     let isSync = true;
@@ -437,7 +436,7 @@ export const SendFund = () => {
                 balanceFormat={balanceFormat}
                 requestPayload={{
                   networkKey: selectedNetworkKey,
-                  from: currentAccountAddress,
+                  from: senderAddress,
                   to: currentReceiveAddress,
                   transferAll: false,
                   token: selectedToken,
