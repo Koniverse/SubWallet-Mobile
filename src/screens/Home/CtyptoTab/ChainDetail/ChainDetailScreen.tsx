@@ -19,6 +19,7 @@ interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
   onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string) => void;
   networkBalanceMap: Record<string, BalanceInfo>;
+  tokenBalanceKeyPriceMap: Record<string, number>;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -40,7 +41,13 @@ const chainDetailHeaderTitle: StyleProp<any> = {
   maxWidth: 150,
 };
 
-export const ChainDetailScreen = ({ onPressBack, selectedNetworkInfo, onPressTokenItem, networkBalanceMap }: Props) => {
+export const ChainDetailScreen = ({
+  onPressBack,
+  selectedNetworkInfo,
+  onPressTokenItem,
+  networkBalanceMap,
+  tokenBalanceKeyPriceMap,
+}: Props) => {
   const currentBalanceInfo = networkBalanceMap[selectedNetworkInfo.networkKey];
   const renderHeaderContent = () => {
     return (
@@ -104,6 +111,7 @@ export const ChainDetailScreen = ({ onPressBack, selectedNetworkInfo, onPressTok
             selectedNetworkInfo={selectedNetworkInfo}
             selectedBalanceInfo={currentBalanceInfo}
             onPressTokenItem={onPressTokenItem}
+            tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
           />
         </Tabs.Tab>
         <Tabs.Tab name="chain" label="History">

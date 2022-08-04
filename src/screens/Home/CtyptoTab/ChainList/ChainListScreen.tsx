@@ -30,6 +30,7 @@ interface Props {
   totalBalanceValue: BigN;
   tokenGroupMap: Record<string, string[]>;
   tokenBalanceMap: Record<string, TokenBalanceItemType>;
+  tokenBalanceKeyPriceMap: Record<string, number>;
 }
 
 const ViewStep = {
@@ -40,6 +41,7 @@ const ViewStep = {
 function getGroupListItems(
   tokenGroupMap: Record<string, string[]>,
   tokenBalanceMap: Record<string, TokenBalanceItemType>,
+  tokenBalanceKeyPriceMap: Record<string, number>,
 ): TokenBalanceItemType[] {
   const result: TokenBalanceItemType[] = [];
   const tokenGroupKeys = Object.keys(tokenGroupMap).sort();
@@ -47,6 +49,7 @@ function getGroupListItems(
   tokenGroupKeys.forEach(tgKey => {
     const [symbol, isTestnet] = tgKey.split('|');
     const newItem: TokenBalanceItemType = {
+      priceValue: tokenBalanceKeyPriceMap[tgKey] || 0,
       id: tgKey,
       logoKey: tokenNetworkKeyMap[symbol] ? tokenNetworkKeyMap[symbol][0] || symbol : symbol,
       networkKey: 'default',
@@ -76,6 +79,7 @@ function getGroupListItems(
 function getGroupDetailItems(
   tbKeys: string[],
   tokenBalanceMap: Record<string, TokenBalanceItemType>,
+  tokenBalanceKeyPriceMap: Record<string, number>,
 ): TokenBalanceItemType[] {
   return tbKeys.map(tbKey => {
     if (tokenBalanceMap[tbKey]) {
@@ -94,7 +98,8 @@ function getGroupDetailItems(
       displayedSymbol: symbol,
       isReady: false,
       isTestnet: !!isTestnet,
-    } as TokenBalanceItemType;
+      priceValue: tokenBalanceKeyPriceMap[tbKey] || 0,
+    };
   });
 }
 
@@ -103,14 +108,15 @@ function getTokenBalanceItems(
   currentTgKey: string,
   tokenGroupMap: Record<string, string[]>,
   tokenBalanceMap: Record<string, TokenBalanceItemType>,
+  tokenBalanceKeyPriceMap: Record<string, number>,
 ): TokenBalanceItemType[] {
   if (viewStep === ViewStep.GROUP_LIST) {
-    return getGroupListItems(tokenGroupMap, tokenBalanceMap);
+    return getGroupListItems(tokenGroupMap, tokenBalanceMap, tokenBalanceKeyPriceMap);
   }
 
   if (viewStep === ViewStep.GROUP_DETAIL) {
     if (currentTgKey && tokenGroupMap[currentTgKey]) {
-      return getGroupDetailItems(tokenGroupMap[currentTgKey], tokenBalanceMap);
+      return getGroupDetailItems(tokenGroupMap[currentTgKey], tokenBalanceMap, tokenBalanceKeyPriceMap);
     }
   }
 
@@ -161,10 +167,17 @@ export const ChainListScreen = ({
   totalBalanceValue,
   tokenGroupMap,
   tokenBalanceMap,
+  tokenBalanceKeyPriceMap,
 }: Props) => {
   const [viewStep, setViewStep] = useState<number>(ViewStep.GROUP_LIST);
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
-  const tokenBalanceItems = getTokenBalanceItems(viewStep, currentTgKey, tokenGroupMap, tokenBalanceMap);
+  const tokenBalanceItems = getTokenBalanceItems(
+    viewStep,
+    currentTgKey,
+    tokenGroupMap,
+    tokenBalanceMap,
+    tokenBalanceKeyPriceMap,
+  );
   const subHeaderTitle = getSubHeaderTitle(currentTgKey);
   const _totalBalanceValue = getTotalBalanceValue(
     viewStep,

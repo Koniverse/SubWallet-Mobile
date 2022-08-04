@@ -54,6 +54,11 @@ export const CryptoTab = () => {
     networkMap,
   );
 
+  const handleBackButton = () => {
+    return true;
+  };
+
+  // prevent Back Press event on Android for this screen
   useEffect(() => {
     const unsubscribeFocusScreen = navigation.addListener('focus', () => {
       BackHandler.addEventListener('hardwareBackPress', handleBackButton);
@@ -68,9 +73,6 @@ export const CryptoTab = () => {
       unsubscribeBlurScreen();
     };
   }, [navigation]);
-  const handleBackButton = () => {
-    return true;
-  };
 
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
     setSelectionInfo(prevState => ({
@@ -138,6 +140,7 @@ export const CryptoTab = () => {
           totalBalanceValue={totalBalanceValue}
           tokenBalanceMap={tokenBalanceMap}
           tokenGroupMap={tokenGroupMap}
+          tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
         />
       )}
 
@@ -147,6 +150,7 @@ export const CryptoTab = () => {
           networkBalanceMap={networkBalanceMap}
           selectedNetworkInfo={selectedNetworkInfo}
           onPressTokenItem={onPressTokenItem}
+          tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
         />
       )}
 

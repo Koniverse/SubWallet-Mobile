@@ -111,6 +111,7 @@ function getAccountBalance(
       symbol: balanceInfo.symbol,
       isReady: balanceInfo.isReady,
       isTestnet,
+      priceValue: tokenBalanceKeyPriceMap[itemId] || 0,
     };
 
     if (balanceInfo.isReady) {
@@ -136,6 +137,7 @@ function getAccountBalance(
           isReady: balanceInfo.isReady,
           symbol: c.symbol,
           isTestnet,
+          priceValue: tokenBalanceKeyPriceMap[childItemId] || 0,
         };
       });
     }

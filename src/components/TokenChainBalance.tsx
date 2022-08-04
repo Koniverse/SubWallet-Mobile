@@ -4,8 +4,6 @@ import { getNetworkLogo } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import { BN_ZERO } from 'utils/chainBalances';
@@ -50,13 +48,9 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
-function geFormattedPrice(symbol: string, tokenPriceMap: Record<string, number>, isTestnet: boolean): string {
+function geFormattedPrice(priceValue: number, isTestnet: boolean): string {
   if (!isTestnet) {
-    const _symbol = symbol.toLowerCase();
-
-    if (tokenPriceMap[_symbol]) {
-      return tokenPriceMap[_symbol].toString().replace('.', ',');
-    }
+    return priceValue.toString().replace('.', ',');
   }
 
   return '0';
@@ -66,18 +60,17 @@ export const TokenChainBalance = ({
   networkKey,
   networkDisplayName,
   logoKey,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   symbol,
   displayedSymbol,
   balanceValue,
   convertedBalanceValue,
   isReady,
   isTestnet,
+  priceValue,
   ...wrapperProps
 }: Props) => {
-  const {
-    price: { tokenPriceMap },
-  } = useSelector((state: RootState) => state);
-  const reformatPrice = geFormattedPrice(symbol, tokenPriceMap, isTestnet);
+  const reformatPrice = geFormattedPrice(priceValue, isTestnet);
 
   if (!isReady) {
     return <ChainBalanceSkeleton />;

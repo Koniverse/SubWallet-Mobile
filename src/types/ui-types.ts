@@ -71,4 +71,5 @@ export interface TokenBalanceItemType {
   displayedSymbol: string;
   isReady: boolean;
   isTestnet: boolean;
+  priceValue: number;
 }

@@ -14,17 +14,23 @@ interface Props {
   selectedNetworkInfo: AccountInfoByNetwork;
   selectedBalanceInfo: BalanceInfo;
   onPressTokenItem: (tokenSymbol: string, tokenDisplayName: string) => void;
+  tokenBalanceKeyPriceMap: Record<string, number>;
 }
 
-function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo: BalanceInfo): TokenBalanceItemType[] {
+function getItems(
+  selectedNetworkInfo: AccountInfoByNetwork,
+  selectedBalanceInfo: BalanceInfo,
+  tokenBalanceKeyPriceMap: Record<string, number>,
+): TokenBalanceItemType[] {
   const items: TokenBalanceItemType[] = [];
 
   const symbol = selectedBalanceInfo?.symbol || 'Unit';
   const networkDisplayName = selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '');
   const isTestnet = selectedNetworkInfo.isTestnet;
+  const itemId = getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol, isTestnet);
 
   items.push({
-    id: getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol, isTestnet),
+    id: itemId,
     logoKey: selectedNetworkInfo.networkKey,
     networkKey: selectedNetworkInfo.networkKey,
     networkDisplayName,
@@ -34,12 +40,14 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
     displayedSymbol: symbol,
     isReady: selectedNetworkInfo && selectedBalanceInfo && selectedBalanceInfo.isReady,
     isTestnet,
+    priceValue: tokenBalanceKeyPriceMap[itemId] || 0,
   });
 
   if (selectedBalanceInfo && selectedBalanceInfo.childrenBalances && selectedBalanceInfo.childrenBalances.length) {
     selectedBalanceInfo.childrenBalances.forEach(item => {
+      const cItemId = getTokenBalanceKey(selectedNetworkInfo.networkKey, item.symbol, isTestnet);
       items.push({
-        id: getTokenBalanceKey(selectedNetworkInfo.networkKey, item.symbol, isTestnet),
+        id: cItemId,
         networkKey: selectedNetworkInfo.networkKey,
         networkDisplayName,
         logoKey: item.symbol,
@@ -49,6 +57,7 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
         displayedSymbol: item.symbol,
         isReady: selectedNetworkInfo && selectedBalanceInfo && selectedBalanceInfo.isReady,
         isTestnet,
+        priceValue: tokenBalanceKeyPriceMap[cItemId] || 0,
       });
     });
   }
@@ -56,8 +65,13 @@ function getItems(selectedNetworkInfo: AccountInfoByNetwork, selectedBalanceInfo
   return items;
 }
 
-export const TokensTab = ({ selectedNetworkInfo, selectedBalanceInfo, onPressTokenItem }: Props) => {
-  const items = getItems(selectedNetworkInfo, selectedBalanceInfo);
+export const TokensTab = ({
+  selectedNetworkInfo,
+  selectedBalanceInfo,
+  onPressTokenItem,
+  tokenBalanceKeyPriceMap,
+}: Props) => {
+  const items = getItems(selectedNetworkInfo, selectedBalanceInfo, tokenBalanceKeyPriceMap);
   const [isRefresh, refresh] = useRefresh();
   function renderItem({ item }: ListRenderItemInfo<TokenBalanceItemType>) {
     return (
