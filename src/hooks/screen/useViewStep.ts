@@ -4,8 +4,6 @@ import { useCallback, useState } from 'react';
 export default function useViewStep(initView: string): UseViewStepType {
   const [views, setViews] = useState<string[]>([initView]);
 
-  console.log('views', views);
-
   const toNextView = useCallback((view: string) => {
     setViews(prevState => {
       return [...prevState, view];
