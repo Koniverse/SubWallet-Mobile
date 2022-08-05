@@ -49,8 +49,13 @@ const chainBalanceSeparator: StyleProp<any> = {
 };
 
 function geFormattedPrice(priceValue: number, isTestnet: boolean): string {
-  if (!isTestnet) {
-    return priceValue.toString().replace('.', ',');
+  if (!isTestnet && priceValue) {
+    const priceArr = priceValue.toString().split('.');
+    if (priceArr[1]) {
+      priceArr[1] = priceArr[1].substring(0, 4);
+    }
+
+    return priceArr.join(',');
   }
 
   return '0';

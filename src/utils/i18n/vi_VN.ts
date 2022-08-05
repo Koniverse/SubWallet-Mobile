@@ -74,6 +74,7 @@ export const vi = {
   warningMessage: {
     passwordTooShort: 'Password is too short',
     noTokenAvailable: 'No Token Available',
+    noNetworkAvailable: 'No Network Available',
     noAccountText: "You currently don't have any accounts. Create your first account to get started.",
     privateKeyWarning: 'If someone has your private key they will have full control of your account',
     secretPhraseWarning: 'If someone has your secret phrase they will have full control of your account',
