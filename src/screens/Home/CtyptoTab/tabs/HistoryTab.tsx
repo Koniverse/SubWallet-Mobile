@@ -15,7 +15,6 @@ import { useRefresh } from 'hooks/useRefresh';
 interface Props {
   networkKey: string;
   token?: string;
-  isUseCollapsibleTabView?: boolean;
 }
 
 interface ContentProps {

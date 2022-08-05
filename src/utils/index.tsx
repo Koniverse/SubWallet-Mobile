@@ -13,6 +13,8 @@ import { ColorMap } from 'styles/color';
 import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
+import { BalanceInfo } from '../types';
+import { BN_ZERO } from 'utils/chainBalances';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -452,4 +454,34 @@ export function getTokenItemOptions(
   });
 
   return options;
+}
+
+export function getTotalConvertedBalanceValue(balanceInfo?: BalanceInfo): BigN {
+  if (!balanceInfo) {
+    return BN_ZERO;
+  }
+
+  let result = new BigN(balanceInfo.convertedBalanceValue);
+
+  if (balanceInfo.childrenBalances && balanceInfo.childrenBalances.length) {
+    balanceInfo.childrenBalances.forEach(i => {
+      result = result.plus(i.convertedBalanceValue);
+    });
+  }
+
+  return result;
+}
+
+export function hasAnyChildTokenBalance(balanceInfo: BalanceInfo): boolean {
+  if (!balanceInfo.childrenBalances || !balanceInfo.childrenBalances.length) {
+    return false;
+  }
+
+  for (const item of balanceInfo.childrenBalances) {
+    if (item.balanceValue.gt(BN_ZERO)) {
+      return true;
+    }
+  }
+
+  return false;
 }

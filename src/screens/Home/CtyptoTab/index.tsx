@@ -4,23 +4,19 @@ import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
-import { ChainListScreen } from 'screens/Home/CtyptoTab/ChainList/ChainListScreen';
-import { ChainDetailScreen } from 'screens/Home/CtyptoTab/ChainDetail/ChainDetailScreen';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
-import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
+import { AccountInfoByNetwork, TokenBalanceItemType, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
-import { TokenHistoryScreen } from 'screens/Home/CtyptoTab/TokenHistoryScreen';
 import { TokenSelect } from 'screens/TokenSelect';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { BackHandler } from 'react-native';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 import useAccountInfoByNetworkMap from 'hooks/screen/Home/CtyptoTab/useAccountInfoByNetworkMap';
-
-const ViewStep = {
-  CHAIN_LIST: 1,
-  NETWORK_DETAIL: 2,
-  TOKEN_HISTORY: 3,
-};
+import Header from 'screens/Home/CtyptoTab/Header';
+import useViewStep from 'hooks/screen/useViewStep';
+import { ViewStep } from 'screens/Home/CtyptoTab/constant';
+import { ScreenContainer } from 'components/ScreenContainer';
+import TabsContainer from 'screens/Home/CtyptoTab/TabsContainer';
 
 interface SelectionInfo {
   selectedNetworkInfo?: AccountInfoByNetwork;
@@ -34,7 +30,7 @@ export const CryptoTab = () => {
     accounts: { accounts, currentAccountAddress },
     networkMap,
   } = useSelector((state: RootState) => state);
-  const [[, currentViewStep], setViewStep] = useState<[number, number]>([ViewStep.CHAIN_LIST, ViewStep.CHAIN_LIST]);
+  const { currentView, toNextView, toBack } = useViewStep(ViewStep.TOKEN_GROUPS);
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
   const tokenGroupMap = useTokenGroup(showedNetworks);
   const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
@@ -53,6 +49,7 @@ export const CryptoTab = () => {
     showedNetworks,
     networkMap,
   );
+  const [currentTgKey, setCurrentTgKey] = useState<string>('');
 
   const handleBackButton = () => {
     return true;
@@ -80,22 +77,12 @@ export const CryptoTab = () => {
       selectedNetworkInfo: info,
       selectBalanceInfo: balanceInfo,
     }));
-    setViewStep([ViewStep.CHAIN_LIST, ViewStep.NETWORK_DETAIL]);
-  };
-
-  const onPressBack = () => {
-    setViewStep(([prevPrevStep, prevCurrentStep]) => {
-      if (prevPrevStep === ViewStep.NETWORK_DETAIL) {
-        return [ViewStep.CHAIN_LIST, ViewStep.NETWORK_DETAIL];
-      }
-
-      return [prevCurrentStep, prevPrevStep];
-    });
+    toNextView(ViewStep.CHAIN_DETAIL);
   };
 
   const deps = selectedNetworkInfo?.networkKey;
 
-  const onPressTokenItem = useCallback(
+  const handleChangeTokenItem = useCallback(
     (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => {
       if (!info) {
         setSelectionInfo(prev => ({
@@ -112,68 +99,74 @@ export const CryptoTab = () => {
         }));
       }
 
-      setViewStep(([, prvCurrentStep]) => {
-        return [prvCurrentStep, ViewStep.TOKEN_HISTORY];
-      });
+      toNextView(ViewStep.TOKEN_HISTORY);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deps],
+    [deps, toNextView],
   );
+
+  const onPressSearchButton = () => {
+    setTokenSelectModal(true);
+  };
 
   const onChangeTokenSelectModalItem = ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
     const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
-    onPressTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
+    handleChangeTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
     setTokenSelectModal(false);
   };
 
+  const onPressTokenBalanceItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
+    if (currentView === ViewStep.TOKEN_GROUPS) {
+      setCurrentTgKey(item.id);
+      toNextView(ViewStep.TOKEN_GROUP_DETAIL);
+    } else if (currentView === ViewStep.TOKEN_GROUP_DETAIL) {
+      handleChangeTokenItem(item.symbol, item.displayedSymbol, info);
+    } else if (currentView === ViewStep.CHAIN_DETAIL) {
+      handleChangeTokenItem(item.symbol, item.displayedSymbol);
+    }
+  };
+
   return (
-    <>
-      {currentViewStep === ViewStep.CHAIN_LIST && (
-        <ChainListScreen
-          onPressSearchButton={() => setTokenSelectModal(true)}
-          accountInfoByNetworkMap={accountInfoByNetworkMap}
-          onPressChainItem={onPressChainItem}
+    <ScreenContainer>
+      <>
+        <Header
+          currentView={currentView}
           navigation={navigation}
-          networkBalanceMap={networkBalanceMap}
-          showedNetworks={showedNetworks}
-          onPressTokenItem={onPressTokenItem}
-          totalBalanceValue={totalBalanceValue}
-          tokenBalanceMap={tokenBalanceMap}
-          tokenGroupMap={tokenGroupMap}
-          tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
-        />
-      )}
-
-      {currentViewStep === ViewStep.NETWORK_DETAIL && selectedNetworkInfo && (
-        <ChainDetailScreen
-          onPressBack={onPressBack}
-          networkBalanceMap={networkBalanceMap}
+          onPressBack={toBack}
+          currentTgKey={currentTgKey}
           selectedNetworkInfo={selectedNetworkInfo}
-          onPressTokenItem={onPressTokenItem}
-          tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
-        />
-      )}
-
-      {currentViewStep === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
-        <TokenHistoryScreen
-          onPressBack={onPressBack}
-          networkBalanceMap={networkBalanceMap}
           selectedTokenDisplayName={selectedTokenDisplayName}
-          selectedTokenSymbol={selectedTokenSymbol}
-          selectedNetworkInfo={selectedNetworkInfo}
+          onPressSearchButton={onPressSearchButton}
         />
-      )}
 
-      <TokenSelect
-        address={currentAccountAddress}
-        selectedNetworkKey={'all'}
-        modalVisible={tokenSelectModal}
-        onChangeToken={onChangeTokenSelectModalItem}
-        onChangeModalVisible={() => setTokenSelectModal(false)}
-        onPressBack={() => {
-          setTokenSelectModal(false);
-        }}
-      />
-    </>
+        <TabsContainer
+          currentView={currentView}
+          currentTgKey={currentTgKey}
+          totalBalanceValue={totalBalanceValue}
+          tokenGroupMap={tokenGroupMap}
+          tokenBalanceMap={tokenBalanceMap}
+          networkBalanceMap={networkBalanceMap}
+          selectedNetworkInfo={selectedNetworkInfo}
+          selectedTokenSymbol={selectedTokenSymbol}
+          selectedTokenDisplayName={selectedTokenDisplayName}
+          showedNetworks={showedNetworks}
+          accountInfoByNetworkMap={accountInfoByNetworkMap}
+          tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
+          onPressChainItem={onPressChainItem}
+          onPressTokenBalanceItem={onPressTokenBalanceItem}
+        />
+
+        <TokenSelect
+          address={currentAccountAddress}
+          selectedNetworkKey={'all'}
+          modalVisible={tokenSelectModal}
+          onChangeToken={onChangeTokenSelectModalItem}
+          onChangeModalVisible={() => setTokenSelectModal(false)}
+          onPressBack={() => {
+            setTokenSelectModal(false);
+          }}
+        />
+      </>
+    </ScreenContainer>
   );
 };

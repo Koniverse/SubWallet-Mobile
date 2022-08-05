@@ -1,13 +1,12 @@
 import React from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { getNetworkLogo, toShort } from 'utils/index';
+import { getNetworkLogo, getTotalConvertedBalanceValue, hasAnyChildTokenBalance, toShort } from 'utils/index';
 import Text from 'components/Text';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../types';
 import { BalanceVal } from 'components/BalanceVal';
-import { getTotalConvertedBalanceValue, hasAnyChildTokenBalance } from 'screens/Home/CtyptoTab/utils';
 import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props extends TouchableOpacityProps {

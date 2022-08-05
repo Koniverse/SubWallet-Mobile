@@ -19,13 +19,17 @@ export interface CheckBoxesType {
   labelComponent: React.ReactNode;
 }
 
-export interface SelectionProviderProps {
-  selectionProvider?: { selectedNetworkKey: string; selectedToken?: string };
+export interface SelectionProviderType {
+  selectedNetworkKey: string;
+  selectedToken?: string;
 }
 
-export interface BalanceContainerType extends SelectionProviderProps {
+export interface SelectionProviderProps {
+  selectionProvider?: SelectionProviderType;
+}
+
+export interface BalanceContainerType {
   balanceValue: BigN;
-  actionButtonContainerStyle?: StyleProp<any>;
   amountToUsd?: BigN;
   isShowBalanceToUsd?: boolean;
   startWithSymbol?: boolean;
@@ -72,4 +76,10 @@ export interface TokenBalanceItemType {
   isReady: boolean;
   isTestnet: boolean;
   priceValue: number;
+}
+
+export interface UseViewStepType {
+  currentView: string;
+  toNextView: (view: string) => void;
+  toBack: () => void;
 }

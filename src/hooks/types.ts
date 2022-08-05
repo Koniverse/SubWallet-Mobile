@@ -5,5 +5,5 @@ import { TokenBalanceItemType } from 'types/ui-types';
 export type AccountBalanceType = {
   totalBalanceValue: BigN;
   networkBalanceMap: Record<string, BalanceInfo>;
-  tokenBalanceMap: Record<string, TokenBalanceItemType>
+  tokenBalanceMap: Record<string, TokenBalanceItemType>;
 };
