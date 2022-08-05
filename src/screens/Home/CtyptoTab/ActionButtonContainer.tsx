@@ -75,12 +75,14 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const getAccountList = () => {
     const accountListWithoutAll = accounts.filter(opt => opt.address !== 'ALL');
 
-    if (!selectedNetworkKey) {
-      return accountListWithoutAll;
-    } else if (networkMap[selectedNetworkKey].isEthereum) {
-      return accountListWithoutAll.filter(acc => isEthereumAddress(acc.address));
+    if (selectionProvider) {
+      if (networkMap[selectionProvider.selectedNetworkKey].isEthereum) {
+        return accountListWithoutAll.filter(acc => isEthereumAddress(acc.address));
+      } else {
+        return accountListWithoutAll.filter(acc => !isEthereumAddress(acc.address));
+      }
     } else {
-      return accountListWithoutAll.filter(acc => !isEthereumAddress(acc.address));
+      return accountListWithoutAll;
     }
   };
 
