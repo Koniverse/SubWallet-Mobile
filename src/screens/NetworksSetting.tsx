@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
@@ -25,8 +25,15 @@ function getDefaultSettingNetworkMap(networkMap: Record<string, NetworkJson>) {
 export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisible }: Props) => {
   const { parsedNetworkMap: networkMap } = useFetchNetworkMap();
   const [searchString, setSearchString] = useState('');
+  const [settingNetworkMap, setSettingNetworkMap] = useState<Record<string, boolean>>({});
+  const deps = JSON.stringify(networkMap);
+  useEffect(() => {
+    if (Object.values(networkMap) && Object.values(networkMap).length) {
+      setSettingNetworkMap(getDefaultSettingNetworkMap(networkMap));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deps]);
 
-  const [settingNetworkMap, setSettingNetworkMap] = useState(getDefaultSettingNetworkMap(networkMap));
   const onToggleItem = (item: NetworkJson) => {
     setSettingNetworkMap(prevState => {
       return {
@@ -36,19 +43,19 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
     });
   };
 
-  const _onPressBack = () => {
-    Object.values(networkMap).forEach(network => {
-      if (network.active === settingNetworkMap[network.key]) {
-        return;
-      } else {
-        if (network.active) {
-          disableNetworkMap(network.key).catch(console.error);
+  const _onPressBack = async () => {
+    const networkList = Object.values(networkMap);
+    onPressBack();
+
+    for (let i = 0; i < networkList.length; i++) {
+      if (settingNetworkMap[networkList[i].key] !== networkList[i].active) {
+        if (settingNetworkMap[networkList[i].key]) {
+          await enableNetworkMap(networkList[i].key);
         } else {
-          enableNetworkMap(network.key).catch(console.error);
+          await disableNetworkMap(networkList[i].key);
         }
       }
-    });
-    onPressBack();
+    }
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {
