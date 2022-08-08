@@ -6,9 +6,10 @@ import { Warning } from 'components/Warning';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { SelectScreen } from 'components/SelectScreen';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
-import useFetchNetworkMap from 'hooks/screen/NetworkSetting/useFetchNetworkMap';
 import i18n from 'utils/i18n/i18n';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   modalVisible: boolean;
@@ -16,31 +17,62 @@ interface Props {
   onChangeModalVisible: () => void;
 }
 
+let networkKeys: Array<string> | undefined;
+
 export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisible }: Props) => {
-  const { parsedNetworkMap: networkMap } = useFetchNetworkMap();
+  const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
   const [currentNetworkMap, setCurrentNetworkMap] = useState<Record<string, NetworkJson>>({});
   const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>([]);
-  const [pendingNetworkList, setPendingNetworkList] = useState({});
+  const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>({});
+  const [needUpdateList, setNeedUpdateList] = useState(true);
 
   useEffect(() => {
-    setCurrentNetworkMap({ ...networkMap });
-    Object.entries(pendingNetworkList).forEach(([key, val]) => {
+    if (!modalVisible || !networkKeys) {
+      setNeedUpdateList(true);
+    }
+  }, [modalVisible]);
+
+  useEffect(() => {
+    const newNetworkMap = {};
+    if (!networkKeys || needUpdateList || networkKeys.length === 0) {
+      const pendingKeys = Object.keys(pendingNetworkMap);
+      networkKeys = Object.keys(networkMap).sort((a, b) => {
+        const aActive = pendingKeys.includes(a) ? pendingNetworkMap[a] : networkMap[a]?.active;
+        const bActive = pendingKeys.includes(b) ? pendingNetworkMap[b] : networkMap[b]?.active;
+
+        if (aActive === bActive) {
+          return 0;
+        } else if (aActive) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      setNeedUpdateList(false);
+    }
+    networkKeys.forEach(key => {
+      // @ts-ignore
+      newNetworkMap[key] = networkMap[key];
+    });
+    setCurrentNetworkMap({ ...newNetworkMap });
+
+    Object.entries(pendingNetworkMap).forEach(([key, val]) => {
       if (networkMap[key]?.active === val) {
         // @ts-ignore
-        delete pendingNetworkList[key];
-        setPendingNetworkList({ ...pendingNetworkList });
+        delete pendingNetworkMap[key];
+        setPendingNetworkMap({ ...pendingNetworkMap });
       }
     });
-  }, [networkMap, pendingNetworkList]);
+  }, [needUpdateList, networkMap, pendingNetworkMap]);
 
   const onToggleItem = (item: NetworkJson) => {
-    setPendingNetworkList({ ...pendingNetworkList, [item.key]: !item.active });
+    setPendingNetworkMap({ ...pendingNetworkMap, [item.key]: !item.active });
     const reject = () => {
       console.warn('Toggle network request failed!');
       // @ts-ignore
-      delete pendingNetworkList[item.key];
-      setPendingNetworkList({ ...pendingNetworkList });
+      delete pendingNetworkMap[item.key];
+      setPendingNetworkMap({ ...pendingNetworkMap });
     };
 
     if (item.active) {
@@ -54,13 +86,13 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
     return (
       <NetworkAndTokenToggleItem
         isDisableSwitching={
-          item.key === 'polkadot' || item.key === 'kusama' || Object.keys(pendingNetworkList).includes(item.key)
+          item.key === 'polkadot' || item.key === 'kusama' || Object.keys(pendingNetworkMap).includes(item.key)
         }
         key={`${item.key}-${item.chain}`}
         itemName={item.chain}
         itemKey={item.key}
         // @ts-ignore
-        isEnabled={Object.keys(pendingNetworkList).includes(item.key) ? pendingNetworkList[item.key] : item.active}
+        isEnabled={Object.keys(pendingNetworkMap).includes(item.key) ? pendingNetworkMap[item.key] : item.active}
         onValueChange={() => onToggleItem(item)}
       />
     );
