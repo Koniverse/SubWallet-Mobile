@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef, ForwardedRef, forwardRef, useImperativeHandle } from 'react';
 
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ListRenderItemInfo } from 'react-native';
@@ -15,6 +15,7 @@ import { TokensTab } from 'screens/Home/CtyptoTab/tabs/TokensTab';
 import { ChainsTab } from 'screens/Home/CtyptoTab/tabs/ChainsTab';
 import { BN_ZERO } from 'utils/chainBalances';
 import { HistoryTab } from 'screens/Home/CtyptoTab/tabs/HistoryTab';
+import { CollapsibleRef } from 'react-native-collapsible-tab-view';
 
 interface Props extends TabsContainerHeaderProps {
   showedNetworks: string[];
@@ -193,22 +194,27 @@ const renderTabBar = (viewStep: string) => {
   );
 };
 
-const TabsContainer = ({
-  currentView,
-  currentTgKey,
-  totalBalanceValue,
-  tokenGroupMap,
-  tokenBalanceMap,
-  networkBalanceMap,
-  selectedNetworkInfo,
-  selectedTokenSymbol,
-  selectedTokenDisplayName,
-  showedNetworks,
-  accountInfoByNetworkMap,
-  tokenBalanceKeyPriceMap,
-  onPressChainItem,
-  onPressTokenBalanceItem,
-}: Props) => {
+const TabsContainer = (
+  {
+    currentView,
+    currentTgKey,
+    totalBalanceValue,
+    tokenGroupMap,
+    tokenBalanceMap,
+    networkBalanceMap,
+    selectedNetworkInfo,
+    selectedTokenSymbol,
+    selectedTokenDisplayName,
+    showedNetworks,
+    accountInfoByNetworkMap,
+    tokenBalanceKeyPriceMap,
+    onPressChainItem,
+    onPressTokenBalanceItem,
+  }: Props,
+  ref: ForwardedRef<any>,
+) => {
+  const containerRef = createRef<CollapsibleRef<string>>();
+
   const tokenBalanceItems = getTokenBalanceItems(
     currentView,
     currentTgKey,
@@ -218,6 +224,14 @@ const TabsContainer = ({
     networkBalanceMap,
     selectedNetworkInfo,
   );
+
+  useImperativeHandle(ref, () => ({
+    jumpToTab: (tabId: string) => {
+      if (containerRef.current) {
+        containerRef.current.jumpToTab(tabId);
+      }
+    },
+  }));
 
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];
@@ -248,12 +262,12 @@ const TabsContainer = ({
       tabs.push(
         ...[
           {
-            id: 'token',
+            id: 'one',
             label: 'Token',
             component: <TokensTab items={tokenBalanceItems} renderItem={renderTokenTabItem} />,
           },
           {
-            id: 'chain',
+            id: 'two',
             label: 'Chain',
             component: (
               <ChainsTab
@@ -270,12 +284,12 @@ const TabsContainer = ({
       tabs.push(
         ...[
           {
-            id: 'token',
+            id: 'one',
             label: 'Token',
             component: <TokensTab items={tokenBalanceItems} renderItem={renderTokenTabItem} />,
           },
           {
-            id: 'history',
+            id: 'two',
             label: 'History',
             component: selectedNetworkInfo ? <HistoryTab networkKey={selectedNetworkInfo.networkKey} /> : <></>,
           },
@@ -285,7 +299,7 @@ const TabsContainer = ({
       tabs.push(
         ...[
           {
-            id: 'history',
+            id: 'one',
             label: 'History',
             component: selectedNetworkInfo ? (
               <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
@@ -309,6 +323,8 @@ const TabsContainer = ({
   return (
     <Tabs.Container
       lazy
+      ref={containerRef}
+      revealHeaderOnScroll
       allowHeaderOverscroll={true}
       renderTabBar={renderTabBar(currentView)}
       renderHeader={renderTabContainerHeader}>
@@ -317,4 +333,4 @@ const TabsContainer = ({
   );
 };
 
-export default TabsContainer;
+export default forwardRef(TabsContainer);

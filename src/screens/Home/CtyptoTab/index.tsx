@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
@@ -50,13 +50,14 @@ export const CryptoTab = () => {
     networkMap,
   );
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
-
-  const handleBackButton = () => {
-    return true;
-  };
+  const tabsContainerRef = createRef();
 
   // prevent Back Press event on Android for this screen
   useEffect(() => {
+    const handleBackButton = () => {
+      return true;
+    };
+
     const unsubscribeFocusScreen = navigation.addListener('focus', () => {
       BackHandler.addEventListener('hardwareBackPress', handleBackButton);
     });
@@ -71,12 +72,28 @@ export const CryptoTab = () => {
     };
   }, [navigation]);
 
+  const jumToTab = (tabId: string) => {
+    if (tabsContainerRef.current) {
+      // @ts-ignore
+      tabsContainerRef.current.jumpToTab(tabId);
+    }
+  };
+
+  const onPressBack = () => {
+    if (currentView === ViewStep.CHAIN_DETAIL) {
+      jumToTab('two');
+    }
+
+    toBack();
+  };
+
   const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
     setSelectionInfo(prevState => ({
       ...prevState,
       selectedNetworkInfo: info,
       selectBalanceInfo: balanceInfo,
     }));
+    jumToTab('one');
     toNextView(ViewStep.CHAIN_DETAIL);
   };
 
@@ -132,7 +149,7 @@ export const CryptoTab = () => {
         <Header
           currentView={currentView}
           navigation={navigation}
-          onPressBack={toBack}
+          onPressBack={onPressBack}
           currentTgKey={currentTgKey}
           selectedNetworkInfo={selectedNetworkInfo}
           selectedTokenDisplayName={selectedTokenDisplayName}
@@ -140,6 +157,7 @@ export const CryptoTab = () => {
         />
 
         <TabsContainer
+          ref={tabsContainerRef}
           currentView={currentView}
           currentTgKey={currentTgKey}
           totalBalanceValue={totalBalanceValue}
