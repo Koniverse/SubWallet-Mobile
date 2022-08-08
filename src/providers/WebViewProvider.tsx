@@ -34,17 +34,17 @@ let injectedJS = `
   }, 200);
 `;
 // Show webview log in development environment
-if (__DEV__) {
-  injectedJS += `
-  const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
-  console = {
-      log: (...args) => consoleLog('log', [...args]),
-      debug: (...args) => consoleLog('debug', [...args]),
-      info: (...args) => consoleLog('info', [...args]),
-      warn: (...args) => consoleLog('warn', [...args]),
-      error: (...args) => consoleLog('error', [...args]),
-  };`;
-}
+// if (__DEV__) {
+//   injectedJS += `
+//   const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
+//   console = {
+//       log: (...args) => consoleLog('log', [...args]),
+//       debug: (...args) => consoleLog('debug', [...args]),
+//       info: (...args) => consoleLog('info', [...args]),
+//       warn: (...args) => consoleLog('warn', [...args]),
+//       error: (...args) => consoleLog('error', [...args]),
+//   };`;
+// }
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>();
@@ -69,12 +69,12 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         return true;
       } else if (data.id === '-1') {
         // @ts-ignore
-        console.debug('Web View Console:', ...data.response);
+        console.debug('### Web View Console:', ...data.response);
         return true;
       } else if (data.id === '-2') {
         // @ts-ignore
         const info = data.response as { url: string; version: string };
-        console.debug('Web View Info:', info);
+        console.debug('### Web View Info:', info);
         setUrl(info.url);
         setVersion(info.version);
         return true;
