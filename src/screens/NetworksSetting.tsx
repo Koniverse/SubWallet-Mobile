@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
@@ -16,56 +16,51 @@ interface Props {
   onChangeModalVisible: () => void;
 }
 
-function getDefaultSettingNetworkMap(networkMap: Record<string, NetworkJson>) {
-  const defaultNetworkSettingMap: Record<string, boolean> = {};
-  Object.values(networkMap).forEach(network => (defaultNetworkSettingMap[network.key] = network.active));
-  return defaultNetworkSettingMap;
-}
-
 export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisible }: Props) => {
   const { parsedNetworkMap: networkMap } = useFetchNetworkMap();
   const [searchString, setSearchString] = useState('');
-  const [settingNetworkMap, setSettingNetworkMap] = useState<Record<string, boolean>>({});
-  const deps = JSON.stringify(networkMap);
+  const [currentNetworkMap, setCurrentNetworkMap] = useState<Record<string, NetworkJson>>({});
+  const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>([]);
+  const [pendingNetworkList, setPendingNetworkList] = useState({});
+
   useEffect(() => {
-    if (Object.values(networkMap) && Object.values(networkMap).length) {
-      setSettingNetworkMap(getDefaultSettingNetworkMap(networkMap));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deps]);
+    setCurrentNetworkMap({ ...networkMap });
+    Object.entries(pendingNetworkList).forEach(([key, val]) => {
+      if (networkMap[key]?.active === val) {
+        // @ts-ignore
+        delete pendingNetworkList[key];
+        setPendingNetworkList({ ...pendingNetworkList });
+      }
+    });
+  }, [networkMap, pendingNetworkList]);
 
   const onToggleItem = (item: NetworkJson) => {
-    setSettingNetworkMap(prevState => {
-      return {
-        ...prevState,
-        [item.key]: !prevState[item.key],
-      };
-    });
-  };
+    setPendingNetworkList({ ...pendingNetworkList, [item.key]: !item.active });
+    const reject = () => {
+      console.warn('Toggle network request failed!');
+      // @ts-ignore
+      delete pendingNetworkList[item.key];
+      setPendingNetworkList({ ...pendingNetworkList });
+    };
 
-  const _onPressBack = async () => {
-    const networkList = Object.values(networkMap);
-    onPressBack();
-
-    for (let i = 0; i < networkList.length; i++) {
-      if (settingNetworkMap[networkList[i].key] !== networkList[i].active) {
-        if (settingNetworkMap[networkList[i].key]) {
-          await enableNetworkMap(networkList[i].key);
-        } else {
-          await disableNetworkMap(networkList[i].key);
-        }
-      }
+    if (item.active) {
+      disableNetworkMap(item.key).catch(reject);
+    } else {
+      enableNetworkMap(item.key).catch(reject);
     }
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {
     return (
       <NetworkAndTokenToggleItem
-        isDisableSwitching={item.key === 'polkadot' || item.key === 'kusama'}
+        isDisableSwitching={
+          item.key === 'polkadot' || item.key === 'kusama' || Object.keys(pendingNetworkList).includes(item.key)
+        }
         key={`${item.key}-${item.chain}`}
         itemName={item.chain}
         itemKey={item.key}
-        isEnabled={settingNetworkMap[item.key]}
+        // @ts-ignore
+        isEnabled={Object.keys(pendingNetworkList).includes(item.key) ? pendingNetworkList[item.key] : item.active}
         onValueChange={() => onToggleItem(item)}
       />
     );
@@ -75,31 +70,25 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
     return <Warning title={'Warning'} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />;
   };
 
-  const filterNetwork = useCallback(() => {
-    const _filteredNetworkMap: Record<string, NetworkJson> = {};
-
-    Object.entries(networkMap).forEach(([key, network]) => {
-      if (network.chain.toLowerCase().includes(searchString.toLowerCase())) {
-        _filteredNetworkMap[key] = network;
-      }
-    });
-
-    return _filteredNetworkMap;
-  }, [networkMap, searchString]);
-
-  const filteredNetworkMap = Object.values(filterNetwork());
+  useEffect(() => {
+    setFilteredNetworkList(
+      Object.values(currentNetworkMap).filter(network =>
+        network.chain.toLowerCase().includes(searchString.toLowerCase()),
+      ),
+    );
+  }, [currentNetworkMap, searchString]);
 
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
-        onPressBack={_onPressBack}
+        onPressBack={onPressBack}
         title={'Network Setting'}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
         <FlatList
           style={{ ...ScrollViewStyle }}
           keyboardShouldPersistTaps={'handled'}
-          data={filteredNetworkMap}
+          data={filteredNetworkList}
           renderItem={renderItem}
           ListEmptyComponent={renderListEmptyComponent}
           keyExtractor={item => `${item.key}-${item.chain}`}
