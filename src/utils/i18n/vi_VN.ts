@@ -70,6 +70,7 @@ export const vi = {
   warningTitle: {
     doNotSharePrivateKey: 'Do not share your private key!',
     doNotShareSecretPhrase: 'Do not share your secret phrase!',
+    doNotShareJsonFile: 'Do not share your JSON file!',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',
@@ -91,6 +92,7 @@ export const vi = {
       'You are about to remove this account. This means that you will not be able to access it via this app anymore. If you wish to recover it, you will need to use its secret phrase.',
     initSecretPhrase:
       'Write down your wallet’s secret phrase and keep it in a safe place. Store it carefully to not lose your assets.',
+    exportAccountWarning: "You are exporting your account. Keep it safe and don't share it with anyone.",
   },
   copied: 'Copied',
   unknown: '<unknown>',

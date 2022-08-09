@@ -1,7 +1,6 @@
-import React, { useMemo } from 'react';
-import { GestureResponderEvent, StyleProp, StyleSheet, View } from 'react-native';
+import React from 'react';
+import { GestureResponderEvent, StyleProp, View } from 'react-native';
 import Text from '../components/Text';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SpaceStyle } from 'styles/space';
 import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
 import { ArrowLeft, IconProps } from 'phosphor-react-native';
@@ -38,6 +37,13 @@ const headerTitle: StyleProp<any> = {
   justifyContent: 'center',
 };
 
+const subHeaderTitle: StyleProp<any> = {
+  ...sharedStyles.mediumText,
+  ...FontSize4,
+  ...FontBold,
+  color: ColorMap.light,
+};
+
 export const SubHeader = ({
   headerContent,
   onPressBack,
@@ -48,27 +54,13 @@ export const SubHeader = ({
   backgroundColor,
   disableRightButton,
 }: SubHeaderProps) => {
-  const swThemeColor = useSubWalletTheme().colors;
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        subHeaderTitle: {
-          ...sharedStyles.mediumText,
-          ...FontSize4,
-          ...FontBold,
-          color: swThemeColor.textColor,
-        },
-      }),
-    [swThemeColor],
-  );
-
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
       {!!headerContent ? (
         headerContent()
       ) : (
         <View style={headerTitle}>
-          <Text style={styles.subHeaderTitle}>{title}</Text>
+          <Text style={subHeaderTitle}>{title}</Text>
         </View>
       )}
 

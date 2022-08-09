@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleProp, TextInput, TextInputProps } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 
 interface InputProps extends TextInputProps {}
@@ -14,14 +13,12 @@ const inputContainer: StyleProp<any> = {
 };
 
 export const Input = (inputProps: InputProps) => {
-  const theme = useSubWalletTheme().colors;
-
   return (
     <TextInput
       autoCorrect={false}
       style={[sharedStyles.textInput, inputContainer]}
-      placeholderTextColor={theme.textColor2}
-      selectionColor={theme.textColor2}
+      placeholderTextColor={ColorMap.disabled}
+      selectionColor={ColorMap.disabled}
       {...inputProps}
     />
   );

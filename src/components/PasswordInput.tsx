@@ -47,7 +47,6 @@ const inputStyle: StyleProp<any> = {
 export const PasswordInput = (inputProps: InputProps) => {
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
   const { containerStyle, label, textTransform = 'none' } = inputProps;
-  const theme = useSubWalletTheme().colors;
 
   return (
     <View style={getInputContainerStyle(containerStyle)}>
@@ -56,8 +55,8 @@ export const PasswordInput = (inputProps: InputProps) => {
         <TextInput
           autoCorrect={false}
           style={inputStyle}
-          placeholderTextColor={theme.textColor2}
-          selectionColor={theme.textColor2}
+          placeholderTextColor={ColorMap.disabled}
+          selectionColor={ColorMap.disabled}
           secureTextEntry={!isShowPassword}
           blurOnSubmit={false}
           onSubmitEditing={() => Keyboard.dismiss()}

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { GestureResponderEvent, ScrollView, StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { SeedWord } from 'components/SeedWord';
@@ -79,14 +79,11 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
     });
   }, [seed]);
 
-  const copyToClipboard = useCallback(
-    (text: string) => {
-      Clipboard.setString(text);
-      toast.hideAll();
-      toast.show('Copied to Clipboard');
-    },
-    [toast],
-  );
+  const copyToClipboard = (text: string) => {
+    Clipboard.setString(text);
+    toast.hideAll();
+    toast.show('Copied to Clipboard');
+  };
 
   return (
     <View style={sharedStyles.layoutContainer}>

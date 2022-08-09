@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { Linking, Share, StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from 'components/Text';
@@ -96,7 +96,7 @@ export const ReceiveModal = ({
     accounts: { currentAccountAddress },
     networkMap,
   } = useSelector((state: RootState) => state);
-  const copyToClipboard = useCallback((text: string) => {
+  const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     if (toastRef.current) {
       // @ts-ignore
@@ -104,7 +104,7 @@ export const ReceiveModal = ({
       // @ts-ignore
       toastRef.current.show('Copied to clipboard');
     }
-  }, []);
+  };
   const formattedAddress = useMemo(() => {
     const networkInfo = networkMap[networkKey];
 

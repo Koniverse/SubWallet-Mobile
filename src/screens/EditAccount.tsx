@@ -7,7 +7,6 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { editAccount } from '../messaging';
 import { toShort } from 'utils/index';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { IconButton } from 'components/IconButton';
 import { CopySimple, FileText, Key, Trash } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -31,7 +30,6 @@ const editAccountAddressItem: StyleProp<any> = {
 };
 
 export const EditAccount = () => {
-  const theme = useSubWalletTheme().colors;
   const navigation = useNavigation<RootNavigationProps>();
   const route = useRoute<RootRouteProps>();
   const data = route.params;
@@ -47,14 +45,11 @@ export const EditAccount = () => {
   );
   const toast = useToast();
 
-  const copyToClipboard = useCallback(
-    (text: string) => {
-      Clipboard.setString(text);
-      toast.hideAll();
-      toast.show('Copied to Clipboard');
-    },
-    [toast],
-  );
+  const copyToClipboard = (text: string) => {
+    Clipboard.setString(text);
+    toast.hideAll();
+    toast.show('Copied to Clipboard');
+  };
 
   const onExportPrivateKey = () => {
     // @ts-ignore
@@ -92,7 +87,7 @@ export const EditAccount = () => {
         <View style={editAccountAddressItem}>
           <EditAccountInputText
             editAccountInputStyle={{ flex: 1 }}
-            outerInputStyle={{ color: theme.textColor2 }}
+            outerInputStyle={{ color: ColorMap.disabled }}
             label={'Account Address'}
             // @ts-ignore
             inputValue={data ? toShort(data.address) : ''}
@@ -101,7 +96,7 @@ export const EditAccount = () => {
           <IconButton
             style={{ width: 20, height: 20, paddingBottom: 22 }}
             icon={CopySimple}
-            color={theme.textColor2}
+            color={ColorMap.disabled}
             // @ts-ignore
             onPress={() => copyToClipboard(data ? data.address : '')}
           />
@@ -125,7 +120,7 @@ export const EditAccount = () => {
           style={{ width: '100%' }}
           title={i18n.settings.removeAccount}
           icon={Trash}
-          color={theme.notification_danger}
+          color={ColorMap.danger}
           onPress={onRemoveAccount}
         />
 

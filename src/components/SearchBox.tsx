@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 
 interface Props {
@@ -38,7 +37,6 @@ const searchBoxCancelBtn: StyleProp<any> = {
 };
 
 export const SearchBox = ({ autoFocus }: Props) => {
-  const theme = useSubWalletTheme().colors;
   const [searchQuery, setSearchQuery] = useState<string | undefined>('');
 
   return (
@@ -48,17 +46,17 @@ export const SearchBox = ({ autoFocus }: Props) => {
         style={searchBoxText}
         autoFocus={autoFocus || true}
         placeholder={'Search...'}
-        placeholderTextColor={theme.textColor2}
+        placeholderTextColor={ColorMap.disabled}
         autoCapitalize="none"
         returnKeyType="search"
-        selectionColor={theme.textColor2}
+        selectionColor={ColorMap.disabled}
         onChangeText={text => {
           setSearchQuery(text);
         }}
         value={searchQuery}
       />
       <TouchableOpacity style={searchBoxCancelBtn} onPress={() => setSearchQuery('')}>
-        <FontAwesomeIcon icon={faXmark} size={16} color={theme.textColor2} />
+        <FontAwesomeIcon icon={faXmark} size={16} color={ColorMap.disabled} />
       </TouchableOpacity>
     </View>
   );

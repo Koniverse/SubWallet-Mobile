@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Dimensions, FlatList, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Text from 'components/Text';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { SearchBox } from 'components/SearchBox';
@@ -41,7 +40,6 @@ const modalStyle: StyleProp<any> = {
 };
 
 export const SearchSelect = ({ value, onChangeSelect, data }: Props) => {
-  const theme = useSubWalletTheme().colors;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   // @ts-ignore
@@ -62,7 +60,7 @@ export const SearchSelect = ({ value, onChangeSelect, data }: Props) => {
       <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
         <View style={searchSelectContainer}>
           <Text style={searchSelectText}>{value}</Text>
-          <FontAwesomeIcon icon={faChevronDown} size={16} color={theme.textColor2} />
+          <FontAwesomeIcon icon={faChevronDown} size={16} color={ColorMap.disabled} />
         </View>
       </TouchableWithoutFeedback>
 

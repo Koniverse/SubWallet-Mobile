@@ -70,6 +70,7 @@ export const en = {
   warningTitle: {
     doNotSharePrivateKey: 'Do not share your private key!',
     doNotShareSecretPhrase: 'Do not share your secret phrase!',
+    doNotShareJsonFile: 'Do not share your JSON file!',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',
@@ -91,6 +92,7 @@ export const en = {
       'You are about to remove this account. This means that you will not be able to access it via this app anymore. If you wish to recover it, you will need to use its secret phrase.',
     initSecretPhrase:
       'Write down your wallet’s secret phrase and keep it in a safe place. Store it carefully to not lose your assets.',
+    exportAccountWarning: "You are exporting your account. Keep it safe and don't share it with anyone.",
   },
   copied: 'Copied',
   unknown: '<unknown>',
@@ -132,7 +134,6 @@ export const en = {
   chooseParentAcc: 'Choose Parent Account:',
   enterPasswordToDerive: 'enter the password for the account you want to derive from',
   createDeriveAccount: 'Create a derived account',
-  exportAccountWarning: "You are exporting your account. Keep it safe and don't share it with anyone.",
   passwordForThisAcc: 'password for this account',
   cancel: 'Cancel',
   removeAccountNoti:

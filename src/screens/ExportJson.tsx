@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import Text from '../components/Text';
@@ -12,6 +12,7 @@ import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight } from '../constant';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   address: string;
@@ -81,7 +82,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
       });
   };
 
-  const copyToClipboard = useCallback((text: string) => {
+  const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     if (toastRef.current) {
       // @ts-ignore
@@ -89,7 +90,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
       // @ts-ignore
       toastRef.current.show('Copied to clipboard');
     }
-  }, []);
+  };
 
   const isPasswordError = !password || password.length < 6;
 
@@ -115,8 +116,8 @@ export const ExportJson = ({ address, closeModal }: Props) => {
 
           <View style={bodyAreaStyle}>
             <Warning
-              title={'Do not share your private key!'}
-              message={'If someone has your private key they will have full control of your account'}
+              title={i18n.warningTitle.doNotShareJsonFile}
+              message={i18n.warningMessage.exportAccountWarning}
               style={{ marginBottom: 16 }}
             />
 

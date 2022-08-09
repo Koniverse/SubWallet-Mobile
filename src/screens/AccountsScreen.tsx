@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
 import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus } from 'phosphor-react-native';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
@@ -46,7 +45,6 @@ export const AccountsScreen = () => {
     accounts: { accounts, currentAccountAddress },
   } = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
-  const theme = useSubWalletTheme().colors;
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
@@ -161,11 +159,7 @@ export const AccountsScreen = () => {
   const renderFooterComponent = () => {
     return (
       <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
-        <SubmitButton
-          backgroundColor={theme.background2}
-          title={i18n.common.addAccount}
-          onPress={onCreateAccount}
-        />
+        <SubmitButton backgroundColor={ColorMap.dark2} title={i18n.common.addAccount} onPress={onCreateAccount} />
       </View>
     );
   };

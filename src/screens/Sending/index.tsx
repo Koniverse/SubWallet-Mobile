@@ -288,7 +288,7 @@ export const SendFund = () => {
     setTxResult(curTxResult);
   };
 
-  const _onResend = useCallback(() => {
+  const _onResend = () => {
     setTxResult({
       isTxSuccess: false,
       isShowTxResult: false,
@@ -297,7 +297,7 @@ export const SendFund = () => {
     setReceiveAddress([null, '']);
     setCurrentStep(ViewStep.SEND_FUND);
     setBusy(false);
-  }, []);
+  };
 
   const onUpdateInputBalance = () => {
     _doCheckTransfer(

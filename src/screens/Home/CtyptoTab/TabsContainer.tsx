@@ -324,7 +324,7 @@ const TabsContainer = (
     <Tabs.Container
       lazy
       ref={containerRef}
-      revealHeaderOnScroll
+      // revealHeaderOnScroll
       allowHeaderOverscroll={true}
       renderTabBar={renderTabBar(currentView)}
       renderHeader={renderTabContainerHeader}>

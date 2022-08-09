@@ -4,7 +4,6 @@ import { NFTTab } from './NFTTab';
 import { CrowdloansTab } from './CrowdloansTab';
 import { StakingTab } from './StakingTab';
 
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TouchableHighlight } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
@@ -14,6 +13,7 @@ import { BrowserTab } from 'screens/Home/BrowserTab';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT } from '../../constant';
 import { useToast } from 'react-native-toast-notifications';
+import { ColorMap } from 'styles/color';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -28,7 +28,6 @@ export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route']
 
 export const Home = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
-  const swThemeColor = useSubWalletTheme().colors;
   const insets = useSafeAreaInsets();
   const toast = useToast();
 
@@ -51,7 +50,7 @@ export const Home = () => {
               ...customStyle,
               // @ts-ignore
               borderTopWidth: 2,
-              borderTopColor: swThemeColor.secondary,
+              borderTopColor: ColorMap.secondary,
               marginTop: -2,
             };
           }
@@ -75,14 +74,14 @@ export const Home = () => {
         tabBarStyle: {
           paddingTop: 0,
           paddingBottom: 0,
-          backgroundColor: swThemeColor.background,
+          backgroundColor: ColorMap.dark1,
           borderTopWidth: 1,
           paddingLeft: 16,
           paddingRight: 16,
           height: BOTTOM_BAR_HEIGHT + (insets.bottom ? insets.bottom - 15 : insets.bottom),
         },
-        tabBarActiveTintColor: swThemeColor.secondary,
-        tabBarInactiveTintColor: swThemeColor.textColor,
+        tabBarActiveTintColor: ColorMap.secondary,
+        tabBarInactiveTintColor: ColorMap.light,
       }}>
       <Tab.Screen
         name={'Crypto'}

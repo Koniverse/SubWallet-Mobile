@@ -108,6 +108,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
         selectedToken: _selectedToken,
       });
     } else {
+      setSelectedResult({ selectedAccount: address });
       setTokenSelectAction({
         onChange: item => onChangeSendToken(item, address),
         onBack: onPressTokenSelectBack,
@@ -166,6 +167,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
       setSelectAccountModal(false);
       actionWithSetTimeout(() => setReceiveModalVisible(true));
     } else {
+      setSelectedResult({ selectedAccount: address });
       setTokenSelectAction({
         onChange: item => onChangeReceiveToken(item, address),
         onBack: onPressTokenSelectBack,

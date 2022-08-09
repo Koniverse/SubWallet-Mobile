@@ -2,7 +2,6 @@ import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from '
 import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
 import Text from '../components/Text';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 import { QrCode } from 'phosphor-react-native';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
@@ -82,7 +81,6 @@ const qrButtonStyle: StyleProp<any> = {
 const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   const { containerStyle, label, onChange, onPressQrButton, value } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
-  const theme = useSubWalletTheme().colors;
   const [address, setAddress] = useState<string>(value);
   const isAddressValid = isAddress(address);
   const onChangeInputText = (text: string) => {
@@ -127,8 +125,8 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
               autoCorrect={false}
               autoFocus={true}
               style={inputStyle}
-              placeholderTextColor={theme.textColor2}
-              selectionColor={theme.textColor2}
+              placeholderTextColor={ColorMap.disabled}
+              selectionColor={ColorMap.disabled}
               blurOnSubmit={false}
               value={address}
               onBlur={onInputBlur}

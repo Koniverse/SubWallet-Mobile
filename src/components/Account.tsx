@@ -70,7 +70,7 @@ export const Account = ({
     accounts: { accounts },
     networkMap,
   } = useSelector((state: RootState) => state);
-  const [{ formatted, genesisHash: recodedGenesis }, setRecoded] = useState<Recoded>(defaultRecoded);
+  const [{ genesisHash: recodedGenesis }, setRecoded] = useState<Recoded>(defaultRecoded);
   const getNetworkInfoByGenesisHash = useCallback(
     (hash?: string | null): NetworkJson | null => {
       if (!hash) {
@@ -123,9 +123,9 @@ export const Account = ({
       : currentAddress;
   };
 
-  const copyToClipboard = useCallback((text: string) => {
+  const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
-  }, []);
+  };
 
   const Name = () => {
     return (
@@ -147,17 +147,11 @@ export const Account = ({
 
           <View style={accountAddressBlock}>
             {isShowAddress && (
-              <Text style={accountAddressStyle}>
-                {_isAccountAll ? 'All Accounts' : toShortAddress(formatted || address, 10)}
-              </Text>
+              <Text style={accountAddressStyle}>{_isAccountAll ? 'All Accounts' : toShortAddress(address, 10)}</Text>
             )}
 
             {showCopyBtn && (
-              <IconButton
-                style={accountCopyBtn}
-                icon={CopySimple}
-                onPress={() => copyToClipboard((formatted && formatted) || '')}
-              />
+              <IconButton style={accountCopyBtn} icon={CopySimple} onPress={() => copyToClipboard(address || '')} />
             )}
           </View>
         </View>

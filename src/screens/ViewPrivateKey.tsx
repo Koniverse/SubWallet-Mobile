@@ -113,14 +113,11 @@ export const ViewPrivateKey = () => {
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
   // @ts-ignore
   const { address } = route.params;
-  const copyToClipboard = useCallback(
-    (text: string) => {
-      Clipboard.setString(text);
-      toast.hideAll();
-      toast.show('Copied to Clipboard');
-    },
-    [toast],
-  );
+  const copyToClipboard = (text: string) => {
+    Clipboard.setString(text);
+    toast.hideAll();
+    toast.show('Copied to Clipboard');
+  };
 
   const onTapPrivate = () => {
     setCurrentViewStep(ViewStep.ENTER_PW);

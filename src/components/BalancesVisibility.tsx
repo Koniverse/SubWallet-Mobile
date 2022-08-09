@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleProp, TouchableOpacity } from 'react-native';
 import Text from '../components/Text';
 import { BalanceVal } from 'components/BalanceVal';
@@ -29,13 +29,13 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Pr
     settings: { isShowBalance },
   } = useSelector((state: RootState) => state);
 
-  const _toggleBalances = useCallback(() => {
+  const _toggleBalances = () => {
     toggleBalancesVisibility(v => {
       console.log('Balances visible:', v.isShowBalance);
     }).catch(e => {
       console.error('There is a problem when set Current Account', e);
     });
-  }, []);
+  };
 
   return (
     <TouchableOpacity onPress={() => _toggleBalances()} style={wrapperStyle}>
