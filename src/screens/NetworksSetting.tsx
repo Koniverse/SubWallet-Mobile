@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo, Text } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -9,6 +9,7 @@ import { disableNetworkMap, enableNetworkMap } from '../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
+import { Warning } from 'components/Warning';
 
 interface Props {}
 
@@ -96,7 +97,7 @@ export const NetworksSetting = ({}: Props) => {
   };
 
   const renderListEmptyComponent = () => {
-    return <Text>{i18n.warningMessage.noNetworkAvailable}</Text>;
+    return <Warning title={'Warning'} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />;
   };
 
   useEffect(() => {
