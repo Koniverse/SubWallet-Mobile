@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ListRenderItemInfo, RefreshControl, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { TokenHistoryItem } from 'components/TokenHistoryItem';
@@ -20,6 +20,7 @@ interface Props {
 interface ContentProps {
   registryMap: Record<string, ChainRegistry>;
   items: TransactionHistoryItemType[];
+  isLoading: boolean;
   token?: string;
 }
 
@@ -34,6 +35,21 @@ const emptyListTextStyle: StyleProp<any> = {
   color: ColorMap.light,
   ...FontMedium,
   paddingTop: 15,
+};
+
+const contentContainerStyle: StyleProp<any> = {
+  position: 'relative',
+  flex: 1,
+};
+
+const loadingLayerStyle: StyleProp<any> = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 10,
+  backgroundColor: ColorMap.dark1,
 };
 
 function getReadyNetwork(registryMap: Record<string, ChainRegistry>): string[] {
@@ -121,7 +137,7 @@ const EmptyList = () => {
   );
 };
 
-const ContentComponent = ({ items, registryMap }: ContentProps) => {
+const ContentComponent = ({ items, registryMap, isLoading }: ContentProps) => {
   const [isRefresh, refresh] = useRefresh();
   const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
@@ -131,17 +147,21 @@ const ContentComponent = ({ items, registryMap }: ContentProps) => {
   };
 
   return (
-    <Tabs.FlatList
-      showsVerticalScrollIndicator={false}
-      nestedScrollEnabled
-      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
-      style={{ ...CollapsibleFlatListStyle }}
-      keyboardShouldPersistTaps={'handled'}
-      data={items}
-      renderItem={renderItem}
-      refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
-      ListEmptyComponent={<EmptyList />}
-    />
+    <View style={contentContainerStyle}>
+      <Tabs.FlatList
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
+        contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
+        style={{ ...CollapsibleFlatListStyle }}
+        keyboardShouldPersistTaps={'handled'}
+        data={items}
+        renderItem={renderItem}
+        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
+        ListEmptyComponent={<EmptyList />}
+      />
+
+      {isLoading && <View style={loadingLayerStyle} />}
+    </View>
   );
 };
 
@@ -153,6 +173,21 @@ export const HistoryTab = ({ networkKey, token }: Props) => {
   const readyNetworks = getReadyNetwork(registryMap);
   const items = getItems(networkKey, historyMap);
   const readyItems = getReadyItems(readyNetworks, items, registryMap, token);
+  const [isLoading, setLoading] = useState<boolean>(true);
 
-  return <ContentComponent items={readyItems} registryMap={registryMap} />;
+  useEffect(() => {
+    let isSync = true;
+
+    setTimeout(() => {
+      if (isSync) {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      isSync = false;
+    };
+  }, []);
+
+  return <ContentComponent isLoading={isLoading} items={readyItems} registryMap={registryMap} />;
 };
