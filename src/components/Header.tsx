@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from '../components/Text';
 import { RootStackParamList } from 'types/routes';
@@ -11,7 +11,6 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
-import { NetworksSetting } from 'screens/NetworksSetting';
 
 export interface HeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -51,7 +50,6 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
   const {
     accounts: { currentAccount },
   } = useSelector((state: RootState) => state);
-  const [networkSettingModal, setNetworkSettingModal] = useState<boolean>(false);
 
   const _onPressSearchButton = () => {
     onPressSearchButton && onPressSearchButton();
@@ -78,7 +76,11 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={actionButtonStyle} onPress={() => setNetworkSettingModal(true)}>
+        <TouchableOpacity
+          style={actionButtonStyle}
+          onPress={() => {
+            navigation.navigate('NetworksSetting');
+          }}>
           <SlidersHorizontal size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
 
@@ -86,12 +88,6 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
           <MagnifyingGlass size={20} color={ColorMap.light} weight={'bold'} />
         </TouchableOpacity>
       </View>
-
-      <NetworksSetting
-        modalVisible={networkSettingModal}
-        onChangeModalVisible={() => setNetworkSettingModal(false)}
-        onPressBack={() => setNetworkSettingModal(false)}
-      />
     </View>
   );
 };

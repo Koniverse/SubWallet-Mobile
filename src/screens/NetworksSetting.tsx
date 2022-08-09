@@ -1,37 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import { FlatList, ListRenderItemInfo, Text } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
-import { Warning } from 'components/Warning';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { SelectScreen } from 'components/SelectScreen';
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import i18n from 'utils/i18n/i18n';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useNavigation } from '@react-navigation/native';
 
-interface Props {
-  modalVisible: boolean;
-  onPressBack: () => void;
-  onChangeModalVisible: () => void;
-}
+interface Props {}
 
 let networkKeys: Array<string> | undefined;
 
-export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisible }: Props) => {
+export const NetworksSetting = ({}: Props) => {
+  const navigation = useNavigation();
   const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
   const [currentNetworkMap, setCurrentNetworkMap] = useState<Record<string, NetworkJson>>({});
   const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>([]);
   const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>({});
   const [needUpdateList, setNeedUpdateList] = useState(true);
-
-  useEffect(() => {
-    if (!modalVisible || !networkKeys) {
-      setNeedUpdateList(true);
-    }
-  }, [modalVisible]);
 
   useEffect(() => {
     const newNetworkMap = {};
@@ -99,7 +89,7 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />;
+    return <Text>{i18n.warningMessage.noNetworkAvailable}</Text>;
   };
 
   useEffect(() => {
@@ -111,21 +101,19 @@ export const NetworksSetting = ({ onPressBack, modalVisible, onChangeModalVisibl
   }, [currentNetworkMap, searchString]);
 
   return (
-    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
-      <SelectScreen
-        onPressBack={onPressBack}
-        title={'Network Setting'}
-        searchString={searchString}
-        onChangeSearchText={setSearchString}>
-        <FlatList
-          style={{ ...ScrollViewStyle }}
-          keyboardShouldPersistTaps={'handled'}
-          data={filteredNetworkList}
-          renderItem={renderItem}
-          ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => `${item.key}-${item.chain}`}
-        />
-      </SelectScreen>
-    </SubWalletFullSizeModal>
+    <SelectScreen
+      onPressBack={() => navigation.goBack()}
+      title={'Network Setting'}
+      searchString={searchString}
+      onChangeSearchText={setSearchString}>
+      <FlatList
+        style={{ ...ScrollViewStyle }}
+        keyboardShouldPersistTaps={'handled'}
+        data={filteredNetworkList}
+        renderItem={renderItem}
+        ListEmptyComponent={renderListEmptyComponent}
+        keyExtractor={item => `${item.key}-${item.chain}`}
+      />
+    </SelectScreen>
   );
 };
