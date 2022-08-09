@@ -14,13 +14,16 @@ interface Props {}
 
 let networkKeys: Array<string> | undefined;
 
+let cachePendingNetworkMap = {};
+let cacheFilterNetworkList: Array<NetworkJson> = [];
+
 export const NetworksSetting = ({}: Props) => {
   const navigation = useNavigation();
   const { networkMap } = useSelector((state: RootState) => state);
   const [searchString, setSearchString] = useState('');
   const [currentNetworkMap, setCurrentNetworkMap] = useState<Record<string, NetworkJson>>({});
-  const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>([]);
-  const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>({});
+  const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>(cacheFilterNetworkList);
+  const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
   const [needUpdateList, setNeedUpdateList] = useState(true);
 
   useEffect(() => {
@@ -54,6 +57,10 @@ export const NetworksSetting = ({}: Props) => {
         setPendingNetworkMap({ ...pendingNetworkMap });
       }
     });
+
+    return () => {
+      cachePendingNetworkMap = pendingNetworkMap;
+    };
   }, [needUpdateList, networkMap, pendingNetworkMap]);
 
   const onToggleItem = (item: NetworkJson) => {
@@ -93,11 +100,10 @@ export const NetworksSetting = ({}: Props) => {
   };
 
   useEffect(() => {
-    setFilteredNetworkList(
-      Object.values(currentNetworkMap).filter(network =>
-        network.chain.toLowerCase().includes(searchString.toLowerCase()),
-      ),
+    cacheFilterNetworkList = Object.values(currentNetworkMap).filter(network =>
+      network.chain.toLowerCase().includes(searchString.toLowerCase()),
     );
+    setFilteredNetworkList(cacheFilterNetworkList);
   }, [currentNetworkMap, searchString]);
 
   return (
