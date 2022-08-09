@@ -18,7 +18,7 @@ import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props extends SelectionProviderProps {
-  style?: object;
+  style?: StyleProp<any>;
 }
 
 type ModalActionType<T> = {

@@ -28,7 +28,7 @@ export interface SelectionProviderProps {
   selectionProvider?: SelectionProviderType;
 }
 
-export interface BalanceContainerType {
+export interface BalanceBlockType {
   balanceValue: BigN;
   amountToUsd?: BigN;
   isShowBalanceToUsd?: boolean;
@@ -80,6 +80,7 @@ export interface TokenBalanceItemType {
 
 export interface UseViewStepType {
   currentView: string;
+  views: string[];
   toNextView: (view: string) => void;
   toBack: () => void;
 }

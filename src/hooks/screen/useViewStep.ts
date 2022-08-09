@@ -25,6 +25,7 @@ export default function useViewStep(initView: string): UseViewStepType {
 
   return {
     currentView: views[views.length - 1],
+    views,
     toNextView,
     toBack,
   };

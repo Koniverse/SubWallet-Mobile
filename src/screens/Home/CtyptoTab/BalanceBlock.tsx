@@ -3,7 +3,7 @@ import { BalancesVisibility } from 'components/BalancesVisibility';
 import { BalanceToUsd } from 'components/BalanceToUsd';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BalanceContainerType } from 'types/ui-types';
+import { BalanceBlockType } from 'types/ui-types';
 
 export const BalanceBlock = ({
   balanceValue,
@@ -11,7 +11,7 @@ export const BalanceBlock = ({
   isShowBalanceToUsd = false,
   startWithSymbol = true,
   symbol = '$',
-}: BalanceContainerType) => {
+}: BalanceBlockType) => {
   const {
     settings: { isShowBalance },
   } = useSelector((state: RootState) => state);
