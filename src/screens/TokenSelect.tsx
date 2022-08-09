@@ -59,6 +59,7 @@ export const TokenSelect = ({
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
+        style={{ paddingTop: 0 }}
         onPressBack={onPressBack || (() => {})}
         title={'Select Token'}
         searchString={searchString}

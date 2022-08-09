@@ -156,7 +156,14 @@ const ContentComponent = ({ items, registryMap, isLoading }: ContentProps) => {
         keyboardShouldPersistTaps={'handled'}
         data={items}
         renderItem={renderItem}
-        refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark2 }}
+            tintColor={ColorMap.light}
+            refreshing={isRefresh}
+            onRefresh={refresh}
+          />
+        }
         ListEmptyComponent={<EmptyList />}
       />
 

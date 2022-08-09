@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleProp, TouchableOpacity } from 'react-native';
 import Text from '../components/Text';
 import { BalanceVal } from 'components/BalanceVal';
@@ -28,17 +28,18 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Pr
   const {
     settings: { isShowBalance },
   } = useSelector((state: RootState) => state);
+  const [isDisabled, setDisabled] = useState<boolean>(false);
 
-  const _toggleBalances = () => {
-    toggleBalancesVisibility(v => {
+  const _toggleBalances = async () => {
+    setDisabled(true);
+    await toggleBalancesVisibility(v => {
       console.log('Balances visible:', v.isShowBalance);
-    }).catch(e => {
-      console.error('There is a problem when set Current Account', e);
     });
+    setDisabled(false);
   };
 
   return (
-    <TouchableOpacity onPress={() => _toggleBalances()} style={wrapperStyle}>
+    <TouchableOpacity onPress={() => _toggleBalances()} style={wrapperStyle} disabled={isDisabled}>
       {isShowBalance ? (
         <BalanceVal value={value} startWithSymbol={startWithSymbol} symbol={symbol} />
       ) : (

@@ -44,7 +44,14 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMap, ac
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}
       renderItem={renderItem}
-      refreshControl={<RefreshControl tintColor={ColorMap.light} refreshing={isRefresh} onRefresh={refresh} />}
+      refreshControl={
+        <RefreshControl
+          style={{ backgroundColor: ColorMap.dark2 }}
+          tintColor={ColorMap.light}
+          refreshing={isRefresh}
+          onRefresh={refresh}
+        />
+      }
     />
   );
 };

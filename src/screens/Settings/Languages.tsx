@@ -56,6 +56,7 @@ export const Languages = () => {
 
   return (
     <SelectScreen
+      style={{ paddingTop: 0 }}
       title={'Language'}
       searchString={searchString}
       onChangeSearchText={setSearchString}
