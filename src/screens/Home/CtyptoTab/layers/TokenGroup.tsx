@@ -188,6 +188,7 @@ const TokenGroupLayer = ({
 
         <Tabs.Container
           lazy
+          containerStyle={{ backgroundColor: ColorMap.dark2 }}
           allowHeaderOverscroll={true}
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>

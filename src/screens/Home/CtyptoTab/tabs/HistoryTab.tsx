@@ -142,7 +142,7 @@ const EmptyList = () => {
   );
 };
 
-const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh }: ContentProps) => {
+const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh, refreshTabId }: ContentProps) => {
   const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
@@ -162,7 +162,7 @@ const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh }:
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
-            style={{ backgroundColor: ColorMap.dark2 }}
+            style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'two' ? 1 : 0 }}
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => refresh('two')}
