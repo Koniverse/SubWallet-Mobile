@@ -4,7 +4,7 @@ import { NFTTab } from './NFTTab';
 import { CrowdloansTab } from './CrowdloansTab';
 import { StakingTab } from './StakingTab';
 
-import { TouchableHighlight } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoTab } from 'screens/Home/CtyptoTab';
@@ -57,9 +57,9 @@ export const Home = () => {
           // @ts-ignore
           props.style = [[...props.style], customStyle];
           if (!props.accessibilityState?.selected) {
-            return <TouchableHighlight {...props} onPress={() => onPressComingSoonTab()} />;
+            return <TouchableOpacity {...props} activeOpacity={1} onPress={() => onPressComingSoonTab()} />;
           } else {
-            return <TouchableHighlight {...props} />;
+            return <TouchableOpacity {...props} activeOpacity={1} />;
           }
         },
         tabBarIconStyle: {
