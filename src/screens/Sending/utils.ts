@@ -1,6 +1,7 @@
 import { ChainRegistry, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { BalanceFormatType } from 'types/ui-types';
 import { BN, BN_HUNDRED } from '@polkadot/util';
+import { getTokenDisplayName } from 'utils/chainBalances';
 
 export function getBalanceFormat(
   networkKey: string,
@@ -71,7 +72,7 @@ export function getAuthTransactionFeeInfo(
   let symbol;
 
   if (feeSymbol) {
-    symbol = tokenMap[feeSymbol].symbolAlt || feeSymbol;
+    symbol = getTokenDisplayName(feeSymbol, tokenMap[feeSymbol].symbolAlt);
   } else {
     symbol = mainTokenInfo.symbol;
   }

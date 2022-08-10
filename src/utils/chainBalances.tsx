@@ -18,6 +18,15 @@ type BalanceWithDecimalsProps = {
   decimals: number;
 };
 
+// all keys must be lowercase
+export const tokenDisplayNameMap: Record<string, string> = {
+  ausd: 'aUSD',
+};
+
+export function getTokenDisplayName(symbol: string, symbolAlt?: string): string {
+  return symbolAlt || tokenDisplayNameMap[symbol.toLowerCase()] || symbol;
+}
+
 const getBalanceWithDecimals = ({ balance, decimals }: BalanceWithDecimalsProps) => {
   return new BigN(balance).div(BN_TEN.pow(decimals));
 };
@@ -65,7 +74,7 @@ export const parseBalancesInfo = (
   const { balanceItem, networkKey, tokenDecimals, tokenSymbols } = balanceInfo;
   const decimals = tokenDecimals && !isEmptyArray(tokenDecimals) ? tokenDecimals[0] : 0;
   const symbol = tokenSymbols && !isEmptyArray(tokenSymbols) ? tokenSymbols[0] : '';
-  const displayedSymbol = tokenMap[symbol]?.symbolAlt || symbol;
+  const displayedSymbol = getTokenDisplayName(symbol, tokenMap[symbol]?.symbolAlt);
   const isTestnet = networkJson.groups.includes('TEST_NET');
   const tbKey = getTokenBalanceKey(networkKey, symbol, isTestnet);
 
@@ -131,7 +140,7 @@ export const parseBalancesInfo = (
         key: token,
         label: '',
         symbol: token,
-        displayedSymbol: tokenMap[token]?.symbolAlt || token,
+        displayedSymbol: getTokenDisplayName(token, tokenMap[token]?.symbolAlt),
         convertedBalanceValue,
         balanceValue,
       });

@@ -26,11 +26,6 @@ export const accountAllRecoded: Recoded = {
   isEthereum: false,
 };
 
-// all keys must be lowercase
-export const tokenDisplayNameMap: Record<string, string> = {
-  ausd: 'aUSD',
-};
-
 export function getTokenNetworkKeyMap(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
 
