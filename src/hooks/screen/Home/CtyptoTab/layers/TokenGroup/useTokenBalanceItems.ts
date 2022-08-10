@@ -26,7 +26,7 @@ function getGroupListItems(
     const newItem: TokenBalanceItemType = {
       priceValue: tokenBalanceKeyPriceMap[tgKey] || 0,
       id: tgKey,
-      logoKey: tokenNetworkKeyMap[symbol] ? tokenNetworkKeyMap[symbol][0] || symbol : symbol,
+      logoKey: tokenNetworkKeyMap[tgKey] ? tokenNetworkKeyMap[tgKey][0] || symbol : symbol,
       networkKey: 'default',
       balanceValue: new BigN(0),
       convertedBalanceValue: new BigN(0),

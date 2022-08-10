@@ -1,7 +1,7 @@
 import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getTokenBalanceKey, getTokenGroupKey } from 'utils/index';
+import { getTokenBalanceKey, getTokenGroupKey, tokenNetworkKeyMap } from 'utils/index';
 import { useMemo } from 'react';
 
 const KNOW_MAIN_KEYS = [getTokenGroupKey('DOT', true), getTokenGroupKey('KSM', true), getTokenGroupKey('STELLA')];
@@ -15,6 +15,42 @@ function updateResult(token: string, isTestnet: string, result: Record<string, s
   } else {
     result[mKey] = [tbKey];
   }
+}
+
+function resortResult(result: Record<string, string[]>) {
+  const tgKeys = Object.keys(result);
+
+  tgKeys.forEach(tgKey => {
+    if (tokenNetworkKeyMap[tgKey]) {
+      const [tgToken, tgIsTestNet] = tgKey.split('|');
+      const prioritizedTbKeys: string[] = [];
+      const restTbKeys: string[] = [];
+
+      result[tgKey].forEach(tbKey => {
+        const [networkKey] = tbKey.split('|');
+
+        if (tokenNetworkKeyMap[tgKey][0] === networkKey) {
+          prioritizedTbKeys.push(tbKey);
+        } else {
+          restTbKeys.push(tbKey);
+        }
+      });
+
+      prioritizedTbKeys.sort((a, b) => {
+        const [, aToken, aIsTestNet] = a.split('|');
+        if (aToken.toLowerCase() === tgToken && aIsTestNet === tgIsTestNet) {
+          return -1;
+        }
+
+        return a.localeCompare(b);
+      });
+      restTbKeys.sort();
+
+      result[tgKey] = [...prioritizedTbKeys, ...restTbKeys];
+    } else {
+      result[tgKey].sort();
+    }
+  });
 }
 
 function isSameGroup(currentToken: string, comparedToken: string, isSameNetworkType: boolean): boolean {
@@ -122,6 +158,8 @@ function getTokenGroup(
 
     allocatedKeys.push(k);
   });
+
+  resortResult(result);
 
   if (!showedNetworks) {
     return result;

@@ -38,10 +38,12 @@ export function getTokenNetworkKeyMap(): Record<string, string[]> {
 
     token = token.toLowerCase();
 
-    if (!result[token]) {
-      result[token] = [networkKey];
+    const tgKey = getTokenGroupKey(token, PREDEFINED_NETWORKS[networkKey].groups.includes('TEST_NET'));
+
+    if (!result[tgKey]) {
+      result[tgKey] = [networkKey];
     } else {
-      result[token].push(networkKey);
+      result[tgKey].push(networkKey);
     }
   });
 
@@ -51,7 +53,7 @@ export function getTokenNetworkKeyMap(): Record<string, string[]> {
 // all keys must be lowercase
 export const tokenNetworkKeyMap: Record<string, string[]> = Object.assign(getTokenNetworkKeyMap(), {
   intr: ['interlay'],
-  betadev: ['moonbase'],
+  'betadev|test': ['moonbase'],
   ibtc: ['interlay'],
 });
 
