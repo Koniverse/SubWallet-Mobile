@@ -183,6 +183,11 @@ export function sendMessage<TMessageType extends MessageTypes>(
   });
 }
 
+export async function hotReload() {
+  // @ts-ignore
+  return sendMessage('mobile:hotReload', {});
+}
+
 export async function editAccount(address: string, name: string): Promise<boolean> {
   return sendMessage('pri(accounts.edit)', { address, name });
 }
