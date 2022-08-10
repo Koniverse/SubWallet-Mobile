@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {StyleProp, TextInput, View} from 'react-native';
+import { StyleProp, TextInput, View } from 'react-native';
 import { Search } from 'components/Search';
 import { sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -15,7 +15,15 @@ interface Props {
   style?: StyleProp<any>;
 }
 
-export const SelectScreen = ({ children, title, searchString, onChangeSearchText, onPressBack, autoFocus = true, style }: Props) => {
+export const SelectScreen = ({
+  children,
+  title,
+  searchString,
+  onChangeSearchText,
+  onPressBack,
+  autoFocus = true,
+  style,
+}: Props) => {
   const searchRef = useRef<TextInput>(null);
   useEffect(() => {
     setTimeout(() => {
@@ -23,7 +31,7 @@ export const SelectScreen = ({ children, title, searchString, onChangeSearchText
         searchRef.current.focus();
       }
     }, HIDE_MODAL_DURATION);
-  }, [searchRef]);
+  }, [autoFocus, searchRef]);
 
   const _onPressBack = () => {
     searchRef && searchRef.current && searchRef.current.blur();
@@ -38,7 +46,7 @@ export const SelectScreen = ({ children, title, searchString, onChangeSearchText
       isShowPlaceHolder={false}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
-          autoFocus={autoFocus}
+          autoFocus={false}
           onClearSearchString={() => onChangeSearchText('')}
           onSearch={onChangeSearchText}
           searchText={searchString}
