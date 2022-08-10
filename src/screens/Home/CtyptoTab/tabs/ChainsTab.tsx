@@ -3,7 +3,6 @@ import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { ChainBalance } from 'components/ChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
-import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';

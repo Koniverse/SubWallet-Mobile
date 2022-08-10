@@ -4,7 +4,7 @@ import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { MagnifyingGlass } from 'phosphor-react-native';
-import { tokenDisplayNameMap, tokenNetworkKeyMap } from 'utils/index';
+import { tokenDisplayNameMap } from 'utils/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
 import * as Tabs from 'react-native-collapsible-tab-view';
@@ -18,6 +18,7 @@ import { ListRenderItemInfo } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import { BN_ZERO } from 'utils/chainBalances';
+import useTokenBalanceItems from 'hooks/screen/Home/CtyptoTab/layers/TokenGroup/useTokenBalanceItems';
 
 interface Prop {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -31,89 +32,6 @@ interface Prop {
   networkBalanceMap: Record<string, BalanceInfo>;
   handleChangeTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
   totalBalanceValue: BigN;
-}
-
-function getGroupListItems(
-  tokenGroupMap: Record<string, string[]>,
-  tokenBalanceMap: Record<string, TokenBalanceItemType>,
-  tokenBalanceKeyPriceMap: Record<string, number>,
-): TokenBalanceItemType[] {
-  const result: TokenBalanceItemType[] = [];
-  const tokenGroupKeys = Object.keys(tokenGroupMap).sort();
-
-  tokenGroupKeys.forEach(tgKey => {
-    const [symbol, isTestnet] = tgKey.split('|');
-    const newItem: TokenBalanceItemType = {
-      priceValue: tokenBalanceKeyPriceMap[tgKey] || 0,
-      id: tgKey,
-      logoKey: tokenNetworkKeyMap[symbol] ? tokenNetworkKeyMap[symbol][0] || symbol : symbol,
-      networkKey: 'default',
-      balanceValue: new BigN(0),
-      convertedBalanceValue: new BigN(0),
-      networkDisplayName: isTestnet ? 'Testnet' : undefined,
-      symbol,
-      displayedSymbol: tokenDisplayNameMap[symbol] || symbol.toUpperCase(),
-      isReady: true,
-      isTestnet: !!isTestnet,
-    };
-
-    tokenGroupMap[tgKey].forEach(tbKey => {
-      const tbItem = tokenBalanceMap[tbKey];
-      if (tbItem && tbItem.isReady) {
-        newItem.balanceValue = newItem.balanceValue.plus(tbItem.balanceValue);
-        newItem.convertedBalanceValue = newItem.convertedBalanceValue.plus(tbItem.convertedBalanceValue);
-      }
-    });
-
-    result.push(newItem);
-  });
-
-  return result;
-}
-
-function getGroupDetailItems(
-  tbKeys: string[],
-  tokenBalanceMap: Record<string, TokenBalanceItemType>,
-  tokenBalanceKeyPriceMap: Record<string, number>,
-): TokenBalanceItemType[] {
-  return tbKeys.map(tbKey => {
-    if (tokenBalanceMap[tbKey]) {
-      return tokenBalanceMap[tbKey];
-    }
-
-    const [networkKey, symbol, isTestnet] = tbKey.split('|');
-
-    return {
-      id: tbKey,
-      logoKey: symbol,
-      networkKey,
-      balanceValue: new BigN(0),
-      convertedBalanceValue: new BigN(0),
-      symbol,
-      displayedSymbol: symbol,
-      isReady: false,
-      isTestnet: !!isTestnet,
-      priceValue: tokenBalanceKeyPriceMap[tbKey] || 0,
-    };
-  });
-}
-
-function getTokenBalanceItems(
-  isGroupDetail: boolean,
-  currentTgKey: string,
-  tokenGroupMap: Record<string, string[]>,
-  tokenBalanceMap: Record<string, TokenBalanceItemType>,
-  tokenBalanceKeyPriceMap: Record<string, number>,
-): TokenBalanceItemType[] {
-  if (!isGroupDetail) {
-    return getGroupListItems(tokenGroupMap, tokenBalanceMap, tokenBalanceKeyPriceMap);
-  }
-
-  if (currentTgKey && tokenGroupMap[currentTgKey]) {
-    return getGroupDetailItems(tokenGroupMap[currentTgKey], tokenBalanceMap, tokenBalanceKeyPriceMap);
-  }
-
-  return [];
 }
 
 function getTokenGroupDisplayName(tgKey: string) {
@@ -147,6 +65,38 @@ function getBalanceValue(
   return BN_ZERO;
 }
 
+const prioritizedNetworkKeys = ['kusama', 'polkadot'];
+
+function getChainTabsNetworkKeys(
+  currentTgKey: string,
+  tokenGroupMap: Record<string, string[]>,
+  showedNetworks: string[],
+): string[] {
+  if (!currentTgKey) {
+    return showedNetworks;
+  }
+
+  const networkKeys: string[] = [];
+
+  tokenGroupMap[currentTgKey].forEach(tbKey => {
+    const [networkKey] = tbKey.split('|');
+
+    if (!networkKeys.includes(networkKey)) {
+      networkKeys.push(networkKey);
+    }
+  });
+
+  const result: string[] = networkKeys.filter(k => !prioritizedNetworkKeys.includes(k)).sort();
+
+  prioritizedNetworkKeys.forEach(pk => {
+    if (networkKeys.includes(pk)) {
+      result.unshift(pk);
+    }
+  });
+
+  return result;
+}
+
 const TokenGroupLayer = ({
   navigation,
   onPressSearchButton,
@@ -166,13 +116,14 @@ const TokenGroupLayer = ({
     setCurrentTgKey('');
     setGroupDetail(false);
   };
-  const tokenBalanceItems = getTokenBalanceItems(
+  const tokenBalanceItems = useTokenBalanceItems(
     isGroupDetail,
     currentTgKey,
     tokenGroupMap,
     tokenBalanceMap,
     tokenBalanceKeyPriceMap,
   );
+  const chainTabsNetworkKeys = getChainTabsNetworkKeys(currentTgKey, tokenGroupMap, showedNetworks);
 
   const onPressTokenItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
     if (isGroupDetail) {
@@ -225,7 +176,7 @@ const TokenGroupLayer = ({
           <Tabs.Tab name={'two'} label={'Chain'}>
             <ChainsTab
               onPressChainItem={onPressChainItem}
-              networkKeys={showedNetworks}
+              networkKeys={chainTabsNetworkKeys}
               networkBalanceMap={networkBalanceMap}
               accountInfoByNetworkMap={accountInfoByNetworkMap}
             />
