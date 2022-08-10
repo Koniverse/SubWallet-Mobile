@@ -10,7 +10,7 @@ import {
   NetworkJson,
   TokenInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { BN_ZERO, parseBalancesInfo } from 'utils/chainBalances';
+import { BN_ZERO, getTokenDisplayName, parseBalancesInfo } from 'utils/chainBalances';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { getTokenBalanceKey } from 'utils/index';
 import { useMemo } from 'react';
@@ -76,7 +76,7 @@ function getAccountBalance(
 
     if (['genshiro_testnet', 'genshiro', 'equilibrium_parachain'].includes(networkKey)) {
       tokenDecimals = [mainTokenInfo.decimals];
-      tokenSymbols = [mainTokenInfo.symbolAlt || mainTokenInfo.symbol];
+      tokenSymbols = [getTokenDisplayName(mainTokenInfo.symbol, mainTokenInfo.symbolAlt)];
     } else {
       tokenDecimals = registry.chainDecimals;
       tokenSymbols = getTokenSymbols(registry);

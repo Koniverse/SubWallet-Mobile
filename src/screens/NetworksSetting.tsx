@@ -109,6 +109,7 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <SelectScreen
+      autoFocus={false}
       onPressBack={() => navigation.goBack()}
       title={'Network Setting'}
       searchString={searchString}

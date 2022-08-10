@@ -1,7 +1,8 @@
 import { TokenBalanceItemType } from 'types/ui-types';
-import { tokenDisplayNameMap, tokenNetworkKeyMap } from 'utils/index';
+import { tokenNetworkKeyMap } from 'utils/index';
 import BigN from 'bignumber.js';
 import { useMemo } from 'react';
+import { getTokenDisplayName } from 'utils/chainBalances';
 
 const prioritizedTokenGroupKeys = ['ksm|test', 'ksm', 'dot|test', 'dot'];
 
@@ -25,13 +26,13 @@ function getGroupListItems(
     const newItem: TokenBalanceItemType = {
       priceValue: tokenBalanceKeyPriceMap[tgKey] || 0,
       id: tgKey,
-      logoKey: tokenNetworkKeyMap[symbol] ? tokenNetworkKeyMap[symbol][0] || symbol : symbol,
+      logoKey: tokenNetworkKeyMap[tgKey] ? tokenNetworkKeyMap[tgKey][0] || symbol : symbol,
       networkKey: 'default',
       balanceValue: new BigN(0),
       convertedBalanceValue: new BigN(0),
       networkDisplayName: isTestnet ? 'Testnet' : undefined,
       symbol,
-      displayedSymbol: tokenDisplayNameMap[symbol] || symbol.toUpperCase(),
+      displayedSymbol: getTokenDisplayName(symbol.toUpperCase()),
       isReady: true,
       isTestnet: !!isTestnet,
     };

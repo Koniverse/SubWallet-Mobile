@@ -34,12 +34,20 @@ import {
   WIKI_URL,
 } from '../../constant';
 import { useToast } from 'react-native-toast-notifications';
+import VersionNumber from 'react-native-version-number';
 
 const settingTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   color: ColorMap.disabled,
   ...FontMedium,
   paddingVertical: 12,
+};
+
+const versionAppStyle: StyleProp<any> = {
+  textAlign: 'center',
+  color: ColorMap.light,
+  ...FontMedium,
+  ...sharedStyles.mainText,
 };
 
 type settingItemType = {
@@ -163,83 +171,86 @@ export const Settings = () => {
 
   return (
     <SubScreenContainer title={i18n.settings.settings} navigation={navigation}>
-      <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 45 }}>
-        <ActionItem
-          icon={ShieldCheck}
-          showIcon={false}
-          title={'Accounts'}
-          subTitle={currentAccount ? currentAccount.name : ''}
-          hasRightArrow
-          paddingLeft={16}
-          style={{ marginBottom: 16 }}
-          onPress={() => navigation.navigate('AccountsScreen')}
-        />
-
-        {settingList[0].map(setting => (
+      <>
+        <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 24 }}>
           <ActionItem
-            key={setting.title}
-            style={{ marginBottom: 4 }}
-            icon={setting.icon}
-            title={setting.title}
-            hasRightArrow={setting.hasRightArrow}
-            onPress={setting.onPress}
-            disabled={setting.disabled}
-            color={setting.disabled ? ColorMap.disabledTextColor : ColorMap.light}
+            icon={ShieldCheck}
+            showIcon={false}
+            title={'Accounts'}
+            subTitle={currentAccount ? currentAccount.name : ''}
+            hasRightArrow
+            paddingLeft={16}
+            style={{ marginBottom: 16 }}
+            onPress={() => navigation.navigate('AccountsScreen')}
           />
-        ))}
 
-        <Text style={settingTitleStyle}>Networks & Assets</Text>
+          {settingList[0].map(setting => (
+            <ActionItem
+              key={setting.title}
+              style={{ marginBottom: 4 }}
+              icon={setting.icon}
+              title={setting.title}
+              hasRightArrow={setting.hasRightArrow}
+              onPress={setting.onPress}
+              disabled={setting.disabled}
+              color={setting.disabled ? ColorMap.disabledTextColor : ColorMap.light}
+            />
+          ))}
 
-        {settingList[1].map(setting => (
-          <ActionItem
-            key={setting.title}
-            style={{ marginBottom: 4 }}
-            icon={setting.icon}
-            title={setting.title}
-            hasRightArrow={setting.hasRightArrow}
-            onPress={setting?.onPress}
-          />
-        ))}
+          <Text style={settingTitleStyle}>Networks & Assets</Text>
 
-        <Text style={settingTitleStyle}>Community & Support</Text>
+          {settingList[1].map(setting => (
+            <ActionItem
+              key={setting.title}
+              style={{ marginBottom: 4 }}
+              icon={setting.icon}
+              title={setting.title}
+              hasRightArrow={setting.hasRightArrow}
+              onPress={setting?.onPress}
+            />
+          ))}
 
-        {settingList[2].map(setting => (
-          <ActionItem
-            key={setting.title}
-            style={{ marginBottom: 4 }}
-            icon={setting.icon}
-            title={setting.title}
-            hasRightArrow={setting.hasRightArrow}
-            onPress={setting.onPress}
-          />
-        ))}
+          <Text style={settingTitleStyle}>Community & Support</Text>
 
-        <Text style={settingTitleStyle}>About</Text>
+          {settingList[2].map(setting => (
+            <ActionItem
+              key={setting.title}
+              style={{ marginBottom: 4 }}
+              icon={setting.icon}
+              title={setting.title}
+              hasRightArrow={setting.hasRightArrow}
+              onPress={setting.onPress}
+            />
+          ))}
 
-        {settingList[3].map(setting => (
-          <ActionItem
-            key={setting.title}
-            style={{ marginBottom: 4 }}
-            icon={setting.icon}
-            title={setting.title}
-            hasRightArrow={setting.hasRightArrow}
-            onPress={setting.onPress}
-          />
-        ))}
+          <Text style={settingTitleStyle}>About</Text>
 
-        {settingList[4].map(setting => (
-          <ActionItem
-            key={setting.title}
-            style={{ marginTop: 23 }}
-            icon={setting.icon}
-            title={setting.title}
-            hasRightArrow={setting.hasRightArrow}
-            onPress={setting.onPress}
-            disabled={setting.disabled}
-            color={setting.disabled ? ColorMap.disabledTextColor : ColorMap.light}
-          />
-        ))}
-      </ScrollView>
+          {settingList[3].map(setting => (
+            <ActionItem
+              key={setting.title}
+              style={{ marginBottom: 4 }}
+              icon={setting.icon}
+              title={setting.title}
+              hasRightArrow={setting.hasRightArrow}
+              onPress={setting.onPress}
+            />
+          ))}
+
+          {settingList[4].map(setting => (
+            <ActionItem
+              key={setting.title}
+              style={{ marginTop: 23 }}
+              icon={setting.icon}
+              title={setting.title}
+              hasRightArrow={setting.hasRightArrow}
+              onPress={setting.onPress}
+              disabled={setting.disabled}
+              color={setting.disabled ? ColorMap.disabledTextColor : ColorMap.light}
+            />
+          ))}
+        </ScrollView>
+        <Text style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}`}</Text>
+      </>
     </SubScreenContainer>
   );
 };

@@ -15,11 +15,11 @@ interface Props {
   style?: StyleProp<any>;
 }
 
-export const SelectScreen = ({ children, title, searchString, onChangeSearchText, onPressBack, autoFocus, style }: Props) => {
+export const SelectScreen = ({ children, title, searchString, onChangeSearchText, onPressBack, autoFocus = true, style }: Props) => {
   const searchRef = useRef<TextInput>(null);
   useEffect(() => {
     setTimeout(() => {
-      if (searchRef && searchRef.current) {
+      if (autoFocus && searchRef && searchRef.current) {
         searchRef.current.focus();
       }
     }, HIDE_MODAL_DURATION);

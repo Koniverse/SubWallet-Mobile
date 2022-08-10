@@ -3,6 +3,8 @@ import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import React from 'react';
 
+export const alwaysShowedKey = ['dot', 'ksm', 'polkadot|DOT', 'kusama|KSM'];
+
 export const renderTabBar = (props: Tabs.MaterialTabBarProps<any>) => (
   <Tabs.MaterialTabBar
     {...props}

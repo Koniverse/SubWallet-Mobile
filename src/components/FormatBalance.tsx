@@ -10,6 +10,7 @@ import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { getTokenDisplayName } from 'utils/chainBalances';
 
 interface Props {
   children?: React.ReactNode;
@@ -68,7 +69,7 @@ function applyFormat(
 ): React.ReactNode {
   const [prefix, postfix] = formatBalance(value, { decimals, forceUnit: '-', withSi: false }).split('.');
   const isShort = _isShort || (withSi && prefix.length >= K_LENGTH);
-  const unitPost = withCurrency ? symbolAlt || symbol : '';
+  const unitPost = withCurrency ? getTokenDisplayName(symbol, symbolAlt) : '';
 
   if (prefix.length > M_LENGTH) {
     const [major, rest] = formatBalance(value, { decimals, withUnit: false }).split('.');

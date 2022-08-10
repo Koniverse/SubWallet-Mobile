@@ -4,11 +4,10 @@ import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { MagnifyingGlass } from 'phosphor-react-native';
-import { tokenDisplayNameMap } from 'utils/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
+import { alwaysShowedKey, renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
 import { TokensTab } from 'screens/Home/CtyptoTab/tabs/TokensTab';
 import { ChainsTab } from 'screens/Home/CtyptoTab/tabs/ChainsTab';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
@@ -17,11 +16,12 @@ import { BalanceInfo } from '../../../../types';
 import { ListRenderItemInfo } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
-import { BN_ZERO } from 'utils/chainBalances';
+import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
 import useTokenBalanceItems from 'hooks/screen/Home/CtyptoTab/layers/TokenGroup/useTokenBalanceItems';
 import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
+  isShowZeroBalance?: boolean;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   onPressSearchButton: () => void;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
@@ -35,9 +35,11 @@ interface Prop {
   totalBalanceValue: BigN;
 }
 
+const prioritizedNetworkKeys = ['kusama', 'polkadot'];
+
 function getTokenGroupDisplayName(tgKey: string) {
   const [symbol] = tgKey.split('|');
-  return tokenDisplayNameMap[symbol] || symbol.toUpperCase();
+  return getTokenDisplayName(symbol.toUpperCase());
 }
 
 function getBalanceValue(
@@ -66,24 +68,25 @@ function getBalanceValue(
   return BN_ZERO;
 }
 
-const prioritizedNetworkKeys = ['kusama', 'polkadot'];
-
 function getChainTabsNetworkKeys(
-  currentTgKey: string,
-  tokenGroupMap: Record<string, string[]>,
+  isGroupDetail: boolean,
+  tokenBalanceItems: TokenBalanceItemType[],
   showedNetworks: string[],
+  isShowZeroBalance?: boolean,
 ): string[] {
-  if (!currentTgKey) {
+  if (!isGroupDetail) {
     return showedNetworks;
   }
 
   const networkKeys: string[] = [];
 
-  tokenGroupMap[currentTgKey].forEach(tbKey => {
-    const [networkKey] = tbKey.split('|');
+  tokenBalanceItems.forEach(item => {
+    if (!isShowZeroBalance && !alwaysShowedKey.includes(item.id) && BN_ZERO.eq(item.balanceValue)) {
+      return;
+    }
 
-    if (!networkKeys.includes(networkKey)) {
-      networkKeys.push(networkKey);
+    if (!networkKeys.includes(item.networkKey)) {
+      networkKeys.push(item.networkKey);
     }
   });
 
@@ -110,6 +113,7 @@ const TokenGroupLayer = ({
   networkBalanceMap,
   handleChangeTokenItem,
   totalBalanceValue,
+  isShowZeroBalance,
 }: Prop) => {
   const [isRefresh, refresh] = useRefresh();
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
@@ -126,7 +130,12 @@ const TokenGroupLayer = ({
     tokenBalanceMap,
     tokenBalanceKeyPriceMap,
   );
-  const chainTabsNetworkKeys = getChainTabsNetworkKeys(currentTgKey, tokenGroupMap, showedNetworks);
+  const chainTabsNetworkKeys = getChainTabsNetworkKeys(
+    isGroupDetail,
+    tokenBalanceItems,
+    showedNetworks,
+    isShowZeroBalance,
+  );
 
   const onPressTokenItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
     if (isGroupDetail) {
@@ -139,6 +148,10 @@ const TokenGroupLayer = ({
 
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];
+
+    if (!isShowZeroBalance && !alwaysShowedKey.includes(item.id) && BN_ZERO.eq(item.balanceValue)) {
+      return null;
+    }
 
     return <TokenChainBalance key={item.id} onPress={() => onPressTokenItem(item, info)} {...item} />;
   };
@@ -175,6 +188,7 @@ const TokenGroupLayer = ({
 
         <Tabs.Container
           lazy
+          containerStyle={{ backgroundColor: ColorMap.dark2 }}
           allowHeaderOverscroll={true}
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>
@@ -189,6 +203,7 @@ const TokenGroupLayer = ({
           </Tabs.Tab>
           <Tabs.Tab name={'two'} label={'Chain'}>
             <ChainsTab
+              isShowZeroBalance={isShowZeroBalance}
               onPressChainItem={onPressChainItem}
               networkKeys={chainTabsNetworkKeys}
               networkBalanceMap={networkBalanceMap}

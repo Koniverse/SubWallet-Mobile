@@ -1,11 +1,11 @@
 import { ScreenContainer } from 'components/ScreenContainer';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, getTokenBalanceKey, getTotalConvertedBalanceValue, toShort } from 'utils/index';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
+import { alwaysShowedKey, renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
 import { TokensTab } from 'screens/Home/CtyptoTab/tabs/TokensTab';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
@@ -19,6 +19,7 @@ import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
+  isShowZeroBalance?: boolean;
   tokenBalanceKeyPriceMap: Record<string, number>;
   networkBalanceMap: Record<string, BalanceInfo>;
   selectedNetworkInfo: AccountInfoByNetwork;
@@ -71,7 +72,7 @@ function getChainDetailItems(
   const items: TokenBalanceItemType[] = [];
 
   const symbol = selectedBalanceInfo?.symbol || 'Unit';
-  const networkDisplayName = selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '');
+  // const networkDisplayName = selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '');
   const isTestnet = selectedNetworkInfo.isTestnet;
   const itemId = getTokenBalanceKey(selectedNetworkInfo.networkKey, symbol, isTestnet);
 
@@ -79,7 +80,7 @@ function getChainDetailItems(
     id: itemId,
     logoKey: selectedNetworkInfo.networkKey,
     networkKey: selectedNetworkInfo.networkKey,
-    networkDisplayName,
+    // networkDisplayName,
     balanceValue: selectedBalanceInfo?.balanceValue || BN_ZERO,
     convertedBalanceValue: selectedBalanceInfo?.convertedBalanceValue || BN_ZERO,
     symbol,
@@ -95,7 +96,7 @@ function getChainDetailItems(
       items.push({
         id: cItemId,
         networkKey: selectedNetworkInfo.networkKey,
-        networkDisplayName,
+        // networkDisplayName,
         logoKey: item.symbol,
         balanceValue: item.balanceValue,
         convertedBalanceValue: item.convertedBalanceValue,
@@ -117,6 +118,7 @@ const ChainDetailLayer = ({
   selectedNetworkInfo,
   handleChangeTokenItem,
   onPressBack,
+  isShowZeroBalance,
 }: Prop) => {
   const tokenBalanceItems = getChainDetailItems(
     selectedNetworkInfo,
@@ -126,6 +128,10 @@ const ChainDetailLayer = ({
   const [isRefresh, refresh] = useRefresh();
   const [refreshTabId, setRefreshTabId] = useState<string>('');
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
+    if (!isShowZeroBalance && !alwaysShowedKey.includes(item.id) && BN_ZERO.eq(item.balanceValue)) {
+      return null;
+    }
+
     return (
       <TokenChainBalance
         key={item.id}
@@ -168,6 +174,7 @@ const ChainDetailLayer = ({
 
         <Tabs.Container
           lazy
+          containerStyle={{ backgroundColor: ColorMap.dark2 }}
           allowHeaderOverscroll={true}
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>
