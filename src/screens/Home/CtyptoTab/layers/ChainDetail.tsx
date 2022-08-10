@@ -1,5 +1,5 @@
 import { ScreenContainer } from 'components/ScreenContainer';
-import React from 'react';
+import React, {useState} from 'react';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { SlidersHorizontal } from 'phosphor-react-native';
@@ -16,6 +16,7 @@ import { HistoryTab } from 'screens/Home/CtyptoTab/tabs/HistoryTab';
 import { BN_ZERO } from 'utils/chainBalances';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
+import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
   tokenBalanceKeyPriceMap: Record<string, number>;
@@ -122,7 +123,8 @@ const ChainDetailLayer = ({
     networkBalanceMap[selectedNetworkInfo.networkKey],
     tokenBalanceKeyPriceMap,
   );
-
+  const [isRefresh, refresh] = useRefresh();
+  const [refreshTabId, setRefreshTabId] = useState<string>('');
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     return (
       <TokenChainBalance
@@ -142,6 +144,11 @@ const ChainDetailLayer = ({
         selectionProvider={{ selectedNetworkKey: selectedNetworkInfo.networkKey }}
       />
     );
+  };
+
+  const _onRefresh = (tabId: string) => {
+    setRefreshTabId(tabId);
+    refresh();
   };
 
   return (
@@ -165,10 +172,21 @@ const ChainDetailLayer = ({
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>
           <Tabs.Tab name={'one'} label={'Token'}>
-            <TokensTab items={tokenBalanceItems} renderItem={renderTokenTabItem} />
+            <TokensTab
+              items={tokenBalanceItems}
+              renderItem={renderTokenTabItem}
+              isRefresh={isRefresh}
+              refresh={_onRefresh}
+              refreshTabId={refreshTabId}
+            />
           </Tabs.Tab>
           <Tabs.Tab name={'two'} label={'History'}>
-            <HistoryTab networkKey={selectedNetworkInfo.networkKey} />
+            <HistoryTab
+              networkKey={selectedNetworkInfo.networkKey}
+              isRefresh={isRefresh}
+              refresh={_onRefresh}
+              refreshTabId={refreshTabId}
+            />
           </Tabs.Tab>
         </Tabs.Container>
       </>

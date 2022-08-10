@@ -19,6 +19,7 @@ import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import { BN_ZERO } from 'utils/chainBalances';
 import useTokenBalanceItems from 'hooks/screen/Home/CtyptoTab/layers/TokenGroup/useTokenBalanceItems';
+import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -110,8 +111,10 @@ const TokenGroupLayer = ({
   handleChangeTokenItem,
   totalBalanceValue,
 }: Prop) => {
+  const [isRefresh, refresh] = useRefresh();
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
   const [isGroupDetail, setGroupDetail] = useState<boolean>(false);
+  const [refreshTabId, setRefreshTabId] = useState<string>('');
   const onPressBack = () => {
     setCurrentTgKey('');
     setGroupDetail(false);
@@ -150,6 +153,11 @@ const TokenGroupLayer = ({
     );
   };
 
+  const _onRefresh = (tabId: string) => {
+    setRefreshTabId(tabId);
+    refresh();
+  };
+
   return (
     <ScreenContainer>
       <>
@@ -171,7 +179,13 @@ const TokenGroupLayer = ({
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>
           <Tabs.Tab name={'one'} label={'Token'}>
-            <TokensTab items={tokenBalanceItems} renderItem={renderTokenTabItem} />
+            <TokensTab
+              items={tokenBalanceItems}
+              renderItem={renderTokenTabItem}
+              isRefresh={isRefresh}
+              refresh={_onRefresh}
+              refreshTabId={refreshTabId}
+            />
           </Tabs.Tab>
           <Tabs.Tab name={'two'} label={'Chain'}>
             <ChainsTab
@@ -179,6 +193,9 @@ const TokenGroupLayer = ({
               networkKeys={chainTabsNetworkKeys}
               networkBalanceMap={networkBalanceMap}
               accountInfoByNetworkMap={accountInfoByNetworkMap}
+              isRefresh={isRefresh}
+              refresh={_onRefresh}
+              refreshTabId={refreshTabId}
             />
           </Tabs.Tab>
         </Tabs.Container>

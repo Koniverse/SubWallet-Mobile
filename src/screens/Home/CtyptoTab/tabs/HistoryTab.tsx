@@ -10,11 +10,13 @@ import { CollapsibleFlatListStyle, FontMedium, sharedStyles } from 'styles/share
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { useRefresh } from 'hooks/useRefresh';
 
 interface Props {
   networkKey: string;
   token?: string;
+  isRefresh: boolean;
+  refresh: (tabId: string) => void;
+  refreshTabId: string;
 }
 
 interface ContentProps {
@@ -22,6 +24,9 @@ interface ContentProps {
   items: TransactionHistoryItemType[];
   isLoading: boolean;
   token?: string;
+  isRefresh: boolean;
+  refresh: (tabId: string) => void;
+  refreshTabId: string;
 }
 
 const emptyListContainerStyle: StyleProp<any> = {
@@ -137,8 +142,7 @@ const EmptyList = () => {
   );
 };
 
-const ContentComponent = ({ items, registryMap, isLoading }: ContentProps) => {
-  const [isRefresh, refresh] = useRefresh();
+const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh }: ContentProps) => {
   const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
@@ -161,7 +165,7 @@ const ContentComponent = ({ items, registryMap, isLoading }: ContentProps) => {
             style={{ backgroundColor: ColorMap.dark2 }}
             tintColor={ColorMap.light}
             refreshing={isRefresh}
-            onRefresh={refresh}
+            onRefresh={() => refresh('two')}
           />
         }
         ListEmptyComponent={<EmptyList />}
@@ -172,7 +176,7 @@ const ContentComponent = ({ items, registryMap, isLoading }: ContentProps) => {
   );
 };
 
-export const HistoryTab = ({ networkKey, token }: Props) => {
+export const HistoryTab = ({ networkKey, token, refreshTabId, isRefresh, refresh }: Props) => {
   const {
     chainRegistry: registryMap,
     transactionHistory: { historyMap },
@@ -196,5 +200,14 @@ export const HistoryTab = ({ networkKey, token }: Props) => {
     };
   }, []);
 
-  return <ContentComponent isLoading={isLoading} items={readyItems} registryMap={registryMap} />;
+  return (
+    <ContentComponent
+      isLoading={isLoading}
+      items={readyItems}
+      registryMap={registryMap}
+      isRefresh={isRefresh}
+      refreshTabId={refreshTabId}
+      refresh={refresh}
+    />
+  );
 };

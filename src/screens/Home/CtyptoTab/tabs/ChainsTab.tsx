@@ -5,7 +5,6 @@ import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
-import { useRefresh } from 'hooks/useRefresh';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 
 interface Props {
@@ -13,10 +12,20 @@ interface Props {
   onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
   networkBalanceMap: Record<string, BalanceInfo>;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
+  isRefresh: boolean;
+  refresh: (tabId: string) => void;
+  refreshTabId: string;
 }
 
-export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMap, accountInfoByNetworkMap }: Props) => {
-  const [isRefresh, refresh] = useRefresh();
+export const ChainsTab = ({
+  networkKeys,
+  onPressChainItem,
+  networkBalanceMap,
+  accountInfoByNetworkMap,
+  isRefresh,
+  refresh,
+  refreshTabId,
+}: Props) => {
   const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMap[networkKey];
@@ -41,10 +50,10 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMap, ac
       renderItem={renderItem}
       refreshControl={
         <RefreshControl
-          style={{ backgroundColor: ColorMap.dark2 }}
+          style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'two' ? 1 : 0 }}
           tintColor={ColorMap.light}
           refreshing={isRefresh}
-          onRefresh={refresh}
+          onRefresh={() => refresh('two')}
         />
       }
     />

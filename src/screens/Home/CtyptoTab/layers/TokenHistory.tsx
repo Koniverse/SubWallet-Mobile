@@ -1,5 +1,5 @@
 import { ScreenContainer } from 'components/ScreenContainer';
-import React from 'react';
+import React, { useState } from 'react';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
 import { HistoryTab } from 'screens/Home/CtyptoTab/tabs/HistoryTab';
@@ -12,6 +12,7 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
+import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
   onPressBack: () => void;
@@ -89,6 +90,13 @@ const TokenHistoryLayer = ({
   selectedTokenSymbol,
   selectedTokenDisplayName,
 }: Prop) => {
+  const [isRefresh, refresh] = useRefresh();
+  const [refreshTabId, setRefreshTabId] = useState<string>('');
+
+  const _onRefresh = (tabId: string) => {
+    setRefreshTabId(tabId);
+    refresh();
+  };
   const renderTabContainerHeader = () => {
     const [balanceValue, amountToUsd] = getBalanceValue(tokenBalanceMap, selectedTokenSymbol, selectedNetworkInfo);
 
@@ -125,7 +133,13 @@ const TokenHistoryLayer = ({
           renderTabBar={() => <></>}
           renderHeader={renderTabContainerHeader}>
           <Tabs.Tab name={'one'} label={'History'}>
-            <HistoryTab networkKey={selectedNetworkInfo.networkKey} token={selectedTokenSymbol} />
+            <HistoryTab
+              networkKey={selectedNetworkInfo.networkKey}
+              token={selectedTokenSymbol}
+              isRefresh={isRefresh}
+              refresh={_onRefresh}
+              refreshTabId={refreshTabId}
+            />
           </Tabs.Tab>
         </Tabs.Container>
       </>
