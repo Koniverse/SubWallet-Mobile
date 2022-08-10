@@ -21,18 +21,14 @@ export const ChainsTab = ({ networkKeys, onPressChainItem, networkBalanceMap, ac
   const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMap[networkKey];
-    if (!balanceInfo || !balanceInfo.isReady) {
-      return <ChainBalanceSkeleton key={info.key} />;
-    } else {
-      return (
-        <ChainBalance
-          key={info.key}
-          accountInfo={info}
-          onPress={() => onPressChainItem(info, balanceInfo)}
-          balanceInfo={balanceInfo}
-        />
-      );
-    }
+    return (
+      <ChainBalance
+        key={info.key}
+        accountInfo={info}
+        onPress={() => onPressChainItem(info, balanceInfo)}
+        balanceInfo={balanceInfo}
+      />
+    );
   };
 
   return (

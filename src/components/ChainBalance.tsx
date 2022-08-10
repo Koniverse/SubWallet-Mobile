@@ -53,7 +53,7 @@ const chainBalanceSeparator: StyleProp<any> = {
 export const ChainBalance = ({ accountInfo, onPress, balanceInfo }: Props) => {
   const renderTokenValue = (curBalanceInfo: BalanceInfo) => {
     if (!curBalanceInfo) {
-      return;
+      return <BalanceVal balanceValTextStyle={textStyle} symbol={accountInfo.nativeToken || 'UNIT'} value={BN_ZERO} />;
     }
 
     if (!hasAnyChildTokenBalance(curBalanceInfo)) {

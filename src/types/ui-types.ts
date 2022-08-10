@@ -46,6 +46,7 @@ export type AccountInfoByNetwork = {
   address: string;
   formattedAddress: string;
   isTestnet: boolean;
+  nativeToken?: string;
 };
 
 export type AccountActionType = {

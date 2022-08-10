@@ -14,6 +14,7 @@ function getAccountInfoByNetwork(address: string, networkKey: string, network: N
     networkIconTheme: network.isEthereum ? 'ethereum' : network.icon || 'polkadot',
     formattedAddress: reformatAddress(address, network.ss58Format),
     isTestnet: network.groups.includes('TEST_NET'),
+    nativeToken: network.nativeToken,
   };
 }
 

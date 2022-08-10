@@ -5,7 +5,6 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
 import { TokenBalanceItemType } from 'types/ui-types';
-import { ChainBalanceSkeleton } from 'components/ChainBalanceSkeleton';
 import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
@@ -48,8 +47,8 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
-function geFormattedPrice(priceValue: number, isTestnet: boolean): string {
-  if (!isTestnet && priceValue) {
+function getFormattedPrice(priceValue: number, isTestnet: boolean, isReady: boolean): string {
+  if (!isTestnet && isReady && priceValue) {
     const priceArr = priceValue.toString().split('.');
     if (priceArr[1]) {
       priceArr[1] = priceArr[1].substring(0, 4);
@@ -75,11 +74,7 @@ export const TokenChainBalance = ({
   priceValue,
   ...wrapperProps
 }: Props) => {
-  const reformatPrice = geFormattedPrice(priceValue, isTestnet);
-
-  if (!isReady) {
-    return <ChainBalanceSkeleton />;
-  }
+  const reformatPrice = getFormattedPrice(priceValue, isTestnet, isReady);
 
   return (
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
@@ -105,12 +100,17 @@ export const TokenChainBalance = ({
         </View>
 
         <View style={chainBalancePart2}>
-          <BalanceVal balanceValTextStyle={textStyle} startWithSymbol symbol={''} value={balanceValue} />
+          <BalanceVal
+            balanceValTextStyle={textStyle}
+            startWithSymbol
+            symbol={''}
+            value={!isReady ? BN_ZERO : balanceValue}
+          />
           <BalanceVal
             balanceValTextStyle={subTextStyle}
             startWithSymbol
             symbol={'$'}
-            value={isTestnet ? BN_ZERO : convertedBalanceValue}
+            value={isTestnet || !isReady ? BN_ZERO : convertedBalanceValue}
           />
         </View>
       </View>
