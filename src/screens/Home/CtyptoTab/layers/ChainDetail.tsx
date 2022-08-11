@@ -5,9 +5,9 @@ import { ColorMap } from 'styles/color';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, getTokenBalanceKey, getTotalConvertedBalanceValue, toShort } from 'utils/index';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { alwaysShowedKey, renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
+import { isItemAllowedToShow, renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
 import { TokensTab } from 'screens/Home/CtyptoTab/tabs/TokensTab';
-import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
+import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
 import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
@@ -20,6 +20,7 @@ import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
   isShowZeroBalance?: boolean;
+  accountType: AccountType;
   tokenBalanceKeyPriceMap: Record<string, number>;
   networkBalanceMap: Record<string, BalanceInfo>;
   selectedNetworkInfo: AccountInfoByNetwork;
@@ -118,6 +119,7 @@ const ChainDetailLayer = ({
   selectedNetworkInfo,
   handleChangeTokenItem,
   onPressBack,
+  accountType,
   isShowZeroBalance,
 }: Prop) => {
   const tokenBalanceItems = getChainDetailItems(
@@ -127,8 +129,9 @@ const ChainDetailLayer = ({
   );
   const [isRefresh, refresh] = useRefresh();
   const [refreshTabId, setRefreshTabId] = useState<string>('');
+
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
-    if (!isShowZeroBalance && !alwaysShowedKey.includes(item.id) && BN_ZERO.eq(item.balanceValue)) {
+    if (!isItemAllowedToShow(item, accountType, isShowZeroBalance)) {
       return null;
     }
 

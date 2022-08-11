@@ -17,6 +17,7 @@ import TokenGroupLayer from 'screens/Home/CtyptoTab/layers/TokenGroup';
 import { TokenSelect } from 'screens/TokenSelect';
 import ChainDetailLayer from 'screens/Home/CtyptoTab/layers/ChainDetail';
 import TokenHistoryLayer from 'screens/Home/CtyptoTab/layers/TokenHistory';
+import { getAccountType } from 'utils/index';
 
 interface SelectionInfo {
   selectedNetworkInfo?: AccountInfoByNetwork;
@@ -44,6 +45,7 @@ export const CryptoTab = () => {
     accounts: { accounts, currentAccountAddress },
     networkMap,
   } = useSelector((state: RootState) => state);
+  const accountType = getAccountType(currentAccountAddress);
   const { currentView, views: viewsLog, toNextView, toBack } = useViewStep(ViewStep.TOKEN_GROUP);
   const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
   const tokenGroupMap = useTokenGroup(showedNetworks);
@@ -146,6 +148,7 @@ export const CryptoTab = () => {
         onPressSearchButton={onPressSearchButton}
         handleChangeTokenItem={handleChangeTokenItem}
         totalBalanceValue={totalBalanceValue}
+        accountType={accountType}
       />
 
       {viewsLog.includes(ViewStep.CHAIN_DETAIL) && selectedNetworkInfo && (
@@ -155,6 +158,7 @@ export const CryptoTab = () => {
             tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
             networkBalanceMap={networkBalanceMap}
             selectedNetworkInfo={selectedNetworkInfo}
+            accountType={accountType}
             onPressBack={onPressBack}
           />
         </View>
