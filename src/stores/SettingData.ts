@@ -15,7 +15,7 @@ const SETTING_DATA_STORE_DEFAULT: SettingDataType = {
 };
 
 const settingDataSlice = createSlice({
-  name: 'accounts',
+  name: 'settingData',
   initialState: SETTING_DATA_STORE_DEFAULT,
   reducers: {
     updateLanguage(state, action: PayloadAction<string>) {
