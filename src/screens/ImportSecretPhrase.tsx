@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { ImportSecretPhraseProps, RootNavigationProps } from 'types/routes';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
@@ -43,16 +43,17 @@ const ViewStep = {
   ENTER_PASSWORD: 2,
 };
 
-export const ImportSecretPhrase = () => {
+export const ImportSecretPhrase = ({
+  route: {
+    params: { keyTypes },
+  },
+}: ImportSecretPhraseProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [account, setAccount] = useState<AccountInfo | null>(null);
   const [seed, setSeed] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [isBusy, setBusy] = useState(false);
-  const route = useRoute<RootRouteProps>();
-  // @ts-ignore
-  const { keyTypes } = route.params;
 
   useEffect(() => {
     if (!seed) {
@@ -67,6 +68,7 @@ export const ImportSecretPhrase = () => {
         setAccount({ address, suri, genesis: '' });
         setError('');
       })
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(e => {
         setAccount(null);
         setError('Invalid mnemonic seed');

@@ -25,5 +25,8 @@ export type RootStackParamList = {
   WebViewDebugger: undefined;
 };
 
-export type RootNavigationProps = NativeStackScreenProps<RootStackParamList>['navigation'];
-export type RootRouteProps = NativeStackScreenProps<RootStackParamList>['route'];
+type NavigationProps = NativeStackScreenProps<RootStackParamList>;
+export type RootNavigationProps = NavigationProps['navigation'];
+export type RootRouteProps = NavigationProps['route'];
+export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
+export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;

@@ -4,8 +4,8 @@ import { VerifySecretPhrase } from 'screens/CreateAccount/VerifySecretPhrase';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
 import { createAccountSuriV2, createSeedV2 } from '../../messaging';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { CreateAccountProps, RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 
 const ViewStep = {
@@ -23,14 +23,15 @@ function getHeaderTitle(viewStep: number) {
   return i18n.common.nameYourWallet;
 }
 
-export const CreateAccount = () => {
+export const CreateAccount = ({
+  route: {
+    params: { keyTypes },
+  },
+}: CreateAccountProps) => {
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.INIT_SP);
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
-  const route = useRoute<RootRouteProps>();
-  // @ts-ignore
-  const { keyTypes } = route.params;
 
   useEffect((): void => {
     createSeedV2(undefined, undefined, [keyTypes])
