@@ -13,6 +13,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight } from '../constant';
 import i18n from 'utils/i18n/i18n';
+import ToastContainer from 'react-native-toast-notifications';
 
 interface Props {
   address: string;
@@ -63,7 +64,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
   const [isBusy, setIsBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fileContent, setFileContent] = useState('');
-  const toastRef = useRef();
+  const toastRef = useRef<ToastContainer>(null);
   const onTypePassword = (pass: string) => {
     setPassword(pass);
     setErrorMessage('');
@@ -166,8 +167,12 @@ export const ExportJson = ({ address, closeModal }: Props) => {
           </View>
 
           {
-            // @ts-ignore
-            <Toast duration={1500} normalColor={ColorMap.notification} ref={toastRef} placement={'bottom'} offsetBottom={OFFSET_BOTTOM}
+            <Toast
+              duration={1500}
+              normalColor={ColorMap.notification}
+              ref={toastRef}
+              placement={'bottom'}
+              offsetBottom={OFFSET_BOTTOM}
             />
           }
         </View>

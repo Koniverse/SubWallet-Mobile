@@ -12,6 +12,8 @@ import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../constant';
+// @ts-ignore
+import * as bcrypt from 'react-native-bcrypt';
 
 export const LockScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -32,7 +34,7 @@ export const LockScreen = () => {
 
   useEffect(() => {
     if (value.length > 5) {
-      if (value === pinCode) {
+      if (bcrypt.compareSync(value, pinCode)) {
         setValue('');
         if (accounts && accounts.length) {
           navigation.navigate('Home');

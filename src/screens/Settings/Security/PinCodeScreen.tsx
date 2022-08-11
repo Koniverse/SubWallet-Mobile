@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProps, RootRouteProps } from 'types/routes';
 import { RootState } from 'stores/index';
+// @ts-ignore
+import * as bcrypt from 'react-native-bcrypt';
 
 const ViewStep = {
   VALIDATE_PIN_CODE: 1,
@@ -31,7 +33,9 @@ export const PinCodeScreen = () => {
   const [repeatPinCode, setRepeatPinCode] = useState<string>('');
   const dispatch = useDispatch();
   const onSavePinCode = () => {
-    dispatch(updatePinCode(newPinCode));
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(newPinCode, salt);
+    dispatch(updatePinCode(hash));
     dispatch(updatePinCodeEnable(true));
     navigation.navigate('LockScreen');
   };
@@ -60,7 +64,7 @@ export const PinCodeScreen = () => {
             }}
             pinCode={validatePinCode}
             onChangePinCode={setValidatePinCode}
-            isPinCodeValid={validatePinCode.length > 5 && !!pinCode && validatePinCode === pinCode}
+            isPinCodeValid={validatePinCode.length > 5 && !!pinCode && bcrypt.compareSync(validatePinCode, pinCode)}
           />
         )}
 

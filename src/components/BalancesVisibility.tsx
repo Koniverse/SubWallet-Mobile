@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { StyleProp, TouchableOpacity } from 'react-native';
 import Text from '../components/Text';
 import { BalanceVal } from 'components/BalanceVal';

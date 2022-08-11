@@ -6,16 +6,24 @@ import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccoun
 import { TokenSelect } from 'screens/TokenSelect';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
 import { AccountActionType, SelectionProviderProps, TokenItemType } from 'types/ui-types';
-import { Article, FirstAidKit, Shuffle } from 'phosphor-react-native';
+import {
+  ArrowFatLineDown,
+  ArrowsClockwise,
+  Article,
+  FirstAidKit,
+  PaperPlaneTilt,
+  Shuffle,
+} from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { HIDE_MODAL_DURATION } from '../../../constant';
-import { useToast } from 'react-native-toast-notifications';
+import ToastContainer, { useToast } from 'react-native-toast-notifications';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { ColorMap } from 'styles/color';
 
 interface Props extends SelectionProviderProps {
   style?: StyleProp<any>;
@@ -187,7 +195,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     actionWithSetTimeout(() => setReceiveModalVisible(true));
   };
 
-  const toastRef = useRef();
+  const toastRef = useRef<ToastContainer>(null);
   const _onClickButton = () => {
     if (toastRef.current) {
       // @ts-ignore
@@ -247,17 +255,16 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     toast.show('Coming Soon');
   };
 
+  const receiveIcon = <ArrowFatLineDown color={ColorMap.light} size={24} weight={'bold'} />;
+  const sendIcon = <PaperPlaneTilt color={ColorMap.light} size={24} weight={'bold'} />;
+  const swapIcon = <ArrowsClockwise color={ColorMap.light} size={24} weight={'bold'} />;
+
   return (
     <>
       <View style={[actionButtonWrapper, style]} pointerEvents="box-none">
-        <ActionButton
-          label={i18n.cryptoTab.receive}
-          iconSize={24}
-          iconName={'ReceiveIcon'}
-          onPress={onPressReceiveButton}
-        />
-        <ActionButton label={i18n.cryptoTab.send} iconSize={24} iconName={'SendIcon'} onPress={onPressSendFundBtn} />
-        <ActionButton label={i18n.cryptoTab.swap} iconSize={24} iconName={'SwapIcon'} onPress={onPressSwapBtn} />
+        <ActionButton label={i18n.cryptoTab.receive} icon={receiveIcon} onPress={onPressReceiveButton} />
+        <ActionButton label={i18n.cryptoTab.send} icon={sendIcon} onPress={onPressSendFundBtn} />
+        <ActionButton label={i18n.cryptoTab.swap} icon={swapIcon} onPress={onPressSwapBtn} />
       </View>
 
       <SelectImportAccountModal
