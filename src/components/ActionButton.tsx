@@ -1,15 +1,12 @@
 import React from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { getIcon } from 'utils/index';
 import Text from '../components/Text';
 import { FontMedium } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 
 interface Props extends TouchableOpacityProps {
   label: string;
-  iconName: string;
-  iconSize: number;
-  iconColor?: string;
+  icon: JSX.Element;
 }
 
 const buttonContainerStyle: StyleProp<any> = {
@@ -50,11 +47,11 @@ const disabledOverlay: StyleProp<any> = {
 };
 
 const ActionButton = (actionButtonProps: Props) => {
-  const { label, iconName, iconSize, iconColor, disabled } = actionButtonProps;
+  const { label, icon, disabled } = actionButtonProps;
   return (
     <View style={{ alignItems: 'center' }}>
-      <TouchableOpacity style={buttonContainerStyle} {...actionButtonProps} disabled={disabled}>
-        <View style={buttonWrapperStyle}>{getIcon(iconName, iconSize, iconColor || ColorMap.light)}</View>
+      <TouchableOpacity style={buttonContainerStyle} {...actionButtonProps} disabled={disabled} activeOpacity={0.5}>
+        <View style={buttonWrapperStyle}>{icon}</View>
         {disabled && <View style={disabledOverlay} />}
       </TouchableOpacity>
       <Text style={getButtonTextStyle(!!disabled)}>{label}</Text>
