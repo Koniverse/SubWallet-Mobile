@@ -1,6 +1,6 @@
 {
   "name": "subwalletmobile",
-  "version": "0.0.1",
+  "version": "0.1.4",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
