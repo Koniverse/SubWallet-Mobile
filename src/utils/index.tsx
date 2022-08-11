@@ -293,6 +293,110 @@ function analysisAccounts(accounts: AccountJson[]): [boolean, boolean] {
   return [ethereumCounter === 0 && substrateCounter > 0, ethereumCounter > 0 && substrateCounter === 0];
 }
 
+export function getSortedNetworkKeys(networkKeys: string[]) {
+  return networkKeys.sort((a, b) => {
+    if (b === 'polkadot') {
+      return 1;
+    }
+
+    if (b === 'kusama' && a !== 'polkadot') {
+      return 1;
+    }
+
+    if (b === 'westend' && a !== 'kusama') {
+      return 1;
+    }
+
+    if (b === 'rococo' && a !== 'westend') {
+      return 1;
+    }
+
+    if (a === 'polkadot') {
+      return -1;
+    }
+
+    if (a === 'kusama' && b !== 'polkadot') {
+      return -1;
+    }
+
+    if (a === 'westend' && b !== 'kusama') {
+      return -1;
+    }
+
+    if (a === 'rococo' && b !== 'westend') {
+      return -1;
+    }
+
+    return a.localeCompare(b);
+  });
+}
+
+export function getNetworkKeysByAddressType(
+  addressType: AccountType | undefined,
+  accounts: AccountJson[],
+  networkMap: Record<string, NetworkJson>,
+  activatedNetworkOnly: boolean = true,
+): string[] {
+  if (!addressType || !accounts.length) {
+    return [];
+  }
+
+  const networkMapKeys = getSortedNetworkKeys(Object.keys(networkMap));
+
+  const result: string[] = [];
+
+  if (addressType === 'ALL') {
+    const [isContainOnlySubstrate, isContainOnlyEthereum] = analysisAccounts(accounts);
+
+    networkMapKeys.forEach(nk => {
+      const networkJson = networkMap[nk];
+
+      if (activatedNetworkOnly && !networkJson.active) {
+        return;
+      }
+
+      if (isContainOnlySubstrate) {
+        if (!networkJson.isEthereum) {
+          result.push(nk);
+        }
+      } else if (isContainOnlyEthereum) {
+        if (networkJson.isEthereum) {
+          result.push(nk);
+        }
+      } else {
+        result.push(nk);
+      }
+    });
+  } else if (addressType === 'ETHEREUM') {
+    networkMapKeys.forEach(nk => {
+      const networkJson = networkMap[nk];
+
+      if (activatedNetworkOnly && !networkJson.active) {
+        return;
+      }
+
+      if (networkJson.isEthereum) {
+        result.push(nk);
+      }
+    });
+  } else {
+    networkMapKeys.forEach(nk => {
+      const networkJson = networkMap[nk];
+
+      if (activatedNetworkOnly && !networkJson.active) {
+        return;
+      }
+
+      if (!networkJson.isEthereum) {
+        result.push(nk);
+      }
+    });
+  }
+
+  return result;
+}
+
+// @Deprecated
 export function getGenesisOptionsByAddressType(
   address: string | null | undefined,
   accounts: AccountJson[],
@@ -305,7 +409,7 @@ export function getGenesisOptionsByAddressType(
   const result: NetworkSelectOption[] = [];
 
   if (isAccountAll(address)) {
-    const [isContainOnlySubstrate, isContainOnlyEtherum] = analysisAccounts(accounts);
+    const [isContainOnlySubstrate, isContainOnlyEthereum] = analysisAccounts(accounts);
 
     if (isContainOnlySubstrate) {
       genesisOptions.forEach(o => {
@@ -313,7 +417,7 @@ export function getGenesisOptionsByAddressType(
           result.push(o);
         }
       });
-    } else if (isContainOnlyEtherum) {
+    } else if (isContainOnlyEthereum) {
       genesisOptions.forEach(o => {
         if (o.isEthereum || o.networkKey === 'all') {
           result.push(o);

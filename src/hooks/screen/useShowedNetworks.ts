@@ -2,30 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import useGenesisHashOptions, { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
-import { getGenesisOptionsByAddressType } from 'utils/index';
+import { getAccountType, getNetworkKeysByAddressType } from 'utils/index';
 import { useMemo } from 'react';
-
-function getShowedNetworks(genesisOptions: NetworkSelectOption[], networkKey: string): string[] {
-  if (networkKey === 'all') {
-    return genesisOptions.filter(i => i.networkKey && i.networkKey !== 'all').map(i => i.networkKey);
-  }
-
-  return [networkKey];
-}
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { AccountType } from 'types/ui-types';
 
 export default function useShowedNetworks(
   currentNetworkKey: string,
   address: string,
   accounts: AccountJson[],
 ): string[] {
-  const genesisHashOptions = useGenesisHashOptions();
+  const { networkMap } = useSelector((state: RootState) => state);
+  const accountType: AccountType | undefined = (!!address && getAccountType(address)) || undefined;
   const dep1 = JSON.stringify(accounts);
-  const dep2 = JSON.stringify(genesisHashOptions);
+  const dep2 = JSON.stringify(networkMap);
 
   return useMemo<string[]>(() => {
-    const genesisOptions = getGenesisOptionsByAddressType(address, accounts, genesisHashOptions);
-    return getShowedNetworks(genesisOptions, currentNetworkKey);
+    return getNetworkKeysByAddressType(accountType, accounts, networkMap);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNetworkKey, address, dep1, dep2]);
+  }, [accountType, dep1, dep2]);
 }
