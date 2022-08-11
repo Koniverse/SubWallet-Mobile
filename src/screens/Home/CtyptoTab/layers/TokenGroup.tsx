@@ -7,10 +7,10 @@ import { MagnifyingGlass } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { alwaysShowedKey, renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
+import { isItemAllowedToShow, renderTabBar } from 'screens/Home/CtyptoTab/layers/shared';
 import { TokensTab } from 'screens/Home/CtyptoTab/tabs/TokensTab';
 import { ChainsTab } from 'screens/Home/CtyptoTab/tabs/ChainsTab';
-import { AccountInfoByNetwork, TokenBalanceItemType } from 'types/ui-types';
+import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { ListRenderItemInfo } from 'react-native';
@@ -22,6 +22,7 @@ import { useRefresh } from 'hooks/useRefresh';
 
 interface Prop {
   isShowZeroBalance?: boolean;
+  accountType: AccountType;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   onPressSearchButton: () => void;
   accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
@@ -72,6 +73,7 @@ function getChainTabsNetworkKeys(
   isGroupDetail: boolean,
   tokenBalanceItems: TokenBalanceItemType[],
   showedNetworks: string[],
+  accountType: AccountType,
   isShowZeroBalance?: boolean,
 ): string[] {
   if (!isGroupDetail) {
@@ -81,7 +83,7 @@ function getChainTabsNetworkKeys(
   const networkKeys: string[] = [];
 
   tokenBalanceItems.forEach(item => {
-    if (!isShowZeroBalance && !alwaysShowedKey.includes(item.id) && BN_ZERO.eq(item.balanceValue)) {
+    if (!isItemAllowedToShow(item, accountType, isShowZeroBalance)) {
       return;
     }
 
@@ -102,6 +104,7 @@ function getChainTabsNetworkKeys(
 }
 
 const TokenGroupLayer = ({
+  accountType,
   navigation,
   onPressSearchButton,
   accountInfoByNetworkMap,
@@ -134,6 +137,7 @@ const TokenGroupLayer = ({
     isGroupDetail,
     tokenBalanceItems,
     showedNetworks,
+    accountType,
     isShowZeroBalance,
   );
 
@@ -149,7 +153,7 @@ const TokenGroupLayer = ({
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];
 
-    if (!isShowZeroBalance && !alwaysShowedKey.includes(item.id) && BN_ZERO.eq(item.balanceValue)) {
+    if (!isItemAllowedToShow(item, accountType, isShowZeroBalance)) {
       return null;
     }
 

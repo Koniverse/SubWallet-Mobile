@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
-import { Recoded, TokenItemType } from 'types/ui-types';
+import { AccountType, Recoded, TokenItemType } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
@@ -272,7 +272,7 @@ export function shuffleArray(array: any[]) {
 
 function analysisAccounts(accounts: AccountJson[]): [boolean, boolean] {
   let substrateCounter = 0;
-  let etherumCounter = 0;
+  let ethereumCounter = 0;
 
   if (!accounts.length) {
     return [false, false];
@@ -284,13 +284,13 @@ function analysisAccounts(accounts: AccountJson[]): [boolean, boolean] {
     }
 
     if (isEthereumAddress(a.address)) {
-      etherumCounter++;
+      ethereumCounter++;
     } else {
       substrateCounter++;
     }
   });
 
-  return [etherumCounter === 0 && substrateCounter > 0, etherumCounter > 0 && substrateCounter === 0];
+  return [ethereumCounter === 0 && substrateCounter > 0, ethereumCounter > 0 && substrateCounter === 0];
 }
 
 export function getGenesisOptionsByAddressType(
@@ -393,10 +393,14 @@ export function getActiveToken(
   return options;
 }
 
+export function getAccountType(address: string): AccountType {
+  return isAccountAll(address) ? 'ALL' : isEthereumAddress(address) ? 'ETHEREUM' : 'SUBSTRATE';
+}
+
 export function getTokenItemOptions(
   chainRegistryMap: Record<string, ChainRegistry>,
   networkMap: Record<string, NetworkJson>,
-  type: 'ALL' | 'ETHEREUM' | 'SUBSTRATE' = 'ALL',
+  type: AccountType = 'ALL',
   filteredNetworkKey?: string,
 ): TokenItemType[] {
   const options: TokenItemType[] = [];

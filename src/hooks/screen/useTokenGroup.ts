@@ -60,9 +60,17 @@ function isSameGroup(currentToken: string, comparedToken: string, isSameNetworkT
 }
 
 function getFilteredTokenGroupMap(
-  showedNetworks: string[],
   tokenGroupMap: Record<string, string[]>,
+  showedNetworks?: string[],
 ): Record<string, string[]> {
+  if (!showedNetworks) {
+    return tokenGroupMap;
+  }
+
+  if (!showedNetworks.length) {
+    return {};
+  }
+
   const result: Record<string, string[]> = {};
 
   Object.keys(tokenGroupMap).forEach(tgKey => {
@@ -83,7 +91,6 @@ function getFilteredTokenGroupMap(
 function getTokenGroup(
   chainRegistryMap: Record<string, ChainRegistry>,
   networkMap: Record<string, NetworkJson>,
-  showedNetworks?: string[],
 ): Record<string, string[]> {
   const result: Record<string, string[]> = {};
   const tokenInfoMap: Record<string, TokenInfo> = {};
@@ -161,11 +168,7 @@ function getTokenGroup(
 
   resortResult(result);
 
-  if (!showedNetworks) {
-    return result;
-  } else {
-    return getFilteredTokenGroupMap(showedNetworks, result);
-  }
+  return result;
 }
 
 export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
@@ -173,10 +176,17 @@ export default function useTokenGroup(showedNetworks?: string[]): Record<string,
 
   const dep1 = JSON.stringify(chainRegistryMap);
   const dep2 = JSON.stringify(networkMap);
-  const dep3 = showedNetworks ? JSON.stringify(chainRegistryMap) : undefined;
+  const dep3 = showedNetworks ? JSON.stringify(showedNetworks) : undefined;
+
+  const tokenGroup: Record<string, string[]> = useMemo<Record<string, string[]>>(() => {
+    return getTokenGroup(chainRegistryMap, networkMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dep1, dep2]);
+
+  const dep4 = JSON.stringify(tokenGroup);
 
   return useMemo<Record<string, string[]>>(() => {
-    return getTokenGroup(chainRegistryMap, networkMap, showedNetworks);
+    return getFilteredTokenGroupMap(tokenGroup, showedNetworks);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep1, dep2, dep3]);
+  }, [dep3, dep4]);
 }
