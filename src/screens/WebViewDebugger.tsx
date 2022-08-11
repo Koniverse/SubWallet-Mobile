@@ -112,8 +112,8 @@ export const WebViewDebugger = () => {
           {unsub && (
             <Text style={{ textAlign: 'center', ...textStyle }}>................... Subscribing .................</Text>
           )}
-          <Textarea value={result} style={{ ...textStyle, height: 320 }} />
           <Text style={{ color: 'red' }}>{error}</Text>
+          <Text style={textStyle}>{result}</Text>
         </View>
       </ScrollView>
     </ContainerWithSubHeader>

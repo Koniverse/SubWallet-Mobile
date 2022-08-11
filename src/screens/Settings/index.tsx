@@ -151,12 +151,6 @@ export const Settings = () => {
         hasRightArrow: true,
         onPress: () => Linking.openURL(PRIVACY_AND_POLICY_URL),
       },
-      {
-        icon: FileText,
-        title: i18n.settings.webViewDebugger,
-        hasRightArrow: true,
-        onPress: () => navigation.navigate('WebViewDebugger'),
-      },
     ],
     [
       {
