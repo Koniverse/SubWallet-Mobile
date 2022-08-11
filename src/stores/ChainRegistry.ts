@@ -7,12 +7,12 @@ const chainRegistrySlice = createSlice({
   initialState,
   name: 'chainRegistry',
   reducers: {
-    update (state, action: PayloadAction<Record<string, ChainRegistry>>) {
+    update(state, action: PayloadAction<Record<string, ChainRegistry>>) {
       const { payload } = action;
 
       Object.assign(state, payload);
-    }
-  }
+    },
+  },
 });
 
 export const { update: updateChainRegistry } = chainRegistrySlice.actions;

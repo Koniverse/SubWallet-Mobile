@@ -16,6 +16,7 @@ import { BUTTON_ACTIVE_OPACITY, deviceHeight } from '../../../constant';
 import Toast from 'react-native-toast-notifications';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
+import ToastContainer from 'react-native-toast-notifications';
 
 interface Props {
   selectedAddress?: string;
@@ -90,7 +91,7 @@ export const ReceiveModal = ({
   openChangeNetworkModal,
   disableReselectButton,
 }: Props) => {
-  const toastRef = useRef();
+  const toastRef = useRef<ToastContainer>(null);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
   const {
     accounts: { currentAccountAddress },
@@ -166,8 +167,13 @@ export const ReceiveModal = ({
           <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={'Share'} onPress={onShareImg} />
         </View>
         {
-          // @ts-ignore
-          <Toast duration={1500} normalColor={ColorMap.notification} ref={toastRef} placement={'bottom'} offsetBottom={OFFSET_BOTTOM} />
+          <Toast
+            duration={1500}
+            normalColor={ColorMap.notification}
+            ref={toastRef}
+            placement={'bottom'}
+            offsetBottom={OFFSET_BOTTOM}
+          />
         }
       </View>
     </SubWalletModal>

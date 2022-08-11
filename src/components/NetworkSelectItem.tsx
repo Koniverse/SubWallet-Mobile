@@ -13,7 +13,12 @@ interface Props extends TouchableOpacityProps {
 export const NetworkSelectItem = ({ itemName, itemKey, isSelected, onSelectNetwork, defaultItemKey }: Props) => {
   return (
     <TouchableOpacity onPress={onSelectNetwork}>
-      <NetworkSelectItemContent itemName={itemName} itemKey={itemKey} isSelected={isSelected} defaultItemKey={defaultItemKey} />
+      <NetworkSelectItemContent
+        itemName={itemName}
+        itemKey={itemKey}
+        isSelected={isSelected}
+        defaultItemKey={defaultItemKey}
+      />
     </TouchableOpacity>
   );
 };

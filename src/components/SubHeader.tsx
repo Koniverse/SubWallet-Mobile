@@ -56,7 +56,7 @@ export const SubHeader = ({
 }: SubHeaderProps) => {
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
-      {!!headerContent ? (
+      {headerContent ? (
         headerContent()
       ) : (
         <View style={headerTitle}>

@@ -15,7 +15,6 @@ const selectItemSeparator: StyleProp<any> = {
   width: '100%',
   height: 1,
   backgroundColor: ColorMap.dark2,
-
 };
 
 export const SelectItem = ({ label, isSelected, onPress, showSeparator = true }: Props) => {

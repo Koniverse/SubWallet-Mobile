@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import {Keyboard, StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View} from 'react-native';
+import { Keyboard, StyleProp, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 import { FontSize0, sharedStyles, FontMedium } from 'styles/sharedStyles';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ColorMap } from 'styles/color';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';

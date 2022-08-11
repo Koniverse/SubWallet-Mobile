@@ -12,7 +12,7 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { HIDE_MODAL_DURATION } from '../../../constant';
-import { useToast } from 'react-native-toast-notifications';
+import ToastContainer, { useToast } from 'react-native-toast-notifications';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -187,7 +187,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     actionWithSetTimeout(() => setReceiveModalVisible(true));
   };
 
-  const toastRef = useRef();
+  const toastRef = useRef<ToastContainer>(null);
   const _onClickButton = () => {
     if (toastRef.current) {
       // @ts-ignore
