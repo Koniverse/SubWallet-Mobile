@@ -47,7 +47,7 @@ export const CryptoTab = () => {
   } = useSelector((state: RootState) => state);
   const accountType = getAccountType(currentAccountAddress);
   const { currentView, views: viewsLog, toNextView, toBack } = useViewStep(ViewStep.TOKEN_GROUP);
-  const showedNetworks = useShowedNetworks('all', currentAccountAddress, accounts);
+  const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
   const tokenGroupMap = useTokenGroup(showedNetworks);
   const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
   const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance(
