@@ -1,18 +1,11 @@
-// Copyright 2019-2022 @polkadot/extension-ui authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { getAccountType, getNetworkKeysByAddressType } from 'utils/index';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountType } from 'types/ui-types';
+import { AccountJson } from '@subwallet/extension-base/background/types';
 
-export default function useShowedNetworks(
-  currentNetworkKey: string,
-  address: string,
-  accounts: AccountJson[],
-): string[] {
+export default function useShowedNetworks(address: string, accounts: AccountJson[]): string[] {
   const { networkMap } = useSelector((state: RootState) => state);
   const accountType: AccountType | undefined = (!!address && getAccountType(address)) || undefined;
   const dep1 = JSON.stringify(accounts);

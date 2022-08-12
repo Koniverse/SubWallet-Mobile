@@ -501,66 +501,6 @@ export function getAccountType(address: string): AccountType {
   return isAccountAll(address) ? 'ALL' : isEthereumAddress(address) ? 'ETHEREUM' : 'SUBSTRATE';
 }
 
-export function getTokenItemOptions(
-  chainRegistryMap: Record<string, ChainRegistry>,
-  networkMap: Record<string, NetworkJson>,
-  type: AccountType = 'ALL',
-  filteredNetworkKey?: string,
-): TokenItemType[] {
-  const options: TokenItemType[] = [];
-  const activatedNetworks: string[] = [];
-
-  if (filteredNetworkKey) {
-    if (!networkMap[filteredNetworkKey] || !networkMap[filteredNetworkKey].active) {
-      return [];
-    }
-
-    if (
-      (type === 'ETHEREUM' && networkMap[filteredNetworkKey].isEthereum) ||
-      (type === 'SUBSTRATE' && !networkMap[filteredNetworkKey].isEthereum) ||
-      type === 'ALL'
-    ) {
-      activatedNetworks.push(filteredNetworkKey);
-    }
-  } else {
-    Object.keys(networkMap).forEach(networkKey => {
-      if (!networkMap[networkKey].active) {
-        return;
-      }
-
-      if (
-        (type === 'ETHEREUM' && networkMap[networkKey].isEthereum) ||
-        (type === 'SUBSTRATE' && !networkMap[networkKey].isEthereum) ||
-        type === 'ALL'
-      ) {
-        activatedNetworks.push(networkKey);
-      }
-    });
-  }
-
-  Object.keys(chainRegistryMap).forEach(networkKey => {
-    if (!activatedNetworks.includes(networkKey)) {
-      return;
-    }
-
-    Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
-      const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
-
-      options.push({
-        networkKey: networkKey,
-        networkDisplayName: networkMap[networkKey].chain.replace(' Relay Chain', ''),
-        symbol: tokenInfo.symbol,
-        displayedSymbol: tokenInfo.symbolAlt || tokenInfo.symbol,
-        decimals: tokenInfo.decimals,
-        isMainToken: tokenInfo.isMainToken,
-        specialOption: tokenInfo?.specialOption,
-      });
-    });
-  });
-
-  return options;
-}
-
 export function getTotalConvertedBalanceValue(balanceInfo?: BalanceInfo): BigN {
   if (!balanceInfo) {
     return BN_ZERO;
