@@ -4,6 +4,7 @@ import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { getRoundedDecimalNumber } from 'utils/index';
 
 type BalanceViewProps = {
   value: string | BigN;
@@ -25,6 +26,16 @@ const balanceValText: StyleProp<any> = {
   color: ColorMap.light,
 };
 
+function getDisplayedBalance(value: string | BigN): string {
+  const number = value.toString();
+
+  if (+number < 1) {
+    return getRoundedDecimalNumber(number, 4);
+  } else {
+    return getRoundedDecimalNumber(number);
+  }
+}
+
 export const BalanceVal = ({
   balanceValTextStyle,
   startWithSymbol = false,
@@ -34,13 +45,7 @@ export const BalanceVal = ({
   withSymbol = true,
   style,
 }: BalanceViewProps) => {
-  let [prefix, postfix] = value.toString().split('.');
-
-  if (startWithSymbol) {
-    postfix = postfix?.substring(0, 3);
-  } else {
-    postfix = postfix?.substring(0, 4);
-  }
+  let [prefix, postfix] = getDisplayedBalance(value).split('.');
 
   const lastSymbol = postfix?.slice(-1);
   const isString = /^[KMB]/.test(lastSymbol);

@@ -4,6 +4,7 @@ import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
+import { BalanceVal } from 'components/BalanceVal';
 
 const textStyle: StyleProp<any> = {
   color: ColorMap.primary,
@@ -21,7 +22,12 @@ export const BalanceToUsd = ({ amountToUsd, isShowBalance }: Props) => {
     <View style={{ flexDirection: 'row', marginTop: 8 }}>
       <Text style={textStyle}>(</Text>
       {isShowBalance ? (
-        <Text style={[textStyle, { marginTop: 1 }]}>{`$${amountToUsd.toFixed()}`}</Text>
+        <BalanceVal
+          balanceValTextStyle={{ ...textStyle, marginTop: 1 }}
+          startWithSymbol
+          symbol={'$'}
+          value={amountToUsd}
+        />
       ) : (
         <Text style={[textStyle, { marginTop: 1 }]}>{'******'}</Text>
       )}

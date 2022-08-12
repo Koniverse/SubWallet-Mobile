@@ -530,3 +530,9 @@ export function hasAnyChildTokenBalance(balanceInfo: BalanceInfo): boolean {
 
   return false;
 }
+
+export function getRoundedDecimalNumber(numberString: string, digits: number = 2): string {
+  const number = isNaN(parseFloat(numberString)) ? '0' : numberString;
+
+  return (+(Math.round(+(number + `e+${digits}`)) + `e-${digits}`)).toString();
+}

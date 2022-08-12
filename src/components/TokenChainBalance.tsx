@@ -32,6 +32,10 @@ const subTextStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.disabled,
 };
+const priceStyle: StyleProp<any> = {
+  ...subTextStyle,
+  color: ColorMap.primary,
+};
 const chainBalanceMetaWrapper: StyleProp<any> = {
   paddingLeft: 16,
 };
@@ -47,19 +51,6 @@ const chainBalanceSeparator: StyleProp<any> = {
   marginRight: 16,
 };
 
-function getFormattedPrice(priceValue: number, isTestnet: boolean, isReady: boolean): string {
-  if (!isTestnet && isReady && priceValue) {
-    const priceArr = priceValue.toString().split('.');
-    if (priceArr[1]) {
-      priceArr[1] = priceArr[1].substring(0, 4);
-    }
-
-    return priceArr.join(',');
-  }
-
-  return '0';
-}
-
 export const TokenChainBalance = ({
   networkKey,
   networkDisplayName,
@@ -74,8 +65,6 @@ export const TokenChainBalance = ({
   priceValue,
   ...wrapperProps
 }: Props) => {
-  const reformatPrice = getFormattedPrice(priceValue, isTestnet, isReady);
-
   return (
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={chainBalanceMainArea}>
@@ -95,7 +84,12 @@ export const TokenChainBalance = ({
               )}
             </View>
 
-            <Text style={[subTextStyle, { color: ColorMap.primary }]}>{`$${reformatPrice}`}</Text>
+            <BalanceVal
+              balanceValTextStyle={priceStyle}
+              startWithSymbol
+              symbol={'$'}
+              value={`${isTestnet ? 0 : priceValue}`}
+            />
           </View>
         </View>
 
