@@ -1,6 +1,6 @@
 import React, { createRef, useCallback, useEffect, useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps, SendFundProps } from 'types/routes';
 import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { InputAddress } from 'components/InputAddress';
 import Text from 'components/Text';
@@ -74,17 +74,18 @@ const ViewStep = {
   CONFIRMATION: 2,
 };
 
-export const SendFund = () => {
+export const SendFund = ({
+  route: {
+    params: { selectedAccount: senderAddress, selectedNetworkKey, selectedToken },
+  },
+}: SendFundProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const route = useRoute<RootRouteProps>();
-  const data = route.params;
   const {
     chainRegistry,
     price: { tokenPriceMap },
     networkMap,
   } = useSelector((state: RootState) => state);
-  // @ts-ignore
-  const { selectedAccount: senderAddress, selectedNetworkKey, selectedToken } = data;
+
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
   const senderFreeBalance = useFreeBalance(selectedNetworkKey, senderAddress, selectedToken);

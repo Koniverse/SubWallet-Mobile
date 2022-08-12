@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
@@ -196,12 +196,11 @@ export const ViewPrivateKey = () => {
             </View>
           )}
 
-          {currentViewStep !== ViewStep.ENTER_PW && (
+          {currentViewStep === ViewStep.SHOW_PK && (
             <View style={copyButtonWrapperStyle}>
               <LeftIconButton
                 icon={CopySimple}
                 title={'Copy to Clipboard'}
-                disabled={currentViewStep !== ViewStep.SHOW_PK}
                 onPress={() => copyToClipboard(privateKey)}
               />
             </View>

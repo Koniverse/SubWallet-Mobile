@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
-import { MagnifyingGlass } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
 import * as Tabs from 'react-native-collapsible-tab-view';
@@ -181,10 +180,7 @@ const TokenGroupLayer = ({
         {!isGroupDetail && <Header navigation={navigation} onPressSearchButton={onPressSearchButton} />}
         {isGroupDetail && (
           <SubHeader
-            showRightBtn
             backgroundColor={ColorMap.dark2}
-            rightIcon={MagnifyingGlass}
-            onPressRightIcon={onPressSearchButton}
             onPressBack={onPressBack}
             title={getTokenGroupDisplayName(currentTgKey)}
           />

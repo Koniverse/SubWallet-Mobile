@@ -52,6 +52,11 @@ export const TokenSelect = ({
     );
   };
 
+  const _onPressBack = () => {
+    setSearchString('');
+    onPressBack && onPressBack();
+  };
+
   const renderListEmptyComponent = () => {
     return <Warning title={'Warning'} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />;
   };
@@ -60,7 +65,7 @@ export const TokenSelect = ({
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
         style={{ paddingTop: 0 }}
-        onPressBack={onPressBack || (() => {})}
+        onPressBack={_onPressBack}
         title={'Select Token'}
         searchString={searchString}
         onChangeSearchText={setSearchString}>

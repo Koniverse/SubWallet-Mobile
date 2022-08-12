@@ -61,6 +61,11 @@ export const AccountSelect = ({
     );
   };
 
+  const _onPressBack = () => {
+    setSearchString('');
+    onPressBack && onPressBack();
+  };
+
   const renderListEmptyComponent = () => {
     return <Warning title={'Warning'} message={"There's no account at the moment"} isDanger={false} />;
   };
@@ -69,7 +74,7 @@ export const AccountSelect = ({
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <SelectScreen
         style={{ paddingTop: 0 }}
-        onPressBack={onPressBack || (() => {})}
+        onPressBack={_onPressBack}
         title={'Select Account'}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
