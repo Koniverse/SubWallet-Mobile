@@ -15,12 +15,11 @@ import {
 } from 'styles/sharedStyles';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { BUTTON_ACTIVE_OPACITY } from '../constant';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
-import { RootNavigationProps } from 'types/routes';
+import { ExportPrivateKeyProps, RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
-import { RootRouteProps } from 'types/routes';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
 
@@ -102,17 +101,18 @@ const ViewStep = {
 };
 const PrivateBlockIcon = FingerprintSimple;
 
-export const ViewPrivateKey = () => {
+export const ViewPrivateKey = ({
+  route: {
+    params: { address },
+  },
+}: ExportPrivateKeyProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const route = useRoute<RootRouteProps>();
   const [privateKey, setPrivateKey] = useState<string>('');
   const toast = useToast();
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
-  // @ts-ignore
-  const { address } = route.params;
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();

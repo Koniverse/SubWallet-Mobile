@@ -6,8 +6,8 @@ import { SubmitButton } from 'components/SubmitButton';
 import { Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { RemoveAccountProps, RootNavigationProps } from 'types/routes';
 import { forgetAccount } from '../messaging';
 import { toShort } from 'utils/index';
 import { useSelector } from 'react-redux';
@@ -66,15 +66,16 @@ const buttonStyle: StyleProp<any> = {
 
 const Icon = Trash;
 
-export const RemoveAccount = () => {
+export const RemoveAccount = ({
+  route: {
+    params: { address },
+  },
+}: RemoveAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const route = useRoute<RootRouteProps>();
   const {
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
   const [isBusy, setIsBusy] = useState(false);
-  // @ts-ignore
-  const { address } = route.params;
   //todo: reformat address base on Current network
   const displayAddress = toShort(address, 10, 10);
 

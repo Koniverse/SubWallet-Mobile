@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { EditAccountProps, RootNavigationProps } from 'types/routes';
 import { Platform, StyleProp, View } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { EditAccountInputText } from 'components/EditAccountInputText';
@@ -29,19 +29,19 @@ const editAccountAddressItem: StyleProp<any> = {
   marginBottom: 16,
 };
 
-export const EditAccount = () => {
+export const EditAccount = ({
+  route: {
+    params: { address: currentAddress, name },
+  },
+}: EditAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const route = useRoute<RootRouteProps>();
-  const data = route.params;
-  // @ts-ignore
-  const [editedName, setEditName] = useState<string>(data ? data.name : '');
+  const [editedName, setEditName] = useState<string>(name);
   const [isShowExportModal, setShowExportModal] = useState<boolean>(false);
   const _saveChange = useCallback(
     (editName: string) => {
-      // @ts-ignore
-      data && data.address && editAccount(data.address, editName).catch(e => console.log(e));
+      editAccount(currentAddress, editName).catch(e => console.log(e));
     },
-    [data],
+    [currentAddress],
   );
   const toast = useToast();
 
@@ -52,8 +52,7 @@ export const EditAccount = () => {
   };
 
   const onExportPrivateKey = () => {
-    // @ts-ignore
-    navigation.navigate('ExportPrivateKey', { address: data.address });
+    navigation.navigate('ExportPrivateKey', { address: currentAddress });
   };
 
   const onExportJson = () => {
@@ -61,19 +60,13 @@ export const EditAccount = () => {
   };
 
   const onRemoveAccount = () => {
-    // @ts-ignore
-    navigation.navigate('RemoveAccount', { address: data.address });
+    navigation.navigate('RemoveAccount', { address: currentAddress });
   };
 
   return (
     <SubScreenContainer navigation={navigation} title={i18n.settings.editAccount}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
-        <View style={{ paddingVertical: 24 }}>
-          {
-            // @ts-ignore
-            <SubWalletAvatar address={data ? data.address : ''} size={76} />
-          }
-        </View>
+        <View style={{ paddingVertical: 24 }}>{<SubWalletAvatar address={currentAddress} size={76} />}</View>
 
         <EditAccountInputText
           editAccountInputStyle={{ marginBottom: 8 }}
@@ -89,16 +82,14 @@ export const EditAccount = () => {
             editAccountInputStyle={{ flex: 1 }}
             outerInputStyle={{ color: ColorMap.disabled }}
             label={'Account Address'}
-            // @ts-ignore
-            inputValue={data ? toShort(data.address) : ''}
+            inputValue={toShort(currentAddress)}
             isDisabled
           />
           <IconButton
             style={{ width: 20, height: 20, paddingBottom: 22 }}
             icon={CopySimple}
             color={ColorMap.disabled}
-            // @ts-ignore
-            onPress={() => copyToClipboard(data ? data.address : '')}
+            onPress={() => copyToClipboard(currentAddress)}
           />
         </View>
 
@@ -128,10 +119,7 @@ export const EditAccount = () => {
           modalVisible={isShowExportModal}
           onChangeModalVisible={() => setShowExportModal(false)}
           modalStyle={{ height: Platform.OS === 'ios' ? deviceHeight - STATUS_BAR_HEIGHT : '100%' }}>
-          {
-            // @ts-ignore
-            <ExportJson address={data?.address || ''} closeModal={setShowExportModal} />
-          }
+          {<ExportJson address={currentAddress} closeModal={setShowExportModal} />}
         </SubWalletModal>
       </View>
     </SubScreenContainer>
