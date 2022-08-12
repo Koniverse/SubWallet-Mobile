@@ -4,8 +4,14 @@ import { RootState } from 'stores/index';
 import { getTokenBalanceKey, getTokenGroupKey, tokenNetworkKeyMap } from 'utils/index';
 import { useMemo } from 'react';
 
-const KNOW_MAIN_KEYS = [getTokenGroupKey('DOT', true), getTokenGroupKey('KSM', true), getTokenGroupKey('STELLA')];
-const KNOW_PREFIXES = ['xcm', 'tai', 'xc', 'lc', 'vs', 'l', 'x', 't', 'h'];
+const KNOW_MAIN_KEYS = [
+  getTokenGroupKey('DOT', true),
+  getTokenGroupKey('KSM', true),
+  getTokenGroupKey('STELLA'),
+  getTokenGroupKey('BTC'),
+];
+const KNOW_PREFIXES = ['xcm', 'tai', 'xc', 'lc', 'vs', 'l', 'x', 't', 'h', 'k', 'i'];
+// const EXCLUDE_TOKENS = [];
 
 function updateResult(token: string, isTestnet: string, result: Record<string, string[]>, tbKey: string) {
   const mKey = getTokenGroupKey(token, !!isTestnet);
@@ -54,6 +60,7 @@ function resortResult(result: Record<string, string[]>) {
 }
 
 function isSameGroup(currentToken: string, comparedToken: string, isSameNetworkType: boolean): boolean {
+  // todo: may need to exclude some tokens here
   const possibleTokens = KNOW_PREFIXES.map(p => `${p}${comparedToken}`.toLowerCase());
 
   return possibleTokens.includes(currentToken.toLowerCase()) && isSameNetworkType;
