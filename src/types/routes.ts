@@ -30,4 +30,5 @@ export type RootNavigationProps = NavigationProps['navigation'];
 export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
+export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;

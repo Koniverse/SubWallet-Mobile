@@ -3,11 +3,10 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { PinCode } from 'screens/Settings/Security/PinCode';
 import { updatePinCode, updatePinCodeEnable } from 'stores/SettingData';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootNavigationProps, RootRouteProps } from 'types/routes';
+import { useNavigation } from '@react-navigation/native';
+import { PinCodeProps, RootNavigationProps } from 'types/routes';
 import { RootState } from 'stores/index';
-// @ts-ignore
-import * as bcrypt from 'react-native-bcrypt';
+import bcrypt from 'react-native-bcrypt';
 
 const ViewStep = {
   VALIDATE_PIN_CODE: 1,
@@ -15,19 +14,19 @@ const ViewStep = {
   REPEAT_PIN_CODE: 3,
 };
 
-export const PinCodeScreen = () => {
+export const PinCodeScreen = ({
+  route: {
+    params: { isEditablePinCode },
+  },
+}: PinCodeProps) => {
   const {
     settingData: { pinCode },
   } = useSelector((state: RootState) => state);
   const navigation = useNavigation<RootNavigationProps>();
-  const route = useRoute<RootRouteProps>();
-  const data = route.params;
-  // @ts-ignore
-  const isEditablePinCodeScreen = data && data.isEditablePinCode;
   const [currentViewStep, setCurrentViewStep] = useState<number>(
-    isEditablePinCodeScreen ? ViewStep.VALIDATE_PIN_CODE : ViewStep.PIN_CODE,
+    isEditablePinCode ? ViewStep.VALIDATE_PIN_CODE : ViewStep.PIN_CODE,
   );
-  const [title, setTitle] = useState(isEditablePinCodeScreen ? 'PIN Code' : 'New PIN Code');
+  const [title, setTitle] = useState(isEditablePinCode ? 'PIN Code' : 'New PIN Code');
   const [validatePinCode, setValidatePinCode] = useState<string>('');
   const [newPinCode, setNewPinCode] = useState<string>('');
   const [repeatPinCode, setRepeatPinCode] = useState<string>('');
