@@ -4,7 +4,7 @@ import BigN from 'bignumber.js';
 import { useMemo } from 'react';
 import { getTokenDisplayName } from 'utils/chainBalances';
 
-const prioritizedTokenGroupKeys = ['ksm|test', 'ksm', 'dot|test', 'dot'];
+const prioritizedTokenGroupKeys = ['roc|test', 'wnd|test', 'ksm|test', 'ksm', 'dot|test', 'dot'];
 
 function getGroupListItems(
   tokenGroupMap: Record<string, string[]>,
