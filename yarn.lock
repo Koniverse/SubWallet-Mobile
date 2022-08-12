@@ -3865,6 +3865,11 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.4.tgz#cd667bcfdd025213aafb7ca5915a932590acdcdc"
   integrity sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==
 
+"@types/react-native-bcrypt@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@types/react-native-bcrypt/-/react-native-bcrypt-2.4.2.tgz#d0e2e2702d03850f662ff6d953326a45df68b1c1"
+  integrity sha512-I5wxHvjLKZ7a3MhSQ7u0p+F1TLGIKfGBv2CedLPwuoKRIaSc55H4oU3CDalj1CiBKq80Nr3VxNcGSJIDMH+29A==
+
 "@types/react-native-vector-icons@^6.4.10", "@types/react-native-vector-icons@^6.4.6":
   version "6.4.11"
   resolved "https://registry.yarnpkg.com/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.11.tgz#8783d4248377aec14e06420397037b96ff242684"
