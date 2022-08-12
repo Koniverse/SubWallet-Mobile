@@ -243,7 +243,7 @@ export const Settings = () => {
             />
           ))}
         </ScrollView>
-        <Text style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}`}</Text>
+        <Text style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}(${VersionNumber.buildVersion})`}</Text>
       </>
     </SubScreenContainer>
   );

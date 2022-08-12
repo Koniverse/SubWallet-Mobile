@@ -32,12 +32,12 @@ function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: St
   };
 }
 
-function getTextStyle(color: string = ColorMap.light) {
+function getTextStyle(color: string = ColorMap.light, isShowLeftIcon: boolean) {
   return {
     ...sharedStyles.mediumText,
     ...FontBold,
     color,
-    paddingLeft: 10,
+    paddingLeft: isShowLeftIcon ? 10 : 0,
   };
 }
 
@@ -76,7 +76,7 @@ export const SubmitButton = (buttonProps: ButtonProps) => {
       disabled={disabled || isBusy}
       style={getWrapperStyle(backgroundColor, style)}>
       {!!LeftIcon && <LeftIcon size={20} weight={'bold'} color={ColorMap.light} />}
-      <Text style={getTextStyle(color)}>{title}</Text>
+      <Text style={getTextStyle(color, !!LeftIcon)}>{title}</Text>
       {hasRightArrow && (
         <View style={iconStyle}>
           <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />
