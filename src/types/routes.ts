@@ -9,9 +9,9 @@ export type RootStackParamList = {
   QrScanner: undefined;
   AccountsScreen: undefined;
   EditAccount: { address: string; name: string };
-  RemoveAccount: undefined;
+  RemoveAccount: { address: string };
   RestoreJson: undefined;
-  ExportPrivateKey: undefined;
+  ExportPrivateKey: { address: string };
   Settings: undefined;
   NetworkSelect: undefined;
   ImportSecretPhrase: { keyTypes: KeypairType };
@@ -32,3 +32,6 @@ export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'Cre
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
+export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
+export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
+export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
