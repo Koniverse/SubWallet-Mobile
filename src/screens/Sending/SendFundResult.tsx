@@ -59,9 +59,9 @@ const subtitleStyle: StyleProp<any> = {
   paddingHorizontal: 16,
 };
 
-const submitButton1Style: StyleProp<any> = {
-  ...MarginBottomForSubmitButton,
-};
+function getButtonStyle(hash?: string) {
+  return { marginBottom: !hash ? 0 : 18 };
+}
 
 export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSuccess, txError }, onResend }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -123,7 +123,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
               <SubmitButton
                 title={'Back to Home'}
                 backgroundColor={ColorMap.dark2}
-                style={submitButton1Style}
+                style={getButtonStyle(extrinsicHash)}
                 onPress={() => navigation.navigate('Home')}
               />
               {/*{viewTransactionBtn(extrinsicHash)}*/}
@@ -134,7 +134,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
               <SubmitButton
                 title={'Resend'}
                 backgroundColor={ColorMap.dark2}
-                style={submitButton1Style}
+                style={getButtonStyle(extrinsicHash)}
                 onPress={onResend}
               />
             </>
