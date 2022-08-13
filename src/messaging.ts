@@ -1,6 +1,3 @@
-// Copyright 2019-2022 @subwallet/extension-ui authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import type {
   AccountJson,
   AllowedPath,
@@ -104,9 +101,12 @@ import {
   ValidateNetworkResponse,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
+import { WebviewStatus } from 'providers/contexts';
+import { WebviewError, WebviewNotReadyError, WebviewResponseError } from './errors/WebViewErrors';
+import EventEmitter from 'eventemitter3';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -116,10 +116,27 @@ interface Handler {
 
 type Handlers = Record<string, Handler>;
 const handlers: Handlers = {};
-let webviewRef: MutableRefObject<WebView | undefined>;
+let webviewRef: RefObject<WebView | undefined>;
+let webviewEvents: EventEmitter;
+let status: WebviewStatus = 'init';
 
-export const setViewRef = (viewRef: MutableRefObject<WebView | undefined>) => {
+export const setupWebview = (
+  viewRef: RefObject<WebView | undefined>,
+  webviewStatus: WebviewStatus,
+  eventEmitter: EventEmitter,
+) => {
   webviewRef = viewRef;
+  status = webviewStatus;
+  // Subscribe in the first time only
+  !webviewEvents &&
+    eventEmitter.on('reloading', () => {
+      console.debug(`### Clean ${Object.keys(handlers).length} handlers`);
+      Object.entries(handlers).forEach(([id, handler]) => {
+        handler.reject(new WebviewNotReadyError('Webview is not readrry'));
+        delete handlers[id];
+      });
+    });
+  webviewEvents = eventEmitter;
 };
 
 export const listenMessage = (data: Message['data'], handleUnknown?: (data: Message['data']) => boolean): void => {
@@ -132,7 +149,7 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
     }
 
     if (!unknownHandled) {
-      console.error(`Unknown response: ${JSON.stringify(data)}`);
+      console.error(`Unknown response: ${JSON.stringify(data.id)}`);
     }
 
     return;
@@ -145,7 +162,7 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
   if (data.subscription) {
     (handler.subscriber as Function)(data.subscription);
   } else if (data.error) {
-    handler.reject(new Error(data.error));
+    handler.reject(new WebviewResponseError(data.error));
   } else {
     handler.resolve(data.response);
   }
@@ -153,8 +170,20 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
 
 // @ts-ignore
 export const postMessage = ({ id, message, request }) => {
-  const injection = 'window.postMessage(' + JSON.stringify({ id, message, request }) + ')';
-  webviewRef.current?.injectJavaScript(injection);
+  const _post = () => {
+    const injection = 'window.postMessage(' + JSON.stringify({ id, message, request }) + ')';
+    webviewRef.current?.injectJavaScript(injection);
+  };
+
+  if (!webviewRef || !webviewEvents) {
+    throw new WebviewError('Webview is not init');
+  }
+
+  if (status === 'crypto_ready') {
+    _post();
+  } else {
+    throw new WebviewNotReadyError('Webview is not ready');
+  }
 };
 
 export function sendMessage<TMessageType extends MessageTypesWithNullRequest>(
