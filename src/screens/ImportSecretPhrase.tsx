@@ -71,7 +71,7 @@ export const ImportSecretPhrase = ({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(e => {
         setAccount(null);
-        setError('Invalid mnemonic seed');
+        setError(i18n.errorMessage.invalidMnemonicSeed);
       });
   }, [keyTypes, seed]);
 

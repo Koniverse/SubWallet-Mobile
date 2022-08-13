@@ -85,6 +85,7 @@ export const en = {
     transferable: 'Transferable: ',
     receiveModalText: 'Scan address to receive payment',
     importSecretPhraseTitle: 'Restore an existing wallet account with your 12 or 24-word secret recovery phrase',
+    comingSoon: 'Coming Soon',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -174,5 +175,6 @@ export const en = {
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
+    invalidMnemonicSeed: 'Invalid mnemonic seed',
   },
 };

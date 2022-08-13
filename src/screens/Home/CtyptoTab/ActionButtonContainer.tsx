@@ -199,7 +199,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
       // @ts-ignore
       toastRef.current.hideAll();
       // @ts-ignore
-      toastRef.current.show('Coming Soon');
+      toastRef.current.show(i18n.common.comingSoon);
     }
   };
 
@@ -250,7 +250,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
 
   const onPressSwapBtn = () => {
     toast.hideAll();
-    toast.show('Coming Soon');
+    toast.show(i18n.common.comingSoon);
   };
 
   const receiveIcon = <ArrowFatLineDown color={ColorMap.light} size={24} weight={'bold'} />;

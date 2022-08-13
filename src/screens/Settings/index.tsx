@@ -65,7 +65,7 @@ export const Settings = () => {
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const onPressComingSoonFeature = () => {
     toast.hideAll();
-    toast.show('Coming Soon');
+    toast.show(i18n.common.comingSoon);
   };
   const [hiddenCount, setHiddenCount] = useState(0);
 

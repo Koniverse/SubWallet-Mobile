@@ -103,7 +103,7 @@ export const ReceiveModal = ({
       // @ts-ignore
       toastRef.current.hideAll();
       // @ts-ignore
-      toastRef.current.show('Copied to clipboard');
+      toastRef.current.show(i18n.common.copiedToClipboard);
     }
   };
   const formattedAddress = useMemo(() => {
