@@ -1,22 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type SettingDataType = {
+type MobileSettingsType = {
   language: string;
   pinCode: string;
   pinCodeEnabled: boolean;
   autoLockTime: number | undefined;
 };
 
-const SETTING_DATA_STORE_DEFAULT: SettingDataType = {
+const MOBILE_SETTINGS_STORE_DEFAULT: MobileSettingsType = {
   language: 'en',
   pinCode: '',
   pinCodeEnabled: false,
   autoLockTime: undefined,
 };
 
-const settingDataSlice = createSlice({
-  name: 'settingData',
-  initialState: SETTING_DATA_STORE_DEFAULT,
+const mobileSettingsSlice = createSlice({
+  name: 'mobileSettings',
+  initialState: MOBILE_SETTINGS_STORE_DEFAULT,
   reducers: {
     updateLanguage(state, action: PayloadAction<string>) {
       state.language = action.payload;
@@ -33,5 +33,5 @@ const settingDataSlice = createSlice({
   },
 });
 
-export const { updateLanguage, updatePinCode, updatePinCodeEnable, updateAutoLockTime } = settingDataSlice.actions;
-export default settingDataSlice.reducer;
+export const { updateLanguage, updatePinCode, updatePinCodeEnable, updateAutoLockTime } = mobileSettingsSlice.actions;
+export default mobileSettingsSlice.reducer;

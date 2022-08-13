@@ -42,7 +42,7 @@ let lastTimestamp = 0;
 export const App = () => {
   const { status } = useContext(WebViewContext);
   const {
-    settingData: { pinCode, pinCodeEnabled, autoLockTime, language },
+    mobileSettings: { pinCode, pinCodeEnabled, autoLockTime, language },
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
   const [isCryptoReady, setCryptoReady] = useState<boolean>(false);
