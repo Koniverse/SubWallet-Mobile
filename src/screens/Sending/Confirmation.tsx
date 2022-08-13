@@ -44,7 +44,6 @@ export const Confirmation = ({
   si,
   onChangeBusy,
 }: Props) => {
-  console.log(requestPayload);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const networkMap = useSelector((state: RootState) => state.networkMap);
   const [password, setPassword] = useState<string>('');
