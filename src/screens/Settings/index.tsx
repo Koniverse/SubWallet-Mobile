@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Linking, ScrollView, StyleProp } from 'react-native';
@@ -67,6 +67,7 @@ export const Settings = () => {
     toast.hideAll();
     toast.show('Coming Soon');
   };
+  const [hiddenCount, setHiddenCount] = useState(0);
 
   const settingList: settingItemType[][] = [
     [
@@ -160,6 +161,13 @@ export const Settings = () => {
     ],
   ];
 
+  const onPressVersionNumber = () => {
+    if (hiddenCount > 9) {
+      navigation.navigate('WebViewDebugger');
+    }
+    setHiddenCount(hiddenCount + 1);
+  };
+
   return (
     <SubScreenContainer title={i18n.settings.settings} navigation={navigation}>
       <>
@@ -240,7 +248,7 @@ export const Settings = () => {
             />
           ))}
         </ScrollView>
-        <Text style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}(${VersionNumber.buildVersion})`}</Text>
+        <Text onPress={onPressVersionNumber} style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}`}</Text>
       </>
     </SubScreenContainer>
   );
