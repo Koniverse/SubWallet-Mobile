@@ -20,9 +20,7 @@ export const PinCodeScreen = ({
     params: { isEditablePinCode },
   },
 }: PinCodeProps) => {
-  const {
-    mobileSettings: { pinCode },
-  } = useSelector((state: RootState) => state);
+  const pinCode = useSelector((state: RootState) => state.mobileSettings.pinCode);
   const navigation = useNavigation<RootNavigationProps>();
   const [currentViewStep, setCurrentViewStep] = useState<number>(
     isEditablePinCode ? ViewStep.VALIDATE_PIN_CODE : ViewStep.PIN_CODE,

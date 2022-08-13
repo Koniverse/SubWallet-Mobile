@@ -59,6 +59,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
 
   const setWebviewStatus = (webviewStatus: WebviewStatus) => {
     setStatus(webviewStatus);
+    eventEmitter.emit('update-status', webviewStatus);
     eventEmitter.emit(webviewStatus, webviewStatus);
   };
 
@@ -93,8 +94,8 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   };
 
   useEffect(() => {
-    setupWebview(webRef, status, eventEmitter);
-  }, [status, webRef]);
+    setupWebview(webRef, eventEmitter);
+  }, [webRef]);
 
   const reload = useCallback(() => {
     setWebviewStatus('reloading');

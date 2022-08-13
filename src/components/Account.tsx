@@ -67,10 +67,8 @@ export const Account = ({
   selectAccount,
   type: givenType,
 }: AccountProps) => {
-  const {
-    accounts: { accounts },
-    networkMap,
-  } = useSelector((state: RootState) => state);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const [{ genesisHash: recodedGenesis }, setRecoded] = useState<Recoded>(defaultRecoded);
   const getNetworkInfoByGenesisHash = useCallback(
     (hash?: string | null): NetworkJson | null => {

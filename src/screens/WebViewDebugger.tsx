@@ -15,6 +15,10 @@ import { Dropdown } from 'components/Dropdown';
 
 // @ts-ignore
 const METHOD_MAP: Record<MessageTypes, { default_input: string; subscription?: boolean }> = {
+  'pri(accounts.subscribeWithCurrentAddress)': {
+    default_input: '{}',
+    subscription: true,
+  },
   'pri(price.getPrice)': {
     default_input: 'null',
   },
@@ -31,14 +35,15 @@ const METHOD_MAP: Record<MessageTypes, { default_input: string; subscription?: b
   },
 };
 
+let unsub: (() => void) | undefined;
+
 export const WebViewDebugger = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { status, viewRef, url, version } = useContext(WebViewContext);
-  const [method, setMethod] = useState<MessageTypes>('pri(balance.getBalance)');
-  const [input, setInput] = useState(METHOD_MAP['pri(balance.getBalance)'].default_input);
+  const { status, url, version, reload } = useContext(WebViewContext);
+  const [method, setMethod] = useState<MessageTypes>('pri(accounts.subscribeWithCurrentAddress)');
+  const [input, setInput] = useState(METHOD_MAP['pri(accounts.subscribeWithCurrentAddress)'].default_input);
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
-  const [unsub, setUnsub] = useState<(() => void) | undefined>(undefined);
   const themeColors = useSubWalletTheme().colors;
 
   const containerStyle = { marginBottom: 30 };
@@ -49,7 +54,7 @@ export const WebViewDebugger = () => {
   };
 
   const onPressReload = () => {
-    viewRef?.current?.reload();
+    reload && reload();
   };
 
   const onChangeMethod = (value: MessageTypes) => {
@@ -61,29 +66,32 @@ export const WebViewDebugger = () => {
     setInput(value);
   };
 
+  const showRs = (rs: unknown) => {
+    setResult(JSON.stringify(rs, null, 2));
+  };
+
   const onSendMessage = () => {
-    // @ts-ignore
-    unsub && unsub();
     const { subscription } = METHOD_MAP[method];
     let callback;
-    let action: ((rs: unknown) => void) | undefined;
     if (subscription) {
-      action = (rs: unknown) => {
+      let action: ((rs: unknown) => void) | undefined = (rs: unknown) => {
         setResult(JSON.stringify(rs, null, 2));
       };
       callback = (rs: unknown) => {
         action && action(rs);
       };
-      setUnsub(() => {
+      unsub = () => {
+        console.log('Unsub');
         action = undefined;
-      });
+      };
     } else {
-      setUnsub(undefined);
+      unsub = undefined;
     }
+
     // @ts-ignore
     sendMessage(method, JSON.parse(input), callback)
       .then(rs => {
-        setResult(JSON.stringify(rs, null, 2));
+        showRs(rs);
       })
       .catch(err => {
         setError(JSON.stringify(err));

@@ -24,9 +24,7 @@ function getTokenBalanceKeyPriceMap(
 }
 
 export default function useTokenBalanceKeyPriceMap(tokenGroupMap: Record<string, string[]>): Record<string, number> {
-  const {
-    price: { tokenPriceMap },
-  } = useSelector((state: RootState) => state);
+  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
 
   const dep1 = JSON.stringify(tokenGroupMap);
   const dep2 = JSON.stringify(tokenPriceMap);

@@ -177,10 +177,8 @@ const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh, r
 };
 
 export const HistoryTab = ({ networkKey, token, refreshTabId, isRefresh, refresh }: Props) => {
-  const {
-    chainRegistry: registryMap,
-    transactionHistory: { historyMap },
-  } = useSelector((state: RootState) => state);
+  const registryMap = useSelector((state: RootState) => state.chainRegistry);
+  const historyMap = useSelector((state: RootState) => state.transactionHistory.historyMap);
   const readyNetworks = getReadyNetwork(registryMap);
   const items = getItems(networkKey, historyMap);
   const readyItems = getReadyItems(readyNetworks, items, registryMap, token);

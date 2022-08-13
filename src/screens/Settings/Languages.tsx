@@ -20,9 +20,7 @@ const footerAreaStyle: StyleProp<any> = {
 };
 
 export const Languages = () => {
-  const {
-    mobileSettings: { language },
-  } = useSelector((state: RootState) => state);
+  const language = useSelector((state: RootState) => state.mobileSettings.language);
   const navigation = useNavigation<RootNavigationProps>();
   const languageOptions = getLanguageOptions();
   const dispatch = useDispatch();

@@ -7,10 +7,8 @@ import { RootState } from 'stores/index';
 import { useEffect, useState } from 'react';
 
 export default function useFetchNetworkMap() {
-  const {
-    accounts: { currentAccount },
-    networkMap,
-  } = useSelector((state: RootState) => state);
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const deps = JSON.stringify(networkMap);
   const [sortedNetworkMap, setSortedNetworkMap] = useState<Record<string, NetworkJson>>({});
 

@@ -120,15 +120,13 @@ let webviewRef: RefObject<WebView | undefined>;
 let webviewEvents: EventEmitter;
 let status: WebviewStatus = 'init';
 
-export const setupWebview = (
-  viewRef: RefObject<WebView | undefined>,
-  webviewStatus: WebviewStatus,
-  eventEmitter: EventEmitter,
-) => {
+export const setupWebview = (viewRef: RefObject<WebView | undefined>, eventEmitter: EventEmitter) => {
   webviewRef = viewRef;
-  status = webviewStatus;
   // Subscribe in the first time only
-  !webviewEvents &&
+  if (!webviewEvents) {
+    eventEmitter.on('update-status', stt => {
+      status = stt;
+    });
     eventEmitter.on('reloading', () => {
       console.debug(`### Clean ${Object.keys(handlers).length} handlers`);
       Object.entries(handlers).forEach(([id, handler]) => {
@@ -136,6 +134,7 @@ export const setupWebview = (
         delete handlers[id];
       });
     });
+  }
   webviewEvents = eventEmitter;
 };
 
@@ -182,7 +181,7 @@ export const postMessage = ({ id, message, request }) => {
   if (status === 'crypto_ready') {
     _post();
   } else {
-    throw new WebviewNotReadyError('Webview is not ready');
+    throw new WebviewNotReadyError('Webview is not ready' + status);
   }
 };
 

@@ -12,9 +12,7 @@ export const BalanceBlock = ({
   startWithSymbol = true,
   symbol = '$',
 }: BalanceBlockType) => {
-  const {
-    settings: { isShowBalance },
-  } = useSelector((state: RootState) => state);
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   return (
     <>

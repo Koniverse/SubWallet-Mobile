@@ -5,8 +5,9 @@ import useSetupNetworkMap from 'hooks/store/useSetupNetworkMap';
 import useSetupBalance from 'hooks/store/useSetupBalance';
 import useSetupTransactionHistory from 'hooks/store/useSetupTransactionHistory';
 import useSetupSettings from 'hooks/store/useSetupSettings';
+import { WebviewStatus } from 'providers/contexts';
 
-export default function useSetupStore(status?: string): void {
+export default function useSetupStore(status?: WebviewStatus): void {
   const isWebRunnerReady = status === 'crypto_ready';
 
   useSetupAccounts(isWebRunnerReady);

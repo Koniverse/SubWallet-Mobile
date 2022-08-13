@@ -10,9 +10,7 @@ import SplashScreen from 'react-native-splash-screen';
 // todo: make use of this component later
 function Rendering(): React.ReactElement {
   SplashScreen.hide();
-  const {
-    accounts: { accounts, currentAccount: account },
-  } = useSelector((state: RootState) => state);
+  const { accounts, currentAccount: account } = useSelector((state: RootState) => state.accounts);
 
   const genesisOptions = getGenesisOptionsByAddressType(account?.address, accounts, useGenesisHashOptions());
 

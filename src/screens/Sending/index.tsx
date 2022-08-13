@@ -80,12 +80,9 @@ export const SendFund = ({
   },
 }: SendFundProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const {
-    chainRegistry,
-    price: { tokenPriceMap },
-    networkMap,
-  } = useSelector((state: RootState) => state);
-
+  const chainRegistry = useSelector((state: RootState) => state.chainRegistry);
+  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
   const senderFreeBalance = useFreeBalance(selectedNetworkKey, senderAddress, selectedToken);

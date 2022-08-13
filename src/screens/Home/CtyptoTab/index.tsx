@@ -41,10 +41,8 @@ const viewLayerStyle: StyleProp<any> = {
 
 export const CryptoTab = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const {
-    accounts: { accounts, currentAccountAddress },
-    networkMap,
-  } = useSelector((state: RootState) => state);
+  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const accountType = getAccountType(currentAccountAddress);
   const { currentView, views: viewsLog, toNextView, toBack } = useViewStep(ViewStep.TOKEN_GROUP);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);

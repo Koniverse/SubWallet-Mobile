@@ -41,10 +41,8 @@ let lastTimestamp = 0;
 
 export const App = () => {
   const { status } = useContext(WebViewContext);
-  const {
-    mobileSettings: { pinCode, pinCodeEnabled, autoLockTime, language },
-    accounts: { accounts },
-  } = useSelector((state: RootState) => state);
+  const { pinCode, pinCodeEnabled, autoLockTime, language } = useSelector((state: RootState) => state.mobileSettings);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const [isCryptoReady, setCryptoReady] = useState<boolean>(false);
   useSetupStore(status);
   useSetupI18n(language, status);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Linking, ScrollView, StyleProp } from 'react-native';
@@ -61,15 +61,13 @@ type settingItemType = {
 export const Settings = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
-  const {
-    accounts: { currentAccount },
-    mobileSettings: { pinCodeEnabled },
-  } = useSelector((state: RootState) => state);
-
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const onPressComingSoonFeature = () => {
     toast.hideAll();
     toast.show('Coming Soon');
   };
+  const [hiddenCount, setHiddenCount] = useState(0);
 
   const settingList: settingItemType[][] = [
     [
@@ -163,6 +161,13 @@ export const Settings = () => {
     ],
   ];
 
+  const onPressVersionNumber = () => {
+    if (hiddenCount > 9) {
+      navigation.navigate('WebViewDebugger');
+    }
+    setHiddenCount(hiddenCount + 1);
+  };
+
   return (
     <SubScreenContainer title={i18n.title.settings} navigation={navigation}>
       <>
@@ -243,7 +248,7 @@ export const Settings = () => {
             />
           ))}
         </ScrollView>
-        <Text style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}(${VersionNumber.buildVersion})`}</Text>
+        <Text onPress={onPressVersionNumber} style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}`}</Text>
       </>
     </SubScreenContainer>
   );
