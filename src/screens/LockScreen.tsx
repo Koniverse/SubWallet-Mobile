@@ -16,10 +16,8 @@ import bcrypt from 'react-native-bcrypt';
 
 export const LockScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const {
-    mobileSettings: { pinCode },
-    accounts: { accounts },
-  } = useSelector((state: RootState) => state);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const pinCode = useSelector((state: RootState) => state.mobileSettings.pinCode);
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });

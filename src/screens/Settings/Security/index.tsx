@@ -25,9 +25,7 @@ const modalTitle: StyleProp<any> = {
 };
 
 export const Security = () => {
-  const {
-    mobileSettings: { pinCode, pinCodeEnabled, autoLockTime },
-  } = useSelector((state: RootState) => state);
+  const { pinCode, pinCodeEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
   const [isEnabledFaceId, setEnabledFaceId] = useState<boolean>(false);
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
   const navigation = useNavigation<RootNavigationProps>();

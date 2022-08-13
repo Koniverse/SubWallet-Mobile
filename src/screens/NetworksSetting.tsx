@@ -20,7 +20,7 @@ let cacheFilterNetworkList: Array<NetworkJson> = [];
 
 export const NetworksSetting = ({}: Props) => {
   const navigation = useNavigation();
-  const { networkMap } = useSelector((state: RootState) => state);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const [searchString, setSearchString] = useState('');
   const [currentNetworkMap, setCurrentNetworkMap] = useState<Record<string, NetworkJson>>({});
   const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>(cacheFilterNetworkList);

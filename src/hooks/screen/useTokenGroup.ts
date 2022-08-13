@@ -179,7 +179,8 @@ function getTokenGroup(
 }
 
 export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
-  const { chainRegistry: chainRegistryMap, networkMap } = useSelector((state: RootState) => state);
+  const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
 
   const dep1 = JSON.stringify(chainRegistryMap);
   const dep2 = JSON.stringify(networkMap);

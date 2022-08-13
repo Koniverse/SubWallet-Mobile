@@ -61,11 +61,8 @@ type settingItemType = {
 export const Settings = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
-  const {
-    accounts: { currentAccount },
-    mobileSettings: { pinCodeEnabled },
-  } = useSelector((state: RootState) => state);
-
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const onPressComingSoonFeature = () => {
     toast.hideAll();
     toast.show('Coming Soon');

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useGetNetworkMetadata(): Record<string, NetWorkMetadataDef> {
-  const { networkMap } = useSelector((state: RootState) => state);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
   const result: Record<string, NetWorkMetadataDef> = {};
 
   Object.entries(networkMap).forEach(([networkKey, network]) => {

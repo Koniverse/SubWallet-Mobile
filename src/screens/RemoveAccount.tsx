@@ -72,9 +72,7 @@ export const RemoveAccount = ({
   },
 }: RemoveAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const {
-    accounts: { accounts },
-  } = useSelector((state: RootState) => state);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const [isBusy, setIsBusy] = useState(false);
   //todo: reformat address base on Current network
   const displayAddress = toShort(address, 10, 10);

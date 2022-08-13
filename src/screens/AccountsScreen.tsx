@@ -41,9 +41,7 @@ const accountItemSeparator: StyleProp<any> = {
 
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const {
-    accounts: { accounts, currentAccountAddress },
-  } = useSelector((state: RootState) => state);
+  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);

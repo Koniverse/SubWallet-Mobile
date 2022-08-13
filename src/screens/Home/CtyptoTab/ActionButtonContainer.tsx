@@ -50,10 +50,8 @@ const actionButtonWrapper: StyleProp<any> = {
 };
 
 export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
-  const {
-    accounts: { accounts, currentAccountAddress },
-    networkMap,
-  } = useSelector((state: RootState) => state);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const toast = useToast();
   const _isAccountAll = isAccountAll(currentAccountAddress);
   const navigation = useNavigation<RootNavigationProps>();

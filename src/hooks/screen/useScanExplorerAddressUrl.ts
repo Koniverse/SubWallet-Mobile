@@ -6,7 +6,7 @@ import { RootState } from 'stores/index';
 import { getScanExplorerAddressInfoUrl } from 'utils/index';
 
 export default function useScanExplorerAddressUrl(networkKey: string, hash: string) {
-  const { networkMap } = useSelector((state: RootState) => state);
+  const networkMap = useSelector((state: RootState) => state.networkMap);
 
   const blockExplorer = networkMap[networkKey]?.blockExplorer;
 

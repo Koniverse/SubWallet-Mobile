@@ -47,9 +47,7 @@ const actionButtonStyle: StyleProp<any> = {
 };
 
 export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
-  const {
-    accounts: { currentAccount },
-  } = useSelector((state: RootState) => state);
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
   const _onPressSearchButton = () => {
     onPressSearchButton && onPressSearchButton();
