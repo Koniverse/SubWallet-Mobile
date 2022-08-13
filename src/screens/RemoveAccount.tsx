@@ -107,7 +107,7 @@ export const RemoveAccount = ({
             <View style={iconWrapperStyle}>
               <Icon size={32} color={ColorMap.danger} />
             </View>
-            <Text style={text1Style}>Remove Account</Text>
+            <Text style={text1Style}>{i18n.title.removeAccount}</Text>
             <Text style={{ ...text1Style, marginBottom: 8 }}>({displayAddress})</Text>
             <Text style={text2Style}>{i18n.warningMessage.removeAccountWarning}</Text>
           </View>

@@ -14,6 +14,7 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
+import i18n from 'utils/i18n/i18n';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -147,7 +148,9 @@ export const Account = ({
 
           <View style={accountAddressBlock}>
             {isShowAddress && (
-              <Text style={accountAddressStyle}>{_isAccountAll ? 'All Accounts' : toShortAddress(address, 10)}</Text>
+              <Text style={accountAddressStyle}>
+                {_isAccountAll ? `${i18n.common.allAccounts}` : toShortAddress(address, 10)}
+              </Text>
             )}
 
             {showCopyBtn && (

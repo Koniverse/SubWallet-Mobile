@@ -403,13 +403,13 @@ export const SendFund = ({
                       }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={{ color: ColorMap.light, ...sharedStyles.mainText, ...FontMedium }}>
-                          Transferable:{' '}
+                          {i18n.common.transferable}
                         </Text>
                         <FormatBalance format={balanceFormat} value={senderFreeBalance} />
                       </View>
 
                       <TouchableOpacity onPress={onUpdateInputBalance} disabled={!canToggleAll}>
-                        <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>Max</Text>
+                        <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>{i18n.common.max}</Text>
                       </TouchableOpacity>
                     </View>
 

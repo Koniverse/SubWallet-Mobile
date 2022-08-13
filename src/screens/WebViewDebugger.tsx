@@ -94,24 +94,22 @@ export const WebViewDebugger = () => {
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.settings.webViewDebugger}>
       <ScrollView style={{ ...sharedStyles.layoutContainer }}>
         <View style={containerStyle}>
-          <Text style={textStyle}>Status: {status}</Text>
-          <Text style={textStyle}>URL: {url}</Text>
-          <Text style={textStyle}>Version: {version}</Text>
-          <Button title={'Reload Background'} onPress={onPressReload} />
+          <Text style={textStyle}>{`${i18n.common.status}${status}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.url}${url}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.version}${version}`}</Text>
+          <Button title={i18n.common.reloadBackground} onPress={onPressReload} />
         </View>
         <View style={containerStyle}>
-          <Text style={textStyle}>Message</Text>
+          <Text style={textStyle}>{i18n.common.message}</Text>
           <Dropdown
             onValueChange={onChangeMethod}
             value={method}
             items={Object.keys(METHOD_MAP).map(k => ({ label: k, value: k }))}
           />
-          <Text style={textStyle}>Input</Text>
+          <Text style={textStyle}>{i18n.common.input}</Text>
           <Textarea value={input} style={{ ...textStyle, height: 80 }} onChangeText={onChangeInput} />
-          <Button style={{ marginBottom: 5 }} title={'Send Message'} onPress={onSendMessage} />
-          {unsub && (
-            <Text style={{ textAlign: 'center', ...textStyle }}>................... Subscribing .................</Text>
-          )}
+          <Button style={{ marginBottom: 5 }} title={i18n.common.sendMessage} onPress={onSendMessage} />
+          {unsub && <Text style={{ textAlign: 'center', ...textStyle }}>{i18n.common.subscribing}</Text>}
           <Text style={{ color: 'red' }}>{error}</Text>
           <Text style={textStyle}>{result}</Text>
         </View>

@@ -65,11 +65,11 @@ export const QrScanner = ({ setContent }: Props) => {
         style={{ width: '100%' }}>
         <View style={{ width: '100%', height: '100%' }}>
           <View style={[Background.transparentDark, { paddingTop: 12, paddingBottom: 12 }]}>
-            <Text style={{ textAlign: 'center' }}>QR Scanner</Text>
+            <Text style={{ textAlign: 'center' }}>{i18n.title.qrScanner}</Text>
           </View>
           <View style={{ position: 'absolute', bottom: 18, width: '100%' }}>
             <View style={[Background.transparentDark, { flexDirection: 'row', padding: 20 }]}>
-              <Button style={{ flex: 1, marginRight: 8 }} color="secondary" title={'OK'} onPress={onOk} />
+              <Button style={{ flex: 1, marginRight: 8 }} color="secondary" title={i18n.common.ok} onPress={onOk} />
               <Button style={{ flex: 1 }} title={i18n.common.continue} onPress={onContinue} />
             </View>
           </View>

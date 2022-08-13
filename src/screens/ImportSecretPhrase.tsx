@@ -106,9 +106,7 @@ export const ImportSecretPhrase = ({
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={sharedStyles.layoutContainer}>
             <ScrollView style={bodyAreaStyle}>
-              <Text style={titleStyle}>
-                Restore an existing wallet account with your 12 or 24-word secret recovery phrase
-              </Text>
+              <Text style={titleStyle}>{i18n.common.importSecretPhraseTitle}</Text>
 
               <Textarea
                 autoFocus={true}

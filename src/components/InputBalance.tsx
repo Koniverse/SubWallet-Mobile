@@ -9,6 +9,7 @@ import { formatBalance } from '@polkadot/util';
 import { CaretDown } from 'phosphor-react-native';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { ModalSelectItem } from 'components/ModalSelectItem';
+import i18n from 'utils/i18n/i18n';
 
 export interface InputBalanceProps {
   onChange?: (val?: string) => void;
@@ -211,7 +212,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         onChangeModalVisible={() => setShowTokenList(false)}
         modalStyle={{ height: 494 }}>
         <View style={unitModalContentWrapper}>
-          <Text style={unitModalTitle}>Unit Selection</Text>
+          <Text style={unitModalTitle}>{i18n.title.unitSelection}</Text>
           <FlatList style={{ width: '100%' }} data={siOptions} renderItem={renderItem} />
         </View>
       </SubWalletModal>

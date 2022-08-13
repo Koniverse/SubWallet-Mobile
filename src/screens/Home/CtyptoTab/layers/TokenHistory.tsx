@@ -13,6 +13,7 @@ import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
+import i18n from 'utils/i18n/i18n';
 
 interface Prop {
   onPressBack: () => void;
@@ -132,7 +133,7 @@ const TokenHistoryLayer = ({
           allowHeaderOverscroll={true}
           renderTabBar={() => <></>}
           renderHeader={renderTabContainerHeader}>
-          <Tabs.Tab name={'one'} label={'History'}>
+          <Tabs.Tab name={'one'} label={i18n.title.history}>
             <HistoryTab
               networkKey={selectedNetworkInfo.networkKey}
               token={selectedTokenSymbol}

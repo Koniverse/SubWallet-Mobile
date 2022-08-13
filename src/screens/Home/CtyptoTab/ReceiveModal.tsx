@@ -132,9 +132,9 @@ export const ReceiveModal = ({
       modalVisible={receiveModalVisible}
       onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
-        <Text style={receiveModalTitle}>Receive</Text>
+        <Text style={receiveModalTitle}>{i18n.cryptoTab.receive}</Text>
         <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />
-        <Text style={receiveModalGuide}>Scan address to receive payment</Text>
+        <Text style={receiveModalGuide}>{i18n.common.receiveModalText}</Text>
 
         <View style={receiveModalAddressWrapper}>
           <TouchableOpacity
