@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { PinCodeProps, RootNavigationProps } from 'types/routes';
 import { RootState } from 'stores/index';
 import bcrypt from 'react-native-bcrypt';
+import i18n from 'utils/i18n/i18n';
 
 const ViewStep = {
   VALIDATE_PIN_CODE: 1,
@@ -26,7 +27,7 @@ export const PinCodeScreen = ({
   const [currentViewStep, setCurrentViewStep] = useState<number>(
     isEditablePinCode ? ViewStep.VALIDATE_PIN_CODE : ViewStep.PIN_CODE,
   );
-  const [title, setTitle] = useState(isEditablePinCode ? 'PIN Code' : 'New PIN Code');
+  const [title, setTitle] = useState(isEditablePinCode ? i18n.common.pinCode : i18n.common.newPinCode);
   const [validatePinCode, setValidatePinCode] = useState<string>('');
   const [newPinCode, setNewPinCode] = useState<string>('');
   const [repeatPinCode, setRepeatPinCode] = useState<string>('');
@@ -46,7 +47,7 @@ export const PinCodeScreen = ({
       navigation.navigate('Security');
     } else {
       setCurrentViewStep(ViewStep.PIN_CODE);
-      setTitle('New PIN Code');
+      setTitle(i18n.common.newPinCode);
       setRepeatPinCode('');
     }
   };
@@ -59,7 +60,7 @@ export const PinCodeScreen = ({
             onPressBack={() => navigation.navigate('Security')}
             onPressContinue={() => {
               setCurrentViewStep(ViewStep.PIN_CODE);
-              setTitle('New PIN Code');
+              setTitle(i18n.common.newPinCode);
             }}
             pinCode={validatePinCode}
             onChangePinCode={setValidatePinCode}
@@ -76,7 +77,7 @@ export const PinCodeScreen = ({
             }}
             onPressContinue={() => {
               setCurrentViewStep(ViewStep.REPEAT_PIN_CODE);
-              setTitle('Repeat PIN Code');
+              setTitle(i18n.common.repeatPinCode);
             }}
             isPinCodeValid={true}
           />
@@ -86,7 +87,7 @@ export const PinCodeScreen = ({
           <PinCode
             onPressBack={() => {
               setCurrentViewStep(ViewStep.PIN_CODE);
-              setTitle('New PIN Code');
+              setTitle(i18n.common.newPinCode);
               setRepeatPinCode('');
             }}
             onPressContinue={onSavePinCode}

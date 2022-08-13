@@ -5,6 +5,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { PinCodeField } from 'components/PinCodeField';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../../../constant';
+import i18n from 'utils/i18n/i18n';
 
 const bottomAreaStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -32,10 +33,10 @@ export const PinCode = ({ pinCode, onChangePinCode, onPressBack, onPressContinue
         <PinCodeField value={pinCode} setValue={onChangePinCode} isPinCodeValid={isPinCodeValid} pinCodeRef={ref} />
       </View>
       <View style={bottomAreaStyle}>
-        <SubmitButton title={'Cancel'} style={cancelButtonStyle} onPress={onPressBack} />
+        <SubmitButton title={i18n.common.cancel} style={cancelButtonStyle} onPress={onPressBack} />
         <SubmitButton
           disabled={!pinCode || pinCode.length < 6 || !isPinCodeValid}
-          title={'Continue'}
+          title={i18n.common.continue}
           style={continueButtonStyle}
           onPress={onPressContinue}
         />

@@ -7,6 +7,7 @@ import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sh
 import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhraseArea';
 import { SubmitButton } from 'components/SubmitButton';
 import { shuffleArray } from 'utils/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   onPressSubmit: (event: GestureResponderEvent) => void;
@@ -99,9 +100,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
     <View style={sharedStyles.layoutContainer}>
       <View style={bodyAreaStyle}>
         <View style={infoBlockStyle}>
-          <Text style={infoTextStyle}>
-            Fill in the words in the correct order to prove that you have saved your secret phrase.
-          </Text>
+          <Text style={infoTextStyle}>{i18n.common.verifySecretPhraseMessage}</Text>
         </View>
         <SeedPhraseArea
           currentWords={selectedWords}
@@ -112,7 +111,11 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
         <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
       </View>
       <View style={footerAreaStyle}>
-        <SubmitButton disabled={!isCorrectWord(selectedWords, seed)} title={'Continue'} onPress={onPressSubmit} />
+        <SubmitButton
+          disabled={!isCorrectWord(selectedWords, seed)}
+          title={i18n.common.continue}
+          onPress={onPressSubmit}
+        />
       </View>
     </View>
   );

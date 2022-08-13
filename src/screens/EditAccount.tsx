@@ -48,7 +48,7 @@ export const EditAccount = ({
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();
-    toast.show('Copied to Clipboard');
+    toast.show(i18n.common.copiedToClipboard);
   };
 
   const onExportPrivateKey = () => {
@@ -64,13 +64,13 @@ export const EditAccount = ({
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={i18n.settings.editAccount}>
+    <SubScreenContainer navigation={navigation} title={i18n.title.editAccount}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
         <View style={{ paddingVertical: 24 }}>{<SubWalletAvatar address={currentAddress} size={76} />}</View>
 
         <EditAccountInputText
           editAccountInputStyle={{ marginBottom: 8 }}
-          label={'Account Name'}
+          label={i18n.common.accountName}
           inputValue={editedName}
           onChangeText={text => setEditName(text)}
           onBlur={() => _saveChange(editedName)}
@@ -81,7 +81,7 @@ export const EditAccount = ({
           <EditAccountInputText
             editAccountInputStyle={{ flex: 1 }}
             outerInputStyle={{ color: ColorMap.disabled }}
-            label={'Account Address'}
+            label={i18n.common.accountAddress}
             inputValue={toShort(currentAddress)}
             isDisabled
           />
@@ -102,14 +102,14 @@ export const EditAccount = ({
         />
         <ActionItem
           style={{ width: '100%', marginBottom: 16 }}
-          title={i18n.settings.exportJson}
+          title={i18n.title.exportJson}
           icon={FileText}
           hasRightArrow
           onPress={onExportJson}
         />
         <ActionItem
           style={{ width: '100%' }}
-          title={i18n.settings.removeAccount}
+          title={i18n.title.removeAccount}
           icon={Trash}
           color={ColorMap.danger}
           onPress={onRemoveAccount}

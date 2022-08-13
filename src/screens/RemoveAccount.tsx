@@ -100,7 +100,7 @@ export const RemoveAccount = ({
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Remove Account'}>
+    <SubScreenContainer navigation={navigation} title={i18n.title.removeAccount}>
       <View style={layoutContainerStyle}>
         <View style={bodyAreaStyle}>
           <View style={bodyContentStyle}>
@@ -114,10 +114,15 @@ export const RemoveAccount = ({
         </View>
 
         <View style={footerAreaStyle}>
-          <SubmitButton title={'Cancel'} backgroundColor={ColorMap.dark2} style={buttonStyle} onPress={onCancel} />
+          <SubmitButton
+            title={i18n.common.cancel}
+            backgroundColor={ColorMap.dark2}
+            style={buttonStyle}
+            onPress={onCancel}
+          />
           <SubmitButton
             isBusy={isBusy}
-            title={'Remove'}
+            title={i18n.common.remove}
             backgroundColor={ColorMap.danger}
             style={buttonStyle}
             onPress={onConfirm}

@@ -6,6 +6,7 @@ import { QrScannerContext } from 'providers/contexts';
 import { QrValue } from 'types/QRScanner';
 import { Background } from 'styles/color';
 import { Button } from 'components/Button';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   setContent: (data: QrValue) => void;
@@ -69,7 +70,7 @@ export const QrScanner = ({ setContent }: Props) => {
           <View style={{ position: 'absolute', bottom: 18, width: '100%' }}>
             <View style={[Background.transparentDark, { flexDirection: 'row', padding: 20 }]}>
               <Button style={{ flex: 1, marginRight: 8 }} color="secondary" title={'OK'} onPress={onOk} />
-              <Button style={{ flex: 1 }} title={'Continue'} onPress={onContinue} />
+              <Button style={{ flex: 1 }} title={i18n.common.continue} onPress={onContinue} />
             </View>
           </View>
         </View>

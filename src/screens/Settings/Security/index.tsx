@@ -35,27 +35,27 @@ export const Security = () => {
 
   const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
     {
-      text: 'Immediately',
+      text: i18n.settings.immediately,
       value: 0,
     },
     {
-      text: 'If left for 1 minute',
+      text: i18n.settings.ifLeftFor1Minutes,
       value: 60 * 1000,
     },
     {
-      text: 'If left for 15 minutes',
+      text: i18n.settings.ifLeftFor15Minutes,
       value: 15 * 60 * 1000,
     },
     {
-      text: 'If left for 30 minutes',
+      text: i18n.settings.ifLeftFor30Minutes,
       value: 30 * 60 * 1000,
     },
     {
-      text: 'If left for 1 hour',
+      text: i18n.settings.ifLeftFor1Hour,
       value: 60 * 60 * 1000,
     },
     {
-      text: 'When close app',
+      text: i18n.settings.whenCloseApp,
       value: undefined,
     },
   ];
@@ -82,12 +82,12 @@ export const Security = () => {
   };
 
   return (
-    <SubScreenContainer title={'Security'} navigation={navigation}>
+    <SubScreenContainer title={i18n.title.security} navigation={navigation}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
-        <ToggleItem label={'PIN Code'} isEnabled={pinCodeEnabled} onValueChange={onValueChangePinCode} />
+        <ToggleItem label={i18n.common.pinCode} isEnabled={pinCodeEnabled} onValueChange={onValueChangePinCode} />
         <ToggleItem
           style={{ marginBottom: 16 }}
-          label={'Face ID'}
+          label={i18n.common.faceId}
           isEnabled={isEnabledFaceId}
           disabled={true}
           onValueChange={onValueChangeFaceId}
@@ -98,7 +98,7 @@ export const Security = () => {
           style={{ marginBottom: 4 }}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           icon={Key}
-          title={'Change PIN code'}
+          title={i18n.common.changePinCode}
           hasRightArrow
           onPress={() => navigation.navigate('PinCode', { isEditablePinCode: true })}
         />
@@ -108,7 +108,7 @@ export const Security = () => {
           disabled={true}
           color={ColorMap.disabledTextColor}
           icon={GlobeHemisphereWest}
-          title={'Dapp'}
+          title={i18n.common.dApp}
           hasRightArrow
           onPress={() => {}}
         />
@@ -116,7 +116,7 @@ export const Security = () => {
         <ActionItem
           style={{ marginBottom: 4 }}
           icon={LockKeyOpen}
-          title={'Manage Auto-Lock'}
+          title={i18n.common.manageAutoLock}
           hasRightArrow
           disabled={!pinCode}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}

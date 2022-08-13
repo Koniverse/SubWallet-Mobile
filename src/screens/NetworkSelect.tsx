@@ -6,6 +6,7 @@ import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { SelectScreen } from 'components/SelectScreen';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -53,7 +54,9 @@ export const NetworkSelect = ({
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={'no network'} isDanger={false} />;
+    return (
+      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />
+    );
   };
 
   return (
@@ -61,7 +64,7 @@ export const NetworkSelect = ({
       <SelectScreen
         style={{ paddingTop: 0 }}
         onPressBack={onPressBack || (() => {})}
-        title={'Select Network'}
+        title={i18n.title.selectNetwork}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
         <FlatList

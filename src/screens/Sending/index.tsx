@@ -339,7 +339,7 @@ export const SendFund = ({
   return (
     <>
       {!isShowTxResult ? (
-        <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={'Send Fund'}>
+        <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={i18n.title.sendFund}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
               <TouchableWithoutFeedback
@@ -353,7 +353,7 @@ export const SendFund = ({
                         ref={inputAddressRef}
                         onPressQrButton={onPressQrButton}
                         containerStyle={{ marginBottom: 8 }}
-                        label={'Send to Address'}
+                        label={i18n.common.sendToAddress}
                         value={currentReceiveAddress}
                         onChange={onChangeReceiverAddress}
                       />
@@ -415,7 +415,7 @@ export const SendFund = ({
 
                     <SubmitButton
                       disabled={!canMakeTransfer}
-                      title={'Continue'}
+                      title={i18n.common.continue}
                       style={{ width: '100%', ...MarginBottomForSubmitButton }}
                       onPress={() => setCurrentStep(ViewStep.CONFIRMATION)}
                     />

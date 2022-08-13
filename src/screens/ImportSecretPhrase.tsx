@@ -101,7 +101,7 @@ export const ImportSecretPhrase = ({
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.common.importSecretPhrase}>
+    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.title.importSecretPhrase}>
       <>
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={sharedStyles.layoutContainer}>
@@ -121,7 +121,7 @@ export const ImportSecretPhrase = ({
               <SubmitButton
                 disabled={!seed || !!error}
                 isBusy={isBusy}
-                title={'Continue'}
+                title={i18n.common.continue}
                 onPress={() => {
                   setCurrentViewStep(ViewStep.ENTER_PASSWORD);
                 }}

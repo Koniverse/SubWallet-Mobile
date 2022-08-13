@@ -16,6 +16,7 @@ import { Warning } from 'components/Warning';
 import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   requestPayload: RequestCheckTransfer;
@@ -130,13 +131,23 @@ export const Confirmation = ({
             si={si}
             decimals={balanceFormat[0]}
           />
-          <NetworkField label={'Network'} networkKey={requestPayload.networkKey} />
-          <TextField label={'Account'} text={accountName || ''} />
-          <AddressField label={'Send from Address'} address={requestPayload.from} networkPrefix={networkPrefix} />
-          <AddressField label={'Send to Address'} address={requestPayload.to} />
-          <BalanceField label={'Network Fee'} value={fee || '0'} si={si} token={feeSymbol} decimal={feeDecimals} />
+          <NetworkField label={i18n.common.network} networkKey={requestPayload.networkKey} />
+          <TextField label={i18n.common.account} text={accountName || ''} />
+          <AddressField
+            label={i18n.common.sendFromAddress}
+            address={requestPayload.from}
+            networkPrefix={networkPrefix}
+          />
+          <AddressField label={i18n.common.sendToAddress} address={requestPayload.to} />
+          <BalanceField
+            label={i18n.common.networkFee}
+            value={fee || '0'}
+            si={si}
+            token={feeSymbol}
+            decimal={feeDecimals}
+          />
           <PasswordField
-            label={'Password'}
+            label={i18n.common.password}
             value={password}
             onChangeText={onChangePassword}
             isBusy={isBusy}
@@ -151,7 +162,7 @@ export const Confirmation = ({
         disabled={!password || password.length < 6}
         isBusy={isBusy}
         style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 8 }}
-        title={'Send'}
+        title={i18n.common.send}
         onPress={_doTransfer}
       />
     </>

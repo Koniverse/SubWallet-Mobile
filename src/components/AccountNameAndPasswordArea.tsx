@@ -35,14 +35,14 @@ export const AccountNameAndPasswordArea = ({
     <>
       <EditAccountInputText
         autoFocus={autoFocusFirstField}
-        label={'Wallet Name'}
+        label={i18n.common.accountName}
         inputValue={name}
         onChangeText={onChangeName}
         editAccountInputStyle={{ marginBottom: 8 }}
       />
       <PasswordField
         autoFocus={false}
-        label={'Wallet Password'}
+        label={i18n.common.walletPassword}
         onChangeText={onChangePass1}
         value={pass1 || ''}
         isError={checkPasswordTooShort(pass1)}
@@ -50,7 +50,7 @@ export const AccountNameAndPasswordArea = ({
 
       <PasswordField
         autoFocus={false}
-        label={'Repeat Wallet Password'}
+        label={i18n.common.repeatWalletPassword}
         onChangeText={onChangePass2}
         value={pass2 || ''}
         isError={checkPasswordTooShort(pass2) || pass1 !== pass2}

@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-notifications';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import ToastContainer from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   selectedAddress?: string;
@@ -157,14 +158,14 @@ export const ReceiveModal = ({
 
         <View style={{ flexDirection: 'row', paddingTop: 27 }}>
           <SubmitButton
-            title={'Explorer'}
+            title={i18n.common.explorer}
             backgroundColor={ColorMap.dark2}
             style={receiveModalExplorerBtn}
             onPress={() => {
               isSupportScanExplorer && Linking.openURL(scanExplorerAddressUrl);
             }}
           />
-          <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={'Share'} onPress={onShareImg} />
+          <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={i18n.common.share} onPress={onShareImg} />
         </View>
         {
           <Toast

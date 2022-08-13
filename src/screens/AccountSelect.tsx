@@ -7,6 +7,7 @@ import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { Account } from 'components/Account';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -67,7 +68,9 @@ export const AccountSelect = ({
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={"There's no account at the moment"} isDanger={false} />;
+    return (
+      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountMessage} isDanger={false} />
+    );
   };
 
   return (
@@ -75,7 +78,7 @@ export const AccountSelect = ({
       <SelectScreen
         style={{ paddingTop: 0 }}
         onPressBack={_onPressBack}
-        title={'Select Account'}
+        title={i18n.title.selectAccount}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
         <FlatList
