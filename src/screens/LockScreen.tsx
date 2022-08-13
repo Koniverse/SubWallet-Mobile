@@ -17,7 +17,7 @@ import bcrypt from 'react-native-bcrypt';
 export const LockScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const {
-    settingData: { pinCode },
+    mobileSettings: { pinCode },
     accounts: { accounts },
   } = useSelector((state: RootState) => state);
   const [value, setValue] = useState<string>('');
