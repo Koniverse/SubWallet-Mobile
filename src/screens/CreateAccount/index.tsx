@@ -16,11 +16,11 @@ const ViewStep = {
 
 function getHeaderTitle(viewStep: number) {
   if (viewStep === ViewStep.INIT_SP) {
-    return i18n.common.yourSecretPhrase;
+    return i18n.title.yourSecretPhrase;
   } else if (viewStep === ViewStep.VERIFY_SP) {
-    return i18n.common.verifySecretPhrase;
+    return i18n.title.verifySecretPhrase;
   }
-  return i18n.common.nameYourWallet;
+  return i18n.title.nameYourWallet;
 }
 
 export const CreateAccount = ({

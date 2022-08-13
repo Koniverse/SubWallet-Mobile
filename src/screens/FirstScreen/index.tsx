@@ -42,7 +42,7 @@ export const FirstScreen = () => {
   const SECRET_TYPE: AccountActionType[] = [
     {
       icon: Article,
-      title: i18n.common.importSecretPhrase,
+      title: i18n.title.importSecretPhrase,
       onCLickButton: () => {
         setSelectedAction('ImportSecretPhrase');
         setSelectModalVisible(false);
@@ -53,7 +53,7 @@ export const FirstScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.common.importEVMPrivateKey,
+      title: i18n.title.importEVMPrivateKey,
       onCLickButton: () => {
         navigation.navigate('ImportPrivateKey');
         setSelectModalVisible(false);
@@ -61,7 +61,7 @@ export const FirstScreen = () => {
     },
     {
       icon: FileArrowUp,
-      title: i18n.common.importFromJson,
+      title: i18n.title.importFromJson,
       onCLickButton: () => {
         navigation.navigate('RestoreJson');
         setSelectModalVisible(false);
@@ -112,9 +112,7 @@ export const FirstScreen = () => {
           }}
         />
         {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
-        <Text style={firstScreenNotificationStyle}>
-          {'By continuing, you agree to our Terms & Conditions and Privacy Policy'}
-        </Text>
+        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessage}</Text>
         <SelectImportAccountModal
           modalTitle={i18n.common.selectYourImport}
           modalHeight={256}

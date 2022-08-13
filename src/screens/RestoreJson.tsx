@@ -54,7 +54,7 @@ export const RestoreJson = () => {
           .then(accountInfo => {
             setAccountsInfo(old => [...old, accountInfo]);
           })
-          .catch(e => {
+          .catch(() => {
             setFileError(true);
           });
       }
@@ -81,7 +81,7 @@ export const RestoreJson = () => {
       .then(res => {
         _onReadFile(JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json);
       })
-      .catch(err => {
+      .catch(() => {
         setFileError(true);
       });
   };
@@ -109,7 +109,7 @@ export const RestoreJson = () => {
         setAccountsInfo(() => []);
         navigation.navigate('Home');
       })
-      .catch(e => {
+      .catch(() => {
         setIsBusy(false);
         setIsPasswordError(true);
       });
@@ -142,25 +142,27 @@ export const RestoreJson = () => {
   }, [accountsInfo]);
 
   return (
-    <SubScreenContainer title={i18n.common.importFromJson} navigation={navigation}>
+    <SubScreenContainer title={i18n.title.importFromJson} navigation={navigation}>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <InputFile onChangeResult={_onChangeFile} />
           {renderAccount()}
           <PasswordField
-            label={'Wallet Password'}
+            label={i18n.common.walletPassword}
             onChangeText={onChangeText}
             value={password}
             isError={!!password && password.length < 6}
           />
           {isPasswordError && <Warning message={i18n.warningMessage.unableDecode} isDanger />}
-          {isFileError && <Warning title={'Error!'} message={i18n.warningMessage.invalidJsonFile} isDanger />}
+          {isFileError && (
+            <Warning title={i18n.warningTitle.error} message={i18n.warningMessage.invalidJsonFile} isDanger />
+          )}
         </ScrollView>
 
         <View style={footerAreaStyle}>
           <SubmitButton
             isBusy={isBusy}
-            title={'Import Account'}
+            title={i18n.common.importAccount}
             onPress={_onRestore}
             disabled={isFileError || isPasswordError || !password || !file}
           />

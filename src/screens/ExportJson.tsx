@@ -89,7 +89,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
       // @ts-ignore
       toastRef.current.hideAll();
       // @ts-ignore
-      toastRef.current.show('Copied to clipboard');
+      toastRef.current.show(i18n.common.copiedToClipboard);
     }
   };
 
@@ -133,7 +133,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
                 <View style={{ alignItems: 'center' }}>
                   <LeftIconButton
                     icon={CopySimple}
-                    title={'Copy to Clipboard'}
+                    title={i18n.common.copyToClipboard}
                     onPress={() => copyToClipboard(fileContent)}
                   />
                 </View>
@@ -142,7 +142,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
 
             {!fileContent && (
               <PasswordField
-                label={'PASSWORD FOR THIS ACCOUNT'}
+                label={i18n.common.passwordForThisAccount.toUpperCase()}
                 onChangeText={onTypePassword}
                 onBlur={onSetPassword}
                 onEndEditing={onSetPassword}
@@ -158,7 +158,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
           </View>
           <View style={footerAreaStyle}>
             <SubmitButton
-              title={fileContent ? 'Done' : 'Continue'}
+              title={fileContent ? i18n.common.done : i18n.common.continue}
               disabled={isPasswordError}
               isBusy={isBusy}
               style={buttonStyle}

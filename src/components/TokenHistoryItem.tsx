@@ -11,6 +11,7 @@ import { BalanceVal } from 'components/BalanceVal';
 import { getBalances } from 'utils/chainBalances';
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends TouchableOpacityProps {
   item: TransactionHistoryItemType;
@@ -188,7 +189,7 @@ export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
 
           {!!item.fee && (
             <View style={part2Line2Style}>
-              <Text style={subTextStyle}>Fee:</Text>
+              <Text style={subTextStyle}>{i18n.common.fee}</Text>
               <BalanceVal
                 style={balanceValStyle}
                 symbol={feeSymbol}

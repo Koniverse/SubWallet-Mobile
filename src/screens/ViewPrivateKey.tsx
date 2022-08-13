@@ -22,6 +22,7 @@ import { ExportPrivateKeyProps, RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
+import i18n from 'utils/i18n/i18n';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -116,7 +117,7 @@ export const ViewPrivateKey = ({
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();
-    toast.show('Copied to Clipboard');
+    toast.show(i18n.common.copiedToClipboard);
   };
 
   const onTapPrivate = () => {
@@ -149,25 +150,21 @@ export const ViewPrivateKey = ({
   const isPasswordError = !password || password.length < 6;
 
   return (
-    <SubScreenContainer navigation={navigation} title={'Your Private Key'}>
+    <SubScreenContainer navigation={navigation} title={i18n.title.yourPrivateKey}>
       <View style={layoutContainerStyle}>
         <ScrollView style={bodyAreaStyle}>
           <View style={warningBlockStyle}>
-            <Text style={warningBlockTitleStyle}>Do not share your private key!</Text>
-            <Text style={warningBlockTextStyle}>
-              If someone has your private key they will have full control of your account
-            </Text>
+            <Text style={warningBlockTitleStyle}>{i18n.warningTitle.doNotSharePrivateKey}</Text>
+            <Text style={warningBlockTextStyle}>{i18n.warningMessage.privateKeyWarning}</Text>
           </View>
 
           {currentViewStep === ViewStep.HIDE_PK && (
             <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={privateBlockStyle} onPress={onTapPrivate}>
               <View style={privateBlockOverlayStyle}>
                 <Text style={{ ...privateBlockTextStyle, marginBottom: 4, color: ColorMap.light }}>
-                  Tap to reveal your private key
+                  {i18n.common.tapToRevealPrivateKey}
                 </Text>
-                <Text style={{ ...privateBlockTextStyle, marginBottom: 8 }}>
-                  Make sure no one is watching your screen
-                </Text>
+                <Text style={{ ...privateBlockTextStyle, marginBottom: 8 }}>{i18n.common.viewPrivateKeyTitle}</Text>
                 <View style={privateBlockIconStyle}>
                   <PrivateBlockIcon size={32} color={ColorMap.light} />
                 </View>
@@ -178,7 +175,7 @@ export const ViewPrivateKey = ({
           {currentViewStep === ViewStep.ENTER_PW && (
             <>
               <PasswordField
-                label={'password for this account'}
+                label={i18n.common.passwordForThisAccount}
                 onChangeText={onTypePassword}
                 isError={isPasswordError}
                 value={password}
@@ -200,7 +197,7 @@ export const ViewPrivateKey = ({
             <View style={copyButtonWrapperStyle}>
               <LeftIconButton
                 icon={CopySimple}
-                title={'Copy to Clipboard'}
+                title={i18n.common.copyToClipboard}
                 onPress={() => copyToClipboard(privateKey)}
               />
             </View>
@@ -210,14 +207,14 @@ export const ViewPrivateKey = ({
         <View style={footerAreaStyle}>
           {currentViewStep === ViewStep.ENTER_PW ? (
             <SubmitButton
-              title={'Continue'}
+              title={i18n.common.continue}
               disabled={isPasswordError}
               isBusy={isBusy}
               style={buttonStyle}
               onPress={onSetPassword}
             />
           ) : (
-            <SubmitButton title={'Done'} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />
+            <SubmitButton title={i18n.common.done} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />
           )}
         </View>
       </View>

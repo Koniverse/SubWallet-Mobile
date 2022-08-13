@@ -82,7 +82,7 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();
-    toast.show('Copied to Clipboard');
+    toast.show(i18n.common.copiedToClipboard);
   };
 
   return (
@@ -94,13 +94,17 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
           </View>
           <View style={phraseBlockStyle}>{seedItems.map(renderSeedWord)}</View>
           <View style={copyButtonWrapperStyle}>
-            <LeftIconButton icon={CopySimple} title={'Copy to Clipboard'} onPress={() => copyToClipboard(seed)} />
+            <LeftIconButton
+              icon={CopySimple}
+              title={i18n.common.copyToClipboard}
+              onPress={() => copyToClipboard(seed)}
+            />
           </View>
           <Warning title={i18n.warningTitle.doNotShareSecretPhrase} message={i18n.warningMessage.secretPhraseWarning} />
         </ScrollView>
       </View>
       <View style={footerAreaStyle}>
-        <SubmitButton title={'Continue'} onPress={onPressSubmit} />
+        <SubmitButton title={i18n.common.continue} onPress={onPressSubmit} />
       </View>
     </View>
   );

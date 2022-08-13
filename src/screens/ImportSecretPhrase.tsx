@@ -71,7 +71,7 @@ export const ImportSecretPhrase = ({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(e => {
         setAccount(null);
-        setError('Invalid mnemonic seed');
+        setError(i18n.errorMessage.invalidMnemonicSeed);
       });
   }, [keyTypes, seed]);
 
@@ -101,14 +101,12 @@ export const ImportSecretPhrase = ({
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.common.importSecretPhrase}>
+    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.title.importSecretPhrase}>
       <>
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={sharedStyles.layoutContainer}>
             <ScrollView style={bodyAreaStyle}>
-              <Text style={titleStyle}>
-                Restore an existing wallet account with your 12 or 24-word secret recovery phrase
-              </Text>
+              <Text style={titleStyle}>{i18n.common.importSecretPhraseTitle}</Text>
 
               <Textarea
                 autoFocus={true}
@@ -121,7 +119,7 @@ export const ImportSecretPhrase = ({
               <SubmitButton
                 disabled={!seed || !!error}
                 isBusy={isBusy}
-                title={'Continue'}
+                title={i18n.common.continue}
                 onPress={() => {
                   setCurrentViewStep(ViewStep.ENTER_PASSWORD);
                 }}

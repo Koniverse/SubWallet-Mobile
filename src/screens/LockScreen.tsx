@@ -39,7 +39,7 @@ export const LockScreen = () => {
           navigation.navigate('FirstScreen');
         }
       } else {
-        setError('Wrong password');
+        setError(i18n.errorMessage.wrongPassword);
       }
     } else {
       setError('');

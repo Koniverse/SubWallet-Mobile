@@ -5,6 +5,7 @@ import Text from '../components/Text';
 import { FileArrowUp } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   onChangeResult: (value: Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null) => void;
@@ -42,7 +43,7 @@ export const InputFile = ({ onChangeResult }: Props) => {
   return (
     <TouchableOpacity style={inputFileContainer} onPress={onChangeFile}>
       <FileArrowUp size={32} weight={'regular'} color={ColorMap.light} />
-      <Text style={inputFileLabel}>Paste your JSON file here</Text>
+      <Text style={inputFileLabel}>{i18n.common.inputFileLabel}</Text>
     </TouchableOpacity>
   );
 };

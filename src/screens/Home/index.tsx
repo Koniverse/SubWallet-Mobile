@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT } from '../../constant';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -33,7 +34,7 @@ export const Home = () => {
 
   const onPressComingSoonTab = useCallback(() => {
     toast.hideAll();
-    toast.show('Coming Soon');
+    toast.show(i18n.common.comingSoon);
   }, [toast]);
 
   return (

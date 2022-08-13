@@ -58,7 +58,9 @@ export const TokenSelect = ({
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />;
+    return (
+      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />
+    );
   };
 
   return (
@@ -66,7 +68,7 @@ export const TokenSelect = ({
       <SelectScreen
         style={{ paddingTop: 0 }}
         onPressBack={_onPressBack}
-        title={'Select Token'}
+        title={i18n.title.selectToken}
         searchString={searchString}
         onChangeSearchText={setSearchString}>
         <FlatList

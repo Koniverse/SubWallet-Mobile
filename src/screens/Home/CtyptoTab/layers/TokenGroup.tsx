@@ -18,6 +18,7 @@ import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
 import useTokenBalanceItems from 'hooks/screen/Home/CtyptoTab/layers/TokenGroup/useTokenBalanceItems';
 import { useRefresh } from 'hooks/useRefresh';
+import i18n from 'utils/i18n/i18n';
 
 interface Prop {
   isShowZeroBalance?: boolean;
@@ -192,7 +193,7 @@ const TokenGroupLayer = ({
           allowHeaderOverscroll={true}
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>
-          <Tabs.Tab name={'one'} label={'Token'}>
+          <Tabs.Tab name={'one'} label={i18n.title.token}>
             <TokensTab
               items={tokenBalanceItems}
               renderItem={renderTokenTabItem}
@@ -201,7 +202,7 @@ const TokenGroupLayer = ({
               refreshTabId={refreshTabId}
             />
           </Tabs.Tab>
-          <Tabs.Tab name={'two'} label={'Chain'}>
+          <Tabs.Tab name={'two'} label={i18n.title.chain}>
             <ChainsTab
               isShowZeroBalance={isShowZeroBalance}
               onPressChainItem={onPressChainItem}

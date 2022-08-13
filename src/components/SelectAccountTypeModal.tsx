@@ -54,7 +54,7 @@ export const SelectAccountTypeModal = ({
       onChangeModalVisible={onChangeModalVisible}
       modalStyle={{ height: modalHeight }}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.common.selectAccountType}</Text>
+        <Text style={modalTitle}>{i18n.title.selectAccountType}</Text>
         {ACCOUNT_TYPE.map(item => (
           <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
         ))}

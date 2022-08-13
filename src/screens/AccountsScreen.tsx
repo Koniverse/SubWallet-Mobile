@@ -60,7 +60,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: Article,
-      title: i18n.common.importSecretPhrase,
+      title: i18n.title.importSecretPhrase,
       onCLickButton: () => {
         setSelectedAction('ImportSecretPhrase');
         setModalVisible(false);
@@ -71,7 +71,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.common.importEVMPrivateKey,
+      title: i18n.title.importEVMPrivateKey,
       onCLickButton: () => {
         navigation.navigate('ImportPrivateKey');
         setModalVisible(false);
@@ -79,7 +79,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: FileArrowUp,
-      title: i18n.common.importFromJson,
+      title: i18n.title.importFromJson,
       onCLickButton: () => {
         navigation.navigate('RestoreJson');
         setModalVisible(false);
@@ -98,7 +98,7 @@ export const AccountsScreen = () => {
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.warningMessage.noAccountText} isDanger={false} />;
+    return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountText} isDanger={false} />;
   };
 
   const selectAccount = useCallback(
@@ -165,7 +165,7 @@ export const AccountsScreen = () => {
   return (
     <SubScreenContainer
       navigation={navigation}
-      title={i18n.settings.account}
+      title={i18n.title.accounts}
       rightIcon={Plus}
       onPressRightIcon={onCreateAccount}>
       <View style={accountsWrapper}>

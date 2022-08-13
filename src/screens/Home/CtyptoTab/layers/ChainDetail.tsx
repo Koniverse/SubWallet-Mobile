@@ -17,6 +17,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/CtyptoTab/TabsContainerHeader';
 import { useRefresh } from 'hooks/useRefresh';
+import i18n from 'utils/i18n/i18n';
 
 interface Prop {
   isShowZeroBalance?: boolean;
@@ -181,7 +182,7 @@ const ChainDetailLayer = ({
           allowHeaderOverscroll={true}
           renderTabBar={renderTabBar}
           renderHeader={renderTabContainerHeader}>
-          <Tabs.Tab name={'one'} label={'Token'}>
+          <Tabs.Tab name={'one'} label={i18n.title.token}>
             <TokensTab
               items={tokenBalanceItems}
               renderItem={renderTokenTabItem}
@@ -190,7 +191,7 @@ const ChainDetailLayer = ({
               refreshTabId={refreshTabId}
             />
           </Tabs.Tab>
-          <Tabs.Tab name={'two'} label={'History'}>
+          <Tabs.Tab name={'two'} label={i18n.title.history}>
             <HistoryTab
               networkKey={selectedNetworkInfo.networkKey}
               isRefresh={isRefresh}

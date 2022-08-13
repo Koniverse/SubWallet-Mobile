@@ -65,7 +65,7 @@ export const Settings = () => {
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const onPressComingSoonFeature = () => {
     toast.hideAll();
-    toast.show('Coming Soon');
+    toast.show(i18n.common.comingSoon);
   };
   const [hiddenCount, setHiddenCount] = useState(0);
 
@@ -73,13 +73,13 @@ export const Settings = () => {
     [
       {
         icon: ShieldCheck,
-        title: i18n.settings.security,
+        title: i18n.title.security,
         hasRightArrow: true,
         onPress: () => navigation.navigate('Security'),
       },
       {
         icon: GlobeHemisphereWest,
-        title: i18n.settings.language,
+        title: i18n.title.language,
         hasRightArrow: true,
         onPress: onPressComingSoonFeature,
       },
@@ -169,13 +169,13 @@ export const Settings = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.settings.settings} navigation={navigation}>
+    <SubScreenContainer title={i18n.title.settings} navigation={navigation}>
       <>
         <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 24 }}>
           <ActionItem
             icon={ShieldCheck}
             showIcon={false}
-            title={'Accounts'}
+            title={i18n.title.accounts}
             subTitle={currentAccount ? currentAccount.name : ''}
             hasRightArrow
             paddingLeft={16}
@@ -196,7 +196,7 @@ export const Settings = () => {
             />
           ))}
 
-          <Text style={settingTitleStyle}>Networks & Assets</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.networksAndAssets}</Text>
 
           {settingList[1].map(setting => (
             <ActionItem
@@ -209,7 +209,7 @@ export const Settings = () => {
             />
           ))}
 
-          <Text style={settingTitleStyle}>Community & Support</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.communityAndSupport}</Text>
 
           {settingList[2].map(setting => (
             <ActionItem
@@ -222,7 +222,7 @@ export const Settings = () => {
             />
           ))}
 
-          <Text style={settingTitleStyle}>About</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.about}</Text>
 
           {settingList[3].map(setting => (
             <ActionItem

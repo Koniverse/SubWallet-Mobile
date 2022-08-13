@@ -17,6 +17,7 @@ import Toast from 'react-native-toast-notifications';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import ToastContainer from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   selectedAddress?: string;
@@ -102,7 +103,7 @@ export const ReceiveModal = ({
       // @ts-ignore
       toastRef.current.hideAll();
       // @ts-ignore
-      toastRef.current.show('Copied to clipboard');
+      toastRef.current.show(i18n.common.copiedToClipboard);
     }
   };
   const formattedAddress = useMemo(() => {
@@ -130,9 +131,9 @@ export const ReceiveModal = ({
       modalVisible={receiveModalVisible}
       onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
-        <Text style={receiveModalTitle}>Receive</Text>
+        <Text style={receiveModalTitle}>{i18n.cryptoTab.receive}</Text>
         <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />
-        <Text style={receiveModalGuide}>Scan address to receive payment</Text>
+        <Text style={receiveModalGuide}>{i18n.common.receiveModalText}</Text>
 
         <View style={receiveModalAddressWrapper}>
           <TouchableOpacity
@@ -156,14 +157,14 @@ export const ReceiveModal = ({
 
         <View style={{ flexDirection: 'row', paddingTop: 27 }}>
           <SubmitButton
-            title={'Explorer'}
+            title={i18n.common.explorer}
             backgroundColor={ColorMap.dark2}
             style={receiveModalExplorerBtn}
             onPress={() => {
               isSupportScanExplorer && Linking.openURL(scanExplorerAddressUrl);
             }}
           />
-          <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={'Share'} onPress={onShareImg} />
+          <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={i18n.common.share} onPress={onShareImg} />
         </View>
         {
           <Toast

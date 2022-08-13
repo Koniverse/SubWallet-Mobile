@@ -97,7 +97,9 @@ export const NetworksSetting = ({}: Props) => {
   };
 
   const renderListEmptyComponent = () => {
-    return <Warning title={'Warning'} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />;
+    return (
+      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />
+    );
   };
 
   useEffect(() => {
@@ -111,7 +113,7 @@ export const NetworksSetting = ({}: Props) => {
     <SelectScreen
       autoFocus={false}
       onPressBack={() => navigation.goBack()}
-      title={'Network Setting'}
+      title={i18n.title.networkSetting}
       searchString={searchString}
       onChangeSearchText={setSearchString}>
       <FlatList

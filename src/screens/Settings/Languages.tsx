@@ -55,14 +55,14 @@ export const Languages = () => {
   return (
     <SelectScreen
       style={{ paddingTop: 0 }}
-      title={'Language'}
+      title={i18n.title.language}
       searchString={searchString}
       onChangeSearchText={setSearchString}
       onPressBack={() => navigation.goBack()}>
       <View style={{ flex: 1 }}>
         <FlatList data={filteredLanguageOption} renderItem={renderItem} style={{ ...ScrollViewStyle }} />
         <View style={footerAreaStyle}>
-          <SubmitButton title={'Done'} onPress={onPressDone} />
+          <SubmitButton title={i18n.common.done} onPress={onPressDone} />
         </View>
       </View>
     </SelectScreen>

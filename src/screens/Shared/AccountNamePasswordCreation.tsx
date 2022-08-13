@@ -80,7 +80,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
         <SubmitButton
           disabled={!pass1 || !pass2 || pass1 !== pass2}
           isBusy={isBusy}
-          title={'Finish'}
+          title={i18n.common.finish}
           onPress={() => {
             pass1 && onCreateAccount(name, pass1);
           }}
