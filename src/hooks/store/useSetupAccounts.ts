@@ -1,15 +1,23 @@
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { saveCurrentAccountAddress, subscribeAccountsWithCurrentAddress } from '../../messaging';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { updateAccountsAndCurrentAccount } from 'stores/updater';
+import { WebViewContext } from 'providers/contexts';
 
-export default function useSetupAccounts(isWebRunnerReady: boolean): void {
-  useEffect((): void => {
-    console.log('--- Setup redux: accounts');
+export default function useSetupAccounts(): boolean {
+  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    let cancel = false;
 
     if (isWebRunnerReady) {
+      console.log('--- Setup redux: accounts');
       subscribeAccountsWithCurrentAddress(rs => {
+        if (cancel) {
+          return;
+        }
+
         const { accounts, currentAddress, currentGenesisHash } = rs;
 
         if (accounts && accounts.length) {
@@ -37,6 +45,8 @@ export default function useSetupAccounts(isWebRunnerReady: boolean): void {
             updateAccountsAndCurrentAccount({ accounts, currentAccountAddress: selectedAcc.address });
           }
         }
+
+        setIsReady(true);
       })
         .catch(e => {
           console.log('--- subscribeAccountsWithCurrentAddress error:', e);
@@ -45,5 +55,11 @@ export default function useSetupAccounts(isWebRunnerReady: boolean): void {
           console.log('--- Init subscribeAccountsWithCurrentAddress');
         });
     }
+
+    return () => {
+      cancel = true;
+    };
   }, [isWebRunnerReady]);
+
+  return isReady;
 }

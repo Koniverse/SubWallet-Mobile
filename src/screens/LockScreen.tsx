@@ -12,12 +12,12 @@ import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../constant';
-import bcrypt from 'react-native-bcrypt';
+import useAppLock from 'hooks/useAppLock';
 
 export const LockScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const pinCode = useSelector((state: RootState) => state.mobileSettings.pinCode);
+  const { unlock } = useAppLock();
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
@@ -31,7 +31,7 @@ export const LockScreen = () => {
 
   useEffect(() => {
     if (value.length > 5) {
-      if (bcrypt.compareSync(value, pinCode)) {
+      if (unlock(value)) {
         setValue('');
         if (accounts && accounts.length) {
           navigation.navigate('Home');
@@ -44,7 +44,7 @@ export const LockScreen = () => {
     } else {
       setError('');
     }
-  }, [accounts, navigation, pinCode, value]);
+  }, [accounts, navigation, unlock, value]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

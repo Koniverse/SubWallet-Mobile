@@ -4,7 +4,6 @@ import WebView from 'react-native-webview';
 import { listenMessage, setupWebview } from '../messaging';
 import { NativeSyntheticEvent, Platform, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
-import SplashScreen from 'react-native-splash-screen';
 import EventEmitter from 'eventemitter3';
 
 interface WebViewProviderProps {
@@ -54,11 +53,13 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
   // const sourceUri = 'http://192.168.10.189:9000'; // Use for developing web runner real time
   const [status, setStatus] = useState<WebviewStatus>('init');
+  const [isReady, setIsReady] = useState(false);
   const [version, setVersion] = useState('unknown');
   const [url, setUrl] = useState(sourceUri);
 
   const setWebviewStatus = (webviewStatus: WebviewStatus) => {
     setStatus(webviewStatus);
+    setIsReady(webviewStatus === 'crypto_ready');
     eventEmitter.emit('update-status', webviewStatus);
     eventEmitter.emit(webviewStatus, webviewStatus);
   };
@@ -72,9 +73,6 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
         const webViewStatus = data.response?.status as WebviewStatus;
         setWebviewStatus(webViewStatus);
         console.debug(`### Web View Status: ${webViewStatus}`);
-        if (webViewStatus === 'crypto_ready') {
-          SplashScreen.hide();
-        }
         return true;
       } else if (data.id === '-1') {
         // @ts-ignore
@@ -103,7 +101,7 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   }, [webRef]);
 
   return (
-    <WebViewContext.Provider value={{ viewRef: webRef, status, eventEmitter, url, version, reload }}>
+    <WebViewContext.Provider value={{ viewRef: webRef, status, isReady, eventEmitter, url, version, reload }}>
       <View style={{ height: 0 }}>
         <WebView
           // injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}

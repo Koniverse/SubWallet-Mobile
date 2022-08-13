@@ -1,14 +1,26 @@
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { subscribeSettings } from '../../messaging';
 import { updateSettings } from 'stores/updater';
+import { ResponseSettingsType } from '@subwallet/extension-base/background/KoniTypes';
+import { WebViewContext } from 'providers/contexts';
 
-export default function useSetupSettings(isWebRunnerReady: boolean): void {
-  useEffect((): void => {
-    console.log('--- Setup redux: settings');
+export default function useSetupSettings(): boolean {
+  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    let cancel = false;
 
     if (isWebRunnerReady) {
-      subscribeSettings(null, updateSettings)
-        .then(updateSettings)
+      console.log('--- Setup redux: settings');
+      const _update = (payload: ResponseSettingsType) => {
+        if (cancel) {
+          return;
+        }
+        updateSettings(payload);
+        setIsReady(true);
+      };
+      subscribeSettings(null, _update)
+        .then(_update)
         .catch(e => {
           console.log('--- subscribeSettings error:', e);
         })
@@ -16,5 +28,11 @@ export default function useSetupSettings(isWebRunnerReady: boolean): void {
           console.log('--- Init subscribeSettings');
         });
     }
+
+    return () => {
+      cancel = true;
+    };
   }, [isWebRunnerReady]);
+
+  return isReady;
 }

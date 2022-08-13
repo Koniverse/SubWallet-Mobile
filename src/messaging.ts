@@ -148,7 +148,7 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
     }
 
     if (!unknownHandled) {
-      console.error(`Unknown response: ${JSON.stringify(data.id)}`);
+      console.warn(`Unknown response: ${JSON.stringify(data.id)}`);
     }
 
     return;

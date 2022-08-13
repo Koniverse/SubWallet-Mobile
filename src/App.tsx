@@ -1,13 +1,13 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RootState } from './stores';
 import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { AppState, StatusBar } from 'react-native';
-import { ThemeContext, WebViewContext } from 'providers/contexts';
+import { StatusBar } from 'react-native';
+import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { QrScanner } from 'screens/QrScanner';
@@ -32,59 +32,60 @@ import { LockScreen } from 'screens/LockScreen';
 import { ExportJson } from 'screens/ExportJson';
 import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
-import useSetupStore from 'hooks/store/useSetupStore';
-import useSetupI18n from 'hooks/useSetupI18n';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
+import useSetupI18n from 'hooks/init/useSetupI18n';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
-
-let lastTimestamp = 0;
+import useAppLock from 'hooks/useAppLock';
+import useCryptoReady from 'hooks/init/useCryptoReady';
+import useSetupAccounts from 'hooks/store/useSetupAccounts';
+import useSetupSettings from 'hooks/store/useSetupSettings';
+import useSetupNetworkMap from 'hooks/store/useSetupNetworkMap';
+import useSetupChainRegistry from 'hooks/store/useSetupChainRegistry';
+import useSetupPrice from 'hooks/store/useSetupPrice';
+import useSetupBalance from 'hooks/store/useSetupBalance';
+import useSetupTransactionHistory from 'hooks/store/useSetupTransactionHistory';
+import SplashScreen from 'react-native-splash-screen';
 
 export const App = () => {
-  const { status } = useContext(WebViewContext);
-  const { pinCode, pinCodeEnabled, autoLockTime, language } = useSelector((state: RootState) => state.mobileSettings);
+  const isLock = useAppLock().isLock;
+  const [isAppReady, setIsAppReady] = useState(false);
+  const isCryptoReady = useCryptoReady();
+  const isI18nReady = useSetupI18n().isI18nReady;
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const [isCryptoReady, setCryptoReady] = useState<boolean>(false);
-  useSetupStore(status);
-  useSetupI18n(language, status);
+  const [isEmptyAccountList, setIsEmptyAccountList] = useState(accounts && accounts.length > 0);
+
+  // Fetching data from web-runner to redux
+  const isAccountReady = useSetupAccounts();
+  const isSettingReady = useSetupSettings();
+  const isNetworkMapReady = useSetupNetworkMap();
+  useSetupChainRegistry();
+  useSetupPrice();
+  useSetupBalance();
+  useSetupTransactionHistory();
+
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
-  // const isDarkMode = useColorScheme() === 'dark';
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   useEffect(() => {
-    cryptoWaitReady().then(() => {
-      setCryptoReady(true);
-    });
-  }, []);
+    return () => {
+      setIsEmptyAccountList(accounts && accounts.length > 0);
+    };
+  }, [accounts]);
 
   useEffect(() => {
-    const onAppStateChange = (state: string) => {
-      if (!pinCodeEnabled) {
-        return;
-      }
+    const _appReady = isCryptoReady && isI18nReady && isSettingReady && isAccountReady && isNetworkMapReady;
+    setIsAppReady(_appReady);
+  }, [isAccountReady, isCryptoReady, isI18nReady, isNetworkMapReady, isSettingReady]);
 
-      if (state === 'background') {
-        lastTimestamp = Date.now();
-      } else if (state === 'active') {
-        if (autoLockTime === undefined) {
-          return;
-        } else {
-          if (Date.now() - lastTimestamp > autoLockTime) {
-            navigationRef.navigate('LockScreen');
-          }
-        }
-      }
-    };
+  useEffect(() => {
+    if (isAppReady) {
+      SplashScreen.hide();
+    }
+  }, [isAppReady]);
 
-    const listener = AppState.addEventListener('change', onAppStateChange);
-    return () => {
-      listener.remove();
-    };
-  }, [autoLockTime, navigationRef, pinCodeEnabled]);
-
-  if (!isCryptoReady) {
+  if (!isAppReady) {
     return <></>;
   }
 
@@ -101,9 +102,7 @@ export const App = () => {
         <ThemeContext.Provider value={theme}>
           <NavigationContainer ref={navigationRef} theme={theme}>
             <Stack.Navigator
-              initialRouteName={
-                !!pinCode && pinCodeEnabled ? 'LockScreen' : accounts && accounts.length ? 'Home' : 'FirstScreen'
-              }
+              initialRouteName={isLock ? 'LockScreen' : isEmptyAccountList ? 'Home' : 'FirstScreen'}
               screenOptions={{
                 animation: 'fade_from_bottom',
               }}>

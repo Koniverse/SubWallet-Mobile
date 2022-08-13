@@ -10,6 +10,7 @@ export type WebviewStatus = 'init' | 'load' | 'reloading' | 'crypto_ready';
 export interface WebviewElement {
   viewRef?: RefObject<WebView | undefined>;
   status?: WebviewStatus;
+  isReady?: boolean;
   url?: string;
   version?: string;
   reload?: () => void;
