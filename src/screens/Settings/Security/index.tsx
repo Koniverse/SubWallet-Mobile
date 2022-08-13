@@ -10,7 +10,7 @@ import { ActionItem } from 'components/ActionItem';
 import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { updateAutoLockTime, updatePinCodeEnable } from 'stores/SettingData';
+import { updateAutoLockTime, updatePinCodeEnable } from 'stores/MobileSettings';
 import { SubWalletModal } from 'components/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
@@ -26,7 +26,7 @@ const modalTitle: StyleProp<any> = {
 
 export const Security = () => {
   const {
-    settingData: { pinCode, pinCodeEnabled, autoLockTime },
+    mobileSettings: { pinCode, pinCodeEnabled, autoLockTime },
   } = useSelector((state: RootState) => state);
   const [isEnabledFaceId, setEnabledFaceId] = useState<boolean>(false);
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);

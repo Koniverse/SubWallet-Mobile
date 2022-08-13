@@ -6,7 +6,7 @@ import settingsReducer from './Settings';
 import currentNetworkReducer from './CurrentNetwork';
 import chainRegistryReducer from './ChainRegistry';
 import BalanceReducer from './Balance';
-import SettingDataReducer from './SettingData';
+import MobileSettingsReducer from './MobileSettings';
 import TransactionHistoryReducer from './TransactionHistory';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,7 +15,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['settingData', 'accounts', 'networkMap', 'currentNetwork', 'settings', 'chainRegistry'],
+  whitelist: ['mobileSettings', 'accounts', 'networkMap', 'currentNetwork', 'settings', 'chainRegistry'],
 };
 
 const rootReducer = combineReducers({
@@ -26,7 +26,7 @@ const rootReducer = combineReducers({
   currentNetwork: currentNetworkReducer,
   chainRegistry: chainRegistryReducer,
   balance: BalanceReducer,
-  settingData: SettingDataReducer,
+  mobileSettings: MobileSettingsReducer,
   transactionHistory: TransactionHistoryReducer,
 });
 

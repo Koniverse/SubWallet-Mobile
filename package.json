@@ -33,6 +33,7 @@
     "@subwallet/extension-base": "0.5.3-1",
     "@subwallet/extension-koni-base": "0.5.3-1",
     "boring-avatars": "^1.6.3",
+    "eventemitter3": "^4.0.7",
     "i18next": "^21.6.5",
     "moment": "^2.29.3",
     "patch-package": "^6.4.7",

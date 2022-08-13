@@ -63,7 +63,7 @@ export const Settings = () => {
   const toast = useToast();
   const {
     accounts: { currentAccount },
-    settingData: { pinCodeEnabled },
+    mobileSettings: { pinCodeEnabled },
   } = useSelector((state: RootState) => state);
 
   const onPressComingSoonFeature = () => {

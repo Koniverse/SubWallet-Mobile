@@ -9,7 +9,7 @@ import { RootNavigationProps } from 'types/routes';
 import RNRestart from 'react-native-restart';
 import i18n from 'utils/i18n/i18n';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateLanguage } from 'stores/SettingData';
+import { updateLanguage } from 'stores/MobileSettings';
 import { RootState } from 'stores/index';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import moment from 'moment';
@@ -21,7 +21,7 @@ const footerAreaStyle: StyleProp<any> = {
 
 export const Languages = () => {
   const {
-    settingData: { language },
+    mobileSettings: { language },
   } = useSelector((state: RootState) => state);
   const navigation = useNavigation<RootNavigationProps>();
   const languageOptions = getLanguageOptions();

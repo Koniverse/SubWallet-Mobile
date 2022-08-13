@@ -1,10 +1,11 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { WebViewContext } from './contexts';
+import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { WebViewContext, WebviewStatus } from './contexts';
 import WebView from 'react-native-webview';
-import { listenMessage, setViewRef } from '../messaging';
+import { listenMessage, setupWebview } from '../messaging';
 import { NativeSyntheticEvent, Platform, View } from 'react-native';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import SplashScreen from 'react-native-splash-screen';
+import EventEmitter from 'eventemitter3';
 
 interface WebViewProviderProps {
   children?: React.ReactNode;
@@ -46,13 +47,20 @@ let injectedJS = `
 //   };`;
 // }
 
+const eventEmitter = new EventEmitter();
+
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
-  const webRef = useRef<WebView>();
+  const webRef = useRef<WebView>(null);
   const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
   // const sourceUri = 'http://192.168.10.189:9000'; // Use for developing web runner real time
-  const [status, setStatus] = useState('init');
+  const [status, setStatus] = useState<WebviewStatus>('init');
   const [version, setVersion] = useState('unknown');
   const [url, setUrl] = useState(sourceUri);
+
+  const setWebviewStatus = (webviewStatus: WebviewStatus) => {
+    setStatus(webviewStatus);
+    eventEmitter.emit(webviewStatus, webviewStatus);
+  };
 
   const onMessage = (data: NativeSyntheticEvent<WebViewMessage>) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -60,8 +68,8 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
       // @ts-ignore
       if (data.id === '0' && data.response?.status) {
         // @ts-ignore
-        const webViewStatus = data.response?.status as string;
-        setStatus(webViewStatus);
+        const webViewStatus = data.response?.status as WebviewStatus;
+        setWebviewStatus(webViewStatus);
         console.debug(`### Web View Status: ${webViewStatus}`);
         if (webViewStatus === 'crypto_ready') {
           SplashScreen.hide();
@@ -85,16 +93,20 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   };
 
   useEffect(() => {
-    setViewRef(webRef);
+    setupWebview(webRef, status, eventEmitter);
+  }, [status, webRef]);
+
+  const reload = useCallback(() => {
+    setWebviewStatus('reloading');
+    webRef?.current?.reload();
   }, [webRef]);
 
   return (
-    <WebViewContext.Provider value={{ viewRef: webRef, status, url, version }}>
+    <WebViewContext.Provider value={{ viewRef: webRef, status, eventEmitter, url, version, reload }}>
       <View style={{ height: 0 }}>
         <WebView
-          // @ts-ignore
-          ref={webRef}
           // injectedJavaScriptBeforeContentLoaded={ERROR_HANDLE_SCRIPT}
+          ref={webRef}
           onMessage={onMessage}
           source={{ uri: sourceUri }}
           originWhitelist={['*']}

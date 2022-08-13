@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { PinCode } from 'screens/Settings/Security/PinCode';
-import { updatePinCode, updatePinCodeEnable } from 'stores/SettingData';
+import { updatePinCode, updatePinCodeEnable } from 'stores/MobileSettings';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { PinCodeProps, RootNavigationProps } from 'types/routes';
@@ -21,7 +21,7 @@ export const PinCodeScreen = ({
   },
 }: PinCodeProps) => {
   const {
-    settingData: { pinCode },
+    mobileSettings: { pinCode },
   } = useSelector((state: RootState) => state);
   const navigation = useNavigation<RootNavigationProps>();
   const [currentViewStep, setCurrentViewStep] = useState<number>(
