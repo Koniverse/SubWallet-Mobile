@@ -15,4 +15,5 @@ const appStateSlice = createSlice({
   },
 });
 
+export const { updateLockState } = appStateSlice.actions;
 export default appStateSlice.reducer;

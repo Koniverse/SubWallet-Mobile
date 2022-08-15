@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { AppState, StyleProp, Text, View } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { ActivityIndicator, AppState, StyleProp, View } from 'react-native';
 import App from './App';
 import useAppLock from 'hooks/useAppLock';
 import SplashScreen from 'react-native-splash-screen';
@@ -14,10 +14,10 @@ import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
 import { StoreStatus } from 'stores/types';
 import { LockScreen } from 'screens/LockScreen';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -34,18 +34,6 @@ const viewLayerStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark1,
 };
 
-function getAppWrapperStyle(isVisible: boolean): StyleProp<any> {
-  const style: StyleProp<any> = {
-    flex: 1,
-  };
-
-  if (!isVisible) {
-    style.display = 'none';
-  }
-
-  return style;
-}
-
 function checkRequiredStoresReady(
   accountsStoreStatus: StoreStatus,
   settingsStoreStatus: StoreStatus,
@@ -55,24 +43,19 @@ function checkRequiredStoresReady(
   return ![accountsStoreStatus, settingsStoreStatus, networkMapStoreStatus, chainRegistryStoreStatus].includes('INIT');
 }
 
-//todo: make a loading screen here
+//Todo: Decorate more beautiful screen
 function Loading() {
   return (
     <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-      <Text style={{ ...FontMedium, color: ColorMap.light, ...sharedStyles.mediumText }}>Loading...</Text>
+      <ActivityIndicator size="large" />
     </View>
   );
 }
 
-let lastTimestamp = 0;
-
 export const EntryGate = () => {
-  SplashScreen.hide();
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const autoLockTime = useSelector((state: RootState) => state.mobileSettings.autoLockTime);
   const { isLocked, lock } = useAppLock();
-
-  console.log('isLock----', isLocked);
 
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
@@ -87,22 +70,13 @@ export const EntryGate = () => {
   useStoreTransactionHistory();
 
   useEffect(() => {
-    //todo: Check lock here and lock the a
     const onAppStateChange = (state: string) => {
       if (!pinCodeEnabled) {
         return;
       }
 
       if (state === 'background') {
-        lastTimestamp = Date.now();
-      } else if (state === 'active') {
-        if (autoLockTime === undefined) {
-          return;
-        } else {
-          if (Date.now() - lastTimestamp > autoLockTime) {
-            lock();
-          }
-        }
+        lock();
       }
     };
 
@@ -120,27 +94,39 @@ export const EntryGate = () => {
     chainRegistryStoreStatus,
   );
 
+  useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 100);
+  }, []);
+
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
+  const _render = useMemo(
+    () => (
+      <View style={viewContainerStyle}>
+        {isAppReady && (
+          <View style={{ flex: 1 }}>
+            <App />
+          </View>
+        )}
 
-  return (
-    <View style={viewContainerStyle}>
-      <View style={getAppWrapperStyle(isAppReady && !isLocked)}>
-        <App isAppReady={isAppReady} />
+        <SubWalletFullSizeModal modalVisible={isLocked || !isAppReady} animationIn={'fadeIn'} animationOut={'fadeOut'}>
+          {isLocked && (
+            <View style={viewLayerStyle}>
+              <LockScreen />
+            </View>
+          )}
+          {!isLocked && !isAppReady && (
+            <View style={viewLayerStyle}>
+              <Loading />
+            </View>
+          )}
+        </SubWalletFullSizeModal>
       </View>
-
-      {!isAppReady && !isLocked && (
-        <View style={viewLayerStyle}>
-          <Loading />
-        </View>
-      )}
-
-      {isLocked && (
-        <View style={viewLayerStyle}>
-          <LockScreen />
-        </View>
-      )}
-    </View>
+    ),
+    [isAppReady, isLocked],
   );
+  return _render;
 };
 
 export default EntryGate;

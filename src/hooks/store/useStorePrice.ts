@@ -20,7 +20,7 @@ export default function useStorePrice(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribePrice success');
+        console.log('--- subscribePrice updated');
 
         updatePrice(payload);
         setStoreStatus('SYNCED');

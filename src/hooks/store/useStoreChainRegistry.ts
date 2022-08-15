@@ -23,7 +23,7 @@ export default function useStoreChainRegistry(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeChainRegistry success');
+        console.log('--- subscribeChainRegistry updated');
 
         updateChainRegistry(payload);
         setStoreStatus('SYNCED');

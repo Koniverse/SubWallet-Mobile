@@ -20,7 +20,7 @@ export default function useStoreBalance(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeBalance success');
+        console.log('--- subscribeBalance updated');
 
         updateBalance(payload);
         setStoreStatus('SYNCED');

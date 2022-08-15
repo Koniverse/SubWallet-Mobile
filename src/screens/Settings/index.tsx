@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Linking, ScrollView, StyleProp } from 'react-native';
@@ -63,103 +63,106 @@ export const Settings = () => {
   const toast = useToast();
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
-  const onPressComingSoonFeature = () => {
+  const onPressComingSoonFeature = useCallback(() => {
     toast.hideAll();
     toast.show(i18n.common.comingSoon);
-  };
+  }, [toast]);
   const [hiddenCount, setHiddenCount] = useState(0);
 
-  const settingList: settingItemType[][] = [
-    [
-      {
-        icon: ShieldCheck,
-        title: i18n.title.security,
-        hasRightArrow: true,
-        onPress: () => navigation.navigate('Security'),
-      },
-      {
-        icon: GlobeHemisphereWest,
-        title: i18n.title.language,
-        hasRightArrow: true,
-        onPress: onPressComingSoonFeature,
-      },
-      {
-        icon: BellRinging,
-        title: i18n.settings.notifications,
-        hasRightArrow: true,
-        onPress: onPressComingSoonFeature,
-      },
+  const settingList: settingItemType[][] = useMemo(
+    () => [
+      [
+        {
+          icon: ShieldCheck,
+          title: i18n.title.security,
+          hasRightArrow: true,
+          onPress: () => navigation.navigate('Security'),
+        },
+        {
+          icon: GlobeHemisphereWest,
+          title: i18n.title.language,
+          hasRightArrow: true,
+          onPress: onPressComingSoonFeature,
+        },
+        {
+          icon: BellRinging,
+          title: i18n.settings.notifications,
+          hasRightArrow: true,
+          onPress: onPressComingSoonFeature,
+        },
+      ],
+      [
+        {
+          icon: GitFork,
+          title: i18n.settings.networks,
+          hasRightArrow: true,
+          onPress: onPressComingSoonFeature,
+        },
+        {
+          icon: Coin,
+          title: i18n.settings.tokens,
+          hasRightArrow: true,
+          onPress: onPressComingSoonFeature,
+        },
+      ],
+      [
+        {
+          icon: TelegramLogo,
+          title: i18n.settings.telegram,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(TELEGRAM_URL),
+        },
+        {
+          icon: TwitterLogo,
+          title: i18n.settings.twitter,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(TWITTER_URL),
+        },
+        {
+          icon: DiscordLogo,
+          title: i18n.settings.discord,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(DISCORD_URL),
+        },
+      ],
+      [
+        {
+          icon: Globe,
+          title: i18n.settings.website,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(WEBSITE_URL),
+        },
+        {
+          icon: FileText,
+          title: i18n.settings.documentation,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(WIKI_URL),
+        },
+        {
+          icon: FileText,
+          title: i18n.settings.termOfService,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(TERMS_OF_SERVICE_URL),
+        },
+        {
+          icon: FileText,
+          title: i18n.settings.privacyPolicy,
+          hasRightArrow: true,
+          onPress: () => Linking.openURL(PRIVACY_AND_POLICY_URL),
+        },
+      ],
+      [
+        {
+          icon: SignOut,
+          title: i18n.settings.logout,
+          hasRightArrow: true,
+          onPress: () => navigation.navigate('LockScreen'),
+          disabled: !pinCodeEnabled,
+        },
+      ],
     ],
-    [
-      {
-        icon: GitFork,
-        title: i18n.settings.networks,
-        hasRightArrow: true,
-        onPress: onPressComingSoonFeature,
-      },
-      {
-        icon: Coin,
-        title: i18n.settings.tokens,
-        hasRightArrow: true,
-        onPress: onPressComingSoonFeature,
-      },
-    ],
-    [
-      {
-        icon: TelegramLogo,
-        title: i18n.settings.telegram,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(TELEGRAM_URL),
-      },
-      {
-        icon: TwitterLogo,
-        title: i18n.settings.twitter,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(TWITTER_URL),
-      },
-      {
-        icon: DiscordLogo,
-        title: i18n.settings.discord,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(DISCORD_URL),
-      },
-    ],
-    [
-      {
-        icon: Globe,
-        title: i18n.settings.website,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(WEBSITE_URL),
-      },
-      {
-        icon: FileText,
-        title: i18n.settings.documentation,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(WIKI_URL),
-      },
-      {
-        icon: FileText,
-        title: i18n.settings.termOfService,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(TERMS_OF_SERVICE_URL),
-      },
-      {
-        icon: FileText,
-        title: i18n.settings.privacyPolicy,
-        hasRightArrow: true,
-        onPress: () => Linking.openURL(PRIVACY_AND_POLICY_URL),
-      },
-    ],
-    [
-      {
-        icon: SignOut,
-        title: i18n.settings.logout,
-        hasRightArrow: true,
-        onPress: () => navigation.navigate('LockScreen'),
-        disabled: !pinCodeEnabled,
-      },
-    ],
-  ];
+    [navigation, onPressComingSoonFeature, pinCodeEnabled],
+  );
 
   const onPressVersionNumber = () => {
     if (hiddenCount > 9) {

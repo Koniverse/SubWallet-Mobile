@@ -22,7 +22,7 @@ export default function useStoreSettings(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeSettings success');
+        console.log('--- subscribeSettings updated');
 
         updateSettings(payload);
         setStoreStatus('SYNCED');

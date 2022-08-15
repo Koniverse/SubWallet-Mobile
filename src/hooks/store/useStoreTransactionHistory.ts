@@ -20,7 +20,7 @@ export default function useStoreTransactionHistory(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeHistory success');
+        console.log('--- subscribeHistory updated');
 
         updateTransactionHistory(payload);
         setStoreStatus('SYNCED');

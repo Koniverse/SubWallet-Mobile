@@ -21,7 +21,7 @@ export default function useStoreAccounts(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeAccountsWithCurrentAddress success');
+        console.log('--- subscribeAccountsWithCurrentAddress updated');
 
         const { accounts, currentAddress, currentGenesisHash } = rs;
 

@@ -23,7 +23,7 @@ export default function useStoreNetworkMap(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeNetworkMap success');
+        console.log('--- subscribeNetworkMap updated');
 
         updateNetworkMap(payload);
         setStoreStatus('SYNCED');

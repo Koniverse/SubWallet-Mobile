@@ -32,21 +32,13 @@ import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
-interface Props {
-  isAppReady: boolean;
-}
-
-export const App = ({ isAppReady }: Props) => {
+export const App = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
-
-  if (!isAppReady) {
-    return <></>;
-  }
 
   return (
     <ToastProvider
