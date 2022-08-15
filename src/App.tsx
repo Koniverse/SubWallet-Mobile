@@ -69,21 +69,16 @@ export const App = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   useEffect(() => {
-    return () => {
-      setIsEmptyAccountList(accounts && accounts.length > 0);
-    };
+    setIsEmptyAccountList(accounts && accounts.length > 0);
   }, [accounts]);
 
   useEffect(() => {
     const _appReady = isCryptoReady && isI18nReady && isSettingReady && isAccountReady && isNetworkMapReady;
     setIsAppReady(_appReady);
-  }, [isAccountReady, isCryptoReady, isI18nReady, isNetworkMapReady, isSettingReady]);
-
-  useEffect(() => {
-    if (isAppReady) {
+    if (_appReady) {
       SplashScreen.hide();
     }
-  }, [isAppReady]);
+  }, [isAccountReady, isCryptoReady, isI18nReady, isNetworkMapReady, isSettingReady]);
 
   if (!isAppReady) {
     return <></>;
