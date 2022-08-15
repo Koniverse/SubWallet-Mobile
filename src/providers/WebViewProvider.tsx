@@ -30,13 +30,13 @@ let injectedJS = `
       version: JSON.parse(localStorage.getItem('application') || '{}').version
     }
   
-    window.ReactNativeWebView.postMessage(JSON.stringify({id: '-2', 'response': info }))
+    window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': info }))
   }, 200);
 `;
 // Show webview log in development environment
 // if (__DEV__) {
 //   injectedJS += `
-//   const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': [type, ...args]}));
+//   const consoleLog = (type, args) => window.ReactNativeWebView.postMessage(JSON.stringify({id: '-2', 'response': [type, ...args]}));
 //   console = {
 //       log: (...args) => consoleLog('log', [...args]),
 //       debug: (...args) => consoleLog('debug', [...args]),
@@ -47,6 +47,43 @@ let injectedJS = `
 // }
 
 const eventEmitter = new EventEmitter();
+const pingPromise: {
+  resolve?: () => void;
+  reject?: () => void;
+} = {};
+
+const createPingPromise = (webRef: React.RefObject<WebView<{}>>) => {
+  if (pingPromise.reject) {
+    // reject if before ping check is not resolved
+    pingPromise.reject();
+  } else {
+    new Promise<void>((resolve, reject) => {
+      const pingInjection =
+        "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))";
+      webRef?.current?.injectJavaScript(pingInjection);
+      pingPromise.resolve = resolve;
+      pingPromise.reject = reject;
+    })
+      .then(() => {
+        pingPromise.reject = undefined;
+      })
+      .catch(() => {
+        console.warn('Ping check failed --> reload Web View');
+        webRef?.current?.reload();
+        pingPromise.reject = undefined;
+      });
+  }
+};
+
+const resolvePingPromise = () => {
+  pingPromise.resolve && pingPromise.resolve();
+};
+
+const cancelPingPromise = () => {
+  pingPromise.resolve && pingPromise.resolve();
+  pingPromise.resolve = undefined;
+  pingPromise.reject = undefined;
+};
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
   const webRef = useRef<WebView>(null);
@@ -70,20 +107,24 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
       // @ts-ignore
       if (data.id === '0' && data.response?.status) {
         // @ts-ignore
-        const webViewStatus = data.response?.status as WebviewStatus;
-        setWebviewStatus(webViewStatus);
-        console.debug(`### Web View Status: ${webViewStatus}`);
+        const webViewStatus = data.response?.status as string;
+        if (webViewStatus === 'ping') {
+          resolvePingPromise();
+        } else {
+          setWebviewStatus(webViewStatus as WebviewStatus);
+          console.debug(`### Web View Status: ${webViewStatus}`);
+        }
         return true;
       } else if (data.id === '-1') {
-        // @ts-ignore
-        console.debug('### Web View Console:', ...data.response);
-        return true;
-      } else if (data.id === '-2') {
         // @ts-ignore
         const info = data.response as { url: string; version: string };
         console.debug('### Web View Info:', info);
         setUrl(info.url);
         setVersion(info.version);
+        return true;
+      } else if (data.id === '-2') {
+        // @ts-ignore
+        console.debug('### Web View Console:', ...data.response);
         return true;
       } else {
         return false;
@@ -99,6 +140,20 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
     setWebviewStatus('reloading');
     webRef?.current?.reload();
   }, [webRef]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timer | undefined;
+    if (isReady) {
+      interval = setInterval(() => {
+        createPingPromise(webRef);
+      }, 3000);
+    }
+
+    return () => {
+      cancelPingPromise();
+      interval && clearInterval(interval);
+    };
+  }, [isReady]);
 
   return (
     <WebViewContext.Provider value={{ viewRef: webRef, status, isReady, eventEmitter, url, version, reload }}>
