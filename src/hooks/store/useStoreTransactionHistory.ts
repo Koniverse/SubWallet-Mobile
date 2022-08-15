@@ -3,29 +3,33 @@ import { subscribeHistory } from '../../messaging';
 import { updateTransactionHistory } from 'stores/updater';
 import { TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
 import { WebViewContext } from 'providers/contexts';
+import { StoreStatus } from 'stores/types';
 
-export default function useSetupTransactionHistory(): boolean {
+export default function useStoreTransactionHistory(): StoreStatus {
   const isWebRunnerReady = useContext(WebViewContext).isReady;
-  const [isReady, setIsReady] = useState(false);
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
+
   useEffect(() => {
     let cancel = false;
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: transactionHistory');
+
       const _update = (payload: Record<string, TransactionHistoryItemType[]>) => {
         if (cancel) {
           return;
         }
+
+        console.log('--- subscribeHistory success');
+
         updateTransactionHistory(payload);
-        setIsReady(true);
+        setStoreStatus('SYNCED');
       };
+
       subscribeHistory(_update)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeHistory error:', e);
-        })
-        .finally(() => {
-          console.log('--- Init subscribeHistory');
         });
     }
     return () => {
@@ -33,5 +37,5 @@ export default function useSetupTransactionHistory(): boolean {
     };
   }, [isWebRunnerReady]);
 
-  return isReady;
+  return storeStatus;
 }

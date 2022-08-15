@@ -35,6 +35,7 @@ export const PinCodeScreen = ({
     const hash = bcrypt.hashSync(newPinCode, salt);
     dispatch(updatePinCode(hash));
     dispatch(updatePinCodeEnable(true));
+    // Todo: Navigate to Root + lock here
     navigation.navigate('LockScreen');
   };
 

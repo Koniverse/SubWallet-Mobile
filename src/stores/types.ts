@@ -8,6 +8,8 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 
+export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED';
+
 export type StoreSlice = {
   isReady?: boolean;
 };
@@ -17,6 +19,10 @@ export type AccountsSlice = {
   currentAccountAddress: string;
   currentAccount?: AccountJson;
 } & StoreSlice;
+
+export type AppStateSlice = {
+  isLocked: boolean;
+};
 
 export type BalanceSlice = BalanceJson & StoreSlice;
 
@@ -29,7 +35,7 @@ export type MobileSettingsSlice = {
   pinCode: string;
   pinCodeEnabled: boolean;
   autoLockTime: number | undefined;
-} & StoreSlice;
+};
 
 export type NetworkMapSlice = {
   details: Record<string, NetworkJson>;

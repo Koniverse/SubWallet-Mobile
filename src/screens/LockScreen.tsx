@@ -2,49 +2,36 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View } from 'react-native';
 import Text from 'components/Text';
 import { FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { PinCodeField } from 'components/PinCodeField';
 import { Warning } from 'components/Warning';
 import { ColorMap } from 'styles/color';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../constant';
 import useAppLock from 'hooks/useAppLock';
 
+// interface Props {
+//   unlock: (code: string) => boolean;
+// }
+
+// export const LockScreen = ({ unlock }: Props) => {
 export const LockScreen = () => {
-  const navigation = useNavigation<RootNavigationProps>();
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const { unlock } = useAppLock();
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      ref && ref.current && ref.current.focus();
-    });
-
-    return unsubscribe;
-  }, [navigation, ref]);
 
   useEffect(() => {
     if (value.length > 5) {
       if (unlock(value)) {
         setValue('');
-        if (accounts && accounts.length) {
-          navigation.navigate('Home');
-        } else {
-          navigation.navigate('FirstScreen');
-        }
       } else {
         setError(i18n.errorMessage.wrongPassword);
       }
     } else {
       setError('');
     }
-  }, [accounts, navigation, unlock, value]);
+  }, [unlock, value]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

@@ -4,19 +4,24 @@ import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTyp
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { updateAccountsAndCurrentAccount } from 'stores/updater';
 import { WebViewContext } from 'providers/contexts';
+import { StoreStatus } from 'stores/types';
 
-export default function useSetupAccounts(): boolean {
+export default function useStoreAccounts(): StoreStatus {
   const isWebRunnerReady = useContext(WebViewContext).isReady;
-  const [isReady, setIsReady] = useState(false);
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
+
   useEffect(() => {
     let cancel = false;
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: accounts');
+
       subscribeAccountsWithCurrentAddress(rs => {
         if (cancel) {
           return;
         }
+
+        console.log('--- subscribeAccountsWithCurrentAddress success');
 
         const { accounts, currentAddress, currentGenesisHash } = rs;
 
@@ -46,14 +51,10 @@ export default function useSetupAccounts(): boolean {
           }
         }
 
-        setIsReady(true);
-      })
-        .catch(e => {
-          console.log('--- subscribeAccountsWithCurrentAddress error:', e);
-        })
-        .finally(() => {
-          console.log('--- Init subscribeAccountsWithCurrentAddress');
-        });
+        setStoreStatus('SYNCED');
+      }).catch(e => {
+        console.log('--- subscribeAccountsWithCurrentAddress error:', e);
+      });
     }
 
     return () => {
@@ -61,5 +62,5 @@ export default function useSetupAccounts(): boolean {
     };
   }, [isWebRunnerReady]);
 
-  return isReady;
+  return storeStatus;
 }

@@ -3,29 +3,32 @@ import { subscribeBalance } from '../../messaging';
 import { updateBalance } from 'stores/updater';
 import { BalanceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebViewContext } from 'providers/contexts';
+import { StoreStatus } from 'stores/types';
 
-export default function useSetupBalance(): boolean {
+export default function useStoreBalance(): StoreStatus {
   const isWebRunnerReady = useContext(WebViewContext).isReady;
-  const [isReady, setIsReady] = useState(false);
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
+
   useEffect(() => {
     let cancel = false;
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: balance');
+
       const _update = (payload: BalanceJson) => {
         if (cancel) {
           return;
         }
+
+        console.log('--- subscribeBalance success');
+
         updateBalance(payload);
-        setIsReady(true);
+        setStoreStatus('SYNCED');
       };
       subscribeBalance(null, _update)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeBalance error:', e);
-        })
-        .finally(() => {
-          console.log('--- Init subscribeBalance');
         });
     }
 
@@ -34,5 +37,5 @@ export default function useSetupBalance(): boolean {
     };
   }, [isWebRunnerReady]);
 
-  return isReady;
+  return storeStatus;
 }

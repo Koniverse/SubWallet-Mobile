@@ -3,29 +3,35 @@ import { subscribeChainRegistry } from '../../messaging';
 import { updateChainRegistry } from 'stores/updater';
 import { ChainRegistry } from '@subwallet/extension-base/background/KoniTypes';
 import { WebViewContext } from 'providers/contexts';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { StoreStatus } from 'stores/types';
 
-export default function useSetupChainRegistry(): boolean {
+export default function useStoreChainRegistry(): StoreStatus {
   const isWebRunnerReady = useContext(WebViewContext).isReady;
-  const [isReady, setIsReady] = useState(false);
+  const isCached = useSelector((state: RootState) => state.chainRegistry.isReady);
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>(isCached ? 'CACHED' : 'INIT');
+
   useEffect(() => {
     let cancel = false;
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: chainRegistry');
+
       const _update = (payload: Record<string, ChainRegistry>) => {
         if (cancel) {
           return;
         }
+
+        console.log('--- subscribeChainRegistry success');
+
         updateChainRegistry(payload);
-        setIsReady(true);
+        setStoreStatus('SYNCED');
       };
       subscribeChainRegistry(_update)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeChainRegistry error:', e);
-        })
-        .finally(() => {
-          console.log('--- Init subscribeChainRegistry');
         });
     }
 
@@ -34,5 +40,5 @@ export default function useSetupChainRegistry(): boolean {
     };
   }, [isWebRunnerReady]);
 
-  return isReady;
+  return storeStatus;
 }

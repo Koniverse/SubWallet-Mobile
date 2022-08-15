@@ -6,7 +6,6 @@ const MOBILE_SETTINGS_STORE_DEFAULT: MobileSettingsSlice = {
   pinCode: '',
   pinCodeEnabled: false,
   autoLockTime: undefined,
-  isReady: true, // always true
 };
 
 const mobileSettingsSlice = createSlice({
@@ -14,15 +13,9 @@ const mobileSettingsSlice = createSlice({
   initialState: MOBILE_SETTINGS_STORE_DEFAULT,
   reducers: {
     update(state, action: PayloadAction<MobileSettingsSlice>) {
-      const newState = {
+      return {
         ...action.payload,
       };
-
-      if (action.payload.isReady === undefined) {
-        newState.isReady = true;
-      }
-
-      return newState;
     },
     updateLanguage(state, action: PayloadAction<string>) {
       state.language = action.payload;

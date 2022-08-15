@@ -4,9 +4,10 @@ import priceReducer from './Price';
 import networkMapReducer from './NetworkMap';
 import settingsReducer from './Settings';
 import chainRegistryReducer from './ChainRegistry';
-import BalanceReducer from './Balance';
-import MobileSettingsReducer from './MobileSettings';
-import TransactionHistoryReducer from './TransactionHistory';
+import balanceReducer from './Balance';
+import mobileSettingsReducer from './MobileSettings';
+import transactionHistoryReducer from './TransactionHistory';
+import appStateReducer from './AppState';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -18,14 +19,15 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  appState: appStateReducer,
   accounts: accountsReducer,
   price: priceReducer,
   networkMap: networkMapReducer,
   settings: settingsReducer,
   chainRegistry: chainRegistryReducer,
-  balance: BalanceReducer,
-  mobileSettings: MobileSettingsReducer,
-  transactionHistory: TransactionHistoryReducer,
+  balance: balanceReducer,
+  mobileSettings: mobileSettingsReducer,
+  transactionHistory: transactionHistoryReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

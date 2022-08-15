@@ -1,8 +1,6 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-import React, { useEffect, useState } from 'react';
-import { RootState } from './stores';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
@@ -28,57 +26,23 @@ import { SendFund } from 'screens/Sending';
 import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
-import { LockScreen } from 'screens/LockScreen';
 import { ExportJson } from 'screens/ExportJson';
 import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
-import useSetupI18n from 'hooks/init/useSetupI18n';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
-import useAppLock from 'hooks/useAppLock';
-import useCryptoReady from 'hooks/init/useCryptoReady';
-import useSetupAccounts from 'hooks/store/useSetupAccounts';
-import useSetupSettings from 'hooks/store/useSetupSettings';
-import useSetupNetworkMap from 'hooks/store/useSetupNetworkMap';
-import useSetupChainRegistry from 'hooks/store/useSetupChainRegistry';
-import useSetupPrice from 'hooks/store/useSetupPrice';
-import useSetupBalance from 'hooks/store/useSetupBalance';
-import useSetupTransactionHistory from 'hooks/store/useSetupTransactionHistory';
-import SplashScreen from 'react-native-splash-screen';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
-export const App = () => {
-  const isLock = useAppLock().isLock;
-  const [isAppReady, setIsAppReady] = useState(false);
-  const isCryptoReady = useCryptoReady();
-  const isI18nReady = useSetupI18n().isI18nReady;
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const [isEmptyAccountList, setIsEmptyAccountList] = useState(accounts && accounts.length > 0);
+interface Props {
+  isAppReady: boolean;
+}
 
-  // Fetching data from web-runner to redux
-  const isAccountReady = useSetupAccounts();
-  const isSettingReady = useSetupSettings();
-  const isNetworkMapReady = useSetupNetworkMap();
-  useSetupChainRegistry();
-  useSetupPrice();
-  useSetupBalance();
-  useSetupTransactionHistory();
-
+export const App = ({ isAppReady }: Props) => {
+  const isEmptyAccounts = useCheckEmptyAccounts();
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
-
-  useEffect(() => {
-    setIsEmptyAccountList(accounts && accounts.length > 0);
-  }, [accounts]);
-
-  useEffect(() => {
-    const _appReady = isCryptoReady && isI18nReady && isSettingReady && isAccountReady && isNetworkMapReady;
-    setIsAppReady(_appReady);
-    if (_appReady) {
-      SplashScreen.hide();
-    }
-  }, [isAccountReady, isCryptoReady, isI18nReady, isNetworkMapReady, isSettingReady]);
 
   if (!isAppReady) {
     return <></>;
@@ -97,12 +61,11 @@ export const App = () => {
         <ThemeContext.Provider value={theme}>
           <NavigationContainer ref={navigationRef} theme={theme}>
             <Stack.Navigator
-              initialRouteName={isLock ? 'LockScreen' : isEmptyAccountList ? 'Home' : 'FirstScreen'}
+              initialRouteName={isEmptyAccounts ? 'FirstScreen' : 'Home'}
               screenOptions={{
                 animation: 'fade_from_bottom',
               }}>
               <Stack.Group screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="LockScreen" component={LockScreen} />
                 <Stack.Screen name="FirstScreen" component={FirstScreen} />
                 <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ title: 'Create Account' }} />
