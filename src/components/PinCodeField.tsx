@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  CodeField,
-  Cursor,
-  isLastFilledCell,
-  MaskSymbol,
-  useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
+import { CodeField, Cursor, useClearByFocusCell } from 'react-native-confirmation-code-field';
 import { StyleProp, TextInput, View } from 'react-native';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
@@ -62,11 +56,7 @@ export const PinCodeField = ({ value, setValue, isPinCodeValid, pinCodeRef }: Pr
     let textChild = null;
 
     if (symbol) {
-      textChild = (
-        <MaskSymbol maskSymbol="*" isLastFilledCell={isLastFilledCell({ index, value })}>
-          {symbol}
-        </MaskSymbol>
-      );
+      textChild = '*';
     } else if (isFocused) {
       textChild = <Cursor />;
     }
