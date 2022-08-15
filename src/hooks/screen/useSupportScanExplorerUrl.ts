@@ -4,7 +4,7 @@ import { isSupportScanExplorer } from 'utils/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 
 export default function useSupportScanExplorer(networkKey: string) {
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   if (isAccountAll(networkKey.toUpperCase())) {
     return false;

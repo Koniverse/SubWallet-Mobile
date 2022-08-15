@@ -2,27 +2,30 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
-import { ResponseSettingsType } from '@subwallet/extension-base/background/KoniTypes';
+import { SettingsSlice } from 'stores/types';
 
 const initialState = {
   isShowBalance: false,
   accountAllLogo: '',
   theme: 'dark',
-} as ResponseSettingsType;
+} as SettingsSlice;
 
 const settingsSlice = createSlice({
   initialState,
   name: 'settings',
   reducers: {
-    updateSettings(state, action: PayloadAction<ResponseSettingsType>) {
-      const payload = action.payload;
+    update(state, action: PayloadAction<SettingsSlice>) {
+      const newState = {
+        ...action.payload,
+      };
 
-      state.isShowBalance = payload.isShowBalance;
-      state.accountAllLogo = payload.accountAllLogo;
-      state.theme = payload.theme;
+      if (action.payload.isReady === undefined) {
+        newState.isReady = true;
+      }
+
+      return newState;
     },
   },
 });
 
-export const { updateSettings } = settingsSlice.actions;
 export default settingsSlice.reducer;

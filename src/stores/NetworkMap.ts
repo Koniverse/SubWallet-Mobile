@@ -1,17 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { NetworkMapSlice } from 'stores/types';
 
-const initialState = {} as Record<string, NetworkJson>;
+const initialState: NetworkMapSlice = { details: {} };
 
 const networkMapSlice = createSlice({
   initialState,
   name: 'networkMap',
   reducers: {
-    updateNetworkMap(state, action: PayloadAction<Record<string, NetworkJson>>) {
-      return action.payload;
+    update(state, action: PayloadAction<NetworkMapSlice>) {
+      const newState = {
+        ...action.payload,
+      };
+
+      if (action.payload.isReady === undefined) {
+        newState.isReady = true;
+      }
+
+      return newState;
     },
   },
 });
 
-export const { updateNetworkMap } = networkMapSlice.actions;
 export default networkMapSlice.reducer;

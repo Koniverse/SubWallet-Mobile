@@ -42,7 +42,7 @@ const logoWrapperStyle: StyleProp<any> = {
 };
 
 export const NetworkField = ({ networkKey, ...fieldBase }: Props) => {
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return (
     <FieldBase {...fieldBase}>

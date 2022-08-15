@@ -1,21 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
-import { BalanceJson } from '@subwallet/extension-base/background/KoniTypes';
+import { BalanceSlice } from 'stores/types';
 
-const initialState = {
+const initialState: BalanceSlice = {
   details: {},
-} as BalanceJson;
+};
 
 const balanceSlice = createSlice({
   initialState,
   name: 'balance',
   reducers: {
-    update(state, action: PayloadAction<BalanceJson>) {
-      const payload = action.payload;
+    update(state, action: PayloadAction<BalanceSlice>) {
+      const newState = {
+        ...action.payload,
+      };
 
-      state.details = payload.details;
+      if (action.payload.isReady === undefined) {
+        newState.isReady = true;
+      }
+
+      return newState;
     },
   },
 });
 
-export const { update: updateBalance } = balanceSlice.actions;
 export default balanceSlice.reducer;

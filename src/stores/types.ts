@@ -1,36 +1,44 @@
 import {
-  CustomEvmToken,
+  BalanceJson,
+  ChainRegistry,
   NetworkJson,
-  NftItem,
+  PriceJson,
+  ResponseSettingsType,
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 
-export type AccountsStoreType = {
+export type StoreSlice = {
+  isReady?: boolean;
+};
+
+export type AccountsSlice = {
   accounts: AccountJson[];
   currentAccountAddress: string;
   currentAccount?: AccountJson;
-};
+} & StoreSlice;
 
-export type CurrentAccountType = {
-  account?: AccountJson | null;
-};
+export type BalanceSlice = BalanceJson & StoreSlice;
 
-export type TransactionHistoryReducerType = {
-  historyMap: Record<string, TransactionHistoryItemType[]>;
-};
+export type ChainRegistrySlice = {
+  details: Record<string, ChainRegistry>;
+} & StoreSlice;
 
-export type TransferNftParams = {
-  nftItem: NftItem;
-  collectionImage?: string;
-  collectionId: string;
-};
+export type MobileSettingsSlice = {
+  language: string;
+  pinCode: string;
+  pinCodeEnabled: boolean;
+  autoLockTime: number | undefined;
+} & StoreSlice;
 
-export type TokenConfigParams = {
-  data: CustomEvmToken;
-};
+export type NetworkMapSlice = {
+  details: Record<string, NetworkJson>;
+} & StoreSlice;
 
-export type NetworkConfigParams = {
-  mode: 'create' | 'edit' | 'init';
-  data: NetworkJson;
-};
+export type PriceSlice = Omit<PriceJson, 'ready'> & StoreSlice;
+
+export type SettingsSlice = ResponseSettingsType & StoreSlice;
+
+export type TransactionHistorySlice = {
+  details: Record<string, TransactionHistoryItemType[]>;
+} & StoreSlice;

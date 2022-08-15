@@ -46,7 +46,7 @@ export const Confirmation = ({
   onChangeBusy,
 }: Props) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const [password, setPassword] = useState<string>('');
   const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
   const [errorArr, setErrorArr] = useState<string[]>([]);

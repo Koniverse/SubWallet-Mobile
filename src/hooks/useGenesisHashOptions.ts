@@ -22,7 +22,7 @@ export interface NetworkSelectOption {
 const RELAY_CHAIN = 'Relay Chain';
 
 export default function (): NetworkSelectOption[] {
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const dep = JSON.stringify(networkMap);
 
   return useMemo(() => {

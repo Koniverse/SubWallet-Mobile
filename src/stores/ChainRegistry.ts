@@ -1,19 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ChainRegistry } from '@subwallet/extension-base/background/KoniTypes';
+import { ChainRegistrySlice } from 'stores/types';
 
-const initialState: Record<string, ChainRegistry> = {};
+const initialState: ChainRegistrySlice = { details: {} };
 
 const chainRegistrySlice = createSlice({
   initialState,
   name: 'chainRegistry',
   reducers: {
-    update(state, action: PayloadAction<Record<string, ChainRegistry>>) {
-      const { payload } = action;
+    update(state, action: PayloadAction<ChainRegistrySlice>) {
+      const newState = {
+        ...action.payload,
+      };
 
-      Object.assign(state, payload);
+      if (action.payload.isReady === undefined) {
+        newState.isReady = true;
+      }
+
+      return newState;
     },
   },
 });
 
-export const { update: updateChainRegistry } = chainRegistrySlice.actions;
 export default chainRegistrySlice.reducer;

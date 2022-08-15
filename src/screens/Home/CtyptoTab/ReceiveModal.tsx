@@ -95,7 +95,7 @@ export const ReceiveModal = ({
   const toastRef = useRef<ToastContainer>(null);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);

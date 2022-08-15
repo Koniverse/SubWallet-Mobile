@@ -154,9 +154,9 @@ export default function useAccountBalance(
   showedNetworks: string[],
   tokenBalanceKeyPriceMap: Record<string, number>,
 ): AccountBalanceType {
-  const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry);
+  const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
   const balanceMap = useSelector((state: RootState) => state.balance.details);
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   const dep1 = JSON.stringify(balanceMap);
   const dep2 = JSON.stringify(chainRegistryMap);

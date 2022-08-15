@@ -1,43 +1,40 @@
 import {
   BalanceJson,
   ChainRegistry,
-  CurrentNetworkInfo,
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsStoreType } from 'stores/types';
+import { AccountsSlice } from 'stores/types';
 
-export function updateNetworkMap(payload: Record<string, NetworkJson>): void {
-  store.dispatch({ type: 'networkMap/updateNetworkMap', payload });
+export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
+  store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
 }
 
-export function updateChainRegistry(payload: Record<string, ChainRegistry>): void {
-  store.dispatch({ type: 'chainRegistry/update', payload });
+export function updateChainRegistry(chainRegistryMap: Record<string, ChainRegistry>): void {
+  store.dispatch({ type: 'chainRegistry/update', payload: { details: chainRegistryMap } });
 }
 
-export function updateBalance(payload: BalanceJson): void {
-  store.dispatch({ type: 'balance/update', payload });
+export function updateBalance(balanceJson: BalanceJson): void {
+  store.dispatch({ type: 'balance/update', payload: { ...balanceJson } });
 }
 
-export function updateSettings(payload: ResponseSettingsType): void {
-  store.dispatch({ type: 'settings/updateSettings', payload });
+export function updateSettings(settings: ResponseSettingsType): void {
+  store.dispatch({ type: 'settings/update', payload: { ...settings } });
 }
 
-export function updatePrice(payload: PriceJson): void {
-  store.dispatch({ type: 'price/updatePrice', payload });
+export function updatePrice(priceJson: PriceJson): void {
+  const payload = { ...priceJson };
+  delete payload.ready;
+  store.dispatch({ type: 'price/update', payload });
 }
 
-export function updateTransactionHistory(payload: Record<string, TransactionHistoryItemType[]>): void {
-  store.dispatch({ type: 'transactionHistory/update', payload });
+export function updateTransactionHistory(transactionHistoryMap: Record<string, TransactionHistoryItemType[]>): void {
+  store.dispatch({ type: 'transactionHistory/update', payload: { details: transactionHistoryMap } });
 }
 
-export function updateAccountsAndCurrentAccount(payload: AccountsStoreType): void {
+export function updateAccountsAndCurrentAccount(payload: AccountsSlice): void {
   store.dispatch({ type: 'accounts/updateAccountsAndCurrentAccount', payload });
-}
-
-export function updateCurrentNetwork(payload: CurrentNetworkInfo): void {
-  store.dispatch({ type: 'currentNetwork/update', payload });
 }

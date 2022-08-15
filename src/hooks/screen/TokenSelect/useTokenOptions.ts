@@ -44,8 +44,8 @@ function getTokenItemOptions(
 }
 
 export default function useTokenOptions(address: string, filteredNetworkKey?: string): TokenItemType[] {
-  const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry);
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const showedNetwork = useShowedNetworks(address, accounts);
 

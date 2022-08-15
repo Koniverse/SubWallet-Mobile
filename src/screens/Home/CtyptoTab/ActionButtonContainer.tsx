@@ -50,7 +50,7 @@ const actionButtonWrapper: StyleProp<any> = {
 };
 
 export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
-  const networkMap = useSelector((state: RootState) => state.networkMap);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const toast = useToast();
   const _isAccountAll = isAccountAll(currentAccountAddress);
