@@ -50,11 +50,9 @@ export default function useTokenOptions(address: string, filteredNetworkKey?: st
   const showedNetwork = useShowedNetworks(address, accounts);
 
   const dep1 = JSON.stringify(showedNetwork);
-  const dep2 = JSON.stringify(networkMap);
-  const dep3 = JSON.stringify(chainRegistryMap);
 
   return useMemo<TokenItemType[]>(() => {
     return getTokenItemOptions(showedNetwork, networkMap, chainRegistryMap, filteredNetworkKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep1, dep2, dep3, filteredNetworkKey]);
+  }, [chainRegistryMap, filteredNetworkKey, networkMap, dep1]);
 }

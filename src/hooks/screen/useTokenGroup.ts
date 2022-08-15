@@ -182,15 +182,11 @@ export default function useTokenGroup(showedNetworks?: string[]): Record<string,
   const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
-  const dep1 = JSON.stringify(chainRegistryMap);
-  const dep2 = JSON.stringify(networkMap);
-  const dep3 = showedNetworks ? JSON.stringify(showedNetworks) : undefined;
-
   const tokenGroup: Record<string, string[]> = useMemo<Record<string, string[]>>(() => {
     return getTokenGroup(chainRegistryMap, networkMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep1, dep2]);
+  }, [chainRegistryMap, networkMap]);
 
+  const dep3 = showedNetworks ? JSON.stringify(showedNetworks) : undefined;
   const dep4 = JSON.stringify(tokenGroup);
 
   return useMemo<Record<string, string[]>>(() => {

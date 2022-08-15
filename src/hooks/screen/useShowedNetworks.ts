@@ -9,10 +9,9 @@ export default function useShowedNetworks(address: string, accounts: AccountJson
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const accountType: AccountType | undefined = (!!address && getAccountType(address)) || undefined;
   const dep1 = JSON.stringify(accounts);
-  const dep2 = JSON.stringify(networkMap);
 
   return useMemo<string[]>(() => {
     return getNetworkKeysByAddressType(accountType, accounts, networkMap);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountType, dep1, dep2]);
+  }, [accountType, dep1, networkMap]);
 }

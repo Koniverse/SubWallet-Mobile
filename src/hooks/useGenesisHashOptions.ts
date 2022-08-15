@@ -23,7 +23,6 @@ const RELAY_CHAIN = 'Relay Chain';
 
 export default function (): NetworkSelectOption[] {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const dep = JSON.stringify(networkMap);
 
   return useMemo(() => {
     const parsedChains = _getKnownHashes(networkMap);
@@ -71,6 +70,5 @@ export default function (): NetworkSelectOption[] {
         .filter(({ text }) => !text.includes(RELAY_CHAIN))
         .sort((a, b) => a.text.localeCompare(b.text)),
     ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep]);
+  }, [networkMap]);
 }

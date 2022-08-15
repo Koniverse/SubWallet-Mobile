@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 export default function useFetchNetworkMap() {
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const deps = JSON.stringify(networkMap);
   const [sortedNetworkMap, setSortedNetworkMap] = useState<Record<string, NetworkJson>>({});
 
   useEffect(() => {
@@ -25,8 +24,7 @@ export default function useFetchNetworkMap() {
       })
       .reduce((r, [k, v]) => ({ ...r, [k]: v }), {}) as Record<string, NetworkJson>;
     setSortedNetworkMap(sorted);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deps]);
+  }, [networkMap]);
 
   return { parsedNetworkMap: sortedNetworkMap, isEthereum: currentAccount?.type === 'ethereum' };
 }
