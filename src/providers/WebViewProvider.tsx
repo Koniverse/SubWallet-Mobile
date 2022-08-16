@@ -47,42 +47,27 @@ let injectedJS = `
 // }
 
 const eventEmitter = new EventEmitter();
-const pingPromise: {
-  resolve?: () => void;
-  reject?: () => void;
-} = {};
 
-const createPingPromise = (webRef: React.RefObject<WebView<{}>>) => {
-  if (pingPromise.reject) {
-    // reject if before ping check is not resolved
-    pingPromise.reject();
-  } else {
-    new Promise<void>((resolve, reject) => {
-      const pingInjection =
-        "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))";
-      webRef?.current?.injectJavaScript(pingInjection);
-      pingPromise.resolve = resolve;
-      pingPromise.reject = reject;
-    })
-      .then(() => {
-        pingPromise.reject = undefined;
-      })
-      .catch(() => {
-        console.warn('Ping check failed --> reload Web View');
-        webRef?.current?.reload();
-        pingPromise.reject = undefined;
-      });
+let pingTimeout: NodeJS.Timeout | undefined;
+let reloadTimeout: NodeJS.Timeout | undefined;
+let runPingCheck = false;
+
+const pingWebView = (webRef: React.RefObject<WebView<{}>>) => {
+  if (!runPingCheck) {
+    return;
   }
-};
+  pingTimeout && clearTimeout(pingTimeout);
+  reloadTimeout && clearTimeout(reloadTimeout);
+  pingTimeout = setTimeout(() => {
+    webRef?.current?.injectJavaScript(
+      "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))",
+    );
 
-const resolvePingPromise = () => {
-  pingPromise.resolve && pingPromise.resolve();
-};
-
-const cancelPingPromise = () => {
-  pingPromise.resolve && pingPromise.resolve();
-  pingPromise.resolve = undefined;
-  pingPromise.reject = undefined;
+    reloadTimeout = setTimeout(() => {
+      console.warn('Ping check failed: Reload timeout');
+      webRef?.current?.reload();
+    }, 3000);
+  }, 6000);
 };
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {
@@ -96,7 +81,9 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
 
   const setWebviewStatus = (webviewStatus: WebviewStatus) => {
     setStatus(webviewStatus);
-    setIsReady(webviewStatus === 'crypto_ready');
+    const _isReady = webviewStatus === 'crypto_ready';
+    setIsReady(_isReady);
+    runPingCheck = _isReady;
     eventEmitter.emit('update-status', webviewStatus);
     eventEmitter.emit(webviewStatus, webviewStatus);
   };
@@ -104,12 +91,13 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
   const onMessage = (data: NativeSyntheticEvent<WebViewMessage>) => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     listenMessage(JSON.parse(data.nativeEvent.data), data => {
+      pingWebView(webRef);
       // @ts-ignore
       if (data.id === '0' && data.response?.status) {
         // @ts-ignore
         const webViewStatus = data.response?.status as string;
         if (webViewStatus === 'ping') {
-          resolvePingPromise();
+          reloadTimeout && clearTimeout(reloadTimeout);
         } else {
           setWebviewStatus(webViewStatus as WebviewStatus);
           console.debug(`### Web View Status: ${webViewStatus}`);
@@ -140,25 +128,6 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
     setWebviewStatus('reloading');
     webRef?.current?.reload();
   }, [webRef]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timer | undefined;
-    let timeout: NodeJS.Timeout | undefined;
-    if (isReady) {
-      // Start ping each 3 second after 6 second from crypto ready
-      timeout = setTimeout(() => {
-        interval = setInterval(() => {
-          createPingPromise(webRef);
-        }, 3000);
-      }, 6000);
-    }
-
-    return () => {
-      cancelPingPromise();
-      interval && clearInterval(interval);
-      timeout && clearTimeout(timeout);
-    };
-  }, [isReady]);
 
   return (
     <WebViewContext.Provider value={{ viewRef: webRef, status, isReady, eventEmitter, url, version, reload }}>

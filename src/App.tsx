@@ -135,10 +135,8 @@ export const App = () => {
 
   useEffect(() => {
     if (isLocked) {
-      console.log('Goto : LockScreen');
       navigationRef.navigate('LockScreen');
     } else if (!isAppReady) {
-      console.log('Goto : LoadingScreen');
       navigationRef.navigate('LoadingScreen');
     }
   }, [isAppReady, isLocked, navigationRef]);
