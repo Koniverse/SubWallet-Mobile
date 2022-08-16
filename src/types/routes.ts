@@ -2,6 +2,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
 
 export type RootStackParamList = {
+  LockScreen: undefined;
+  LoadingScreen: undefined;
   Home: undefined;
   CreateAccount: { keyTypes: KeypairType };
   QrScanner: undefined;
@@ -23,7 +25,7 @@ export type RootStackParamList = {
   WebViewDebugger: undefined;
 };
 
-type NavigationProps = NativeStackScreenProps<RootStackParamList>;
+export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
 export type RootNavigationProps = NavigationProps['navigation'];
 export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;

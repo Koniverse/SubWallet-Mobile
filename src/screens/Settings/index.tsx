@@ -176,7 +176,7 @@ export const Settings = () => {
   return (
     <SubScreenContainer title={i18n.title.settings} navigation={navigation}>
       <>
-        <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 24 }}>
+        <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 16 }}>
           <ActionItem
             icon={ShieldCheck}
             showIcon={false}
@@ -253,7 +253,9 @@ export const Settings = () => {
             />
           ))}
         </ScrollView>
-        <Text onPress={onPressVersionNumber} style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion}`}</Text>
+        <Text
+          onPress={onPressVersionNumber}
+          style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion} (${VersionNumber.buildVersion})`}</Text>
       </>
     </SubScreenContainer>
   );

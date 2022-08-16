@@ -5,7 +5,7 @@ const MOBILE_SETTINGS_STORE_DEFAULT: MobileSettingsSlice = {
   language: 'en',
   pinCode: '',
   pinCodeEnabled: false,
-  autoLockTime: undefined,
+  autoLockTime: 15 * 1000,
 };
 
 const mobileSettingsSlice = createSlice({

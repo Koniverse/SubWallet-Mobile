@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from '../components/Text';
 import { RootStackParamList } from 'types/routes';
 import { useSelector } from 'react-redux';
@@ -48,6 +48,7 @@ const actionButtonStyle: StyleProp<any> = {
 
 export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
 
   const _onPressSearchButton = () => {
     onPressSearchButton && onPressSearchButton();
@@ -62,6 +63,19 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
           }}>
           <View>
             <SubWalletAvatar address={currentAccount?.address || ''} size={32} />
+            {isAccountWaiting && (
+              <View
+                style={{
+                  position: 'absolute',
+                  backgroundColor: ColorMap.disabledOverlay,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  justifyContent: 'center',
+                }}>
+                <ActivityIndicator size={18} />
+              </View>
+            )}
           </View>
         </TouchableOpacity>
         <Text style={accountName} numberOfLines={1}>

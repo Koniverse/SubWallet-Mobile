@@ -24,39 +24,51 @@ const modalTitle: StyleProp<any> = {
   textAlign: 'center',
 };
 
+const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
+  {
+    text: i18n.settings.immediately,
+    value: 0,
+  },
+  {
+    text: i18n.settings.ifLeftFor15Seconds,
+    value: 15 * 1000,
+  },
+  {
+    text: i18n.settings.ifLeftFor15Seconds,
+    value: 30 * 1000,
+  },
+  {
+    text: i18n.settings.ifLeftFor1Minutes,
+    value: 60 * 1000,
+  },
+  {
+    text: i18n.settings.ifLeftFor5Minutes,
+    value: 5 * 60 * 1000,
+  },
+  {
+    text: i18n.settings.ifLeftFor15Minutes,
+    value: 15 * 60 * 1000,
+  },
+  {
+    text: i18n.settings.ifLeftFor30Minutes,
+    value: 30 * 60 * 1000,
+  },
+  {
+    text: i18n.settings.ifLeftFor1Hour,
+    value: 60 * 60 * 1000,
+  },
+  {
+    text: i18n.settings.whenCloseApp,
+    value: undefined,
+  },
+];
+
 export const Security = () => {
   const { pinCode, pinCodeEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
   const [isEnabledFaceId, setEnabledFaceId] = useState<boolean>(false);
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
-
-  const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
-    {
-      text: i18n.settings.immediately,
-      value: 0,
-    },
-    {
-      text: i18n.settings.ifLeftFor1Minutes,
-      value: 60 * 1000,
-    },
-    {
-      text: i18n.settings.ifLeftFor15Minutes,
-      value: 15 * 60 * 1000,
-    },
-    {
-      text: i18n.settings.ifLeftFor30Minutes,
-      value: 30 * 60 * 1000,
-    },
-    {
-      text: i18n.settings.ifLeftFor1Hour,
-      value: 60 * 60 * 1000,
-    },
-    {
-      text: i18n.settings.whenCloseApp,
-      value: undefined,
-    },
-  ];
 
   const onValueChangePinCode = () => {
     if (!pinCodeEnabled) {

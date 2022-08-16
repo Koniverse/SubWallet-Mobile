@@ -9,8 +9,9 @@ import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../constant';
 import useAppLock from 'hooks/useAppLock';
+import { NavigationProps } from 'types/routes';
 
-export const LockScreen = () => {
+export const LockScreen = ({ navigation }: NavigationProps) => {
   const { unlock } = useAppLock();
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -20,13 +21,14 @@ export const LockScreen = () => {
     if (value.length === 6) {
       if (unlock(value)) {
         setValue('');
+        navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Home');
       } else {
         setError(i18n.errorMessage.wrongPassword);
       }
     } else {
       setError('');
     }
-  }, [unlock, value]);
+  }, [navigation, unlock, value]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
