@@ -34,7 +34,7 @@ const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
     value: 15 * 1000,
   },
   {
-    text: i18n.settings.ifLeftFor15Seconds,
+    text: i18n.settings.ifLeftFor30Seconds,
     value: 30 * 1000,
   },
   {
@@ -131,7 +131,7 @@ export const Security = () => {
         <SubWalletModal
           modalVisible={iShowAutoLockModal}
           onChangeModalVisible={() => setIsShowAutoLockModal(false)}
-          modalStyle={{ height: 412 }}>
+          modalStyle={{ height: 582 }}>
           <View style={{ width: '100%' }}>
             <Text style={modalTitle}>{i18n.common.autoLock}</Text>
             {AUTO_LOCK_LIST.map(item => (
