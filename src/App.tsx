@@ -56,43 +56,23 @@ export const App = () => {
               }}>
               <Stack.Group screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ title: 'Create Account' }} />
-                <Stack.Screen name="AccountsScreen" component={AccountsScreen} options={{ title: 'Account Screen' }} />
-                <Stack.Screen name="EditAccount" component={EditAccount} options={{ title: 'Edit Account' }} />
-                <Stack.Screen name="RestoreJson" component={RestoreJson} options={{ title: 'Restore JSON' }} />
-                <Stack.Screen
-                  name="ExportPrivateKey"
-                  component={ViewPrivateKey}
-                  options={{ title: 'Export Private Key' }}
-                />
-                <Stack.Screen name="Settings" component={Settings} options={{ title: 'Settings' }} />
-                <Stack.Screen name="RemoveAccount" component={RemoveAccount} options={{ title: 'Remove Account' }} />
-                <Stack.Screen name="NetworkSelect" component={NetworkSelect} options={{ title: 'Network Select' }} />
-                <Stack.Screen
-                  name="NetworksSetting"
-                  component={NetworksSetting}
-                  options={{ title: 'Networks Setting' }}
-                />
-                <Stack.Screen
-                  name="ImportSecretPhrase"
-                  component={ImportSecretPhrase}
-                  options={{ title: 'Import Secret Phrase' }}
-                />
-                <Stack.Screen
-                  name="ImportPrivateKey"
-                  component={ImportPrivateKey}
-                  options={{ title: 'Import Private Key' }}
-                />
-                <Stack.Screen name="SendFund" component={SendFund} options={{ title: 'Send Fund' }} />
-                <Stack.Screen name="Languages" component={Languages} options={{ title: 'Languages' }} />
-                <Stack.Screen name="Security" component={Security} options={{ title: 'Security' }} />
-                <Stack.Screen name="PinCode" component={PinCodeScreen} options={{ title: 'Pin Code' }} />
-                <Stack.Screen name="ExportJson" component={ExportJson} options={{ title: 'Export Json' }} />
-                <Stack.Screen
-                  name="WebViewDebugger"
-                  component={WebViewDebugger}
-                  options={{ title: 'Web View Debugger' }}
-                />
+                <Stack.Screen name="CreateAccount" component={CreateAccount} />
+                <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
+                <Stack.Screen name="EditAccount" component={EditAccount} />
+                <Stack.Screen name="RestoreJson" component={RestoreJson} />
+                <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
+                <Stack.Screen name="Settings" component={Settings} />
+                <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
+                <Stack.Screen name="NetworkSelect" component={NetworkSelect} />
+                <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
+                <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
+                <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
+                <Stack.Screen name="SendFund" component={SendFund} />
+                <Stack.Screen name="Languages" component={Languages} />
+                <Stack.Screen name="Security" component={Security} />
+                <Stack.Screen name="PinCode" component={PinCodeScreen} />
+                <Stack.Screen name="ExportJson" component={ExportJson} />
+                <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{
