@@ -25,7 +25,6 @@ export default function useAppLock(): UseAppLockOptions {
   );
 
   const lock = useCallback(() => {
-    console.log('Lock is running');
     dispatch(updateLockState(true));
   }, [dispatch]);
 

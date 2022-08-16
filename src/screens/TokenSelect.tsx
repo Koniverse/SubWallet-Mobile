@@ -89,7 +89,7 @@ export const TokenSelect = ({
     setTimeout(() => {
       setLoading(false);
       setPageNumber(currentPageNumber);
-    }, 2000);
+    }, 300);
   };
 
   const renderLoadingAnimation = () => {
