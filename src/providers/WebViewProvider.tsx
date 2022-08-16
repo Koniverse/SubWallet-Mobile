@@ -143,15 +143,20 @@ export const WebViewProvider = ({ children }: WebViewProviderProps): React.React
 
   useEffect(() => {
     let interval: NodeJS.Timer | undefined;
+    let timeout: NodeJS.Timeout | undefined;
     if (isReady) {
-      interval = setInterval(() => {
-        createPingPromise(webRef);
-      }, 3000);
+      // Start ping each 3 second after 6 second from crypto ready
+      timeout = setTimeout(() => {
+        interval = setInterval(() => {
+          createPingPromise(webRef);
+        }, 3000);
+      }, 6000);
     }
 
     return () => {
       cancelPingPromise();
       interval && clearInterval(interval);
+      timeout && clearTimeout(timeout);
     };
   }, [isReady]);
 
