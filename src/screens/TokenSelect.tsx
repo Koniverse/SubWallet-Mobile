@@ -48,6 +48,7 @@ export const TokenSelect = ({
     if (modalVisible) {
       setLazyList(sliceArray(filteredOptions, pageNumber));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dep, modalVisible, pageNumber]);
 
   const renderItem = ({ item }: ListRenderItemInfo<TokenItemType>) => {
