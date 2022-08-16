@@ -38,9 +38,8 @@ function checkRequiredStoresReady(
   accountsStoreStatus: StoreStatus,
   settingsStoreStatus: StoreStatus,
   networkMapStoreStatus: StoreStatus,
-  chainRegistryStoreStatus: StoreStatus,
 ): boolean {
-  return ![accountsStoreStatus, settingsStoreStatus, networkMapStoreStatus, chainRegistryStoreStatus].includes('INIT');
+  return ![accountsStoreStatus, settingsStoreStatus, networkMapStoreStatus].includes('INIT');
 }
 
 //Todo: Decorate more beautiful screen
@@ -90,7 +89,7 @@ export const EntryGate = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
-  const chainRegistryStoreStatus = useStoreChainRegistry();
+  useStoreChainRegistry();
   useStorePrice();
   useStoreBalance();
   useStoreTransactionHistory();
@@ -113,7 +112,6 @@ export const EntryGate = () => {
     accountsStoreStatus,
     settingsStoreStatus,
     networkMapStoreStatus,
-    chainRegistryStoreStatus,
   );
 
   useEffect(() => {
@@ -123,7 +121,10 @@ export const EntryGate = () => {
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
-  const _render = useMemo(
+  //todo: add more condition for waiting
+  const isWaiting = accountsStoreStatus === 'WAITING';
+
+  return useMemo(
     () => (
       <View style={viewContainerStyle}>
         {isAppReady && (
@@ -132,13 +133,16 @@ export const EntryGate = () => {
           </View>
         )}
 
-        <SubWalletFullSizeModal modalVisible={isLocked || !isAppReady} animationIn={'fadeIn'} animationOut={'fadeOut'}>
+        <SubWalletFullSizeModal
+          modalVisible={isLocked || !isAppReady || isWaiting}
+          animationIn={'fadeIn'}
+          animationOut={'fadeOut'}>
           {isLocked && (
             <View style={viewLayerStyle}>
               <LockScreen />
             </View>
           )}
-          {!isLocked && !isAppReady && (
+          {!isLocked && (!isAppReady || isWaiting) && (
             <View style={viewLayerStyle}>
               <Loading />
             </View>
@@ -146,9 +150,8 @@ export const EntryGate = () => {
         </SubWalletFullSizeModal>
       </View>
     ),
-    [isAppReady, isLocked],
+    [isAppReady, isLocked, isWaiting],
   );
-  return _render;
 };
 
 export default EntryGate;

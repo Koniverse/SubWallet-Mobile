@@ -15,6 +15,8 @@ import { BOTTOM_BAR_HEIGHT } from '../../constant';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
+import { FirstScreen } from 'screens/Home/FirstScreen';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -27,7 +29,7 @@ type HomeStackParamList = {
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
-export const Home = () => {
+const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const toast = useToast();
@@ -131,4 +133,10 @@ export const Home = () => {
       />
     </Tab.Navigator>
   );
+};
+
+export const Home = () => {
+  const isEmptyAccounts = useCheckEmptyAccounts();
+
+  return <>{isEmptyAccounts ? <FirstScreen /> : <MainScreen />}</>;
 };

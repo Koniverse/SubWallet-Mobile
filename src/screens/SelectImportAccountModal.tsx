@@ -1,12 +1,12 @@
 import React from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { StyleProp, View } from 'react-native';
-import Text from '../../components/Text';
+import Text from '../components/Text';
 import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';
 import { AccountActionType } from 'types/ui-types';
-import { deviceHeight } from '../../constant';
+import { deviceHeight } from '../constant';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 

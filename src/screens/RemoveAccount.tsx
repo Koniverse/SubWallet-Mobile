@@ -10,9 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RemoveAccountProps, RootNavigationProps } from 'types/routes';
 import { forgetAccount } from '../messaging';
 import { toShort } from 'utils/index';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
+import { backToHome } from 'utils/navigation';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -72,7 +71,6 @@ export const RemoveAccount = ({
   },
 }: RemoveAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const [isBusy, setIsBusy] = useState(false);
   //todo: reformat address base on Current network
   const displayAddress = toShort(address, 10, 10);
@@ -85,11 +83,7 @@ export const RemoveAccount = ({
     setIsBusy(true);
     forgetAccount(address)
       .then(() => {
-        if (accounts && accounts.length === 2) {
-          navigation.navigate('FirstScreen');
-        } else {
-          navigation.navigate('Home');
-        }
+        backToHome(navigation, true);
       })
       .catch((error: Error) => {
         setIsBusy(false);

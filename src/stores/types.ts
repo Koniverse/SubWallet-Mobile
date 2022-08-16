@@ -8,7 +8,7 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 
-export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED';
+export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
 export type StoreSlice = {
   isReady?: boolean;
@@ -18,6 +18,7 @@ export type AccountsSlice = {
   accounts: AccountJson[];
   currentAccountAddress: string;
   currentAccount?: AccountJson;
+  isWaiting?: boolean;
 } & StoreSlice;
 
 export type AppStateSlice = {

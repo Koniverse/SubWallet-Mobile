@@ -1,14 +1,33 @@
-import { useContext, useEffect, useState } from 'react';
-import { saveCurrentAccountAddress, subscribeAccountsWithCurrentAddress } from '../../messaging';
+import { useContext, useEffect } from 'react';
+import {
+  saveCurrentAccountAddress,
+  subscribeAccountsWithCurrentAddress,
+  triggerAccountsSubscription,
+} from '../../messaging';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
-import { updateAccountsAndCurrentAccount } from 'stores/updater';
+import { updateAccountsAndCurrentAccount, updateAccountsSlice, updateAccountsWaitingStatus } from 'stores/updater';
 import { WebViewContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+
+function getStatus(isReady: boolean | undefined, isWaiting: boolean | undefined): StoreStatus {
+  if (isReady) {
+    if (isWaiting) {
+      return 'WAITING';
+    } else {
+      return 'SYNCED';
+    }
+  }
+
+  return 'INIT';
+}
 
 export default function useStoreAccounts(): StoreStatus {
   const isWebRunnerReady = useContext(WebViewContext).isReady;
-  const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
+  const isReady = useSelector((state: RootState) => state.accounts.isReady);
+  const isWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
 
   useEffect(() => {
     let cancel = false;
@@ -29,6 +48,7 @@ export default function useStoreAccounts(): StoreStatus {
           let selectedAcc = accounts.find(acc => acc.address === currentAddress);
 
           if (!selectedAcc) {
+            updateAccountsWaitingStatus(true);
             selectedAcc = accounts[0];
             selectedAcc.genesisHash = currentGenesisHash;
 
@@ -38,9 +58,8 @@ export default function useStoreAccounts(): StoreStatus {
             } as CurrentAccountInfo;
 
             saveCurrentAccountAddress(accountInfo, () => {
-              updateAccountsAndCurrentAccount({
-                accounts,
-                currentAccountAddress: (selectedAcc as AccountJson).address,
+              triggerAccountsSubscription().catch(e => {
+                console.error('There is a problem when trigger Accounts Subscription', e);
               });
             }).catch(e => {
               console.error('There is a problem when set Current Account', e);
@@ -49,9 +68,9 @@ export default function useStoreAccounts(): StoreStatus {
             selectedAcc.genesisHash = currentGenesisHash;
             updateAccountsAndCurrentAccount({ accounts, currentAccountAddress: selectedAcc.address });
           }
+        } else {
+          updateAccountsSlice({ accounts: [], currentAccountAddress: ALL_ACCOUNT_KEY });
         }
-
-        setStoreStatus('SYNCED');
       }).catch(e => {
         console.log('--- subscribeAccountsWithCurrentAddress error:', e);
       });
@@ -62,5 +81,5 @@ export default function useStoreAccounts(): StoreStatus {
     };
   }, [isWebRunnerReady]);
 
-  return storeStatus;
+  return getStatus(isReady, isWaiting);
 }

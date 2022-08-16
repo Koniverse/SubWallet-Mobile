@@ -18,7 +18,6 @@ import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 import { NetworkSelect } from 'screens/NetworkSelect';
-import { FirstScreen } from 'screens/FirstScreen';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -30,16 +29,15 @@ import { ExportJson } from 'screens/ExportJson';
 import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
-import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
 export const App = () => {
-  const isEmptyAccounts = useCheckEmptyAccounts();
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
+  // todo: do lazy load
   return (
     <ToastProvider
       duration={1500}
@@ -53,12 +51,10 @@ export const App = () => {
         <ThemeContext.Provider value={theme}>
           <NavigationContainer ref={navigationRef} theme={theme}>
             <Stack.Navigator
-              initialRouteName={isEmptyAccounts ? 'FirstScreen' : 'Home'}
               screenOptions={{
                 animation: 'fade_from_bottom',
               }}>
               <Stack.Group screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="FirstScreen" component={FirstScreen} />
                 <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} options={{ title: 'Create Account' }} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} options={{ title: 'Account Screen' }} />

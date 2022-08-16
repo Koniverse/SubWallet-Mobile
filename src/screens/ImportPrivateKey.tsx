@@ -11,6 +11,7 @@ import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging'
 import { Textarea } from 'components/Textarea';
 import { Warning } from 'components/Warning';
 import { EVM_ACCOUNT_TYPE } from '../constant';
+import { backToHome } from 'utils/navigation';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -64,7 +65,7 @@ export const ImportPrivateKey = () => {
         setIsBusy(true);
         createAccountSuriV2(name, password, autoCorrectPrivateKey, false, [EVM_ACCOUNT_TYPE])
           .then(() => {
-            navigation.navigate('Home');
+            backToHome(navigation, true);
           })
           .catch(() => {
             setIsBusy(false);

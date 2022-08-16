@@ -35,6 +35,14 @@ export function updateTransactionHistory(transactionHistoryMap: Record<string, T
   store.dispatch({ type: 'transactionHistory/update', payload: { details: transactionHistoryMap } });
 }
 
+export function updateAccountsSlice(payload: AccountsSlice): void {
+  store.dispatch({ type: 'accounts/update', payload });
+}
+
 export function updateAccountsAndCurrentAccount(payload: AccountsSlice): void {
   store.dispatch({ type: 'accounts/updateAccountsAndCurrentAccount', payload });
+}
+
+export function updateAccountsWaitingStatus(payload: boolean): void {
+  store.dispatch({ type: 'accounts/updateWaitingStatus', payload });
 }

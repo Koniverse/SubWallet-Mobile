@@ -3,7 +3,7 @@ import { FlatList, StyleProp, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
 import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus } from 'phosphor-react-native';
@@ -13,13 +13,13 @@ import { ColorMap } from 'styles/color';
 import { RootNavigationProps, RootStackParamList } from 'types/routes';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import i18n from 'utils/i18n/i18n';
-import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
+import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
-import { updateCurrentAccount } from 'stores/Accounts';
+import { updateAccountsWaitingStatus } from 'stores/updater';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -41,8 +41,8 @@ const accountItemSeparator: StyleProp<any> = {
 
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
-  const dispatch = useDispatch();
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
@@ -104,19 +104,17 @@ export const AccountsScreen = () => {
   const selectAccount = useCallback(
     (accAddress: string) => {
       if (currentAccountAddress !== accAddress) {
+        updateAccountsWaitingStatus(true);
         saveCurrentAccountAddress({ address: accAddress }, () => {
           triggerAccountsSubscription().catch(e => {
             console.error('There is a problem when trigger Accounts Subscription', e);
           });
-        })
-          .then(console.log)
-          .catch(console.error);
-        dispatch(updateCurrentAccount(accAddress));
+        }).catch(console.error);
       }
 
       navigation.navigate('Home');
     },
-    [dispatch, navigation, currentAccountAddress],
+    [navigation, currentAccountAddress],
   );
 
   // @ts-ignore

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
-import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
+import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { TokenSelect } from 'screens/TokenSelect';
 import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
 import { AccountActionType, SelectionProviderProps, TokenItemType } from 'types/ui-types';

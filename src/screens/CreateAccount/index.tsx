@@ -7,6 +7,7 @@ import { createAccountSuriV2, createSeedV2 } from '../../messaging';
 import { useNavigation } from '@react-navigation/native';
 import { CreateAccountProps, RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
+import { backToHome } from 'utils/navigation';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -65,7 +66,7 @@ export const CreateAccount = ({
       setIsBusy(true);
       createAccountSuriV2(curName, password, seed, true, [keyTypes], '')
         .then(() => {
-          navigation.navigate('Home');
+          backToHome(navigation, true);
         })
         .catch((error: Error): void => {
           setIsBusy(false);

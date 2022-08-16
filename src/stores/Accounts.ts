@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { AccountsSlice } from 'stores/types';
 
@@ -23,23 +22,8 @@ const accountsSlice = createSlice({
 
       return newState;
     },
-    updateAccounts(state, action: PayloadAction<AccountJson[]>) {
-      state.accounts = action.payload;
-
-      if (!state.isReady) {
-        state.isReady = true;
-      }
-    },
-    updateCurrentAccount(state, action: PayloadAction<string>) {
-      state.currentAccountAddress = action.payload;
-      state.currentAccount = state.accounts.find(acc => acc.address === state.currentAccountAddress);
-
-      if (!state.isReady) {
-        state.isReady = true;
-      }
-    },
     updateAccountsAndCurrentAccount(state, action: PayloadAction<AccountsSlice>) {
-      const { accounts, currentAccountAddress, isReady } = action.payload;
+      const { accounts, currentAccountAddress, isReady, isWaiting } = action.payload;
 
       state.accounts = accounts;
       state.currentAccountAddress = currentAccountAddress;
@@ -50,17 +34,17 @@ const accountsSlice = createSlice({
       } else {
         state.isReady = isReady;
       }
-    },
-    upsertCurrentAccount(state, action: PayloadAction<AccountJson>) {
-      state.currentAccountAddress = action.payload.address;
-      state.currentAccount = action.payload;
 
-      if (!state.isReady) {
-        state.isReady = true;
+      if (isWaiting === undefined) {
+        state.isWaiting = false;
+      } else {
+        state.isWaiting = isWaiting;
       }
+    },
+    updateWaitingStatus(state, action: PayloadAction<boolean>) {
+      state.isWaiting = action.payload;
     },
   },
 });
 
-export const { updateAccounts, updateCurrentAccount } = accountsSlice.actions;
 export default accountsSlice.reducer;

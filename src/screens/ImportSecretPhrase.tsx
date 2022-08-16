@@ -12,6 +12,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
 import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { backToHome } from 'utils/navigation';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -82,7 +83,7 @@ export const ImportSecretPhrase = ({
 
         createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
           .then(() => {
-            navigation.navigate('Home');
+            backToHome(navigation, true);
           })
           .catch(() => {
             setBusy(false);

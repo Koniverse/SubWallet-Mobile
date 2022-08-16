@@ -18,6 +18,7 @@ import { PasswordField } from 'components/Field/Password';
 import { Account } from 'components/Account';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import { backToHome } from 'utils/navigation';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -107,7 +108,7 @@ export const RestoreJson = () => {
         setIsPasswordError(false);
         setPassword('');
         setAccountsInfo(() => []);
-        navigation.navigate('Home');
+        backToHome(navigation, true);
       })
       .catch(() => {
         setIsBusy(false);

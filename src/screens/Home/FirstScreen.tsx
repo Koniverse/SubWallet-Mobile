@@ -6,7 +6,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { ArchiveTray, Article, FileArrowUp, LockKey, UserCirclePlus } from 'phosphor-react-native';
-import { SelectImportAccountModal } from 'screens/FirstScreen/SelectImportAccountModal';
+import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
