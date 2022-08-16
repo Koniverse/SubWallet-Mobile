@@ -10,7 +10,7 @@ import { ActionItem } from 'components/ActionItem';
 import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { updateAutoLockTime, updatePinCodeEnable } from 'stores/MobileSettings';
+import { updateAutoLockTime } from 'stores/MobileSettings';
 import { SubWalletModal } from 'components/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
@@ -60,13 +60,9 @@ export const Security = () => {
 
   const onValueChangePinCode = () => {
     if (!pinCodeEnabled) {
-      if (pinCode) {
-        dispatch(updatePinCodeEnable(true));
-      } else {
-        navigation.navigate('PinCode', { isEditablePinCode: false });
-      }
+      navigation.navigate('PinCode', { screen: 'NewPinCode' });
     } else {
-      dispatch(updatePinCodeEnable(false));
+      navigation.navigate('PinCode', { screen: 'TurnoffPinCode' });
     }
   };
 
@@ -98,7 +94,7 @@ export const Security = () => {
           icon={Key}
           title={i18n.common.changePinCode}
           hasRightArrow
-          onPress={() => navigation.navigate('PinCode', { isEditablePinCode: true })}
+          onPress={() => navigation.navigate('PinCode', { screen: 'ChangePinCode' })}
         />
 
         <ActionItem

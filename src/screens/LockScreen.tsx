@@ -10,11 +10,6 @@ import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../constant';
 import useAppLock from 'hooks/useAppLock';
 
-// interface Props {
-//   unlock: (code: string) => boolean;
-// }
-
-// export const LockScreen = ({ unlock }: Props) => {
 export const LockScreen = () => {
   const { unlock } = useAppLock();
   const [value, setValue] = useState<string>('');
@@ -22,7 +17,7 @@ export const LockScreen = () => {
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
 
   useEffect(() => {
-    if (value.length > 5) {
+    if (value.length === 6) {
       if (unlock(value)) {
         setValue('');
       } else {

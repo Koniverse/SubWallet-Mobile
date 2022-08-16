@@ -35,6 +35,7 @@ import {
 } from '../../constant';
 import { useToast } from 'react-native-toast-notifications';
 import VersionNumber from 'react-native-version-number';
+import useAppLock from 'hooks/useAppLock';
 
 const settingTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -63,6 +64,7 @@ export const Settings = () => {
   const toast = useToast();
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
+  const { lock } = useAppLock();
   const onPressComingSoonFeature = useCallback(() => {
     toast.hideAll();
     toast.show(i18n.common.comingSoon);
@@ -156,12 +158,12 @@ export const Settings = () => {
           icon: SignOut,
           title: i18n.settings.logout,
           hasRightArrow: true,
-          onPress: () => navigation.navigate('LockScreen'),
+          onPress: lock,
           disabled: !pinCodeEnabled,
         },
       ],
     ],
-    [navigation, onPressComingSoonFeature, pinCodeEnabled],
+    [lock, navigation, onPressComingSoonFeature, pinCodeEnabled],
   );
 
   const onPressVersionNumber = () => {

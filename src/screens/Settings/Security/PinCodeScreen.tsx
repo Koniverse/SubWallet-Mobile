@@ -17,15 +17,15 @@ const ViewStep = {
 
 export const PinCodeScreen = ({
   route: {
-    params: { isEditablePinCode },
+    params: { screen },
   },
 }: PinCodeProps) => {
   const pinCode = useSelector((state: RootState) => state.mobileSettings.pinCode);
   const navigation = useNavigation<RootNavigationProps>();
   const [currentViewStep, setCurrentViewStep] = useState<number>(
-    isEditablePinCode ? ViewStep.VALIDATE_PIN_CODE : ViewStep.PIN_CODE,
+    screen === 'NewPinCode' ? ViewStep.PIN_CODE : ViewStep.VALIDATE_PIN_CODE,
   );
-  const [title, setTitle] = useState(isEditablePinCode ? i18n.common.pinCode : i18n.common.newPinCode);
+  const [title, setTitle] = useState(screen ? i18n.common.pinCode : i18n.common.newPinCode);
   const [validatePinCode, setValidatePinCode] = useState<string>('');
   const [newPinCode, setNewPinCode] = useState<string>('');
   const [repeatPinCode, setRepeatPinCode] = useState<string>('');
@@ -35,8 +35,7 @@ export const PinCodeScreen = ({
     const hash = bcrypt.hashSync(newPinCode, salt);
     dispatch(updatePinCode(hash));
     dispatch(updatePinCodeEnable(true));
-    // Todo: Navigate to Root + lock here
-    navigation.navigate('LockScreen');
+    navigation.navigate('Security');
   };
 
   const onPressBack = () => {
@@ -58,8 +57,14 @@ export const PinCodeScreen = ({
           <PinCode
             onPressBack={() => navigation.navigate('Security')}
             onPressContinue={() => {
-              setCurrentViewStep(ViewStep.PIN_CODE);
-              setTitle(i18n.common.newPinCode);
+              if (screen === 'TurnoffPinCode') {
+                dispatch(updatePinCodeEnable(false));
+                dispatch(updatePinCode(''));
+                navigation.navigate('Security');
+              } else {
+                setCurrentViewStep(ViewStep.PIN_CODE);
+                setTitle(i18n.common.newPinCode);
+              }
             }}
             pinCode={validatePinCode}
             onChangePinCode={setValidatePinCode}

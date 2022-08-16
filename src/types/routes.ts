@@ -20,7 +20,7 @@ export type RootStackParamList = {
   SendFund: { selectedAccount: string; selectedNetworkKey: string; selectedToken: string };
   Languages: undefined;
   Security: undefined;
-  PinCode: { isEditablePinCode: boolean };
+  PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   ExportJson: undefined;
   WebViewDebugger: undefined;
 };

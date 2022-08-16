@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import bcrypt from 'react-native-bcrypt';
 import { updateLockState } from 'stores/AppState';
 
@@ -12,12 +12,8 @@ export interface UseAppLockOptions {
 
 export default function useAppLock(): UseAppLockOptions {
   const isLocked = useSelector((state: RootState) => state.appState.isLocked);
-  const { pinCode, pinCodeEnabled } = useSelector((state: RootState) => state.mobileSettings);
+  const { pinCode } = useSelector((state: RootState) => state.mobileSettings);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(updateLockState(pinCodeEnabled));
-  }, [dispatch, pinCodeEnabled]);
 
   const unlock = useCallback(
     (code: string) => {
@@ -29,6 +25,7 @@ export default function useAppLock(): UseAppLockOptions {
   );
 
   const lock = useCallback(() => {
+    console.log('Lock is running');
     dispatch(updateLockState(true));
   }, [dispatch]);
 
