@@ -52,6 +52,32 @@ function Loading() {
   );
 }
 
+let lastTimestamp = 0;
+const autoLockParams: { pinCodeEnabled: boolean; autoLockTime?: number; lock: () => void } = {
+  pinCodeEnabled: false,
+  autoLockTime: undefined,
+  lock: () => {},
+};
+AppState.addEventListener('change', (state: string) => {
+  if (!autoLockParams.pinCodeEnabled) {
+    return;
+  }
+
+  if (state === 'background') {
+    lastTimestamp = Date.now();
+  } else if (state === 'active') {
+    if (autoLockParams.autoLockTime === undefined) {
+      return;
+    } else {
+      if (Date.now() > lastTimestamp + autoLockParams.autoLockTime) {
+        autoLockParams.lock();
+      }
+    }
+  }
+});
+
+let firstTimeCheckPincode: boolean | undefined;
+
 export const EntryGate = () => {
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const autoLockTime = useSelector((state: RootState) => state.mobileSettings.autoLockTime);
@@ -69,22 +95,18 @@ export const EntryGate = () => {
   useStoreBalance();
   useStoreTransactionHistory();
 
+  // Enable lock screen on the start app
   useEffect(() => {
-    const onAppStateChange = (state: string) => {
-      if (!pinCodeEnabled) {
-        return;
-      }
+    if (!firstTimeCheckPincode && pinCodeEnabled) {
+      lock();
+    }
+    firstTimeCheckPincode = true;
+  }, [lock, pinCodeEnabled]);
 
-      if (state === 'background') {
-        lock();
-      }
-    };
-
-    const listener = AppState.addEventListener('change', onAppStateChange);
-
-    return () => {
-      listener.remove();
-    };
+  useEffect(() => {
+    autoLockParams.lock = lock;
+    autoLockParams.autoLockTime = autoLockTime;
+    autoLockParams.pinCodeEnabled = pinCodeEnabled;
   }, [autoLockTime, lock, pinCodeEnabled]);
 
   const isRequiredStoresReady = checkRequiredStoresReady(
