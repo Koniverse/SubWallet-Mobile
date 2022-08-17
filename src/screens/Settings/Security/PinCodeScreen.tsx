@@ -31,7 +31,7 @@ export const PinCodeScreen = ({
   const [repeatPinCode, setRepeatPinCode] = useState<string>('');
   const dispatch = useDispatch();
   const onSavePinCode = () => {
-    const salt = bcrypt.genSaltSync(10);
+    const salt = bcrypt.genSaltSync(6);
     const hash = bcrypt.hashSync(newPinCode, salt);
     dispatch(updatePinCode(hash));
     dispatch(updatePinCodeEnable(true));
@@ -68,7 +68,7 @@ export const PinCodeScreen = ({
             }}
             pinCode={validatePinCode}
             onChangePinCode={setValidatePinCode}
-            isPinCodeValid={validatePinCode.length > 5 && !!pinCode && bcrypt.compareSync(validatePinCode, pinCode)}
+            isPinCodeValid={validatePinCode.length === 6 && !!pinCode && bcrypt.compareSync(validatePinCode, pinCode)}
           />
         )}
 
@@ -97,7 +97,7 @@ export const PinCodeScreen = ({
             onPressContinue={onSavePinCode}
             pinCode={repeatPinCode}
             onChangePinCode={setRepeatPinCode}
-            isPinCodeValid={repeatPinCode.length > 5 && newPinCode === repeatPinCode}
+            isPinCodeValid={repeatPinCode.length === 6 && newPinCode === repeatPinCode}
           />
         )}
       </>
