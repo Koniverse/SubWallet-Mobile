@@ -91,7 +91,6 @@ export const App = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
-  const faceIdEnabled = useSelector((state: RootState) => state.mobileSettings.faceIdEnabled);
   const autoLockTime = useSelector((state: RootState) => state.mobileSettings.autoLockTime);
   const { isLocked, lock } = useAppLock();
 
@@ -150,7 +149,7 @@ export const App = () => {
         navigationRef.navigate('Home');
       }
     }
-  }, [faceIdEnabled, isAppReady, isLocked, navigationRef]);
+  }, [isAppReady, isLocked, navigationRef]);
   // todo: do lazy load in react-native-navigation
 
   return useMemo(

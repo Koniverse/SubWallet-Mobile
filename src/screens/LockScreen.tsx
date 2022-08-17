@@ -32,14 +32,15 @@ export const LockScreen = ({ navigation }: NavigationProps) => {
   const faceIdEnabled = useSelector((state: RootState) => state.mobileSettings.faceIdEnabled);
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [authMethod, setAuthMethod] = useState<'bio' | 'pinCode'>(faceIdEnabled ? 'bio' : 'pinCode');
+  const [authMethod, setAuthMethod] = useState<'biometric' | 'pinCode'>(faceIdEnabled ? 'biometric' : 'pinCode');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
 
   const unlockWithBiometric = useAppLock().unlockWithBiometric;
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused && authMethod === 'bio') {
+    const _authMethod = faceIdEnabled ? 'biometric' : 'pinCode';
+    if (isFocused && _authMethod === 'biometric') {
       TouchID.isSupported()
         .then(currentType => {
           TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
@@ -52,13 +53,8 @@ export const LockScreen = ({ navigation }: NavigationProps) => {
             });
         })
         .catch(() => setAuthMethod('pinCode'));
-    } else {
-      if (faceIdEnabled) {
-        setAuthMethod('bio');
-      } else {
-        setAuthMethod('pinCode');
-      }
     }
+    setAuthMethod(_authMethod);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [faceIdEnabled, isFocused, navigation, unlockWithBiometric]);
 
