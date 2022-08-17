@@ -35,7 +35,7 @@ export const PinCode = ({ pinCode, onChangePinCode, onPressBack, onPressContinue
       <View style={bottomAreaStyle}>
         <SubmitButton title={i18n.common.cancel} style={cancelButtonStyle} onPress={onPressBack} />
         <SubmitButton
-          disabled={!pinCode || pinCode.length < 6 || !isPinCodeValid}
+          disabled={!pinCode || pinCode.length !== 6 || !isPinCodeValid}
           title={i18n.common.continue}
           style={continueButtonStyle}
           onPress={onPressContinue}
