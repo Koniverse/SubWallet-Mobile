@@ -26,6 +26,7 @@ interface Prop {
   networkBalanceMap: Record<string, BalanceInfo>;
   selectedNetworkInfo: AccountInfoByNetwork;
   onPressBack: () => void;
+  tokenGroupMap: Record<string, string[]>;
   handleChangeTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
 }
 
@@ -121,6 +122,7 @@ const ChainDetailLayer = ({
   handleChangeTokenItem,
   onPressBack,
   accountType,
+  tokenGroupMap,
   isShowZeroBalance,
 }: Prop) => {
   const tokenBalanceItems = getChainDetailItems(
@@ -132,7 +134,7 @@ const ChainDetailLayer = ({
   const [refreshTabId, setRefreshTabId] = useState<string>('');
 
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
-    if (!isItemAllowedToShow(item, accountType, isShowZeroBalance)) {
+    if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
       return null;
     }
 

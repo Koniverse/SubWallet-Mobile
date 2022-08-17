@@ -5,16 +5,19 @@ import React from 'react';
 import { AccountType, TokenBalanceItemType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
 
-export const alwaysShowedKey = ['dot', 'ksm', 'polkadot|DOT', 'kusama|KSM'];
+export const alwaysShowedKey = ['polkadot|DOT', 'kusama|KSM'];
 
 export function isItemAllowedToShow(
   item: TokenBalanceItemType,
   accountType: AccountType,
+  tokenGroupMap: Record<string, string[]>,
   isShowZeroBalance?: boolean,
 ): boolean {
   if (!isShowZeroBalance) {
     if (BN_ZERO.eq(item.balanceValue)) {
-      if (alwaysShowedKey.includes(item.id)) {
+      if (tokenGroupMap[item.id]) {
+        return tokenGroupMap[item.id].some(k => alwaysShowedKey.includes(k));
+      } else if (alwaysShowedKey.includes(item.id)) {
         return accountType !== 'ETHEREUM';
       }
 

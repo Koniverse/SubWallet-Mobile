@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from '../../../types';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
-import { BackHandler, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 import useAccountInfoByNetworkMap from 'hooks/screen/Home/CtyptoTab/useAccountInfoByNetworkMap';
 import useViewStep from 'hooks/screen/useViewStep';
@@ -64,38 +64,21 @@ export const CryptoTab = () => {
     networkMap,
   );
 
-  // prevent Back Press event on Android for this screen
-  useEffect(() => {
-    const handleBackButton = () => {
-      return true;
-    };
-
-    const unsubscribeFocusScreen = navigation.addListener('focus', () => {
-      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
-    });
-
-    const unsubscribeBlurScreen = navigation.addListener('blur', () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
-    });
-
-    return () => {
-      unsubscribeFocusScreen();
-      unsubscribeBlurScreen();
-    };
-  }, [navigation]);
-
-  const onPressBack = () => {
+  const onPressBack = useCallback(() => {
     toBack();
-  };
+  }, [toBack]);
 
-  const onPressChainItem = (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
-    setSelectionInfo(prevState => ({
-      ...prevState,
-      selectedNetworkInfo: info,
-      selectBalanceInfo: balanceInfo,
-    }));
-    toNextView(ViewStep.CHAIN_DETAIL);
-  };
+  const onPressChainItem = useCallback(
+    (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => {
+      setSelectionInfo(prevState => ({
+        ...prevState,
+        selectedNetworkInfo: info,
+        selectBalanceInfo: balanceInfo,
+      }));
+      toNextView(ViewStep.CHAIN_DETAIL);
+    },
+    [toNextView],
+  );
 
   const deps = selectedNetworkInfo?.networkKey;
 
@@ -122,15 +105,18 @@ export const CryptoTab = () => {
     [deps, toNextView],
   );
 
-  const onPressSearchButton = () => {
+  const onPressSearchButton = useCallback(() => {
     setTokenSelectModal(true);
-  };
+  }, []);
 
-  const onChangeTokenSelectModalItem = ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
-    const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
-    handleChangeTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
-    setTokenSelectModal(false);
-  };
+  const onChangeTokenSelectModalItem = useCallback(
+    ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
+      const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
+      handleChangeTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
+      setTokenSelectModal(false);
+    },
+    [accountInfoByNetworkMap, handleChangeTokenItem],
+  );
 
   return (
     <View style={viewContainerStyle}>
@@ -156,6 +142,7 @@ export const CryptoTab = () => {
             tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
             networkBalanceMap={networkBalanceMap}
             selectedNetworkInfo={selectedNetworkInfo}
+            tokenGroupMap={tokenGroupMap}
             accountType={accountType}
             onPressBack={onPressBack}
           />
