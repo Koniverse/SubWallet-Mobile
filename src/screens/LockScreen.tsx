@@ -21,7 +21,6 @@ export const LockScreen = ({ navigation }: NavigationProps) => {
     if (value.length === 6) {
       if (unlock(value)) {
         setValue('');
-        navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Home');
       } else {
         setError(i18n.errorMessage.wrongPassword);
       }

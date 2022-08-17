@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CodeField, Cursor, useClearByFocusCell } from 'react-native-confirmation-code-field';
 import { StyleProp, TextInput, View } from 'react-native';
 import Text from '../components/Text';
@@ -72,6 +72,12 @@ export const PinCodeField = ({ value, setValue, isPinCodeValid, pinCodeRef }: Pr
     );
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      pinCodeRef?.current?.focus();
+    }, 600);
+  }, [pinCodeRef]);
+
   return (
     <CodeField
       ref={pinCodeRef}
@@ -83,7 +89,7 @@ export const PinCodeField = ({ value, setValue, isPinCodeValid, pinCodeRef }: Pr
       keyboardType="number-pad"
       textContentType="oneTimeCode"
       renderCell={renderCell}
-      autoFocus
+      autoFocus={true}
     />
   );
 };

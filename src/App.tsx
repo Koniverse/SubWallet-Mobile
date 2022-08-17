@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, StackActions, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
@@ -81,6 +81,7 @@ AppState.addEventListener('change', (state: string) => {
 });
 
 let firstTimeCheckPincode: boolean | undefined;
+const DONT_GO_BACK_LIST = ['LoadingScreen', 'LockScreen', 'BiometricScreen'];
 
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
@@ -138,10 +139,17 @@ export const App = () => {
       navigationRef.navigate('LockScreen');
     } else if (!isAppReady) {
       navigationRef.navigate('LoadingScreen');
+    } else {
+      // Go back to latest screen not in DONT_GO_BACK_LIST
+      const currentRoutes = navigationRef?.getState().routes || [];
+      const needGoBackTimes = currentRoutes.filter(r => DONT_GO_BACK_LIST.includes(r.name)).length;
+      if (needGoBackTimes > 0 && navigationRef.canGoBack()) {
+        navigationRef.dispatch(StackActions.pop(needGoBackTimes));
+      } else {
+        navigationRef.navigate('Home');
+      }
     }
   }, [isAppReady, isLocked, navigationRef]);
-
-  // todo: do lazy load in react-native-navigation
 
   return useMemo(
     () => (
