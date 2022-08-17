@@ -72,6 +72,7 @@ function getBalanceValue(
 function getChainTabsNetworkKeys(
   isGroupDetail: boolean,
   tokenBalanceItems: TokenBalanceItemType[],
+  tokenGroupMap: Record<string, string[]>,
   showedNetworks: string[],
   accountType: AccountType,
   isShowZeroBalance?: boolean,
@@ -83,7 +84,7 @@ function getChainTabsNetworkKeys(
   const networkKeys: string[] = [];
 
   tokenBalanceItems.forEach(item => {
-    if (!isItemAllowedToShow(item, accountType, isShowZeroBalance)) {
+    if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
       return;
     }
 
@@ -136,6 +137,7 @@ const TokenGroupLayer = ({
   const chainTabsNetworkKeys = getChainTabsNetworkKeys(
     isGroupDetail,
     tokenBalanceItems,
+    tokenGroupMap,
     showedNetworks,
     accountType,
     isShowZeroBalance,
@@ -153,7 +155,7 @@ const TokenGroupLayer = ({
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];
 
-    if (!isItemAllowedToShow(item, accountType, isShowZeroBalance)) {
+    if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
       return null;
     }
 
