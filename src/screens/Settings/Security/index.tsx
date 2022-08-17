@@ -10,7 +10,7 @@ import { ActionItem } from 'components/ActionItem';
 import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { updateAutoLockTime } from 'stores/MobileSettings';
+import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
 import { SubWalletModal } from 'components/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
@@ -64,8 +64,9 @@ const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
 ];
 
 export const Security = () => {
-  const { pinCode, pinCodeEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
-  const [isEnabledFaceId, setEnabledFaceId] = useState<boolean>(false);
+  const { pinCode, pinCodeEnabled, autoLockTime, faceIdEnabled } = useSelector(
+    (state: RootState) => state.mobileSettings,
+  );
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
@@ -79,7 +80,7 @@ export const Security = () => {
   };
 
   const onValueChangeFaceId = () => {
-    setEnabledFaceId(!isEnabledFaceId);
+    dispatch(updateFaceIdEnable(!faceIdEnabled));
   };
 
   const onChangeAutoLockTime = (value: number | undefined) => {
@@ -94,8 +95,8 @@ export const Security = () => {
         <ToggleItem
           style={{ marginBottom: 16 }}
           label={i18n.common.faceId}
-          isEnabled={isEnabledFaceId}
-          disabled={true}
+          isEnabled={faceIdEnabled}
+          disabled={!pinCodeEnabled}
           onValueChange={onValueChangeFaceId}
         />
 

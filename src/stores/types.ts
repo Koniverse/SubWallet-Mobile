@@ -35,6 +35,7 @@ export type MobileSettingsSlice = {
   language: string;
   pinCode: string;
   pinCodeEnabled: boolean;
+  faceIdEnabled: boolean;
   autoLockTime: number | undefined;
 };
 

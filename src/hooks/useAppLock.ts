@@ -7,6 +7,7 @@ import { updateLockState } from 'stores/AppState';
 export interface UseAppLockOptions {
   isLocked: boolean;
   unlock: (code: string) => boolean;
+  unlockWithBiometric: () => void;
   lock: () => void;
 }
 
@@ -24,9 +25,13 @@ export default function useAppLock(): UseAppLockOptions {
     [dispatch, pinCode],
   );
 
+  const unlockWithBiometric = useCallback(() => {
+    dispatch(updateLockState(false));
+  }, [dispatch]);
+
   const lock = useCallback(() => {
     dispatch(updateLockState(true));
   }, [dispatch]);
 
-  return { isLocked, unlock, lock };
+  return { isLocked, unlock, lock, unlockWithBiometric };
 }

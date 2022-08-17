@@ -81,7 +81,7 @@ AppState.addEventListener('change', (state: string) => {
 });
 
 let firstTimeCheckPincode: boolean | undefined;
-const DONT_GO_BACK_LIST = ['LoadingScreen', 'LockScreen', 'BiometricScreen'];
+const DONT_GO_BACK_LIST = ['LoadingScreen', 'LockScreen'];
 
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
@@ -91,6 +91,7 @@ export const App = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
+  const faceIdEnabled = useSelector((state: RootState) => state.mobileSettings.faceIdEnabled);
   const autoLockTime = useSelector((state: RootState) => state.mobileSettings.autoLockTime);
   const { isLocked, lock } = useAppLock();
 
@@ -142,14 +143,15 @@ export const App = () => {
     } else {
       // Go back to latest screen not in DONT_GO_BACK_LIST
       const currentRoutes = navigationRef?.getState().routes || [];
-      const needGoBackTimes = currentRoutes.filter(r => DONT_GO_BACK_LIST.includes(r.name)).length;
-      if (needGoBackTimes > 0 && navigationRef.canGoBack()) {
+      const needGoBackTimes = [...currentRoutes].filter(r => DONT_GO_BACK_LIST.includes(r.name)).length;
+      if (needGoBackTimes > 0 && navigationRef.canGoBack() && currentRoutes.length > needGoBackTimes) {
         navigationRef.dispatch(StackActions.pop(needGoBackTimes));
       } else {
         navigationRef.navigate('Home');
       }
     }
-  }, [isAppReady, isLocked, navigationRef]);
+  }, [faceIdEnabled, isAppReady, isLocked, navigationRef]);
+  // todo: do lazy load in react-native-navigation
 
   return useMemo(
     () => (
