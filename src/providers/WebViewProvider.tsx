@@ -66,8 +66,8 @@ const pingWebView = (webRef: React.RefObject<WebView<{}>>) => {
     reloadTimeout = setTimeout(() => {
       console.warn('Ping check failed: Reload timeout');
       webRef?.current?.reload();
-    }, 3000);
-  }, 6000);
+    }, 6000);
+  }, 9000);
 };
 
 export const WebViewProvider = ({ children }: WebViewProviderProps): React.ReactElement<WebViewProviderProps> => {

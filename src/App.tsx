@@ -59,22 +59,34 @@ function checkRequiredStoresReady(
   return ![accountsStoreStatus, settingsStoreStatus, networkMapStoreStatus].includes('INIT');
 }
 
-const autoLockParams: { pinCodeEnabled: boolean; autoLockTime?: number; lock: () => void } = {
+const autoLockParams: { pinCodeEnabled: boolean; faceIdEnabled: boolean; autoLockTime?: number; lock: () => void } = {
   pinCodeEnabled: false,
+  faceIdEnabled: false,
   autoLockTime: undefined,
   lock: () => {},
 };
 let timeout: NodeJS.Timeout | undefined;
+let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
-  if (!autoLockParams.pinCodeEnabled || autoLockParams.autoLockTime === undefined) {
+  const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock } = autoLockParams;
+  if (!pinCodeEnabled || autoLockTime === undefined) {
     return;
   }
 
   if (state === 'background') {
     timeout = setTimeout(() => {
-      autoLockParams.lock();
-    }, autoLockParams.autoLockTime);
+      if (faceIdEnabled) {
+        lockWhenActive = true;
+      } else {
+        lockWhenActive = false;
+        lock();
+      }
+    }, autoLockTime);
   } else if (state === 'active') {
+    if (lockWhenActive) {
+      lock();
+      lockWhenActive = false;
+    }
     timeout && clearTimeout(timeout);
     timeout = undefined;
   }
@@ -90,8 +102,7 @@ export const App = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
-  const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
-  const autoLockTime = useSelector((state: RootState) => state.mobileSettings.autoLockTime);
+  const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
   const { isLocked, lock } = useAppLock();
 
   const isCryptoReady = useCryptoReady();
@@ -118,7 +129,8 @@ export const App = () => {
     autoLockParams.lock = lock;
     autoLockParams.autoLockTime = autoLockTime;
     autoLockParams.pinCodeEnabled = pinCodeEnabled;
-  }, [autoLockTime, lock, pinCodeEnabled]);
+    autoLockParams.faceIdEnabled = faceIdEnabled;
+  }, [autoLockTime, faceIdEnabled, lock, pinCodeEnabled]);
 
   const isRequiredStoresReady = checkRequiredStoresReady(
     accountsStoreStatus,
