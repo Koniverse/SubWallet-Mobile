@@ -10,12 +10,57 @@ import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
 import { CELL_COUNT } from '../constant';
 import useAppLock from 'hooks/useAppLock';
 import { NavigationProps } from 'types/routes';
+import { useIsFocused } from '@react-navigation/native';
+import TouchID from 'react-native-touch-id';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+
+const optionalConfigObject = {
+  title: 'Authentication Required', // Android
+  imageColor: '#e00606', // Android
+  imageErrorColor: '#ff0000', // Android
+  sensorDescription: 'Touch sensor', // Android
+  sensorErrorDescription: 'Failed', // Android
+  cancelText: 'Cancel', // Android
+  fallbackLabel: 'Enter Password', // iOS (if empty, then label is hidden)
+  unifiedErrors: false, // use unified error messages (default false)
+  passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
+};
 
 export const LockScreen = ({ navigation }: NavigationProps) => {
   const { unlock } = useAppLock();
+  const faceIdEnabled = useSelector((state: RootState) => state.mobileSettings.faceIdEnabled);
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [authMethod, setAuthMethod] = useState<'bio' | 'pinCode'>(faceIdEnabled ? 'bio' : 'pinCode');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+
+  const unlockWithBiometric = useAppLock().unlockWithBiometric;
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused && authMethod === 'bio') {
+      TouchID.isSupported()
+        .then(currentType => {
+          TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
+            .then(() => {
+              console.log();
+              unlockWithBiometric();
+            })
+            .catch(() => {
+              setAuthMethod('pinCode');
+            });
+        })
+        .catch(() => setAuthMethod('pinCode'));
+    } else {
+      if (faceIdEnabled) {
+        setAuthMethod('bio');
+      } else {
+        setAuthMethod('pinCode');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faceIdEnabled, isFocused, navigation, unlockWithBiometric]);
 
   useEffect(() => {
     if (value.length === 6) {
@@ -43,10 +88,14 @@ export const LockScreen = ({ navigation }: NavigationProps) => {
           }}>
           {i18n.common.welcomeBack}
         </Text>
-        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingBottom: 77 }}>
-          {i18n.common.enterPinToUnlock}
-        </Text>
-        <PinCodeField value={value} setValue={setValue} isPinCodeValid={!error} pinCodeRef={ref} />
+        {authMethod === 'pinCode' && (
+          <>
+            <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingBottom: 77 }}>
+              {i18n.common.enterPinToUnlock}
+            </Text>
+            <PinCodeField value={value} setValue={setValue} isPinCodeValid={!error} pinCodeRef={ref} />
+          </>
+        )}
 
         {!!error && <Warning style={{ marginTop: 16 }} isDanger message={error} />}
       </View>
