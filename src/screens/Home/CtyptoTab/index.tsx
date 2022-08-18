@@ -18,6 +18,8 @@ import { TokenSelect } from 'screens/TokenSelect';
 import ChainDetailLayer from 'screens/Home/CtyptoTab/layers/ChainDetail';
 import TokenHistoryLayer from 'screens/Home/CtyptoTab/layers/TokenHistory';
 import { getAccountType } from 'utils/index';
+import { useModal } from 'react-native-modalfy';
+import { Button } from 'components/Button';
 
 interface SelectionInfo {
   selectedNetworkInfo?: AccountInfoByNetwork;
@@ -63,6 +65,26 @@ export const CryptoTab = () => {
     showedNetworks,
     networkMap,
   );
+
+  const modal = useModal();
+  const openModal = () => {
+    return () => {
+      new Promise((resolve, reject) => {
+        modal.openModal<'NotificationModal'>(
+          'NotificationModal',
+          {
+            message: 'ok',
+            type: 'test',
+            resolve,
+            reject,
+          },
+          () => {
+            console.log(Math.random());
+          },
+        );
+      });
+    };
+  };
 
   const onPressBack = useCallback(() => {
     toBack();
@@ -160,6 +182,8 @@ export const CryptoTab = () => {
           />
         </View>
       )}
+
+      <Button title={'Open Modal'} onPress={openModal()} />
 
       <TokenSelect
         address={currentAccountAddress}

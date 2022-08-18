@@ -8,8 +8,6 @@ import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { QrScanner } from 'screens/QrScanner';
-import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
@@ -45,6 +43,8 @@ import useStoreTransactionHistory from 'hooks/store/useStoreTransactionHistory';
 import SplashScreen from 'react-native-splash-screen';
 import { LockScreen } from 'screens/LockScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
+import { createModalStack, ModalProvider } from 'react-native-modalfy';
+import { NotificationModal } from 'screens/modals/NotificationModal';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -164,6 +164,10 @@ export const App = () => {
   }, [isAppReady, isLocked, navigationRef]);
   // todo: do lazy load in react-native-navigation
 
+  const modalConfig = { NotificationModal };
+  const defaultOptions = { backdropOpacity: 0.6 };
+  const modalStack = createModalStack(modalConfig, defaultOptions);
+
   return useMemo(
     () => (
       <View style={viewContainerStyle}>
@@ -176,7 +180,7 @@ export const App = () => {
             warningColor={theme.colors.notification_warning}
             offsetTop={STATUS_BAR_HEIGHT + 40}
             dangerColor={theme.colors.notification_danger}>
-            <QrScannerProvider navigationRef={navigationRef}>
+            <ModalProvider stack={modalStack}>
               <ThemeContext.Provider value={theme}>
                 <NavigationContainer ref={navigationRef} theme={theme}>
                   <Stack.Navigator
@@ -209,18 +213,15 @@ export const App = () => {
                       {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
                       <Stack.Screen name="LockScreen" component={LockScreen} />
                     </Stack.Group>
-                    <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false }}>
-                      <Stack.Screen name="QrScanner" component={QrScanner} />
-                    </Stack.Group>
                   </Stack.Navigator>
                 </NavigationContainer>
               </ThemeContext.Provider>
-            </QrScannerProvider>
+            </ModalProvider>
           </ToastProvider>
         </View>
       </View>
     ),
-    [Stack, isAppReady, navigationRef, theme],
+    [Stack, isAppReady, modalStack, navigationRef, theme],
   );
 };
 
