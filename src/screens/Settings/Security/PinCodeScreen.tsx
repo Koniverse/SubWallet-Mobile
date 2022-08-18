@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { PinCode } from 'screens/Settings/Security/PinCode';
-import { updatePinCode, updatePinCodeEnable } from 'stores/MobileSettings';
+import { updateFaceIdEnable, updatePinCode, updatePinCodeEnable } from 'stores/MobileSettings';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { PinCodeProps, RootNavigationProps } from 'types/routes';
@@ -59,6 +59,7 @@ export const PinCodeScreen = ({
             onPressContinue={() => {
               if (screen === 'TurnoffPinCode') {
                 dispatch(updatePinCodeEnable(false));
+                dispatch(updateFaceIdEnable(false));
                 dispatch(updatePinCode(''));
                 navigation.navigate('Security');
               } else {
