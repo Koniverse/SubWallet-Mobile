@@ -2,13 +2,13 @@ import { useContext, useEffect, useState } from 'react';
 import { subscribeSettings } from '../../messaging';
 import { updateSettings } from 'stores/updater';
 import { ResponseSettingsType } from '@subwallet/extension-base/background/KoniTypes';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useStoreSettings(): StoreStatus {
-  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const isCached = !!useSelector((state: RootState) => state.settings.isReady);
   const [storeStatus, setStoreStatus] = useState<StoreStatus>(isCached ? 'CACHED' : 'INIT');
 

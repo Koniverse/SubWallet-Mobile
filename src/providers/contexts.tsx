@@ -6,17 +6,21 @@ import EventEmitter from 'eventemitter3';
 
 const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
 
-export type WebviewStatus = 'init' | 'load' | 'reloading' | 'crypto_ready';
-export interface WebviewElement {
-  viewRef?: RefObject<WebView | undefined>;
+export type WebviewStatus = 'init' | 'load' | 'reloading' | 'crypto_ready' | 'ping';
+export interface WebViewState {
   status?: WebviewStatus;
-  isReady?: boolean;
   url?: string;
   version?: string;
+}
+export interface WebviewElement {
+  webRef?: RefObject<WebView | undefined>;
   reload?: () => void;
+  webState: WebViewState;
+  isReady?: boolean;
   eventEmitter?: EventEmitter;
 }
-const WebViewContext = React.createContext<WebviewElement>({});
+
+const WebRunnerContext = React.createContext<WebviewElement>({ webState: {} });
 
 const QrScannerContext = React.createContext<{
   value: QrValue;
@@ -32,4 +36,4 @@ const QrScannerContext = React.createContext<{
   onClosed: () => {},
 });
 
-export { ThemeContext, WebViewContext, QrScannerContext };
+export { ThemeContext, WebRunnerContext, QrScannerContext };

@@ -6,7 +6,7 @@ import {
 } from '../../messaging';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { updateAccountsAndCurrentAccount, updateAccountsSlice, updateAccountsWaitingStatus } from 'stores/updater';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ function getStatus(isReady: boolean | undefined, isWaiting: boolean | undefined)
 }
 
 export default function useStoreAccounts(): StoreStatus {
-  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const isReady = useSelector((state: RootState) => state.accounts.isReady);
   const isWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
 

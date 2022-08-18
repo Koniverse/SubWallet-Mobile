@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from 'react';
 import { subscribeHistory } from '../../messaging';
 import { updateTransactionHistory } from 'stores/updater';
 import { TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 
 export default function useStoreTransactionHistory(): StoreStatus {
-  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
 
   useEffect(() => {

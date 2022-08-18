@@ -2,13 +2,13 @@ import { useContext, useEffect, useState } from 'react';
 import { subscribeChainRegistry } from '../../messaging';
 import { updateChainRegistry } from 'stores/updater';
 import { ChainRegistry } from '@subwallet/extension-base/background/KoniTypes';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
 
 export default function useStoreChainRegistry(): StoreStatus {
-  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const isCached = useSelector((state: RootState) => state.chainRegistry.isReady);
   const [storeStatus, setStoreStatus] = useState<StoreStatus>(isCached ? 'CACHED' : 'INIT');
 

@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from 'react';
 import { subscribeBalance } from '../../messaging';
 import { updateBalance } from 'stores/updater';
 import { BalanceJson } from '@subwallet/extension-base/background/KoniTypes';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 
 export default function useStoreBalance(): StoreStatus {
-  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
 
   useEffect(() => {

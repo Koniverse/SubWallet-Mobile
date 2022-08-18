@@ -2,11 +2,11 @@ import { useContext, useEffect, useState } from 'react';
 import { subscribePrice } from '../../messaging';
 import { updatePrice } from 'stores/updater';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 
 export default function useStorePrice(): StoreStatus {
-  const isWebRunnerReady = useContext(WebViewContext).isReady;
+  const isWebRunnerReady = useContext(WebRunnerContext).isReady;
   const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
 
   useEffect(() => {

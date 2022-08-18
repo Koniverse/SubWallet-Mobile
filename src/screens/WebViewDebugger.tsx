@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 import { sharedStyles } from 'styles/sharedStyles';
-import { WebViewContext } from 'providers/contexts';
+import { WebRunnerContext } from 'providers/contexts';
 import { Button } from 'components/Button';
 import { MessageTypes } from '@subwallet/extension-base/background/types';
 import { Textarea } from 'components/Textarea';
@@ -39,7 +39,7 @@ let unsub: (() => void) | undefined;
 
 export const WebViewDebugger = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { status, url, version, reload } = useContext(WebViewContext);
+  const { webState, reload } = useContext(WebRunnerContext);
   const [method, setMethod] = useState<MessageTypes>('pri(accounts.subscribeWithCurrentAddress)');
   const [input, setInput] = useState(METHOD_MAP['pri(accounts.subscribeWithCurrentAddress)'].default_input);
   const [result, setResult] = useState('');
@@ -102,9 +102,9 @@ export const WebViewDebugger = () => {
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.settings.webViewDebugger}>
       <ScrollView style={{ ...sharedStyles.layoutContainer }}>
         <View style={containerStyle}>
-          <Text style={textStyle}>{`${i18n.common.status}${status}`}</Text>
-          <Text style={textStyle}>{`${i18n.common.url}${url}`}</Text>
-          <Text style={textStyle}>{`${i18n.common.version}${version}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.status}${webState.status}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.url}${webState.url}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.version}${webState.version}`}</Text>
           <Button title={i18n.common.reloadBackground} onPress={onPressReload} />
         </View>
         <View style={containerStyle}>
