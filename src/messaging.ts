@@ -104,7 +104,7 @@ import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
-import { WebviewStatus } from 'providers/contexts';
+import { WebRunnerStatus } from 'providers/contexts';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from './errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
 
@@ -118,7 +118,7 @@ type Handlers = Record<string, Handler>;
 const handlers: Handlers = {};
 let webviewRef: RefObject<WebView | undefined>;
 let webviewEvents: EventEmitter;
-let status: WebviewStatus = 'init';
+let status: WebRunnerStatus = 'init';
 
 export const setupWebview = (viewRef: RefObject<WebView | undefined>, eventEmitter: EventEmitter) => {
   webviewRef = viewRef;
@@ -130,7 +130,7 @@ export const setupWebview = (viewRef: RefObject<WebView | undefined>, eventEmitt
     eventEmitter.on('reloading', () => {
       console.debug(`### Clean ${Object.keys(handlers).length} handlers`);
       Object.entries(handlers).forEach(([id, handler]) => {
-        handler.reject(new WebviewNotReadyError('Webview is not readrry'));
+        handler.reject(new WebviewNotReadyError('Webview is not ready'));
         delete handlers[id];
       });
     });
@@ -181,7 +181,12 @@ export const postMessage = ({ id, message, request }) => {
   if (status === 'crypto_ready') {
     _post();
   } else {
-    throw new WebviewNotReadyError('Webview is not ready' + status);
+    const listenEvent = webviewEvents.on('update-status', stt => {
+      if (stt === 'crypto_ready') {
+        _post();
+        listenEvent.removeListener('update-status');
+      }
+    });
   }
 };
 

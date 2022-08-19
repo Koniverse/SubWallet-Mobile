@@ -1,5 +1,5 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { WebRunnerContext, WebViewState, WebviewStatus } from '../contexts';
+import { WebRunnerContext, WebRunnerState, WebRunnerStatus } from '../contexts';
 import WebView from 'react-native-webview';
 import { setupWebview } from '../../messaging';
 import { WebRunner } from 'providers/WebRunnerProvider/WebRunner';
@@ -14,7 +14,7 @@ const eventEmitter = new EventEmitter();
 let lastIsReady = false;
 export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.ReactElement<WebRunnerProviderProps> => {
   const webRef = useRef<WebView>(null);
-  const webStateRef = useRef<WebViewState>({
+  const webStateRef = useRef<WebRunnerState>({
     status: 'init',
     version: 'unknown',
   });
@@ -25,7 +25,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
   }, [webRef]);
 
   useEffect(() => {
-    const listener = eventEmitter.on('update-status', (status: WebviewStatus) => {
+    const listener = eventEmitter.on('update-status', (status: WebRunnerStatus) => {
       const _isReady = status === 'crypto_ready';
       if (lastIsReady !== _isReady) {
         setIsReady(_isReady);

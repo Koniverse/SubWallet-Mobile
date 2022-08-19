@@ -159,7 +159,6 @@ export const App = () => {
       }
     }
   }, [isAppReady, isLocked, navigationRef]);
-  // todo: do lazy load in react-native-navigation
 
   return useMemo(
     () => (

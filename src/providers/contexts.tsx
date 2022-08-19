@@ -6,16 +6,16 @@ import EventEmitter from 'eventemitter3';
 
 const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
 
-export type WebviewStatus = 'init' | 'load' | 'reloading' | 'crypto_ready' | 'ping';
-export interface WebViewState {
-  status?: WebviewStatus;
+export type WebRunnerStatus = 'init' | 'load' | 'reloading' | 'crypto_ready' | 'ping';
+export interface WebRunnerState {
+  status?: WebRunnerStatus;
   url?: string;
   version?: string;
 }
 export interface WebviewElement {
   webRef?: RefObject<WebView | undefined>;
   reload?: () => void;
-  webState: WebViewState;
+  webState: WebRunnerState;
   isReady?: boolean;
   eventEmitter?: EventEmitter;
 }
