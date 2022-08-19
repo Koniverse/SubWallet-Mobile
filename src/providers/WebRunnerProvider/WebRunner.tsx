@@ -70,7 +70,7 @@ const pingWebView = () => {
     reloadTimeout = setTimeout(() => {
       console.warn('Ping check failed: Reload timeout');
       webRef?.current?.reload();
-    }, 6000);
+    }, 18000);
   }, 9000);
 };
 

@@ -8,15 +8,11 @@ const chainRegistrySlice = createSlice({
   name: 'chainRegistry',
   reducers: {
     update(state, action: PayloadAction<ChainRegistrySlice>) {
-      const newState = {
-        ...action.payload,
-      };
+      state.details = Object.assign(state.details, action.payload.details);
 
       if (action.payload.isReady === undefined) {
-        newState.isReady = true;
+        state.isReady = true;
       }
-
-      return newState;
     },
   },
 });

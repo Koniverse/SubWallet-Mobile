@@ -158,11 +158,8 @@ export default function useAccountBalance(
   const balanceMap = useSelector((state: RootState) => state.balance.details);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
-  const dep1 = JSON.stringify(showedNetworks);
-  const dep2 = JSON.stringify(tokenBalanceKeyPriceMap);
-
   return useMemo<AccountBalanceType>(() => {
     return getAccountBalance(showedNetworks, chainRegistryMap, balanceMap, networkMap, tokenBalanceKeyPriceMap);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balanceMap, chainRegistryMap, networkMap, dep1, dep2]);
+  }, [balanceMap, JSON.stringify(tokenBalanceKeyPriceMap)]);
 }

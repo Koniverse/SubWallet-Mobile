@@ -4,10 +4,13 @@ import { updateBalance } from 'stores/updater';
 import { BalanceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 export default function useStoreBalance(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
-  const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
+  const isCached = useSelector((state: RootState) => state.balance.isReady);
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>(isCached ? 'CACHED' : 'INIT');
 
   useEffect(() => {
     let cancel = false;
@@ -17,6 +20,11 @@ export default function useStoreBalance(): StoreStatus {
 
       const _update = (payload: BalanceJson) => {
         if (cancel) {
+          return;
+        }
+
+        if (storeStatus === 'CACHED' && payload.reset) {
+          console.log('Cache is runnning');
           return;
         }
 
@@ -35,7 +43,7 @@ export default function useStoreBalance(): StoreStatus {
     return () => {
       cancel = true;
     };
-  }, [isWebRunnerReady]);
+  }, [isWebRunnerReady, storeStatus]);
 
   return storeStatus;
 }

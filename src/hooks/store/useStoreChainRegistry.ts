@@ -23,6 +23,9 @@ export default function useStoreChainRegistry(): StoreStatus {
           return;
         }
 
+        if (storeStatus === 'CACHED' && Object.keys(payload).length === 0) {
+          return;
+        }
         console.log('--- subscribeChainRegistry updated');
 
         updateChainRegistry(payload);
@@ -38,7 +41,7 @@ export default function useStoreChainRegistry(): StoreStatus {
     return () => {
       cancel = true;
     };
-  }, [isWebRunnerReady]);
+  }, [isWebRunnerReady, storeStatus]);
 
   return storeStatus;
 }
