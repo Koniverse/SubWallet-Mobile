@@ -6,7 +6,7 @@ import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { listenMessage } from '../../messaging';
 import { Message } from '@subwallet/extension-base/types';
-import { WebViewState, WebviewStatus } from 'providers/contexts';
+import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 
 const getJsInjectContent = (showLog?: boolean) => {
   const params = 'platform=' + Platform.OS;
@@ -50,7 +50,7 @@ let eventEmitter: EventEmitter;
 let webRef: React.RefObject<WebView<{}>>;
 const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
 // const sourceUri = 'http://192.168.10.189:9000'; // Use for developing web runner real time
-let webViewState: WebViewState = {};
+let webViewState: WebRunnerState = {};
 
 // Handle ping
 let pingTimeout: NodeJS.Timeout | undefined;
@@ -79,7 +79,7 @@ const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
     pingWebView();
     const { id, response } = unHandleData as { id: string; response: Object };
     if (id === '0') {
-      const statusData = response as { status: WebviewStatus };
+      const statusData = response as { status: WebRunnerStatus };
       const webViewStatus = statusData?.status;
 
       // ping is used to check web-runner is alive, not put into web-runner state
@@ -108,7 +108,7 @@ const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
 
 interface Props {
   webRunnerRef: React.RefObject<WebView<{}>>;
-  webRunnerStateRef: React.RefObject<WebViewState>;
+  webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
 }
 export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
