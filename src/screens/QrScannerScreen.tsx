@@ -10,7 +10,7 @@ import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { BarCodeReadEvent } from 'react-native-camera';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
-import Modal from 'react-native-modal';
+import Modal from 'components/Modal';
 
 const overlayColor = 'rgba(34, 34, 34, 0.5)'; // this gives us a black color with a 50% transparency
 

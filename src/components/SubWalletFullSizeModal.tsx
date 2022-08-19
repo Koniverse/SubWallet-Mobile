@@ -1,8 +1,8 @@
 import React from 'react';
-import Modal from 'react-native-modal';
 import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
+import Modal from 'components/Modal';
 
 interface Props {
   children: React.ReactNode;
