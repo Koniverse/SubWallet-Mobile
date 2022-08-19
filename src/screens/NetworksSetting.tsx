@@ -28,6 +28,19 @@ export const NetworksSetting = ({}: Props) => {
   const [needUpdateList, setNeedUpdateList] = useState(true);
 
   useEffect(() => {
+    setPendingNetworkMap(prevPendingNetworkMap => {
+      Object.entries(prevPendingNetworkMap).forEach(([key, val]) => {
+        if (networkMap[key]?.active === val) {
+          // @ts-ignore
+          delete prevPendingNetworkMap[key];
+        }
+      });
+
+      return { ...prevPendingNetworkMap };
+    });
+  }, [networkMap]);
+
+  useEffect(() => {
     const newNetworkMap = {};
     if (!networkKeys || needUpdateList || networkKeys.length === 0) {
       const pendingKeys = Object.keys(pendingNetworkMap);
@@ -50,19 +63,11 @@ export const NetworksSetting = ({}: Props) => {
       newNetworkMap[key] = networkMap[key];
     });
     setCurrentNetworkMap({ ...newNetworkMap });
-
-    Object.entries(pendingNetworkMap).forEach(([key, val]) => {
-      if (networkMap[key]?.active === val) {
-        // @ts-ignore
-        delete pendingNetworkMap[key];
-        setPendingNetworkMap({ ...pendingNetworkMap });
-      }
-    });
-
-    return () => {
-      cachePendingNetworkMap = pendingNetworkMap;
-    };
   }, [needUpdateList, networkMap, pendingNetworkMap]);
+
+  useEffect(() => {
+    cachePendingNetworkMap = pendingNetworkMap;
+  }, [pendingNetworkMap]);
 
   const onToggleItem = (item: NetworkJson) => {
     setPendingNetworkMap({ ...pendingNetworkMap, [item.key]: !item.active });
@@ -90,7 +95,9 @@ export const NetworksSetting = ({}: Props) => {
         itemName={item.chain}
         itemKey={item.key}
         // @ts-ignore
-        isEnabled={Object.keys(pendingNetworkMap).includes(item.key) ? pendingNetworkMap[item.key] : item.active}
+        isEnabled={
+          Object.keys(pendingNetworkMap).includes(item.key) ? pendingNetworkMap[item.key] : networkMap[item.key].active
+        }
         onValueChange={() => onToggleItem(item)}
       />
     );
