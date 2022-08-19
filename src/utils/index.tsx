@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
-import { AccountType, Recoded, TokenItemType } from 'types/ui-types';
+import { AccountType, Recoded } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
