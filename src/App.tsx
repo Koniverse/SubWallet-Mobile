@@ -8,8 +8,6 @@ import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { QrScanner } from 'screens/QrScanner';
-import { QrScannerProvider } from 'providers/QrScannerProvider';
 import { RootStackParamList } from 'types/routes';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
@@ -17,7 +15,6 @@ import { EditAccount } from 'screens/EditAccount';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { ViewPrivateKey } from 'screens/ViewPrivateKey';
-import { NetworkSelect } from 'screens/NetworkSelect';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -175,46 +172,40 @@ export const App = () => {
             warningColor={theme.colors.notification_warning}
             offsetTop={STATUS_BAR_HEIGHT + 40}
             dangerColor={theme.colors.notification_danger}>
-            <QrScannerProvider navigationRef={navigationRef}>
-              <ThemeContext.Provider value={theme}>
-                <NavigationContainer ref={navigationRef} theme={theme}>
-                  <Stack.Navigator
-                    screenOptions={{
-                      animation: 'fade_from_bottom',
-                    }}>
-                    {isAppReady && (
-                      <Stack.Group screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
-                        <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                        <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                        <Stack.Screen name="EditAccount" component={EditAccount} />
-                        <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                        <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
-                        <Stack.Screen name="Settings" component={Settings} />
-                        <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
-                        <Stack.Screen name="NetworkSelect" component={NetworkSelect} />
-                        <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
-                        <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
-                        <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
-                        <Stack.Screen name="SendFund" component={SendFund} />
-                        <Stack.Screen name="Languages" component={Languages} />
-                        <Stack.Screen name="Security" component={Security} />
-                        <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                        <Stack.Screen name="ExportJson" component={ExportJson} />
-                        <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                      </Stack.Group>
-                    )}
-                    <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>
-                      {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
-                      <Stack.Screen name="LockScreen" component={LockScreen} />
+            <ThemeContext.Provider value={theme}>
+              <NavigationContainer ref={navigationRef} theme={theme}>
+                <Stack.Navigator
+                  screenOptions={{
+                    animation: 'fade_from_bottom',
+                  }}>
+                  {isAppReady && (
+                    <Stack.Group screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
+                      <Stack.Screen name="CreateAccount" component={CreateAccount} />
+                      <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
+                      <Stack.Screen name="EditAccount" component={EditAccount} />
+                      <Stack.Screen name="RestoreJson" component={RestoreJson} />
+                      <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
+                      <Stack.Screen name="Settings" component={Settings} />
+                      <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
+                      <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
+                      <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
+                      <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
+                      <Stack.Screen name="SendFund" component={SendFund} />
+                      <Stack.Screen name="Languages" component={Languages} />
+                      <Stack.Screen name="Security" component={Security} />
+                      <Stack.Screen name="PinCode" component={PinCodeScreen} />
+                      <Stack.Screen name="ExportJson" component={ExportJson} />
+                      <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                     </Stack.Group>
-                    <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false }}>
-                      <Stack.Screen name="QrScanner" component={QrScanner} />
-                    </Stack.Group>
-                  </Stack.Navigator>
-                </NavigationContainer>
-              </ThemeContext.Provider>
-            </QrScannerProvider>
+                  )}
+                  <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>
+                    {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
+                    <Stack.Screen name="LockScreen" component={LockScreen} />
+                  </Stack.Group>
+                </Stack.Navigator>
+              </NavigationContainer>
+            </ThemeContext.Provider>
           </ToastProvider>
         </View>
       </View>
