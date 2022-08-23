@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
+import { Warning } from 'components/Warning';
 
 interface Props extends TextInputProps {
-  inputValue: string;
   isDisabled?: boolean;
   label: string;
   editAccountInputStyle?: object;
   outerInputStyle?: object;
+  errorMessages?: string[];
 }
 
 const inputWrapper: StyleProp<any> = {
@@ -38,20 +39,27 @@ const inputStyle: StyleProp<any> = {
   color: ColorMap.light,
 };
 
-export const EditAccountInputText = (inputProps: Props) => {
-  const { inputValue, isDisabled = false, label, editAccountInputStyle, outerInputStyle } = inputProps;
+export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Ref<TextInput>) => {
+  const { isDisabled = false, label, editAccountInputStyle, outerInputStyle, errorMessages } = inputProps;
 
   return (
-    <View style={[inputWrapper, editAccountInputStyle]}>
-      <Text style={labelStyle}>{label}</Text>
-      <TextInput
-        autoCorrect={false}
-        style={[inputStyle, outerInputStyle]}
-        value={inputValue}
-        {...inputProps}
-        editable={!isDisabled}
-        selectTextOnFocus={!isDisabled}
-      />
-    </View>
+    <>
+      <View style={[inputWrapper, editAccountInputStyle]}>
+        <Text style={labelStyle}>{label}</Text>
+        <TextInput
+          ref={ref}
+          autoCorrect={false}
+          style={[inputStyle, outerInputStyle]}
+          {...inputProps}
+          editable={!isDisabled}
+          selectTextOnFocus={!isDisabled}
+        />
+      </View>
+
+      {!!(errorMessages && errorMessages.length) &&
+        errorMessages.map((message, index) => (
+          <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
+        ))}
+    </>
   );
-};
+});

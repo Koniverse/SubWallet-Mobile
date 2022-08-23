@@ -21,7 +21,6 @@ import { useToast } from 'react-native-toast-notifications';
 import { ExportPrivateKeyProps, RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { PasswordField } from 'components/Field/Password';
-import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 
 const layoutContainerStyle: StyleProp<any> = {
@@ -112,7 +111,7 @@ export const ViewPrivateKey = ({
   const toast = useToast();
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
@@ -126,7 +125,7 @@ export const ViewPrivateKey = ({
 
   const onTypePassword = (pass: string) => {
     setPassword(pass);
-    setErrorMessage('');
+    setErrorMessages([]);
   };
 
   const onSetPassword = () => {
@@ -138,7 +137,7 @@ export const ViewPrivateKey = ({
         setCurrentViewStep(ViewStep.SHOW_PK);
       })
       .catch((error: Error) => {
-        setErrorMessage(error.message);
+        setErrorMessages([error.message]);
         setIsBusy(false);
       });
   };
@@ -177,13 +176,8 @@ export const ViewPrivateKey = ({
               <PasswordField
                 label={i18n.common.passwordForThisAccount}
                 onChangeText={onTypePassword}
-                isError={isPasswordError}
-                value={password}
+                errorMessages={errorMessages}
               />
-
-              {!!errorMessage && (
-                <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 10 }} message={errorMessage} />
-              )}
             </>
           )}
 

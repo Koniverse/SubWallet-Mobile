@@ -12,7 +12,6 @@ import { SubmitButton } from 'components/SubmitButton';
 import { PasswordField } from 'components/Field/Password';
 import { makeTransfer } from '../../messaging';
 import { TransferResultType } from 'types/tx';
-import { Warning } from 'components/Warning';
 import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
@@ -48,7 +47,6 @@ export const Confirmation = ({
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const [password, setPassword] = useState<string>('');
-  const [isKeyringErr, setKeyringErr] = useState<boolean>(false);
   const [errorArr, setErrorArr] = useState<string[]>([]);
   const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
   const accountName = accounts.find(acc => acc.address === requestPayload.from)?.name;
@@ -81,15 +79,9 @@ export const Confirmation = ({
         },
       )
         .then(errors => {
-          const errorMessage = errors.map(err => err.message);
-
-          if (errors.find(err => err.code === 'keyringError')) {
-            setKeyringErr(true);
-          }
-
-          setErrorArr(errorMessage);
-
-          if (errorMessage && errorMessage.length) {
+          const errorMessages = errors.map(err => err.message);
+          setErrorArr(errorMessages);
+          if (errorMessages && errorMessages.length) {
             onChangeBusy(false);
           }
         })
@@ -108,14 +100,13 @@ export const Confirmation = ({
     ],
   );
 
-  const renderError = () => {
-    return errorArr.map(err => <Warning isDanger key={err} message={err} />);
-  };
-
   const onChangePassword = (text: string) => {
     setPassword(text);
-    setKeyringErr(false);
-    setErrorArr([]);
+    if (text && text.length < 6) {
+      setErrorArr([i18n.warningMessage.passwordTooShort]);
+    } else {
+      setErrorArr([]);
+    }
   };
 
   return (
@@ -145,13 +136,10 @@ export const Confirmation = ({
           />
           <PasswordField
             label={i18n.common.password}
-            value={password}
             onChangeText={onChangePassword}
             isBusy={isBusy}
-            isError={isKeyringErr || password.length < 6}
+            errorMessages={errorArr}
           />
-
-          {renderError()}
         </View>
       </ScrollView>
 

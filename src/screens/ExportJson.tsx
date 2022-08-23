@@ -62,12 +62,16 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 export const ExportJson = ({ address, closeModal }: Props) => {
   const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [fileContent, setFileContent] = useState('');
   const toastRef = useRef<ToastContainer>(null);
   const onTypePassword = (pass: string) => {
     setPassword(pass);
-    setErrorMessage('');
+    if (pass && pass.length < 6) {
+      setErrorMessages([i18n.warningMessage.passwordTooShort]);
+    } else {
+      setErrorMessages([]);
+    }
   };
 
   const onSetPassword = () => {
@@ -78,7 +82,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
         setIsBusy(false);
       })
       .catch((error: Error) => {
-        setErrorMessage(error.message);
+        setErrorMessages([error.message]);
         setIsBusy(false);
       });
   };
@@ -146,14 +150,9 @@ export const ExportJson = ({ address, closeModal }: Props) => {
                 onChangeText={onTypePassword}
                 onBlur={onSetPassword}
                 onEndEditing={onSetPassword}
-                isError={isPasswordError}
-                value={password}
+                errorMessages={errorMessages}
                 style={passwordFieldStyle}
               />
-            )}
-
-            {!!errorMessage && (
-              <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 0 }} message={errorMessage} />
             )}
           </View>
           <View style={footerAreaStyle}>

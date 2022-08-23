@@ -1,64 +1,40 @@
 import React from 'react';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { PasswordField } from 'components/Field/Password';
-import { Warning } from 'components/Warning';
-import i18n from 'utils/i18n/i18n';
-
-function checkPasswordTooShort(password: string | null) {
-  return !!(password && password.length < 6);
-}
+import { FormState } from 'hooks/screen/useFormControl';
 
 interface Props {
-  name: string;
-  onChangeName: (text: string) => void;
-  pass1: string | null;
-  pass2: string | null;
-  onChangePass1: (curPass: string) => void;
-  onChangePass2: (curPass: string) => void;
-  pass2Dirty: boolean;
-  isSecondPasswordValid: boolean;
-  autoFocusFirstField?: boolean;
+  formState: FormState;
+  onChangeValue: (fieldName: string) => (currentValue: string) => void;
+  onSubmitEditing: (fieldName: string) => () => void;
 }
 
-export const AccountNameAndPasswordArea = ({
-  name,
-  onChangeName,
-  pass1,
-  pass2,
-  onChangePass1,
-  onChangePass2,
-  pass2Dirty,
-  isSecondPasswordValid,
-  autoFocusFirstField,
-}: Props) => {
+export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitEditing }: Props) => {
   return (
     <>
       <EditAccountInputText
-        autoFocus={autoFocusFirstField}
-        label={i18n.common.accountName}
-        inputValue={name}
-        onChangeText={onChangeName}
+        ref={formState.refs.accountName}
+        label={formState.labels.accountName}
+        onChangeText={onChangeValue('accountName')}
         editAccountInputStyle={{ marginBottom: 8 }}
+        onSubmitEditing={onSubmitEditing('accountName')}
+        errorMessages={formState.errors.accountName}
       />
       <PasswordField
-        autoFocus={false}
-        label={i18n.common.walletPassword}
-        onChangeText={onChangePass1}
-        value={pass1 || ''}
-        isError={checkPasswordTooShort(pass1)}
+        ref={formState.refs.password}
+        label={formState.labels.password}
+        onChangeText={onChangeValue('password')}
+        errorMessages={formState.errors.password}
+        onSubmitEditing={onSubmitEditing('password')}
       />
 
       <PasswordField
-        autoFocus={false}
-        label={i18n.common.repeatWalletPassword}
-        onChangeText={onChangePass2}
-        value={pass2 || ''}
-        isError={checkPasswordTooShort(pass2) || pass1 !== pass2}
+        ref={formState.refs.repeatPassword}
+        label={formState.labels.repeatPassword}
+        onChangeText={onChangeValue('repeatPassword')}
+        errorMessages={formState.errors.repeatPassword}
+        onSubmitEditing={onSubmitEditing('repeatPassword')}
       />
-
-      {!pass2 && pass2Dirty && <Warning isDanger message={i18n.warningMessage.noPasswordMessage} />}
-
-      {isSecondPasswordValid && <Warning isDanger message={i18n.warningMessage.doNotMatchPasswordWarning} />}
     </>
   );
 };

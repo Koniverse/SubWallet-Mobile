@@ -71,7 +71,7 @@ export const EditAccount = ({
         <EditAccountInputText
           editAccountInputStyle={{ marginBottom: 8 }}
           label={i18n.common.accountName}
-          inputValue={editedName}
+          value={editedName}
           onChangeText={text => setEditName(text)}
           onBlur={() => _saveChange(editedName)}
           onEndEditing={() => _saveChange(editedName)}
@@ -82,7 +82,7 @@ export const EditAccount = ({
             editAccountInputStyle={{ flex: 1 }}
             outerInputStyle={{ color: ColorMap.disabled }}
             label={i18n.common.accountAddress}
-            inputValue={toShort(currentAddress)}
+            value={toShort(currentAddress)}
             isDisabled
           />
           <IconButton

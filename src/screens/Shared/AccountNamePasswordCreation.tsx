@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
@@ -6,6 +6,7 @@ import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles 
 import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 import i18n from 'utils/i18n/i18n';
+import useFormControl from 'hooks/screen/useFormControl';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -31,58 +32,76 @@ interface Props {
   onCreateAccount: (curName: string, password: string) => void;
 }
 
+export function checkPasswordLength(value: string) {
+  return !!(value && value.length > 5);
+}
+
+export function checkPasswordTooShort(value: string) {
+  const isPasswordTooShort = !checkPasswordLength(value);
+  if (isPasswordTooShort) {
+    return [i18n.warningMessage.passwordTooShort];
+  } else {
+    return [];
+  }
+}
+
+export function checkPasswordMatched(value: string, formValue: Record<string, string>) {
+  const isPasswordTooShort = !checkPasswordLength(value);
+  if (isPasswordTooShort) {
+    return [i18n.warningMessage.passwordTooShort];
+  } else {
+    if (formValue.password !== value) {
+      return [i18n.warningMessage.doNotMatchPasswordWarning];
+    } else {
+      return [];
+    }
+  }
+}
+
+export const formConfig = {
+  accountName: {
+    name: i18n.common.accountName,
+    value: '',
+    require: true,
+  },
+  password: {
+    name: i18n.common.walletPassword,
+    value: '',
+    validateFunc: checkPasswordTooShort,
+    require: true,
+  },
+  repeatPassword: {
+    name: i18n.common.repeatWalletPassword,
+    value: '',
+    validateFunc: checkPasswordMatched,
+    require: true,
+  },
+};
+
 export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) => {
-  const [name, setName] = useState<string>('');
-  const [pass1, setPass1] = useState<string | null>(null);
-  const [pass2, setPass2] = useState<string | null>(null);
-  const [pass2Dirty, setPass2Dirty] = useState<boolean>(false);
-  const isSecondPasswordValid = !!(pass2 && pass2.length > 5) && pass2Dirty && pass1 !== pass2;
-
-  const onChangeName = (text: string) => {
-    setName(text);
-  };
-
-  const onChangePass1 = (curPass1: string) => {
-    if (curPass1 && curPass1.length) {
-      setPass1(curPass1);
-    } else {
-      setPass1(null);
-    }
-  };
-
-  const onChangePass2 = (curPass2: string) => {
-    setPass2Dirty(true);
-    if (curPass2 && curPass2.length) {
-      setPass2(curPass2);
-    } else {
-      setPass2(null);
-    }
-  };
-
+  const { formState, onChangeValue, onSubmitEditing } = useFormControl(formConfig);
   return (
     <View style={sharedStyles.layoutContainer}>
       <ScrollView style={bodyAreaStyle}>
         <Text style={titleStyle}>{i18n.common.createWalletNotification}</Text>
 
         <AccountNameAndPasswordArea
-          name={name}
-          onChangeName={onChangeName}
-          onChangePass1={onChangePass1}
-          onChangePass2={onChangePass2}
-          isSecondPasswordValid={isSecondPasswordValid}
-          pass1={pass1}
-          pass2={pass2}
-          pass2Dirty={pass2Dirty}
-          autoFocusFirstField
+          formState={formState}
+          onChangeValue={onChangeValue}
+          onSubmitEditing={onSubmitEditing}
         />
       </ScrollView>
       <View style={footerAreaStyle}>
         <SubmitButton
-          disabled={!pass1 || !pass2 || pass1 !== pass2}
+          disabled={
+            !formState.data.password ||
+            !formState.data.repeatPassword ||
+            formState.data.password !== formState.data.repeatPassword
+          }
           isBusy={isBusy}
           title={i18n.common.finish}
           onPress={() => {
-            pass1 && onCreateAccount(name, pass1);
+            formState.data.password && onCreateAccount(formState.data.accountName, formState.data.password);
           }}
         />
       </View>

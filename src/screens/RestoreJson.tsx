@@ -30,7 +30,7 @@ export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [password, setPassword] = useState<string>('');
   const [file, setFile] = useState<KeyringPair$Json | KeyringPairs$Json | undefined>(undefined);
-  const [isPasswordError, setIsPasswordError] = useState(false);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
@@ -71,7 +71,7 @@ export const RestoreJson = () => {
     }
 
     setFileError(false);
-    setIsPasswordError(false);
+    setErrorMessages([]);
     setPassword('');
     setAccountsInfo(() => []);
 
@@ -105,20 +105,24 @@ export const RestoreJson = () => {
       .then(() => {
         setFileError(false);
         setIsBusy(false);
-        setIsPasswordError(false);
+        setErrorMessages([]);
         setPassword('');
         setAccountsInfo(() => []);
         backToHome(navigation, true);
       })
       .catch(() => {
         setIsBusy(false);
-        setIsPasswordError(true);
+        setErrorMessages([i18n.warningMessage.unableDecode]);
       });
   }, [accountsInfo, file, navigation, password]);
 
   const onChangeText = (text: string) => {
     setFileError(false);
-    setIsPasswordError(false);
+    if (text && text.length < 6) {
+      setErrorMessages([i18n.warningMessage.passwordTooShort]);
+    } else {
+      setErrorMessages([]);
+    }
     setPassword(text);
   };
 
@@ -148,13 +152,7 @@ export const RestoreJson = () => {
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <InputFile onChangeResult={_onChangeFile} />
           {renderAccount()}
-          <PasswordField
-            label={i18n.common.walletPassword}
-            onChangeText={onChangeText}
-            value={password}
-            isError={!!password && password.length < 6}
-          />
-          {isPasswordError && <Warning message={i18n.warningMessage.unableDecode} isDanger />}
+          <PasswordField label={i18n.common.walletPassword} onChangeText={onChangeText} errorMessages={errorMessages} />
           {isFileError && (
             <Warning title={i18n.warningTitle.error} message={i18n.warningMessage.invalidJsonFile} isDanger />
           )}
@@ -165,7 +163,7 @@ export const RestoreJson = () => {
             isBusy={isBusy}
             title={i18n.common.importAccount}
             onPress={_onRestore}
-            disabled={isFileError || isPasswordError || !password || !file}
+            disabled={isFileError || !!(errorMessages && errorMessages.length) || !password || !file}
           />
         </View>
       </View>
