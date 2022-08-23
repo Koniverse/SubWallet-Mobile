@@ -1,25 +1,19 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 import { NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import RNFS from 'react-native-fs';
 import WebView from 'react-native-webview';
-import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
+import { WebViewMessage, WebViewSource } from 'react-native-webview/lib/WebViewTypes';
 import { listenMessage } from '../../messaging';
 import { Message } from '@subwallet/extension-base/types';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
+import StaticServer from 'react-native-static-server';
+
+const WEB_SERVER_PORT = 9135;
 
 const getJsInjectContent = (showLog?: boolean) => {
-  const params = 'platform=' + Platform.OS;
   let injectedJS = `
-  // Redirect from loader
-  if (!window.location.search) {
-    var link = document.getElementById('progress-bar');
-    if (link) {
-      link.href = './site/index.html?${params}';
-      link.click();    
-    }
-  }
-
   // Update config data
   setTimeout(() => {
     var info = {
@@ -28,7 +22,7 @@ const getJsInjectContent = (showLog?: boolean) => {
     }
   
     window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': info }))
-  }, 200);
+  }, 2000);
 `;
   // Show webview log in development environment
   if (showLog) {
@@ -48,35 +42,30 @@ const getJsInjectContent = (showLog?: boolean) => {
 
 let eventEmitter: EventEmitter;
 let webRef: React.RefObject<WebView<{}>>;
-const sourceUri = (Platform.OS === 'android' ? 'file:///android_asset/' : '') + 'Web.bundle/loader.html';
-// const sourceUri = 'http://192.168.10.189:9000'; // Use for developing web runner real time
 let webViewState: WebRunnerState = {};
 
 // Handle ping
-let pingTimeout: NodeJS.Timeout | undefined;
+let pingInterval: NodeJS.Timer | undefined;
 let reloadTimeout: NodeJS.Timeout | undefined;
 
-const pingWebView = () => {
-  if (webViewState.status !== 'crypto_ready') {
-    return;
-  }
-  pingTimeout && clearTimeout(pingTimeout);
-  reloadTimeout && clearTimeout(reloadTimeout);
-  pingTimeout = setTimeout(() => {
+const startPingInterval = () => {
+  console.log('Start ping interval');
+  pingInterval = setInterval(() => {
     webRef?.current?.injectJavaScript(
       "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))",
     );
 
     reloadTimeout = setTimeout(() => {
-      console.warn('Ping check failed: Reload timeout');
+      console.warn('Ping check failed: Reload web runner!!!');
+      reloadTimeout && clearTimeout(reloadTimeout);
+      pingInterval && clearTimeout(pingInterval);
       webRef?.current?.reload();
-    }, 18000);
-  }, 9000);
+    }, 16000);
+  }, 18000);
 };
 
 const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
   listenMessage(JSON.parse(eventData.nativeEvent.data), (unHandleData: Message['data']) => {
-    pingWebView();
     const { id, response } = unHandleData as { id: string; response: Object };
     if (id === '0') {
       const statusData = response as { status: WebRunnerStatus };
@@ -84,11 +73,19 @@ const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
 
       // ping is used to check web-runner is alive, not put into web-runner state
       if (webViewStatus === 'ping') {
+        // Clear ping timeout
         reloadTimeout && clearTimeout(reloadTimeout);
       } else {
         webViewState.status = webViewStatus;
         eventEmitter?.emit('update-status', webViewStatus);
         console.debug(`### Web Runner Status: ${webViewStatus}`);
+
+        // Clear ping interval and ping timeout
+        reloadTimeout && clearTimeout(reloadTimeout);
+        pingInterval && clearInterval(pingInterval);
+        if (webViewStatus === 'crypto_ready') {
+          webViewStatus === 'crypto_ready' && startPingInterval();
+        }
       }
       return true;
     } else if (id === '-1') {
@@ -111,17 +108,37 @@ interface Props {
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
 }
+
 export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
   eventEmitter = webRunnerEventEmitter;
   webRef = webRunnerRef;
   webViewState = webRunnerStateRef.current || {};
+  const [source, setSource] = useState<WebViewSource | undefined>(undefined);
+
+  useEffect(() => {
+    let server: StaticServer;
+    const params = 'platform=' + Platform.OS;
+    if (Platform.OS === 'android') {
+      setSource({ uri: `file:///android_asset/Web.bundle/site/index.html?${params}` });
+    } else {
+      server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + '/Web.bundle/site');
+
+      server.start().then(() => {
+        setSource({ uri: `http://localhost:${WEB_SERVER_PORT}?${params}` });
+      });
+    }
+
+    return () => {
+      server && server.stop();
+    };
+  }, []);
 
   return (
     <View style={{ height: 0 }}>
       <WebView
         ref={webRunnerRef}
+        source={source}
         onMessage={onWebviewMessage}
-        source={{ uri: sourceUri }}
         originWhitelist={['*']}
         injectedJavaScript={getJsInjectContent(false)}
         onError={e => console.debug('### WebRunner error', e)}

@@ -38,6 +38,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
   }, []);
 
   const reload = useCallback(() => {
+    console.log('Reload web runner');
     webRef?.current?.reload();
   }, [webRef]);
 

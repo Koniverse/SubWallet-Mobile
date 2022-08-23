@@ -23,8 +23,8 @@ export default function useStoreBalance(): StoreStatus {
           return;
         }
 
+        // Not apply first result if get cached
         if (storeStatus === 'CACHED' && payload.reset) {
-          console.log('Cache is runnning');
           return;
         }
 
