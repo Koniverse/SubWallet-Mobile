@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { useNavigation } from '@react-navigation/native';
@@ -62,36 +62,33 @@ export const ImportSecretPhrase = ({
     }
 
     const suri = `${seed || ''}`;
-
+    setBusy(true);
     validateSeedV2(seed, [keyTypes])
       .then(({ addressMap }) => {
         const address = addressMap[keyTypes as KeypairType];
         setAccount({ address, suri, genesis: '' });
         setError('');
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .catch(e => {
+      .catch(() => {
         setAccount(null);
         setError(i18n.errorMessage.invalidMnemonicSeed);
-      });
+      })
+      .finally(() => setBusy(false));
   }, [keyTypes, seed]);
 
-  const _onImportSeed = useCallback(
-    (curName: string, password: string): void => {
-      if (curName && password && account) {
-        setBusy(true);
+  const _onImportSeed = (curName: string, password: string): void => {
+    if (curName && password && account) {
+      setBusy(true);
 
-        createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
-          .then(() => {
-            backToHome(navigation, true);
-          })
-          .catch(() => {
-            setBusy(false);
-          });
-      }
-    },
-    [account, keyTypes, navigation],
-  );
+      createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
+        .then(() => {
+          backToHome(navigation, true);
+        })
+        .catch(() => {
+          setBusy(false);
+        });
+    }
+  };
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.ENTER_SEED) {
@@ -118,7 +115,7 @@ export const ImportSecretPhrase = ({
             </ScrollView>
             <View style={footerAreaStyle}>
               <SubmitButton
-                disabled={!seed || !!error}
+                disabled={!seed || !!error || isBusy}
                 isBusy={isBusy}
                 title={i18n.common.continue}
                 onPress={() => {

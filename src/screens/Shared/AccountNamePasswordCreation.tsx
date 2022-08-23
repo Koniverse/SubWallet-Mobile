@@ -1,12 +1,12 @@
 import React from 'react';
-import { ScrollView, StyleProp, View } from 'react-native';
+import { Keyboard, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 import i18n from 'utils/i18n/i18n';
-import useFormControl from 'hooks/screen/useFormControl';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -58,51 +58,56 @@ export function checkPasswordMatched(value: string, formValue: Record<string, st
   }
 }
 
-export const formConfig = {
-  accountName: {
-    name: i18n.common.accountName,
-    value: '',
-    require: true,
-  },
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: checkPasswordTooShort,
-    require: true,
-  },
-  repeatPassword: {
-    name: i18n.common.repeatWalletPassword,
-    value: '',
-    validateFunc: checkPasswordMatched,
-    require: true,
-  },
-};
+function checkValidateForm(formValidated: Record<string, boolean>) {
+  console.log('33', formValidated.accountName, formValidated.password, formValidated.repeatPassword);
+  return formValidated.accountName && formValidated.password && formValidated.repeatPassword;
+}
 
 export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) => {
-  const { formState, onChangeValue, onSubmitEditing } = useFormControl(formConfig);
+  const _onCreateAccount = (formState: FormState) => {
+    console.log('formState.isValidated', checkValidateForm(formState.isValidated));
+    if (checkValidateForm(formState.isValidated)) {
+      console.log('123123123123');
+      onCreateAccount(formState.data.accountName, formState.data.password);
+    } else {
+      Keyboard.dismiss();
+    }
+  };
+
+  const formConfig = {
+    accountName: {
+      name: i18n.common.accountName,
+      value: '',
+      require: true,
+    },
+    password: {
+      name: i18n.common.walletPassword,
+      value: '',
+      validateFunc: checkPasswordTooShort,
+      require: true,
+    },
+    repeatPassword: {
+      name: i18n.common.repeatWalletPassword,
+      value: '',
+      validateFunc: checkPasswordMatched,
+      onSubmitForm: _onCreateAccount,
+      require: true,
+    },
+  };
+  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig);
   return (
     <View style={sharedStyles.layoutContainer}>
       <ScrollView style={bodyAreaStyle}>
         <Text style={titleStyle}>{i18n.common.createWalletNotification}</Text>
 
-        <AccountNameAndPasswordArea
-          formState={formState}
-          onChangeValue={onChangeValue}
-          onSubmitEditing={onSubmitEditing}
-        />
+        <AccountNameAndPasswordArea formState={formState} onChangeValue={onChangeValue} onSubmitField={onSubmitField} />
       </ScrollView>
       <View style={footerAreaStyle}>
         <SubmitButton
-          disabled={
-            !formState.data.password ||
-            !formState.data.repeatPassword ||
-            formState.data.password !== formState.data.repeatPassword
-          }
+          disabled={!checkValidateForm(formState.isValidated)}
           isBusy={isBusy}
           title={i18n.common.finish}
-          onPress={() => {
-            formState.data.password && onCreateAccount(formState.data.accountName, formState.data.password);
-          }}
+          onPress={() => {}}
         />
       </View>
     </View>

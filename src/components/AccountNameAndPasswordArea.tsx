@@ -6,10 +6,10 @@ import { FormState } from 'hooks/screen/useFormControl';
 interface Props {
   formState: FormState;
   onChangeValue: (fieldName: string) => (currentValue: string) => void;
-  onSubmitEditing: (fieldName: string) => () => void;
+  onSubmitField: (fieldName: string) => () => void;
 }
 
-export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitEditing }: Props) => {
+export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitField }: Props) => {
   return (
     <>
       <EditAccountInputText
@@ -17,7 +17,7 @@ export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitE
         label={formState.labels.accountName}
         onChangeText={onChangeValue('accountName')}
         editAccountInputStyle={{ marginBottom: 8 }}
-        onSubmitEditing={onSubmitEditing('accountName')}
+        onSubmitEditing={onSubmitField('accountName')}
         errorMessages={formState.errors.accountName}
       />
       <PasswordField
@@ -25,7 +25,7 @@ export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitE
         label={formState.labels.password}
         onChangeText={onChangeValue('password')}
         errorMessages={formState.errors.password}
-        onSubmitEditing={onSubmitEditing('password')}
+        onSubmitEditing={onSubmitField('password')}
       />
 
       <PasswordField
@@ -33,7 +33,7 @@ export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitE
         label={formState.labels.repeatPassword}
         onChangeText={onChangeValue('repeatPassword')}
         errorMessages={formState.errors.repeatPassword}
-        onSubmitEditing={onSubmitEditing('repeatPassword')}
+        onSubmitEditing={onSubmitField('repeatPassword')}
       />
     </>
   );

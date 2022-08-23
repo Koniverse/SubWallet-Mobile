@@ -49,6 +49,7 @@ export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Re
         <TextInput
           ref={ref}
           autoCorrect={false}
+          blurOnSubmit={false}
           style={[inputStyle, outerInputStyle]}
           {...inputProps}
           editable={!isDisabled}

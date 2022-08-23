@@ -9,7 +9,7 @@ interface FormControlItem {
   value: string;
   validateFunc?: (value: string, formValue: Record<FormItemKey, string>) => string[];
   require?: boolean;
-  lastFieldAction?: () => void;
+  onSubmitForm?: (formState: FormState) => void;
   validateOn?: string[];
 }
 
@@ -52,27 +52,52 @@ function initForm(initData: Record<FormItemKey, FormControlItem>) {
   return formState;
 }
 
+function checkFormRequired(state: FormState, fieldName: string) {
+  if (state.requireItems[fieldName]) {
+    state.errors[fieldName] = [i18n.warningMessage.requireMessage];
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function checkFormFieldValidation(
+  state: FormState,
+  fieldName: string,
+  value: string,
+  validateFunction?: (value: string, formValue: Record<FormItemKey, string>) => string[],
+) {
+  if (validateFunction) {
+    state.errors[fieldName] = validateFunction(value, state.data);
+    return !state.errors[fieldName].length;
+  } else {
+    state.errors[fieldName] = [];
+    return true;
+  }
+}
+
 function formReducer(state: FormState, action: FormControlAction) {
   switch (action.type) {
+    case 'update_errors':
+      if (action.payload.value) {
+        state.errors[action.payload.fieldName] = [action.payload.value];
+        state.isValidated[action.payload.fieldName] = false;
+      } else {
+        state.errors[action.payload.fieldName] = [];
+        state.isValidated[action.payload.fieldName] = true;
+      }
+
+      return { ...state };
     case 'change_value':
-      let fireUpdate = false;
       const { fieldName, value } = action.payload;
-      const validateFunction = state.config[fieldName].validateFunc;
+      let fireUpdate = false;
       let isValidated = false;
+      const validateFunction = state.config[fieldName].validateFunc;
 
       if (value && value.length) {
-        if (validateFunction) {
-          state.errors[fieldName] = validateFunction(value, state.data);
-          isValidated = !state.errors[fieldName].length;
-        } else {
-          isValidated = true;
-        }
+        isValidated = checkFormFieldValidation(state, fieldName, value, validateFunction);
       } else {
-        if (state.requireItems[fieldName]) {
-          state.errors[fieldName] = [i18n.warningMessage.requireMessage];
-        } else {
-          isValidated = true;
-        }
+        isValidated = checkFormRequired(state, fieldName);
       }
 
       if (state.isValidated[fieldName] !== isValidated) {
@@ -89,7 +114,9 @@ function formReducer(state: FormState, action: FormControlAction) {
       state.index = Object.keys(state.refs).indexOf(action.payload.fieldName) + 1;
       const refList = Object.values(state.refs);
       if (state.index === refList.length) {
+        const _onSubmitForm = state.config[action.payload.fieldName].onSubmitForm;
         Keyboard.dismiss();
+        !!_onSubmitForm && _onSubmitForm(state);
       } else {
         refList[state.index].current?.focus();
       }
@@ -109,12 +136,19 @@ export default function useFormControl(formConfig: Record<FormItemKey, FormContr
     };
   };
 
-  const onSubmitEditing = (fieldName: string) => {
+  const onUpdateErrors = (fieldName: string) => {
+    return (error: string) => {
+      dispatchForm({ type: 'update_errors', payload: { fieldName, value: error } });
+    };
+  };
+
+  const onSubmitField = (fieldName: string) => {
     return () => dispatchForm({ type: 'submit', payload: { fieldName, value: '' } });
   };
   return {
     formState,
+    onUpdateErrors,
     onChangeValue,
-    onSubmitEditing,
+    onSubmitField,
   };
 }
