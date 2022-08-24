@@ -11,7 +11,7 @@ import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging'
 import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from '../constant';
 import { backToHome } from 'utils/navigation';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 
 const footerAreaStyle: StyleProp<any> = {
@@ -45,11 +45,14 @@ export const ImportPrivateKey = () => {
     }
   };
 
-  const privateKeyFormConfig = {
+  const privateKeyFormConfig: FormControlConfig = {
     privateKey: {
       name: i18n.common.privateKey,
       value: '',
       require: true,
+      transformFunc: value => {
+        return value.trim();
+      },
     },
     accountName: {
       name: i18n.common.accountName,
@@ -86,10 +89,10 @@ export const ImportPrivateKey = () => {
           suri = `0x${suri}`;
         }
         onChangeValue('privateKey')(suri);
-        onUpdateErrors('privateKey')(JSON.stringify([]));
+        onUpdateErrors('privateKey')();
       })
       .catch(() => {
-        onUpdateErrors('privateKey')(JSON.stringify([i18n.warningMessage.notAValidEVMPrivateKey]));
+        onUpdateErrors('privateKey')([i18n.warningMessage.invalidEVMPrivateKey]);
       });
   };
 

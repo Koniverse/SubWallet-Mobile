@@ -82,13 +82,13 @@ export const RestoreJson = () => {
       .then(() => {
         setFileError(false);
         setIsBusy(false);
-        onUpdateErrors('password')(JSON.stringify([]));
+        onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
         backToHome(navigation, true);
       })
       .catch(() => {
         setIsBusy(false);
-        onUpdateErrors('password')(JSON.stringify([i18n.warningMessage.unableDecode]));
+        onUpdateErrors('password')([i18n.warningMessage.unableDecode]);
       });
   };
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
@@ -130,7 +130,7 @@ export const RestoreJson = () => {
     }
 
     setFileError(false);
-    onUpdateErrors('password')(JSON.stringify([]));
+    onUpdateErrors('password')([]);
     setAccountsInfo(() => []);
 
     fileInfo = fileInfo as Array<DocumentPickerResponse>;

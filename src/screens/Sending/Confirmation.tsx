@@ -89,7 +89,7 @@ export const Confirmation = ({
     )
       .then(errors => {
         const errorMessages = errors.map(err => err.message);
-        onUpdateErrors('password')(JSON.stringify(errorMessages));
+        onUpdateErrors('password')(errorMessages);
         if (errorMessages && errorMessages.length) {
           onChangeBusy(false);
         }

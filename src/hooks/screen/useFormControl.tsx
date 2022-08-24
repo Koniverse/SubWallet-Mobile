@@ -8,6 +8,7 @@ interface FormControlItem {
   name: string;
   value: string;
   validateFunc?: (value: string, formValue: Record<FormItemKey, string>) => string[];
+  transformFunc?: (value: string, formValue: Record<FormItemKey, string>) => string;
   require?: boolean;
   validateOn?: string[];
 }
@@ -27,7 +28,7 @@ export interface FormState {
 
 interface FormControlAction {
   type: string;
-  payload: { fieldName: string; value: string };
+  payload: { fieldName: string; value?: string; errors?: string[] };
 }
 
 interface FormControlOption {
@@ -89,12 +90,12 @@ function checkFieldValidation(
 }
 
 function formReducer(state: FormState, action: FormControlAction) {
-  const { fieldName, value } = action.payload;
+  const { fieldName, value, errors } = action.payload;
+  const { validateFunc, transformFunc } = state.config[fieldName];
   switch (action.type) {
     case 'update_errors':
-      const convertedValue = JSON.parse(value);
-      if (convertedValue && convertedValue.length) {
-        state.errors[fieldName] = convertedValue;
+      if (errors && errors.length) {
+        state.errors[fieldName] = errors;
         state.isValidated[fieldName] = false;
       } else {
         state.errors[fieldName] = [];
@@ -103,11 +104,16 @@ function formReducer(state: FormState, action: FormControlAction) {
 
       return { ...state };
     case 'change_value':
+      if (value === undefined) {
+        return state;
+      }
+
+      const _value = transformFunc ? transformFunc(value, state.data) : value;
       let fireUpdate = false;
+      // Validation check
       let isValidated = false;
-      const validateFunction = state.config[fieldName].validateFunc;
       if (state.validateFieldsOn[fieldName].includes('change_value')) {
-        isValidated = checkFieldValidation(state, fieldName, value, validateFunction);
+        isValidated = checkFieldValidation(state, fieldName, _value, validateFunc);
       }
 
       if (state.isValidated[fieldName] !== isValidated) {
@@ -118,18 +124,16 @@ function formReducer(state: FormState, action: FormControlAction) {
       if (state.errors[fieldName]) {
         fireUpdate = true;
       }
-      state.data[fieldName] = value;
+      state.data[fieldName] = _value;
       return fireUpdate ? { ...state } : state;
     case 'submit':
+      if (value !== undefined) {
+        state.data[fieldName] = value;
+      }
       state.index = Object.keys(state.refs).indexOf(fieldName) + 1;
       const refList = Object.values(state.refs);
       if (state.validateFieldsOn[fieldName].includes('submit')) {
-        state.isValidated[fieldName] = checkFieldValidation(
-          state,
-          fieldName,
-          state.data[fieldName],
-          state.config[fieldName].validateFunc,
-        );
+        state.isValidated[fieldName] = checkFieldValidation(state, fieldName, state.data[fieldName], validateFunc);
       }
       if (state.index === refList.length) {
         const _onSubmitForm = state.onSubmitForm;
@@ -145,10 +149,9 @@ function formReducer(state: FormState, action: FormControlAction) {
   }
 }
 
-export default function useFormControl(
-  formConfig: Record<FormItemKey, FormControlItem>,
-  formControlOption: FormControlOption,
-) {
+export type FormControlConfig = Record<FormItemKey, FormControlItem>;
+
+export default function useFormControl(formConfig: FormControlConfig, formControlOption: FormControlOption) {
   const [formState, dispatchForm] = useReducer(formReducer, initForm(formConfig, formControlOption));
 
   const onChangeValue = (fieldName: string) => {
@@ -158,13 +161,13 @@ export default function useFormControl(
   };
 
   const onUpdateErrors = (fieldName: string) => {
-    return (error: string) => {
-      dispatchForm({ type: 'update_errors', payload: { fieldName, value: error } });
+    return (errors?: string[]) => {
+      dispatchForm({ type: 'update_errors', payload: { fieldName, errors: errors } });
     };
   };
 
-  const onSubmitField = (fieldName: string) => {
-    return () => dispatchForm({ type: 'submit', payload: { fieldName, value: '' } });
+  const onSubmitField = (fieldName: string, value?: string) => {
+    return () => dispatchForm({ type: 'submit', payload: { fieldName, value: value } });
   };
   return {
     formState,

@@ -83,8 +83,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
         setIsBusy(false);
       })
       .catch((error: Error) => {
-        const errorMessage = JSON.stringify([error.message]);
-        onUpdateErrors('password')(errorMessage);
+        onUpdateErrors('password')([error.message]);
         setIsBusy(false);
       });
   };

@@ -132,7 +132,7 @@ export const ViewPrivateKey = ({
         setCurrentViewStep(ViewStep.SHOW_PK);
       })
       .catch((error: Error) => {
-        onUpdateErrors('password')(JSON.stringify([error.message]));
+        onUpdateErrors('password')([error.message]);
         setIsBusy(false);
       });
   };

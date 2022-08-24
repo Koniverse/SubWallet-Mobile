@@ -168,7 +168,7 @@ export const vi = {
     recipientPhish: 'The recipient is associated with a known phishing site on',
     isNotSameAddressAndTokenType: 'Transfer is not supported for this type of account and token',
     recipientAddressMustBe: 'The recipient address must be ',
-    notAValidEVMPrivateKey: 'Not a valid EVM private key',
+    invalidEVMPrivateKey: 'Invalid EVM private key',
     removeAccountWarning:
       'You are about to remove this account. This means that you will not be able to access it via this app anymore. If you wish to recover it, you will need to use its secret phrase.',
     initSecretPhrase:
