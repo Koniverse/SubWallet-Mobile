@@ -14,6 +14,8 @@ import Toast from 'react-native-toast-notifications';
 import { deviceHeight } from '../constant';
 import i18n from 'utils/i18n/i18n';
 import ToastContainer from 'react-native-toast-notifications';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 
 interface Props {
   address: string;
@@ -59,18 +61,21 @@ const buttonStyle: StyleProp<any> = {
 
 const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
+const formConfig = {
+  password: {
+    require: true,
+    name: i18n.common.passwordForThisAccount.toUpperCase(),
+    value: '',
+    validateFunc: validatePassword,
+  },
+};
+
 export const ExportJson = ({ address, closeModal }: Props) => {
-  const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [fileContent, setFileContent] = useState('');
   const toastRef = useRef<ToastContainer>(null);
-  const onTypePassword = (pass: string) => {
-    setPassword(pass);
-    setErrorMessage('');
-  };
-
-  const onSetPassword = () => {
+  const onSetPassword = (formState: FormState) => {
+    const password = formState.data.password;
     setIsBusy(true);
     exportAccount(address, password)
       .then(({ exportedJson }) => {
@@ -78,10 +83,14 @@ export const ExportJson = ({ address, closeModal }: Props) => {
         setIsBusy(false);
       })
       .catch((error: Error) => {
-        setErrorMessage(error.message);
+        const errorMessage = JSON.stringify([error.message]);
+        onUpdateErrors('password')(errorMessage);
         setIsBusy(false);
       });
   };
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+    onSubmitForm: onSetPassword,
+  });
 
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
@@ -92,8 +101,6 @@ export const ExportJson = ({ address, closeModal }: Props) => {
       toastRef.current.show(i18n.common.copiedToClipboard);
     }
   };
-
-  const isPasswordError = !password || password.length < 6;
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={18}>
@@ -142,27 +149,23 @@ export const ExportJson = ({ address, closeModal }: Props) => {
 
             {!fileContent && (
               <PasswordField
-                label={i18n.common.passwordForThisAccount.toUpperCase()}
-                onChangeText={onTypePassword}
-                onBlur={onSetPassword}
-                onEndEditing={onSetPassword}
-                isError={isPasswordError}
-                value={password}
+                label={formState.labels.password}
+                onChangeText={onChangeValue('password')}
+                onBlur={() => onSetPassword(formState)}
+                onEndEditing={() => onSetPassword(formState)}
+                errorMessages={formState.errors.password}
                 style={passwordFieldStyle}
+                onSubmitField={onSubmitField('password')}
               />
-            )}
-
-            {!!errorMessage && (
-              <Warning isDanger style={{ ...sharedStyles.mainText, marginTop: 0 }} message={errorMessage} />
             )}
           </View>
           <View style={footerAreaStyle}>
             <SubmitButton
               title={fileContent ? i18n.common.done : i18n.common.continue}
-              disabled={isPasswordError}
+              disabled={!formState.isValidated.password}
               isBusy={isBusy}
               style={buttonStyle}
-              onPress={fileContent ? () => closeModal(false) : onSetPassword}
+              onPress={fileContent ? () => closeModal(false) : () => onSetPassword(formState)}
             />
           </View>
 

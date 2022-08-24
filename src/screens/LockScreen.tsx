@@ -45,7 +45,6 @@ export const LockScreen = ({ navigation }: NavigationProps) => {
         .then(currentType => {
           TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
             .then(() => {
-              console.log();
               unlockWithBiometric();
             })
             .catch(() => {

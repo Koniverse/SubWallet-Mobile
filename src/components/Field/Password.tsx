@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
-import { Keyboard, StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { forwardRef, useState } from 'react';
+import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
-import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   onChangeText?: (text: string) => void;
   onEndEditing?: () => void;
   onBlur?: () => void;
-  value?: string;
-  isError?: boolean;
+  errorMessages?: string[];
   isBusy?: boolean;
   autoFocus?: boolean;
+  onSubmitField?: () => void;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -38,35 +37,27 @@ function getInputStyle(isError: boolean) {
   };
 }
 
-export const PasswordField = ({
-  onChangeText,
-  onEndEditing,
-  onBlur,
-  value,
-  isError,
-  isBusy,
-  autoFocus = true,
-  ...fieldBase
-}: Props) => {
+export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
+  const { onChangeText, onEndEditing, onBlur, errorMessages, isBusy, autoFocus, onSubmitField, ...fieldBase } =
+    passwordFieldProps;
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
-  const isPasswordTooShort = value && value.length < 6;
   return (
     <>
       <FieldBase {...fieldBase}>
         <View style={blockContentStyle}>
           <TextInput
+            ref={ref}
             autoCorrect={false}
             autoFocus={autoFocus}
-            style={getInputStyle(!!isError)}
+            style={getInputStyle(!!(errorMessages && errorMessages.length))}
             placeholderTextColor={ColorMap.disabled}
             selectionColor={ColorMap.disabled}
             secureTextEntry={!isShowPassword}
             blurOnSubmit={false}
-            onSubmitEditing={() => Keyboard.dismiss()}
+            onSubmitEditing={onSubmitField}
             onChangeText={onChangeText}
             onEndEditing={onEndEditing}
             onBlur={onBlur}
-            value={value}
             editable={!isBusy}
             selectTextOnFocus={!isBusy}
           />
@@ -89,9 +80,10 @@ export const PasswordField = ({
         </View>
       </FieldBase>
 
-      {!!isPasswordTooShort && (
-        <Warning isDanger message={i18n.warningMessage.passwordTooShort} style={{ marginBottom: 8 }} />
-      )}
+      {!!(errorMessages && errorMessages.length) &&
+        errorMessages.map((message, index) => (
+          <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
+        ))}
     </>
   );
-};
+});

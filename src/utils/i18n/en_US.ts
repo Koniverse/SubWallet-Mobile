@@ -175,6 +175,7 @@ export const en = {
       'Write down your wallet’s secret phrase and keep it in a safe place. Store it carefully to not lose your assets.',
     exportAccountWarning: "You are exporting your account. Keep it safe and don't share it with anyone.",
     noAccountMessage: "There's no account at the moment",
+    requireMessage: 'This field is required',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
