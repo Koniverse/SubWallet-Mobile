@@ -7,6 +7,7 @@ interface Props {
   formState: FormState;
   onChangeValue: (fieldName: string) => (currentValue: string) => void;
   onSubmitField: (fieldName: string) => () => void;
+  autoFocusFirstField?: boolean;
 }
 
 export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitField }: Props) => {

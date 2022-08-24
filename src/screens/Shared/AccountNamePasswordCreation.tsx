@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Keyboard, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
@@ -58,6 +58,10 @@ function checkValidateForm(formValidated: Record<string, boolean>) {
 }
 
 export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) => {
+  useEffect(() => {
+    focus('accountName')();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const _onCreateAccount = (formState: FormState) => {
     if (checkValidateForm(formState.isValidated)) {
       onCreateAccount(formState.data.accountName, formState.data.password);
@@ -87,7 +91,9 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
       require: true,
     },
   };
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, { onSubmitForm: _onCreateAccount });
+  const { formState, onChangeValue, onSubmitField, focus } = useFormControl(formConfig, {
+    onSubmitForm: _onCreateAccount,
+  });
   return (
     <View style={sharedStyles.layoutContainer}>
       <ScrollView style={bodyAreaStyle}>
@@ -100,7 +106,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
           disabled={!checkValidateForm(formState.isValidated)}
           isBusy={isBusy}
           title={i18n.common.finish}
-          onPress={() => {}}
+          onPress={() => _onCreateAccount(formState)}
         />
       </View>
     </View>

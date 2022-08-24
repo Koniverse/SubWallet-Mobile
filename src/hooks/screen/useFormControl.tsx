@@ -144,8 +144,13 @@ function formReducer(state: FormState, action: FormControlAction) {
       }
 
       return { ...state };
+    case 'focus':
+      state.index = Object.keys(state.refs).indexOf(fieldName);
+      Object.values(state.refs)[state.index].current?.focus();
+
+      return { ...state };
     default:
-      throw new Error();
+      throw new Error('Invalid form action');
   }
 }
 
@@ -169,10 +174,16 @@ export default function useFormControl(formConfig: FormControlConfig, formContro
   const onSubmitField = (fieldName: string, value?: string) => {
     return () => dispatchForm({ type: 'submit', payload: { fieldName, value: value } });
   };
+
+  const focus = (target: string | number) => {
+    const fieldName = typeof target === 'string' ? target : Object.keys(formState.refs)[target];
+    return () => dispatchForm({ type: 'focus', payload: { fieldName } });
+  };
   return {
     formState,
     onUpdateErrors,
     onChangeValue,
     onSubmitField,
+    focus,
   };
 }

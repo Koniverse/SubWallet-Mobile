@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import Text from '../components/Text';
@@ -11,7 +11,7 @@ import { LeftIconButton } from 'components/LeftIconButton';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
-import { deviceHeight } from '../constant';
+import { deviceHeight, HIDE_MODAL_DURATION } from '../constant';
 import i18n from 'utils/i18n/i18n';
 import ToastContainer from 'react-native-toast-notifications';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
@@ -74,6 +74,15 @@ export const ExportJson = ({ address, closeModal }: Props) => {
   const [isBusy, setIsBusy] = useState(false);
   const [fileContent, setFileContent] = useState('');
   const toastRef = useRef<ToastContainer>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      focus('password')();
+    }, HIDE_MODAL_DURATION);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onSetPassword = (formState: FormState) => {
     const password = formState.data.password;
     setIsBusy(true);
@@ -87,7 +96,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
         setIsBusy(false);
       });
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSetPassword,
   });
 
@@ -148,6 +157,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
 
             {!fileContent && (
               <PasswordField
+                ref={formState.refs.password}
                 label={formState.labels.password}
                 onChangeText={onChangeValue('password')}
                 onBlur={() => onSetPassword(formState)}

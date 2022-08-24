@@ -173,6 +173,7 @@ export const RestoreJson = () => {
           <InputFile onChangeResult={_onChangeFile} />
           {renderAccount()}
           <PasswordField
+            ref={formState.refs.password}
             label={formState.labels.password}
             onChangeText={onChangeValue('password')}
             errorMessages={formState.errors.password}
