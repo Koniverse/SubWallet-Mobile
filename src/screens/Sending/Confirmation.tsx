@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
@@ -16,6 +16,8 @@ import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
 import i18n from 'utils/i18n/i18n';
+import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 interface Props {
   requestPayload: RequestCheckTransfer;
@@ -35,6 +37,15 @@ function getNetworkPrefix(networkKey: string, networkMap: Record<string, Network
   return;
 }
 
+const formConfig = {
+  password: {
+    require: true,
+    name: i18n.common.passwordForThisAccount.toUpperCase(),
+    value: '',
+    validateFunc: checkPasswordTooShort,
+  },
+};
+
 export const Confirmation = ({
   balanceFormat,
   requestPayload,
@@ -46,68 +57,46 @@ export const Confirmation = ({
 }: Props) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const [password, setPassword] = useState<string>('');
-  const [errorArr, setErrorArr] = useState<string[]>([]);
   const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
   const accountName = accounts.find(acc => acc.address === requestPayload.from)?.name;
-  const _doTransfer = useCallback(
-    (): void => {
-      onChangeBusy(true);
+  const _doTransfer = (formState: FormState): void => {
+    const password = formState.data.password;
+    onChangeBusy(true);
 
-      makeTransfer(
-        {
-          ...requestPayload,
-          password,
-        },
-        rs => {
-          if (!rs.isFinalized) {
-            if (rs.step === TransferStep.SUCCESS.valueOf()) {
-              onChangeResult({
-                isShowTxResult: true,
-                isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
-                extrinsicHash: rs.extrinsicHash,
-              });
-            } else if (rs.step === TransferStep.ERROR.valueOf()) {
-              onChangeResult({
-                isShowTxResult: true,
-                isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
-                extrinsicHash: rs.extrinsicHash,
-                txError: rs.errors,
-              });
-            }
+    makeTransfer(
+      {
+        ...requestPayload,
+        password,
+      },
+      rs => {
+        if (!rs.isFinalized) {
+          if (rs.step === TransferStep.SUCCESS.valueOf()) {
+            onChangeResult({
+              isShowTxResult: true,
+              isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
+              extrinsicHash: rs.extrinsicHash,
+            });
+          } else if (rs.step === TransferStep.ERROR.valueOf()) {
+            onChangeResult({
+              isShowTxResult: true,
+              isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
+              extrinsicHash: rs.extrinsicHash,
+              txError: rs.errors,
+            });
           }
-        },
-      )
-        .then(errors => {
-          const errorMessages = errors.map(err => err.message);
-          setErrorArr(errorMessages);
-          if (errorMessages && errorMessages.length) {
-            onChangeBusy(false);
-          }
-        })
-        .catch(e => console.log('There is problem when makeTransfer', e));
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      password,
-      onChangeResult,
-      requestPayload.networkKey,
-      requestPayload.from,
-      requestPayload.to,
-      requestPayload.value,
-      requestPayload.transferAll,
-      requestPayload.token,
-    ],
-  );
-
-  const onChangePassword = (text: string) => {
-    setPassword(text);
-    if (text && text.length < 6) {
-      setErrorArr([i18n.warningMessage.passwordTooShort]);
-    } else {
-      setErrorArr([]);
-    }
+        }
+      },
+    )
+      .then(errors => {
+        const errorMessages = errors.map(err => err.message);
+        onUpdateErrors('password')(JSON.stringify(errorMessages));
+        if (errorMessages && errorMessages.length) {
+          onChangeBusy(false);
+        }
+      })
+      .catch(e => console.log('There is problem when makeTransfer', e));
   };
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, _doTransfer);
 
   return (
     <>
@@ -135,20 +124,21 @@ export const Confirmation = ({
             decimal={feeDecimals}
           />
           <PasswordField
-            label={i18n.common.password}
-            onChangeText={onChangePassword}
+            label={formState.labels.password}
+            onChangeText={onChangeValue('password')}
             isBusy={isBusy}
-            errorMessages={errorArr}
+            errorMessages={formState.errors.password}
+            onSubmitField={onSubmitField('password')}
           />
         </View>
       </ScrollView>
 
       <SubmitButton
-        disabled={!password || password.length < 6}
+        disabled={!formState.isValidated.password}
         isBusy={isBusy}
         style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 8 }}
         title={i18n.common.send}
-        onPress={_doTransfer}
+        onPress={() => _doTransfer(formState)}
       />
     </>
   );

@@ -11,6 +11,7 @@ interface Props extends TextInputProps {
   editAccountInputStyle?: object;
   outerInputStyle?: object;
   errorMessages?: string[];
+  onSubmitField?: () => void;
 }
 
 const inputWrapper: StyleProp<any> = {
@@ -40,18 +41,26 @@ const inputStyle: StyleProp<any> = {
 };
 
 export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Ref<TextInput>) => {
-  const { isDisabled = false, label, editAccountInputStyle, outerInputStyle, errorMessages } = inputProps;
+  const {
+    isDisabled = false,
+    label,
+    editAccountInputStyle,
+    outerInputStyle,
+    errorMessages,
+    onSubmitField,
+  } = inputProps;
 
   return (
     <>
       <View style={[inputWrapper, editAccountInputStyle]}>
         <Text style={labelStyle}>{label}</Text>
         <TextInput
+          {...inputProps}
           ref={ref}
           autoCorrect={false}
           blurOnSubmit={false}
+          onSubmitEditing={onSubmitField}
           style={[inputStyle, outerInputStyle]}
-          {...inputProps}
           editable={!isDisabled}
           selectTextOnFocus={!isDisabled}
         />

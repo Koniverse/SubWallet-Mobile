@@ -49,6 +49,7 @@ export const ImportPrivateKey = () => {
     privateKey: {
       name: i18n.common.privateKey,
       value: '',
+      require: true,
     },
     accountName: {
       name: i18n.common.accountName,
@@ -65,11 +66,10 @@ export const ImportPrivateKey = () => {
       name: i18n.common.repeatWalletPassword,
       value: '',
       validateFunc: checkPasswordMatched,
-      onSubmitForm: _onImport,
       require: true,
     },
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(privateKeyFormConfig);
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(privateKeyFormConfig, _onImport);
   const validatePrivateKey = (currentPrivateKey: string) => {
     if (!currentPrivateKey) {
       return;
@@ -82,10 +82,10 @@ export const ImportPrivateKey = () => {
           suri = `0x${suri}`;
         }
         onChangeValue('privateKey')(suri);
-        onUpdateErrors('privateKey')('');
+        onUpdateErrors('privateKey')(JSON.stringify(['']));
       })
       .catch(() => {
-        onUpdateErrors('privateKey')(i18n.warningMessage.notAValidEVMPrivateKey);
+        onUpdateErrors('privateKey')(JSON.stringify([i18n.warningMessage.notAValidEVMPrivateKey]));
       });
   };
 

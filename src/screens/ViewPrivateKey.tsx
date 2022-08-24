@@ -22,6 +22,8 @@ import { ExportPrivateKeyProps, RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
+import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -101,6 +103,15 @@ const ViewStep = {
 };
 const PrivateBlockIcon = FingerprintSimple;
 
+const formConfig = {
+  password: {
+    require: true,
+    name: i18n.common.passwordForThisAccount.toUpperCase(),
+    value: '',
+    validateFunc: checkPasswordTooShort,
+  },
+};
+
 export const ViewPrivateKey = ({
   route: {
     params: { address },
@@ -109,10 +120,23 @@ export const ViewPrivateKey = ({
   const navigation = useNavigation<RootNavigationProps>();
   const [privateKey, setPrivateKey] = useState<string>('');
   const toast = useToast();
-  const [password, setPassword] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  const onSetPassword = (formState: FormState) => {
+    const password = formState.data.password;
+    setIsBusy(true);
+    exportAccountPrivateKey(address, password)
+      .then(({ privateKey: resPrivateKey }) => {
+        setPrivateKey(resPrivateKey);
+        setIsBusy(false);
+        setCurrentViewStep(ViewStep.SHOW_PK);
+      })
+      .catch((error: Error) => {
+        onUpdateErrors('password')(JSON.stringify([error.message]));
+        setIsBusy(false);
+      });
+  };
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, onSetPassword);
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();
@@ -123,30 +147,9 @@ export const ViewPrivateKey = ({
     setCurrentViewStep(ViewStep.ENTER_PW);
   };
 
-  const onTypePassword = (pass: string) => {
-    setPassword(pass);
-    setErrorMessages([]);
-  };
-
-  const onSetPassword = () => {
-    setIsBusy(true);
-    exportAccountPrivateKey(address, password)
-      .then(({ privateKey: resPrivateKey }) => {
-        setPrivateKey(resPrivateKey);
-        setIsBusy(false);
-        setCurrentViewStep(ViewStep.SHOW_PK);
-      })
-      .catch((error: Error) => {
-        setErrorMessages([error.message]);
-        setIsBusy(false);
-      });
-  };
-
   const onPressDone = () => {
     navigation.goBack();
   };
-
-  const isPasswordError = !password || password.length < 6;
 
   return (
     <SubScreenContainer navigation={navigation} title={i18n.title.yourPrivateKey}>
@@ -174,9 +177,10 @@ export const ViewPrivateKey = ({
           {currentViewStep === ViewStep.ENTER_PW && (
             <>
               <PasswordField
-                label={i18n.common.passwordForThisAccount}
-                onChangeText={onTypePassword}
-                errorMessages={errorMessages}
+                label={formState.labels.password}
+                onChangeText={onChangeValue('password')}
+                errorMessages={formState.errors.password}
+                onSubmitField={onSubmitField('password')}
               />
             </>
           )}
@@ -202,10 +206,10 @@ export const ViewPrivateKey = ({
           {currentViewStep === ViewStep.ENTER_PW ? (
             <SubmitButton
               title={i18n.common.continue}
-              disabled={isPasswordError}
+              disabled={!formState.isValidated.password}
               isBusy={isBusy}
               style={buttonStyle}
-              onPress={onSetPassword}
+              onPress={onSubmitField('password')}
             />
           ) : (
             <SubmitButton title={i18n.common.done} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />

@@ -59,15 +59,12 @@ export function checkPasswordMatched(value: string, formValue: Record<string, st
 }
 
 function checkValidateForm(formValidated: Record<string, boolean>) {
-  console.log('33', formValidated.accountName, formValidated.password, formValidated.repeatPassword);
   return formValidated.accountName && formValidated.password && formValidated.repeatPassword;
 }
 
 export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) => {
   const _onCreateAccount = (formState: FormState) => {
-    console.log('formState.isValidated', checkValidateForm(formState.isValidated));
     if (checkValidateForm(formState.isValidated)) {
-      console.log('123123123123');
       onCreateAccount(formState.data.accountName, formState.data.password);
     } else {
       Keyboard.dismiss();
@@ -90,11 +87,10 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
       name: i18n.common.repeatWalletPassword,
       value: '',
       validateFunc: checkPasswordMatched,
-      onSubmitForm: _onCreateAccount,
       require: true,
     },
   };
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig);
+  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, _onCreateAccount);
   return (
     <View style={sharedStyles.layoutContainer}>
       <ScrollView style={bodyAreaStyle}>

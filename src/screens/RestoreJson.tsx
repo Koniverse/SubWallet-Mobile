@@ -19,6 +19,8 @@ import { Account } from 'components/Account';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
+import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -26,15 +28,70 @@ const footerAreaStyle: StyleProp<any> = {
   ...MarginBottomForSubmitButton,
 };
 
+const formConfig = {
+  file: {
+    name: '',
+    value: '',
+  },
+  password: {
+    require: true,
+    name: i18n.common.walletPassword,
+    value: '',
+    validateFunc: checkPasswordTooShort,
+  },
+};
+
+const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
+  let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
+  jsonFile.accounts.forEach(account => {
+    currentAccountsInfo.push({
+      address: account.address,
+      genesisHash: account.meta.genesisHash,
+      name: account.meta.name,
+    } as ResponseJsonGetAccountInfo);
+  });
+
+  return currentAccountsInfo;
+};
+
 export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [password, setPassword] = useState<string>('');
   const [file, setFile] = useState<KeyringPair$Json | KeyringPairs$Json | undefined>(undefined);
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
+  const _onRestore = (formState: FormState) => {
+    const password = formState.data.password;
+    let jsonFile;
+    if (formState.data.file) {
+      jsonFile = JSON.parse(formState.data.file) as KeyringPair$Json | KeyringPairs$Json;
+    }
 
+    if (!jsonFile) {
+      return;
+    }
+    if (!password) {
+      return;
+    }
+
+    setIsBusy(true);
+    (isKeyringPairs$Json(jsonFile)
+      ? batchRestoreV2(jsonFile, password, getAccountsInfo(jsonFile), true)
+      : jsonRestoreV2(jsonFile, password, jsonFile.address, true)
+    )
+      .then(() => {
+        setFileError(false);
+        setIsBusy(false);
+        onUpdateErrors('password')(JSON.stringify([]));
+        setAccountsInfo(() => []);
+        backToHome(navigation, true);
+      })
+      .catch(() => {
+        setIsBusy(false);
+        onUpdateErrors('password')(JSON.stringify([i18n.warningMessage.unableDecode]));
+      });
+  };
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, _onRestore);
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
     setFile(fileContent);
 
@@ -71,8 +128,7 @@ export const RestoreJson = () => {
     }
 
     setFileError(false);
-    setErrorMessages([]);
-    setPassword('');
+    onUpdateErrors('password')(JSON.stringify([]));
     setAccountsInfo(() => []);
 
     fileInfo = fileInfo as Array<DocumentPickerResponse>;
@@ -80,50 +136,12 @@ export const RestoreJson = () => {
 
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
+        onChangeValue('file')(res);
         _onReadFile(JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json);
       })
       .catch(() => {
         setFileError(true);
       });
-  };
-
-  const _onRestore = useCallback(() => {
-    if (!file) {
-      return;
-    }
-
-    if (!password) {
-      return;
-    }
-
-    setIsBusy(true);
-
-    (isKeyringPairs$Json(file)
-      ? batchRestoreV2(file, password, accountsInfo, true)
-      : jsonRestoreV2(file, password, accountsInfo[0].address, true)
-    )
-      .then(() => {
-        setFileError(false);
-        setIsBusy(false);
-        setErrorMessages([]);
-        setPassword('');
-        setAccountsInfo(() => []);
-        backToHome(navigation, true);
-      })
-      .catch(() => {
-        setIsBusy(false);
-        setErrorMessages([i18n.warningMessage.unableDecode]);
-      });
-  }, [accountsInfo, file, navigation, password]);
-
-  const onChangeText = (text: string) => {
-    setFileError(false);
-    if (text && text.length < 6) {
-      setErrorMessages([i18n.warningMessage.passwordTooShort]);
-    } else {
-      setErrorMessages([]);
-    }
-    setPassword(text);
   };
 
   const renderAccount = useCallback(() => {
@@ -152,7 +170,12 @@ export const RestoreJson = () => {
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <InputFile onChangeResult={_onChangeFile} />
           {renderAccount()}
-          <PasswordField label={i18n.common.walletPassword} onChangeText={onChangeText} errorMessages={errorMessages} />
+          <PasswordField
+            label={formState.labels.password}
+            onChangeText={onChangeValue('password')}
+            errorMessages={formState.errors.password}
+            onSubmitField={onSubmitField('password')}
+          />
           {isFileError && (
             <Warning title={i18n.warningTitle.error} message={i18n.warningMessage.invalidJsonFile} isDanger />
           )}
@@ -162,8 +185,8 @@ export const RestoreJson = () => {
           <SubmitButton
             isBusy={isBusy}
             title={i18n.common.importAccount}
-            onPress={_onRestore}
-            disabled={isFileError || !!(errorMessages && errorMessages.length) || !password || !file}
+            onPress={() => _onRestore(formState)}
+            disabled={isFileError || !formState.isValidated.password || !formState.data.password || !file}
           />
         </View>
       </View>
