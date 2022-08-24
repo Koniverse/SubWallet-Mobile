@@ -13,6 +13,7 @@ import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordC
 import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { backToHome } from 'utils/navigation';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -44,6 +45,16 @@ const ViewStep = {
   ENTER_PASSWORD: 2,
 };
 
+const secretPhraseFormConfig: FormControlConfig = {
+  seed: {
+    name: '',
+    value: '',
+    require: true,
+    // transformFunc: value => {
+    //   return value.trim();
+    // },
+  },
+};
 export const ImportSecretPhrase = ({
   route: {
     params: { keyTypes },
@@ -51,35 +62,42 @@ export const ImportSecretPhrase = ({
 }: ImportSecretPhraseProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [account, setAccount] = useState<AccountInfo | null>(null);
-  const [seed, setSeed] = useState<string>('');
-  const [error, setError] = useState<string>('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [isBusy, setBusy] = useState(false);
-
-  useEffect(() => {
+  const validateSeedAndGoToNextScreen = (currentFormState: FormState) => {
+    const seed = currentFormState.data.seed.trim();
     if (!seed) {
       return;
     }
-
+    onChangeValue('seed')(seed);
     const suri = `${seed || ''}`;
     setBusy(true);
     validateSeedV2(seed, [keyTypes])
       .then(({ addressMap }) => {
         const address = addressMap[keyTypes as KeypairType];
         setAccount({ address, suri, genesis: '' });
-        setError('');
+        onUpdateErrors('seed')();
+        setCurrentViewStep(ViewStep.ENTER_PASSWORD);
       })
       .catch(() => {
         setAccount(null);
-        setError(i18n.errorMessage.invalidMnemonicSeed);
+        onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
       })
       .finally(() => setBusy(false));
-  }, [keyTypes, seed]);
+  };
+
+  useEffect(() => {
+    focus('seed')();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
+    onSubmitForm: validateSeedAndGoToNextScreen,
+  });
 
   const _onImportSeed = (curName: string, password: string): void => {
     if (curName && password && account) {
       setBusy(true);
-
       createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
         .then(() => {
           backToHome(navigation, true);
@@ -107,20 +125,21 @@ export const ImportSecretPhrase = ({
               <Text style={titleStyle}>{i18n.common.importSecretPhraseTitle}</Text>
 
               <Textarea
+                ref={formState.refs.seed}
+                style={{ marginBottom: 8, paddingTop: 16 }}
+                value={formState.data.seed}
                 autoFocus={true}
-                onChangeText={text => {
-                  setSeed(text);
-                }}
+                onChangeText={onChangeValue('seed')}
+                onSubmitEditing={onSubmitField('seed')}
+                errorMessages={formState.errors.seed}
               />
             </ScrollView>
             <View style={footerAreaStyle}>
               <SubmitButton
-                disabled={!seed || !!error || isBusy}
+                disabled={!formState.data.seed || !formState.isValidated.seed || isBusy}
                 isBusy={isBusy}
                 title={i18n.common.continue}
-                onPress={() => {
-                  setCurrentViewStep(ViewStep.ENTER_PASSWORD);
-                }}
+                onPress={() => validateSeedAndGoToNextScreen(formState)}
               />
             </View>
           </View>

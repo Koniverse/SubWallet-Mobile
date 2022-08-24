@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
@@ -106,7 +106,7 @@ const PrivateBlockIcon = FingerprintSimple;
 const formConfig = {
   password: {
     require: true,
-    name: i18n.common.passwordForThisAccount.toUpperCase(),
+    name: i18n.common.passwordForThisAccount,
     value: '',
     validateFunc: validatePassword,
   },
@@ -122,6 +122,13 @@ export const ViewPrivateKey = ({
   const toast = useToast();
   const [isBusy, setIsBusy] = useState(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+
+  useEffect(() => {
+    if (currentViewStep === ViewStep.ENTER_PW) {
+      focus('password')();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentViewStep]);
   const onSetPassword = (formState: FormState) => {
     const password = formState.data.password;
     setIsBusy(true);
@@ -136,7 +143,7 @@ export const ViewPrivateKey = ({
         setIsBusy(false);
       });
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSetPassword,
   });
   const copyToClipboard = (text: string) => {
@@ -179,6 +186,7 @@ export const ViewPrivateKey = ({
           {currentViewStep === ViewStep.ENTER_PW && (
             <>
               <PasswordField
+                ref={formState.refs.password}
                 label={formState.labels.password}
                 onChangeText={onChangeValue('password')}
                 errorMessages={formState.errors.password}

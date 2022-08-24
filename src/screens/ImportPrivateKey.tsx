@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
@@ -27,6 +27,12 @@ function checkValidateForm(isValidated: Record<string, boolean>) {
 export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setIsBusy] = useState(false);
+
+  useEffect(() => {
+    focus('privateKey')();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const _onImport = (formState: FormState) => {
     const privateKey = formState.data.privateKey;
     const accountName = formState.data.accountName;
@@ -74,7 +80,7 @@ export const ImportPrivateKey = () => {
       require: true,
     },
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(privateKeyFormConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(privateKeyFormConfig, {
     onSubmitForm: _onImport,
   });
   const validatePrivateKey = (currentPrivateKey: string) => {
@@ -102,7 +108,6 @@ export const ImportPrivateKey = () => {
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea
             ref={formState.refs.privateKey}
-            autoFocus={true}
             style={{ height: 94, marginBottom: 8, paddingTop: 16 }}
             onChangeText={onChangeValue('privateKey')}
             value={formState.data.privateKey}

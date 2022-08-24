@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
@@ -40,7 +40,7 @@ function getNetworkPrefix(networkKey: string, networkMap: Record<string, Network
 const formConfig = {
   password: {
     require: true,
-    name: i18n.common.passwordForThisAccount.toUpperCase(),
+    name: i18n.common.password,
     value: '',
     validateFunc: validatePassword,
   },
@@ -59,6 +59,11 @@ export const Confirmation = ({
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
   const accountName = accounts.find(acc => acc.address === requestPayload.from)?.name;
+  useEffect(() => {
+    focus('password')();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const _doTransfer = (formState: FormState): void => {
     const password = formState.data.password;
     onChangeBusy(true);
@@ -96,7 +101,7 @@ export const Confirmation = ({
       })
       .catch(e => console.log('There is problem when makeTransfer', e));
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: _doTransfer,
   });
 
@@ -126,6 +131,7 @@ export const Confirmation = ({
             decimal={feeDecimals}
           />
           <PasswordField
+            ref={formState.refs.password}
             label={formState.labels.password}
             onChangeText={onChangeValue('password')}
             isBusy={isBusy}
