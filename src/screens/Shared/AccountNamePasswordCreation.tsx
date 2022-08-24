@@ -36,7 +36,7 @@ export function checkPasswordLength(value: string) {
   return !!(value && value.length > 5);
 }
 
-export function checkPasswordTooShort(value: string) {
+export function validatePassword(value: string) {
   const isPasswordTooShort = !checkPasswordLength(value);
   if (isPasswordTooShort) {
     return [i18n.warningMessage.passwordTooShort];
@@ -45,16 +45,11 @@ export function checkPasswordTooShort(value: string) {
   }
 }
 
-export function checkPasswordMatched(value: string, formValue: Record<string, string>) {
-  const isPasswordTooShort = !checkPasswordLength(value);
-  if (isPasswordTooShort) {
-    return [i18n.warningMessage.passwordTooShort];
+export function validatePasswordMatched(value: string, compareValue: string) {
+  if (value !== compareValue) {
+    return [i18n.warningMessage.doNotMatchPasswordWarning];
   } else {
-    if (formValue.password !== value) {
-      return [i18n.warningMessage.doNotMatchPasswordWarning];
-    } else {
-      return [];
-    }
+    return [];
   }
 }
 
@@ -80,17 +75,19 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
     password: {
       name: i18n.common.walletPassword,
       value: '',
-      validateFunc: checkPasswordTooShort,
+      validateFunc: validatePassword,
       require: true,
     },
     repeatPassword: {
       name: i18n.common.repeatWalletPassword,
       value: '',
-      validateFunc: checkPasswordMatched,
+      validateFunc: (value: string, formValue: Record<string, string>) => {
+        return validatePasswordMatched(value, formValue.password);
+      },
       require: true,
     },
   };
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, _onCreateAccount);
+  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, { onSubmitForm: _onCreateAccount });
   return (
     <View style={sharedStyles.layoutContainer}>
       <ScrollView style={bodyAreaStyle}>

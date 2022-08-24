@@ -22,7 +22,7 @@ import { ExportPrivateKeyProps, RootNavigationProps } from 'types/routes';
 import { exportAccountPrivateKey } from '../messaging';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
-import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const layoutContainerStyle: StyleProp<any> = {
@@ -108,7 +108,7 @@ const formConfig = {
     require: true,
     name: i18n.common.passwordForThisAccount.toUpperCase(),
     value: '',
-    validateFunc: checkPasswordTooShort,
+    validateFunc: validatePassword,
   },
 };
 
@@ -136,7 +136,9 @@ export const ViewPrivateKey = ({
         setIsBusy(false);
       });
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, onSetPassword);
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+    onSubmitForm: onSetPassword,
+  });
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();

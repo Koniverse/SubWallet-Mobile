@@ -15,7 +15,7 @@ import { deviceHeight } from '../constant';
 import i18n from 'utils/i18n/i18n';
 import ToastContainer from 'react-native-toast-notifications';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 
 interface Props {
   address: string;
@@ -66,7 +66,7 @@ const formConfig = {
     require: true,
     name: i18n.common.passwordForThisAccount.toUpperCase(),
     value: '',
-    validateFunc: checkPasswordTooShort,
+    validateFunc: validatePassword,
   },
 };
 
@@ -88,7 +88,9 @@ export const ExportJson = ({ address, closeModal }: Props) => {
         setIsBusy(false);
       });
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, onSetPassword);
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+    onSubmitForm: onSetPassword,
+  });
 
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);

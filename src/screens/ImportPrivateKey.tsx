@@ -12,7 +12,7 @@ import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from '../constant';
 import { backToHome } from 'utils/navigation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { checkPasswordMatched, checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -59,17 +59,21 @@ export const ImportPrivateKey = () => {
     password: {
       name: i18n.common.walletPassword,
       value: '',
-      validateFunc: checkPasswordTooShort,
+      validateFunc: validatePassword,
       require: true,
     },
     repeatPassword: {
       name: i18n.common.repeatWalletPassword,
       value: '',
-      validateFunc: checkPasswordMatched,
+      validateFunc: (value: string, formValue: Record<string, string>) => {
+        return validatePasswordMatched(value, formValue.password);
+      },
       require: true,
     },
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(privateKeyFormConfig, _onImport);
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(privateKeyFormConfig, {
+    onSubmitForm: _onImport,
+  });
   const validatePrivateKey = (currentPrivateKey: string) => {
     if (!currentPrivateKey) {
       return;

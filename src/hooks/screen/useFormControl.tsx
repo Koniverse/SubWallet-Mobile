@@ -21,7 +21,7 @@ export interface FormState {
   labels: Record<FormItemKey, string>;
   data: Record<FormItemKey, string>;
   errors: Record<FormItemKey, string[]>;
-  validateFormTypes: Record<FormItemKey, string[]>;
+  validateFieldsOn: Record<FormItemKey, string[]>;
   onSubmitForm?: (formState: FormState) => void;
 }
 
@@ -30,7 +30,11 @@ interface FormControlAction {
   payload: { fieldName: string; value: string };
 }
 
-function initForm(initData: Record<FormItemKey, FormControlItem>, onSubmitForm?: (formState: FormState) => void) {
+interface FormControlOption {
+  onSubmitForm?: (formState: FormState) => void;
+}
+
+function initForm(initData: Record<FormItemKey, FormControlItem>, formControlOption: FormControlOption) {
   const formState: FormState = {
     config: initData,
     index: 0,
@@ -40,8 +44,8 @@ function initForm(initData: Record<FormItemKey, FormControlItem>, onSubmitForm?:
     labels: {},
     data: {},
     errors: {},
-    validateFormTypes: {},
-    onSubmitForm: onSubmitForm,
+    validateFieldsOn: {},
+    onSubmitForm: formControlOption.onSubmitForm,
   };
 
   Object.entries(initData).forEach(([k, d]) => {
@@ -50,7 +54,7 @@ function initForm(initData: Record<FormItemKey, FormControlItem>, onSubmitForm?:
     formState.data[k] = d.value;
     formState.errors[k] = [];
     formState.requireItems[k] = !!d.require;
-    formState.validateFormTypes[k] = d.validateOn || ['change_value'];
+    formState.validateFieldsOn[k] = d.validateOn || ['change_value'];
   });
 
   return formState;
@@ -102,7 +106,7 @@ function formReducer(state: FormState, action: FormControlAction) {
       let fireUpdate = false;
       let isValidated = false;
       const validateFunction = state.config[fieldName].validateFunc;
-      if (state.validateFormTypes[fieldName].includes('change_value')) {
+      if (state.validateFieldsOn[fieldName].includes('change_value')) {
         isValidated = checkFieldValidation(state, fieldName, value, validateFunction);
       }
 
@@ -119,7 +123,7 @@ function formReducer(state: FormState, action: FormControlAction) {
     case 'submit':
       state.index = Object.keys(state.refs).indexOf(fieldName) + 1;
       const refList = Object.values(state.refs);
-      if (state.validateFormTypes[fieldName].includes('submit')) {
+      if (state.validateFieldsOn[fieldName].includes('submit')) {
         state.isValidated[fieldName] = checkFieldValidation(
           state,
           fieldName,
@@ -143,9 +147,9 @@ function formReducer(state: FormState, action: FormControlAction) {
 
 export default function useFormControl(
   formConfig: Record<FormItemKey, FormControlItem>,
-  onSubmitForm?: (formState: FormState) => void,
+  formControlOption: FormControlOption,
 ) {
-  const [formState, dispatchForm] = useReducer(formReducer, initForm(formConfig, onSubmitForm));
+  const [formState, dispatchForm] = useReducer(formReducer, initForm(formConfig, formControlOption));
 
   const onChangeValue = (fieldName: string) => {
     return (currentValue: string) => {

@@ -19,7 +19,7 @@ import { Account } from 'components/Account';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
-import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const footerAreaStyle: StyleProp<any> = {
@@ -37,7 +37,7 @@ const formConfig = {
     require: true,
     name: i18n.common.walletPassword,
     value: '',
-    validateFunc: checkPasswordTooShort,
+    validateFunc: validatePassword,
   },
 };
 
@@ -91,7 +91,9 @@ export const RestoreJson = () => {
         onUpdateErrors('password')(JSON.stringify([i18n.warningMessage.unableDecode]));
       });
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, _onRestore);
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+    onSubmitForm: _onRestore,
+  });
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
     setFile(fileContent);
 

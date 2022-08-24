@@ -16,7 +16,7 @@ import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
 import i18n from 'utils/i18n/i18n';
-import { checkPasswordTooShort } from 'screens/Shared/AccountNamePasswordCreation';
+import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 interface Props {
@@ -42,7 +42,7 @@ const formConfig = {
     require: true,
     name: i18n.common.passwordForThisAccount.toUpperCase(),
     value: '',
-    validateFunc: checkPasswordTooShort,
+    validateFunc: validatePassword,
   },
 };
 
@@ -96,7 +96,9 @@ export const Confirmation = ({
       })
       .catch(e => console.log('There is problem when makeTransfer', e));
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, _doTransfer);
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+    onSubmitForm: _doTransfer,
+  });
 
   return (
     <>
