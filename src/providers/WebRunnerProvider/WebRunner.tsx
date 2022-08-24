@@ -121,7 +121,7 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     if (Platform.OS === 'android') {
       setSource({ uri: `file:///android_asset/Web.bundle/site/index.html?${params}` });
     } else {
-      server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + '/Web.bundle/site');
+      server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + '/Web.bundle/site', { localOnly: true });
 
       server.start().then(() => {
         setSource({ uri: `http://localhost:${WEB_SERVER_PORT}?${params}` });
@@ -129,7 +129,7 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     }
 
     return () => {
-      server && server.stop();
+      server && server.kill();
     };
   }, []);
 
