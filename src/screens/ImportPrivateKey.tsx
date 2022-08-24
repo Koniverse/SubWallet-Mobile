@@ -86,7 +86,7 @@ export const ImportPrivateKey = () => {
           suri = `0x${suri}`;
         }
         onChangeValue('privateKey')(suri);
-        onUpdateErrors('privateKey')(JSON.stringify(['']));
+        onUpdateErrors('privateKey')(JSON.stringify([]));
       })
       .catch(() => {
         onUpdateErrors('privateKey')(JSON.stringify([i18n.warningMessage.notAValidEVMPrivateKey]));
