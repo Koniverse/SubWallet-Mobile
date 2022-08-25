@@ -188,6 +188,7 @@ export const ViewPrivateKey = ({
               <PasswordField
                 ref={formState.refs.password}
                 label={formState.labels.password}
+                defaultValue={formState.data.password}
                 onChangeText={onChangeValue('password')}
                 errorMessages={formState.errors.password}
                 onSubmitField={onSubmitField('password')}

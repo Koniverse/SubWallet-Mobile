@@ -162,6 +162,7 @@ export const ExportJson = ({ address, closeModal }: Props) => {
                 onChangeText={onChangeValue('password')}
                 onBlur={() => onSetPassword(formState)}
                 onEndEditing={() => onSetPassword(formState)}
+                defaultValue={formState.data.password}
                 errorMessages={formState.errors.password}
                 style={passwordFieldStyle}
                 onSubmitField={onSubmitField('password')}

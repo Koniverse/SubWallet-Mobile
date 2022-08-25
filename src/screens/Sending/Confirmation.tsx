@@ -133,6 +133,7 @@ export const Confirmation = ({
           <PasswordField
             ref={formState.refs.password}
             label={formState.labels.password}
+            defaultValue={formState.data.password}
             onChangeText={onChangeValue('password')}
             isBusy={isBusy}
             errorMessages={formState.errors.password}

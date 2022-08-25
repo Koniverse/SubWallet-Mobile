@@ -15,6 +15,7 @@ interface Props extends FieldBaseProps {
   isBusy?: boolean;
   autoFocus?: boolean;
   onSubmitField?: () => void;
+  defaultValue?: string;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -38,8 +39,17 @@ function getInputStyle(isError: boolean) {
 }
 
 export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
-  const { onChangeText, onEndEditing, onBlur, errorMessages, isBusy, autoFocus, onSubmitField, ...fieldBase } =
-    passwordFieldProps;
+  const {
+    defaultValue,
+    onChangeText,
+    onEndEditing,
+    onBlur,
+    errorMessages,
+    isBusy,
+    autoFocus,
+    onSubmitField,
+    ...fieldBase
+  } = passwordFieldProps;
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
   return (
     <>
@@ -57,6 +67,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
             onSubmitEditing={onSubmitField}
             onChangeText={onChangeText}
             onEndEditing={onEndEditing}
+            defaultValue={defaultValue || ''}
             onBlur={onBlur}
             editable={!isBusy}
             selectTextOnFocus={!isBusy}

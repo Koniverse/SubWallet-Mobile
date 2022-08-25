@@ -19,11 +19,13 @@ export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitF
         onChangeText={onChangeValue('accountName')}
         editAccountInputStyle={{ marginBottom: 8 }}
         onSubmitField={onSubmitField('accountName')}
+        defaultValue={formState.data.accountName}
         errorMessages={formState.errors.accountName}
       />
       <PasswordField
         ref={formState.refs.password}
         label={formState.labels.password}
+        defaultValue={formState.data.password}
         onChangeText={onChangeValue('password')}
         errorMessages={formState.errors.password}
         onSubmitField={onSubmitField('password')}
@@ -32,6 +34,7 @@ export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitF
       <PasswordField
         ref={formState.refs.repeatPassword}
         label={formState.labels.repeatPassword}
+        defaultValue={formState.data.repeatPassword}
         onChangeText={onChangeValue('repeatPassword')}
         errorMessages={formState.errors.repeatPassword}
         onSubmitField={onSubmitField('repeatPassword')}
