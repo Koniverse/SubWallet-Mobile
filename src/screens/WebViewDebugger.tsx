@@ -33,6 +33,9 @@ const METHOD_MAP: Record<MessageTypes, { default_input: string; subscription?: b
     default_input: 'null',
     subscription: true,
   },
+  'pri(accounts.create.external)': {
+    default_input: '{"address": "__name__", "genesisHash": "", "name": "External Account"}',
+  },
 };
 
 let unsub: (() => void) | undefined;
