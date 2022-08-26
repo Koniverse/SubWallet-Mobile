@@ -9,10 +9,11 @@ interface Props {
   children: JSX.Element;
   title: string;
   searchString: string;
-  onPressBack: () => void;
+  onPressBack?: () => void;
   onChangeSearchText: (text: string) => void;
   autoFocus?: boolean;
   style?: StyleProp<any>;
+  showLeftBtn?: boolean;
 }
 
 export const SelectScreen = ({
@@ -22,6 +23,7 @@ export const SelectScreen = ({
   onChangeSearchText,
   onPressBack,
   autoFocus = true,
+  showLeftBtn = true,
   style,
 }: Props) => {
   const searchRef = useRef<TextInput>(null);
@@ -40,6 +42,7 @@ export const SelectScreen = ({
 
   return (
     <ContainerWithSubHeader
+      showLeftBtn={showLeftBtn}
       onPressBack={_onPressBack}
       title={title}
       style={[{ width: '100%' }, style]}

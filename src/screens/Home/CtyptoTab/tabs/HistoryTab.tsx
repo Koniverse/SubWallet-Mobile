@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
 import { ListDashes } from 'phosphor-react-native';
-import { CollapsibleFlatListStyle, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { CollapsibleFlatListStyle, emptyListTextStyle } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import * as Tabs from 'react-native-collapsible-tab-view';
@@ -33,13 +33,6 @@ const emptyListContainerStyle: StyleProp<any> = {
   paddingTop: 111,
   flex: 1,
   alignItems: 'center',
-};
-
-const emptyListTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  color: ColorMap.light,
-  ...FontMedium,
-  paddingTop: 15,
 };
 
 const contentContainerStyle: StyleProp<any> = {
