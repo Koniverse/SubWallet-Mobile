@@ -1,6 +1,7 @@
 import {
   BalanceJson,
   ChainRegistry,
+  CrowdloanJson,
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
@@ -26,6 +27,7 @@ export type AppStateSlice = {
 };
 
 export type BalanceSlice = BalanceJson & StoreSlice;
+export type CrowdloanSlice = CrowdloanJson & StoreSlice;
 
 export type ChainRegistrySlice = {
   details: Record<string, ChainRegistry>;

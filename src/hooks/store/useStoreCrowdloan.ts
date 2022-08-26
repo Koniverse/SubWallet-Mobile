@@ -4,10 +4,13 @@ import { WebRunnerContext } from 'providers/contexts';
 import { CrowdloanJson } from '@subwallet/extension-base/background/KoniTypes';
 import { updateCrowdloan } from 'stores/updater';
 import { subscribeCrowdloan } from '../../messaging';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 export default function useStoreCrowdloan(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
-  const [storeStatus, setStoreStatus] = useState<StoreStatus>('INIT');
+  const isCached = useSelector((state: RootState) => state.crowdloan.isReady);
+  const [storeStatus, setStoreStatus] = useState<StoreStatus>(isCached ? 'CACHED' : 'INIT');
 
   useEffect(() => {
     let cancel = false;
@@ -17,6 +20,10 @@ export default function useStoreCrowdloan(): StoreStatus {
 
       const _update = (payload: CrowdloanJson) => {
         if (cancel) {
+          return;
+        }
+
+        if (storeStatus === 'CACHED' && payload.reset) {
           return;
         }
 
@@ -36,7 +43,7 @@ export default function useStoreCrowdloan(): StoreStatus {
     return () => {
       cancel = true;
     };
-  }, [isWebRunnerReady]);
+  }, [isWebRunnerReady, storeStatus]);
 
   return storeStatus;
 }

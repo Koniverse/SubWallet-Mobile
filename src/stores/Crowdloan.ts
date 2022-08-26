@@ -1,18 +1,24 @@
-import { CrowdloanJson } from '@subwallet/extension-base/background/KoniTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CrowdloanSlice } from 'stores/types';
 
-const initialState = {
+const initialState: CrowdloanSlice = {
   details: {},
-} as CrowdloanJson;
+};
 
 const crowdloanSlice = createSlice({
   initialState,
   name: 'crowdloan',
   reducers: {
-    update(state, action: PayloadAction<CrowdloanJson>) {
-      const payload = action.payload;
+    update(state, action: PayloadAction<CrowdloanSlice>) {
+      const newState = {
+        ...action.payload,
+      };
 
-      state.details = payload.reset ? payload.details : { ...state.details, ...payload.details };
+      if (action.payload.isReady === undefined) {
+        newState.isReady = true;
+      }
+
+      return newState;
     },
   },
 });
