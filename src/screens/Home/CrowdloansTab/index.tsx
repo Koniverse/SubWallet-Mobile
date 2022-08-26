@@ -33,7 +33,6 @@ export const CrowdloansTab = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [searchString, setSearchString] = useState('');
   const [filteredOptions, setFilteredOption] = useState<CrowdloanItemType[]>(items);
-  const dep1 = JSON.stringify(items);
   const dep2 = JSON.stringify(filteredOptions);
 
   useEffect(() => {
@@ -49,8 +48,7 @@ export const CrowdloansTab = () => {
     } else {
       setFilteredOption(items);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep1, searchString]);
+  }, [items, searchString]);
 
   useEffect(() => {
     setLazyList(sliceArray(filteredOptions, pageNumber));

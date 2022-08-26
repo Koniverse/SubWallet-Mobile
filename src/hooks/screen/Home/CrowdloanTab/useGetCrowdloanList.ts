@@ -199,19 +199,16 @@ export default function useGetCrowdloanList() {
   const crowdloanMap = useSelector((state: RootState) => state.crowdloan.details);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const crowdloanNetworks = getCrowdloanNetworks(networkMap, 'all');
-  const crowdloanContributeMap = getCrowdloanContributeMap(
-    crowdloanNetworks,
-    networkMap,
-    chainRegistryMap,
-    crowdloanMap,
-    priceMap,
-  );
-  const dep1 = JSON.stringify(crowdloanContributeMap);
-  const dep2 = JSON.stringify(crowdloanNetworks);
-  const dep3 = JSON.stringify(networkMap);
+  const crowdloanNetworks = useMemo<string[]>(() => getCrowdloanNetworks(networkMap, 'all'), [networkMap]);
+
   return useMemo<CrowdloanItemType[]>(() => {
+    const crowdloanContributeMap = getCrowdloanContributeMap(
+      crowdloanNetworks,
+      networkMap,
+      chainRegistryMap,
+      crowdloanMap,
+      priceMap,
+    );
     return getCrowdloanContributeList(networkMap, crowdloanNetworks, crowdloanContributeMap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep1, dep2, dep3]);
+  }, [chainRegistryMap, crowdloanMap, crowdloanNetworks, networkMap, priceMap]);
 }
