@@ -31,6 +31,7 @@ export const vi = {
     scan: 'Scan',
     toAddressToSendFunds: 'address to send funds',
     emptyTransactionListMessage: 'Your transactions will appear here',
+    emptyCrowdloanListMessage: 'Your crowdloans will appear here',
     copyToClipboard: 'Copy to clipboard',
     copiedToClipboard: 'Copied to Clipboard',
     continue: 'Continue',
@@ -86,6 +87,9 @@ export const vi = {
     receiveModalText: 'Scan address to receive payment',
     importSecretPhraseTitle: 'Restore an existing wallet account with your 12 or 24-word secret recovery phrase',
     comingSoon: 'Coming Soon',
+    winner: 'Winner',
+    fail: 'Fail',
+    active: 'Active',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -113,6 +117,13 @@ export const vi = {
     history: 'History',
     qrScanner: 'QR Scanner',
     unitSelection: 'Unit Selection',
+  },
+  tabName: {
+    crypto: 'Crypto',
+    nft: 'NFT',
+    crowdloans: 'Crowdloans',
+    staking: 'Staking',
+    browser: 'Browser',
   },
   cryptoTab: {
     receive: 'Receive',

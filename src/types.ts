@@ -1,5 +1,5 @@
 import BigN from 'bignumber.js';
-import { BalanceItem } from '@subwallet/extension-base/background/KoniTypes';
+import { BalanceItem, CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
 
 export interface WebViewMessageBase<T> {
   id: string;
@@ -37,4 +37,16 @@ export type BalanceInfo = {
   detailBalances: BalanceSubInfo[];
   childrenBalances: BalanceSubInfo[];
   isReady: boolean;
+};
+
+export type CrowdloanItemType = {
+  networkKey: string;
+  contribute: string | BigN;
+  contributeToUsd: string | BigN;
+  networkDisplayName: string;
+  groupDisplayName: string;
+  logo: string;
+  symbol: string;
+  paraState?: CrowdloanParaState;
+  crowdloanUrl?: string;
 };

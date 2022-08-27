@@ -1,6 +1,7 @@
 import {
   BalanceJson,
   ChainRegistry,
+  CrowdloanJson,
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
@@ -45,4 +46,8 @@ export function updateAccountsAndCurrentAccount(payload: AccountsSlice): void {
 
 export function updateAccountsWaitingStatus(payload: boolean): void {
   store.dispatch({ type: 'accounts/updateWaitingStatus', payload });
+}
+
+export function updateCrowdloan(payload: CrowdloanJson): void {
+  store.dispatch({ type: 'crowdloan/update', payload });
 }

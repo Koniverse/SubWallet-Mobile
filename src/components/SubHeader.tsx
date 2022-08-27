@@ -17,6 +17,7 @@ export interface SubHeaderProps {
   disableRightButton?: boolean;
   headerContent?: () => JSX.Element;
   backgroundColor?: string;
+  showLeftBtn?: boolean;
 }
 
 function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
@@ -53,6 +54,7 @@ export const SubHeader = ({
   title,
   backgroundColor,
   disableRightButton,
+  showLeftBtn = true,
 }: SubHeaderProps) => {
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
@@ -64,13 +66,15 @@ export const SubHeader = ({
         </View>
       )}
 
-      <IconButton
-        icon={ArrowLeft}
-        color={disabled ? ColorMap.disabled : ColorMap.light}
-        disabled={disabled}
-        onPress={onPressBack}
-        style={{ position: 'absolute', left: 16, top: 0 }}
-      />
+      {!!showLeftBtn && (
+        <IconButton
+          icon={ArrowLeft}
+          color={disabled ? ColorMap.disabled : ColorMap.light}
+          disabled={disabled}
+          onPress={onPressBack}
+          style={{ position: 'absolute', left: 16, top: 0 }}
+        />
+      )}
 
       {!!rightIcon && (
         <IconButton
