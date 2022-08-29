@@ -8,6 +8,7 @@ import balanceReducer from './Balance';
 import mobileSettingsReducer from './MobileSettings';
 import transactionHistoryReducer from './TransactionHistory';
 import crowdloanReducer from './Crowdloan';
+import confirmationReducer from './Confirmation';
 import appStateReducer from './AppState';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   mobileSettings: mobileSettingsReducer,
   transactionHistory: transactionHistoryReducer,
   crowdloan: crowdloanReducer,
+  confirmation: confirmationReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

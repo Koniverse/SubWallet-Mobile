@@ -1,13 +1,19 @@
 import {
   BalanceJson,
   ChainRegistry,
+  ConfirmationsQueue,
   CrowdloanJson,
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
+import {
+  AccountJson,
+  AuthorizeRequest,
+  MetadataRequest,
+  SigningRequest,
+} from '@subwallet/extension-base/background/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -31,6 +37,16 @@ export type CrowdloanSlice = CrowdloanJson & StoreSlice;
 
 export type ChainRegistrySlice = {
   details: Record<string, ChainRegistry>;
+} & StoreSlice;
+
+export type ConfirmationSlice = {
+  details: {
+    authorizeRequest?: Record<string, AuthorizeRequest>;
+    signingRequest?: Record<string, SigningRequest>;
+    metadataRequest?: Record<string, MetadataRequest>;
+  } & {
+    [P in keyof ConfirmationsQueue]?: ConfirmationsQueue[P];
+  };
 } & StoreSlice;
 
 export type MobileSettingsSlice = {

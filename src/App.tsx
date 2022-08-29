@@ -43,6 +43,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { LockScreen } from 'screens/LockScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import useStoreCrowdloan from 'hooks/store/useStoreCrowdloan';
+import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -115,6 +116,7 @@ export const App = () => {
   useStoreBalance();
   useStoreTransactionHistory();
   useStoreCrowdloan();
+  useStoreConfirmation();
 
   // Enable lock screen on the start app
   useEffect(() => {
