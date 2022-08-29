@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
+import { FilterOptsType } from 'types/ui-types';
 
-export function useLazyList<T>(items: T[], doFilterOptions: (items: T[], searchString: string) => T[]) {
-  const [filteredOptions, setFilteredOption] = useState<T[]>(items);
+export function useLazyList<T>(
+  items: T[],
+  doFilterOptions: (items: T[], searchString: string, filterOpts: FilterOptsType) => T[],
+) {
+  const [filteredResult, setFilteredResult] = useState<T[]>(items);
+  const [filterOpts, setFilterOpts] = useState<FilterOptsType>({});
   const [isLoading, setLoading] = useState<boolean>(false);
   const [lazyList, setLazyList] = useState<T[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -13,20 +18,21 @@ export function useLazyList<T>(items: T[], doFilterOptions: (items: T[], searchS
 
   useEffect(() => {
     if (searchString) {
-      setFilteredOption(doFilterOptions(items, searchString));
+      setFilteredResult(doFilterOptions(items, searchString, filterOpts));
     } else {
-      setFilteredOption(items);
+      setFilteredResult(doFilterOptions(items, '', filterOpts));
     }
-  }, [doFilterOptions, items, searchString]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doFilterOptions, JSON.stringify(filterOpts), items, searchString]);
 
   useEffect(() => {
-    const a = sliceArray(filteredOptions, pageNumber);
+    const a = sliceArray(filteredResult, pageNumber);
     setLazyList(a);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(filteredOptions), pageNumber]);
+  }, [JSON.stringify(filteredResult), pageNumber]);
 
   const onLoadMore = () => {
-    if (lazyList.length === filteredOptions.length) {
+    if (lazyList.length === filteredResult.length) {
       return;
     }
 
@@ -43,11 +49,17 @@ export function useLazyList<T>(items: T[], doFilterOptions: (items: T[], searchS
     setSearchString(text);
   };
 
+  const onChangeFilterOptType = (currentValue: FilterOptsType) => {
+    setFilterOpts(currentValue);
+  };
+
   return {
     isLoading,
+    filterOpts,
     lazyList,
     searchString,
     onSearchOption,
     onLoadMore,
+    onChangeFilterOptType,
   };
 }

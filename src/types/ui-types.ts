@@ -85,3 +85,5 @@ export interface UseViewStepType {
   toNextView: (view: string) => void;
   toBack: () => void;
 }
+
+export type FilterOptsType = Record<string, string>;

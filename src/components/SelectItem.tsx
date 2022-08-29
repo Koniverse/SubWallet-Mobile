@@ -9,6 +9,7 @@ interface Props extends TouchableOpacityProps {
   label: string;
   isSelected: boolean;
   showSeparator?: boolean;
+  leftIcon?: JSX.Element;
 }
 
 const selectItemSeparator: StyleProp<any> = {
@@ -17,21 +18,32 @@ const selectItemSeparator: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
 };
 
-export const SelectItem = ({ label, isSelected, onPress, showSeparator = true }: Props) => {
+export const SelectItem = ({ label, isSelected, onPress, showSeparator = true, leftIcon }: Props) => {
   const CheckIcon = CircleWavyCheck;
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 52 }}>
-        <Text
-          style={{
-            ...sharedStyles.mediumText,
-            color: ColorMap.light,
-            ...FontSemiBold,
-            paddingVertical: 14,
-            paddingLeft: 16,
-          }}>
-          {label}
-        </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: 52,
+          paddingHorizontal: 16,
+        }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {leftIcon && leftIcon}
+          <Text
+            style={{
+              ...sharedStyles.mediumText,
+              color: ColorMap.light,
+              ...FontSemiBold,
+              paddingVertical: 14,
+              paddingLeft: 16,
+            }}>
+            {label}
+          </Text>
+        </View>
+
         {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
       </View>
 

@@ -4,7 +4,7 @@ import { CrowdloanItemType } from '../../../types';
 import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { BalanceVal } from 'components/BalanceVal';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
 import { getNetworkLogo } from 'utils/index';
@@ -35,7 +35,7 @@ const crowdloanItemPart2Style: StyleProp<any> = {
 };
 
 const crowdloanItemMetaWrapperStyle: StyleProp<any> = {
-  paddingLeft: 16,
+  paddingLeft: 14,
 };
 
 const crowdloanItemTopAreaStyle: StyleProp<any> = {
@@ -45,21 +45,21 @@ const crowdloanItemTopAreaStyle: StyleProp<any> = {
 
 const crowdloanItemMainArea: StyleProp<any> = {
   flexDirection: 'row',
-  paddingVertical: 8,
+  paddingVertical: 19,
   justifyContent: 'space-between',
 };
 
 const paraStateLabelWrapperStyle: StyleProp<any> = {
   backgroundColor: ColorMap.inputBackground,
-  borderRadius: 3,
-  paddingHorizontal: 6,
-  paddingVertical: 2,
-  marginLeft: 4,
+  borderRadius: 2,
+  paddingHorizontal: 8,
+  paddingVertical: 1,
+  marginLeft: 8,
 };
 const crowdloanItemSeparator: StyleProp<any> = {
   borderBottomWidth: 1,
   borderBottomColor: ColorMap.dark2,
-  marginLeft: 56,
+  marginLeft: 54,
 };
 
 function getParaStateLabelStyle(paraState: CrowdloanParaState): StyleProp<any> {
@@ -77,6 +77,9 @@ function getParaStateLabelStyle(paraState: CrowdloanParaState): StyleProp<any> {
   }
 
   return {
+    ...FontSize0,
+    lineHeight: 16,
+    ...FontMedium,
     color: color,
   };
 }
@@ -97,6 +100,14 @@ function getParaStateLabel(paraState: CrowdloanParaState) {
   return '';
 }
 
+export function getGroupKey(groupDisplayName: string) {
+  if (groupDisplayName === 'Polkadot parachain') {
+    return 'polkadot';
+  } else {
+    return 'kusama';
+  }
+}
+
 export const CrowdloanItem = ({ item }: Props) => {
   return (
     <TouchableOpacity
@@ -105,7 +116,15 @@ export const CrowdloanItem = ({ item }: Props) => {
       disabled={!item.crowdloanUrl}>
       <View style={crowdloanItemMainArea}>
         <View style={crowdloanItemPart1Style}>
-          {getNetworkLogo(item.networkKey, 40)}
+          <View style={{ position: 'relative' }}>
+            {getNetworkLogo(item.networkKey, 40)}
+            {getNetworkLogo(getGroupKey(item.groupDisplayName), 16, 'default', {
+              position: 'absolute',
+              bottom: 10,
+              right: 0,
+            })}
+          </View>
+
           <View style={crowdloanItemMetaWrapperStyle}>
             <View style={crowdloanItemTopAreaStyle}>
               <Text style={[textStyle, { maxWidth: 120 }]} numberOfLines={1}>

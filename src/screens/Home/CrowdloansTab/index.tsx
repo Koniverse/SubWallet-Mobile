@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SelectScreen } from 'components/SelectScreen';
 import i18n from 'utils/i18n/i18n';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-import { CrowdloanItem } from 'screens/Home/CrowdloansTab/CrowdloanItem';
+import { CrowdloanItem, getGroupKey } from 'screens/Home/CrowdloansTab/CrowdloanItem';
 import { CrowdloanItemType } from '../../../types';
 import { emptyListContainerStyle, emptyListTextStyle, ScrollViewStyle } from 'styles/sharedStyles';
-import { Rocket } from 'phosphor-react-native';
+import { FunnelSimple, Rocket } from 'phosphor-react-native';
 import { ActivityLoading } from 'components/ActivityLoading';
 import useGetCrowdloanList from 'hooks/screen/Home/CrowdloanTab/useGetCrowdloanList';
 import { useLazyList } from 'hooks/useLazyList';
+import { CrowdloanFilter } from 'screens/Home/CrowdloansTab/CrowdloanFilter';
+import { FilterOptsType } from 'types/ui-types';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;
@@ -23,19 +25,39 @@ const renderListEmptyComponent = () => {
   );
 };
 
-function doFilterOptions(items: CrowdloanItemType[], searchString: string) {
+function getListByFilterOpt(items: CrowdloanItemType[], filterOpts: FilterOptsType) {
+  let result: CrowdloanItemType[];
+  if (filterOpts.paraChain !== 'all' && filterOpts.crowdloanStatus !== 'all') {
+    result = items.filter(
+      ({ groupDisplayName, paraState }) =>
+        getGroupKey(groupDisplayName) === filterOpts.paraChain && paraState === filterOpts.crowdloanStatus,
+    );
+  } else if (filterOpts.paraChain === 'all' && filterOpts.crowdloanStatus !== 'all') {
+    result = items.filter(({ paraState }) => paraState === filterOpts.crowdloanStatus);
+  } else if (filterOpts.paraChain !== 'all' && filterOpts.crowdloanStatus === 'all') {
+    result = items.filter(({ groupDisplayName }) => getGroupKey(groupDisplayName) === filterOpts.paraChain);
+  } else {
+    result = items;
+  }
+
+  return result;
+}
+
+function doFilterOptions(items: CrowdloanItemType[], searchString: string, filterOpts: FilterOptsType) {
   const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(
-    ({ networkDisplayName, groupDisplayName }) =>
-      networkDisplayName.toLowerCase().includes(lowerCaseSearchString) ||
-      groupDisplayName.toLowerCase().includes(lowerCaseSearchString),
-  );
+  const result = getListByFilterOpt(items, filterOpts);
+  if (searchString) {
+    return result.filter(({ networkDisplayName }) => networkDisplayName.toLowerCase().includes(lowerCaseSearchString));
+  } else {
+    return result;
+  }
 }
 
 export const CrowdloansTab = () => {
   const items: CrowdloanItemType[] = useGetCrowdloanList();
-  const { isLoading, lazyList, searchString, onSearchOption, onLoadMore } = useLazyList(items, doFilterOptions);
-
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const { isLoading, lazyList, filterOpts, searchString, onSearchOption, onLoadMore, onChangeFilterOptType } =
+    useLazyList(items, doFilterOptions);
   const renderLoadingAnimation = () => {
     return isLoading ? <ActivityLoading /> : null;
   };
@@ -45,7 +67,10 @@ export const CrowdloansTab = () => {
       title={i18n.tabName.crowdloans}
       onChangeSearchText={onSearchOption}
       searchString={searchString}
-      showLeftBtn={false}>
+      showLeftBtn={false}
+      showRightBtn={true}
+      rightIcon={FunnelSimple}
+      onPressRightIcon={() => setModalVisible(true)}>
       <>
         {lazyList.length ? (
           <FlatList
@@ -60,6 +85,13 @@ export const CrowdloansTab = () => {
         ) : (
           renderListEmptyComponent()
         )}
+
+        <CrowdloanFilter
+          modalVisible={modalVisible}
+          onChangeModalVisible={() => setModalVisible(false)}
+          filterOpts={filterOpts}
+          onChangeFilterOpts={onChangeFilterOptType}
+        />
       </>
     </SelectScreen>
   );
