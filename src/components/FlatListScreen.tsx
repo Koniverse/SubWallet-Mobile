@@ -26,10 +26,11 @@ interface Props<T> {
   style?: StyleProp<any>;
   rightIconOption: RightIconOpt;
   afterListItem?: JSX.Element;
-  filterFunction: (searchString: string) => T[];
+  filterFunction: (items: T[], searchString: string) => T[];
 }
 
 export function FlatListScreen<T>({
+  items,
   title,
   autoFocus = true,
   onPressBack,
@@ -43,9 +44,10 @@ export function FlatListScreen<T>({
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
-  const filteredItems = filterFunction(searchString);
+  const filteredItems = useMemo(() => filterFunction(items, searchString), [filterFunction, items, searchString]);
   const { isLoading, lazyList, onLoadMore } = useLazyList(filteredItems);
   const searchRef = useRef<TextInput>(null);
+
   useEffect(() => {
     setTimeout(() => {
       if (autoFocus && searchRef && searchRef.current) {

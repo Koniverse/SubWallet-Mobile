@@ -52,9 +52,9 @@ export const CrowdloansTab = () => {
   const [filterOpts, setFilterOpts] = useState<FilterOptsType>(defaultFilterOpts);
 
   const doFilterOptions = useCallback(
-    (searchString: string) => {
+    (itemList: CrowdloanItemType[], searchString: string) => {
       const lowerCaseSearchString = searchString.toLowerCase();
-      const result = getListByFilterOpt(items, filterOpts);
+      const result = getListByFilterOpt(itemList, filterOpts);
       if (searchString) {
         return result.filter(({ networkDisplayName }) =>
           networkDisplayName.toLowerCase().includes(lowerCaseSearchString),
@@ -63,7 +63,7 @@ export const CrowdloansTab = () => {
         return result;
       }
     },
-    [filterOpts, items],
+    [filterOpts],
   );
 
   return (

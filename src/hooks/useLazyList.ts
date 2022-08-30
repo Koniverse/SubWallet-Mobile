@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useLazyList<T>(items: T[], itemPerPage = 15) {
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -15,7 +15,7 @@ export function useLazyList<T>(items: T[], itemPerPage = 15) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(items), pageNumber]);
 
-  const onLoadMore = () => {
+  const onLoadMore = useCallback(() => {
     if (lazyList.length === items.length) {
       return;
     }
@@ -26,7 +26,7 @@ export function useLazyList<T>(items: T[], itemPerPage = 15) {
       setLoading(false);
       setPageNumber(currentPageNumber);
     }, 300);
-  };
+  }, [items.length, lazyList.length, pageNumber]);
 
   return {
     isLoading,
