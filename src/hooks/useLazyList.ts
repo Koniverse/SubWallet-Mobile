@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export function useLazyList<T>(items: T[], itemPerPage = 15) {
+export function useLazyList<T>(items: T[], options = { itemPerPage: 20, lazyTime: 300 }) {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [lazyList, setLazyList] = useState<T[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
 
   const sliceArray = (array: T[], curPageNumber: number) => {
-    return array.slice(0, itemPerPage * curPageNumber);
+    return array.slice(0, options.itemPerPage * curPageNumber);
   };
 
   useEffect(() => {
@@ -25,12 +25,13 @@ export function useLazyList<T>(items: T[], itemPerPage = 15) {
     setTimeout(() => {
       setLoading(false);
       setPageNumber(currentPageNumber);
-    }, 300);
-  }, [items.length, lazyList.length, pageNumber]);
+    }, options.lazyTime);
+  }, [items.length, lazyList.length, options.lazyTime, pageNumber]);
 
   return {
     isLoading,
     lazyList,
     onLoadMore,
+    setPageNumber,
   };
 }

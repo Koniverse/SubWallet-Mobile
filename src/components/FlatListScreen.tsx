@@ -24,7 +24,7 @@ interface Props<T> {
   onPressBack?: () => void;
   showLeftBtn?: boolean;
   style?: StyleProp<any>;
-  rightIconOption: RightIconOpt;
+  rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
 }
@@ -45,7 +45,7 @@ export function FlatListScreen<T>({
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
   const filteredItems = useMemo(() => filterFunction(items, searchString), [filterFunction, items, searchString]);
-  const { isLoading, lazyList, onLoadMore } = useLazyList(filteredItems);
+  const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(filteredItems);
   const searchRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -55,6 +55,11 @@ export function FlatListScreen<T>({
       }
     }, HIDE_MODAL_DURATION);
   }, [autoFocus, searchRef]);
+
+  useEffect(() => {
+    // Reset page number on change search string => avoid render too many items
+    setPageNumber(1);
+  }, [searchString, setPageNumber]);
 
   const _onPressBack = () => {
     searchRef && searchRef.current && searchRef.current.blur();
@@ -75,7 +80,7 @@ export function FlatListScreen<T>({
             data={lazyList}
             onEndReached={onLoadMore}
             renderItem={renderItem}
-            onEndReachedThreshold={0.7}
+            onEndReachedThreshold={0.3}
             ListFooterComponent={renderLoadingAnimation}
           />
         ) : (
@@ -91,9 +96,9 @@ export function FlatListScreen<T>({
       onPressBack={_onPressBack}
       title={title}
       style={[{ width: '100%' }, style]}
-      showRightBtn={!!rightIconOption.icon}
-      rightIcon={rightIconOption.icon}
-      onPressRightIcon={rightIconOption.onPress}
+      showRightBtn={!!rightIconOption?.icon}
+      rightIcon={rightIconOption?.icon}
+      onPressRightIcon={rightIconOption?.onPress}
       isShowPlaceHolder={false}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search

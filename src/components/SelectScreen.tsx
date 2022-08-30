@@ -20,6 +20,7 @@ interface Props {
   onPressRightIcon?: () => void;
 }
 
+// Todo: Remove this component
 export const SelectScreen = ({
   children,
   title,
