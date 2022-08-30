@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
-import { ScrollViewStyle } from 'styles/sharedStyles';
+import React from 'react';
+import { ListRenderItemInfo } from 'react-native';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
-import { SelectScreen } from 'components/SelectScreen';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { TokenItemType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
-import useFilteredOptions from 'hooks/screen/TokenSelect/useFilteredOptions';
-import { ActivityLoading } from 'components/ActivityLoading';
+import { FlatListScreen } from 'components/FlatListScreen';
 
 interface Props {
   address: string;
@@ -22,9 +19,18 @@ interface Props {
   selectedToken?: string;
 }
 
-function sliceArray(array: TokenItemType[], pageNumber: number) {
-  return array.slice(0, 15 * pageNumber);
-}
+const filterFunction = (items: TokenItemType[], searchString: string) => {
+  const lowerCaseSearchString = searchString.toLowerCase();
+  return items.filter(
+    ({ displayedSymbol, networkDisplayName }) =>
+      displayedSymbol.toLowerCase().includes(lowerCaseSearchString) ||
+      networkDisplayName.toLowerCase().includes(lowerCaseSearchString),
+  );
+};
+
+const renderListEmptyComponent = () => {
+  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />;
+};
 
 export const TokenSelect = ({
   address,
@@ -36,20 +42,7 @@ export const TokenSelect = ({
   modalVisible,
   onChangeModalVisible,
 }: Props) => {
-  const [searchString, setSearchString] = useState('');
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [lazyList, setLazyList] = useState<TokenItemType[]>([]);
-  const [pageNumber, setPageNumber] = useState<number>(1);
   const tokenOptions = useTokenOptions(address, filteredNetworkKey);
-  const filteredOptions = useFilteredOptions(tokenOptions, searchString);
-  const dep = JSON.stringify(filteredOptions);
-
-  useEffect(() => {
-    if (modalVisible) {
-      setLazyList(sliceArray(filteredOptions, pageNumber));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep, modalVisible, pageNumber]);
 
   const renderItem = ({ item }: ListRenderItemInfo<TokenItemType>) => {
     const { symbol, networkKey, displayedSymbol, isMainToken, networkDisplayName } = item;
@@ -68,58 +61,18 @@ export const TokenSelect = ({
     );
   };
 
-  const _onPressBack = () => {
-    setSearchString('');
-    setPageNumber(1);
-    onPressBack && onPressBack();
-  };
-
-  const renderListEmptyComponent = () => {
-    return (
-      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />
-    );
-  };
-
-  const _onLoadMore = () => {
-    if (lazyList.length === filteredOptions.length) {
-      return;
-    }
-    setLoading(true);
-    const currentPageNumber = pageNumber + 1;
-    setTimeout(() => {
-      setLoading(false);
-      setPageNumber(currentPageNumber);
-    }, 300);
-  };
-
-  const renderLoadingAnimation = () => {
-    return isLoading ? <ActivityLoading /> : null;
-  };
-
-  const _onSearchToken = (text: string) => {
-    setPageNumber(1);
-    setSearchString(text);
-  };
-
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
-      <SelectScreen
+      <FlatListScreen
+        autoFocus={true}
+        items={tokenOptions}
         style={{ paddingTop: 0 }}
-        onPressBack={_onPressBack}
         title={i18n.title.selectToken}
-        searchString={searchString}
-        onChangeSearchText={_onSearchToken}>
-        <FlatList
-          style={{ ...ScrollViewStyle }}
-          keyboardShouldPersistTaps={'handled'}
-          data={lazyList}
-          onEndReached={_onLoadMore}
-          renderItem={renderItem}
-          onEndReachedThreshold={0.7}
-          ListEmptyComponent={renderListEmptyComponent}
-          ListFooterComponent={renderLoadingAnimation}
-        />
-      </SelectScreen>
+        filterFunction={filterFunction}
+        renderItem={renderItem}
+        onPressBack={onPressBack}
+        renderListEmptyComponent={renderListEmptyComponent}
+      />
     </SubWalletFullSizeModal>
   );
 };

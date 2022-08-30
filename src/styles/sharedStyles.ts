@@ -30,7 +30,7 @@ export const emptyListContainerStyle: StyleProp<any> = {
 
 export const emptyListTextStyle: StyleProp<any> = {
   ...FontSize2,
-  lineHeight: 25,
+  lineHeight: 24,
   color: ColorMap.light,
   ...FontMedium,
   paddingTop: 15,
@@ -56,13 +56,13 @@ const smallText = {
 
 const mainText = {
   ...FontSize2,
-  lineHeight: 25,
+  lineHeight: 24,
   ...FontRegular,
 };
 
 const mediumText = {
   ...FontSize3,
-  lineHeight: 25,
+  lineHeight: 24,
   ...FontRegular,
 };
 

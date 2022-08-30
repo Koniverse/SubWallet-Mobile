@@ -90,6 +90,7 @@ export const en = {
     winner: 'Winner',
     fail: 'Fail',
     active: 'Active',
+    apply: 'Apply',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -117,6 +118,7 @@ export const en = {
     history: 'History',
     qrScanner: 'QR Scanner',
     unitSelection: 'Unit Selection',
+    filters: 'Filters',
   },
   tabName: {
     crypto: 'Crypto',

@@ -7,7 +7,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
-import { Image, View } from 'react-native';
+import { Image, StyleProp, View } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
 import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
@@ -247,14 +247,14 @@ export function recodeAddress(
 }
 
 // @ts-ignore
-export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default') {
+export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
   // @ts-ignore
   const imgSrc = Images[logoKey.toLowerCase()];
 
   if (imgSrc) {
     return (
       <Image
-        style={{ width: size, height: size, borderRadius: size, backgroundColor: ColorMap.light }}
+        style={[{ width: size, height: size, borderRadius: size, backgroundColor: ColorMap.light }, outerStyle]}
         source={imgSrc}
       />
     );

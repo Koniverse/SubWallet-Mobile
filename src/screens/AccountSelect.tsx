@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo, StyleProp, View } from 'react-native';
-import { ScrollViewStyle } from 'styles/sharedStyles';
+import React from 'react';
+import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import { Warning } from 'components/Warning';
-import { SelectScreen } from 'components/SelectScreen';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { Account } from 'components/Account';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import { FlatListScreen } from 'components/FlatListScreen';
 
 interface Props {
   modalVisible: boolean;
@@ -23,6 +22,10 @@ const itemSeparator: StyleProp<any> = {
   marginLeft: 56,
 };
 
+const renderListEmptyComponent = () => {
+  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountMessage} isDanger={false} />;
+};
+
 export const AccountSelect = ({
   accountList,
   onPressBack,
@@ -30,22 +33,9 @@ export const AccountSelect = ({
   onChangeModalVisible,
   onChangeAddress,
 }: Props) => {
-  const [searchString, setSearchString] = useState('');
-  const [filteredGenesisOptions, setFilteredGenesisOption] = useState<AccountJson[]>(accountList);
-
-  const dep = accountList.toString();
-
-  useEffect(() => {
-    if (searchString) {
-      const lowerCaseSearchString = searchString.toLowerCase();
-      setFilteredGenesisOption(
-        accountList.filter(acc => acc.name && acc.name.toLowerCase().includes(lowerCaseSearchString)),
-      );
-    } else {
-      setFilteredGenesisOption(accountList);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep, searchString]);
+  const filteredAccounts = (items: AccountJson[], searchString: string) => {
+    return items.filter(acc => acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase()));
+  };
 
   const renderItem = ({ item }: ListRenderItemInfo<AccountJson>) => {
     return (
@@ -62,34 +52,18 @@ export const AccountSelect = ({
     );
   };
 
-  const _onPressBack = () => {
-    setSearchString('');
-    onPressBack && onPressBack();
-  };
-
-  const renderListEmptyComponent = () => {
-    return (
-      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountMessage} isDanger={false} />
-    );
-  };
-
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
-      <SelectScreen
+      <FlatListScreen
+        onPressBack={onPressBack}
+        autoFocus={false}
+        items={accountList}
         style={{ paddingTop: 0 }}
-        onPressBack={_onPressBack}
         title={i18n.title.selectAccount}
-        searchString={searchString}
-        onChangeSearchText={setSearchString}>
-        <FlatList
-          style={{ ...ScrollViewStyle }}
-          keyboardShouldPersistTaps={'handled'}
-          data={filteredGenesisOptions}
-          renderItem={renderItem}
-          ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.address}
-        />
-      </SelectScreen>
+        renderItem={renderItem}
+        filterFunction={filteredAccounts}
+        renderListEmptyComponent={renderListEmptyComponent}
+      />
     </SubWalletFullSizeModal>
   );
 };

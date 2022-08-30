@@ -4,6 +4,7 @@ import { Search } from 'components/Search';
 import { sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { HIDE_MODAL_DURATION } from '../constant';
+import { IconProps } from 'phosphor-react-native';
 
 interface Props {
   children: JSX.Element;
@@ -14,8 +15,12 @@ interface Props {
   autoFocus?: boolean;
   style?: StyleProp<any>;
   showLeftBtn?: boolean;
+  showRightBtn?: boolean;
+  rightIcon?: (iconProps: IconProps) => JSX.Element;
+  onPressRightIcon?: () => void;
 }
 
+// Todo: Remove this component
 export const SelectScreen = ({
   children,
   title,
@@ -24,6 +29,9 @@ export const SelectScreen = ({
   onPressBack,
   autoFocus = true,
   showLeftBtn = true,
+  showRightBtn = false,
+  rightIcon,
+  onPressRightIcon,
   style,
 }: Props) => {
   const searchRef = useRef<TextInput>(null);
@@ -46,6 +54,9 @@ export const SelectScreen = ({
       onPressBack={_onPressBack}
       title={title}
       style={[{ width: '100%' }, style]}
+      showRightBtn={showRightBtn}
+      rightIcon={rightIcon}
+      onPressRightIcon={onPressRightIcon}
       isShowPlaceHolder={false}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
