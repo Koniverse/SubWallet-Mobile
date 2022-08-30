@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { SelectScreen } from 'components/SelectScreen';
+import React, { useCallback, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { ListRenderItemInfo, Text, View } from 'react-native';
 import { CrowdloanItem, getGroupKey } from 'screens/Home/CrowdloansTab/CrowdloanItem';
 import { CrowdloanItemType } from '../../../types';
-import { emptyListContainerStyle, emptyListTextStyle, ScrollViewStyle } from 'styles/sharedStyles';
+import { emptyListContainerStyle, emptyListTextStyle } from 'styles/sharedStyles';
 import { FunnelSimple, Rocket } from 'phosphor-react-native';
-import { ActivityLoading } from 'components/ActivityLoading';
 import useGetCrowdloanList from 'hooks/screen/Home/CrowdloanTab/useGetCrowdloanList';
-import { useLazyList } from 'hooks/useLazyList';
 import { CrowdloanFilter } from 'screens/Home/CrowdloansTab/CrowdloanFilter';
 import { FilterOptsType } from 'types/ui-types';
+import { FlatListScreen } from 'components/FlatListScreen';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;
@@ -43,56 +41,49 @@ function getListByFilterOpt(items: CrowdloanItemType[], filterOpts: FilterOptsTy
   return result;
 }
 
-function doFilterOptions(items: CrowdloanItemType[], searchString: string, filterOpts: FilterOptsType) {
-  const lowerCaseSearchString = searchString.toLowerCase();
-  const result = getListByFilterOpt(items, filterOpts);
-  if (searchString) {
-    return result.filter(({ networkDisplayName }) => networkDisplayName.toLowerCase().includes(lowerCaseSearchString));
-  } else {
-    return result;
-  }
-}
+const defaultFilterOpts = {
+  paraChain: 'all',
+  crowdloanStatus: 'all',
+};
 
 export const CrowdloansTab = () => {
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const { isLoading, lazyList, filterOpts, searchString, onSearchOption, onLoadMore, onChangeFilterOptType } =
-    useLazyList(items, doFilterOptions);
-  const renderLoadingAnimation = () => {
-    return isLoading ? <ActivityLoading /> : null;
-  };
+  const [filterOpts, setFilterOpts] = useState<FilterOptsType>(defaultFilterOpts);
+
+  const doFilterOptions = useCallback(
+    (searchString: string) => {
+      const lowerCaseSearchString = searchString.toLowerCase();
+      const result = getListByFilterOpt(items, filterOpts);
+      if (searchString) {
+        return result.filter(({ networkDisplayName }) =>
+          networkDisplayName.toLowerCase().includes(lowerCaseSearchString),
+        );
+      } else {
+        return result;
+      }
+    },
+    [filterOpts, items],
+  );
 
   return (
-    <SelectScreen
+    <FlatListScreen<CrowdloanItemType>
       title={i18n.tabName.crowdloans}
-      onChangeSearchText={onSearchOption}
-      searchString={searchString}
+      renderListEmptyComponent={renderListEmptyComponent}
+      renderItem={renderItem}
+      autoFocus={true}
+      items={items}
       showLeftBtn={false}
-      showRightBtn={true}
-      rightIcon={FunnelSimple}
-      onPressRightIcon={() => setModalVisible(true)}>
-      <>
-        {lazyList.length ? (
-          <FlatList
-            style={{ ...ScrollViewStyle }}
-            keyboardShouldPersistTaps={'handled'}
-            data={lazyList}
-            onEndReached={onLoadMore}
-            renderItem={renderItem}
-            onEndReachedThreshold={0.7}
-            ListFooterComponent={renderLoadingAnimation}
-          />
-        ) : (
-          renderListEmptyComponent()
-        )}
-
+      filterFunction={doFilterOptions}
+      rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
+      afterListItem={
         <CrowdloanFilter
           modalVisible={modalVisible}
           onChangeModalVisible={() => setModalVisible(false)}
           filterOpts={filterOpts}
-          onChangeFilterOpts={onChangeFilterOptType}
+          onChangeFilterOpts={setFilterOpts}
         />
-      </>
-    </SelectScreen>
+      }
+    />
   );
 };

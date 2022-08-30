@@ -10,6 +10,7 @@ import { getNetworkLogo } from 'utils/index';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl from 'hooks/screen/useFormControl';
 import { FilterOptsType } from 'types/ui-types';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -99,7 +100,7 @@ export const CrowdloanFilter = ({ modalVisible, onChangeModalVisible, filterOpts
       modalVisible={modalVisible}
       onChangeModalVisible={onChangeModalVisible}
       modalStyle={{ paddingTop: 0 }}>
-      <ContainerWithSubHeader title={'Filters'} onPressBack={onPressBack} style={{ flex: 1, width: '100%' }}>
+      <ContainerWithSubHeader title={i18n.title.filters} onPressBack={onPressBack} style={{ flex: 1, width: '100%' }}>
         <View style={{ ...sharedStyles.layoutContainer }}>
           <View style={{ flex: 1 }}>
             <Text style={crowdloanFilterLabelStyle}>{formState.labels.paraChain}</Text>
@@ -127,7 +128,7 @@ export const CrowdloanFilter = ({ modalVisible, onChangeModalVisible, filterOpts
             ))}
           </View>
 
-          <SubmitButton title={'Apply'} style={{ ...MarginBottomForSubmitButton }} onPress={onApplyChange} />
+          <SubmitButton title={i18n.common.apply} style={{ ...MarginBottomForSubmitButton }} onPress={onApplyChange} />
         </View>
       </ContainerWithSubHeader>
     </SubWalletFullSizeModal>

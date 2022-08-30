@@ -28,17 +28,16 @@ export const SelectItem = ({ label, isSelected, onPress, showSeparator = true, l
           alignItems: 'center',
           justifyContent: 'space-between',
           height: 52,
-          paddingHorizontal: 16,
+          paddingRight: 16,
         }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {leftIcon && leftIcon}
+          {leftIcon && <View style={{ paddingHorizontal: 16 }}>{leftIcon}</View>}
           <Text
             style={{
               ...sharedStyles.mediumText,
               color: ColorMap.light,
               ...FontSemiBold,
               paddingVertical: 14,
-              paddingLeft: 16,
             }}>
             {label}
           </Text>
