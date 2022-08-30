@@ -21,6 +21,7 @@ const filterFunction = (items: NetworkJson[], searchString: string) => {
 
 export const NetworksSetting = ({}: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const [currentNetworkList, setCurrentNetworkList] = useState(Object.values(networkMap));
   const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
   const [needUpdateList, setNeedUpdateList] = useState(true);
 
@@ -38,6 +39,7 @@ export const NetworksSetting = ({}: Props) => {
   }, [networkMap]);
 
   useEffect(() => {
+    const newNetworkMap = {};
     if (!networkKeys || needUpdateList || networkKeys.length === 0) {
       const pendingKeys = Object.keys(pendingNetworkMap);
       networkKeys = Object.keys(networkMap).sort((a, b) => {
@@ -54,6 +56,12 @@ export const NetworksSetting = ({}: Props) => {
       });
       setNeedUpdateList(false);
     }
+
+    networkKeys.forEach(key => {
+      // @ts-ignore
+      newNetworkMap[key] = networkMap[key];
+    });
+    setCurrentNetworkList(Object.values(newNetworkMap));
   }, [needUpdateList, networkMap, pendingNetworkMap]);
 
   useEffect(() => {
@@ -102,7 +110,7 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <FlatListScreen
-      items={Object.values(networkMap)}
+      items={currentNetworkList}
       title={i18n.title.networkSetting}
       autoFocus={false}
       renderListEmptyComponent={renderListEmptyComponent}
