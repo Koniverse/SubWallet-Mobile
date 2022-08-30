@@ -29,9 +29,8 @@ type HomeStackParamList = {
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
-function checkTabCompleted(tabLabel: string) {
-  const tabName = tabLabel.split(', ')[0];
-  if (tabName.toLowerCase() === 'crypto' || tabName.toLowerCase() === 'crowdloans') {
+function checkTabCompleted(target: string) {
+  if (target === '/Home/Crypto' || target === '/Home/Crowdloans') {
     return true;
   } else {
     return false;
@@ -68,7 +67,7 @@ const MainScreen = () => {
           }
           // @ts-ignore
           props.style = [[...props.style], customStyle];
-          if (!checkTabCompleted(props.accessibilityLabel || '')) {
+          if (!checkTabCompleted(props.to || '')) {
             return <TouchableOpacity {...props} activeOpacity={1} onPress={() => onPressComingSoonTab()} />;
           } else {
             return <TouchableOpacity {...props} activeOpacity={1} />;

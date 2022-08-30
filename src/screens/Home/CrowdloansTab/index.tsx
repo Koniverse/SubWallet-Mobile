@@ -71,7 +71,7 @@ export const CrowdloansTab = () => {
       title={i18n.tabName.crowdloans}
       renderListEmptyComponent={renderListEmptyComponent}
       renderItem={renderItem}
-      autoFocus={true}
+      autoFocus={false}
       items={items}
       showLeftBtn={false}
       filterFunction={doFilterOptions}
