@@ -6,6 +6,7 @@ import { ColorMap } from 'styles/color';
 interface Props extends TouchableOpacityProps {
   icon: (iconProps: IconProps) => JSX.Element;
   color?: string;
+  size?: number;
 }
 
 const iconButtonWrapper: StyleProp<any> = {
@@ -16,11 +17,11 @@ const iconButtonWrapper: StyleProp<any> = {
 };
 
 export const IconButton = (iconButtonProps: Props) => {
-  const { icon: Icon, color, style } = iconButtonProps;
+  const { icon: Icon, color, style, size = 20 } = iconButtonProps;
 
   return (
     <TouchableOpacity {...iconButtonProps} style={[iconButtonWrapper, style]}>
-      <Icon size={20} color={color || ColorMap.light} weight={'bold'} />
+      <Icon size={size} color={color || ColorMap.light} weight={'bold'} />
     </TouchableOpacity>
   );
 };

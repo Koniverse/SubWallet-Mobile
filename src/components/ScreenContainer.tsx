@@ -10,6 +10,7 @@ import {
 
 interface Props {
   children: JSX.Element;
+  placeholderBgc?: string;
 }
 
 const containerStyle: StyleProp<any> = {
@@ -19,10 +20,10 @@ const containerStyle: StyleProp<any> = {
   paddingTop: STATUS_BAR_HEIGHT + 13.5,
 };
 
-export const ScreenContainer = ({ children }: Props) => {
+export const ScreenContainer = ({ children, placeholderBgc = ColorMap.dark2 }: Props) => {
   return (
     <View style={containerStyle}>
-      <View style={getStatusBarPlaceholderStyle(ColorMap.dark2)} />
+      <View style={getStatusBarPlaceholderStyle(placeholderBgc)} />
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>

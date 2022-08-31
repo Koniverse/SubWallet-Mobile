@@ -22,7 +22,7 @@ export const ContainerHorizontalPadding = { paddingLeft: 16, paddingRight: 16 };
 export const MarginBottomForSubmitButton = { marginBottom: Platform.OS === 'ios' ? 18 : 0 };
 export const ScrollViewStyle = { marginLeft: -16, marginRight: -16, ...ContainerHorizontalPadding };
 export const CollapsibleFlatListStyle = { paddingTop: 8, backgroundColor: ColorMap.dark2 };
-export const emptyListContainerStyle: StyleProp<any> = {
+export const centerStyle: StyleProp<any> = {
   justifyContent: 'center',
   flex: 1,
   alignItems: 'center',
@@ -33,7 +33,7 @@ export const emptyListTextStyle: StyleProp<any> = {
   lineHeight: 24,
   color: ColorMap.light,
   ...FontMedium,
-  paddingTop: 15,
+  paddingTop: 8,
 };
 
 export const getStatusBarPlaceholderStyle = (backgroundColor = ColorMap.dark1): StyleProp<any> => {

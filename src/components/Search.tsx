@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import { MagnifyingGlass, X } from 'phosphor-react-native';
+import { MagnifyingGlass, XCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 
@@ -16,20 +16,22 @@ const searchContainerStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   borderRadius: 5,
   alignItems: 'center',
-  paddingRight: 16,
+  paddingRight: 12,
   paddingLeft: 16,
   flexDirection: 'row',
   height: 48,
 };
 
-export const Search = ({ onSearch, searchText, style, onClearSearchString, autoFocus, searchRef }: Props) => {
+export const Search = (searchProps: Props) => {
+  const { onSearch, searchText, style, onClearSearchString, autoFocus, searchRef } = searchProps;
   const SearchIcon = MagnifyingGlass;
-  const CancelIcon = X;
+  const CancelIcon = XCircle;
 
   return (
     <View style={[searchContainerStyle, style]}>
       <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
       <TextInput
+        {...searchProps}
         ref={searchRef}
         style={{
           marginHorizontal: 8,
@@ -43,13 +45,12 @@ export const Search = ({ onSearch, searchText, style, onClearSearchString, autoF
         autoCorrect={false}
         autoFocus={autoFocus}
         onChangeText={text => onSearch(text)}
-        placeholder={'Search'}
         placeholderTextColor={ColorMap.disabled}
         value={searchText}
       />
       {!!searchText && (
         <TouchableOpacity onPress={onClearSearchString}>
-          <CancelIcon size={20} color={ColorMap.light} weight={'bold'} />
+          <CancelIcon size={20} color={ColorMap.disabled} weight={'bold'} />
         </TouchableOpacity>
       )}
     </View>

@@ -1,52 +1,37 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, TouchableWithoutFeedbackProps, View } from 'react-native';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import React from 'react';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
 
-interface ButtonProps extends TouchableWithoutFeedbackProps {
+interface ButtonProps extends TouchableOpacityProps {
   title: string;
-  color?: 'primary' | 'secondary';
+  color?: string;
+}
+
+function getButtonWrapperStyle(): StyleProp<any> {
+  return {
+    minHeight: 40,
+    justifyContent: 'center',
+  };
+}
+
+function getButtonTextStyle(color: string): StyleProp<any> {
+  return {
+    color: color,
+    textAlign: 'center',
+    ...sharedStyles.mainText,
+    ...FontSemiBold,
+  };
 }
 
 export const Button = (buttonProps: ButtonProps) => {
-  const theme = useSubWalletTheme().colors;
-  const { title, color, style } = buttonProps;
-
-  const ButtonStyle = useMemo(
-    () =>
-      StyleSheet.create({
-        base: { opacity: 1, paddingLeft: 16, paddingRight: 16, paddingTop: 12, paddingBottom: 12, borderRadius: 5 },
-        primary: {
-          color: ColorMap.light,
-          backgroundColor: theme.primary,
-        },
-        secondary: {
-          color: ColorMap.light,
-          backgroundColor: theme.secondary,
-        },
-        buttonTextStyle: {
-          color: theme.textColor,
-          textAlign: 'center',
-          ...sharedStyles.mediumText,
-          ...FontSemiBold,
-        },
-      }),
-    [theme],
-  );
-  const finalStyle = [style, ButtonStyle.base];
-
-  const _color = color || 'secondary';
-  if (ButtonStyle[_color]) {
-    // @ts-ignore
-    finalStyle.push(ButtonStyle[_color]);
-  }
+  const { title, style, color = ColorMap.secondary } = buttonProps;
 
   return (
     <TouchableOpacity {...buttonProps}>
-      <View style={finalStyle}>
-        <Text style={ButtonStyle.buttonTextStyle}>{title}</Text>
+      <View style={[style, getButtonWrapperStyle()]}>
+        <Text style={getButtonTextStyle(color)}>{title}</Text>
       </View>
     </TouchableOpacity>
   );
