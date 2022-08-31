@@ -14,6 +14,7 @@ import {
   MetadataRequest,
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
+import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -31,6 +32,10 @@ export type AccountsSlice = {
 export type AppStateSlice = {
   isLocked: boolean;
 };
+
+export type AuthUrlsSlice = {
+  details: Record<string, AuthUrlInfo>;
+} & StoreSlice;
 
 export type BalanceSlice = BalanceJson & StoreSlice;
 export type CrowdloanSlice = CrowdloanJson & StoreSlice;

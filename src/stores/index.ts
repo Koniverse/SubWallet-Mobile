@@ -9,6 +9,7 @@ import mobileSettingsReducer from './MobileSettings';
 import transactionHistoryReducer from './TransactionHistory';
 import crowdloanReducer from './Crowdloan';
 import confirmationReducer from './Confirmation';
+import authUrlsReducer from './AuthUrls';
 import appStateReducer from './AppState';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,12 +18,23 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'accounts', 'networkMap', 'settings', 'chainRegistry', 'price', 'balance', 'crowdloan'],
+  whitelist: [
+    'mobileSettings',
+    'accounts',
+    'networkMap',
+    'settings',
+    'chainRegistry',
+    'price',
+    'balance',
+    'crowdloan',
+    'authUrls',
+  ],
 };
 
 const rootReducer = combineReducers({
   appState: appStateReducer,
   accounts: accountsReducer,
+  authUrls: authUrlsReducer,
   price: priceReducer,
   networkMap: networkMapReducer,
   settings: settingsReducer,

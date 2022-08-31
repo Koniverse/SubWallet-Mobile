@@ -8,7 +8,7 @@ import {
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsSlice } from 'stores/types';
+import { AccountsSlice, AuthUrlsSlice } from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
@@ -50,4 +50,8 @@ export function updateAccountsWaitingStatus(payload: boolean): void {
 
 export function updateCrowdloan(payload: CrowdloanJson): void {
   store.dispatch({ type: 'crowdloan/update', payload });
+}
+
+export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
+  store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap } });
 }
