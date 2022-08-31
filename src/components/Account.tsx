@@ -7,7 +7,7 @@ import { accountAllRecoded, defaultRecoded, recodeAddress } from 'utils/index';
 import { RootState } from 'stores/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { Recoded } from 'types/ui-types';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';

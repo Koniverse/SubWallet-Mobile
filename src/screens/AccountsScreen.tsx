@@ -11,7 +11,6 @@ import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps, RootStackParamList } from 'types/routes';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
@@ -20,6 +19,7 @@ import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../constant';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
 import { updateAccountsWaitingStatus } from 'stores/updater';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,

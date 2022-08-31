@@ -5,6 +5,7 @@ import { sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { HIDE_MODAL_DURATION } from '../constant';
 import { IconProps } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   children: JSX.Element;
@@ -60,6 +61,7 @@ export const SelectScreen = ({
       isShowPlaceHolder={false}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
+          placeholder={i18n.common.search}
           autoFocus={false}
           onClearSearchString={() => onChangeSearchText('')}
           onSearch={onChangeSearchText}

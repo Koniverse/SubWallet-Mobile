@@ -10,13 +10,13 @@ import { BalanceInfo } from '../../../types';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { StyleProp, View } from 'react-native';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
-import useAccountInfoByNetworkMap from 'hooks/screen/Home/CtyptoTab/useAccountInfoByNetworkMap';
+import useAccountInfoByNetworkMap from 'hooks/screen/Home/Ctypto/useAccountInfoByNetworkMap';
 import useViewStep from 'hooks/screen/useViewStep';
-import { ViewStep } from 'screens/Home/CtyptoTab/constant';
-import TokenGroupLayer from 'screens/Home/CtyptoTab/layers/TokenGroup';
+import { ViewStep } from 'screens/Home/Ctypto/constant';
+import TokenGroupLayer from 'screens/Home/Ctypto/layers/TokenGroup';
 import { TokenSelect } from 'screens/TokenSelect';
-import ChainDetailLayer from 'screens/Home/CtyptoTab/layers/ChainDetail';
-import TokenHistoryLayer from 'screens/Home/CtyptoTab/layers/TokenHistory';
+import ChainDetailLayer from 'screens/Home/Ctypto/layers/ChainDetail';
+import TokenHistoryLayer from 'screens/Home/Ctypto/layers/TokenHistory';
 import { getAccountType } from 'utils/index';
 
 interface SelectionInfo {
@@ -39,7 +39,7 @@ const viewLayerStyle: StyleProp<any> = {
   zIndex: 10,
 };
 
-export const CryptoTab = () => {
+export const CryptoScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);

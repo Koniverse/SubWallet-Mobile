@@ -32,6 +32,7 @@ export const en = {
     toAddressToSendFunds: 'address to send funds',
     emptyTransactionListMessage: 'Your transactions will appear here',
     emptyCrowdloanListMessage: 'Your crowdloans will appear here',
+    emptyBrowserMessage: 'Type a URL or search the web',
     copyToClipboard: 'Copy to clipboard',
     copiedToClipboard: 'Copied to Clipboard',
     continue: 'Continue',
@@ -90,6 +91,8 @@ export const en = {
     winner: 'Winner',
     fail: 'Fail',
     active: 'Active',
+    search: 'Search',
+    searchPlaceholder: 'Search or enter website',
     apply: 'Apply',
   },
   title: {
@@ -127,7 +130,7 @@ export const en = {
     staking: 'Staking',
     browser: 'Browser',
   },
-  cryptoTab: {
+  cryptoScreen: {
     receive: 'Receive',
     send: 'Send',
     swap: 'Swap',

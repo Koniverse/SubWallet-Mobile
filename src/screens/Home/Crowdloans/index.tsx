@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, Text, View } from 'react-native';
-import { CrowdloanItem, getGroupKey } from 'screens/Home/CrowdloansTab/CrowdloanItem';
+import { CrowdloanItem, getGroupKey } from 'screens/Home/Crowdloans/CrowdloanItem';
 import { CrowdloanItemType } from '../../../types';
-import { emptyListContainerStyle, emptyListTextStyle } from 'styles/sharedStyles';
+import { centerStyle, emptyListTextStyle } from 'styles/sharedStyles';
 import { FunnelSimple, Rocket } from 'phosphor-react-native';
-import useGetCrowdloanList from 'hooks/screen/Home/CrowdloanTab/useGetCrowdloanList';
-import { CrowdloanFilter } from 'screens/Home/CrowdloansTab/CrowdloanFilter';
+import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
+import { CrowdloanFilter } from 'screens/Home/Crowdloans/CrowdloanFilter';
 import { FilterOptsType } from 'types/ui-types';
 import { FlatListScreen } from 'components/FlatListScreen';
 
@@ -16,7 +16,7 @@ const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
 
 const renderListEmptyComponent = () => {
   return (
-    <View style={emptyListContainerStyle}>
+    <View style={centerStyle}>
       <Rocket size={80} color={'rgba(255, 255, 255, 0.3)'} weight={'thin'} />
       <Text style={emptyListTextStyle}>{i18n.common.emptyCrowdloanListMessage}</Text>
     </View>
@@ -46,7 +46,7 @@ const defaultFilterOpts = {
   crowdloanStatus: 'all',
 };
 
-export const CrowdloansTab = () => {
+export const CrowdloansScreen = () => {
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [filterOpts, setFilterOpts] = useState<FilterOptsType>(defaultFilterOpts);

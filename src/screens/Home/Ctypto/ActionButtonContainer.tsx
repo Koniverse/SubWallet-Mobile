@@ -4,7 +4,7 @@ import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { TokenSelect } from 'screens/TokenSelect';
-import { ReceiveModal } from 'screens/Home/CtyptoTab/ReceiveModal';
+import { ReceiveModal } from 'screens/Home/Ctypto/ReceiveModal';
 import { AccountActionType, SelectionProviderProps, TokenItemType } from 'types/ui-types';
 import {
   ArrowFatLineDown,
@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { HIDE_MODAL_DURATION } from '../../../constant';
 import ToastContainer, { useToast } from 'react-native-toast-notifications';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { ColorMap } from 'styles/color';
@@ -260,9 +260,9 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   return (
     <>
       <View style={[actionButtonWrapper, style]} pointerEvents="box-none">
-        <ActionButton label={i18n.cryptoTab.receive} icon={receiveIcon} onPress={onPressReceiveButton} />
-        <ActionButton label={i18n.cryptoTab.send} icon={sendIcon} onPress={onPressSendFundBtn} />
-        <ActionButton label={i18n.cryptoTab.swap} icon={swapIcon} onPress={onPressSwapBtn} />
+        <ActionButton label={i18n.cryptoScreen.receive} icon={receiveIcon} onPress={onPressReceiveButton} />
+        <ActionButton label={i18n.cryptoScreen.send} icon={sendIcon} onPress={onPressSendFundBtn} />
+        <ActionButton label={i18n.cryptoScreen.swap} icon={swapIcon} onPress={onPressSwapBtn} />
       </View>
 
       <SelectImportAccountModal

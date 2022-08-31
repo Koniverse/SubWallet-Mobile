@@ -5,7 +5,7 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
 import { Image, StyleProp, View } from 'react-native';
 import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';

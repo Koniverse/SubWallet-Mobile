@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isSupportScanExplorer } from 'utils/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils/utils';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 
 export default function useSupportScanExplorer(networkKey: string) {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);

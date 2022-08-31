@@ -1,11 +1,10 @@
 import React from 'react';
 import { Image, View } from 'react-native';
-import { Images } from 'assets/index';
 
-export const BrowserTab = () => {
+export const StakingScreen = () => {
   return (
     <View style={{ alignItems: 'center', height: '100%', justifyContent: 'center' }}>
-      <Image source={Images.historyEmpty} />
+      <Image source={require('assets/stacking-empty-list.png')} />
     </View>
   );
 };

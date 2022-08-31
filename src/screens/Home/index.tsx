@@ -1,14 +1,13 @@
 import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NFTTab } from './NFTTab';
-import { StakingTab } from './StakingTab';
+import { NFTScreen } from './NFTScreen';
+import { StakingScreen } from './StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
-import { CryptoTab } from 'screens/Home/CtyptoTab';
+import { CryptoScreen } from 'screens/Home/Ctypto';
 import { FontMedium } from 'styles/sharedStyles';
-import { BrowserTab } from 'screens/Home/BrowserTab';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT } from '../../constant';
 import { useToast } from 'react-native-toast-notifications';
@@ -16,7 +15,7 @@ import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
-import { CrowdloansTab } from 'screens/Home/CrowdloansTab';
+import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -30,7 +29,7 @@ export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['na
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
 function checkTabCompleted(target: string) {
-  if (target === '/Home/Crypto' || target === '/Home/Crowdloans') {
+  if (target === '/Home/Crypto' || target === '/Home/Crowdloans' || target === '/Home/Browser') {
     return true;
   } else {
     return false;
@@ -96,7 +95,7 @@ const MainScreen = () => {
       }}>
       <Tab.Screen
         name={'Crypto'}
-        component={CryptoTab}
+        component={CryptoScreen}
         options={{
           tabBarIcon: ({ color }) => {
             return <CurrencyCircleDollar size={24} color={color} weight={'bold'} />;
@@ -105,7 +104,7 @@ const MainScreen = () => {
       />
       <Tab.Screen
         name={'NFT'}
-        component={NFTTab}
+        component={NFTScreen}
         options={{
           tabBarIcon: ({ color }) => {
             return <Aperture size={24} color={color} weight={'bold'} />;
@@ -114,7 +113,7 @@ const MainScreen = () => {
       />
       <Tab.Screen
         name={'Crowdloans'}
-        component={CrowdloansTab}
+        component={CrowdloansScreen}
         options={{
           tabBarIcon: ({ color }) => {
             return <Rocket size={24} color={color} weight={'bold'} />;
@@ -123,22 +122,22 @@ const MainScreen = () => {
       />
       <Tab.Screen
         name={'Staking'}
-        component={StakingTab}
+        component={StakingScreen}
         options={{
           tabBarIcon: ({ color }) => {
             return <Database size={24} color={color} weight={'bold'} />;
           },
         }}
       />
-      <Tab.Screen
-        name={'Browser'}
-        component={BrowserTab}
-        options={{
-          tabBarIcon: ({ color }) => {
-            return <GlobeSimple size={24} color={color} weight={'bold'} />;
-          },
-        }}
-      />
+      {/*<Tab.Screen*/}
+      {/*  name={'Browser'}*/}
+      {/*  component={BrowserScreen}*/}
+      {/*  options={{*/}
+      {/*    tabBarIcon: ({ color }) => {*/}
+      {/*      return <GlobeSimple size={24} color={color} weight={'bold'} />;*/}
+      {/*    },*/}
+      {/*  }}*/}
+      {/*/>*/}
     </Tab.Navigator>
   );
 };
