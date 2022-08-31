@@ -43,6 +43,8 @@ import SplashScreen from 'react-native-splash-screen';
 import { LockScreen } from 'screens/LockScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import useStoreCrowdloan from 'hooks/store/useStoreCrowdloan';
+import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
+import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
 
 const viewContainerStyle: StyleProp<any> = {
@@ -200,6 +202,8 @@ export const App = () => {
                       <Stack.Screen name="Security" component={Security} />
                       <Stack.Screen name="PinCode" component={PinCodeScreen} />
                       <Stack.Screen name="ExportJson" component={ExportJson} />
+                      <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
+                      <Stack.Screen name="BrowserTab" component={BrowserTab} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                     </Stack.Group>
                   )}

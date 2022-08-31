@@ -16,6 +16,7 @@ import i18n from 'utils/i18n/i18n';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
+import { BrowserScreen } from 'screens/Home/Browser';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -129,15 +130,15 @@ const MainScreen = () => {
           },
         }}
       />
-      {/*<Tab.Screen*/}
-      {/*  name={'Browser'}*/}
-      {/*  component={BrowserScreen}*/}
-      {/*  options={{*/}
-      {/*    tabBarIcon: ({ color }) => {*/}
-      {/*      return <GlobeSimple size={24} color={color} weight={'bold'} />;*/}
-      {/*    },*/}
-      {/*  }}*/}
-      {/*/>*/}
+      <Tab.Screen
+        name={'Browser'}
+        component={BrowserScreen}
+        options={{
+          tabBarIcon: ({ color }) => {
+            return <GlobeSimple size={24} color={color} weight={'bold'} />;
+          },
+        }}
+      />
     </Tab.Navigator>
   );
 };
