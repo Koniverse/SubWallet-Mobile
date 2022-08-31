@@ -222,10 +222,12 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   ];
 
   const onPressSendFundBtn = () => {
+    setSelectedResult({});
     setSendFundTypeModal(true);
   };
 
   const onPressReceiveButton = () => {
+    setSelectedResult({});
     if (_isAccountAll) {
       setAccountSelectAction({
         onChange: onChangeReceiveAccount,

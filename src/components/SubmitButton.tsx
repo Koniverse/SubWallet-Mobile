@@ -15,6 +15,7 @@ interface ButtonProps extends TouchableOpacityProps {
   hasRightArrow?: boolean;
   isBusy?: boolean;
   leftIcon?: (iconProps: IconProps) => JSX.Element;
+  disabledColor?: string;
 }
 
 function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: StyleProp<any> = {}): StyleProp<any> {
@@ -41,15 +42,17 @@ function getTextStyle(color: string = ColorMap.light, isShowLeftIcon: boolean) {
   };
 }
 
-const disabledOverlay: StyleProp<any> = {
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  left: 0,
-  bottom: 0,
-  borderRadius: 5,
-  backgroundColor: ColorMap.disabledOverlay,
-};
+function disabledOverlayStyle(color?: string): StyleProp<any> {
+  return {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    left: 0,
+    bottom: 0,
+    borderRadius: 5,
+    backgroundColor: color ? color : ColorMap.disabledOverlay,
+  };
+}
 
 const iconStyle: StyleProp<any> = {
   position: 'absolute',
@@ -67,7 +70,17 @@ const loadingStyle: StyleProp<any> = {
 };
 
 export const SubmitButton = (buttonProps: ButtonProps) => {
-  const { leftIcon: LeftIcon, title, backgroundColor, color, style, hasRightArrow, disabled, isBusy } = buttonProps;
+  const {
+    leftIcon: LeftIcon,
+    title,
+    backgroundColor,
+    color,
+    style,
+    hasRightArrow,
+    disabled,
+    isBusy,
+    disabledColor,
+  } = buttonProps;
 
   return (
     <TouchableOpacity
@@ -82,7 +95,7 @@ export const SubmitButton = (buttonProps: ButtonProps) => {
           <CaretRight size={20} color={color || ColorMap.light} weight={'bold'} />
         </View>
       )}
-      {(disabled || isBusy) && <View style={disabledOverlay} />}
+      {(disabled || isBusy) && <View style={disabledOverlayStyle(disabledColor)} />}
       {isBusy && <Loading width={32} height={32} style={loadingStyle} />}
     </TouchableOpacity>
   );

@@ -41,11 +41,14 @@ const tokenHistoryHeaderTitleStyle: StyleProp<any> = {
 const renderTokenHistoryHeaderContent = (
   selectedNetworkInfo: AccountInfoByNetwork,
   selectedTokenDisplayName: string,
+  selectedTokenSymbol: string,
 ) => {
+  const logoKey =
+    selectedTokenSymbol === selectedNetworkInfo.nativeToken ? selectedNetworkInfo.networkKey : selectedTokenSymbol;
   return () => {
     return (
       <View style={tokenHistoryHeaderStyle}>
-        {getNetworkLogo(selectedNetworkInfo.networkKey, 20)}
+        {getNetworkLogo(logoKey, 20, selectedNetworkInfo.networkKey)}
         <Text style={tokenHistoryHeaderTitleStyle} numberOfLines={1}>
           {selectedNetworkInfo.networkDisplayName.replace(' Relay Chain', '')}
         </Text>
@@ -125,7 +128,11 @@ const TokenHistoryLayer = ({
           showRightBtn
           backgroundColor={ColorMap.dark2}
           onPressBack={onPressBack}
-          headerContent={renderTokenHistoryHeaderContent(selectedNetworkInfo, selectedTokenDisplayName)}
+          headerContent={renderTokenHistoryHeaderContent(
+            selectedNetworkInfo,
+            selectedTokenDisplayName,
+            selectedTokenSymbol,
+          )}
           title={''}
         />
         <Tabs.Container
