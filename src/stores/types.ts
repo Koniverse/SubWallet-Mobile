@@ -62,6 +62,24 @@ export type MobileSettingsSlice = {
   autoLockTime: number | undefined;
 };
 
+export type SiteInfo = {
+  name: string;
+  url: string;
+};
+
+export type BrowserSliceTab = {
+  id: string;
+  url: string;
+};
+
+export type BrowserSlice = {
+  activeTab: null | string;
+  tabs: BrowserSliceTab[];
+  whitelist: string[];
+  history: SiteInfo[];
+  bookmarks: SiteInfo[];
+};
+
 export type NetworkMapSlice = {
   details: Record<string, NetworkJson>;
 } & StoreSlice;
