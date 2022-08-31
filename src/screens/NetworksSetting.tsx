@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
-import { ScrollViewStyle } from 'styles/sharedStyles';
+import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { SelectScreen } from 'components/SelectScreen';
 import i18n from 'utils/i18n/i18n';
 import { disableNetworkMap, enableNetworkMap } from '../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useNavigation } from '@react-navigation/native';
 import { Warning } from 'components/Warning';
+import { FlatListScreen } from 'components/FlatListScreen';
 
 interface Props {}
 
 let networkKeys: Array<string> | undefined;
 
 let cachePendingNetworkMap = {};
-let cacheFilterNetworkList: Array<NetworkJson> = [];
+
+const filterFunction = (items: NetworkJson[], searchString: string) => {
+  return items.filter(network => network.chain.toLowerCase().includes(searchString.toLowerCase()));
+};
 
 export const NetworksSetting = ({}: Props) => {
-  const navigation = useNavigation();
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const [searchString, setSearchString] = useState('');
-  const [currentNetworkMap, setCurrentNetworkMap] = useState<Record<string, NetworkJson>>({});
-  const [filteredNetworkList, setFilteredNetworkList] = useState<Array<NetworkJson>>(cacheFilterNetworkList);
+  const [currentNetworkList, setCurrentNetworkList] = useState(Object.values(networkMap));
   const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
   const [needUpdateList, setNeedUpdateList] = useState(true);
 
@@ -58,11 +56,12 @@ export const NetworksSetting = ({}: Props) => {
       });
       setNeedUpdateList(false);
     }
+
     networkKeys.forEach(key => {
       // @ts-ignore
       newNetworkMap[key] = networkMap[key];
     });
-    setCurrentNetworkMap({ ...newNetworkMap });
+    setCurrentNetworkList(Object.values(newNetworkMap));
   }, [needUpdateList, networkMap, pendingNetworkMap]);
 
   useEffect(() => {
@@ -109,28 +108,14 @@ export const NetworksSetting = ({}: Props) => {
     );
   };
 
-  useEffect(() => {
-    cacheFilterNetworkList = Object.values(currentNetworkMap).filter(network =>
-      network.chain.toLowerCase().includes(searchString.toLowerCase()),
-    );
-    setFilteredNetworkList(cacheFilterNetworkList);
-  }, [currentNetworkMap, searchString]);
-
   return (
-    <SelectScreen
-      autoFocus={false}
-      onPressBack={() => navigation.goBack()}
+    <FlatListScreen
+      items={currentNetworkList}
       title={i18n.title.networkSetting}
-      searchString={searchString}
-      onChangeSearchText={setSearchString}>
-      <FlatList
-        style={{ ...ScrollViewStyle }}
-        keyboardShouldPersistTaps={'handled'}
-        data={filteredNetworkList}
-        renderItem={renderItem}
-        ListEmptyComponent={renderListEmptyComponent}
-        keyExtractor={item => `${item.key}-${item.chain}`}
-      />
-    </SelectScreen>
+      autoFocus={false}
+      renderListEmptyComponent={renderListEmptyComponent}
+      filterFunction={filterFunction}
+      renderItem={renderItem}
+    />
   );
 };

@@ -52,6 +52,7 @@ export const Languages = () => {
     );
   };
 
+  // Todo: use FlatListScreen instead of SelectScreen
   return (
     <SelectScreen
       style={{ paddingTop: 0 }}

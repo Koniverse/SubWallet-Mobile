@@ -1,32 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-export function useLazyList<T>(items: T[], doFilterOptions: (items: T[], searchString: string) => T[]) {
-  const [filteredOptions, setFilteredOption] = useState<T[]>(items);
+export function useLazyList<T>(items: T[], options = { itemPerPage: 20, lazyTime: 300 }) {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [lazyList, setLazyList] = useState<T[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [searchString, setSearchString] = useState('');
 
   const sliceArray = (array: T[], curPageNumber: number) => {
-    return array.slice(0, 15 * curPageNumber);
+    return array.slice(0, options.itemPerPage * curPageNumber);
   };
 
   useEffect(() => {
-    if (searchString) {
-      setFilteredOption(doFilterOptions(items, searchString));
-    } else {
-      setFilteredOption(items);
-    }
-  }, [doFilterOptions, items, searchString]);
-
-  useEffect(() => {
-    const a = sliceArray(filteredOptions, pageNumber);
-    setLazyList(a);
+    const currentLazyList = sliceArray(items, pageNumber);
+    setLazyList(currentLazyList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(filteredOptions), pageNumber]);
+  }, [JSON.stringify(items), pageNumber]);
 
-  const onLoadMore = () => {
-    if (lazyList.length === filteredOptions.length) {
+  const onLoadMore = useCallback(() => {
+    if (lazyList.length === items.length) {
       return;
     }
 
@@ -35,19 +25,13 @@ export function useLazyList<T>(items: T[], doFilterOptions: (items: T[], searchS
     setTimeout(() => {
       setLoading(false);
       setPageNumber(currentPageNumber);
-    }, 300);
-  };
-
-  const onSearchOption = (text: string) => {
-    setPageNumber(1);
-    setSearchString(text);
-  };
+    }, options.lazyTime);
+  }, [items.length, lazyList.length, options.lazyTime, pageNumber]);
 
   return {
     isLoading,
     lazyList,
-    searchString,
-    onSearchOption,
     onLoadMore,
+    setPageNumber,
   };
 }
