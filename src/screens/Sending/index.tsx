@@ -390,6 +390,10 @@ export const SendFund = ({
                     </View>
                   </ScrollView>
 
+                  {!isSupportTransfer && (
+                    <Warning style={WarningStyle} isDanger message={i18n.warningMessage.notSupportTransferMessage} />
+                  )}
+
                   <View>
                     <View
                       style={{
