@@ -77,7 +77,7 @@ export const RestoreJson = () => {
     setIsBusy(true);
     (isKeyringPairs$Json(jsonFile)
       ? batchRestoreV2(jsonFile, password, getAccountsInfo(jsonFile), true)
-      : jsonRestoreV2(jsonFile, password, jsonFile.address, true)
+      : jsonRestoreV2(jsonFile, password, accountsInfo[0].address, true)
     )
       .then(() => {
         setFileError(false);
