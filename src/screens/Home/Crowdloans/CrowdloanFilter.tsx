@@ -5,8 +5,8 @@ import { StyleProp, Text, View } from 'react-native';
 import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { SelectItem } from 'components/SelectItem';
 import { ColorMap } from 'styles/color';
-import { Activity, Barricade, CirclesThreePlus, IconProps, ListChecks, Trophy } from 'phosphor-react-native';
-import { getNetworkLogo } from 'utils/index';
+import { Activity, Barricade, CirclesThreePlus, ListChecks, Trophy } from 'phosphor-react-native';
+import { getLeftIcon, getNetworkLogo } from 'utils/index';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl from 'hooks/screen/useFormControl';
 import { FilterOptsType } from 'types/ui-types';
@@ -31,10 +31,6 @@ const crowdloanFilterLabelStyle: StyleProp<any> = {
   paddingTop: 12,
   paddingBottom: 12,
 };
-function getLeftIcon(icon: (iconProps: IconProps) => JSX.Element) {
-  const Icon = icon;
-  return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
-}
 
 const parachainFilterOptions: Record<string, FilterOptionType> = {
   all: {

@@ -15,6 +15,7 @@ import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../types';
 import { BN_ZERO } from 'utils/chainBalances';
+import { IconProps } from 'phosphor-react-native';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -535,4 +536,9 @@ export function getRoundedDecimalNumber(numberString: string, digits: number = 2
   const number = isNaN(parseFloat(numberString)) ? '0' : numberString;
 
   return (+(Math.round(+(number + `e+${digits}`)) + `e-${digits}`)).toString();
+}
+
+export function getLeftIcon(icon: (iconProps: IconProps) => JSX.Element) {
+  const Icon = icon;
+  return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
 }

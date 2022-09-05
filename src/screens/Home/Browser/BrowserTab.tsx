@@ -31,6 +31,7 @@ import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { approveAuthRequestV2 } from '../../../messaging';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
+import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -144,7 +145,7 @@ export const BrowserTab = ({
   },
 }: BrowserTabProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [webViewSource, setWebViewSource] = useState(propUrl);
   const authorizeRequest = useSelector((state: RootState) => state.confirmation.details.authorizeRequest);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
@@ -265,7 +266,9 @@ export const BrowserTab = ({
     {
       key: 'more',
       icon: DotsThree,
-      onPress: () => {},
+      onPress: () => {
+        setModalVisible(true);
+      },
     },
   ];
 
@@ -370,6 +373,8 @@ export const BrowserTab = ({
             />
           ))}
         </View>
+
+        <BrowserOptionModal visibleModal={modalVisible} onChangeModalVisible={() => setModalVisible(false)} />
       </>
     </ScreenContainer>
   );
