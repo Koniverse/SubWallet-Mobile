@@ -19,7 +19,7 @@ import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser/BrowserScreen';
 
 type HomeStackParamList = {
-  Crypto: {};
+  Crypto: undefined;
   NFT: undefined;
   Crowdloans: undefined;
   Staking: undefined;

@@ -121,7 +121,6 @@ export const CryptoScreen = () => {
   return (
     <View style={viewContainerStyle}>
       <TokenGroupLayer
-        isShowZeroBalance
         navigation={navigation}
         accountInfoByNetworkMap={accountInfoByNetworkMap}
         onPressChainItem={onPressChainItem}
@@ -139,7 +138,6 @@ export const CryptoScreen = () => {
       {viewsLog.includes(ViewStep.CHAIN_DETAIL) && selectedNetworkInfo && (
         <View style={viewLayerStyle}>
           <ChainDetailLayer
-            isShowZeroBalance
             handleChangeTokenItem={handleChangeTokenItem}
             tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
             networkBalanceMap={networkBalanceMap}
