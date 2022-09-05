@@ -139,14 +139,11 @@ const bottomButtonAreaStyle: StyleProp<any> = {
   paddingVertical: 12,
 };
 
-export const BrowserTab = ({
-  route: {
-    params: { url: propUrl, name },
-  },
-}: BrowserTabProps) => {
+export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
+  const { url: propUrl, name } = params;
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [webViewSource, setWebViewSource] = useState(propUrl);
+  const [initWebViewSource, setInitWebViewSource] = useState(propUrl);
   const authorizeRequest = useSelector((state: RootState) => state.confirmation.details.authorizeRequest);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const { eventEmitter } = useContext(WebRunnerContext);
@@ -157,11 +154,13 @@ export const BrowserTab = ({
   const [injectedPageJs, setInjectedPageJs] = useState<string | null>(null);
   const webviewRef = useRef<WebView>(null);
   const browserSv = useRef<BrowserService | null>(null);
-  const url = useRef(webViewSource);
+  const url = useRef<string | null>(null);
   const title = useRef('');
-  const address = (url.current || webViewSource).split('://')[1].split('/')[0];
-  const hostname = address.split(':')[0];
-  const isUrlSecure = (url.current || webViewSource).startsWith('https://');
+
+  //todo: refactor this
+  const address = url.current ? url.current.split('://')[1].split('/')[0] : null;
+  const hostname = address ? address.split(':')[0] : null;
+  const isUrlSecure = url.current ? url.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
 
   const changeUrl = (nativeEvent: WebViewNavigation) => {
@@ -291,10 +290,14 @@ export const BrowserTab = ({
   }, []);
 
   useEffect(() => {
-    if (url.current !== propUrl) {
-      setWebViewSource(propUrl);
+    if (!initWebViewSource) {
+      setInitWebViewSource(params.url);
+    } else {
+      if (url.current !== params.url) {
+        webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${params.url}' })()`);
+      }
     }
-  }, [propUrl]);
+  }, [params, initWebViewSource]);
 
   useEffect(() => {
     authorizeRequest &&
@@ -326,11 +329,15 @@ export const BrowserTab = ({
           <AccountSettingButton navigation={navigation} />
 
           <View style={centerStyle}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
-              <Text style={hostNameTextStyle}>{hostname}</Text>
-            </View>
-            <Text style={nameSiteTextStyle}>{title.current || name}</Text>
+            {hostname && (
+              <>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
+                  <Text style={hostNameTextStyle}>{hostname}</Text>
+                </View>
+                <Text style={nameSiteTextStyle}>{title.current || name}</Text>
+              </>
+            )}
           </View>
 
           <IconButton
@@ -341,11 +348,11 @@ export const BrowserTab = ({
           />
         </View>
         <View style={{ flex: 1 }}>
-          {injectedPageJs ? (
+          {initWebViewSource && injectedPageJs ? (
             <WebView
               ref={webviewRef}
               originWhitelist={['*']}
-              source={{ uri: webViewSource }}
+              source={{ uri: initWebViewSource }}
               injectedJavaScriptBeforeContentLoaded={injectedPageJs}
               injectedJavaScript={getJsInjectContent(true)}
               onLoadStart={onLoadStart}
