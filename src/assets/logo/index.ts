@@ -84,7 +84,7 @@ export const ImageLogosMap = {
   ukraine: require('./03.Ukraine.png'),
   bitcountry: require('./61.Bit.Country.png'),
   unique_network: require('./104.UniqueNetwork.png'),
-  bnc: require('./63.BNC.png'),
+  bnc: require('./59.Bifrost.png'),
   kbtc: require('./23.kbtc.png'),
   kint: require('./27.Kintsugi.png'),
   kusd: require('./58.aUSD.png'),
