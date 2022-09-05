@@ -75,13 +75,16 @@ const receiveModalCopyBtn: StyleProp<any> = {
   borderBottomRightRadius: 5,
 };
 
-const receiveModalExplorerBtn: StyleProp<any> = {
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderColor: ColorMap.light,
-  flex: 1,
-  marginRight: 8,
-};
+function receiveModalExplorerBtnStyle(borderColor: string): StyleProp<any> {
+  return {
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: borderColor,
+    flex: 1,
+    marginRight: 8,
+  };
+}
+
 const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 export const ReceiveModal = ({
   selectedAddress,
@@ -157,9 +160,11 @@ export const ReceiveModal = ({
 
         <View style={{ flexDirection: 'row', paddingTop: 27 }}>
           <SubmitButton
+            disabled={!isSupportScanExplorer}
+            disabledColor={'rgba(34, 34, 34, 0.7)'}
             title={i18n.common.explorer}
             backgroundColor={ColorMap.dark2}
-            style={receiveModalExplorerBtn}
+            style={receiveModalExplorerBtnStyle(!isSupportScanExplorer ? 'rgba(255, 255, 255, 0.5)' : ColorMap.light)}
             onPress={() => {
               isSupportScanExplorer && Linking.openURL(scanExplorerAddressUrl);
             }}
