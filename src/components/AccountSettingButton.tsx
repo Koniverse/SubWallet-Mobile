@@ -4,14 +4,17 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { ColorMap } from 'styles/color';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
-  currentAccountAddress?: string;
-  isAccountWaiting?: boolean;
 }
 
-export const AccountSettingButton = ({ navigation, currentAccountAddress, isAccountWaiting }: Props) => {
+export const AccountSettingButton = ({ navigation }: Props) => {
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
+
   return (
     <TouchableOpacity
       onPress={() => {

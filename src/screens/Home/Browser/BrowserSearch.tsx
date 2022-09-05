@@ -7,11 +7,11 @@ import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/Button';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BrowserItem } from 'components/BrowserItem';
-import { getNetworkLogo } from 'utils/index';
 import { DAppSite, dAppSites } from '../../../predefined/dAppSites';
-import { GlobeSimple } from 'phosphor-react-native';
+import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
+import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
 
 function doFilter(searchString: string) {
   return dAppSites.filter(item => item.name.includes(searchString.toLowerCase()));
@@ -31,11 +31,17 @@ export const BrowserSearch = () => {
   }, [searchString]);
 
   const onPressItem = (item: DAppSite) => {
-    navigation.navigate('BrowserTab', { url: item.url, name: item.name });
+    nativeAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<DAppSite>) => {
-    return <BrowserItem leftIcon={getNetworkLogo(item.key, 20)} text={item.url} onPress={() => onPressItem(item)} />;
+    return (
+      <BrowserItem
+        leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
+        text={item.url}
+        onPress={() => onPressItem(item)}
+      />
+    );
   };
 
   return (
@@ -59,7 +65,7 @@ export const BrowserSearch = () => {
           <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light }}>Search Result</Text>
           {!!searchString && (
             <BrowserItem
-              leftIcon={<GlobeSimple color={ColorMap.disabled} weight={'bold'} size={20} />}
+              leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
               text={searchString}
               onPress={() => {}}
             />

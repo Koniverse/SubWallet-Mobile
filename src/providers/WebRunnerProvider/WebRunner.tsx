@@ -65,7 +65,7 @@ const startPingInterval = () => {
 };
 
 const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
-  listenMessage(JSON.parse(eventData.nativeEvent.data), (unHandleData: Message['data']) => {
+  listenMessage(JSON.parse(eventData.nativeEvent.data), eventEmitter, (unHandleData: Message['data']) => {
     const { id, response } = unHandleData as { id: string; response: Object };
     if (id === '0') {
       const statusData = response as { status: WebRunnerStatus };
@@ -140,7 +140,7 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
         source={source}
         onMessage={onWebviewMessage}
         originWhitelist={['*']}
-        injectedJavaScript={getJsInjectContent(false)}
+        injectedJavaScript={getJsInjectContent()}
         onError={e => console.debug('### WebRunner error', e)}
         onHttpError={e => console.debug('### WebRunner HttpError', e)}
         javaScriptEnabled={true}

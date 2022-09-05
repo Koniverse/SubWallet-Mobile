@@ -39,19 +39,13 @@ const searchBtnTextStyle: StyleProp<any> = {
 
 export const BrowserScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
-  const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
   const SearchIcon = MagnifyingGlass;
 
   return (
     <ScreenContainer placeholderBgc={ColorMap.dark1}>
       <>
         <View style={browserScreenHeader}>
-          <AccountSettingButton
-            currentAccountAddress={currentAccount?.address || ''}
-            isAccountWaiting={isAccountWaiting}
-            navigation={navigation}
-          />
+          <AccountSettingButton navigation={navigation} />
 
           <TouchableOpacity
             activeOpacity={BUTTON_ACTIVE_OPACITY}

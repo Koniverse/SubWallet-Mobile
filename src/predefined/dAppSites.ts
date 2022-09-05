@@ -6,13 +6,18 @@ export type DAppSite = {
 
 export const dAppSites: DAppSite[] = [
   {
+    url: 'https://connect.subwallet.app',
+    key: 'connect.subwallet.app',
+    name: 'SubWallet Connect',
+  },
+  {
     url: 'https://polkadot.js.org/apps',
-    key: 'polkadot',
+    key: 'polkadot.js.org',
     name: 'Polkadot JS',
   },
   {
     url: 'https://portal.astar.network',
-    key: 'astar',
+    key: 'portal.astar',
     name: 'Astar',
   },
   {

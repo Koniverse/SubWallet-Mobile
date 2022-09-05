@@ -46,6 +46,7 @@ import useStoreCrowdloan from 'hooks/store/useStoreCrowdloan';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
+import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -118,6 +119,7 @@ export const App = () => {
   useStoreBalance();
   useStoreTransactionHistory();
   useStoreCrowdloan();
+  useStoreAuthUrls();
   useStoreConfirmation();
 
   // Enable lock screen on the start app

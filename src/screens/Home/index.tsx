@@ -5,7 +5,7 @@ import { StakingScreen } from './StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Aperture, CurrencyCircleDollar, Database, Rocket } from 'phosphor-react-native';
+import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,11 +30,7 @@ export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['na
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
 function checkTabCompleted(target: string) {
-  if (target === '/Home/Crypto' || target === '/Home/Crowdloans' || target === '/Home/Browser') {
-    return true;
-  } else {
-    return false;
-  }
+  return target === '/Home/Crypto' || target === '/Home/Crowdloans' || target === '/Home/Browser';
 }
 
 const MainScreen = () => {
