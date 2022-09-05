@@ -10,13 +10,13 @@ import { BalanceInfo } from '../../../types';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { StyleProp, View } from 'react-native';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
-import useAccountInfoByNetworkMap from 'hooks/screen/Home/Ctypto/useAccountInfoByNetworkMap';
+import useAccountInfoByNetworkMap from 'hooks/screen/Home/Crypto/useAccountInfoByNetworkMap';
 import useViewStep from 'hooks/screen/useViewStep';
-import { ViewStep } from 'screens/Home/Ctypto/constant';
-import TokenGroupLayer from 'screens/Home/Ctypto/layers/TokenGroup';
+import { ViewStep } from 'screens/Home/Crypto/constant';
+import TokenGroupLayer from 'screens/Home/Crypto/layers/TokenGroup';
 import { TokenSelect } from 'screens/TokenSelect';
-import ChainDetailLayer from 'screens/Home/Ctypto/layers/ChainDetail';
-import TokenHistoryLayer from 'screens/Home/Ctypto/layers/TokenHistory';
+import ChainDetailLayer from 'screens/Home/Crypto/layers/ChainDetail';
+import TokenHistoryLayer from 'screens/Home/Crypto/layers/TokenHistory';
 import { getAccountType } from 'utils/index';
 
 interface SelectionInfo {

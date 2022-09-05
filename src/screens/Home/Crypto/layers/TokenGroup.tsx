@@ -6,19 +6,19 @@ import { ColorMap } from 'styles/color';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types/routes';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { isItemAllowedToShow, renderTabBar } from 'screens/Home/Ctypto/layers/shared';
-import { TokensTab } from 'screens/Home/Ctypto/tabs/TokensTab';
-import { ChainsTab } from 'screens/Home/Ctypto/tabs/ChainsTab';
+import { isItemAllowedToShow, renderTabBar } from 'screens/Home/Crypto/layers/shared';
+import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
+import { ChainsTab } from 'screens/Home/Crypto/tabs/ChainsTab';
 import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../../../../types';
 import { ListRenderItemInfo } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
-import TabsContainerHeader from 'screens/Home/Ctypto/TabsContainerHeader';
+import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
 import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
 import i18n from 'utils/i18n/i18n';
-import useTokenBalanceItems from 'hooks/screen/Home/Ctypto/layers/TokenGroup/useTokenBalanceItems';
+import useTokenBalanceItems from 'hooks/screen/Home/Crypto/layers/TokenGroup/useTokenBalanceItems';
 
 interface Prop {
   isShowZeroBalance?: boolean;

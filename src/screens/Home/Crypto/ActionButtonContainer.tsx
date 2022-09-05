@@ -4,7 +4,7 @@ import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { TokenSelect } from 'screens/TokenSelect';
-import { ReceiveModal } from 'screens/Home/Ctypto/ReceiveModal';
+import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { AccountActionType, SelectionProviderProps, TokenItemType } from 'types/ui-types';
 import {
   ArrowFatLineDown,
