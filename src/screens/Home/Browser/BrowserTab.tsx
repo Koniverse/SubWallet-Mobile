@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { Alert, NativeSyntheticEvent, StyleProp, Text, View } from 'react-native';
+import { Alert, NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserTabProps, RootNavigationProps } from 'types/routes';
@@ -22,7 +22,6 @@ import { centerStyle, FontMedium, FontSize0, sharedStyles } from 'styles/sharedS
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
-import { BrowserService } from '../../../ztest/BrowserService';
 import { WebViewMessage, WebViewNavigation, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
@@ -31,6 +30,7 @@ import { RootState } from 'stores/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { approveAuthRequestV2 } from '../../../messaging';
 import { DEVICE } from '../../../constant';
+import { BrowserService } from 'screens/Home/Browser/BrowserService';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -75,7 +75,13 @@ const InjectPageJsScript: InjectPageJsScriptType = {
 
   async init() {
     // todo: make this work on IOS
-    const pageJsContent = await RNFS.readFileAssets('PageJs.bundle/page.js', 'ascii');
+    let pageJsContent;
+    if (Platform.OS === 'ios') {
+      pageJsContent = await RNFS.readFile(`${RNFS.MainBundlePath}/PageJs.bundle/page.js`, 'ascii');
+    } else {
+      pageJsContent = await RNFS.readFileAssets('PageJs.bundle/page.js', 'ascii');
+    }
+
     this.content = BridgeScript + pageJsContent;
 
     return this.content;
@@ -129,7 +135,7 @@ const bottomButtonAreaStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark1,
   borderTopColor: ColorMap.dark2,
   borderTopWidth: 1,
-  paddingTop: 11,
+  paddingVertical: 12,
 };
 
 export const BrowserTab = ({

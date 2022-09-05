@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { ScreenContainer } from 'components/ScreenContainer';
@@ -26,11 +24,11 @@ const searchBtnWrapperStyle: StyleProp<any> = {
   paddingRight: 16,
   paddingLeft: 16,
   flexDirection: 'row',
-  height: 48,
+  height: 44,
 };
 
 const searchBtnTextStyle: StyleProp<any> = {
-  marginHorizontal: 8,
+  marginHorizontal: 16,
   ...sharedStyles.mainText,
   lineHeight: 20,
   ...FontMedium,
@@ -53,9 +51,7 @@ export const BrowserScreen = () => {
             onPress={() => navigation.navigate('BrowserSearch')}>
             <View style={searchBtnWrapperStyle}>
               <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
-              <View>
-                <Text style={searchBtnTextStyle}>{i18n.common.searchPlaceholder}</Text>
-              </View>
+              <Text style={searchBtnTextStyle}>{i18n.common.searchPlaceholder}</Text>
             </View>
           </TouchableOpacity>
         </View>

@@ -92,7 +92,7 @@ export const en = {
     fail: 'Fail',
     active: 'Active',
     search: 'Search',
-    searchPlaceholder: 'Search or enter website',
+    searchPlaceholder: 'Search Or Enter Website',
     apply: 'Apply',
   },
   title: {

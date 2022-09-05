@@ -61,8 +61,10 @@ export const BrowserSearch = () => {
           <Button title={i18n.common.cancel} onPress={() => navigation.canGoBack() && navigation.goBack()} />
         </View>
 
-        <View style={{ flex: 1, paddingVertical: 24 }}>
-          <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light }}>Search Result</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light, paddingVertical: 24 }}>
+            Search Result
+          </Text>
           {!!searchString && (
             <BrowserItem
               leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
