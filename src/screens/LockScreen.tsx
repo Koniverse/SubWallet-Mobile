@@ -40,18 +40,22 @@ export const LockScreen = ({ navigation }: NavigationProps) => {
 
   useEffect(() => {
     const _authMethod = faceIdEnabled ? 'biometric' : 'pinCode';
-    if (isFocused && _authMethod === 'biometric') {
-      TouchID.isSupported()
-        .then(currentType => {
-          TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
-            .then(() => {
-              unlockWithBiometric();
-            })
-            .catch(() => {
-              setAuthMethod('pinCode');
-            });
-        })
-        .catch(() => setAuthMethod('pinCode'));
+    if (isFocused) {
+      if (_authMethod === 'biometric') {
+        TouchID.isSupported()
+          .then(currentType => {
+            TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
+              .then(() => {
+                unlockWithBiometric();
+              })
+              .catch(() => {
+                setAuthMethod('pinCode');
+              });
+          })
+          .catch(() => setAuthMethod('pinCode'));
+      } else {
+        ref.current?.focus();
+      }
     }
     setAuthMethod(_authMethod);
     // eslint-disable-next-line react-hooks/exhaustive-deps
