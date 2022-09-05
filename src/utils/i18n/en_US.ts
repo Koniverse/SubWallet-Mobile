@@ -192,6 +192,7 @@ export const en = {
     exportAccountWarning: "You are exporting your account. Keep it safe and don't share it with anyone.",
     noAccountMessage: "There's no account at the moment",
     requireMessage: 'This field is required',
+    notSupportTransferMessage: 'The transfer for the current token is not supported',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

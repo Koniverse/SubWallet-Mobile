@@ -18,6 +18,7 @@ import { SubWalletModal } from 'components/SubWalletModal';
 import { ExportJson } from 'screens/ExportJson';
 import { deviceHeight } from '../constant';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const editAccountAddressItem: StyleProp<any> = {
   borderRadius: 5,
@@ -34,15 +35,26 @@ export const EditAccount = ({
     params: { address: currentAddress, name },
   },
 }: EditAccountProps) => {
+  const formConfig = {
+    accountName: {
+      name: i18n.common.accountName,
+      value: name,
+    },
+  };
   const navigation = useNavigation<RootNavigationProps>();
-  const [editedName, setEditName] = useState<string>(name);
   const [isShowExportModal, setShowExportModal] = useState<boolean>(false);
   const _saveChange = useCallback(
-    (editName: string) => {
+    (formState: FormState) => {
+      const editName = formState.data.accountName;
       editAccount(currentAddress, editName).catch(e => console.log(e));
     },
     [currentAddress],
   );
+
+  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
+    onSubmitForm: _saveChange,
+  });
+
   const toast = useToast();
 
   const copyToClipboard = (text: string) => {
@@ -69,12 +81,13 @@ export const EditAccount = ({
         <View style={{ paddingVertical: 24 }}>{<SubWalletAvatar address={currentAddress} size={76} />}</View>
 
         <EditAccountInputText
+          ref={formState.refs.accountName}
           editAccountInputStyle={{ marginBottom: 8 }}
-          label={i18n.common.accountName}
-          value={editedName}
-          onChangeText={text => setEditName(text)}
-          onBlur={() => _saveChange(editedName)}
-          onEndEditing={() => _saveChange(editedName)}
+          label={formState.labels.accountName}
+          value={formState.data.accountName}
+          onChangeText={onChangeValue('accountName')}
+          onSubmitField={onSubmitField('accountName')}
+          returnKeyType={'go'}
         />
 
         <View style={editAccountAddressItem}>
