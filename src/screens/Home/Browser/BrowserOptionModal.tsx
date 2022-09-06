@@ -3,7 +3,7 @@ import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from '
 import { Linking, StyleProp, Text, View } from 'react-native';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { ArrowsOutSimple, Star } from 'phosphor-react-native';
+import { ArrowsOutSimple, Star, StarHalf } from 'phosphor-react-native';
 import { SelectItem } from 'components/SelectItem';
 import { getLeftIcon } from 'utils/index';
 import { SiteInfo } from 'stores/types';
@@ -59,7 +59,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
     },
     {
       key: 'addToFavourites',
-      icon: getLeftIcon(Star),
+      icon: getLeftIcon(isBookmarked ? StarHalf : Star),
       // todo: i18n
       label: isBookmarked ? 'Remove from favourites' : 'Add to favourites',
       onPress: () => {

@@ -7,38 +7,68 @@ import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/Button';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BrowserItem } from 'components/BrowserItem';
-import { DAppSite, dAppSites } from '../../../predefined/dAppSites';
+import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
+import { SiteInfo } from 'stores/types';
+import { isValidURL } from 'utils/browser';
 
 function doFilter(searchString: string) {
-  return dAppSites.filter(item => item.name.includes(searchString.toLowerCase()));
+  return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
+}
+
+type SearchItemType = {
+  displayUrl?: string;
+} & SiteInfo;
+
+function getFirstSearchItem(searchString: string): SearchItemType {
+  if (isValidURL(searchString)) {
+    const url =
+      searchString.startsWith('http://') || searchString.startsWith('https://')
+        ? searchString
+        : `https://${searchString}`;
+
+    //todo: use function to get hostname here
+    const address = url.split('://')[1].split('/')[0];
+    const hostname = address.split(':')[0];
+
+    return {
+      url,
+      name: hostname,
+    };
+  } else {
+    return {
+      url: `https://duckduckgo.com/?q=${encodeURIComponent(searchString)}`,
+      displayUrl: `${searchString} - Search At duckduckgo`, //todo: i18n here
+      name: 'duckduckgo.com',
+    };
+  }
 }
 
 export const BrowserSearch = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
-  const [filteredList, setFilteredList] = useState<DAppSite[]>(dAppSites);
+  const [filteredList, setFilteredList] = useState<SearchItemType[]>(dAppSites);
 
   useEffect(() => {
     if (searchString) {
-      setFilteredList(doFilter(searchString));
+      setFilteredList([getFirstSearchItem(searchString), ...doFilter(searchString)]);
     } else {
       setFilteredList(dAppSites);
     }
   }, [searchString]);
 
-  const onPressItem = (item: DAppSite) => {
+  const onPressItem = (item: SearchItemType) => {
     nativeAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<DAppSite>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {
     return (
       <BrowserItem
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
-        text={item.url}
+        text={item.displayUrl || item.url}
         onPress={() => onPressItem(item)}
       />
     );
@@ -66,13 +96,6 @@ export const BrowserSearch = () => {
             {/* todo: i18n this */}
             Search Result
           </Text>
-          {!!searchString && (
-            <BrowserItem
-              leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
-              text={searchString}
-              onPress={() => {}}
-            />
-          )}
           <FlatList data={filteredList} renderItem={renderItem} />
         </View>
       </View>

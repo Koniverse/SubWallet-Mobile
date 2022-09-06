@@ -160,6 +160,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const browserOptionModalRef = useRef(null);
 
   //todo: refactor this
+  //todo: use function to get hostname here
   const address = url.current ? url.current.split('://')[1].split('/')[0] : null;
   const hostname = address ? address.split(':')[0] : null;
   const isUrlSecure = url.current ? url.current.startsWith('https://') : false;
@@ -273,7 +274,9 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     {
       key: 'home',
       icon: HouseSimple,
-      onPress: () => {},
+      onPress: () => {
+        navigation.canGoBack() && navigation.goBack();
+      },
     },
     {
       key: 'more',
