@@ -33,6 +33,7 @@ import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory } from 'stores/updater';
+import { getHostName } from 'utils/index';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -76,7 +77,6 @@ const InjectPageJsScript: InjectPageJsScriptType = {
   content: null,
 
   async init() {
-    // todo: make this work on IOS
     let pageJsContent;
     if (Platform.OS === 'ios') {
       pageJsContent = await RNFS.readFile(`${RNFS.MainBundlePath}/PageJs.bundle/page.js`, 'ascii');
@@ -160,9 +160,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const browserOptionModalRef = useRef(null);
 
   //todo: refactor this
-  //todo: use function to get hostname here
-  const address = url.current ? url.current.split('://')[1].split('/')[0] : null;
-  const hostname = address ? address.split(':')[0] : null;
+  const hostname = url.current ? getHostName(url.current) : null;
   const isUrlSecure = url.current ? url.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
 

@@ -10,6 +10,7 @@ import { SiteInfo } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { addBookmark, removeBookmark } from 'stores/updater';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   visibleModal: boolean;
@@ -51,7 +52,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
     {
       key: 'openInBrowser',
       icon: getLeftIcon(ArrowsOutSimple),
-      label: 'Open in browser', // todo: i18n
+      label: i18n.common.openInBrowser,
       onPress: () => {
         Linking.openURL(siteInfo.url);
         onClose();
@@ -60,8 +61,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
     {
       key: 'addToFavourites',
       icon: getLeftIcon(isBookmarked ? StarHalf : Star),
-      // todo: i18n
-      label: isBookmarked ? 'Remove from favourites' : 'Add to favourites',
+      label: isBookmarked ? i18n.common.removeFromFavourites : i18n.common.addToFavourites,
       onPress: () => {
         if (isBookmarked) {
           removeBookmark(siteInfo);

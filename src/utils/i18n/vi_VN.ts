@@ -96,6 +96,13 @@ export const vi = {
     apply: 'Apply',
     chooseAccount: 'Choose the account(s) you’d like to connect',
     connect: 'Connect',
+    favorites: 'Favorites',
+    history: 'History',
+    openInBrowser: 'Open in browser',
+    removeFromFavourites: 'Remove from favourites',
+    addToFavourites: 'Add to favourites',
+    searchAtDuckDuckGo: 'Search At DuckDuckGo',
+    searchResult: 'Search Result',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ColorMap } from 'styles/color';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
 import { Search } from 'components/Search';
 import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/Button';
@@ -14,6 +14,7 @@ import { RootNavigationProps } from 'types/routes';
 import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { isValidURL } from 'utils/browser';
+import { getHostName } from 'utils/index';
 
 function doFilter(searchString: string) {
   return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -30,9 +31,7 @@ function getFirstSearchItem(searchString: string): SearchItemType {
         ? searchString
         : `https://${searchString}`;
 
-    //todo: use function to get hostname here
-    const address = url.split('://')[1].split('/')[0];
-    const hostname = address.split(':')[0];
+    const hostname = getHostName(url);
 
     return {
       url,
@@ -41,11 +40,18 @@ function getFirstSearchItem(searchString: string): SearchItemType {
   } else {
     return {
       url: `https://duckduckgo.com/?q=${encodeURIComponent(searchString)}`,
-      displayUrl: `${searchString} - Search At duckduckgo`, //todo: i18n here
+      displayUrl: `${searchString} - ${i18n.common.searchAtDuckDuckGo}`,
       name: 'duckduckgo.com',
     };
   }
 }
+
+const searchResultStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.light,
+  paddingVertical: 24,
+};
 
 export const BrowserSearch = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -92,10 +98,7 @@ export const BrowserSearch = () => {
         </View>
 
         <View style={{ flex: 1 }}>
-          <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light, paddingVertical: 24 }}>
-            {/* todo: i18n this */}
-            Search Result
-          </Text>
+          <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
           <FlatList data={filteredList} renderItem={renderItem} />
         </View>
       </View>

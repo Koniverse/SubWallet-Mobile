@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
@@ -39,6 +39,13 @@ const searchBtnTextStyle: StyleProp<any> = {
   color: ColorMap.disabled,
 };
 
+const searchTitleStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.light,
+  paddingVertical: 24,
+};
+
 export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
@@ -49,9 +56,10 @@ export const BrowserScreen = () => {
     navigation.navigate('BrowserTab', { url: item.url, name: item.name });
   };
 
-  const renderSiteItem = ({ item }: ListRenderItemInfo<SiteInfo>) => {
+  const renderSiteItem = (item: SiteInfo) => {
     return (
       <BrowserItem
+        key={item.url}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
         onPress={() => onPressItem(item)}
@@ -77,26 +85,20 @@ export const BrowserScreen = () => {
         </View>
 
         {!!bookmarkItems.length || !!historyItems.length ? (
-          <ScrollView style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
             {!!bookmarkItems.length && (
               <>
-                <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light, paddingVertical: 24 }}>
-                  {/* todo: i18n this */}
-                  Favorites
-                </Text>
+                <Text style={searchTitleStyle}>{i18n.common.favorites}</Text>
 
-                <FlatList data={bookmarkItems} renderItem={renderSiteItem} />
+                {bookmarkItems.slice(0, 15).map(item => renderSiteItem(item))}
               </>
             )}
 
             {!!historyItems.length && (
               <>
-                <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light, paddingVertical: 24 }}>
-                  {/* todo: i18n this */}
-                  History
-                </Text>
+                <Text style={searchTitleStyle}>{i18n.common.history}</Text>
 
-                <FlatList data={historyItems} renderItem={renderSiteItem} />
+                {historyItems.slice(0, 15).map(item => renderSiteItem(item))}
               </>
             )}
           </ScrollView>
