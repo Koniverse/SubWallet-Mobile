@@ -47,6 +47,7 @@ import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
 import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
+import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -212,6 +213,14 @@ export const App = () => {
                   <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>
                     {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
                     <Stack.Screen name="LockScreen" component={LockScreen} />
+                  </Stack.Group>
+                  <Stack.Group
+                    screenOptions={{
+                      presentation: 'transparentModal',
+                      contentStyle: { backgroundColor: 'rgba(22, 22, 22, 0.8)' },
+                      headerShown: false,
+                    }}>
+                    <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
                   </Stack.Group>
                 </Stack.Navigator>
               </NavigationContainer>

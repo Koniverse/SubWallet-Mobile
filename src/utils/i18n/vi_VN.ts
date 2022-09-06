@@ -94,6 +94,8 @@ export const vi = {
     search: 'Search',
     searchPlaceholder: 'Search Or Enter Website',
     apply: 'Apply',
+    chooseAccount: 'Choose the account(s) you’d like to connect',
+    connect: 'Connect',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -193,6 +195,10 @@ export const vi = {
     noAccountMessage: "There's no account at the moment",
     requireMessage: 'This field is required',
     notSupportTransferMessage: 'The transfer for the current token is not supported',
+    noEvmAccountMessage: "You don't have any evm account. Please create, import or restore an account to continue",
+    noSubstrateAccountMessage:
+      "You don't have any substrate account. Please create, import or restore an account to continue",
+    trustSiteMessage: 'Make sure you trust this site before connecting',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

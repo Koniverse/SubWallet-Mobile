@@ -20,6 +20,7 @@ export const ColorMap = {
   warningOverlay: 'rgba(231, 185, 23, 0.05)',
   inputBackground: '#262C4A',
   checkBoxBorderColor: '#2D365C',
+  borderButtonColor: '#444444',
 };
 
 export const Background = StyleSheet.create({
