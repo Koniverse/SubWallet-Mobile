@@ -37,8 +37,15 @@ const browserSlice = createSlice({
         }),
       ];
     },
+    addToHistory: (state, { payload }: PayloadAction<SiteInfo>) => {
+      if (!state.history.length || state.history[0].url !== payload.url) {
+        state.history = [payload, ...state.history].slice(0, 50); //max 50 items
+      }
+    },
     addBookmark: (state, { payload }: PayloadAction<SiteInfo>) => {
-      state.bookmarks = [...state.bookmarks, payload];
+      if (!state.bookmarks.some(s => s.url === payload.url)) {
+        state.bookmarks = [payload, ...state.bookmarks];
+      }
     },
     removeBookmark: (state, { payload }: PayloadAction<SiteInfo>) => {
       state.bookmarks = state.bookmarks.filter(t => t.url !== payload.url);

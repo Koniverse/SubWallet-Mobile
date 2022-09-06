@@ -8,7 +8,7 @@ import {
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsSlice, AuthUrlsSlice } from 'stores/types';
+import { AccountsSlice, AuthUrlsSlice, SiteInfo } from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
@@ -54,4 +54,18 @@ export function updateCrowdloan(payload: CrowdloanJson): void {
 
 export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
   store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap } });
+}
+
+// browser
+
+export function addToHistory(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/addToHistory', payload });
+}
+
+export function addBookmark(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/addBookmark', payload });
+}
+
+export function removeBookmark(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/removeBookmark', payload });
 }

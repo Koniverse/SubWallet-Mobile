@@ -63,6 +63,7 @@ export const BrowserSearch = () => {
 
         <View style={{ flex: 1 }}>
           <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light, paddingVertical: 24 }}>
+            {/* todo: i18n this */}
             Search Result
           </Text>
           {!!searchString && (

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { Alert, NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
@@ -32,6 +32,7 @@ import { approveAuthRequestV2 } from '../../../messaging';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
+import { addToHistory } from 'stores/updater';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -156,12 +157,15 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const browserSv = useRef<BrowserService | null>(null);
   const url = useRef<string | null>(null);
   const title = useRef('');
+  const browserOptionModalRef = useRef(null);
 
   //todo: refactor this
   const address = url.current ? url.current.split('://')[1].split('/')[0] : null;
   const hostname = address ? address.split(':')[0] : null;
   const isUrlSecure = url.current ? url.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
+
+  const isWebviewReady = initWebViewSource && injectedPageJs;
 
   const changeUrl = (nativeEvent: WebViewNavigation) => {
     url.current = nativeEvent.url;
@@ -212,6 +216,15 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
 
     changeUrl(nativeEvent);
+    addToHistory({
+      url: nativeEvent.url,
+      name: nativeEvent.title,
+    });
+    // @ts-ignore
+    browserOptionModalRef.current?.onUpdateSiteInfo({
+      url: nativeEvent.url,
+      name: nativeEvent.title,
+    });
     // clear the current service and init the new one
     clearCurrentBrowserSv();
     initBrowserSv(nativeEvent);
@@ -265,6 +278,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     {
       key: 'more',
       icon: DotsThree,
+      isDisabled: !isWebviewReady,
       onPress: () => {
         setModalVisible(true);
       },
@@ -322,6 +336,10 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
       });
   }, [authorizeRequest, accounts]);
 
+  const onCloseBrowserOptionModal = useCallback(() => {
+    setModalVisible(false);
+  }, []);
+
   return (
     <ScreenContainer>
       <>
@@ -348,7 +366,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
           />
         </View>
         <View style={{ flex: 1 }}>
-          {initWebViewSource && injectedPageJs ? (
+          {isWebviewReady ? (
             <WebView
               ref={webviewRef}
               originWhitelist={['*']}
@@ -381,7 +399,11 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
           ))}
         </View>
 
-        <BrowserOptionModal visibleModal={modalVisible} onChangeModalVisible={() => setModalVisible(false)} />
+        <BrowserOptionModal
+          ref={browserOptionModalRef}
+          visibleModal={modalVisible}
+          onClose={onCloseBrowserOptionModal}
+        />
       </>
     </ScreenContainer>
   );
