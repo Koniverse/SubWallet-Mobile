@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BrowserItem } from 'components/BrowserItem';
 import { StoredSiteInfo } from 'stores/types';
+import { Button } from 'components/Button';
 
 const browserScreenHeader: StyleProp<any> = {
   flexDirection: 'row',
@@ -45,6 +46,16 @@ const searchTitleStyle: StyleProp<any> = {
   color: ColorMap.light,
   paddingVertical: 24,
 };
+
+function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Text style={searchTitleStyle}>{title}</Text>
+
+      <Button title={i18n.common.seeAll} onPress={onPressSeeAllBtn} />
+    </View>
+  );
+}
 
 export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
@@ -88,7 +99,7 @@ export const BrowserScreen = () => {
           <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
             {!!bookmarkItems.length && (
               <>
-                <Text style={searchTitleStyle}>{i18n.common.favorites}</Text>
+                {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}
 
                 {bookmarkItems.slice(0, 15).map(item => renderSiteItem(item))}
               </>
@@ -96,7 +107,7 @@ export const BrowserScreen = () => {
 
             {!!historyItems.length && (
               <>
-                <Text style={searchTitleStyle}>{i18n.common.history}</Text>
+                {renderGroupHeader(i18n.common.history, () => navigation.navigate('HistoryGroupDetail'))}
 
                 {historyItems.slice(0, 15).map(item => renderSiteItem(item))}
               </>

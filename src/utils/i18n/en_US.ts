@@ -103,6 +103,7 @@ export const en = {
     addToFavourites: 'Add to favourites',
     searchAtDuckDuckGo: 'Search At DuckDuckGo',
     searchResult: 'Search Result',
+    seeAll: 'See All',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

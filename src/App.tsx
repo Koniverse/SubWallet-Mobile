@@ -48,6 +48,8 @@ import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
 import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
 import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
+import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
+import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -207,6 +209,8 @@ export const App = () => {
                       <Stack.Screen name="ExportJson" component={ExportJson} />
                       <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                       <Stack.Screen name="BrowserTab" component={BrowserTab} />
+                      <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
+                      <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                     </Stack.Group>
                   )}

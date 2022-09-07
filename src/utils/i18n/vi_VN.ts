@@ -103,6 +103,7 @@ export const vi = {
     addToFavourites: 'Add to favourites',
     searchAtDuckDuckGo: 'Search At DuckDuckGo',
     searchResult: 'Search Result',
+    seeAll: 'See All',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

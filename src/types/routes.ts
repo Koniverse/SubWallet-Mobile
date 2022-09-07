@@ -25,6 +25,8 @@ export type RootStackParamList = {
   BrowserSearch: undefined;
   BrowserTab: { url: string; name: string };
   ConfirmationPopup: undefined;
+  FavouritesGroupDetail: undefined;
+  HistoryGroupDetail: undefined;
   WebViewDebugger: undefined;
 };
 

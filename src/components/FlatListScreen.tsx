@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { useLazyList } from 'hooks/useLazyList';
 import { ActivityLoading } from 'components/ActivityLoading';
+import i18n from 'utils/i18n/i18n';
 
 interface RightIconOpt {
   icon: (iconProps: IconProps) => JSX.Element;
@@ -27,6 +28,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
+  placeholder?: string;
 }
 
 export function FlatListScreen<T>({
@@ -41,6 +43,7 @@ export function FlatListScreen<T>({
   afterListItem,
   renderListEmptyComponent,
   filterFunction,
+  placeholder = i18n.common.search,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -103,6 +106,7 @@ export function FlatListScreen<T>({
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
           autoFocus={false}
+          placeholder={placeholder}
           onClearSearchString={() => setSearchString('')}
           onSearch={setSearchString}
           searchText={searchString}
