@@ -10,3 +10,8 @@ export function isValidURL(str: string): boolean {
   ); // fragment locator
   return pattern.test(str);
 }
+
+export function getHostName(url: string) {
+  const address = url.split('://')[1].split('/')[0];
+  return address.split(':')[0];
+}

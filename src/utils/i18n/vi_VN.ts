@@ -105,6 +105,8 @@ export const vi = {
     searchResult: 'Search Result',
     seeAll: 'See All',
     historyEmptyListPlaceholder: 'Your history will appear here',
+    approve: 'Approve',
+    metadataIsOutOfDate: 'Your metadata is out of date',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -133,6 +135,8 @@ export const vi = {
     qrScanner: 'QR Scanner',
     unitSelection: 'Unit Selection',
     filters: 'Filters',
+    metadataTitlePart1: 'Approving this update will sync your metadata for the',
+    metadataTitlePart2: 'chain from',
   },
   tabName: {
     crypto: 'Crypto',

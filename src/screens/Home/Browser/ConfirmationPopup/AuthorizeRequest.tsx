@@ -10,6 +10,8 @@ import { RequestAuthorizeTab } from '@subwallet/extension-base/background/types'
 import { ConnectAccount } from 'components/ConnectAccount';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { Warning } from 'components/Warning';
+import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
+import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 
 interface Props {
   request: RequestAuthorizeTab;
@@ -35,44 +37,54 @@ export const AuthorizeRequest = ({ request: { origin, accountAuthType, allowedAc
   }, [accountList, selectedAccounts]);
 
   return (
-    <View style={{ width: '100%' }}>
-      <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{origin}</Text>
-      {accountList && accountList.length ? (
-        <>
-          <Text style={[textStyle, { paddingBottom: 16 }]}>{i18n.common.chooseAccount}</Text>
-          <ScrollView style={{ maxHeight: 168 }} showsVerticalScrollIndicator={false}>
-            <>
-              <ConnectAccount
-                isSelected={isSelectedAll}
-                address={ALL_ACCOUNT_KEY}
-                name={'Select All'}
-                selectedAccounts={accountList.map(account => account.address)}
-                selectAccountCallBack={setSelectedAccounts}
-              />
-              {accountList.map(acc => (
+    <View style={{ width: '100%', flex: 1 }}>
+      <Header title={'Approve Request'} hostName={origin} />
+      <View style={{ flex: 1 }}>
+        <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{origin}</Text>
+        {accountList && accountList.length ? (
+          <>
+            <Text style={[textStyle, { paddingBottom: 16 }]}>{i18n.common.chooseAccount}</Text>
+            <ScrollView style={{ maxHeight: 168 }} showsVerticalScrollIndicator={false}>
+              <>
                 <ConnectAccount
-                  key={acc.address}
-                  isSelected={selectedAccounts.includes(acc.address)}
-                  address={acc.address}
-                  name={acc.name || ''}
-                  selectedAccounts={selectedAccounts}
+                  isSelected={isSelectedAll}
+                  address={ALL_ACCOUNT_KEY}
+                  name={'Select All'}
+                  selectedAccounts={accountList.map(account => account.address)}
                   selectAccountCallBack={setSelectedAccounts}
                 />
-              ))}
-            </>
-          </ScrollView>
-        </>
-      ) : (
-        <Warning
-          message={
-            accountAuthType === 'evm'
-              ? i18n.warningMessage.noEvmAccountMessage
-              : i18n.warningMessage.noSubstrateAccountMessage
-          }
-        />
-      )}
+                {accountList.map(acc => (
+                  <ConnectAccount
+                    key={acc.address}
+                    isSelected={selectedAccounts.includes(acc.address)}
+                    address={acc.address}
+                    name={acc.name || ''}
+                    selectedAccounts={selectedAccounts}
+                    selectAccountCallBack={setSelectedAccounts}
+                  />
+                ))}
+              </>
+            </ScrollView>
+          </>
+        ) : (
+          <Warning
+            message={
+              accountAuthType === 'evm'
+                ? i18n.warningMessage.noEvmAccountMessage
+                : i18n.warningMessage.noSubstrateAccountMessage
+            }
+          />
+        )}
 
-      <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24 }]}>{i18n.warningMessage.trustSiteMessage}</Text>
+        <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24 }]}>{i18n.warningMessage.trustSiteMessage}</Text>
+      </View>
+      <ConfirmationFooter
+        isShowBlockButton={true}
+        cancelButtonTitle={i18n.common.cancel}
+        submitButtonTitle={i18n.common.connect}
+        onPressCancelButton={() => {}}
+        onPressSubmitButton={() => {}}
+      />
     </View>
   );
 };

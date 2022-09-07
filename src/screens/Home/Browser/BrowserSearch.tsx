@@ -14,7 +14,7 @@ import { RootNavigationProps } from 'types/routes';
 import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { isValidURL } from 'utils/browser';
-import { getHostName } from 'utils/index';
+import { getHostName } from 'utils/browser';
 
 function doFilter(searchString: string) {
   return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));

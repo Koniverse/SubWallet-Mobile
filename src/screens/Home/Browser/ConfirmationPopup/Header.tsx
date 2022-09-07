@@ -16,6 +16,7 @@ const titleStyle: StyleProp<any> = {
 };
 
 export const Header = ({ title, hostName }: Props) => {
+  console.log('title', title);
   return (
     <View style={{ alignItems: 'center' }}>
       <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 56, height: 56 }} />

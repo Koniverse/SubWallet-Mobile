@@ -542,8 +542,3 @@ export function getLeftIcon(icon: (iconProps: IconProps) => JSX.Element) {
   const Icon = icon;
   return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
 }
-
-export function getHostName(url: string) {
-  const address = url.split('://')[1].split('/')[0];
-  return address.split(':')[0];
-}

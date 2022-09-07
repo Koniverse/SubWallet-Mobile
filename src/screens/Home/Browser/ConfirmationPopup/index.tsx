@@ -1,11 +1,8 @@
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
 import { AuthorizeRequest } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeRequest';
-import { getHostName } from 'utils/index';
-import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
-import i18n from 'utils/i18n/i18n';
+import { getHostName } from 'utils/browser';
 
 const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
@@ -33,15 +30,7 @@ export const ConfirmationPopup = () => {
     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
       <View style={confirmationPopupWrapper}>
         <View style={subWalletModalSeparator} />
-        <Header title={'Approve Request'} hostName={hostName} />
         <AuthorizeRequest request={{ origin: hostName }} />
-        <ConfirmationFooter
-          isShowBlockButton={true}
-          cancelButtonTitle={i18n.common.cancel}
-          submitButtonTitle={i18n.common.connect}
-          onPressCancelButton={() => {}}
-          onPressSubmitButton={() => {}}
-        />
       </View>
     </View>
   );

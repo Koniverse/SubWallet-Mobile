@@ -34,7 +34,7 @@ import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory } from 'stores/updater';
-import { getHostName } from 'utils/index';
+import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
