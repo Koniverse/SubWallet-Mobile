@@ -3,53 +3,56 @@ import { RootState } from 'stores/index';
 import { ConfirmationSlice } from 'stores/types';
 import { useCallback } from 'react';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from '../messaging';
+import useCheckEmptyConfirmationRequests from 'hooks/useCheckEmptyConfirmationRequests';
 
 export type ConfirmationType = keyof ConfirmationSlice['details'];
 
 interface ConfirmationRs {
   confirmationRequests: ConfirmationSlice['details'];
-  cancelRequest: (type: ConfirmationType, id: string) => Promise<() => void>;
-  approveRequest: (type: ConfirmationType, id: string, payload: unknown) => Promise<() => void>;
-  rejectRequest: (type: ConfirmationType, id: string) => Promise<() => void>;
+  cancelRequest: (type: ConfirmationType, id: string) => Promise<void>;
+  approveRequest: (type: ConfirmationType, id: string, payload: unknown) => Promise<void>;
+  rejectRequest: (type: ConfirmationType, id: string) => Promise<void>;
+  isEmptyRequests: boolean;
 }
 
 export default function useConfirmations(): ConfirmationRs {
   const confirmationRequests = useSelector((state: RootState) => state.confirmation.details);
+  const isEmptyRequests = useCheckEmptyConfirmationRequests();
 
   const cancelRequest = useCallback((type: ConfirmationType, id: string) => {
-    if (type === 'authorizeRequest') {
-      return new Promise<() => void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
+      if (type === 'authorizeRequest') {
         cancelAuthRequestV2(id)
           .then(() => resolve)
           .catch(reject);
-      });
-    }
-
-    return new Promise<() => void>(resolve => resolve);
+      } else {
+        return resolve;
+      }
+    });
   }, []);
 
   const approveRequest = useCallback((type: ConfirmationType, id: string, payload: unknown) => {
-    if (type === 'authorizeRequest') {
-      return new Promise<() => void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
+      if (type === 'authorizeRequest') {
         approveAuthRequestV2(id, payload as string[])
           .then(() => resolve)
           .catch(reject);
-      });
-    }
-    //
-    return new Promise<() => void>(resolve => resolve);
+      } else {
+        return resolve;
+      }
+    });
   }, []);
 
   const rejectRequest = useCallback((type: ConfirmationType, id: string) => {
-    if (type === 'authorizeRequest') {
-      return new Promise<() => void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
+      if (type === 'authorizeRequest') {
         rejectAuthRequestV2(id)
           .then(() => resolve)
           .catch(reject);
-      });
-    }
-
-    return new Promise<() => void>(resolve => resolve);
+      } else {
+        return resolve;
+      }
+    });
   }, []);
 
   return {
@@ -57,5 +60,6 @@ export default function useConfirmations(): ConfirmationRs {
     cancelRequest,
     approveRequest,
     rejectRequest,
+    isEmptyRequests,
   };
 }
