@@ -6,6 +6,7 @@ import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
 import { ArrowLeft, IconProps } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
 import { ColorMap } from 'styles/color';
+import { Button } from 'components/Button';
 
 export interface SubHeaderProps {
   showRightBtn?: boolean;
@@ -18,6 +19,7 @@ export interface SubHeaderProps {
   headerContent?: () => JSX.Element;
   backgroundColor?: string;
   showLeftBtn?: boolean;
+  rightButtonTitle?: string;
 }
 
 function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
@@ -55,6 +57,7 @@ export const SubHeader = ({
   backgroundColor,
   disableRightButton,
   showLeftBtn = true,
+  rightButtonTitle = '',
 }: SubHeaderProps) => {
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
@@ -72,17 +75,18 @@ export const SubHeader = ({
           color={disabled ? ColorMap.disabled : ColorMap.light}
           disabled={disabled}
           onPress={onPressBack}
-          style={{ position: 'absolute', left: 16, top: 0 }}
+          style={{ position: 'absolute', left: 8, top: 0 }}
         />
       )}
 
       {!!rightIcon && (
-        <IconButton
+        <Button
           icon={rightIcon}
           onPress={onPressRightIcon}
-          style={{ position: 'absolute', right: 16, top: 0 }}
+          style={{ position: 'absolute', right: 8, top: 0 }}
           disabled={disableRightButton}
           color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
+          title={rightButtonTitle}
         />
       )}
     </View>

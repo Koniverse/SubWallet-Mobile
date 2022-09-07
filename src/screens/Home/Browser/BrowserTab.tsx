@@ -10,6 +10,7 @@ import {
   CaretLeft,
   CaretRight,
   DotsThree,
+  GlobeSimple,
   HouseSimple,
   IconProps,
   LockSimple,
@@ -34,6 +35,7 @@ import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory } from 'stores/updater';
 import { getHostName } from 'utils/index';
+import i18n from 'utils/i18n/i18n';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -383,7 +385,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
               domStorageEnabled={true}
             />
           ) : (
-            <EmptyListPlaceholder />
+            <EmptyListPlaceholder icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
           )}
         </View>
 

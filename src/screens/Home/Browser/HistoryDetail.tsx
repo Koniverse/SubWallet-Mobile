@@ -5,11 +5,13 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoredSiteInfo } from 'stores/types';
 import { BrowserItem } from 'components/BrowserItem';
-import { GlobeHemisphereEast } from 'phosphor-react-native';
+import { ClockCounterClockwise, GlobeHemisphereEast, Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
-import { ListRenderItemInfo } from 'react-native';
+import { Alert, ListRenderItemInfo } from 'react-native';
+import { clearHistory } from 'stores/updater';
+import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
   return items.filter(info => info.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -21,6 +23,18 @@ export const HistoryDetail = () => {
 
   const onPressItem = (item: StoredSiteInfo) => {
     navigation.navigate('BrowserTab', { url: item.url, name: item.name });
+  };
+
+  const _clearHistory = () => {
+    Alert.alert('Clear History', 'Make sure you want to clear all history', [
+      {
+        text: 'Cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => clearHistory(),
+      },
+    ]);
   };
 
   const renderSiteItem = ({ item }: ListRenderItemInfo<StoredSiteInfo>) => {
@@ -40,8 +54,13 @@ export const HistoryDetail = () => {
       autoFocus={false}
       filterFunction={filterFunction}
       renderItem={renderSiteItem}
+      rightIconOption={{
+        icon: Trash,
+        onPress: () => _clearHistory(),
+        disabled: !(historyItems && historyItems.length),
+      }}
       renderListEmptyComponent={() => {
-        return <></>;
+        return <EmptyListPlaceholder icon={ClockCounterClockwise} title={i18n.common.historyEmptyListPlaceholder} />;
       }}
     />
   );

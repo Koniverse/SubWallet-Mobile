@@ -6,7 +6,7 @@ import { RootNavigationProps } from 'types/routes';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
-import { GlobeHemisphereEast, MagnifyingGlass } from 'phosphor-react-native';
+import { GlobeHemisphereEast, GlobeSimple, MagnifyingGlass } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
 import i18n from 'utils/i18n/i18n';
@@ -114,7 +114,7 @@ export const BrowserScreen = () => {
             )}
           </ScrollView>
         ) : (
-          <EmptyListPlaceholder />
+          <EmptyListPlaceholder icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
         )}
       </>
     </ScreenContainer>
