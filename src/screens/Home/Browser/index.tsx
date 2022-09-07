@@ -13,7 +13,7 @@ import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BrowserItem } from 'components/BrowserItem';
-import { SiteInfo } from 'stores/types';
+import { StoredSiteInfo } from 'stores/types';
 
 const browserScreenHeader: StyleProp<any> = {
   flexDirection: 'row',
@@ -52,14 +52,14 @@ export const BrowserScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const SearchIcon = MagnifyingGlass;
 
-  const onPressItem = (item: SiteInfo) => {
+  const onPressItem = (item: StoredSiteInfo) => {
     navigation.navigate('BrowserTab', { url: item.url, name: item.name });
   };
 
-  const renderSiteItem = (item: SiteInfo) => {
+  const renderSiteItem = (item: StoredSiteInfo) => {
     return (
       <BrowserItem
-        key={item.url}
+        key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
         onPress={() => onPressItem(item)}

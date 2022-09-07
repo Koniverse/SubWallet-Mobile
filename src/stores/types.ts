@@ -67,6 +67,10 @@ export type SiteInfo = {
   url: string;
 };
 
+export type StoredSiteInfo = {
+  id: string;
+} & SiteInfo;
+
 export type BrowserSliceTab = {
   id: string;
   url: string;
@@ -76,8 +80,8 @@ export type BrowserSlice = {
   activeTab: null | string;
   tabs: BrowserSliceTab[];
   whitelist: string[];
-  history: SiteInfo[];
-  bookmarks: SiteInfo[];
+  history: StoredSiteInfo[];
+  bookmarks: StoredSiteInfo[];
 };
 
 export type NetworkMapSlice = {

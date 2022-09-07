@@ -9,8 +9,8 @@ const initialState: BrowserSlice = {
   bookmarks: [],
 };
 
-function generateTabId(): string {
-  return `tab-${Date.now()}`;
+function generateId(prefix?: string): string {
+  return `${prefix ? prefix + '-' : ''}${Date.now()}`;
 }
 
 const browserSlice = createSlice({
@@ -21,7 +21,7 @@ const browserSlice = createSlice({
       state.activeTab = action.payload;
     },
     createNewTab: (state, { payload: url }: PayloadAction<string>) => {
-      state.tabs = [...state.tabs, { url, id: generateTabId() }];
+      state.tabs = [...state.tabs, { url, id: generateId('tab') }];
     },
     closeTab: (state, { payload: id }: PayloadAction<string>) => {
       state.tabs = state.tabs.filter(t => t.id !== id);
@@ -39,12 +39,15 @@ const browserSlice = createSlice({
     },
     addToHistory: (state, { payload }: PayloadAction<SiteInfo>) => {
       if (!state.history.length || state.history[0].url !== payload.url) {
-        state.history = [payload, ...state.history].slice(0, 50); //max 50 items
+        state.history = [{ ...payload, id: generateId('his') }, ...state.history].slice(0, 50); //max 50 items
       }
+    },
+    clearHistory: state => {
+      state.history = [];
     },
     addBookmark: (state, { payload }: PayloadAction<SiteInfo>) => {
       if (!state.bookmarks.some(s => s.url === payload.url)) {
-        state.bookmarks = [payload, ...state.bookmarks];
+        state.bookmarks = [{ ...payload, id: generateId('bm') }, ...state.bookmarks];
       }
     },
     removeBookmark: (state, { payload }: PayloadAction<SiteInfo>) => {

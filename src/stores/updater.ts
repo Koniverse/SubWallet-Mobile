@@ -62,6 +62,10 @@ export function addToHistory(payload: SiteInfo): void {
   store.dispatch({ type: 'browser/addToHistory', payload });
 }
 
+export function clearHistory(): void {
+  store.dispatch({ type: 'browser/clearHistory' });
+}
+
 export function addBookmark(payload: SiteInfo): void {
   store.dispatch({ type: 'browser/addBookmark', payload });
 }

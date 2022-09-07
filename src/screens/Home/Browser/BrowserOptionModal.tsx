@@ -43,7 +43,6 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
 
   useImperativeHandle(ref, () => ({
     onUpdateSiteInfo: (_siteInfo: SiteInfo) => {
-      console.log('ON UPDATE SITE INFO !!!!');
       setSiteInfo(_siteInfo);
     },
   }));
