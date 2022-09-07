@@ -104,6 +104,7 @@ export const vi = {
     searchAtDuckDuckGo: 'Search At DuckDuckGo',
     searchResult: 'Search Result',
     seeAll: 'See All',
+    historyEmptyListPlaceholder: 'Your history will appear here',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

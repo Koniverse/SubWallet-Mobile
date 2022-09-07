@@ -12,7 +12,9 @@ import { ActivityLoading } from 'components/ActivityLoading';
 import i18n from 'utils/i18n/i18n';
 
 interface RightIconOpt {
-  icon: (iconProps: IconProps) => JSX.Element;
+  icon?: (iconProps: IconProps) => JSX.Element;
+  title?: string;
+  disabled?: boolean;
   onPress: () => void;
 }
 
@@ -102,6 +104,8 @@ export function FlatListScreen<T>({
       showRightBtn={!!rightIconOption?.icon}
       rightIcon={rightIconOption?.icon}
       onPressRightIcon={rightIconOption?.onPress}
+      rightButtonTitle={rightIconOption?.title}
+      disableRightButton={rightIconOption?.disabled}
       isShowPlaceHolder={false}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
