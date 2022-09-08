@@ -36,14 +36,13 @@ export const AuthorizeConfirmation = ({
   approveRequest,
   rejectRequest,
 }: Props) => {
-  console.log('url', url, request);
-  const { accountAuthType, allowedAccounts } = request;
+  const { accountAuthType } = request;
   const hostName = getHostName(url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const accountList = useMemo(() => {
     return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
   }, [accountAuthType, accounts]);
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>(allowedAccounts || []);
+  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [isSelectedAll, setIsSelectedAll] = useState(true);
 
   useEffect(() => {

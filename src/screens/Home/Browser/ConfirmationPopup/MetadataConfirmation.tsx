@@ -50,7 +50,7 @@ function getMetadataTextStyle(color: string): StyleProp<any> {
 
 function renderMetadataInfo(label: string, value: string | number) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <View key={label} style={{ flexDirection: 'row', alignItems: 'center' }}>
       <View style={metadataLabelStyle}>
         <Text style={getMetadataTextStyle(ColorMap.disabled)}>{`${label}: `}</Text>
       </View>
