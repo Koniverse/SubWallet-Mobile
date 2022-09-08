@@ -9,7 +9,7 @@ interface Props {
   cancelButtonTitle: string;
   submitButtonTitle: string;
   onPressCancelButton: () => void;
-  isSubmitButtonDisabled: boolean;
+  isSubmitButtonDisabled?: boolean;
   onPressSubmitButton: () => void;
   isShowBlockButton?: boolean;
   onPressBlockButton?: () => void;

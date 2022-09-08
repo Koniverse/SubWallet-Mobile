@@ -9,7 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { ConfirmationSlice } from 'stores/types';
 import { AuthorizeConfirmation } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeConfirmation';
-import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
+import { AuthorizeRequest, MetadataRequest } from '@subwallet/extension-base/background/types';
+import { MetadataConfirmation } from 'screens/Home/Browser/ConfirmationPopup/MetadataConfirmation';
 
 type ConfirmationItem = {
   type: keyof ConfirmationSlice['details'];
@@ -94,6 +95,14 @@ export const ConfirmationPopup = () => {
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
           rejectRequest={rejectRequest}
+        />
+      );
+    } else if (currentConfirmationItem.type === 'metadataRequest') {
+      return (
+        <MetadataConfirmation
+          payload={currentConfirmationItem.payload as MetadataRequest}
+          approveRequest={approveRequest}
+          cancelRequest={cancelRequest}
         />
       );
     }

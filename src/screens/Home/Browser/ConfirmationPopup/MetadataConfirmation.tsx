@@ -1,16 +1,18 @@
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import { MetadataDef } from '../../../../types';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 import i18n from 'utils/i18n/i18n';
 import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
 import { getHostName } from 'utils/browser';
+import { MetadataRequest } from '@subwallet/extension-base/background/types';
+import { ConfirmationHookType } from 'hooks/types';
 
 interface Props {
-  request: MetadataDef;
-  url: string;
+  payload: MetadataRequest;
+  cancelRequest: ConfirmationHookType['cancelRequest'];
+  approveRequest: ConfirmationHookType['approveRequest'];
 }
 
 const dividerStyle: StyleProp<any> = {
@@ -59,7 +61,13 @@ function renderMetadataInfo(label: string, value: string | number) {
   );
 }
 
-export const MetadataRequest = ({ request, url }: Props) => {
+const CONFIRMATION_TYPE = 'metadataRequest';
+
+export const MetadataConfirmation = ({
+  payload: { request, id: confirmationId, url },
+  cancelRequest,
+  approveRequest,
+}: Props) => {
   const hostName = getHostName(url);
   const metadataInfos = [
     {
@@ -71,6 +79,15 @@ export const MetadataRequest = ({ request, url }: Props) => {
       value: request.tokenDecimals,
     },
   ];
+
+  const onPressCancelButton = () => {
+    cancelRequest(CONFIRMATION_TYPE, confirmationId);
+  };
+
+  const onPressSubmitButton = () => {
+    approveRequest(CONFIRMATION_TYPE, confirmationId, undefined);
+  };
+
   return (
     <View style={{ width: '100%', flex: 1 }}>
       <Header title={i18n.common.metadataIsOutOfDate} hostName={hostName} />
@@ -87,8 +104,8 @@ export const MetadataRequest = ({ request, url }: Props) => {
       <ConfirmationFooter
         submitButtonTitle={i18n.common.approve}
         cancelButtonTitle={i18n.common.cancel}
-        onPressCancelButton={() => {}}
-        onPressSubmitButton={() => {}}
+        onPressCancelButton={onPressCancelButton}
+        onPressSubmitButton={onPressSubmitButton}
       />
     </View>
   );

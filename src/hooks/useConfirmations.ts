@@ -1,7 +1,13 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useCallback } from 'react';
-import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from '../messaging';
+import {
+  approveAuthRequestV2,
+  approveMetaRequest,
+  cancelAuthRequestV2,
+  rejectAuthRequestV2,
+  rejectMetaRequest
+} from '../messaging';
 import useCheckEmptyConfirmationRequests from 'hooks/useCheckEmptyConfirmationRequests';
 import { ConfirmationHookType, ConfirmationType } from 'hooks/types';
 
@@ -15,6 +21,10 @@ export default function useConfirmations(): ConfirmationHookType {
         cancelAuthRequestV2(id)
           .then(() => resolve)
           .catch(reject);
+      } else if (type === 'metadataRequest') {
+        rejectMetaRequest(id)
+          .then(() => resolve)
+          .catch(reject);
       } else {
         return resolve;
       }
@@ -25,6 +35,10 @@ export default function useConfirmations(): ConfirmationHookType {
     return new Promise<void>((resolve, reject) => {
       if (type === 'authorizeRequest') {
         approveAuthRequestV2(id, payload as string[])
+          .then(() => resolve)
+          .catch(reject);
+      } else if (type === 'metadataRequest') {
+        approveMetaRequest(id)
           .then(() => resolve)
           .catch(reject);
       } else {
