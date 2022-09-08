@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import { BrowserTabProps, RootNavigationProps } from 'types/routes';
 import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
 import { useNavigation } from '@react-navigation/native';
-import useCheckEmptyConfirmationRequests from 'hooks/useCheckEmptyConfirmationRequests';
+import useConfirmations from 'hooks/useConfirmations';
 
 function ConfirmationTrigger() {
   const navigation = useNavigation<RootNavigationProps>();
-  const isEmptyRequests = useCheckEmptyConfirmationRequests();
+  const { isEmptyRequests } = useConfirmations();
 
   useEffect(() => {
     if (!isEmptyRequests) {

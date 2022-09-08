@@ -11,7 +11,6 @@ import {
   rejectAuthRequestV2,
   rejectMetaRequest,
 } from '../messaging';
-import useCheckEmptyConfirmationRequests from 'hooks/useCheckEmptyConfirmationRequests';
 import { ConfirmationHookType, ConfirmationType } from 'hooks/types';
 import { ConfirmationDefinitions } from '@subwallet/extension-base/background/KoniTypes';
 
@@ -25,9 +24,21 @@ const ConfirmationsQueueItems = [
   'evmSendTransactionRequestQr',
 ];
 
+type RequestMap = Record<string, Record<string, unknown>>;
+
+function getRequestLength(requestMap: RequestMap): number {
+  let counter = 0;
+
+  Object.values(requestMap).forEach(m => {
+    counter += Object.keys(m).length;
+  });
+
+  return counter;
+}
+
 export default function useConfirmations(): ConfirmationHookType {
   const confirmationRequestMap = useSelector((state: RootState) => state.confirmation.details);
-  const isEmptyRequests = useCheckEmptyConfirmationRequests();
+  const isEmptyRequests = !getRequestLength(confirmationRequestMap);
 
   const cancelRequest = useCallback((type: ConfirmationType, id: string) => {
     return new Promise<void>((resolve, reject) => {
