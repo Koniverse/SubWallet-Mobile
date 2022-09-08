@@ -26,7 +26,7 @@ const accountContainerStyle: StyleProp<any> = {
   marginBottom: 8,
 };
 
-const textStyle: StyleProp<any> = { paddingLeft: 8, color: ColorMap.disabled, ...sharedStyles.mainText, ...FontMedium };
+const textStyle: StyleProp<any> = { color: ColorMap.disabled, ...sharedStyles.mainText, ...FontMedium };
 
 export const ConnectAccount = ({ address, name, isSelected, selectedAccounts, selectAccountCallBack }: Props) => {
   const selectAccounts = useCallback(() => {
@@ -49,10 +49,12 @@ export const ConnectAccount = ({ address, name, isSelected, selectedAccounts, se
     <TouchableOpacity onPress={selectAccounts} style={accountContainerStyle}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <SubWalletAvatar address={address || ''} size={14} />
-        <Text style={textStyle}>
-          <Text>{name}</Text>
-          <Text> ({toShort(address, 0, 5)})</Text>
-        </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text numberOfLines={1} style={[textStyle, { maxWidth: 150, paddingLeft: 8 }]}>
+            {name}
+          </Text>
+          <Text style={textStyle}> ({toShort(address, 0, 5)})</Text>
+        </View>
       </View>
       {isSelected && <Check weight={'bold'} size={20} color={ColorMap.primary} />}
     </TouchableOpacity>

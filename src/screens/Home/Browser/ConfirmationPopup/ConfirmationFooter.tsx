@@ -9,6 +9,7 @@ interface Props {
   cancelButtonTitle: string;
   submitButtonTitle: string;
   onPressCancelButton: () => void;
+  isSubmitButtonDisabled: boolean;
   onPressSubmitButton: () => void;
   isShowBlockButton?: boolean;
   onPressBlockButton?: () => void;
@@ -31,6 +32,7 @@ export const ConfirmationFooter = ({
   onPressSubmitButton,
   isShowBlockButton = false,
   onPressBlockButton,
+  isSubmitButtonDisabled,
 }: Props) => {
   return (
     <>
@@ -42,7 +44,12 @@ export const ConfirmationFooter = ({
           style={cancelButtonStyle}
           onPress={onPressCancelButton}
         />
-        <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={submitButtonTitle} onPress={onPressSubmitButton} />
+        <SubmitButton
+          style={{ flex: 1, marginLeft: 8 }}
+          title={submitButtonTitle}
+          onPress={onPressSubmitButton}
+          disabled={isSubmitButtonDisabled}
+        />
       </View>
       <SafeAreaView />
     </>

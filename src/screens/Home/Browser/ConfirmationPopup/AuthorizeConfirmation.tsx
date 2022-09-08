@@ -36,6 +36,7 @@ export const AuthorizeConfirmation = ({
   approveRequest,
   rejectRequest,
 }: Props) => {
+  console.log('url', url, request);
   const { accountAuthType, allowedAccounts } = request;
   const hostName = getHostName(url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
@@ -111,6 +112,7 @@ export const AuthorizeConfirmation = ({
         onPressCancelButton={onPressCancelButton}
         onPressSubmitButton={onPressSubmitButton}
         onPressBlockButton={onPressBlockButton}
+        isSubmitButtonDisabled={!(selectedAccounts && selectedAccounts.length)}
       />
     </View>
   );
