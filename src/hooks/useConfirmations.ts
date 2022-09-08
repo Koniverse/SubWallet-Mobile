@@ -4,7 +4,9 @@ import { useCallback } from 'react';
 import {
   approveAuthRequestV2,
   approveMetaRequest,
+  approveSignPassword,
   cancelAuthRequestV2,
+  cancelSignRequest,
   completeConfirmation,
   rejectAuthRequestV2,
   rejectMetaRequest,
@@ -37,6 +39,10 @@ export default function useConfirmations(): ConfirmationHookType {
         rejectMetaRequest(id)
           .then(() => resolve)
           .catch(reject);
+      } else if (type === 'signingRequest') {
+        cancelSignRequest(id)
+          .then(() => resolve)
+          .catch(reject);
       } else if (ConfirmationsQueueItems.includes(type)) {
         completeConfirmation(type as keyof ConfirmationDefinitions, {
           id,
@@ -59,6 +65,12 @@ export default function useConfirmations(): ConfirmationHookType {
           .catch(reject);
       } else if (type === 'metadataRequest') {
         approveMetaRequest(id)
+          .then(() => resolve)
+          .catch(reject);
+      } else if (type === 'signingRequest') {
+        const password = payload ? (payload as string) : '';
+
+        approveSignPassword(id, false, password)
           .then(() => resolve)
           .catch(reject);
       } else if (ConfirmationsQueueItems.includes(type)) {
