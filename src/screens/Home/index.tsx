@@ -30,7 +30,7 @@ export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['na
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
 function checkTabCompleted(target: string) {
-  return target === '/Home/Crypto' || target === '/Home/Crowdloans' || target === '/Home/Browser';
+  return target.includes('Crypto') || target.includes('Crowdloans') || target.includes('Browser');
 }
 
 const MainScreen = () => {
