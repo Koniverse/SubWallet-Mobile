@@ -5,6 +5,15 @@ import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import { ShieldSlash } from 'phosphor-react-native';
 
+interface Props {
+  cancelButtonTitle: string;
+  submitButtonTitle: string;
+  onPressCancelButton: () => void;
+  onPressSubmitButton: () => void;
+  isShowBlockButton?: boolean;
+  onPressBlockButton?: () => void;
+}
+
 const cancelButtonStyle: StyleProp<any> = {
   borderWidth: 1,
   borderStyle: 'solid',
@@ -15,25 +24,18 @@ const cancelButtonStyle: StyleProp<any> = {
 
 const blockButtonStyle: StyleProp<any> = { backgroundColor: ColorMap.danger, borderRadius: 5, marginRight: 16 };
 
-interface Props {
-  cancelButtonTitle: string;
-  submitButtonTitle: string;
-  onPressCancelButton: () => void;
-  onPressSubmitButton: () => void;
-  isShowBlockButton?: boolean;
-}
-
 export const ConfirmationFooter = ({
   cancelButtonTitle,
   submitButtonTitle,
   onPressCancelButton,
   onPressSubmitButton,
   isShowBlockButton = false,
+  onPressBlockButton,
 }: Props) => {
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16 }}>
-        {isShowBlockButton && <IconButton icon={ShieldSlash} style={blockButtonStyle} />}
+        {isShowBlockButton && <IconButton icon={ShieldSlash} style={blockButtonStyle} onPress={onPressBlockButton} />}
         <SubmitButton
           title={cancelButtonTitle}
           backgroundColor={ColorMap.dark2}

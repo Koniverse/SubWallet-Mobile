@@ -21,7 +21,7 @@ function comparor(prev: RequestMap, next: RequestMap): boolean {
 }
 
 export default function useCheckEmptyConfirmationRequests(): boolean {
-  const confirmationRequests = useSelector((state: RootState) => state.confirmation.details, comparor);
+  const confirmationRequestMap = useSelector((state: RootState) => state.confirmation.details, comparor);
 
-  return !getRequestLength(confirmationRequests);
+  return !getRequestLength(confirmationRequestMap);
 }

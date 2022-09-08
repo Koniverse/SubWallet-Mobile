@@ -1,22 +1,12 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ConfirmationSlice } from 'stores/types';
 import { useCallback } from 'react';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from '../messaging';
 import useCheckEmptyConfirmationRequests from 'hooks/useCheckEmptyConfirmationRequests';
+import { ConfirmationHookType, ConfirmationType } from 'hooks/types';
 
-export type ConfirmationType = keyof ConfirmationSlice['details'];
-
-interface ConfirmationRs {
-  confirmationRequests: ConfirmationSlice['details'];
-  cancelRequest: (type: ConfirmationType, id: string) => Promise<void>;
-  approveRequest: (type: ConfirmationType, id: string, payload: unknown) => Promise<void>;
-  rejectRequest: (type: ConfirmationType, id: string) => Promise<void>;
-  isEmptyRequests: boolean;
-}
-
-export default function useConfirmations(): ConfirmationRs {
-  const confirmationRequests = useSelector((state: RootState) => state.confirmation.details);
+export default function useConfirmations(): ConfirmationHookType {
+  const confirmationRequestMap = useSelector((state: RootState) => state.confirmation.details);
   const isEmptyRequests = useCheckEmptyConfirmationRequests();
 
   const cancelRequest = useCallback((type: ConfirmationType, id: string) => {
@@ -56,7 +46,7 @@ export default function useConfirmations(): ConfirmationRs {
   }, []);
 
   return {
-    confirmationRequests,
+    confirmationRequestMap,
     cancelRequest,
     approveRequest,
     rejectRequest,

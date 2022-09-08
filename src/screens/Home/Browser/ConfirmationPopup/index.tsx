@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { AuthorizeRequest } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeRequest';
-import { getHostName } from 'utils/browser';
 import { IconButton } from 'components/IconButton';
 import { ArrowLeft, ArrowRight } from 'phosphor-react-native';
 import useConfirmations from 'hooks/useConfirmations';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'types/routes';
+import { ConfirmationSlice } from 'stores/types';
+import { AuthorizeConfirmation } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeConfirmation';
+import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
+
+type ConfirmationItem = {
+  type: keyof ConfirmationSlice['details'];
+  payload: unknown;
+};
 
 const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
@@ -37,24 +45,73 @@ const confirmationHeader: StyleProp<any> = {
 
 const authorizeIndexTextStyle: StyleProp<any> = { ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light };
 
-const requestListLength = 3;
+function getConfirmationItems(confirmationRequestMap: ConfirmationSlice['details']): ConfirmationItem[] {
+  const items: ConfirmationItem[] = [];
+
+  Object.keys(confirmationRequestMap).forEach(type => {
+    // @ts-ignore
+    Object.values(confirmationRequestMap[type]).forEach(payload => {
+      items.push({
+        type: type as keyof ConfirmationSlice['details'],
+        payload,
+      });
+    });
+  });
+
+  return items;
+}
 
 export const ConfirmationPopup = () => {
-  const url = 'https://portal.astar.network';
-  const hostName = getHostName(url);
-  const {} = useConfirmations();
-  const [confirmationIndex, setConfirmationIndex] = useState<number>(1);
+  const { confirmationRequestMap, isEmptyRequests, approveRequest, cancelRequest, rejectRequest } = useConfirmations();
+  console.log('confirmationRequestMap---', confirmationRequestMap);
+  const confirmationItems = getConfirmationItems(confirmationRequestMap);
+  const confirmationItemsLength = confirmationItems.length;
+  const navigation = useNavigation<RootNavigationProps>();
+  const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
+  const currentConfirmationItem = confirmationItems[confirmationIndex];
+
   const onPressPrevButton = () => {
-    if (confirmationIndex > 1) {
+    if (confirmationIndex > 0) {
       setConfirmationIndex(confirmationIndex - 1);
     }
   };
 
   const onPressNextButton = () => {
-    if (confirmationIndex < requestListLength) {
+    if (confirmationIndex < confirmationItemsLength - 1) {
       setConfirmationIndex(confirmationIndex + 1);
     }
   };
+
+  const renderConfirmation = () => {
+    if (!currentConfirmationItem) {
+      return null;
+    }
+
+    if (currentConfirmationItem.type === 'authorizeRequest') {
+      return (
+        <AuthorizeConfirmation
+          payload={currentConfirmationItem.payload as AuthorizeRequest}
+          approveRequest={approveRequest}
+          cancelRequest={cancelRequest}
+          rejectRequest={rejectRequest}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    if (isEmptyRequests) {
+      navigation.canGoBack() && navigation.goBack();
+    }
+  }, [isEmptyRequests, navigation]);
+
+  useEffect(() => {
+    if (confirmationIndex && (confirmationIndex < 0 || confirmationIndex > confirmationItemsLength - 1)) {
+      setConfirmationIndex(0);
+    }
+  }, [confirmationIndex, confirmationItemsLength]);
 
   return (
     <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -63,11 +120,11 @@ export const ConfirmationPopup = () => {
         <View style={confirmationHeader}>
           <IconButton icon={ArrowLeft} color={ColorMap.disabled} onPress={onPressPrevButton} />
           <Text style={authorizeIndexTextStyle}>
-            <Text>{confirmationIndex}</Text>/<Text>{requestListLength}</Text>
+            <Text>{confirmationIndex + 1}</Text>/<Text>{confirmationItemsLength}</Text>
           </Text>
           <IconButton icon={ArrowRight} color={ColorMap.disabled} onPress={onPressNextButton} />
         </View>
-        <AuthorizeRequest request={{ origin: hostName }} />
+        {renderConfirmation()}
       </View>
     </View>
   );

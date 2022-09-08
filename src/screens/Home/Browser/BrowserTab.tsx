@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { Alert, NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
+import { NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserTabProps, RootNavigationProps } from 'types/routes';
@@ -26,10 +26,6 @@ import WebView from 'react-native-webview';
 import { WebViewMessage, WebViewNavigation, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
-import { approveAuthRequestV2 } from '../../../messaging';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
@@ -147,8 +143,9 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState(propUrl);
-  const authorizeRequest = useSelector((state: RootState) => state.confirmation.details.authorizeRequest);
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  // todo: Remove this
+  // const authorizeRequest = useSelector((state: RootState) => state.confirmation.details.authorizeRequest);
+  // const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -316,28 +313,29 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
   }, [params, initWebViewSource]);
 
-  useEffect(() => {
-    authorizeRequest &&
-      Object.keys(authorizeRequest).forEach(authId => {
-        Alert.alert('Request Access', `For ${authorizeRequest[authId].url}`, [
-          {
-            text: 'Accept',
-            onPress: () => {
-              const accountNames = accounts.filter(a => !isAccountAll(a.address)).map(a => a.address);
-
-              approveAuthRequestV2(authId, accountNames)
-                .then(rs => {
-                  console.log('---- approveAuthRequestV2 rs----', rs);
-                })
-                .catch((error: Error) => console.log('---- approveAuthRequestV2 error----', error));
-            },
-          },
-          {
-            text: 'OK',
-          },
-        ]);
-      });
-  }, [authorizeRequest, accounts]);
+  //todo: remove this
+  // useEffect(() => {
+  //   authorizeRequest &&
+  //     Object.keys(authorizeRequest).forEach(authId => {
+  //       Alert.alert('Request Access', `For ${authorizeRequest[authId].url}`, [
+  //         {
+  //           text: 'Accept',
+  //           onPress: () => {
+  //             const accountNames = accounts.filter(a => !isAccountAll(a.address)).map(a => a.address);
+  //
+  //             approveAuthRequestV2(authId, accountNames)
+  //               .then(rs => {
+  //                 console.log('---- approveAuthRequestV2 rs----', rs);
+  //               })
+  //               .catch((error: Error) => console.log('---- approveAuthRequestV2 error----', error));
+  //           },
+  //         },
+  //         {
+  //           text: 'OK',
+  //         },
+  //       ]);
+  //     });
+  // }, [authorizeRequest, accounts]);
 
   const onCloseBrowserOptionModal = useCallback(() => {
     setModalVisible(false);

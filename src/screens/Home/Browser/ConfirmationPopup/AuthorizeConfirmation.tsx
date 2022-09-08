@@ -6,15 +6,20 @@ import i18n from 'utils/i18n/i18n';
 import { filterAndSortingAccountByAuthType } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { RequestAuthorizeTab } from '@subwallet/extension-base/background/types';
+import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ConnectAccount } from 'components/ConnectAccount';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { Warning } from 'components/Warning';
 import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
 import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
+import { ConfirmationHookType } from 'hooks/types';
+import { getHostName } from 'utils/browser';
 
 interface Props {
-  request: RequestAuthorizeTab;
+  payload: AuthorizeRequest;
+  cancelRequest: ConfirmationHookType['cancelRequest'];
+  approveRequest: ConfirmationHookType['approveRequest'];
+  rejectRequest: ConfirmationHookType['rejectRequest'];
 }
 
 const textStyle: StyleProp<any> = {
@@ -23,7 +28,16 @@ const textStyle: StyleProp<any> = {
   color: ColorMap.disabled,
 };
 
-export const AuthorizeRequest = ({ request: { origin, accountAuthType, allowedAccounts } }: Props) => {
+const CONFIRMATION_TYPE = 'authorizeRequest';
+
+export const AuthorizeConfirmation = ({
+  payload: { request, id: confirmationId, url },
+  cancelRequest,
+  approveRequest,
+  rejectRequest,
+}: Props) => {
+  const { accountAuthType, allowedAccounts } = request;
+  const hostName = getHostName(url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const accountList = useMemo(() => {
     return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
@@ -36,11 +50,23 @@ export const AuthorizeRequest = ({ request: { origin, accountAuthType, allowedAc
     setIsSelectedAll(!notInSelected);
   }, [accountList, selectedAccounts]);
 
+  const onPressCancelButton = () => {
+    cancelRequest(CONFIRMATION_TYPE, confirmationId);
+  };
+
+  const onPressSubmitButton = () => {
+    approveRequest(CONFIRMATION_TYPE, confirmationId, selectedAccounts);
+  };
+
+  const onPressBlockButton = () => {
+    rejectRequest(CONFIRMATION_TYPE, confirmationId);
+  };
+
   return (
     <View style={{ width: '100%', flex: 1 }}>
-      <Header title={'Approve Request'} hostName={origin} />
+      <Header title={'Approve Request'} hostName={hostName} />
       <View style={{ flex: 1 }}>
-        <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{origin}</Text>
+        <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{hostName}</Text>
         {accountList && accountList.length ? (
           <>
             <Text style={[textStyle, { paddingBottom: 16 }]}>{i18n.common.chooseAccount}</Text>
@@ -82,8 +108,9 @@ export const AuthorizeRequest = ({ request: { origin, accountAuthType, allowedAc
         isShowBlockButton={true}
         cancelButtonTitle={i18n.common.cancel}
         submitButtonTitle={i18n.common.connect}
-        onPressCancelButton={() => {}}
-        onPressSubmitButton={() => {}}
+        onPressCancelButton={onPressCancelButton}
+        onPressSubmitButton={onPressSubmitButton}
+        onPressBlockButton={onPressBlockButton}
       />
     </View>
   );
