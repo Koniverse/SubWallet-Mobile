@@ -14,10 +14,12 @@ import i18n from 'utils/i18n/i18n';
 import { PasswordField } from 'components/Field/Password';
 import useFormControl from 'hooks/screen/useFormControl';
 import { Warning } from 'components/Warning';
+import { ConfirmationHookType } from 'hooks/types';
 
 interface Props {
-  className?: string;
-  confirmation: ConfirmationsQueue['evmSignatureRequest'][0];
+  payload: ConfirmationsQueue['evmSignatureRequest'][0];
+  cancelRequest: ConfirmationHookType['cancelRequest'];
+  approveRequest: ConfirmationHookType['approveRequest'];
 }
 
 interface SignTypedDataObjectV1 {
@@ -26,6 +28,7 @@ interface SignTypedDataObjectV1 {
   value: any;
 }
 
+//todo: what to do with this
 function getNodeStyle(isLeaf: boolean): StyleProp<any> {
   return {
     position: 'relative',
@@ -52,7 +55,13 @@ const formConfig = {
   },
 };
 
-export const EvmSignConfirmation = ({ confirmation: { payload, url } }: Props) => {
+const CONFIRMATION_TYPE = 'evmSignatureRequest';
+
+export const EvmSignConfirmation = ({
+  payload: { payload, url, id: confirmationId },
+  cancelRequest,
+  approveRequest,
+}: Props) => {
   const hostName = getHostName(url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const [signMethod, setSignMethod] = useState<string>('');
@@ -147,6 +156,15 @@ export const EvmSignConfirmation = ({ confirmation: { payload, url } }: Props) =
     }
   }, [handlerRenderV1, payload.type, rawData, renderData]);
 
+  const onPressCancelButton = () => {
+    cancelRequest(CONFIRMATION_TYPE, confirmationId);
+  };
+
+  const onPressSubmitButton = () => {
+    //todo: set Password error
+    approveRequest(CONFIRMATION_TYPE, confirmationId, formState.data.password);
+  };
+
   return (
     <View style={{ alignItems: 'center', width: '100%', flex: 1 }}>
       <Header title={'request to sign message with'} hostName={hostName} />
@@ -187,11 +205,12 @@ export const EvmSignConfirmation = ({ confirmation: { payload, url } }: Props) =
         />
       </View>
 
+      {/* todo: i18n Sign */}
       <ConfirmationFooter
         cancelButtonTitle={i18n.common.cancel}
         submitButtonTitle={'Sign'}
-        onPressCancelButton={() => {}}
-        onPressSubmitButton={() => {}}
+        onPressCancelButton={onPressCancelButton}
+        onPressSubmitButton={onPressSubmitButton}
       />
     </View>
   );

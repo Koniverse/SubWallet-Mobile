@@ -11,6 +11,8 @@ import { ConfirmationSlice } from 'stores/types';
 import { AuthorizeConfirmation } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeConfirmation';
 import { AuthorizeRequest, MetadataRequest } from '@subwallet/extension-base/background/types';
 import { MetadataConfirmation } from 'screens/Home/Browser/ConfirmationPopup/MetadataConfirmation';
+import { EvmSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/EvmSignConfirmation';
+import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 
 type ConfirmationItem = {
   type: keyof ConfirmationSlice['details'];
@@ -100,6 +102,14 @@ export const ConfirmationPopup = () => {
       return (
         <MetadataConfirmation
           payload={currentConfirmationItem.payload as MetadataRequest}
+          approveRequest={approveRequest}
+          cancelRequest={cancelRequest}
+        />
+      );
+    } else if (currentConfirmationItem.type === 'evmSignatureRequest') {
+      return (
+        <EvmSignConfirmation
+          payload={currentConfirmationItem.payload as ConfirmationsQueue['evmSignatureRequest'][0]}
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
         />
