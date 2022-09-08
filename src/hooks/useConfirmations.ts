@@ -5,11 +5,23 @@ import {
   approveAuthRequestV2,
   approveMetaRequest,
   cancelAuthRequestV2,
+  completeConfirmation,
   rejectAuthRequestV2,
-  rejectMetaRequest
+  rejectMetaRequest,
 } from '../messaging';
 import useCheckEmptyConfirmationRequests from 'hooks/useCheckEmptyConfirmationRequests';
 import { ConfirmationHookType, ConfirmationType } from 'hooks/types';
+import { ConfirmationDefinitions } from '@subwallet/extension-base/background/KoniTypes';
+
+const ConfirmationsQueueItems = [
+  'addNetworkRequest',
+  'addTokenRequest',
+  'switchNetworkRequest',
+  'evmSignatureRequest',
+  'evmSignatureRequestQr',
+  'evmSendTransactionRequest',
+  'evmSendTransactionRequestQr',
+];
 
 export default function useConfirmations(): ConfirmationHookType {
   const confirmationRequestMap = useSelector((state: RootState) => state.confirmation.details);
@@ -23,6 +35,14 @@ export default function useConfirmations(): ConfirmationHookType {
           .catch(reject);
       } else if (type === 'metadataRequest') {
         rejectMetaRequest(id)
+          .then(() => resolve)
+          .catch(reject);
+      } else if (ConfirmationsQueueItems.includes(type)) {
+        completeConfirmation(type as keyof ConfirmationDefinitions, {
+          id,
+          isApproved: false,
+          payload: false,
+        })
           .then(() => resolve)
           .catch(reject);
       } else {
@@ -39,6 +59,17 @@ export default function useConfirmations(): ConfirmationHookType {
           .catch(reject);
       } else if (type === 'metadataRequest') {
         approveMetaRequest(id)
+          .then(() => resolve)
+          .catch(reject);
+      } else if (ConfirmationsQueueItems.includes(type)) {
+        const password = payload ? (payload as string) : '';
+
+        completeConfirmation(type as keyof ConfirmationDefinitions, {
+          id,
+          isApproved: true,
+          payload: true,
+          password,
+        })
           .then(() => resolve)
           .catch(reject);
       } else {
