@@ -64,7 +64,6 @@ function getConfirmationItems(confirmationRequestMap: ConfirmationSlice['details
 
 export const ConfirmationPopup = () => {
   const { confirmationRequestMap, isEmptyRequests, approveRequest, cancelRequest, rejectRequest } = useConfirmations();
-  console.log('confirmationRequestMap---', confirmationRequestMap);
   const confirmationItems = getConfirmationItems(confirmationRequestMap);
   const confirmationItemsLength = confirmationItems.length;
   const navigation = useNavigation<RootNavigationProps>();

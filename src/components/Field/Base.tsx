@@ -5,14 +5,17 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize0 } from 'styles/sharedStyles';
 
 export interface FieldBaseProps extends ViewProps {
-  label: string;
+  label?: string;
+  fieldBgc?: string;
 }
 
-const wrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  borderRadius: 5,
-  marginBottom: 8,
-};
+function getWrapperStyle(bgc: string): StyleProp<any> {
+  return {
+    backgroundColor: bgc,
+    borderRadius: 5,
+    marginBottom: 8,
+  };
+}
 
 const labelStyle: StyleProp<any> = {
   ...FontSize0,
@@ -23,10 +26,10 @@ const labelStyle: StyleProp<any> = {
   color: ColorMap.disabled,
 };
 
-export const FieldBase = ({ children, label, ...props }: FieldBaseProps) => {
+export const FieldBase = ({ children, label, fieldBgc, ...props }: FieldBaseProps) => {
   return (
-    <View style={wrapperStyle} {...props}>
-      <Text style={labelStyle}>{label}</Text>
+    <View style={getWrapperStyle(fieldBgc || ColorMap.dark2)} {...props}>
+      {!!label && <Text style={labelStyle}>{label}</Text>}
       {children}
     </View>
   );

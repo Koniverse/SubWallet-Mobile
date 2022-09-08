@@ -13,6 +13,8 @@ interface Props {
   isSelected: boolean;
   selectedAccounts: string[];
   selectAccountCallBack?: (selectedAccounts: string[]) => void;
+  isShowShortedAddress?: boolean;
+  style?: StyleProp<any>;
 }
 
 const accountContainerStyle: StyleProp<any> = {
@@ -28,7 +30,15 @@ const accountContainerStyle: StyleProp<any> = {
 
 const textStyle: StyleProp<any> = { color: ColorMap.disabled, ...sharedStyles.mainText, ...FontMedium };
 
-export const ConnectAccount = ({ address, name, isSelected, selectedAccounts, selectAccountCallBack }: Props) => {
+export const ConnectAccount = ({
+  address,
+  name,
+  isSelected,
+  selectedAccounts,
+  selectAccountCallBack,
+  isShowShortedAddress = true,
+  style,
+}: Props) => {
   const selectAccounts = useCallback(() => {
     let newSelectedList = selectedAccounts;
 
@@ -46,14 +56,14 @@ export const ConnectAccount = ({ address, name, isSelected, selectedAccounts, se
   }, [address, isSelected, selectAccountCallBack, selectedAccounts]);
 
   return (
-    <TouchableOpacity onPress={selectAccounts} style={accountContainerStyle}>
+    <TouchableOpacity onPress={selectAccounts} style={[accountContainerStyle, style]}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <SubWalletAvatar address={address || ''} size={14} />
         <View style={{ flexDirection: 'row' }}>
           <Text numberOfLines={1} style={[textStyle, { maxWidth: 150, paddingLeft: 8 }]}>
             {name}
           </Text>
-          <Text style={textStyle}> ({toShort(address, 0, 5)})</Text>
+          {isShowShortedAddress && <Text style={textStyle}> ({toShort(address, 0, 5)})</Text>}
         </View>
       </View>
       {isSelected && <Check weight={'bold'} size={20} color={ColorMap.primary} />}
