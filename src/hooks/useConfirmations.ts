@@ -81,36 +81,33 @@ export default function useConfirmations(): ConfirmationHookType {
 
   const approveRequest = useCallback<ConfirmationHookType['approveRequest']>((type, id, payload) => {
     return new Promise<void>((resolve, reject) => {
-      if (payload) {
-        const password = payload.password || '';
-        if (type === 'authorizeRequest') {
-          if (payload.data) {
-            approveAuthRequestV2(id, payload.data as string[])
-              .then(() => resolve)
-              .catch(reject);
-          }
-        } else if (type === 'metadataRequest') {
-          approveMetaRequest(id)
+      const password = (payload && payload.password) || '';
+      if (type === 'authorizeRequest') {
+        if (payload && payload.data) {
+          approveAuthRequestV2(id, payload.data as string[])
             .then(() => resolve)
             .catch(reject);
-        } else if (type === 'signingRequest') {
-          approveSignPassword(id, false, password)
-            .then(() => resolve)
-            .catch(reject);
-        } else if (ConfirmationsQueueItems.includes(type)) {
-          completeConfirmation(type as keyof ConfirmationDefinitions, {
-            id,
-            isApproved: true,
-            payload: true,
-            password,
-          })
-            .then(() => resolve)
-            .catch(reject);
-        } else {
-          return resolve;
         }
+      } else if (type === 'metadataRequest') {
+        approveMetaRequest(id)
+          .then(() => resolve)
+          .catch(reject);
+      } else if (type === 'signingRequest') {
+        approveSignPassword(id, false, password)
+          .then(() => resolve)
+          .catch(reject);
+      } else if (ConfirmationsQueueItems.includes(type)) {
+        completeConfirmation(type as keyof ConfirmationDefinitions, {
+          id,
+          isApproved: true,
+          payload: true,
+          password,
+        })
+          .then(() => resolve)
+          .catch(reject);
+      } else {
+        return resolve;
       }
-
       return resolve;
     });
   }, []);

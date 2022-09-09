@@ -1,7 +1,7 @@
 import { ConfirmationHeader, ConfirmationHeaderType } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
 import { ConfirmationFooter, ConfirmationFooterType } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 import { View } from 'react-native';
-import React, { ForwardedRef, forwardRef, useImperativeHandle } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { PasswordField } from 'components/Field/Password';
 import { ColorMap } from 'styles/color';
 import useFormControl from 'hooks/screen/useFormControl';
@@ -10,11 +10,15 @@ import i18n from 'utils/i18n/i18n';
 interface Props {
   headerProps: ConfirmationHeaderType;
   footerProps: {
-    onPressSubmitButton: (password: string) => void;
-  } & Omit<ConfirmationFooterType, 'onPressSubmitButton'>;
+    onPressSubmitButton?: (password: string) => Promise<void>;
+    onPressCancelButton?: () => Promise<void>;
+    onPressBlockButton?: () => Promise<void>;
+  } & Omit<ConfirmationFooterType, 'onPressSubmitButton' | 'onPressCancelButton' | 'onPressBlockButton'>;
   children?: JSX.Element;
   isShowPassword?: boolean;
 }
+
+type BusyKey = 'CANCEL' | 'SUBMIT' | 'BLOCK';
 
 export interface ConfirmationBaseRef {
   onPasswordError: (e: Error) => void;
@@ -28,19 +32,70 @@ const formConfig = {
 };
 
 const Component = (
-  { headerProps, footerProps: { onPressSubmitButton, ...footerProps }, children }: Props,
+  {
+    headerProps,
+    footerProps: {
+      onPressSubmitButton,
+      onPressBlockButton,
+      onPressCancelButton,
+      isBlockButtonBusy,
+      isBlockButtonDisabled,
+      isCancelButtonBusy,
+      isCancelButtonDisabled,
+      isSubmitButtonBusy,
+      isSubmitButtonDisabled,
+      ...footerProps
+    },
+    children,
+  }: Props,
   ref: ForwardedRef<ConfirmationBaseRef>,
 ) => {
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
+  const [isBusy, setIsBusy] = useState<boolean>(false);
+  const [busyKey, setBusyKey] = useState<BusyKey | null>(null);
 
+  // todo: if ref is not necessary, then remove this
   useImperativeHandle(ref, () => ({
     onPasswordError: (e: Error) => {},
   }));
 
   const _onPressSubmitButton = () => {
-    onPressSubmitButton && onPressSubmitButton('');
+    if (onPressSubmitButton) {
+      setBusyKey('SUBMIT');
+      setIsBusy(true);
+      // todo: set password here
+      onPressSubmitButton('')
+        .catch(e => {
+          //  todo: handle password here
+        })
+        .finally(() => {
+          setIsBusy(false);
+        });
+    }
+  };
+
+  const _onPressBlockButton = () => {
+    if (onPressBlockButton) {
+      setBusyKey('BLOCK');
+      setIsBusy(true);
+
+      onPressBlockButton().finally(() => {
+        setIsBusy(false);
+      });
+    }
+  };
+
+  const _onPressCancelButton = () => {
+    if (onPressCancelButton) {
+      setBusyKey('CANCEL');
+      setIsBusy(true);
+
+      onPressCancelButton().finally(() => {
+        setIsBusy(false);
+      });
+    }
   };
 
   return (
@@ -59,7 +114,18 @@ const Component = (
           onSubmitField={onSubmitField('password')}
         />
       </View>
-      <ConfirmationFooter {...footerProps} onPressSubmitButton={_onPressSubmitButton} />
+      <ConfirmationFooter
+        {...footerProps}
+        onPressCancelButton={_onPressCancelButton}
+        onPressBlockButton={_onPressBlockButton}
+        onPressSubmitButton={_onPressSubmitButton}
+        isBlockButtonBusy={isBlockButtonBusy || (isBusy && busyKey === 'BLOCK')}
+        isBlockButtonDisabled={isBlockButtonDisabled || isBusy}
+        isCancelButtonBusy={isCancelButtonBusy || (isBusy && busyKey === 'CANCEL')}
+        isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
+        isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
+        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy}
+      />
     </>
   );
 };

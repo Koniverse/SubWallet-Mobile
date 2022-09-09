@@ -80,11 +80,11 @@ export const MetadataConfirmation = ({
   ];
 
   const onPressCancelButton = () => {
-    cancelRequest(CONFIRMATION_TYPE, confirmationId);
+    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
   const onPressSubmitButton = () => {
-    approveRequest(CONFIRMATION_TYPE, confirmationId);
+    return approveRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
   return (
@@ -99,7 +99,7 @@ export const MetadataConfirmation = ({
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
       }}>
-      <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+      <View style={{ width: '100%', alignItems: 'center' }}>
         <Text style={metadataTextStyle}>
           {`${i18n.title.metadataTitlePart1} ${request.chain} ${i18n.title.metadataTitlePart2} ${url}`}
         </Text>

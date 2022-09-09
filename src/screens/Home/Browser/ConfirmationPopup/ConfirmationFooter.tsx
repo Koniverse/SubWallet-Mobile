@@ -9,10 +9,15 @@ export interface ConfirmationFooterType {
   cancelButtonTitle: string;
   submitButtonTitle: string;
   onPressCancelButton?: () => void;
-  isSubmitButtonDisabled?: boolean;
   onPressSubmitButton?: () => void;
   isShowBlockButton?: boolean;
   onPressBlockButton?: () => void;
+  isBlockButtonDisabled?: boolean;
+  isCancelButtonDisabled?: boolean;
+  isSubmitButtonDisabled?: boolean;
+  isBlockButtonBusy?: boolean;
+  isCancelButtonBusy?: boolean;
+  isSubmitButtonBusy?: boolean;
 }
 
 const cancelButtonStyle: StyleProp<any> = {
@@ -33,22 +38,38 @@ export const ConfirmationFooter = ({
   isShowBlockButton = false,
   onPressBlockButton,
   isSubmitButtonDisabled,
+  isBlockButtonDisabled,
+  isCancelButtonDisabled,
+  isBlockButtonBusy,
+  isCancelButtonBusy,
+  isSubmitButtonBusy,
 }: ConfirmationFooterType) => {
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16 }}>
-        {isShowBlockButton && <IconButton icon={ShieldSlash} style={blockButtonStyle} onPress={onPressBlockButton} />}
+        {/* todo: add busy prop + style to IconButton */}
+        {isShowBlockButton && (
+          <IconButton
+            icon={ShieldSlash}
+            style={blockButtonStyle}
+            onPress={onPressBlockButton}
+            disabled={isBlockButtonDisabled || isBlockButtonBusy}
+          />
+        )}
         <SubmitButton
           title={cancelButtonTitle}
           backgroundColor={ColorMap.dark2}
           style={cancelButtonStyle}
           onPress={onPressCancelButton}
+          disabled={isCancelButtonDisabled}
+          isBusy={isCancelButtonBusy}
         />
         <SubmitButton
           style={{ flex: 1, marginLeft: 8 }}
           title={submitButtonTitle}
           onPress={onPressSubmitButton}
           disabled={isSubmitButtonDisabled}
+          isBusy={isSubmitButtonBusy}
         />
       </View>
       <SafeAreaView />

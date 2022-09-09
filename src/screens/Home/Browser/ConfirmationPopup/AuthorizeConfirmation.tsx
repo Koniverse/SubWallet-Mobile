@@ -37,7 +37,6 @@ export const AuthorizeConfirmation = ({
 }: Props) => {
   const { accountAuthType } = request;
   const hostName = getHostName(url);
-  console.log('url', url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const accountList = useMemo(() => {
     return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
@@ -51,15 +50,15 @@ export const AuthorizeConfirmation = ({
   }, [accountList, selectedAccounts]);
 
   const onPressCancelButton = () => {
-    cancelRequest(CONFIRMATION_TYPE, confirmationId);
+    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
   const onPressSubmitButton = () => {
-    approveRequest(CONFIRMATION_TYPE, confirmationId, { data: selectedAccounts });
+    return approveRequest(CONFIRMATION_TYPE, confirmationId, { data: selectedAccounts });
   };
 
   const onPressBlockButton = () => {
-    rejectRequest(CONFIRMATION_TYPE, confirmationId);
+    return rejectRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
   return (

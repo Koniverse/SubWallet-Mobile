@@ -8,10 +8,11 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { AuthorizeConfirmation } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeConfirmation';
-import { AuthorizeRequest, MetadataRequest } from '@subwallet/extension-base/background/types';
+import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
 import { MetadataConfirmation } from 'screens/Home/Browser/ConfirmationPopup/MetadataConfirmation';
 import { EvmSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/EvmSignConfirmation';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
+import { SubstrateSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation';
 
 const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
@@ -80,6 +81,14 @@ export const ConfirmationPopup = () => {
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
           rejectRequest={rejectRequest}
+        />
+      );
+    } else if (currentConfirmationItem.type === 'signingRequest') {
+      return (
+        <SubstrateSignConfirmation
+          payload={currentConfirmationItem.payload as SigningRequest}
+          approveRequest={approveRequest}
+          cancelRequest={cancelRequest}
         />
       );
     } else if (currentConfirmationItem.type === 'metadataRequest') {
