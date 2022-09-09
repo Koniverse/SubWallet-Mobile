@@ -68,36 +68,39 @@ export default function useConfirmations(): ConfirmationHookType {
     });
   }, []);
 
-  const approveRequest = useCallback((type: ConfirmationType, id: string, payload: unknown) => {
+  const approveRequest = useCallback<ConfirmationHookType['approveRequest']>((type, id, payload) => {
     return new Promise<void>((resolve, reject) => {
-      if (type === 'authorizeRequest') {
-        approveAuthRequestV2(id, payload as string[])
-          .then(() => resolve)
-          .catch(reject);
-      } else if (type === 'metadataRequest') {
-        approveMetaRequest(id)
-          .then(() => resolve)
-          .catch(reject);
-      } else if (type === 'signingRequest') {
-        const password = payload ? (payload as string) : '';
-
-        approveSignPassword(id, false, password)
-          .then(() => resolve)
-          .catch(reject);
-      } else if (ConfirmationsQueueItems.includes(type)) {
-        const password = payload ? (payload as string) : '';
-
-        completeConfirmation(type as keyof ConfirmationDefinitions, {
-          id,
-          isApproved: true,
-          payload: true,
-          password,
-        })
-          .then(() => resolve)
-          .catch(reject);
-      } else {
-        return resolve;
+      if (payload) {
+        const password = payload.password || '';
+        if (type === 'authorizeRequest') {
+          if (payload.data) {
+            approveAuthRequestV2(id, payload.data as string[])
+              .then(() => resolve)
+              .catch(reject);
+          }
+        } else if (type === 'metadataRequest') {
+          approveMetaRequest(id)
+            .then(() => resolve)
+            .catch(reject);
+        } else if (type === 'signingRequest') {
+          approveSignPassword(id, false, password)
+            .then(() => resolve)
+            .catch(reject);
+        } else if (ConfirmationsQueueItems.includes(type)) {
+          completeConfirmation(type as keyof ConfirmationDefinitions, {
+            id,
+            isApproved: true,
+            payload: true,
+            password,
+          })
+            .then(() => resolve)
+            .catch(reject);
+        } else {
+          return resolve;
+        }
       }
+
+      return resolve;
     });
   }, []);
 

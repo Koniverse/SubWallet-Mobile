@@ -162,7 +162,7 @@ export const EvmSignConfirmation = ({
 
   const onPressSubmitButton = () => {
     //todo: set Password error
-    approveRequest(CONFIRMATION_TYPE, confirmationId, formState.data.password);
+    approveRequest(CONFIRMATION_TYPE, confirmationId, { password: formState.data.password });
   };
 
   return (

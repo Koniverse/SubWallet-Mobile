@@ -84,7 +84,7 @@ export const MetadataConfirmation = ({
   };
 
   const onPressSubmitButton = () => {
-    approveRequest(CONFIRMATION_TYPE, confirmationId, undefined);
+    approveRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
   return (

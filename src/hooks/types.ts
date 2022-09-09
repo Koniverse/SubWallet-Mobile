@@ -18,10 +18,15 @@ export type CrowdloanContributeValueType = {
 
 export type ConfirmationType = keyof ConfirmationSlice['details'];
 
+// todo: add dismiss action, allow user to deal with the confirmation later
 export type ConfirmationHookType = {
   confirmationRequestMap: ConfirmationSlice['details'];
   cancelRequest: (type: ConfirmationType, id: string) => Promise<void>;
-  approveRequest: (type: ConfirmationType, id: string, payload: unknown) => Promise<void>;
+  approveRequest: (
+    type: ConfirmationType,
+    id: string,
+    payload?: { password?: string; data?: unknown },
+  ) => Promise<void>;
   rejectRequest: (type: ConfirmationType, id: string) => Promise<void>;
   isEmptyRequests: boolean;
 };

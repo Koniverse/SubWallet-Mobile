@@ -54,7 +54,7 @@ export const AuthorizeConfirmation = ({
   };
 
   const onPressSubmitButton = () => {
-    approveRequest(CONFIRMATION_TYPE, confirmationId, selectedAccounts);
+    approveRequest(CONFIRMATION_TYPE, confirmationId, { data: selectedAccounts });
   };
 
   const onPressBlockButton = () => {
@@ -83,6 +83,7 @@ export const AuthorizeConfirmation = ({
             <Text style={[textStyle, { paddingBottom: 16 }]}>{i18n.common.chooseAccount}</Text>
             <ScrollView style={{ maxHeight: 168 }} showsVerticalScrollIndicator={false}>
               <>
+                {/* todo: i18n Select All */}
                 <ConnectAccount
                   isSelected={isSelectedAll}
                   address={ALL_ACCOUNT_KEY}
