@@ -143,9 +143,6 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState(propUrl);
-  // todo: Remove this
-  // const authorizeRequest = useSelector((state: RootState) => state.confirmation.details.authorizeRequest);
-  // const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -157,8 +154,6 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const url = useRef<string | null>(null);
   const title = useRef('');
   const browserOptionModalRef = useRef(null);
-
-  //todo: refactor this
   const hostname = url.current ? getHostName(url.current) : null;
   const isUrlSecure = url.current ? url.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
@@ -312,30 +307,6 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
       }
     }
   }, [params, initWebViewSource]);
-
-  //todo: remove this
-  // useEffect(() => {
-  //   authorizeRequest &&
-  //     Object.keys(authorizeRequest).forEach(authId => {
-  //       Alert.alert('Request Access', `For ${authorizeRequest[authId].url}`, [
-  //         {
-  //           text: 'Accept',
-  //           onPress: () => {
-  //             const accountNames = accounts.filter(a => !isAccountAll(a.address)).map(a => a.address);
-  //
-  //             approveAuthRequestV2(authId, accountNames)
-  //               .then(rs => {
-  //                 console.log('---- approveAuthRequestV2 rs----', rs);
-  //               })
-  //               .catch((error: Error) => console.log('---- approveAuthRequestV2 error----', error));
-  //           },
-  //         },
-  //         {
-  //           text: 'OK',
-  //         },
-  //       ]);
-  //     });
-  // }, [authorizeRequest, accounts]);
 
   const onCloseBrowserOptionModal = useCallback(() => {
     setModalVisible(false);
