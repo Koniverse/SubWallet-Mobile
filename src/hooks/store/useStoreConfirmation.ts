@@ -9,7 +9,7 @@ import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { updateConfirmations } from '../../stores/Confirmation';
+import { updateConfirmations } from 'stores/Confirmation';
 import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
 
 function getStatus(isReady: boolean | undefined, isWaiting: boolean | undefined): StoreStatus {

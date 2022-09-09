@@ -7,17 +7,11 @@ import useConfirmations from 'hooks/useConfirmations';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
-import { ConfirmationSlice } from 'stores/types';
 import { AuthorizeConfirmation } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeConfirmation';
 import { AuthorizeRequest, MetadataRequest } from '@subwallet/extension-base/background/types';
 import { MetadataConfirmation } from 'screens/Home/Browser/ConfirmationPopup/MetadataConfirmation';
 import { EvmSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/EvmSignConfirmation';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
-
-type ConfirmationItem = {
-  type: keyof ConfirmationSlice['details'];
-  payload: unknown;
-};
 
 const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
@@ -48,26 +42,16 @@ const confirmationHeader: StyleProp<any> = {
 
 const authorizeIndexTextStyle: StyleProp<any> = { ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light };
 
-function getConfirmationItems(confirmationRequestMap: ConfirmationSlice['details']): ConfirmationItem[] {
-  const items: ConfirmationItem[] = [];
-
-  Object.keys(confirmationRequestMap).forEach(type => {
-    // @ts-ignore
-    Object.values(confirmationRequestMap[type]).forEach(payload => {
-      items.push({
-        type: type as keyof ConfirmationSlice['details'],
-        payload,
-      });
-    });
-  });
-
-  return items;
-}
-
 export const ConfirmationPopup = () => {
-  const { confirmationRequestMap, isEmptyRequests, approveRequest, cancelRequest, rejectRequest } = useConfirmations();
-  const confirmationItems = getConfirmationItems(confirmationRequestMap);
-  const confirmationItemsLength = confirmationItems.length;
+  const {
+    confirmationItemsLength,
+    isEmptyRequests,
+    approveRequest,
+    cancelRequest,
+    rejectRequest,
+    confirmationItems,
+    isDisplayConfirmation,
+  } = useConfirmations();
   const navigation = useNavigation<RootNavigationProps>();
   const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
   const currentConfirmationItem = confirmationItems[confirmationIndex];
@@ -120,10 +104,10 @@ export const ConfirmationPopup = () => {
   };
 
   useEffect(() => {
-    if (isEmptyRequests) {
+    if (!isDisplayConfirmation || isEmptyRequests) {
       navigation.canGoBack() && navigation.goBack();
     }
-  }, [isEmptyRequests, navigation]);
+  }, [isEmptyRequests, isDisplayConfirmation, navigation]);
 
   useEffect(() => {
     if (confirmationIndex && (confirmationIndex < 0 || confirmationIndex > confirmationItemsLength - 1)) {

@@ -31,6 +31,7 @@ export type AccountsSlice = {
 
 export type AppStateSlice = {
   isLocked: boolean;
+  isDisplayConfirmation: boolean;
 };
 
 export type AuthUrlsSlice = {

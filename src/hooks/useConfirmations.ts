@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   approveAuthRequestV2,
   approveMetaRequest,
@@ -11,8 +11,10 @@ import {
   rejectAuthRequestV2,
   rejectMetaRequest,
 } from '../messaging';
-import { ConfirmationHookType, ConfirmationType } from 'hooks/types';
+import { ConfirmationHookType, ConfirmationItem, ConfirmationType } from 'hooks/types';
 import { ConfirmationDefinitions } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationSlice } from 'stores/types';
+import { toggleConfirmationDisplayState } from 'stores/updater';
 
 const ConfirmationsQueueItems = [
   'addNetworkRequest',
@@ -24,21 +26,30 @@ const ConfirmationsQueueItems = [
   'evmSendTransactionRequestQr',
 ];
 
-type RequestMap = Record<string, Record<string, unknown>>;
+function getConfirmationItems(confirmationRequestMap: ConfirmationSlice['details']): ConfirmationItem[] {
+  const items: ConfirmationItem[] = [];
 
-function getRequestLength(requestMap: RequestMap): number {
-  let counter = 0;
-
-  Object.values(requestMap).forEach(m => {
-    counter += Object.keys(m).length;
+  Object.keys(confirmationRequestMap).forEach(type => {
+    // @ts-ignore
+    Object.values(confirmationRequestMap[type]).forEach(payload => {
+      items.push({
+        type: type as keyof ConfirmationSlice['details'],
+        payload,
+      });
+    });
   });
 
-  return counter;
+  return items;
 }
 
 export default function useConfirmations(): ConfirmationHookType {
   const confirmationRequestMap = useSelector((state: RootState) => state.confirmation.details);
-  const isEmptyRequests = !getRequestLength(confirmationRequestMap);
+  const isDisplayConfirmation = useSelector((state: RootState) => state.appState.isDisplayConfirmation);
+  const confirmationItems = useMemo<ConfirmationItem[]>(() => {
+    return getConfirmationItems(confirmationRequestMap);
+  }, [confirmationRequestMap]);
+  const confirmationItemsLength = confirmationItems.length;
+  const isEmptyRequests = !confirmationItemsLength;
 
   const cancelRequest = useCallback((type: ConfirmationType, id: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -122,5 +133,9 @@ export default function useConfirmations(): ConfirmationHookType {
     approveRequest,
     rejectRequest,
     isEmptyRequests,
+    confirmationItems,
+    confirmationItemsLength,
+    isDisplayConfirmation,
+    toggleConfirmation: toggleConfirmationDisplayState,
   };
 }

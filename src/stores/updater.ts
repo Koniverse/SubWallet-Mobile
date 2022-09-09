@@ -56,6 +56,12 @@ export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
   store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap } });
 }
 
+// App State
+
+export function toggleConfirmationDisplayState(): void {
+  store.dispatch({ type: 'appState/toggleConfirmationDisplayState'});
+}
+
 // browser
 
 export function addToHistory(payload: SiteInfo): void {

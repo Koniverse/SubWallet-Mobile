@@ -38,7 +38,7 @@ export default function useStoreAuthUrls(): StoreStatus {
     return () => {
       cancel = true;
     };
-  }, [isWebRunnerReady, storeStatus]);
+  }, [isWebRunnerReady]);
 
   return storeStatus;
 }

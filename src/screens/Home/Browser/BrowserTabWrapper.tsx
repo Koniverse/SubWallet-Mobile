@@ -6,13 +6,13 @@ import useConfirmations from 'hooks/useConfirmations';
 
 function ConfirmationTrigger() {
   const navigation = useNavigation<RootNavigationProps>();
-  const { isEmptyRequests } = useConfirmations();
+  const { isEmptyRequests, isDisplayConfirmation } = useConfirmations();
 
   useEffect(() => {
-    if (!isEmptyRequests) {
+    if (isDisplayConfirmation && !isEmptyRequests) {
       navigation.navigate('ConfirmationPopup');
     }
-  }, [isEmptyRequests, navigation]);
+  }, [isDisplayConfirmation, isEmptyRequests, navigation]);
 
   return <></>;
 }
