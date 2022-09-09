@@ -8,9 +8,9 @@ import { ShieldSlash } from 'phosphor-react-native';
 export interface ConfirmationFooterType {
   cancelButtonTitle: string;
   submitButtonTitle: string;
-  onPressCancelButton: () => void;
+  onPressCancelButton?: () => void;
   isSubmitButtonDisabled?: boolean;
-  onPressSubmitButton: () => void;
+  onPressSubmitButton?: () => void;
   isShowBlockButton?: boolean;
   onPressBlockButton?: () => void;
 }

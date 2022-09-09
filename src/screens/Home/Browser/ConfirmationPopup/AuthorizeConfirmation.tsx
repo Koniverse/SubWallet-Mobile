@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleProp, Text, View } from 'react-native';
+import { ScrollView, StyleProp, Text } from 'react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
@@ -37,6 +37,7 @@ export const AuthorizeConfirmation = ({
 }: Props) => {
   const { accountAuthType } = request;
   const hostName = getHostName(url);
+  console.log('url', url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const accountList = useMemo(() => {
     return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
@@ -76,12 +77,12 @@ export const AuthorizeConfirmation = ({
         onPressBlockButton: onPressBlockButton,
         isSubmitButtonDisabled: !(selectedAccounts && selectedAccounts.length),
       }}>
-      <View style={{ flex: 1 }}>
+      <>
         <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{hostName}</Text>
         {accountList && accountList.length ? (
           <>
             <Text style={[textStyle, { paddingBottom: 16 }]}>{i18n.common.chooseAccount}</Text>
-            <ScrollView style={{ maxHeight: 168 }} showsVerticalScrollIndicator={false}>
+            <ScrollView style={{ maxHeight: 168, width: '100%' }} showsVerticalScrollIndicator={false}>
               <>
                 {/* todo: i18n Select All */}
                 <ConnectAccount
@@ -115,7 +116,7 @@ export const AuthorizeConfirmation = ({
         )}
 
         <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24 }]}>{i18n.warningMessage.trustSiteMessage}</Text>
-      </View>
+      </>
     </ConfirmationBase>
   );
 };
