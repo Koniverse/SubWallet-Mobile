@@ -70,11 +70,11 @@ export const MetadataConfirmation = ({
   const hostName = getHostName(url);
   const metadataInfos = [
     {
-      label: 'Symbol',
+      label: i18n.common.symbol,
       value: request.tokenSymbol,
     },
     {
-      label: 'Decimals',
+      label: i18n.common.decimals,
       value: request.tokenDecimals,
     },
   ];
@@ -99,15 +99,17 @@ export const MetadataConfirmation = ({
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
       }}>
-      <View style={{ width: '100%', alignItems: 'center' }}>
+      <>
         <Text style={metadataTextStyle}>
           {`${i18n.title.metadataTitlePart1} ${request.chain} ${i18n.title.metadataTitlePart2} ${url}`}
         </Text>
 
         <View style={dividerStyle} />
 
-        {metadataInfos.map(info => renderMetadataInfo(info.label, info.value))}
-      </View>
+        <View style={{ width: '100%', paddingBottom: 32 }}>
+          {metadataInfos.map(info => renderMetadataInfo(info.label, info.value))}
+        </View>
+      </>
     </ConfirmationBase>
   );
 };

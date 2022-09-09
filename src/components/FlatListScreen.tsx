@@ -10,7 +10,7 @@ import { RootNavigationProps } from 'types/routes';
 import { useLazyList } from 'hooks/useLazyList';
 import { ActivityLoading } from 'components/ActivityLoading';
 import i18n from 'utils/i18n/i18n';
-
+//TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
   title?: string;

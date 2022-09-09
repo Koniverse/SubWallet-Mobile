@@ -61,10 +61,26 @@ export const AuthorizeConfirmation = ({
     return rejectRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
+  const onChangeSelection = (address: string) => {
+    let newSelectedList = selectedAccounts;
+
+    if (address !== ALL_ACCOUNT_KEY) {
+      if (selectedAccounts.includes(address)) {
+        newSelectedList = selectedAccounts.filter(acc => acc !== address);
+      } else {
+        newSelectedList = selectedAccounts.concat(address);
+      }
+    } else if (isSelectedAll) {
+      newSelectedList = [];
+    }
+
+    setSelectedAccounts(newSelectedList);
+  };
+
   return (
     <ConfirmationBase
       headerProps={{
-        title: 'Approve Request', //todo: i18n
+        title: i18n.title.authorizeRequestTitle,
         hostName,
       }}
       footerProps={{
@@ -83,13 +99,12 @@ export const AuthorizeConfirmation = ({
             <Text style={[textStyle, { paddingBottom: 16 }]}>{i18n.common.chooseAccount}</Text>
             <ScrollView style={{ maxHeight: 168, width: '100%' }} showsVerticalScrollIndicator={false}>
               <>
-                {/* todo: i18n Select All */}
                 <ConnectAccount
                   isSelected={isSelectedAll}
                   address={ALL_ACCOUNT_KEY}
-                  name={'Select All'}
+                  name={i18n.common.selectAll}
                   selectedAccounts={accountList.map(account => account.address)}
-                  selectAccountCallBack={setSelectedAccounts}
+                  onChangeSelection={onChangeSelection}
                 />
                 {accountList.map(acc => (
                   <ConnectAccount
@@ -98,7 +113,7 @@ export const AuthorizeConfirmation = ({
                     address={acc.address}
                     name={acc.name || ''}
                     selectedAccounts={selectedAccounts}
-                    selectAccountCallBack={setSelectedAccounts}
+                    onChangeSelection={onChangeSelection}
                   />
                 ))}
               </>

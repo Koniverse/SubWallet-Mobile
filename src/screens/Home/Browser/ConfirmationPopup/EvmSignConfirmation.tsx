@@ -1,20 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
-import { ConfirmationHeader } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
 import { getHostName } from 'utils/browser';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ConnectAccount } from 'components/ConnectAccount';
 import { Divider } from 'components/Divider';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 import i18n from 'utils/i18n/i18n';
-import { PasswordField } from 'components/Field/Password';
-import useFormControl from 'hooks/screen/useFormControl';
 import { Warning } from 'components/Warning';
 import { ConfirmationHookType } from 'hooks/types';
+import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
+import { renderTargetAccount } from 'screens/Home/Browser/ConfirmationPopup/shared';
 
 interface Props {
   payload: ConfirmationsQueue['evmSignatureRequest'][0];
@@ -28,11 +25,12 @@ interface SignTypedDataObjectV1 {
   value: any;
 }
 
-//todo: what to do with this
 function getNodeStyle(isLeaf: boolean): StyleProp<any> {
   return {
     position: 'relative',
     marginLeft: 16,
+    flexDirection: isLeaf ? 'row' : 'column',
+    flexWrap: 'wrap',
   };
 }
 
@@ -48,13 +46,6 @@ const valueStyle: StyleProp<any> = {
   color: ColorMap.disabled,
 };
 
-const formConfig = {
-  password: {
-    name: i18n.common.password,
-    value: '',
-  },
-};
-
 const CONFIRMATION_TYPE = 'evmSignatureRequest';
 
 export const EvmSignConfirmation = ({
@@ -68,14 +59,9 @@ export const EvmSignConfirmation = ({
   const [rawData, setRawData] = useState<string | object>('');
   const account = accounts.find(acc => acc.address === payload.address);
   const [warning, setWarning] = useState<string | undefined>(undefined);
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
-    onSubmitForm: () => {},
-  });
   useEffect(() => {
     if (payload.type === 'eth_sign') {
-      setWarning(
-        "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site.",
-      );
+      setWarning(i18n.warningMessage.ethSignWarningMessage);
       setSignMethod('ETH Sign');
     } else if (payload.type === 'personal_sign') {
       setSignMethod('Personal Sign');
@@ -114,7 +100,7 @@ export const EvmSignConfirmation = ({
 
             return (
               <View style={getNodeStyle(isLeaf)} key={index}>
-                <Text>{key}:</Text>
+                <Text style={labelStyle}>{key}: </Text>
                 {renderData(datum)}
               </View>
             );
@@ -130,8 +116,8 @@ export const EvmSignConfirmation = ({
         {data.map((value, index) => {
           return (
             <View key={index}>
-              <Text>{value.name}:</Text>
-              <Text>{value.value}</Text>
+              <Text style={labelStyle}>{value.name}:</Text>
+              <Text style={valueStyle}>{value.value}</Text>
             </View>
           );
         })}
@@ -157,61 +143,42 @@ export const EvmSignConfirmation = ({
   }, [handlerRenderV1, payload.type, rawData, renderData]);
 
   const onPressCancelButton = () => {
-    cancelRequest(CONFIRMATION_TYPE, confirmationId);
+    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
   };
 
-  const onPressSubmitButton = () => {
-    //todo: set Password error
-    approveRequest(CONFIRMATION_TYPE, confirmationId, { password: formState.data.password });
+  const onPressSubmitButton = (password: string) => {
+    return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
 
   return (
-    <View style={{ alignItems: 'center', width: '100%', flex: 1 }}>
-      <ConfirmationHeader title={'request to sign message with'} hostName={hostName} />
-      {account && (
-        <ConnectAccount
-          style={{ marginTop: 16 }}
-          name={account.name || ''}
-          address={account.address}
-          isSelected={false}
-          selectedAccounts={[]}
-          isShowShortedAddress={false}
-        />
-      )}
-      <Divider style={{ marginVertical: 16 }} />
+    <ConfirmationBase
+      headerProps={{ title: 'request to sign message with', hostName }}
+      isShowPassword={true}
+      footerProps={{
+        cancelButtonTitle: i18n.common.cancel,
+        submitButtonTitle: 'Sign',
+        onPressCancelButton: onPressCancelButton,
+        onPressSubmitButton: onPressSubmitButton,
+      }}>
+      <>
+        <View style={{ paddingTop: 16 }}>{account && renderTargetAccount(account.address, account.name)}</View>
 
-      <ScrollView style={{ width: '100%' }}>
-        <Text>
-          <Text style={labelStyle}>Sign Method: </Text>
-          <Text style={valueStyle}>{signMethod}</Text>
-        </Text>
+        <Divider style={{ marginVertical: 16 }} />
 
-        {warning && <Warning message={warning} />}
+        <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%' }}>
+          <Text>
+            <Text style={labelStyle}>Sign Method: </Text>
+            <Text style={valueStyle}>{signMethod}</Text>
+          </Text>
 
-        <View>
-          <Text style={labelStyle}>Raw Data: </Text>
-          {handlerRenderContent()}
-        </View>
-      </ScrollView>
-      <View style={{ width: '100%', paddingTop: 8 }}>
-        <PasswordField
-          label={formState.labels.password}
-          fieldBgc={ColorMap.dark1}
-          defaultValue={formState.data.password}
-          onChangeText={onChangeValue('password')}
-          isBusy={false}
-          errorMessages={formState.errors.password}
-          onSubmitField={onSubmitField('password')}
-        />
-      </View>
+          {warning && <Warning message={warning} />}
 
-      {/* todo: i18n Sign */}
-      <ConfirmationFooter
-        cancelButtonTitle={i18n.common.cancel}
-        submitButtonTitle={'Sign'}
-        onPressCancelButton={onPressCancelButton}
-        onPressSubmitButton={onPressSubmitButton}
-      />
-    </View>
+          <View>
+            <Text style={labelStyle}>Raw Data: </Text>
+            {handlerRenderContent()}
+          </View>
+        </ScrollView>
+      </>
+    </ConfirmationBase>
   );
 };

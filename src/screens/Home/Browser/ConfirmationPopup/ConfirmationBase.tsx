@@ -47,10 +47,11 @@ const Component = (
       ...footerProps
     },
     children,
+    isShowPassword,
   }: Props,
   ref: ForwardedRef<ConfirmationBaseRef>,
 ) => {
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
   const [isBusy, setIsBusy] = useState<boolean>(false);
@@ -65,10 +66,10 @@ const Component = (
     if (onPressSubmitButton) {
       setBusyKey('SUBMIT');
       setIsBusy(true);
-      // todo: set password here
-      onPressSubmitButton('')
+      onPressSubmitButton(formState.data.password)
+        .then(res => console.log(res))
         .catch(e => {
-          //  todo: handle password here
+          onUpdateErrors('password')([e.message]);
         })
         .finally(() => {
           setIsBusy(false);
@@ -104,15 +105,17 @@ const Component = (
       {children}
 
       <View style={{ width: '100%', paddingTop: 8 }}>
-        <PasswordField
-          label={formState.labels.password}
-          fieldBgc={ColorMap.dark1}
-          defaultValue={formState.data.password}
-          onChangeText={onChangeValue('password')}
-          isBusy={false}
-          errorMessages={formState.errors.password}
-          onSubmitField={onSubmitField('password')}
-        />
+        {isShowPassword && (
+          <PasswordField
+            label={formState.labels.password}
+            fieldBgc={ColorMap.dark1}
+            defaultValue={formState.data.password}
+            onChangeText={onChangeValue('password')}
+            isBusy={false}
+            errorMessages={formState.errors.password}
+            onSubmitField={onSubmitField('password')}
+          />
+        )}
       </View>
       <ConfirmationFooter
         {...footerProps}
@@ -124,7 +127,7 @@ const Component = (
         isCancelButtonBusy={isCancelButtonBusy || (isBusy && busyKey === 'CANCEL')}
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
-        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy}
+        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || !formState.data.password}
       />
     </>
   );

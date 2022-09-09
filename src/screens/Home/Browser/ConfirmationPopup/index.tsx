@@ -13,6 +13,9 @@ import { MetadataConfirmation } from 'screens/Home/Browser/ConfirmationPopup/Met
 import { EvmSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/EvmSignConfirmation';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { SubstrateSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { SendEvmTransactionConfirmation } from 'screens/Home/Browser/ConfirmationPopup/SendEvmTransactionConfirmation';
 
 const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
@@ -22,7 +25,7 @@ const subWalletModalSeparator: StyleProp<any> = {
 };
 
 const confirmationPopupWrapper: StyleProp<any> = {
-  height: '66%',
+  maxHeight: '90%',
   width: '100%',
   backgroundColor: ColorMap.dark2,
   borderTopLeftRadius: 15,
@@ -56,6 +59,7 @@ export const ConfirmationPopup = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
   const currentConfirmationItem = confirmationItems[confirmationIndex];
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   const onPressPrevButton = () => {
     if (confirmationIndex > 0) {
@@ -103,6 +107,17 @@ export const ConfirmationPopup = () => {
       return (
         <EvmSignConfirmation
           payload={currentConfirmationItem.payload as ConfirmationsQueue['evmSignatureRequest'][0]}
+          approveRequest={approveRequest}
+          cancelRequest={cancelRequest}
+        />
+      );
+    } else if (currentConfirmationItem.type === 'evmSendTransactionRequest') {
+      const evmSendTransactionRequest =
+        currentConfirmationItem.payload as ConfirmationsQueue['evmSendTransactionRequest'][0];
+      return (
+        <SendEvmTransactionConfirmation
+          payload={evmSendTransactionRequest}
+          network={networkMap[evmSendTransactionRequest.networkKey || '']}
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
         />

@@ -107,6 +107,18 @@ export const en = {
     historyEmptyListPlaceholder: 'Your history will appear here',
     approve: 'Approve',
     metadataIsOutOfDate: 'Your metadata is out of date',
+    selectAll: 'Select All',
+    symbol: 'Symbol',
+    decimals: 'Decimals',
+    defaultReceiveAccountName: 'Received Account / Contract Address',
+    info: 'Info',
+    hexData: 'Hex data',
+    detail: 'Detail',
+    data: 'Data',
+    method: 'Method',
+    arguments: 'Arguments',
+    amount: 'Amount',
+    estimateGas: 'Estimate Gas',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -137,6 +149,7 @@ export const en = {
     filters: 'Filters',
     metadataTitlePart1: 'Approving this update will sync your metadata for the',
     metadataTitlePart2: 'chain from',
+    authorizeRequestTitle: 'Approve Request',
   },
   tabName: {
     crypto: 'Crypto',
@@ -183,6 +196,7 @@ export const en = {
     doNotShareJsonFile: 'Do not share your JSON file!',
     warning: 'Warning',
     error: 'Error!',
+    clearHistory: 'Clear History',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',
@@ -212,6 +226,9 @@ export const en = {
     noSubstrateAccountMessage:
       "You don't have any substrate account. Please create, import or restore an account to continue",
     trustSiteMessage: 'Make sure you trust this site before connecting',
+    ethSignWarningMessage:
+      "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site.",
+    clearHistoryWarningMessage: 'Make sure you want to clear all history',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
