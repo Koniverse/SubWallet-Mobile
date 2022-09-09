@@ -5,7 +5,7 @@ import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import { ShieldSlash } from 'phosphor-react-native';
 
-interface Props {
+export interface ConfirmationFooterType {
   cancelButtonTitle: string;
   submitButtonTitle: string;
   onPressCancelButton: () => void;
@@ -33,7 +33,7 @@ export const ConfirmationFooter = ({
   isShowBlockButton = false,
   onPressBlockButton,
   isSubmitButtonDisabled,
-}: Props) => {
+}: ConfirmationFooterType) => {
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16 }}>

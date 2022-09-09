@@ -10,10 +10,9 @@ import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ConnectAccount } from 'components/ConnectAccount';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { Warning } from 'components/Warning';
-import { ConfirmationHeader } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
-import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 import { ConfirmationHookType } from 'hooks/types';
 import { getHostName } from 'utils/browser';
+import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 
 interface Props {
   payload: AuthorizeRequest;
@@ -63,8 +62,20 @@ export const AuthorizeConfirmation = ({
   };
 
   return (
-    <View style={{ width: '100%', flex: 1 }}>
-      <ConfirmationHeader title={'Approve Request'} hostName={hostName} />
+    <ConfirmationBase
+      headerProps={{
+        title: 'Approve Request', //todo: i18n
+        hostName,
+      }}
+      footerProps={{
+        isShowBlockButton: true,
+        cancelButtonTitle: i18n.common.cancel,
+        submitButtonTitle: i18n.common.connect,
+        onPressCancelButton: onPressCancelButton,
+        onPressSubmitButton: onPressSubmitButton,
+        onPressBlockButton: onPressBlockButton,
+        isSubmitButtonDisabled: !(selectedAccounts && selectedAccounts.length),
+      }}>
       <View style={{ flex: 1 }}>
         <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{hostName}</Text>
         {accountList && accountList.length ? (
@@ -104,15 +115,6 @@ export const AuthorizeConfirmation = ({
 
         <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24 }]}>{i18n.warningMessage.trustSiteMessage}</Text>
       </View>
-      <ConfirmationFooter
-        isShowBlockButton={true}
-        cancelButtonTitle={i18n.common.cancel}
-        submitButtonTitle={i18n.common.connect}
-        onPressCancelButton={onPressCancelButton}
-        onPressSubmitButton={onPressSubmitButton}
-        onPressBlockButton={onPressBlockButton}
-        isSubmitButtonDisabled={!(selectedAccounts && selectedAccounts.length)}
-      />
-    </View>
+    </ConfirmationBase>
   );
 };
