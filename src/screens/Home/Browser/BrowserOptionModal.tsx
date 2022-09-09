@@ -58,7 +58,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
       },
     },
     {
-      key: 'addToFavourites',
+      key: 'toggleFavouriteSite',
       icon: getLeftIcon(isBookmarked ? StarHalf : Star),
       label: isBookmarked ? i18n.common.removeFromFavourites : i18n.common.addToFavourites,
       onPress: () => {

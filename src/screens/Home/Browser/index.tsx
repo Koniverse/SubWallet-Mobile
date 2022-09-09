@@ -57,11 +57,12 @@ function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
   );
 }
 
+const SearchIcon = MagnifyingGlass;
+
 export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const navigation = useNavigation<RootNavigationProps>();
-  const SearchIcon = MagnifyingGlass;
 
   const onPressItem = (item: StoredSiteInfo) => {
     navigation.navigate('BrowserTab', { url: item.url, name: item.name });

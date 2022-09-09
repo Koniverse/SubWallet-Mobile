@@ -9,9 +9,9 @@ export interface FieldBaseProps extends ViewProps {
   fieldBgc?: string;
 }
 
-function getWrapperStyle(bgc: string): StyleProp<any> {
+function getWrapperStyle(backgroundColor: string): StyleProp<any> {
   return {
-    backgroundColor: bgc,
+    backgroundColor,
     borderRadius: 5,
     marginBottom: 8,
   };

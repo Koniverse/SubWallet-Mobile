@@ -50,6 +50,7 @@ import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
 import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
 import { BrowserTabWrapper } from 'screens/Home/Browser/BrowserTabWrapper';
+import { ColorMap } from 'styles/color';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -221,7 +222,7 @@ export const App = () => {
                   <Stack.Group
                     screenOptions={{
                       presentation: 'transparentModal',
-                      contentStyle: { backgroundColor: 'rgba(22, 22, 22, 0.8)' },
+                      contentStyle: { backgroundColor: ColorMap.modalBackDropColor },
                       headerShown: false,
                     }}>
                     <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />

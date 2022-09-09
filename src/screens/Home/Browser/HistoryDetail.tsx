@@ -28,10 +28,10 @@ export const HistoryDetail = () => {
   const _clearHistory = () => {
     Alert.alert('Clear History', 'Make sure you want to clear all history', [
       {
-        text: 'Cancel',
+        text: 'Cancel', // todo: i18n
       },
       {
-        text: 'OK',
+        text: 'OK', // todo: i18n
         onPress: () => clearHistory(),
       },
     ]);

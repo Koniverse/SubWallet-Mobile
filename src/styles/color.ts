@@ -21,6 +21,8 @@ export const ColorMap = {
   inputBackground: '#262C4A',
   checkBoxBorderColor: '#2D365C',
   borderButtonColor: '#444444',
+  modalBackDropColor: 'rgba(22, 22, 22, 0.8)',
+  placeholderIconColor: 'rgba(255, 255, 255, 0.3)'
 };
 
 export const Background = StyleSheet.create({
