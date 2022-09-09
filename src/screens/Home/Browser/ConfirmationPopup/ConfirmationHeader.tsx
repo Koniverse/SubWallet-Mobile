@@ -15,7 +15,7 @@ const titleStyle: StyleProp<any> = {
   paddingTop: 16,
 };
 
-export const Header = ({ title, hostName }: Props) => {
+export const ConfirmationHeader = ({ title, hostName }: Props) => {
   return (
     <View style={{ alignItems: 'center' }}>
       <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 56, height: 56 }} />

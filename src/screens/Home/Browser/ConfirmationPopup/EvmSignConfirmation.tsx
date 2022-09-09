@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
-import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
+import { ConfirmationHeader } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
 import { getHostName } from 'utils/browser';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -167,7 +167,7 @@ export const EvmSignConfirmation = ({
 
   return (
     <View style={{ alignItems: 'center', width: '100%', flex: 1 }}>
-      <Header title={'request to sign message with'} hostName={hostName} />
+      <ConfirmationHeader title={'request to sign message with'} hostName={hostName} />
       {account && (
         <ConnectAccount
           style={{ marginTop: 16 }}

@@ -10,7 +10,7 @@ import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ConnectAccount } from 'components/ConnectAccount';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { Warning } from 'components/Warning';
-import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
+import { ConfirmationHeader } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
 import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 import { ConfirmationHookType } from 'hooks/types';
 import { getHostName } from 'utils/browser';
@@ -64,7 +64,7 @@ export const AuthorizeConfirmation = ({
 
   return (
     <View style={{ width: '100%', flex: 1 }}>
-      <Header title={'Approve Request'} hostName={hostName} />
+      <ConfirmationHeader title={'Approve Request'} hostName={hostName} />
       <View style={{ flex: 1 }}>
         <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{hostName}</Text>
         {accountList && accountList.length ? (

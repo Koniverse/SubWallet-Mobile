@@ -4,7 +4,7 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ConfirmationFooter } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
 import i18n from 'utils/i18n/i18n';
-import { Header } from 'screens/Home/Browser/ConfirmationPopup/Header';
+import { ConfirmationHeader } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
 import { getHostName } from 'utils/browser';
 import { MetadataRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHookType } from 'hooks/types';
@@ -90,7 +90,7 @@ export const MetadataConfirmation = ({
 
   return (
     <View style={{ width: '100%', flex: 1 }}>
-      <Header title={i18n.common.metadataIsOutOfDate} hostName={hostName} />
+      <ConfirmationHeader title={i18n.common.metadataIsOutOfDate} hostName={hostName} />
       <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
         <Text style={metadataTextStyle}>
           {`${i18n.title.metadataTitlePart1} ${request.chain} ${i18n.title.metadataTitlePart2} ${url}`}
