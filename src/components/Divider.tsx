@@ -9,5 +9,9 @@ interface Props {
 const dividerStyle: StyleProp<any> = { height: 1, width: '100%', backgroundColor: ColorMap.disabled };
 
 export const Divider = ({ style }: Props) => {
-  return <View style={[dividerStyle, style]} />;
+  return (
+    <View style={[style, { width: '100%' }]}>
+      <View style={dividerStyle} />
+    </View>
+  );
 };

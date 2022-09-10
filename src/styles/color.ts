@@ -23,7 +23,8 @@ export const ColorMap = {
   borderButtonColor: '#444444',
   modalBackDropDarkColor: 'rgba(22, 22, 22, 0.8)',
   modalBackDropLightColor: 'rgba(255, 255, 255, 0.5)',
-  placeholderIconColor: 'rgba(255, 255, 255, 0.3)'
+  placeholderIconColor: 'rgba(255, 255, 255, 0.3)',
+  buttonOverlayButtonColor: 'rgba(34, 34, 34, 0.7)',
 };
 
 export const Background = StyleSheet.create({

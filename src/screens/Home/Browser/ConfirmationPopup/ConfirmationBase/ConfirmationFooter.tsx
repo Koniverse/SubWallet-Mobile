@@ -26,9 +26,15 @@ const cancelButtonStyle: StyleProp<any> = {
   borderColor: ColorMap.borderButtonColor,
   flex: 1,
   marginRight: 8,
+  marginLeft: 8,
 };
 
-const blockButtonStyle: StyleProp<any> = { backgroundColor: ColorMap.danger, borderRadius: 5, marginRight: 16 };
+const blockButtonStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.danger,
+  borderRadius: 5,
+  marginRight: 8,
+  marginLeft: 8,
+};
 
 export const ConfirmationFooter = ({
   cancelButtonTitle,
@@ -46,7 +52,7 @@ export const ConfirmationFooter = ({
 }: ConfirmationFooterType) => {
   return (
     <>
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16, marginHorizontal: 8 }}>
         {/* todo: add busy prop + style to IconButton */}
         {isShowBlockButton && (
           <IconButton
@@ -62,10 +68,11 @@ export const ConfirmationFooter = ({
           style={cancelButtonStyle}
           onPress={onPressCancelButton}
           disabled={isCancelButtonDisabled}
+          disabledColor={ColorMap.buttonOverlayButtonColor}
           isBusy={isCancelButtonBusy}
         />
         <SubmitButton
-          style={{ flex: 1, marginLeft: 8 }}
+          style={{ flex: 1, marginRight: 8, marginLeft: 8 }}
           title={submitButtonTitle}
           onPress={onPressSubmitButton}
           disabled={isSubmitButtonDisabled}

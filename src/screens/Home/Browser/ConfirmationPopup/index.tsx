@@ -32,7 +32,6 @@ const confirmationPopupWrapper: StyleProp<any> = {
   borderTopRightRadius: 15,
   alignItems: 'center',
   paddingTop: 8,
-  paddingHorizontal: 16,
 };
 
 const confirmationHeader: StyleProp<any> = {
@@ -42,6 +41,7 @@ const confirmationHeader: StyleProp<any> = {
   alignItems: 'center',
   marginTop: 8,
   marginBottom: 16,
+  paddingHorizontal: 16,
 };
 
 const authorizeIndexTextStyle: StyleProp<any> = { ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light };

@@ -139,7 +139,6 @@ const bottomButtonAreaStyle: StyleProp<any> = {
   paddingVertical: 12,
 };
 
-//todo: i18n
 //todo: Update better style
 const PhishingBlockerLayer = () => {
   return (
@@ -153,13 +152,7 @@ const PhishingBlockerLayer = () => {
         position: 'absolute',
       }}>
       <View style={{ backgroundColor: ColorMap.modalBackDropDarkColor }}>
-        <Warning
-          isDanger
-          title={'Phishing Detected'}
-          message={
-            'This site is blocked the Subwallet app believes that this website could compromise the security of your accounts and your tokens.'
-          }
-        />
+        <Warning isDanger title={i18n.title.phishingDetected} message={i18n.warningMessage.phishingMessage} />
       </View>
     </View>
   );
@@ -225,7 +218,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
   };
 
-  const onLoadStart = async ({ nativeEvent }: WebViewNavigationEvent) => {
+  const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url !== url.current && nativeEvent.loading) {
       setNavigationInfo({
         canGoBack: nativeEvent.canGoBack,

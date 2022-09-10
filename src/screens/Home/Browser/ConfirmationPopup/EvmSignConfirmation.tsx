@@ -156,25 +156,25 @@ export const EvmSignConfirmation = ({
       isShowPassword={true}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
-        submitButtonTitle: 'Sign', // todo: i18n here
+        submitButtonTitle: i18n.common.sign,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
       }}>
       <>
         <View style={{ paddingTop: 16 }}>{account && renderTargetAccount(account.address, account.name)}</View>
 
-        <Divider style={{ marginVertical: 16 }} />
+        <Divider style={{ marginVertical: 16, paddingHorizontal: 16 }} />
 
-        <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%' }}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%', paddingHorizontal: 16 }}>
           <Text>
-            <Text style={labelStyle}>Sign Method: </Text>
+            <Text style={labelStyle}>{i18n.common.signMethod}: </Text>
             <Text style={valueStyle}>{signMethod}</Text>
           </Text>
 
-          {warning && <Warning message={warning} />}
+          {warning && <Warning message={warning} style={{ marginVertical: 8 }} />}
 
           <View>
-            <Text style={labelStyle}>Raw Data: </Text>
+            <Text style={labelStyle}>{i18n.common.rawData}: </Text>
             {handlerRenderContent()}
           </View>
         </ScrollView>

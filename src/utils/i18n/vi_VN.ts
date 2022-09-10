@@ -119,6 +119,21 @@ export const vi = {
     arguments: 'Arguments',
     amount: 'Amount',
     estimateGas: 'Estimate Gas',
+    sign: 'Sign',
+    rawData: 'Raw Data',
+    signMethod: 'Sign Method',
+    from: 'From',
+    genesis: 'Genesis',
+    versionLabel: 'Version',
+    nonce: 'Nonce',
+    tip: 'Tip',
+    lifetime: 'Lifetime',
+    bytes: 'Bytes',
+    immortal: 'immortal',
+    immortalValidFrom: 'mortal, valid from',
+    to: 'to',
+    close: 'Close',
+    viewDetail: 'View Detail',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -150,6 +165,7 @@ export const vi = {
     metadataTitlePart1: 'Approving this update will sync your metadata for the',
     metadataTitlePart2: 'chain from',
     authorizeRequestTitle: 'Approve Request',
+    phishingDetected: 'Phishing Detected',
   },
   tabName: {
     crypto: 'Crypto',
@@ -229,6 +245,8 @@ export const vi = {
     ethSignWarningMessage:
       "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site.",
     clearHistoryWarningMessage: 'Make sure you want to clear all history',
+    phishingMessage:
+      'This site is blocked the Subwallet app believes that this website could compromise the security of your accounts and your tokens.',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

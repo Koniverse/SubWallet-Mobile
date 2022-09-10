@@ -11,6 +11,7 @@ interface Props {
   modalStyle?: object;
   animationIn?: ModalProps['animationIn'];
   animationOut?: ModalProps['animationOut'];
+  backdropColor?: string;
 }
 
 const subWalletModalContainer: StyleProp<any> = {
@@ -20,7 +21,14 @@ const subWalletModalContainer: StyleProp<any> = {
   paddingTop: 8,
 };
 
-export const SubWalletFullSizeModal = ({ children, modalVisible, modalStyle, animationIn, animationOut }: Props) => {
+export const SubWalletFullSizeModal = ({
+  children,
+  modalVisible,
+  modalStyle,
+  animationIn,
+  animationOut,
+  backdropColor,
+}: Props) => {
   return (
     <Modal
       isVisible={modalVisible}
@@ -28,6 +36,7 @@ export const SubWalletFullSizeModal = ({ children, modalVisible, modalStyle, ani
       animationIn={animationIn || 'slideInUp'}
       animationOut={animationOut || 'slideOutDown'}
       useNativeDriver
+      backdropColor={backdropColor}
       hideModalContentWhileAnimating
       propagateSwipe>
       <View style={[subWalletModalContainer, modalStyle]}>{children}</View>

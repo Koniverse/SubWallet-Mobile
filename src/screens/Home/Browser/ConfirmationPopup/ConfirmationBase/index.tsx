@@ -102,7 +102,7 @@ export const ConfirmationBase = ({
       <ConfirmationHeader {...headerProps} />
       {children}
 
-      <View style={{ width: '100%', paddingTop: 8 }}>
+      <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16 }}>
         {isShowPassword && (
           <PasswordField
             label={formState.labels.password}

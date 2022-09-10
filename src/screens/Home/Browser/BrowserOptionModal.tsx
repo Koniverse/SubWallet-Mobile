@@ -5,7 +5,7 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { ArrowsOutSimple, Star, StarHalf } from 'phosphor-react-native';
 import { SelectItem } from 'components/SelectItem';
-import { getLeftIcon } from 'utils/index';
+import { getLeftSelectItemIcon } from 'utils/index';
 import { SiteInfo } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -50,7 +50,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
   const OPTIONS: OptionType[] = [
     {
       key: 'openInBrowser',
-      icon: getLeftIcon(ArrowsOutSimple),
+      icon: getLeftSelectItemIcon(ArrowsOutSimple),
       label: i18n.common.openInBrowser,
       onPress: () => {
         Linking.openURL(siteInfo.url);
@@ -59,7 +59,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
     },
     {
       key: 'toggleFavouriteSite',
-      icon: getLeftIcon(isBookmarked ? StarHalf : Star),
+      icon: getLeftSelectItemIcon(isBookmarked ? StarHalf : Star),
       label: isBookmarked ? i18n.common.removeFromFavourites : i18n.common.addToFavourites,
       onPress: () => {
         if (isBookmarked) {

@@ -6,7 +6,7 @@ import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sh
 import { SelectItem } from 'components/SelectItem';
 import { ColorMap } from 'styles/color';
 import { Activity, Barricade, CirclesThreePlus, ListChecks, Trophy } from 'phosphor-react-native';
-import { getLeftIcon, getNetworkLogo } from 'utils/index';
+import { getLeftSelectItemIcon, getNetworkLogo } from 'utils/index';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl from 'hooks/screen/useFormControl';
 import { FilterOptsType } from 'types/ui-types';
@@ -35,7 +35,7 @@ const crowdloanFilterLabelStyle: StyleProp<any> = {
 const parachainFilterOptions: Record<string, FilterOptionType> = {
   all: {
     label: 'All Parachains',
-    icon: getLeftIcon(CirclesThreePlus),
+    icon: getLeftSelectItemIcon(CirclesThreePlus),
   },
   polkadot: {
     label: 'Polkadot Parachain',
@@ -50,19 +50,19 @@ const parachainFilterOptions: Record<string, FilterOptionType> = {
 const crowdloanStatusFilterOptions: Record<string, FilterOptionType> = {
   all: {
     label: 'All Projects',
-    icon: getLeftIcon(ListChecks),
+    icon: getLeftSelectItemIcon(ListChecks),
   },
   completed: {
     label: 'Winner',
-    icon: getLeftIcon(Trophy),
+    icon: getLeftSelectItemIcon(Trophy),
   },
   fail: {
     label: 'Fail',
-    icon: getLeftIcon(Barricade),
+    icon: getLeftSelectItemIcon(Barricade),
   },
   ongoing: {
     label: 'Active',
-    icon: getLeftIcon(Activity),
+    icon: getLeftSelectItemIcon(Activity),
   },
 };
 

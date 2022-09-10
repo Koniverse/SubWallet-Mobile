@@ -96,8 +96,12 @@ export const AuthorizeConfirmation = ({
         <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{hostName}</Text>
         {accountList && accountList.length ? (
           <>
-            <Text style={[textStyle, { paddingBottom: 16, width: '100%' }]}>{i18n.common.chooseAccount}</Text>
-            <ScrollView style={{ maxHeight: 168, width: '100%' }} showsVerticalScrollIndicator={false}>
+            <Text style={[textStyle, { paddingBottom: 16, width: '100%', paddingLeft: 16 }]}>
+              {i18n.common.chooseAccount}
+            </Text>
+            <ScrollView
+              style={{ maxHeight: 168, width: '100%', paddingHorizontal: 16 }}
+              showsVerticalScrollIndicator={false}>
               <>
                 <ConnectAccount
                   isSelected={isSelectedAll}
@@ -129,7 +133,7 @@ export const AuthorizeConfirmation = ({
           />
         )}
 
-        <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24, width: '100%' }]}>
+        <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24, width: '100%', paddingLeft: 16 }]}>
           {i18n.warningMessage.trustSiteMessage}
         </Text>
       </>

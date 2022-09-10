@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ConfirmationsQueue,
   EVMTransactionArg,
@@ -12,7 +12,7 @@ import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { ColorMap } from 'styles/color';
 import { toShort } from 'utils/index';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { Divider } from 'components/Divider';
 import { IconButton } from 'components/IconButton';
 import { CopySimple } from 'phosphor-react-native';
@@ -24,7 +24,12 @@ import { BN } from '@polkadot/util';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 import { ConfirmationHookType } from 'hooks/types';
 import { renderCurrentChain, renderTargetAccount } from 'screens/Home/Browser/ConfirmationPopup/shared';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from 'react-native-toast-notifications';
+import { deviceHeight } from '../../../../constant';
+import ToastContainer from 'react-native-toast-notifications';
 
+const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 80;
 enum TAB_SELECTION_TYPE {
   BASIC,
   HEX,
@@ -73,13 +78,14 @@ const receiveAccountWrapperStyle: StyleProp<any> = {
   width: '100%',
   alignItems: 'center',
   justifyContent: 'space-between',
+  paddingHorizontal: 16,
 };
 
 const valueWrapperStyle: StyleProp<any> = { flexDirection: 'row', alignItems: 'center' };
 
-const scrollViewStyle: StyleProp<any> = { maxHeight: 200, marginVertical: 16, width: '100%' };
+const scrollViewStyle: StyleProp<any> = { maxHeight: 200, marginVertical: 16, width: '100%', paddingHorizontal: 16 };
 
-const renderReceiveAccount = (receiveAddress: string) => {
+const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: string) => void) => {
   return (
     <View style={receiveAccountWrapperStyle}>
       <View style={valueWrapperStyle}>
@@ -89,7 +95,7 @@ const renderReceiveAccount = (receiveAddress: string) => {
           <Text style={subTextStyle}>{toShort(receiveAddress, 12, 12)}</Text>
         </View>
       </View>
-      <IconButton icon={CopySimple} onPress={() => {}} />
+      <IconButton icon={CopySimple} onPress={() => onPressCopyButton(receiveAddress)} />
     </View>
   );
 };
@@ -116,6 +122,14 @@ export const EvmSendTransactionConfirmation = ({
   const [selectedTab, setSelectedTab] = useState<TAB_SELECTION_TYPE>(TAB_SELECTION_TYPE.BASIC);
   const { inputInfo, XCMToken } = useGetEvmTransactionInfos(payload, network);
   const handleChangeTab = (tabIndex: TAB_SELECTION_TYPE) => setSelectedTab(tabIndex);
+  const toastRef = useRef<ToastContainer>(null);
+  const copyToClipboard = (text: string) => {
+    Clipboard.setString(text);
+    if (toastRef.current) {
+      toastRef.current.hideAll();
+      toastRef.current.show(i18n.common.copiedToClipboard);
+    }
+  };
 
   const handleRenderTab = useCallback(() => {
     const arr: TabOptionProps[] = [
@@ -141,7 +155,7 @@ export const EvmSendTransactionConfirmation = ({
 
     if (arr.length > 1) {
       return (
-        <View style={{ flexDirection: 'row', width: '100%' }}>
+        <View style={{ flexDirection: 'row', width: '100%', paddingHorizontal: 16 }}>
           {arr.map(item => {
             const isSelected = selectedTab === item.key;
 
@@ -313,12 +327,22 @@ export const EvmSendTransactionConfirmation = ({
       }}>
       <>
         {renderSenderAccountAndTransactionFrom(network?.chain, networkKey, senderAccount)}
-        <Divider style={{ marginVertical: 24 }} />
+        <Divider style={{ marginVertical: 24, paddingHorizontal: 16 }} />
 
-        {payload.to && renderReceiveAccount(payload.to)}
+        {payload.to && renderReceiveAccount(payload.to, copyToClipboard)}
 
         {handleRenderTab()}
         {handleRenderContent()}
+
+        {
+          <Toast
+            duration={1500}
+            normalColor={ColorMap.notification}
+            ref={toastRef}
+            placement={'bottom'}
+            offsetBottom={OFFSET_BOTTOM}
+          />
+        }
       </>
     </ConfirmationBase>
   );

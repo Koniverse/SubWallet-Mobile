@@ -538,7 +538,7 @@ export function getRoundedDecimalNumber(numberString: string, digits: number = 2
   return (+(Math.round(+(number + `e+${digits}`)) + `e-${digits}`)).toString();
 }
 
-export function getLeftIcon(icon: (iconProps: IconProps) => JSX.Element) {
+export function getLeftSelectItemIcon(icon: (iconProps: IconProps) => JSX.Element) {
   const Icon = icon;
   return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
 }

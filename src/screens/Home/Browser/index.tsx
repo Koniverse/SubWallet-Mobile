@@ -44,7 +44,8 @@ const searchTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.light,
-  paddingVertical: 24,
+  paddingTop: 8,
+  paddingBottom: 24,
 };
 
 function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
@@ -97,7 +98,7 @@ export const BrowserScreen = () => {
         </View>
 
         {!!bookmarkItems.length || !!historyItems.length ? (
-          <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+          <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginVertical: 16 }}>
             {!!bookmarkItems.length && (
               <>
                 {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}
