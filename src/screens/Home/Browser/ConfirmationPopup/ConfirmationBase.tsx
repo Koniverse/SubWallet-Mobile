@@ -127,7 +127,7 @@ const Component = (
         isCancelButtonBusy={isCancelButtonBusy || (isBusy && busyKey === 'CANCEL')}
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
-        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || !formState.data.password}
+        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isShowPassword && !formState.data.password)}
       />
     </>
   );

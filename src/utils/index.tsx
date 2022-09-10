@@ -542,3 +542,22 @@ export function getLeftIcon(icon: (iconProps: IconProps) => JSX.Element) {
   const Icon = icon;
   return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
 }
+
+export const getNetworkJsonByGenesisHash = (
+  networkMap: Record<string, NetworkJson>,
+  hash: string,
+): NetworkJson | null => {
+  for (const n in networkMap) {
+    if (!Object.prototype.hasOwnProperty.call(networkMap, n)) {
+      continue;
+    }
+
+    const networkInfo = networkMap[n];
+
+    if (networkInfo.genesisHash === hash) {
+      return networkInfo;
+    }
+  }
+
+  return null;
+};

@@ -156,7 +156,7 @@ export const EvmSignConfirmation = ({
       isShowPassword={true}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
-        submitButtonTitle: 'Sign',
+        submitButtonTitle: 'Sign', // todo: i18n here
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
       }}>
