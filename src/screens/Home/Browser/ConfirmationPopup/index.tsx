@@ -15,7 +15,7 @@ import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTyp
 import { SubstrateSignConfirmation } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { SendEvmTransactionConfirmation } from 'screens/Home/Browser/ConfirmationPopup/SendEvmTransactionConfirmation';
+import { EvmSendTransactionConfirmation } from 'screens/Home/Browser/ConfirmationPopup/EvmSendTransactionConfirmation';
 
 const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
@@ -115,7 +115,7 @@ export const ConfirmationPopup = () => {
       const evmSendTransactionRequest =
         currentConfirmationItem.payload as ConfirmationsQueue['evmSendTransactionRequest'][0];
       return (
-        <SendEvmTransactionConfirmation
+        <EvmSendTransactionConfirmation
           payload={evmSendTransactionRequest}
           network={networkMap[evmSendTransactionRequest.networkKey || '']}
           approveRequest={approveRequest}

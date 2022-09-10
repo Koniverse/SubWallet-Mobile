@@ -7,7 +7,7 @@ import {
 import { parseEVMTransactionInput, validateEvmToken } from '../../../../../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { XCM_ARGS, XCM_METHOD } from 'screens/Home/Browser/ConfirmationPopup/SendEvmTransactionConfirmation';
+import { XCM_ARGS, XCM_METHOD } from 'screens/Home/Browser/ConfirmationPopup/EvmSendTransactionConfirmation';
 
 interface XCMTokenProps {
   symbol: string;

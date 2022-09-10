@@ -105,7 +105,7 @@ const renderSenderAccountAndTransactionFrom = (chain?: string, networkKey?: stri
   );
 };
 
-export const SendEvmTransactionConfirmation = ({
+export const EvmSendTransactionConfirmation = ({
   payload: { networkKey, payload, url, id: confirmationId },
   network,
   cancelRequest,
