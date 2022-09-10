@@ -222,7 +222,7 @@ export const App = () => {
                   <Stack.Group
                     screenOptions={{
                       presentation: 'transparentModal',
-                      contentStyle: { backgroundColor: ColorMap.modalBackDropColor },
+                      contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
                       headerShown: false,
                     }}>
                     <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />

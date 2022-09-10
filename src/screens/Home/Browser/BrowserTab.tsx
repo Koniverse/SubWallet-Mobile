@@ -32,6 +32,7 @@ import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
+import { Warning } from 'components/Warning';
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -138,6 +139,32 @@ const bottomButtonAreaStyle: StyleProp<any> = {
   paddingVertical: 12,
 };
 
+//todo: i18n
+//todo: Update better style
+const PhishingBlockerLayer = () => {
+  return (
+    <View
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: ColorMap.modalBackDropDarkColor,
+        position: 'absolute',
+      }}>
+      <View style={{ backgroundColor: ColorMap.modalBackDropDarkColor }}>
+        <Warning
+          isDanger
+          title={'Phishing Detected'}
+          message={
+            'This site is blocked the Subwallet app believes that this website could compromise the security of your accounts and your tokens.'
+          }
+        />
+      </View>
+    </View>
+  );
+};
+
 export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const { url: propUrl, name } = params;
   const navigation = useNavigation<RootNavigationProps>();
@@ -149,6 +176,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     canGoForward: false,
   });
   const [injectedPageJs, setInjectedPageJs] = useState<string | null>(null);
+  const [isShowPhishingWarning, setIsShowPhishingWarning] = useState<boolean>(false);
   const webviewRef = useRef<WebView>(null);
   const browserSv = useRef<BrowserService | null>(null);
   const url = useRef<string | null>(null);
@@ -176,8 +204,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
         browserWebviewRef: webviewRef,
         url: nativeEvent.url,
         onHandlePhishing: () => {
-          // todo: handle phishing site here
-          console.log('_____THIS IS PHISHING SITE_____');
+          setIsShowPhishingWarning(true);
         },
       });
     }
@@ -218,6 +245,9 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
       url: nativeEvent.url,
       name: nativeEvent.title,
     });
+
+    setIsShowPhishingWarning(false);
+
     // clear the current service and init the new one
     clearCurrentBrowserSv();
     initBrowserSv(nativeEvent);
@@ -337,14 +367,14 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
             }}
           />
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, position: 'relative' }}>
           {isWebviewReady ? (
             <WebView
               ref={webviewRef}
               originWhitelist={['*']}
               source={{ uri: initWebViewSource }}
               injectedJavaScriptBeforeContentLoaded={injectedPageJs}
-              injectedJavaScript={getJsInjectContent(true)}
+              injectedJavaScript={getJsInjectContent()}
               onLoadStart={onLoadStart}
               onMessage={onWebviewMessage}
               javaScriptEnabled={true}
@@ -356,6 +386,8 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
           ) : (
             <EmptyListPlaceholder icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
           )}
+
+          {isShowPhishingWarning && <PhishingBlockerLayer />}
         </View>
 
         <View style={bottomButtonAreaStyle}>
