@@ -1,7 +1,13 @@
-import { ConfirmationHeader, ConfirmationHeaderType } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationHeader';
-import { ConfirmationFooter, ConfirmationFooterType } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationFooter';
+import {
+  ConfirmationHeader,
+  ConfirmationHeaderType,
+} from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationHeader';
+import {
+  ConfirmationFooter,
+  ConfirmationFooterType,
+} from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationFooter';
 import { View } from 'react-native';
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useState } from 'react';
 import { PasswordField } from 'components/Field/Password';
 import { ColorMap } from 'styles/color';
 import useFormControl from 'hooks/screen/useFormControl';
@@ -31,36 +37,28 @@ const formConfig = {
   },
 };
 
-const Component = (
-  {
-    headerProps,
-    footerProps: {
-      onPressSubmitButton,
-      onPressBlockButton,
-      onPressCancelButton,
-      isBlockButtonBusy,
-      isBlockButtonDisabled,
-      isCancelButtonBusy,
-      isCancelButtonDisabled,
-      isSubmitButtonBusy,
-      isSubmitButtonDisabled,
-      ...footerProps
-    },
-    children,
-    isShowPassword,
-  }: Props,
-  ref: ForwardedRef<ConfirmationBaseRef>,
-) => {
+export const ConfirmationBase = ({
+  headerProps,
+  footerProps: {
+    onPressSubmitButton,
+    onPressBlockButton,
+    onPressCancelButton,
+    isBlockButtonBusy,
+    isBlockButtonDisabled,
+    isCancelButtonBusy,
+    isCancelButtonDisabled,
+    isSubmitButtonBusy,
+    isSubmitButtonDisabled,
+    ...footerProps
+  },
+  children,
+  isShowPassword,
+}: Props) => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const [busyKey, setBusyKey] = useState<BusyKey | null>(null);
-
-  // todo: if ref is not necessary, then remove this
-  useImperativeHandle(ref, () => ({
-    onPasswordError: (e: Error) => {},
-  }));
 
   const _onPressSubmitButton = () => {
     if (onPressSubmitButton) {
@@ -132,5 +130,3 @@ const Component = (
     </>
   );
 };
-
-export const ConfirmationBase = forwardRef(Component);
