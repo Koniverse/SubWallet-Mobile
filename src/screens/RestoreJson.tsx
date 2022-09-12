@@ -21,6 +21,7 @@ import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import reformatAddress from 'utils/index';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -77,7 +78,7 @@ export const RestoreJson = () => {
     setIsBusy(true);
     (isKeyringPairs$Json(jsonFile)
       ? batchRestoreV2(jsonFile, password, getAccountsInfo(jsonFile), true)
-      : jsonRestoreV2(jsonFile, password, accountsInfo[0].address, true)
+      : jsonRestoreV2(jsonFile, password, reformatAddress(jsonFile.address, 42), true)
     )
       .then(() => {
         setFileError(false);
