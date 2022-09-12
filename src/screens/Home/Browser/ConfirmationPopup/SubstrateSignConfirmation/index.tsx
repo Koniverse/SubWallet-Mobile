@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
@@ -7,7 +7,6 @@ import { ExtrinsicPayload } from '@polkadot/types/interfaces';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
-import { TypeRegistry } from '@polkadot/types';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { Bytes } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Bytes';
@@ -18,6 +17,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
+import useGetSignData from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetSignData';
 
 interface Props {
   payload: SigningRequest;
@@ -25,15 +25,9 @@ interface Props {
   approveRequest: ConfirmationHookType['approveRequest'];
 }
 
-interface SignData {
+export interface SignData {
   hexBytes: string | null;
   payload: ExtrinsicPayload | null;
-}
-
-const registry = new TypeRegistry();
-
-function isRawPayload(payload: SignerPayloadJSON | SignerPayloadRaw): payload is SignerPayloadRaw {
-  return !!(payload as SignerPayloadRaw).data;
 }
 
 const modalStyle: StyleProp<any> = {
@@ -59,7 +53,7 @@ export const SubstrateSignConfirmation = ({
   cancelRequest,
   approveRequest,
 }: Props) => {
-  const [{ hexBytes, payload }, setSignData] = useState<SignData>({ hexBytes: null, payload: null });
+  const { hexBytes, payload } = useGetSignData(request);
   const [isShowDetails, setShowDetails] = useState<boolean>(false);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
@@ -82,24 +76,6 @@ export const SubstrateSignConfirmation = ({
   const onPressSubmitButton = (password: string) => {
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
-
-  useEffect((): void => {
-    const _payload = request.payload;
-
-    if (isRawPayload(_payload)) {
-      setSignData({
-        hexBytes: _payload.data,
-        payload: null,
-      });
-    } else {
-      registry.setSignedExtensions(_payload.signedExtensions);
-
-      setSignData({
-        hexBytes: null,
-        payload: registry.createType('ExtrinsicPayload', _payload, { version: _payload.version }),
-      });
-    }
-  }, [request]);
 
   const renderSignData = () => {
     if (payload !== null) {
