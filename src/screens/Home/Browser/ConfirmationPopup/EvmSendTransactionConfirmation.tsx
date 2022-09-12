@@ -5,8 +5,7 @@ import {
   NetworkJson,
   ResponseParseEVMTransactionInput,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { getHostName } from 'utils/browser';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
@@ -83,7 +82,7 @@ const receiveAccountWrapperStyle: StyleProp<any> = {
 
 const valueWrapperStyle: StyleProp<any> = { flexDirection: 'row', alignItems: 'center' };
 
-const scrollViewStyle: StyleProp<any> = { maxHeight: 200, marginVertical: 16, width: '100%', paddingHorizontal: 16 };
+const scrollViewStyle: StyleProp<any> = { marginVertical: 16, width: '100%', paddingHorizontal: 16 };
 
 const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: string) => void) => {
   return (
@@ -102,10 +101,10 @@ const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: 
 
 const renderSenderAccountAndTransactionFrom = (chain?: string, networkKey?: string, senderAccount?: AccountJson) => {
   return (
-    <View style={{ alignItems: 'center', paddingTop: 16, flexDirection: 'row' }}>
+    <View style={{ alignItems: 'center', paddingTop: 16, flexDirection: 'row', justifyContent: 'center' }}>
       {senderAccount && renderTargetAccount(senderAccount.address, senderAccount.name)}
 
-      <Text style={[textStyle, { paddingHorizontal: 8 }]}>on</Text>
+      <Text style={[textStyle, { paddingHorizontal: 8 }]}>{i18n.common.on}</Text>
       {networkKey && renderCurrentChain(networkKey, chain)}
     </View>
   );
@@ -225,7 +224,7 @@ export const EvmSendTransactionConfirmation = ({
       const isXcmTransaction = XCM_METHOD === info.methodName && XCM_ARGS.every(s => argName.includes(s));
 
       return (
-        <ScrollView showsVerticalScrollIndicator={false} style={scrollViewStyle}>
+        <View style={scrollViewStyle}>
           <View>
             <Text style={textStyle}>Method</Text>
             <Text style={subTextStyle}>{info.methodName}</Text>
@@ -234,7 +233,7 @@ export const EvmSendTransactionConfirmation = ({
             <Text style={textStyle}>{i18n.common.arguments}</Text>
             <View>{info.args.map(value => handlerRenderArg(value, '', isXcmTransaction))}</View>
           </View>
-        </ScrollView>
+        </View>
       );
     },
     [handlerRenderArg],
@@ -254,15 +253,15 @@ export const EvmSendTransactionConfirmation = ({
         }
 
         return (
-          <ScrollView showsVerticalScrollIndicator={false} style={scrollViewStyle}>
+          <View style={scrollViewStyle}>
             <Text style={textStyle}>{i18n.common.data}</Text>
             <Text style={subTextStyle}>{payload.data}</Text>
-          </ScrollView>
+          </View>
         );
       case TAB_SELECTION_TYPE.BASIC:
       default:
         return (
-          <ScrollView showsVerticalScrollIndicator={false} style={scrollViewStyle}>
+          <View style={scrollViewStyle}>
             {payload.value && (
               <View>
                 <Text style={textStyle}>{i18n.common.amount}</Text>
@@ -290,7 +289,7 @@ export const EvmSendTransactionConfirmation = ({
                 </View>
               </View>
             )}
-          </ScrollView>
+          </View>
         );
     }
   }, [
@@ -315,8 +314,8 @@ export const EvmSendTransactionConfirmation = ({
   return (
     <ConfirmationBase
       headerProps={{
-        title: 'request to send payload from',
-        hostName: getHostName(url),
+        title: i18n.title.requestToSendPayload,
+        url: url,
       }}
       isShowPassword={true}
       footerProps={{

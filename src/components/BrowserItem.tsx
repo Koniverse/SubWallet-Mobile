@@ -28,10 +28,9 @@ const textStyle: StyleProp<any> = {
 
 export const BrowserItem = ({ leftIcon, text, onPress }: Props) => {
   return (
-    <TouchableOpacity style={{ marginBottom: 8 }} onPress={onPress}>
+    <TouchableOpacity style={{ paddingVertical: 4 }} onPress={onPress}>
       <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
         <View style={leftIconWrapperStyle}>{leftIcon}</View>
-
         <Text numberOfLines={1} style={textStyle}>
           {text}
         </Text>

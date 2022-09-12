@@ -11,7 +11,6 @@ import { ConnectAccount } from 'components/ConnectAccount';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { Warning } from 'components/Warning';
 import { ConfirmationHookType } from 'hooks/types';
-import { getHostName } from 'utils/browser';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 
 interface Props {
@@ -36,7 +35,6 @@ export const AuthorizeConfirmation = ({
   rejectRequest,
 }: Props) => {
   const { accountAuthType } = request;
-  const hostName = getHostName(url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const accountList = useMemo(() => {
     return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
@@ -81,7 +79,7 @@ export const AuthorizeConfirmation = ({
     <ConfirmationBase
       headerProps={{
         title: i18n.title.authorizeRequestTitle,
-        hostName,
+        url,
       }}
       footerProps={{
         isShowBlockButton: true,
@@ -93,10 +91,9 @@ export const AuthorizeConfirmation = ({
         isSubmitButtonDisabled: !(selectedAccounts && selectedAccounts.length),
       }}>
       <>
-        <Text style={[textStyle, { paddingTop: 3, paddingBottom: 24, textAlign: 'center' }]}>{hostName}</Text>
         {accountList && accountList.length ? (
           <>
-            <Text style={[textStyle, { paddingBottom: 16, width: '100%', paddingLeft: 16 }]}>
+            <Text style={[textStyle, { paddingBottom: 16, width: '100%', paddingLeft: 16, paddingTop: 24 }]}>
               {i18n.common.chooseAccount}
             </Text>
             <ScrollView

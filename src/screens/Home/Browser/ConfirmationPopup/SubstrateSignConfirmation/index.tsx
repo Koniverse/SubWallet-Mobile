@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHookType } from 'hooks/types';
-import { getHostName } from 'utils/browser';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 import i18n from 'utils/i18n/i18n';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
@@ -45,6 +44,22 @@ const modalStyle: StyleProp<any> = {
   marginHorizontal: 16,
 };
 
+const viewDetailButtonStyle = {
+  paddingVertical: 4,
+  paddingHorizontal: 8,
+  borderRadius: 5,
+  backgroundColor: ColorMap.dark1,
+  marginBottom: 16,
+};
+
+function getTextStyle(color: string) {
+  return {
+    ...sharedStyles.mainText,
+    ...FontMedium,
+    color: color,
+  };
+}
+
 const CONFIRMATION_TYPE = 'signingRequest';
 
 export const SubstrateSignConfirmation = ({
@@ -52,7 +67,6 @@ export const SubstrateSignConfirmation = ({
   cancelRequest,
   approveRequest,
 }: Props) => {
-  const hostName = getHostName(url);
   const [{ hexBytes, payload }, setSignData] = useState<SignData>({ hexBytes: null, payload: null });
   const [isShowDetails, setShowDetails] = useState<boolean>(false);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
@@ -130,46 +144,37 @@ export const SubstrateSignConfirmation = ({
   return (
     <ConfirmationBase
       headerProps={{
-        title: 'Approve Request', // todo: i18n
-        hostName,
+        title: i18n.title.authorizeRequestTitle,
+        url,
       }}
       isShowPassword
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
-        submitButtonTitle: 'Approve', // todo: i18n
+        submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
       }}>
-      <>
-        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingTop: 24 }}>
-          You are approving a request with account
+      <View style={{ paddingHorizontal: 16 }}>
+        <Text style={[getTextStyle(ColorMap.disabled), { paddingTop: 24, textAlign: 'center' }]}>
+          {i18n.common.approveRequestTitle}
         </Text>
-        <View style={{ paddingVertical: 8, flexDirection: 'row', alignItems: 'center' }}>
-          {renderTargetAccount(account.address, account.name)}
-          {targetNetwork && (
-            <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light, paddingHorizontal: 8 }}>
-              on
-            </Text>
-          )}
-          {targetNetwork && renderCurrentChain(targetNetwork.key, targetNetwork.chain)}
-        </View>
 
-        <TouchableOpacity
-          onPress={toggleDetails}
-          style={{
-            paddingVertical: 4,
-            paddingHorizontal: 8,
-            borderRadius: 5,
-            backgroundColor: ColorMap.dark1,
-            marginBottom: 16,
-          }}>
-          <Text style={{ color: ColorMap.disabled, ...sharedStyles.mainText, ...FontSemiBold }}>
-            {i18n.common.viewDetail}
-          </Text>
-        </TouchableOpacity>
-        {/*<Button title={'View Detail'} onPress={toggleDetails} color={ColorMap.disabled} />*/}
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', paddingVertical: 8 }}>
+            {renderTargetAccount(account.address, account.name)}
+            {targetNetwork && (
+              <Text style={[getTextStyle(ColorMap.light), { paddingHorizontal: 8 }]}>{i18n.common.on}</Text>
+            )}
+            {targetNetwork && renderCurrentChain(targetNetwork.key, targetNetwork.chain)}
+          </View>
+          <TouchableOpacity onPress={toggleDetails} style={viewDetailButtonStyle}>
+            <Text style={{ color: ColorMap.disabled, ...sharedStyles.mainText, ...FontSemiBold }}>
+              {i18n.common.viewDetail}
+            </Text>
+          </TouchableOpacity>
+        </View>
         {renderDetailsModal()}
-      </>
+      </View>
     </ConfirmationBase>
   );
 };

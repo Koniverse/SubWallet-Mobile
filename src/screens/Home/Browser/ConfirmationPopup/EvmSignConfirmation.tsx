@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
-import { getHostName } from 'utils/browser';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Divider } from 'components/Divider';
@@ -53,7 +52,6 @@ export const EvmSignConfirmation = ({
   cancelRequest,
   approveRequest,
 }: Props) => {
-  const hostName = getHostName(url);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const [signMethod, setSignMethod] = useState<string>('');
   const [rawData, setRawData] = useState<string | object>('');
@@ -152,7 +150,7 @@ export const EvmSignConfirmation = ({
 
   return (
     <ConfirmationBase
-      headerProps={{ title: 'request to sign message with', hostName }}
+      headerProps={{ title: i18n.title.requestToSignMessage, url }}
       isShowPassword={true}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
@@ -161,11 +159,13 @@ export const EvmSignConfirmation = ({
         onPressSubmitButton: onPressSubmitButton,
       }}>
       <>
-        <View style={{ paddingTop: 16 }}>{account && renderTargetAccount(account.address, account.name)}</View>
+        <View style={{ paddingTop: 16, alignItems: 'center' }}>
+          {account && renderTargetAccount(account.address, account.name)}
+        </View>
 
         <Divider style={{ marginVertical: 16, paddingHorizontal: 16 }} />
 
-        <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%', paddingHorizontal: 16 }}>
+        <View style={{ width: '100%', paddingHorizontal: 16 }}>
           <Text>
             <Text style={labelStyle}>{i18n.common.signMethod}: </Text>
             <Text style={valueStyle}>{signMethod}</Text>
@@ -177,7 +177,7 @@ export const EvmSignConfirmation = ({
             <Text style={labelStyle}>{i18n.common.rawData}: </Text>
             {handlerRenderContent()}
           </View>
-        </ScrollView>
+        </View>
       </>
     </ConfirmationBase>
   );

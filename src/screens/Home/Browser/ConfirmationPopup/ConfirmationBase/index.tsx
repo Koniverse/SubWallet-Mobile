@@ -6,7 +6,7 @@ import {
   ConfirmationFooter,
   ConfirmationFooterType,
 } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationFooter';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import React, { useState } from 'react';
 import { PasswordField } from 'components/Field/Password';
 import { ColorMap } from 'styles/color';
@@ -99,9 +99,10 @@ export const ConfirmationBase = ({
 
   return (
     <>
-      <ConfirmationHeader {...headerProps} />
-      {children}
-
+      <ScrollView style={{ width: '100%' }}>
+        <ConfirmationHeader {...headerProps} />
+        {children}
+      </ScrollView>
       <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16 }}>
         {isShowPassword && (
           <PasswordField

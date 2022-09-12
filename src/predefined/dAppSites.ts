@@ -6,7 +6,7 @@ export const dAppSites: SiteInfo[] = [
     name: 'SubWallet Connect',
   },
   {
-    url: 'https://polkadot.js.org/apps',
+    url: 'https://polkadot.js.org/apps/#/explorer',
     name: 'Polkadot JS',
   },
   {

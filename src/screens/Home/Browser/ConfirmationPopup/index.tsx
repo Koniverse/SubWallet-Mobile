@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import { ArrowLeft, ArrowRight } from 'phosphor-react-native';
@@ -140,18 +140,20 @@ export const ConfirmationPopup = () => {
   }, [confirmationIndex, confirmationItemsLength]);
 
   return (
-    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-      <View style={confirmationPopupWrapper}>
-        <View style={subWalletModalSeparator} />
-        <View style={confirmationHeader}>
-          <IconButton icon={ArrowLeft} color={ColorMap.disabled} onPress={onPressPrevButton} />
-          <Text style={authorizeIndexTextStyle}>
-            <Text>{confirmationIndex + 1}</Text>/<Text>{confirmationItemsLength}</Text>
-          </Text>
-          <IconButton icon={ArrowRight} color={ColorMap.disabled} onPress={onPressNextButton} />
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
+        <View style={confirmationPopupWrapper}>
+          <View style={subWalletModalSeparator} />
+          <View style={confirmationHeader}>
+            <IconButton icon={ArrowLeft} color={ColorMap.disabled} onPress={onPressPrevButton} />
+            <Text style={authorizeIndexTextStyle}>
+              <Text>{confirmationIndex + 1}</Text>/<Text>{confirmationItemsLength}</Text>
+            </Text>
+            <IconButton icon={ArrowRight} color={ColorMap.disabled} onPress={onPressNextButton} />
+          </View>
+          {renderConfirmation()}
         </View>
-        {renderConfirmation()}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };

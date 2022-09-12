@@ -134,6 +134,8 @@ export const en = {
     to: 'to',
     close: 'Close',
     viewDetail: 'View Detail',
+    on: 'on',
+    approveRequestTitle: 'You are approving a request with account',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -166,6 +168,8 @@ export const en = {
     metadataTitlePart2: 'chain from',
     authorizeRequestTitle: 'Approve Request',
     phishingDetected: 'Phishing Detected',
+    requestToSignMessage: 'Request to sign message',
+    requestToSendPayload: 'Request to send payload',
   },
   tabName: {
     crypto: 'Crypto',

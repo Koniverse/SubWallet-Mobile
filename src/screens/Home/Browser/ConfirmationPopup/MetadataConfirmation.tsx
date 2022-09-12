@@ -3,23 +3,16 @@ import { StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { getHostName } from 'utils/browser';
 import { MetadataRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
+import { Divider } from 'components/Divider';
 
 interface Props {
   payload: MetadataRequest;
   cancelRequest: ConfirmationHookType['cancelRequest'];
   approveRequest: ConfirmationHookType['approveRequest'];
 }
-
-const dividerStyle: StyleProp<any> = {
-  height: 1,
-  width: '100%',
-  backgroundColor: ColorMap.disabled,
-  marginVertical: 48,
-};
 
 const metadataLabelStyle: StyleProp<any> = {
   flex: 4,
@@ -67,7 +60,6 @@ export const MetadataConfirmation = ({
   cancelRequest,
   approveRequest,
 }: Props) => {
-  const hostName = getHostName(url);
   const metadataInfos = [
     {
       label: i18n.common.symbol,
@@ -91,7 +83,7 @@ export const MetadataConfirmation = ({
     <ConfirmationBase
       headerProps={{
         title: i18n.common.metadataIsOutOfDate,
-        hostName,
+        url,
       }}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
@@ -104,7 +96,7 @@ export const MetadataConfirmation = ({
           {`${i18n.title.metadataTitlePart1} ${request.chain} ${i18n.title.metadataTitlePart2} ${url}`}
         </Text>
 
-        <View style={dividerStyle} />
+        <Divider style={{ marginVertical: 24, paddingHorizontal: 16 }} />
 
         <View style={{ width: '100%', paddingBottom: 32 }}>
           {metadataInfos.map(info => renderMetadataInfo(info.label, info.value))}
