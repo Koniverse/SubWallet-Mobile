@@ -10,7 +10,6 @@ import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
-import { renderTargetAccount } from 'screens/Home/Browser/ConfirmationPopup/shared';
 
 interface Props {
   payload: ConfirmationsQueue['evmSignatureRequest'][0];
@@ -150,7 +149,7 @@ export const EvmSignConfirmation = ({
 
   return (
     <ConfirmationBase
-      headerProps={{ title: i18n.title.requestToSignMessage, url }}
+      headerProps={{ title: i18n.title.requestToSignMessage, url, senderAccount: account }}
       isShowPassword={true}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
@@ -159,10 +158,6 @@ export const EvmSignConfirmation = ({
         onPressSubmitButton: onPressSubmitButton,
       }}>
       <>
-        <View style={{ paddingTop: 16, alignItems: 'center' }}>
-          {account && renderTargetAccount(account.address, account.name)}
-        </View>
-
         <Divider style={{ marginVertical: 16, paddingHorizontal: 16 }} />
 
         <View style={{ width: '100%', paddingHorizontal: 16 }}>

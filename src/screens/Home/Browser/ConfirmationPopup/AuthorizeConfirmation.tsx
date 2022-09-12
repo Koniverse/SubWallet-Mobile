@@ -39,7 +39,7 @@ export const AuthorizeConfirmation = ({
   const accountList = useMemo(() => {
     return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
   }, [accountAuthType, accounts]);
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
+  const [selectedAccounts, setSelectedAccounts] = useState<string[]>(request.allowedAccounts || []);
   const [isSelectedAll, setIsSelectedAll] = useState(true);
 
   useEffect(() => {

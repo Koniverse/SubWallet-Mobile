@@ -16,13 +16,11 @@ import { Divider } from 'components/Divider';
 import { IconButton } from 'components/IconButton';
 import { CopySimple } from 'phosphor-react-native';
 import useGetEvmTransactionInfos from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetEvmTransactionInfos';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import i18n from 'utils/i18n/i18n';
 import FormatBalance from 'components/FormatBalance';
 import { BN } from '@polkadot/util';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 import { ConfirmationHookType } from 'hooks/types';
-import { renderCurrentChain, renderTargetAccount } from 'screens/Home/Browser/ConfirmationPopup/shared';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight } from '../../../../constant';
@@ -99,19 +97,8 @@ const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: 
   );
 };
 
-const renderSenderAccountAndTransactionFrom = (chain?: string, networkKey?: string, senderAccount?: AccountJson) => {
-  return (
-    <View style={{ alignItems: 'center', paddingTop: 16, flexDirection: 'row', justifyContent: 'center' }}>
-      {senderAccount && renderTargetAccount(senderAccount.address, senderAccount.name)}
-
-      <Text style={[textStyle, { paddingHorizontal: 8 }]}>{i18n.common.on}</Text>
-      {networkKey && renderCurrentChain(networkKey, chain)}
-    </View>
-  );
-};
-
 export const EvmSendTransactionConfirmation = ({
-  payload: { networkKey, payload, url, id: confirmationId },
+  payload: { payload, url, id: confirmationId },
   network,
   cancelRequest,
   approveRequest,
@@ -316,6 +303,8 @@ export const EvmSendTransactionConfirmation = ({
       headerProps={{
         title: i18n.title.requestToSendPayload,
         url: url,
+        targetNetwork: network,
+        senderAccount,
       }}
       isShowPassword={true}
       footerProps={{
@@ -325,7 +314,6 @@ export const EvmSendTransactionConfirmation = ({
         onPressSubmitButton: onPressSubmitButton,
       }}>
       <>
-        {renderSenderAccountAndTransactionFrom(network?.chain, networkKey, senderAccount)}
         <Divider style={{ marginVertical: 24, paddingHorizontal: 16 }} />
 
         {payload.to && renderReceiveAccount(payload.to, copyToClipboard)}

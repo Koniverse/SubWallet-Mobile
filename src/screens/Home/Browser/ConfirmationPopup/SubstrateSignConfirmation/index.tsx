@@ -15,9 +15,9 @@ import { getNetworkJsonByGenesisHash } from 'utils/index';
 import { Extrinsic } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Extrinsic';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { SubmitButton } from 'components/SubmitButton';
-import { renderCurrentChain, renderTargetAccount } from 'screens/Home/Browser/ConfirmationPopup/shared';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { Divider } from 'components/Divider';
 
 interface Props {
   payload: SigningRequest;
@@ -51,14 +51,6 @@ const viewDetailButtonStyle = {
   backgroundColor: ColorMap.dark1,
   marginBottom: 16,
 };
-
-function getTextStyle(color: string) {
-  return {
-    ...sharedStyles.mainText,
-    ...FontMedium,
-    color: color,
-  };
-}
 
 const CONFIRMATION_TYPE = 'signingRequest';
 
@@ -146,6 +138,8 @@ export const SubstrateSignConfirmation = ({
       headerProps={{
         title: i18n.title.authorizeRequestTitle,
         url,
+        targetNetwork,
+        senderAccount: account,
       }}
       isShowPassword
       footerProps={{
@@ -155,18 +149,11 @@ export const SubstrateSignConfirmation = ({
         onPressSubmitButton: onPressSubmitButton,
       }}>
       <View style={{ paddingHorizontal: 16 }}>
-        <Text style={[getTextStyle(ColorMap.disabled), { paddingTop: 24, textAlign: 'center' }]}>
-          {i18n.common.approveRequestTitle}
-        </Text>
-
+        <Divider style={{ paddingTop: 8, paddingBottom: 16 }} />
+        {/*<Text style={[getTextStyle(ColorMap.disabled), { paddingTop: 24, textAlign: 'center' }]}>*/}
+        {/*  {i18n.common.approveRequestTitle}*/}
+        {/*</Text>*/}
         <View style={{ alignItems: 'center' }}>
-          <View style={{ flexDirection: 'row', paddingVertical: 8 }}>
-            {renderTargetAccount(account.address, account.name)}
-            {targetNetwork && (
-              <Text style={[getTextStyle(ColorMap.light), { paddingHorizontal: 8 }]}>{i18n.common.on}</Text>
-            )}
-            {targetNetwork && renderCurrentChain(targetNetwork.key, targetNetwork.chain)}
-          </View>
           <TouchableOpacity onPress={toggleDetails} style={viewDetailButtonStyle}>
             <Text style={{ color: ColorMap.disabled, ...sharedStyles.mainText, ...FontSemiBold }}>
               {i18n.common.viewDetail}
