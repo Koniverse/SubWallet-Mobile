@@ -103,8 +103,8 @@ export const ConfirmationBase = ({
         <ConfirmationHeader {...headerProps} />
         {children}
       </ScrollView>
-      <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16 }}>
-        {isShowPassword && (
+      {isShowPassword && (
+        <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16 }}>
           <PasswordField
             label={formState.labels.password}
             fieldBgc={ColorMap.dark1}
@@ -114,8 +114,8 @@ export const ConfirmationBase = ({
             errorMessages={formState.errors.password}
             onSubmitField={onSubmitField('password')}
           />
-        )}
-      </View>
+        </View>
+      )}
       <ConfirmationFooter
         {...footerProps}
         onPressCancelButton={_onPressCancelButton}
