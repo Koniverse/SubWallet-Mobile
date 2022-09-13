@@ -45,6 +45,7 @@ const subHeaderTitle: StyleProp<any> = {
   ...FontSize4,
   ...FontBold,
   color: ColorMap.light,
+  paddingHorizontal: 60,
 };
 
 export const SubHeader = ({
@@ -65,7 +66,9 @@ export const SubHeader = ({
         headerContent()
       ) : (
         <View style={headerTitle}>
-          <Text style={subHeaderTitle}>{title}</Text>
+          <Text numberOfLines={1} style={subHeaderTitle}>
+            {title}
+          </Text>
         </View>
       )}
 

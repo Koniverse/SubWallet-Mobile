@@ -33,12 +33,14 @@ const itemSubTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: Colo
 export const DAppAccessItem = ({ item, onPress }: Props) => {
   const hostName = getHostName(item.url);
   return (
-    <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPress}>
+    <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPress} style={{ ...ContainerHorizontalPadding }}>
       <View style={itemWrapperStyle}>
         <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 40, height: 40 }} />
         <View style={itemContentWrapperStyle}>
           <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
-            <Text style={itemMainTextStyle}>{item.origin}</Text>
+            <Text numberOfLines={1} style={itemMainTextStyle}>
+              {item.origin}
+            </Text>
             <Text numberOfLines={1} style={itemSubTextStyle}>
               {item.url}
             </Text>

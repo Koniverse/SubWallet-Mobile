@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { FlatList, ListRenderItemInfo, StyleProp, TextInput, View } from 'react-native';
-import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { FlatList, ListRenderItemInfo, StyleProp, TextInput } from 'react-native';
+import { ScrollViewStyle } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { HIDE_MODAL_DURATION } from '../constant';
@@ -107,19 +107,19 @@ export function FlatListScreen<T>({
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       isShowPlaceHolder={false}>
-      <View style={{ ...sharedStyles.layoutContainer }}>
+      <>
         <Search
           autoFocus={false}
           placeholder={placeholder}
           onClearSearchString={() => setSearchString('')}
           onSearch={setSearchString}
           searchText={searchString}
-          style={{ marginBottom: 8 }}
+          style={{ marginBottom: 8, marginHorizontal: 16 }}
           searchRef={searchRef}
         />
         {children}
         {afterListItem}
-      </View>
+      </>
     </ContainerWithSubHeader>
   );
 }

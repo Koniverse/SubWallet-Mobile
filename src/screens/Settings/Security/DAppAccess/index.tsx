@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThree, PushPinSlash } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 import { changeAuthorizationAll, forgetAllSite } from '../../../../messaging';
 import { updateAuthUrls } from 'stores/updater';
+import i18n from 'utils/i18n/i18n';
 
 function filterFunction(items: AuthUrlInfo[], searchString: string) {
   return items.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -36,25 +37,24 @@ export const DAppAccessScreen = () => {
     };
   }, []);
 
-  // todo: i18n
   const dAppAccessMoreOptions = useMemo(() => {
     return [
       {
-        name: 'Forget All',
+        name: i18n.common.forgetAll,
         onPress: () => {
           forgetAllSite(updateAuthUrls).catch(console.error);
           setModalVisible(false);
         },
       },
       {
-        name: 'Disconnect All',
+        name: i18n.common.disconnectAll,
         onPress: () => {
           changeAuthorizationAll(false, updateAuthUrls).catch(console.error);
           setModalVisible(false);
         },
       },
       {
-        name: 'Connect All',
+        name: i18n.common.connectAll,
         onPress: () => {
           changeAuthorizationAll(true, updateAuthUrls).catch(console.error);
           setModalVisible(false);
@@ -81,14 +81,13 @@ export const DAppAccessScreen = () => {
     [navigation],
   );
 
-  // todo: i18n Manage DApp Access
   return (
     <FlatListScreen
-      title={'Manage DApp Access'}
+      title={i18n.title.manageDAppAccess}
       autoFocus={false}
       items={dAppItems}
       filterFunction={filterFunction}
-      renderListEmptyComponent={EmptyListScreen}
+      renderListEmptyComponent={() => <EmptyListScreen icon={PushPinSlash} title={i18n.common.noDAppAvailable} />}
       rightIconOption={rightIconOption}
       renderItem={renderItem}
       afterListItem={

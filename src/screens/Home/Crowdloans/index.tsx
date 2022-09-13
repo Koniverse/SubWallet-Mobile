@@ -67,7 +67,7 @@ export const CrowdloansScreen = () => {
   );
 
   return (
-    <FlatListScreen<CrowdloanItemType>
+    <FlatListScreen
       title={i18n.tabName.crowdloans}
       renderListEmptyComponent={renderListEmptyComponent}
       renderItem={renderItem}

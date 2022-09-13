@@ -136,6 +136,12 @@ export const vi = {
     viewDetail: 'View Detail',
     on: 'on',
     approveRequestTitle: 'You are approving a request with account',
+    block: 'Block',
+    forgetAll: 'Forget All',
+    disconnectAll: 'Disconnect All',
+    connectAll: 'Connect All',
+    noDAppAvailable: 'No DApp available',
+    noAccountAvailableForThisDApp: 'No account available for this DApp',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -170,6 +176,8 @@ export const vi = {
     phishingDetected: 'Phishing Detected',
     requestToSignMessage: 'Request to sign message',
     requestToSendPayload: 'Request to send payload',
+    manageDAppAccess: 'Manage DApp Access',
+    moreOptions: 'More Options',
   },
   tabName: {
     crypto: 'Crypto',

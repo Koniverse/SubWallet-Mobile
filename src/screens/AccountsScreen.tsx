@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, StyleProp, View } from 'react-native';
+import { FlatList, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
@@ -20,22 +20,13 @@ import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '.
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
 import { updateAccountsWaitingStatus } from 'stores/updater';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { Divider } from 'components/Divider';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
 };
 const accountItemContainer: StyleProp<any> = {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  flex: 1,
-};
-
-const accountItemSeparator: StyleProp<any> = {
-  borderBottomWidth: 1,
-  borderBottomColor: ColorMap.dark2,
-  borderBottomStyle: 'solid',
-  marginLeft: 50,
+  paddingHorizontal: 16,
 };
 
 export const AccountsScreen = () => {
@@ -119,33 +110,32 @@ export const AccountsScreen = () => {
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
-      <View style={accountItemContainer}>
-        <Account
-          key={item.address}
-          name={item.name || ''}
-          address={item.address}
-          showCopyBtn={false}
-          selectAccount={() => {
-            selectAccount(item.address);
-          }}
-          isSelected={currentAccountAddress === item.address}
-        />
-
-        {!isAccountAll(item.address) && (
-          <IconButton
-            icon={DotsThree}
-            color={ColorMap.disabled}
-            onPress={() => {
-              navigation.navigate('EditAccount', { address: item.address, name: item.name });
+      <TouchableOpacity style={accountItemContainer} onPress={() => selectAccount(item.address)}>
+        <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+          <Account
+            key={item.address}
+            name={item.name || ''}
+            address={item.address}
+            showCopyBtn={false}
+            selectAccount={() => {
+              selectAccount(item.address);
             }}
+            isSelected={currentAccountAddress === item.address}
           />
-        )}
-      </View>
-    );
-  };
 
-  const renderSeparator = () => {
-    return <View style={accountItemSeparator} />;
+          {!isAccountAll(item.address) && (
+            <IconButton
+              icon={DotsThree}
+              color={ColorMap.disabled}
+              onPress={() => {
+                navigation.navigate('EditAccount', { address: item.address, name: item.name });
+              }}
+            />
+          )}
+        </View>
+        <Divider style={{ paddingLeft: 56 }} color={ColorMap.dark2} />
+      </TouchableOpacity>
+    );
   };
 
   const onCreateAccount = () => {
@@ -168,11 +158,10 @@ export const AccountsScreen = () => {
       onPressRightIcon={onCreateAccount}>
       <View style={accountsWrapper}>
         <FlatList
-          style={{ paddingHorizontal: 16, flex: 1 }}
+          style={{ flex: 1 }}
           keyboardShouldPersistTaps={'handled'}
           data={accounts}
           renderItem={renderItem}
-          ItemSeparatorComponent={renderSeparator}
           ListEmptyComponent={renderListEmptyComponent}
           keyExtractor={item => item.address}
         />

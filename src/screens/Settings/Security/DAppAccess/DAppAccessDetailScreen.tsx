@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
-import { DotsThree } from 'phosphor-react-native';
+import { DotsThree, PushPinSlash } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
@@ -21,6 +21,8 @@ import {
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';
+import i18n from 'utils/i18n/i18n';
+import { ContainerHorizontalPadding } from 'styles/sharedStyles';
 
 type Props = {
   origin: string;
@@ -136,8 +138,8 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       };
 
       return (
-        <>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={ContainerHorizontalPadding}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <Account
               name={item.name || ''}
               address={item.address}
@@ -147,13 +149,13 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
             />
             <Switch
               disabled={pendingMap[item.address] !== undefined}
-              ios_backgroundColor="rgba(120,120,128,0.32)"
+              ios_backgroundColor={ColorMap.switchInactiveButtonColor}
               value={pendingMap[item.address] === undefined ? isEnabled : pendingMap[item.address]}
               onValueChange={onChangeToggle}
             />
           </View>
           <Divider style={{ paddingLeft: 56 }} color={ColorMap.dark2} />
-        </>
+        </View>
       );
     },
     [authInfo, pendingMap, origin],
@@ -161,11 +163,13 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
 
   return (
     <FlatListScreen
-      title={'Accounts'}
+      title={origin}
       autoFocus={false}
       items={accountItems}
       filterFunction={filterFunction}
-      renderListEmptyComponent={EmptyListScreen}
+      renderListEmptyComponent={() => (
+        <EmptyListScreen icon={PushPinSlash} title={i18n.common.noAccountAvailableForThisDApp} />
+      )}
       rightIconOption={rightIconOption}
       renderItem={renderItem}
       afterListItem={
