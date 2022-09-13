@@ -24,13 +24,14 @@ const modalTitleStyle: StyleProp<any> = {
   paddingBottom: 26,
 };
 
+// todo: i18n More Options
 export const MoreOptionModal = ({ modalVisible, moreOptionList, onChangeModalVisible }: Props) => {
   return (
     <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitleStyle}>More Options</Text>
         {moreOptionList.map(item => (
-          <SelectItem isSelected={false} label={item.name} onPress={item.onPress} />
+          <SelectItem key={item.name} isSelected={false} label={item.name} onPress={item.onPress} />
         ))}
         <SafeAreaView />
       </View>

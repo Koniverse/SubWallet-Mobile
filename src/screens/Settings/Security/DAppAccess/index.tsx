@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
@@ -10,58 +10,91 @@ import { ListRenderItemInfo } from 'react-native';
 import { DAppAccessItem } from 'components/DAppAccessItem';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
+import { changeAuthorizationAll, forgetAllSite } from '../../../../messaging';
+import { updateAuthUrls } from 'stores/updater';
 
 function filterFunction(items: AuthUrlInfo[], searchString: string) {
   return items.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
 }
 
-const dappAccessMoreOptions = [
-  {
-    name: 'Forget All',
-    onPress: () => {},
-  },
-  {
-    name: 'Disconnect All',
-    onPress: () => {},
-  },
-  {
-    name: 'Connect All',
-    onPress: () => {},
-  },
-];
+function getDAppItems(authUrlMap: Record<string, AuthUrlInfo>): AuthUrlInfo[] {
+  return Object.values(authUrlMap);
+}
 
 export const DAppAccessScreen = () => {
-  const authUrls = useSelector((state: RootState) => state.authUrls.details);
+  const authUrlMap = useSelector((state: RootState) => state.authUrls.details);
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const renderItem = ({ item }: ListRenderItemInfo<AuthUrlInfo>) => {
-    return (
-      <DAppAccessItem
-        key={item.id}
-        item={item}
-        onPress={() =>
-          navigation.navigate('DAppAccessDetail', { origin: item.origin, accountAuthType: item.accountAuthType || '' })
-        }
-      />
-    );
-  };
+  const dAppItems = useMemo<AuthUrlInfo[]>(() => {
+    return getDAppItems(authUrlMap);
+  }, [authUrlMap]);
 
+  const rightIconOption = useMemo(() => {
+    return {
+      icon: DotsThree,
+      onPress: () => setModalVisible(true),
+    };
+  }, []);
+
+  // todo: i18n
+  const dAppAccessMoreOptions = useMemo(() => {
+    return [
+      {
+        name: 'Forget All',
+        onPress: () => {
+          forgetAllSite(updateAuthUrls).catch(console.error);
+          setModalVisible(false);
+        },
+      },
+      {
+        name: 'Disconnect All',
+        onPress: () => {
+          changeAuthorizationAll(false, updateAuthUrls).catch(console.error);
+          setModalVisible(false);
+        },
+      },
+      {
+        name: 'Connect All',
+        onPress: () => {
+          changeAuthorizationAll(true, updateAuthUrls).catch(console.error);
+          setModalVisible(false);
+        },
+      },
+    ];
+  }, []);
+
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<AuthUrlInfo>) => {
+      return (
+        <DAppAccessItem
+          key={item.id}
+          item={item}
+          onPress={() => {
+            navigation.navigate('DAppAccessDetail', {
+              origin: item.origin,
+              accountAuthType: item.accountAuthType || '',
+            });
+          }}
+        />
+      );
+    },
+    [navigation],
+  );
+
+  // todo: i18n Manage DApp Access
   return (
     <FlatListScreen
       title={'Manage DApp Access'}
       autoFocus={false}
-      items={Object.values(authUrls)}
+      items={dAppItems}
       filterFunction={filterFunction}
       renderListEmptyComponent={EmptyListScreen}
-      rightIconOption={{
-        icon: DotsThree,
-        onPress: () => setModalVisible(true),
-      }}
+      rightIconOption={rightIconOption}
       renderItem={renderItem}
       afterListItem={
         <MoreOptionModal
           modalVisible={modalVisible}
-          moreOptionList={dappAccessMoreOptions}
+          moreOptionList={dAppAccessMoreOptions}
           onChangeModalVisible={() => setModalVisible(false)}
         />
       }
