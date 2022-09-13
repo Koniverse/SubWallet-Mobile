@@ -51,6 +51,8 @@ import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
 import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
 import { BrowserTabWrapper } from 'screens/Home/Browser/BrowserTabWrapper';
 import { ColorMap } from 'styles/color';
+import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
+import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -212,6 +214,8 @@ export const App = () => {
                       <Stack.Screen name="BrowserTab" component={BrowserTabWrapper} />
                       <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                       <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                      <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
+                      <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                     </Stack.Group>
                   )}

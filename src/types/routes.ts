@@ -27,6 +27,8 @@ export type RootStackParamList = {
   ConfirmationPopup: undefined;
   FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;
+  DAppAccess: undefined;
+  DAppAccessDetail: { origin: string };
   WebViewDebugger: undefined;
 };
 

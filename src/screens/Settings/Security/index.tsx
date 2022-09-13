@@ -112,12 +112,11 @@ export const Security = () => {
 
         <ActionItem
           style={{ marginBottom: 4 }}
-          disabled={true}
           color={ColorMap.disabledTextColor}
           icon={GlobeHemisphereWest}
           title={i18n.common.dApp}
           hasRightArrow
-          onPress={() => {}}
+          onPress={() => navigation.navigate('DappAccess')}
         />
 
         <ActionItem
