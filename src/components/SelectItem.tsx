@@ -21,17 +21,16 @@ const selectItemSeparator: StyleProp<any> = {
 export const SelectItem = ({ label, isSelected, onPress, showSeparator = true, leftIcon }: Props) => {
   const CheckIcon = CircleWavyCheck;
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity style={{ paddingHorizontal: 16 }} onPress={onPress}>
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
           height: 52,
-          paddingRight: 16,
         }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {leftIcon && <View style={{ paddingHorizontal: 16 }}>{leftIcon}</View>}
+          {leftIcon && <View style={{ paddingRight: 16 }}>{leftIcon}</View>}
           <Text
             style={{
               ...sharedStyles.mediumText,

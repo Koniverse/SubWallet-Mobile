@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { CaretRight } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
@@ -13,16 +13,33 @@ interface Props {
   onPress: () => void;
 }
 
+const itemWrapperStyle: StyleProp<any> = {
+  flexDirection: 'row',
+  width: '100%',
+  alignItems: 'center',
+  paddingVertical: 16,
+};
+
+const itemContentWrapperStyle: StyleProp<any> = {
+  flexDirection: 'row',
+  alignItems: 'center',
+  flex: 1,
+  justifyContent: 'space-between',
+};
+
+const itemMainTextStyle: StyleProp<any> = { ...sharedStyles.mediumText, color: ColorMap.light, ...FontSemiBold };
+const itemSubTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium };
+
 export const DAppAccessItem = ({ item, onPress }: Props) => {
   const hostName = getHostName(item.url);
   return (
     <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPress}>
-      <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center', paddingVertical: 16 }}>
+      <View style={itemWrapperStyle}>
         <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 40, height: 40 }} />
-        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, justifyContent: 'space-between' }}>
+        <View style={itemContentWrapperStyle}>
           <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
-            <Text style={{ ...sharedStyles.mediumText, color: ColorMap.light, ...FontSemiBold }}>{item.origin}</Text>
-            <Text numberOfLines={1} style={{ ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium }}>
+            <Text style={itemMainTextStyle}>{item.origin}</Text>
+            <Text numberOfLines={1} style={itemSubTextStyle}>
               {item.url}
             </Text>
           </View>

@@ -33,6 +33,7 @@ const accountNameStyle: StyleProp<any> = {
   ...FontBold,
   paddingRight: 5,
   maxWidth: 220,
+  paddingBottom: 6,
 };
 
 const accountAddressStyle: StyleProp<any> = {
@@ -139,7 +140,7 @@ export const Account = ({
 
   return (
     <TouchableOpacity style={{ flex: 1 }} onPress={() => selectAccount && selectAccount(address)} disabled={isDisabled}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingTop: 16, paddingBottom: 16 }}>
         <SubWalletAvatar address={address} size={34} />
         <View style={{ marginLeft: 16 }}>
           <Name />

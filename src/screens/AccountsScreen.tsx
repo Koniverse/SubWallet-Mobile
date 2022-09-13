@@ -28,7 +28,6 @@ const accountItemContainer: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingVertical: 11,
   flex: 1,
 };
 
@@ -135,6 +134,7 @@ export const AccountsScreen = () => {
         {!isAccountAll(item.address) && (
           <IconButton
             icon={DotsThree}
+            color={ColorMap.disabled}
             onPress={() => {
               navigation.navigate('EditAccount', { address: item.address, name: item.name });
             }}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {ListRenderItemInfo, Switch, TouchableOpacity, View} from 'react-native';
+import { ListRenderItemInfo, Switch, TouchableOpacity, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
 import { DotsThree } from 'phosphor-react-native';
@@ -10,14 +10,14 @@ import { RootState } from 'stores/index';
 import { DAppAccessDetailProps } from 'types/routes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { Account } from 'components/Account';
-import {Divider} from 'components/Divider';
-import {ColorMap} from 'styles/color';
+import { Divider } from 'components/Divider';
+import { ColorMap } from 'styles/color';
 
 const filterFunction = (items: AccountJson[], searchString: string) => {
   return items.filter(item => item.name?.toLowerCase().includes(searchString.toLowerCase()));
 };
 
-const dappAccessDetailMoreOptions = [
+const dAppAccessDetailMoreOptions = [
   {
     name: 'Block',
     onPress: () => {},
@@ -57,7 +57,7 @@ export const DAppAccessDetailScreen = ({
 
   const renderItem = ({ item }: ListRenderItemInfo<AccountJson>) => {
     return (
-      <TouchableOpacity style={{ backgroundColor: 'red' }}>
+      <TouchableOpacity>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Account
             name={item.name || ''}
@@ -75,7 +75,7 @@ export const DAppAccessDetailScreen = ({
 
   return (
     <FlatListScreen
-      title={'Manage DApp Access'}
+      title={'Accounts'}
       autoFocus={false}
       items={getAccountList()}
       filterFunction={filterFunction}
@@ -88,7 +88,7 @@ export const DAppAccessDetailScreen = ({
       afterListItem={
         <MoreOptionModal
           modalVisible={modalVisible}
-          moreOptionList={dappAccessDetailMoreOptions}
+          moreOptionList={dAppAccessDetailMoreOptions}
           onChangeModalVisible={() => setModalVisible(false)}
         />
       }
