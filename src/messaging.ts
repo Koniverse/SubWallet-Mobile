@@ -554,7 +554,7 @@ export async function changeAuthorization(
   return sendMessage('pri(authorize.changeSite)', { url, connectValue }, callback);
 }
 
-export async function changeAuthorizationPerAcc(
+export async function changeAuthorizationPerAccount(
   address: string,
   connectValue: boolean,
   url: string,

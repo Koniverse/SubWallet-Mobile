@@ -71,7 +71,7 @@ export const DAppAccessScreen = () => {
           item={item}
           onPress={() => {
             navigation.navigate('DAppAccessDetail', {
-              origin: item.origin,
+              origin: item.id,
               accountAuthType: item.accountAuthType || '',
             });
           }}
