@@ -4,14 +4,17 @@ import { ColorMap } from 'styles/color';
 
 interface Props {
   style: StyleProp<any>;
+  color?: string;
 }
 
-const dividerStyle: StyleProp<any> = { height: 1, width: '100%', backgroundColor: ColorMap.disabled };
+function getDividerStyle(color: string) {
+  return { height: 1, width: '100%', backgroundColor: color };
+}
 
-export const Divider = ({ style }: Props) => {
+export const Divider = ({ style, color = 'red' }: Props) => {
   return (
     <View style={[style, { width: '100%' }]}>
-      <View style={dividerStyle} />
+      <View style={getDividerStyle(color)} />
     </View>
   );
 };

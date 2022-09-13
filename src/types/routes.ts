@@ -28,7 +28,7 @@ export type RootStackParamList = {
   FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;
   DAppAccess: undefined;
-  DAppAccessDetail: { origin: string };
+  DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
 };
 
@@ -42,4 +42,5 @@ export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
+export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabProps = NativeStackScreenProps<RootStackParamList, 'BrowserTab'>;
