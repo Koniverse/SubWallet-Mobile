@@ -9,6 +9,9 @@ import mobileSettingsReducer from './MobileSettings';
 import transactionHistoryReducer from './TransactionHistory';
 import crowdloanReducer from './Crowdloan';
 import confirmationReducer from './Confirmation';
+import nftReducer from './Nft';
+import nftCollectionReducer from './NftCollection';
+import transferNftParamsReducer from './TransferNftParams';
 import appStateReducer from './AppState';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +35,9 @@ const rootReducer = combineReducers({
   transactionHistory: transactionHistoryReducer,
   crowdloan: crowdloanReducer,
   confirmation: confirmationReducer,
+  nftCollection: nftCollectionReducer,
+  nft: nftReducer,
+  transferNftParams: transferNftParamsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

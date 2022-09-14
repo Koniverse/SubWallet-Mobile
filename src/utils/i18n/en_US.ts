@@ -94,6 +94,7 @@ export const en = {
     search: 'Search',
     searchPlaceholder: 'Search or enter website',
     apply: 'Apply',
+    anErrorHasOccurred: 'An error has occurred.',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -122,6 +123,9 @@ export const en = {
     qrScanner: 'QR Scanner',
     unitSelection: 'Unit Selection',
     filters: 'Filters',
+    importEvmNft: 'Import EVM NFT',
+    sendNft: 'Send NFT',
+    authorizeTransaction: 'Authorize transaction',
   },
   tabName: {
     crypto: 'Crypto',
@@ -134,6 +138,26 @@ export const en = {
     receive: 'Receive',
     send: 'Send',
     swap: 'Swap',
+  },
+  nftScreen: {
+    nftAppearHere: 'Your NFTs will appear here',
+    dontSeeNft: "Don't see your NFTs?",
+    importNft: 'Import NFTs',
+    nftDetail: {
+      description: 'Description',
+      rarity: 'Rarity',
+      properties: 'Properties',
+    },
+  },
+  importEvmNft: {
+    smartContract: 'NFT Contract Address',
+    chain: 'Chain',
+    nftCollectionName: 'NFT Collection Name',
+  },
+  sendNft: {
+    send: 'Send',
+    nft: 'NFT',
+    chain: 'Chain',
   },
   settings: {
     notifications: 'Notifications',
@@ -197,5 +221,6 @@ export const en = {
   errorMessage: {
     wrongPassword: 'Wrong password',
     invalidMnemonicSeed: 'Invalid mnemonic seed',
+    invalidAddress: 'Invalid address',
   },
 };

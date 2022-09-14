@@ -5,8 +5,11 @@ import {
   CrowdloanJson,
   NetworkJson,
   PriceJson,
+  NftJson,
   ResponseSettingsType,
   TransactionHistoryItemType,
+  NftCollectionJson,
+  NftItem,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AccountJson,
@@ -68,3 +71,15 @@ export type SettingsSlice = ResponseSettingsType & StoreSlice;
 export type TransactionHistorySlice = {
   details: Record<string, TransactionHistoryItemType[]>;
 } & StoreSlice;
+
+export type NftSlice = NftJson & StoreSlice;
+
+export type NftCollectionSlice = NftCollectionJson & StoreSlice;
+
+export type TransferNftParams = {
+  nftItem: NftItem;
+  collectionImage?: string;
+  collectionId: string;
+};
+
+export type TransferNftParamsSlice = TransferNftParams & StoreSlice;

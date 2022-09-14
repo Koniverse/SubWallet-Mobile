@@ -23,6 +23,8 @@ export type RootStackParamList = {
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   ExportJson: undefined;
   WebViewDebugger: undefined;
+  ImportEvmNft: undefined;
+  TransferNft: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

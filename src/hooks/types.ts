@@ -1,7 +1,7 @@
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../types';
 import { TokenBalanceItemType } from 'types/ui-types';
-import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+import { CrowdloanParaState, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { BalanceValueType } from 'utils/chainBalances';
 
 export type AccountBalanceType = {
@@ -14,3 +14,11 @@ export type CrowdloanContributeValueType = {
   paraState?: CrowdloanParaState;
   contribute: BalanceValueType;
 };
+
+export interface NftCollectionType {
+  nftCollections: NftCollection[];
+}
+
+export interface NftItemType {
+  nftItems: NftItem[];
+}

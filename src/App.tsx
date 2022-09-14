@@ -6,6 +6,7 @@ import { NavigationContainer, StackActions, useNavigationContainerRef } from '@r
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
+import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'types/routes';
@@ -44,6 +45,9 @@ import { LockScreen } from 'screens/LockScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import useStoreCrowdloan from 'hooks/store/useStoreCrowdloan';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
+import useStoreNftCollection from 'hooks/store/useStoreNftCollection';
+import useStoreNft from 'hooks/store/useStoreNft';
+import SendNft from 'screens/SendNft';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -111,6 +115,8 @@ export const App = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
+  useStoreNftCollection();
+  useStoreNft();
   useStoreChainRegistry();
   useStorePrice();
   useStoreBalance();
@@ -201,6 +207,8 @@ export const App = () => {
                       <Stack.Screen name="PinCode" component={PinCodeScreen} />
                       <Stack.Screen name="ExportJson" component={ExportJson} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
+                      <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
+                      <Stack.Screen name="TransferNft" component={SendNft} />
                     </Stack.Group>
                   )}
                   <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>

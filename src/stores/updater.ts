@@ -2,13 +2,13 @@ import {
   BalanceJson,
   ChainRegistry,
   CrowdloanJson,
-  NetworkJson,
+  NetworkJson, NftItem,
   PriceJson,
   ResponseSettingsType,
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsSlice } from 'stores/types';
+import { AccountsSlice, NftCollectionSlice, NftSlice, TransferNftParams } from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
@@ -50,4 +50,19 @@ export function updateAccountsWaitingStatus(payload: boolean): void {
 
 export function updateCrowdloan(payload: CrowdloanJson): void {
   store.dispatch({ type: 'crowdloan/update', payload });
+}
+
+export function updateNftCollection(payload: NftCollectionSlice): void {
+  store.dispatch({ type: 'nftCollection/update', payload });
+}
+
+export function updateNft(payload: NftSlice): void {
+  store.dispatch({ type: 'nft/update', payload });
+}
+
+export function updateTransferNftParams(nftItem: NftItem, collectionImage: string | undefined, collectionId: string) {
+  store.dispatch({
+    type: 'transferNftParams/update',
+    payload: { nftItem, collectionImage, collectionId } as TransferNftParams,
+  });
 }

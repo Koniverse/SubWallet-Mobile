@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NFTScreen } from './NFTScreen';
+import NFTScreen from 'screens/Home/NFT/NFTScreen';
 import { StakingScreen } from './StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
@@ -29,7 +29,12 @@ export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['na
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
 function checkTabCompleted(target: string) {
-  if (target === '/Home/Crypto' || target === '/Home/Crowdloans' || target === '/Home/Browser') {
+  if (
+    target === '/Home/Crypto' ||
+    target === '/Home/Crowdloans' ||
+    target === '/Home/Browser' ||
+    target === '/Home/NFT'
+  ) {
     return true;
   } else {
     return false;
