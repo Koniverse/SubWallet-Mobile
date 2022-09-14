@@ -22,6 +22,7 @@ interface Props {
   } & Omit<ConfirmationFooterType, 'onPressSubmitButton' | 'onPressCancelButton' | 'onPressBlockButton'>;
   children?: JSX.Element;
   isShowPassword?: boolean;
+  isUseScrollView?: boolean;
 }
 
 type BusyKey = 'CANCEL' | 'SUBMIT' | 'BLOCK';
@@ -53,6 +54,7 @@ export const ConfirmationBase = ({
   },
   children,
   isShowPassword,
+  isUseScrollView = true,
 }: Props) => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: () => {},
@@ -99,10 +101,18 @@ export const ConfirmationBase = ({
 
   return (
     <>
-      <ScrollView style={{ width: '100%' }}>
-        <ConfirmationHeader {...headerProps} />
-        {children}
-      </ScrollView>
+      {isUseScrollView ? (
+        <ScrollView style={{ width: '100%' }}>
+          <ConfirmationHeader {...headerProps} />
+          {children}
+        </ScrollView>
+      ) : (
+        <View style={{ width: '100%' }}>
+          <ConfirmationHeader {...headerProps} />
+          {children}
+        </View>
+      )}
+
       {isShowPassword && (
         <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16 }}>
           <PasswordField

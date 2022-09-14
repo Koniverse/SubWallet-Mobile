@@ -71,7 +71,7 @@ function renderCurrentChain(networkKey: string, chain?: string) {
 }
 
 const renderSenderAccountAndTransactionFrom = (targetNetwork?: NetworkJson | null, senderAccount?: AccountJson) => {
-  if (!(senderAccount && targetNetwork)) {
+  if (!senderAccount && !targetNetwork) {
     return null;
   }
 

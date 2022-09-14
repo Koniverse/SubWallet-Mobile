@@ -81,6 +81,7 @@ export const AuthorizeConfirmation = ({
         title: i18n.title.authorizeRequestTitle,
         url,
       }}
+      isUseScrollView={false}
       footerProps={{
         isShowBlockButton: true,
         cancelButtonTitle: i18n.common.cancel,
@@ -97,7 +98,7 @@ export const AuthorizeConfirmation = ({
               {i18n.common.chooseAccount}
             </Text>
             <ScrollView
-              style={{ maxHeight: 168, width: '100%', paddingHorizontal: 16 }}
+              style={{ maxHeight: 180, width: '100%', paddingHorizontal: 16 }}
               showsVerticalScrollIndicator={false}>
               <>
                 <ConnectAccount
