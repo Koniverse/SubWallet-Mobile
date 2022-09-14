@@ -4,7 +4,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isValidAddress } from '@subwallet/extension-koni-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import ImagePreview from 'components/ImagePreview';
-import { InputAddress } from 'components/InputAddress';
+import { InputAddress } from 'components/Input/InputAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';

@@ -11,6 +11,7 @@ export const ColorMap = {
   danger: '#F5000E',
   disabled: '#999',
   warning: '#E7B917',
+  iconWarningColor: '#FF7D01',
   disabledTextColor: 'rgba(255, 255, 255, 0.4)',
   notification: 'rgba(0, 0, 0, 0.8)',
   disabledOverlay: 'rgba(0, 7, 45, 0.7)',
@@ -24,6 +25,7 @@ export const ColorMap = {
   popupBackground: '#181E42',
   borderNftMeta: '#212845',
   errorColor: '#E42F2F',
+  buttonBackground1: '#181E42',
 };
 
 export const Background = StyleSheet.create({

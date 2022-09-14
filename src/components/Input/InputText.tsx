@@ -14,6 +14,7 @@ interface Props extends FieldBaseProps {
   autoFocus?: boolean;
   onSubmitField?: () => void;
   defaultValue?: string;
+  value: string;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -46,6 +47,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     isBusy,
     autoFocus,
     onSubmitField,
+    value,
     ...fieldBase
   } = passwordFieldProps;
   return (
@@ -67,6 +69,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             onBlur={onBlur}
             editable={!isBusy}
             selectTextOnFocus={!isBusy}
+            value={value}
           />
         </View>
       </FieldBase>

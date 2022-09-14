@@ -150,9 +150,11 @@ export const en = {
     },
   },
   importEvmNft: {
-    smartContract: 'NFT Contract Address',
-    chain: 'Chain',
-    nftCollectionName: 'NFT Collection Name',
+    smartContract: 'NFT Contract Address (*)',
+    chain: 'Chain (*)',
+    nftCollectionName: 'NFT Collection Name (*)',
+    cancel: 'Cancel',
+    addNft: 'Add NFT',
   },
   sendNft: {
     send: 'Send',
