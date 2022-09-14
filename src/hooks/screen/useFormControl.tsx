@@ -150,7 +150,6 @@ function formReducer(state: FormState, action: FormControlAction) {
 
       return { ...state };
     case 'blur':
-      console.log('blur');
       state.index = Object.keys(state.refs).indexOf(fieldName);
       Object.values(state.refs)[state.index].current?.blur();
 
