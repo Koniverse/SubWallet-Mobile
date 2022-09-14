@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ListRenderItemInfo, Switch, View } from 'react-native';
+import { ListRenderItemInfo, StyleProp, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
 import { DotsThree, PushPinSlash } from 'phosphor-react-native';
@@ -28,6 +28,22 @@ type Props = {
   origin: string;
   accountAuthType: string;
   authInfo: AuthUrlInfo;
+};
+
+const itemContainerStyle: StyleProp<any> = {
+  ...ContainerHorizontalPadding,
+  position: 'relative',
+};
+
+const blockLayerStyle: StyleProp<any> = {
+  position: 'absolute',
+  backgroundColor: ColorMap.dark1,
+  opacity: 0.7,
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 10,
 };
 
 const filterFunction = (items: AccountJson[], searchString: string) => {
@@ -137,7 +153,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       };
 
       return (
-        <View style={ContainerHorizontalPadding}>
+        <View style={itemContainerStyle}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <Account
               name={item.name || ''}
@@ -154,6 +170,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
             />
           </View>
           <Divider style={{ paddingLeft: 56 }} color={ColorMap.dark2} />
+          {!authInfo.isAllowed && <View style={blockLayerStyle} />}
         </View>
       );
     },
