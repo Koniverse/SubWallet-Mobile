@@ -51,13 +51,12 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
     }
   }, [accountAuthType, accounts]);
 
-  //todo: i18n
   const dAppAccessDetailMoreOptions = useMemo(() => {
     const isAllowed = authInfo.isAllowed;
 
     const options = [
       {
-        name: isAllowed ? 'Block' : 'Unblock',
+        name: isAllowed ? i18n.common.block : i18n.common.unblock,
         onPress: () => {
           toggleAuthorization(origin)
             .then(({ list }) => {
@@ -68,7 +67,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
         },
       },
       {
-        name: 'Forget Site',
+        name: i18n.common.forgetSite,
         onPress: () => {
           forgetSite(origin, updateAuthUrls).catch(console.error);
           navigation.canGoBack() && navigation.goBack();
@@ -79,14 +78,14 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
     if (isAllowed) {
       options.push(
         {
-          name: 'Disconnect All',
+          name: i18n.common.disconnectAll,
           onPress: () => {
             changeAuthorization(false, origin, updateAuthUrls).catch(console.error);
             setModalVisible(false);
           },
         },
         {
-          name: 'Connect All',
+          name: i18n.common.connectAll,
           onPress: () => {
             changeAuthorization(true, origin, updateAuthUrls).catch(console.error);
             setModalVisible(false);

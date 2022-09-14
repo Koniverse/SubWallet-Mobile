@@ -102,7 +102,7 @@ export const Security = () => {
 
         <ActionItem
           disabled={!pinCode}
-          style={{ marginBottom: 4 }}
+          style={{ marginBottom: 8 }}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           icon={Key}
           title={i18n.common.changePinCode}
@@ -111,7 +111,7 @@ export const Security = () => {
         />
 
         <ActionItem
-          style={{ marginBottom: 4 }}
+          style={{ marginBottom: 8 }}
           color={ColorMap.light}
           icon={GlobeHemisphereWest}
           title={i18n.common.dApp}

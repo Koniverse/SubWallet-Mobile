@@ -18,7 +18,7 @@ const toggleItemWrapperStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   borderRadius: 5,
   paddingHorizontal: 16,
-  marginBottom: 4,
+  marginBottom: 8,
 };
 
 const toggleItemTextStyle: StyleProp<any> = {

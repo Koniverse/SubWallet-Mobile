@@ -27,10 +27,10 @@ function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): Sty
     backgroundColor: backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     position: 'relative',
     height: 40,
     zIndex: 10,
+    width: '100%',
   };
 }
 
@@ -45,7 +45,7 @@ const subHeaderTitle: StyleProp<any> = {
   ...FontSize4,
   ...FontBold,
   color: ColorMap.light,
-  paddingHorizontal: 60,
+  paddingHorizontal: 72,
 };
 
 export const SubHeader = ({
@@ -78,7 +78,7 @@ export const SubHeader = ({
           color={disabled ? ColorMap.disabled : ColorMap.light}
           disabled={disabled}
           onPress={onPressBack}
-          style={{ position: 'absolute', left: 8, top: 0 }}
+          style={{ position: 'absolute', left: 16, top: 0 }}
         />
       )}
 
@@ -86,7 +86,7 @@ export const SubHeader = ({
         <Button
           icon={rightIcon}
           onPress={onPressRightIcon}
-          style={{ position: 'absolute', right: 8, top: 0 }}
+          style={{ position: 'absolute', right: 16, top: 0 }}
           disabled={disableRightButton}
           color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
           title={rightButtonTitle}
