@@ -17,7 +17,7 @@ const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
 const renderListEmptyComponent = () => {
   return (
     <View style={centerStyle}>
-      <Rocket size={80} color={'rgba(255, 255, 255, 0.3)'} weight={'thin'} />
+      <Rocket size={80} color={'rgba(255, 255, 255, 0.3)'} weight={'regular'} />
       <Text style={emptyListTextStyle}>{i18n.common.emptyCrowdloanListMessage}</Text>
     </View>
   );

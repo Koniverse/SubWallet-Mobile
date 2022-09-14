@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View } from 'react-native';
+import { SafeAreaView, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Modal from 'components/Modal';
 interface Props {
@@ -26,6 +26,7 @@ const subWalletModalSeparator: StyleProp<any> = {
   borderRadius: 2,
   backgroundColor: 'rgba(255, 255, 255, 0.1)',
   marginBottom: 19,
+  textAlign: 'center',
 };
 
 export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, modalStyle, onModalHide }: Props) => {
@@ -44,9 +45,12 @@ export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, m
       hideModalContentWhileAnimating
       propagateSwipe>
       <View style={[subWalletModalContainer, modalStyle]}>
-        <View style={subWalletModalSeparator} />
+        <View style={{ width: '100%', paddingBottom: 16, alignItems: 'center' }}>
+          <View style={subWalletModalSeparator} />
 
-        {children}
+          {children}
+        </View>
+        <SafeAreaView />
       </View>
     </Modal>
   );

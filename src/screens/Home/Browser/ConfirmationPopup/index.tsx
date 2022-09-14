@@ -60,7 +60,7 @@ export const ConfirmationPopup = () => {
   const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
   const currentConfirmationItem = confirmationItems[confirmationIndex];
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-
+  const isDisabled = confirmationIndex === confirmationItemsLength - 1;
   const onPressPrevButton = () => {
     if (confirmationIndex > 0) {
       setConfirmationIndex(confirmationIndex - 1);
@@ -145,11 +145,21 @@ export const ConfirmationPopup = () => {
         <View style={confirmationPopupWrapper}>
           <View style={subWalletModalSeparator} />
           <View style={confirmationHeader}>
-            <IconButton icon={ArrowLeft} color={ColorMap.disabled} onPress={onPressPrevButton} />
+            <IconButton
+              icon={ArrowLeft}
+              color={isDisabled ? ColorMap.disabled : ColorMap.light}
+              onPress={onPressPrevButton}
+              disabled={isDisabled}
+            />
             <Text style={authorizeIndexTextStyle}>
               <Text>{confirmationIndex + 1}</Text>/<Text>{confirmationItemsLength}</Text>
             </Text>
-            <IconButton icon={ArrowRight} color={ColorMap.disabled} onPress={onPressNextButton} />
+            <IconButton
+              icon={ArrowRight}
+              color={isDisabled ? ColorMap.disabled : ColorMap.light}
+              onPress={onPressNextButton}
+              disabled={isDisabled}
+            />
           </View>
           {renderConfirmation()}
         </View>

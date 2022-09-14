@@ -119,6 +119,7 @@ const nameSiteTextStyle: StyleProp<any> = {
   ...FontMedium,
   ...FontSize0,
   color: ColorMap.disabled,
+  paddingHorizontal: 40,
 };
 
 const hostNameTextStyle: StyleProp<any> = {
@@ -346,9 +347,13 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
-                  <Text style={hostNameTextStyle}>{hostname}</Text>
+                  <Text numberOfLines={1} style={hostNameTextStyle}>
+                    {hostname}
+                  </Text>
                 </View>
-                <Text style={nameSiteTextStyle}>{title.current || name}</Text>
+                <Text numberOfLines={1} style={nameSiteTextStyle}>
+                  {title.current || name}
+                </Text>
               </>
             )}
           </View>

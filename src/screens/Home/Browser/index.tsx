@@ -44,13 +44,19 @@ const searchTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.light,
-  paddingTop: 8,
-  paddingBottom: 24,
+};
+
+const groupHeaderWrapperStyle: StyleProp<any> = {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingHorizontal: 16,
+  paddingBottom: 16,
 };
 
 function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <View style={groupHeaderWrapperStyle}>
       <Text style={searchTitleStyle}>{title}</Text>
 
       <Button title={i18n.common.seeAll} onPress={onPressSeeAllBtn} />
@@ -98,7 +104,7 @@ export const BrowserScreen = () => {
         </View>
 
         {!!bookmarkItems.length || !!historyItems.length ? (
-          <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginVertical: 16 }}>
+          <ScrollView style={{ flex: 1, marginVertical: 16 }}>
             {!!bookmarkItems.length && (
               <>
                 {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}

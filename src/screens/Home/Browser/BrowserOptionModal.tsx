@@ -73,7 +73,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => 
   ];
 
   return (
-    <SubWalletModal modalVisible={visibleModal} onChangeModalVisible={onClose} modalStyle={{ height: 204 }}>
+    <SubWalletModal modalVisible={visibleModal} onChangeModalVisible={onClose}>
       <View style={{ width: '100%' }}>
         <Text style={titleStyle}>More options</Text>
         {OPTIONS.map(opt => (

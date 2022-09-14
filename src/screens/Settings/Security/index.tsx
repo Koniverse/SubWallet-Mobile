@@ -128,10 +128,7 @@ export const Security = () => {
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           onPress={() => setIsShowAutoLockModal(true)}
         />
-        <SubWalletModal
-          modalVisible={iShowAutoLockModal}
-          onChangeModalVisible={() => setIsShowAutoLockModal(false)}
-          modalStyle={{ height: 582 }}>
+        <SubWalletModal modalVisible={iShowAutoLockModal} onChangeModalVisible={() => setIsShowAutoLockModal(false)}>
           <View style={{ width: '100%' }}>
             <Text style={modalTitle}>{i18n.common.autoLock}</Text>
             {AUTO_LOCK_LIST.map(item => (

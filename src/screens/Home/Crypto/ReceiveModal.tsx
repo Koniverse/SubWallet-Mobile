@@ -129,10 +129,7 @@ export const ReceiveModal = ({
   };
 
   return (
-    <SubWalletModal
-      modalStyle={{ height: 496 }}
-      modalVisible={receiveModalVisible}
-      onChangeModalVisible={onChangeVisible}>
+    <SubWalletModal modalVisible={receiveModalVisible} onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
         <Text style={receiveModalTitle}>{i18n.cryptoScreen.receive}</Text>
         <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />

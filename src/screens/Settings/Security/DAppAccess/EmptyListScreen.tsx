@@ -12,7 +12,7 @@ interface Props {
 export const EmptyListScreen = ({ icon: Icon, title }: Props) => {
   return (
     <View style={centerStyle}>
-      <Icon size={80} color={ColorMap.placeholderIconColor} weight={'thin'} />
+      <Icon size={80} color={ColorMap.disabled} weight={'regular'} />
       <Text style={emptyListTextStyle}>{title}</Text>
     </View>
   );

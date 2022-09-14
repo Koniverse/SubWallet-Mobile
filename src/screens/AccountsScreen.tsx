@@ -169,7 +169,6 @@ export const AccountsScreen = () => {
 
         <SelectImportAccountModal
           modalTitle={i18n.common.connectYourAccount}
-          modalHeight={308}
           secretTypeList={SECRET_TYPE}
           modalVisible={modalVisible}
           onChangeModalVisible={() => setModalVisible(false)}
@@ -178,7 +177,6 @@ export const AccountsScreen = () => {
         <SelectAccountTypeModal
           modalVisible={selectTypeModalVisible}
           onChangeModalVisible={() => setSelectTypeModalVisible(false)}
-          modalHeight={206}
           onSelectSubstrateAccount={onSelectSubstrateAccount}
           onSelectEvmAccount={onSelectEvmAccount}
         />

@@ -5,7 +5,7 @@ import { FlatList, ListRenderItemInfo, StyleProp, Text, View } from 'react-nativ
 import { Search } from 'components/Search';
 import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/Button';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BrowserItem } from 'components/BrowserItem';
 import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
@@ -51,6 +51,7 @@ const searchResultStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.light,
   paddingVertical: 24,
+  ...ContainerHorizontalPadding,
 };
 
 export const BrowserSearch = () => {
@@ -82,8 +83,8 @@ export const BrowserSearch = () => {
 
   return (
     <ScreenContainer placeholderBgc={ColorMap.dark1}>
-      <View style={{ ...sharedStyles.layoutContainer }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <>
+        <View style={{ flexDirection: 'row', alignItems: 'center', ...ContainerHorizontalPadding }}>
           <Search
             style={{ flex: 1, marginRight: 8 }}
             autoFocus={true}
@@ -101,7 +102,7 @@ export const BrowserSearch = () => {
           <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
           <FlatList data={filteredList} renderItem={renderItem} />
         </View>
-      </View>
+      </>
     </ScreenContainer>
   );
 };

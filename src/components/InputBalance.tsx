@@ -65,8 +65,6 @@ const getBaseTextStyle = (inputValue: string) => {
 const unitModalContentWrapper: StyleProp<any> = {
   alignItems: 'center',
   width: '100%',
-  flex: 1,
-  paddingBottom: 42,
 };
 
 const unitModalTitle: StyleProp<any> = {
@@ -207,10 +205,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         <CaretDown size={20} weight={'bold'} color={ColorMap.disabled} />
       </TouchableOpacity>
 
-      <SubWalletModal
-        modalVisible={isShowTokenList}
-        onChangeModalVisible={() => setShowTokenList(false)}
-        modalStyle={{ height: 494 }}>
+      <SubWalletModal modalVisible={isShowTokenList} onChangeModalVisible={() => setShowTokenList(false)}>
         <View style={unitModalContentWrapper}>
           <Text style={unitModalTitle}>{i18n.title.unitSelection}</Text>
           <FlatList style={{ width: '100%' }} data={siOptions} renderItem={renderItem} />

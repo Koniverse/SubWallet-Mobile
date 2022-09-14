@@ -12,7 +12,6 @@ import { ImageLogosMap } from 'assets/logo';
 interface Props {
   modalVisible: boolean;
   onChangeModalVisible: () => void;
-  modalHeight: number;
   onModalHide?: () => void;
   onSelectSubstrateAccount: () => void;
   onSelectEvmAccount: () => void;
@@ -29,7 +28,6 @@ const modalTitle: StyleProp<any> = {
 export const SelectAccountTypeModal = ({
   modalVisible,
   onChangeModalVisible,
-  modalHeight,
   onModalHide,
   onSelectSubstrateAccount,
   onSelectEvmAccount,
@@ -48,11 +46,7 @@ export const SelectAccountTypeModal = ({
   ];
 
   return (
-    <SubWalletModal
-      modalVisible={modalVisible}
-      onModalHide={onModalHide}
-      onChangeModalVisible={onChangeModalVisible}
-      modalStyle={{ height: modalHeight }}>
+    <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitle}>{i18n.title.selectAccountType}</Text>
         {ACCOUNT_TYPE.map(item => (

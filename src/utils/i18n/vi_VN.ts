@@ -261,7 +261,7 @@ export const vi = {
       "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site.",
     clearHistoryWarningMessage: 'Make sure you want to clear all history',
     phishingMessage:
-      'This site is blocked the Subwallet app believes that this website could compromise the security of your accounts and your tokens.',
+      'This site is blocked because the Subwallet app believes that this website could compromise the security of your accounts and your tokens.',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
