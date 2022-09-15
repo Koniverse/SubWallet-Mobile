@@ -193,6 +193,8 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
         browserWebviewRef: webviewRef,
         url: nativeEvent.url,
         onHandlePhishing: () => {
+          // clear content of the phishing site
+          webviewRef.current?.injectJavaScript("(function(){document.documentElement.innerHTML='' })()");
           setIsShowPhishingWarning(true);
         },
       });
