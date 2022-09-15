@@ -21,7 +21,6 @@ import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import reformatAddress from 'utils/index';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -31,6 +30,10 @@ const footerAreaStyle: StyleProp<any> = {
 
 const formConfig = {
   file: {
+    name: '',
+    value: '',
+  },
+  accountAddress: {
     name: '',
     value: '',
   },
@@ -63,6 +66,7 @@ export const RestoreJson = () => {
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
   const _onRestore = (formState: FormState) => {
     const password = formState.data.password;
+    const accountAddress = formState.data.accountAddress;
     let jsonFile;
     if (formState.data.file) {
       jsonFile = JSON.parse(formState.data.file) as KeyringPair$Json | KeyringPairs$Json;
@@ -78,7 +82,7 @@ export const RestoreJson = () => {
     setIsBusy(true);
     (isKeyringPairs$Json(jsonFile)
       ? batchRestoreV2(jsonFile, password, getAccountsInfo(jsonFile), true)
-      : jsonRestoreV2(jsonFile, password, reformatAddress(jsonFile.address, 42), true)
+      : jsonRestoreV2(jsonFile, password, accountAddress, true)
     )
       .then(() => {
         setFileError(false);
@@ -113,6 +117,7 @@ export const RestoreJson = () => {
       } else {
         jsonGetAccountInfo(fileContent)
           .then(accountInfo => {
+            onChangeValue('accountAddress')(accountInfo.address);
             setAccountsInfo(old => [...old, accountInfo]);
           })
           .catch(() => {
