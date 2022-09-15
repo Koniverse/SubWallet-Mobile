@@ -5,14 +5,15 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useFetchNftCollection(): NftCollectionType {
-  const { nft: nftReducer, nftCollection: nftCollectionReducer } = useSelector((state: RootState) => state);
+  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
+  const nftList = useSelector((state: RootState) => state.nft.nftList);
 
   return useMemo((): NftCollectionType => {
     const nftCollections: NftCollection[] = [];
-    for (const nftCollection of nftCollectionReducer.nftCollectionList) {
+    for (const nftCollection of nftCollectionList) {
       const tmp: NftCollection = { ...nftCollection };
       let count = 0;
-      for (const nft of nftReducer.nftList) {
+      for (const nft of nftList) {
         if (nft.chain === nftCollection.chain && nft.collectionId === nftCollection.collectionId) {
           count++;
         }
@@ -24,5 +25,5 @@ export default function useFetchNftCollection(): NftCollectionType {
     return {
       nftCollections: nftCollections,
     };
-  }, [nftCollectionReducer.nftCollectionList, nftReducer.nftList]);
+  }, [nftCollectionList, nftList]);
 }

@@ -4,11 +4,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useGetNetworkMetadata(): Record<string, NetWorkMetadataDef> {
-  const { networkMap } = useSelector((state: RootState) => state);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return useMemo((): Record<string, NetWorkMetadataDef> => {
     const result: Record<string, NetWorkMetadataDef> = {};
-    Object.entries(networkMap.details).forEach(([networkKey, network]) => {
+    Object.entries(networkMap).forEach(([networkKey, network]) => {
       const { active, apiStatus, chain, genesisHash, groups, icon, isEthereum, paraId, ss58Format } = network;
       let isAvailable = true;
 
@@ -32,5 +32,5 @@ export default function useGetNetworkMetadata(): Record<string, NetWorkMetadataD
     });
 
     return result;
-  }, [networkMap.details]);
+  }, [networkMap]);
 }

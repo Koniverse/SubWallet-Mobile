@@ -1,5 +1,5 @@
 import { Images } from 'assets/index';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Image, StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
 import Video from 'react-native-video';
 import { ColorMap } from 'styles/color';
@@ -8,6 +8,23 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   mainUrl?: string;
   backupUrl?: string;
+}
+
+interface ImageState {
+  url: string;
+  loading: boolean;
+  showImage: boolean;
+  imageError: boolean;
+}
+
+enum ImageActionType {
+  INIT = 'INIT',
+  UPDATE = 'UPDATE',
+}
+
+interface ImageAction {
+  type: ImageActionType;
+  payload: Partial<ImageState>;
 }
 
 const ContainerStyle: StyleProp<any> = {
@@ -34,42 +51,70 @@ const IndicatorStyle: StyleProp<any> = {
   position: 'absolute',
 };
 
-const ImagePreview = (props: Props) => {
-  const { style, mainUrl, backupUrl } = props;
+const handleReducer = (oldState: ImageState, action: ImageAction) => {
+  switch (action.type) {
+    case ImageActionType.INIT:
+      return handleIntState(action.payload);
+    case ImageActionType.UPDATE:
+      return { ...oldState, ...action.payload };
+  }
+};
 
-  const [url, setUrl] = useState(mainUrl);
-  const [loading, setLoading] = useState(true);
-  const [showImage, setShowImage] = useState(true);
-  const [imageError, setImageError] = useState(false);
+const handleIntState = (state: Partial<ImageState>) => {
+  return { ...DEFAULT_IMAGE_STATE, ...state };
+};
+
+const DEFAULT_IMAGE_STATE: ImageState = {
+  imageError: false,
+  url: '',
+  showImage: true,
+  loading: true,
+};
+
+const ImagePreview = ({ style, mainUrl, backupUrl }: Props) => {
+  const [imageState, dispatchImageState] = useReducer(handleReducer, DEFAULT_IMAGE_STATE, handleIntState);
+  const { url, showImage, imageError, loading } = imageState;
 
   const videoRef = useRef<Video>(null);
 
   const handleOnLoad = useCallback(() => {
-    setLoading(false);
+    dispatchImageState({ type: ImageActionType.UPDATE, payload: { loading: false } });
   }, []);
 
   const handleImageError = useCallback(() => {
-    setShowImage(false);
+    dispatchImageState({ type: ImageActionType.UPDATE, payload: { showImage: false } });
   }, []);
 
   const handleVideoError = useCallback(() => {
     if (backupUrl && url !== backupUrl) {
-      setUrl(backupUrl);
-      setShowImage(true);
-      setLoading(true);
-      setImageError(false);
+      dispatchImageState({
+        type: ImageActionType.INIT,
+        payload: {
+          url: backupUrl,
+        },
+      });
     } else {
-      setLoading(false);
-      setImageError(true);
+      dispatchImageState({
+        type: ImageActionType.UPDATE,
+        payload: {
+          loading: false,
+          imageError: true,
+        },
+      });
     }
   }, [backupUrl, url]);
 
   useEffect(() => {
     if (url !== mainUrl) {
-      setShowImage(true);
-      setLoading(true);
-      setImageError(false);
-      setUrl(mainUrl);
+      dispatchImageState({
+        type: ImageActionType.INIT,
+        payload: {
+          showImage: true,
+          url: mainUrl,
+          loading: true,
+          imageError: false,
+        },
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainUrl]);

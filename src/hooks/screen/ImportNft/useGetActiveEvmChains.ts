@@ -4,12 +4,12 @@ import { RootState } from 'stores/index';
 import { Item } from 'react-native-picker-select';
 
 export default function useGetActiveEvmChains(): Item[] {
-  const { networkMap } = useSelector((state: RootState) => state);
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return useMemo((): Item[] => {
     const result: Item[] = [];
 
-    for (const [key, network] of Object.entries(networkMap.details)) {
+    for (const [key, network] of Object.entries(networkMap)) {
       if (network.isEthereum && network.active) {
         result.push({
           label: network.chain,

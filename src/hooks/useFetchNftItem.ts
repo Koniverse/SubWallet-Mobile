@@ -5,11 +5,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useFetchNftItem(collection: NftCollection): NftItemType {
-  const { nft: nftReducer } = useSelector((state: RootState) => state);
+  const nftList = useSelector((state: RootState) => state.nft.nftList);
 
   return useMemo((): NftItemType => {
     const nftItems: NftItem[] = [];
-    for (const nft of nftReducer.nftList) {
+    for (const nft of nftList) {
       if (nft.chain === collection.chain && nft.collectionId === collection.collectionId) {
         nftItems.push(nft);
       }
@@ -18,5 +18,5 @@ export default function useFetchNftItem(collection: NftCollection): NftItemType 
     return {
       nftItems: nftItems,
     };
-  }, [collection, nftReducer.nftList]);
+  }, [collection, nftList]);
 }

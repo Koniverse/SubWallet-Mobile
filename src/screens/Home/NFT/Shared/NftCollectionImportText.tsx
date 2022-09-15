@@ -22,12 +22,11 @@ const importTextStyle: StyleProp<any> = {
 const NftCollectionImportText = () => {
   const navigation = useNavigation<RootNavigationProps>();
 
-  const { accounts } = useSelector((state: RootState) => state);
-  const { currentAccount } = accounts;
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
   const isEthAccount = useMemo(() => isEthereumAddress(currentAccount?.address), [currentAccount?.address]);
 
-  const hanldeChangeToImport = useCallback(() => {
+  const handleChangeToImport = useCallback(() => {
     navigation.navigate('ImportEvmNft');
   }, [navigation]);
 
@@ -38,7 +37,7 @@ const NftCollectionImportText = () => {
   return (
     <View style={textContainerStyle}>
       <Text>{i18n.nftScreen.dontSeeNft}</Text>
-      <Text style={importTextStyle} onPress={hanldeChangeToImport}>
+      <Text style={importTextStyle} onPress={handleChangeToImport}>
         {i18n.nftScreen.importNft}
       </Text>
     </View>

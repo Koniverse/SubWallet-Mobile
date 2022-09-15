@@ -13,7 +13,7 @@ interface Props {
   handleBack: () => void;
 }
 
-const NftCollectionListStyle: StyleProp<any> = {
+const NftItemListStyle: StyleProp<any> = {
   height: '100%',
 };
 
@@ -21,16 +21,14 @@ const renderEmpty = () => {
   return <EmptyList />;
 };
 
-const NftItemList = (props: Props) => {
-  const { handleBack, handlePress, nftCollection } = props;
+const filteredNftItem = (items: _NftItem[], searchString: string) => {
+  return items.filter(item => {
+    return item.name && item.name.toLowerCase().includes(searchString.toLowerCase());
+  });
+};
 
-  const { nftItems } = useFetchNftItem(nftCollection);
-
-  const filteredNftItem = useCallback((items: _NftItem[], searchString: string) => {
-    return items.filter(item => {
-      return item.name && item.name.toLowerCase().includes(searchString.toLowerCase());
-    });
-  }, []);
+const NftItemList = ({ handleBack, handlePress, nftCollection }: Props) => {
+  const nftItems = useFetchNftItem(nftCollection).nftItems;
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<_NftItem>) => {
@@ -43,7 +41,7 @@ const NftItemList = (props: Props) => {
   );
 
   return (
-    <View style={NftCollectionListStyle}>
+    <View style={NftItemListStyle}>
       <FlatListScreen
         title={nftCollection.collectionName || 'NFT Items'}
         autoFocus={false}

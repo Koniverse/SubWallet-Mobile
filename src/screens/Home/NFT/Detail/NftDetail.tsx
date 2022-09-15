@@ -13,7 +13,6 @@ import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
-import { updateTransferNftParams } from 'stores/updater';
 
 interface Props {
   data: NftItem;
@@ -115,14 +114,11 @@ const propDetail = (title: string, valueDict: Record<string, any>, key: number):
   return <View />;
 };
 
-const NftDetail = (props: Props) => {
-  const { data, collectionImage, collectionId, onBack } = props;
-
+const NftDetail = ({ data, collectionImage, collectionId, onBack }: Props) => {
   const { show } = useToast();
   const navigation = useNavigation<RootNavigationProps>();
 
-  const { accounts } = useSelector((state: RootState) => state);
-  const { currentAccount } = accounts;
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
   const networkJson = useGetNetworkJson(data.chain as string);
   const isAccountAll = useIsAccountAll();
@@ -140,8 +136,7 @@ const NftDetail = (props: Props) => {
       return;
     }
 
-    updateTransferNftParams(data, collectionImage, collectionId);
-    navigation.navigate('TransferNft');
+    navigation.navigate('SendNft', { nftItem: data, collectionImage: collectionImage, collectionId: collectionId });
   }, [currentAccount, isAccountAll, data, networkJson.isEthereum, collectionImage, collectionId, navigation, show]);
 
   return (

@@ -3,13 +3,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useIsAccountAll(): boolean {
-  const {
-    accounts: { currentAccount: account },
-  } = useSelector((state: RootState) => state);
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
-  if (!account) {
+  if (!currentAccount) {
     return false;
   } else {
-    return isAccountAll(account.address);
+    return isAccountAll(currentAccount.address);
   }
 }

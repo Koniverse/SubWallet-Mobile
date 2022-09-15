@@ -14,7 +14,7 @@ import { QrScannerScreen } from 'screens/QrScannerScreen';
 import AuthTransaction from 'screens/SendNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps, SendNftProps } from 'types/routes';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
 import transferHandler from 'services/nft/transferHandler';
@@ -85,17 +85,17 @@ const isValidRecipient = (address: string, isEthereum: boolean) => {
   }
 };
 
-const SendNft = () => {
+const SendNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
   const { show } = useToast();
   const navigation = useNavigation<RootNavigationProps>();
 
-  const { accounts, transferNftParams } = useSelector((state: RootState) => state);
+  const _currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
   const { nftItem, collectionImage, collectionId } = transferNftParams;
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
   const [addressError, setAddressError] = useState(true);
-  const [currentAccount] = useState<AccountJson | undefined>(accounts.currentAccount);
+  const [currentAccount] = useState<AccountJson | undefined>(_currentAccount);
   const networkKey = nftItem.chain as string;
   const networkJson = useGetNetworkJson(networkKey);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
@@ -202,10 +202,10 @@ const SendNft = () => {
 
   useEffect(() => {
     // handle user change account during sending process
-    if (currentAccount?.address !== accounts.currentAccount?.address) {
+    if (currentAccount?.address !== _currentAccount?.address) {
       navigation.navigate('Home');
     }
-  }, [accounts.currentAccount?.address, currentAccount?.address, navigation]);
+  }, [_currentAccount?.address, currentAccount?.address, navigation]);
 
   if (showConfirm && currentAccount && (substrateTransferParams || web3TransferParams)) {
     return (

@@ -19,9 +19,7 @@ const renderEmpty = () => {
   return <EmptyList />;
 };
 
-const NftCollectionList = (props: Props) => {
-  const { handlePress } = props;
-
+const NftCollectionList = ({ handlePress }: Props) => {
   const { nftCollections } = useFetchNftCollection();
 
   const filteredCollection = useCallback((items: NftCollection[], searchString: string) => {

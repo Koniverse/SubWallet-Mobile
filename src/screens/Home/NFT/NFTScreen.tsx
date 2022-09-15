@@ -10,10 +10,11 @@ import { RootState } from 'stores/index';
 import NftDetail from './Detail/NftDetail';
 
 const NFTScreen = () => {
-  const { accounts, networkMap, nftCollection } = useSelector((state: RootState) => state);
+  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
 
-  const { currentAccountAddress, accounts: _accounts } = accounts;
-  const showedNetworks = useShowedNetworks(currentAccountAddress, _accounts);
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
 
   const [selectedCollection, setSelectedCollection] = useState<NftCollection | null>(null);
   const [selectedNft, setSelectedNft] = useState<NftItem | null>(null);
@@ -64,7 +65,7 @@ const NFTScreen = () => {
     );
   }
 
-  if (nftCollection.nftCollectionList.length) {
+  if (nftCollectionList.length) {
     return <NftCollectionList handlePress={handleSelectCollection} />;
   }
 

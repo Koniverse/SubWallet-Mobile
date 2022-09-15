@@ -24,7 +24,7 @@ export const SubWalletFullSizeModal = ({ children, modalVisible, modalStyle, ani
   return (
     <Modal
       isVisible={modalVisible}
-      style={{ margin: 0, zIndex: 10 }}
+      style={{ margin: 0, zIndex: 10000 }}
       animationIn={animationIn || 'slideInUp'}
       animationOut={animationOut || 'slideOutDown'}
       useNativeDriver

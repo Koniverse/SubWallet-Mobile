@@ -208,7 +208,7 @@ export const App = () => {
                       <Stack.Screen name="ExportJson" component={ExportJson} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                       <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
-                      <Stack.Screen name="TransferNft" component={SendNft} />
+                      <Stack.Screen name="SendNft" component={SendNft} />
                     </Stack.Group>
                   )}
                   <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>

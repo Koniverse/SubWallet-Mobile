@@ -58,9 +58,7 @@ const SeparatorStyle: StyleProp<any> = {
   left: 70,
 };
 
-const NftCollectionItem = (props: Props) => {
-  const { nftCollection, onPress } = props;
-
+const NftCollectionItem = ({ nftCollection, onPress }: Props) => {
   const { itemCount, collectionName, image } = nftCollection;
 
   return (

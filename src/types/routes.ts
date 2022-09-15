@@ -1,5 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { TransferNftParams } from 'stores/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -24,7 +25,7 @@ export type RootStackParamList = {
   ExportJson: undefined;
   WebViewDebugger: undefined;
   ImportEvmNft: undefined;
-  TransferNft: undefined;
+  SendNft: TransferNftParams;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -37,3 +38,4 @@ export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
+export type SendNftProps = NativeStackScreenProps<RootStackParamList, 'SendNft'>;

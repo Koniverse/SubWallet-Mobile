@@ -75,9 +75,7 @@ const ButtonTextStyle: StyleProp<TextStyle> = {
   textAlign: 'center',
 };
 
-const TransferResult = (props: Props) => {
-  const { backToHome, handleResend, isTxSuccess, txError, networkKey, extrinsicHash } = props;
-
+const TransferResult = ({ backToHome, handleResend, isTxSuccess, txError, networkKey, extrinsicHash }: Props) => {
   const scanExplorerTxUrl = useScanExplorerTxUrl(networkKey, extrinsicHash);
   const isSupportScanExplorer = useSupportScanExplorer(networkKey);
 
