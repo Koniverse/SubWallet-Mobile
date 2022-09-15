@@ -38,6 +38,11 @@ const formConfig = {
   },
 };
 
+interface BusyType {
+  isBusy: boolean;
+  busyKey: BusyKey | null;
+}
+
 export const ConfirmationBase = ({
   headerProps,
   footerProps: {
@@ -59,42 +64,38 @@ export const ConfirmationBase = ({
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
-  const [isBusy, setIsBusy] = useState<boolean>(false);
-  const [busyKey, setBusyKey] = useState<BusyKey | null>(null);
+  const [{ isBusy, busyKey }, setBusy] = useState<BusyType>({ busyKey: null, isBusy: false });
 
   const _onPressSubmitButton = () => {
     if (onPressSubmitButton) {
-      setBusyKey('SUBMIT');
-      setIsBusy(true);
+      setBusy({ busyKey: 'SUBMIT', isBusy: true });
       onPressSubmitButton(formState.data.password)
         .then(res => console.log(res))
         .catch(e => {
           onUpdateErrors('password')([e.message]);
         })
         .finally(() => {
-          setIsBusy(false);
+          setBusy((prevState: BusyType) => ({ ...prevState, isBusy: false }));
         });
     }
   };
 
   const _onPressBlockButton = () => {
     if (onPressBlockButton) {
-      setBusyKey('BLOCK');
-      setIsBusy(true);
+      setBusy({ busyKey: 'BLOCK', isBusy: true });
 
       onPressBlockButton().finally(() => {
-        setIsBusy(false);
+        setBusy((prevState: BusyType) => ({ ...prevState, isBusy: false }));
       });
     }
   };
 
   const _onPressCancelButton = () => {
     if (onPressCancelButton) {
-      setBusyKey('CANCEL');
-      setIsBusy(true);
+      setBusy({ busyKey: 'CANCEL', isBusy: true });
 
       onPressCancelButton().finally(() => {
-        setIsBusy(false);
+        setBusy((prevState: BusyType) => ({ ...prevState, isBusy: false }));
       });
     }
   };
