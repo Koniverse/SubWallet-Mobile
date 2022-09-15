@@ -29,7 +29,7 @@ import * as RNFS from 'react-native-fs';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
-import { addToHistory } from 'stores/updater';
+import { addToHistory, updateLatestItemInHistory } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
@@ -199,6 +199,27 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
   };
 
+  const updateSiteInfo = ({ url, title }: WebViewNavigation) => {
+    siteUrl.current = url;
+    siteName.current = title || url;
+  };
+
+  const updateNavigationInfo = (nativeEvent: WebViewNavigation) => {
+    setNavigationInfo({
+      canGoBack: nativeEvent.canGoBack,
+      // currently the method goForward() of react webview does not work on Android
+      // todo: find a way to overcome this issue
+      canGoForward: DEVICE.isAndroid ? false : nativeEvent.canGoForward,
+    });
+  };
+
+  const updateBrowserOptionModalRef = ({ url, title }: WebViewNavigation) => {
+    browserOptionModalRef.current?.onUpdateSiteInfo({
+      url,
+      name: title || url,
+    });
+  };
+
   const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
     const content = eventData.nativeEvent.data;
 
@@ -214,31 +235,32 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
   };
 
-  const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
-    const { url, title } = nativeEvent;
-    const name = title || url;
+  const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
+    if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
+      updateSiteInfo(nativeEvent);
+      updateNavigationInfo(nativeEvent);
 
-    if (nativeEvent.url !== siteUrl.current && nativeEvent.loading) {
-      setNavigationInfo({
-        canGoBack: nativeEvent.canGoBack,
-        // currently the method goForward() of react webview does not work on Android
-        // todo: find a way to overcome this issue
-        canGoForward: DEVICE.isAndroid ? false : nativeEvent.canGoForward,
+      updateLatestItemInHistory({
+        url: nativeEvent.url,
+        name: nativeEvent.title || nativeEvent.url,
       });
+      updateBrowserOptionModalRef(nativeEvent);
+    }
+  };
+
+  const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
+    updateSiteInfo(nativeEvent);
+
+    if (nativeEvent.url !== siteUrl.current) {
+      updateNavigationInfo(nativeEvent);
     }
 
-    siteUrl.current = url;
-    siteName.current = name;
-
     addToHistory({
-      url,
-      name,
+      url: nativeEvent.url,
+      name: nativeEvent.title || nativeEvent.url,
     });
 
-    browserOptionModalRef.current?.onUpdateSiteInfo({
-      url,
-      name,
-    });
+    updateBrowserOptionModalRef(nativeEvent);
 
     setIsShowPhishingWarning(false);
 
@@ -374,6 +396,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
               injectedJavaScriptBeforeContentLoaded={injectedPageJs}
               injectedJavaScript={getJsInjectContent()}
               onLoadStart={onLoadStart}
+              onLoad={onLoad}
               onMessage={onWebviewMessage}
               javaScriptEnabled={true}
               allowFileAccess={true}

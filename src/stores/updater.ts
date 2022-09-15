@@ -59,13 +59,17 @@ export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
 // App State
 
 export function toggleConfirmationDisplayState(): void {
-  store.dispatch({ type: 'appState/toggleConfirmationDisplayState'});
+  store.dispatch({ type: 'appState/toggleConfirmationDisplayState' });
 }
 
 // browser
 
 export function addToHistory(payload: SiteInfo): void {
   store.dispatch({ type: 'browser/addToHistory', payload });
+}
+
+export function updateLatestItemInHistory(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/updateLatestItemInHistory', payload });
 }
 
 export function clearHistory(): void {
