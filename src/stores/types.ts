@@ -14,6 +14,7 @@ import {
   MetadataRequest,
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
+import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -30,7 +31,12 @@ export type AccountsSlice = {
 
 export type AppStateSlice = {
   isLocked: boolean;
+  isDisplayConfirmation: boolean;
 };
+
+export type AuthUrlsSlice = {
+  details: Record<string, AuthUrlInfo>;
+} & StoreSlice;
 
 export type BalanceSlice = BalanceJson & StoreSlice;
 export type CrowdloanSlice = CrowdloanJson & StoreSlice;
@@ -55,6 +61,28 @@ export type MobileSettingsSlice = {
   pinCodeEnabled: boolean;
   faceIdEnabled: boolean;
   autoLockTime: number | undefined;
+};
+
+export type SiteInfo = {
+  name: string;
+  url: string;
+};
+
+export type StoredSiteInfo = {
+  id: string;
+} & SiteInfo;
+
+export type BrowserSliceTab = {
+  id: string;
+  url: string;
+};
+
+export type BrowserSlice = {
+  activeTab: null | string;
+  tabs: BrowserSliceTab[];
+  whitelist: string[];
+  history: StoredSiteInfo[];
+  bookmarks: StoredSiteInfo[];
 };
 
 export type NetworkMapSlice = {

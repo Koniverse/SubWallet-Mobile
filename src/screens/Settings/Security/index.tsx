@@ -102,7 +102,7 @@ export const Security = () => {
 
         <ActionItem
           disabled={!pinCode}
-          style={{ marginBottom: 4 }}
+          style={{ marginBottom: 8 }}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           icon={Key}
           title={i18n.common.changePinCode}
@@ -111,13 +111,12 @@ export const Security = () => {
         />
 
         <ActionItem
-          style={{ marginBottom: 4 }}
-          disabled={true}
-          color={ColorMap.disabledTextColor}
+          style={{ marginBottom: 8 }}
+          color={ColorMap.light}
           icon={GlobeHemisphereWest}
           title={i18n.common.dApp}
           hasRightArrow
-          onPress={() => {}}
+          onPress={() => navigation.navigate('DAppAccess')}
         />
 
         <ActionItem
@@ -129,10 +128,7 @@ export const Security = () => {
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           onPress={() => setIsShowAutoLockModal(true)}
         />
-        <SubWalletModal
-          modalVisible={iShowAutoLockModal}
-          onChangeModalVisible={() => setIsShowAutoLockModal(false)}
-          modalStyle={{ height: 582 }}>
+        <SubWalletModal modalVisible={iShowAutoLockModal} onChangeModalVisible={() => setIsShowAutoLockModal(false)}>
           <View style={{ width: '100%' }}>
             <Text style={modalTitle}>{i18n.common.autoLock}</Text>
             {AUTO_LOCK_LIST.map(item => (

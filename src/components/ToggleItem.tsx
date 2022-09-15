@@ -18,7 +18,7 @@ const toggleItemWrapperStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   borderRadius: 5,
   paddingHorizontal: 16,
-  marginBottom: 4,
+  marginBottom: 8,
 };
 
 const toggleItemTextStyle: StyleProp<any> = {
@@ -35,7 +35,7 @@ export const ToggleItem = ({ label, isEnabled, onValueChange, style, disabled }:
         {label}
       </Text>
       <Switch
-        ios_backgroundColor="rgba(120,120,128,0.32)"
+        ios_backgroundColor={ColorMap.switchInactiveButtonColor}
         value={isEnabled}
         onValueChange={onValueChange}
         disabled={disabled}

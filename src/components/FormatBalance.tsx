@@ -22,17 +22,20 @@ interface Props {
   value?: Compact<any> | BN | string | null | 'all';
   withCurrency?: boolean;
   withSi?: boolean;
+  valueColor?: string;
 }
 
 const formatBalanceFrontPartStyle: StyleProp<any> = {};
 const formatBalancePostfixStyle: StyleProp<any> = {};
 const formatBalanceUnit: StyleProp<any> = {};
 const formatBalanceStyle: StyleProp<any> = {};
-const formatBalanceValueStyle: StyleProp<any> = {
-  color: ColorMap.light,
-  ...sharedStyles.mainText,
-  ...FontMedium,
-};
+function getFormatBalanceValueStyle(color: string): StyleProp<any> {
+  return {
+    color: color,
+    ...sharedStyles.mainText,
+    ...FontMedium,
+  };
+}
 
 // for million, 2 * 3-grouping + comma
 const M_LENGTH = 6 + 1;
@@ -103,11 +106,12 @@ function FormatBalance({
   value,
   withCurrency,
   withSi,
+  valueColor,
 }: Props): React.ReactElement<Props> {
   return (
     <View style={[formatBalanceStyle, style]}>
       {label && <Text>{<Text>{label}&nbsp;</Text>}</Text>}
-      <Text style={formatBalanceValueStyle}>
+      <Text style={getFormatBalanceValueStyle(valueColor || ColorMap.light)}>
         {value
           ? applyFormat(value, format, withCurrency, withSi, isShort, labelPost)
           : applyFormat(BN_ZERO, format, withCurrency, withSi, isShort, labelPost)}

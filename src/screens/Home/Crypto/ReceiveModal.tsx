@@ -129,10 +129,7 @@ export const ReceiveModal = ({
   };
 
   return (
-    <SubWalletModal
-      modalStyle={{ height: 496 }}
-      modalVisible={receiveModalVisible}
-      onChangeModalVisible={onChangeVisible}>
+    <SubWalletModal modalVisible={receiveModalVisible} onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
         <Text style={receiveModalTitle}>{i18n.cryptoScreen.receive}</Text>
         <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />
@@ -161,7 +158,7 @@ export const ReceiveModal = ({
         <View style={{ flexDirection: 'row', paddingTop: 27 }}>
           <SubmitButton
             disabled={!isSupportScanExplorer}
-            disabledColor={'rgba(34, 34, 34, 0.7)'}
+            disabledColor={ColorMap.buttonOverlayButtonColor}
             title={i18n.common.explorer}
             backgroundColor={ColorMap.dark2}
             style={receiveModalExplorerBtnStyle(!isSupportScanExplorer ? 'rgba(255, 255, 255, 0.5)' : ColorMap.light)}

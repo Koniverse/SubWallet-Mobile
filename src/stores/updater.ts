@@ -8,7 +8,7 @@ import {
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsSlice } from 'stores/types';
+import { AccountsSlice, AuthUrlsSlice, SiteInfo } from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
@@ -50,4 +50,36 @@ export function updateAccountsWaitingStatus(payload: boolean): void {
 
 export function updateCrowdloan(payload: CrowdloanJson): void {
   store.dispatch({ type: 'crowdloan/update', payload });
+}
+
+export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
+  store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap } });
+}
+
+// App State
+
+export function toggleConfirmationDisplayState(): void {
+  store.dispatch({ type: 'appState/toggleConfirmationDisplayState' });
+}
+
+// browser
+
+export function addToHistory(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/addToHistory', payload });
+}
+
+export function updateLatestItemInHistory(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/updateLatestItemInHistory', payload });
+}
+
+export function clearHistory(): void {
+  store.dispatch({ type: 'browser/clearHistory' });
+}
+
+export function addBookmark(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/addBookmark', payload });
+}
+
+export function removeBookmark(payload: SiteInfo): void {
+  store.dispatch({ type: 'browser/removeBookmark', payload });
 }

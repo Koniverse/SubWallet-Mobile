@@ -115,10 +115,59 @@ interface Handler {
 }
 
 type Handlers = Record<string, Handler>;
+type MessageType = 'PRI' | 'PUB' | 'EVM' | 'UNKNOWN';
 const handlers: Handlers = {};
+const handlerTypeMap: Record<string, MessageType> = {};
 let webviewRef: RefObject<WebView | undefined>;
 let webviewEvents: EventEmitter;
 let status: WebRunnerStatus = 'init';
+
+export async function clearWebRunnerHandler(id: string): Promise<boolean> {
+  const handler = handlers[id];
+  const handlerTypeMapValue = handlerTypeMap[id];
+
+  if (!handler && !handlerTypeMapValue) {
+    return true;
+  }
+
+  if (handler) {
+    delete handlers[id];
+  }
+
+  if (handlerTypeMapValue) {
+    delete handlerTypeMap[id];
+
+    if (handlerTypeMapValue === 'PRI' || handlerTypeMapValue === 'PUB') {
+      return cancelSubscription(id);
+    }
+  }
+
+  return true;
+}
+
+export function getMessageType(message: string): MessageType {
+  if (message.startsWith('pri(')) {
+    return 'PRI';
+  } else if (message.startsWith('pub(')) {
+    return 'PUB';
+  } else if (message.startsWith('evm(')) {
+    return 'EVM';
+  }
+
+  return 'UNKNOWN';
+}
+
+export function getHandlerId(message: string, id?: string): string {
+  return `${getMessageType(message)}|${id ? id : getId()}`;
+}
+
+function isDappHandle(id: string): boolean {
+  if (!handlerTypeMap[id]) {
+    return false;
+  }
+
+  return handlerTypeMap[id] === 'PUB' || handlerTypeMap[id] === 'EVM';
+}
 
 export const setupWebview = (viewRef: RefObject<WebView | undefined>, eventEmitter: EventEmitter) => {
   webviewRef = viewRef;
@@ -132,14 +181,28 @@ export const setupWebview = (viewRef: RefObject<WebView | undefined>, eventEmitt
       Object.entries(handlers).forEach(([id, handler]) => {
         handler.reject(new WebviewNotReadyError('Webview is not ready'));
         delete handlers[id];
+        delete handlerTypeMap[id];
       });
     });
   }
   webviewEvents = eventEmitter;
 };
 
-export const listenMessage = (data: Message['data'], handleUnknown?: (data: Message['data']) => boolean): void => {
-  const handler = handlers[data.id];
+export const listenMessage = (
+  data: Message['data'],
+  eventEmitter?: EventEmitter,
+  handleUnknown?: (data: Message['data']) => boolean,
+): void => {
+  const handlerId = data.id;
+
+  if (isDappHandle(handlerId)) {
+    if (data.response !== undefined || data.subscription !== undefined) {
+      eventEmitter?.emit(handlerId, JSON.stringify(data));
+    }
+    return;
+  }
+
+  const handler = handlers[handlerId];
 
   if (!handler) {
     let unknownHandled = false;
@@ -148,14 +211,15 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
     }
 
     if (!unknownHandled) {
-      console.warn(`Unknown response: ${JSON.stringify(data.id)}`);
+      console.warn(`Unknown response: ${JSON.stringify(handlerId)}`);
     }
 
     return;
   }
 
   if (!handler.subscriber) {
-    delete handlers[data.id];
+    delete handlers[handlerId];
+    delete handlerTypeMap[handlerId];
   }
 
   if (data.subscription) {
@@ -168,9 +232,11 @@ export const listenMessage = (data: Message['data'], handleUnknown?: (data: Mess
 };
 
 // @ts-ignore
-export const postMessage = ({ id, message, request }) => {
+export const postMessage = ({ id, message, request, origin }) => {
+  handlerTypeMap[id] = getMessageType(message);
+
   const _post = () => {
-    const injection = 'window.postMessage(' + JSON.stringify({ id, message, request }) + ')';
+    const injection = 'window.postMessage(' + JSON.stringify({ id, message, request, origin }) + ')';
     webviewRef.current?.injectJavaScript(injection);
   };
 
@@ -212,7 +278,7 @@ export function sendMessage<TMessageType extends MessageTypes>(
 
     handlers[id] = { reject, resolve, subscriber };
 
-    postMessage({ id, message, request: request || {} });
+    postMessage({ id, message, request: request || {}, origin: undefined });
   });
 }
 
@@ -488,7 +554,7 @@ export async function changeAuthorization(
   return sendMessage('pri(authorize.changeSite)', { url, connectValue }, callback);
 }
 
-export async function changeAuthorizationPerAcc(
+export async function changeAuthorizationPerAccount(
   address: string,
   connectValue: boolean,
   url: string,

@@ -43,7 +43,16 @@ import SplashScreen from 'react-native-splash-screen';
 import { LockScreen } from 'screens/LockScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import useStoreCrowdloan from 'hooks/store/useStoreCrowdloan';
+import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
+import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
+import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
+import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
+import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
+import { BrowserTabWrapper } from 'screens/Home/Browser/BrowserTabWrapper';
+import { ColorMap } from 'styles/color';
+import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
+import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -116,6 +125,7 @@ export const App = () => {
   useStoreBalance();
   useStoreTransactionHistory();
   useStoreCrowdloan();
+  useStoreAuthUrls();
   useStoreConfirmation();
 
   // Enable lock screen on the start app
@@ -200,12 +210,26 @@ export const App = () => {
                       <Stack.Screen name="Security" component={Security} />
                       <Stack.Screen name="PinCode" component={PinCodeScreen} />
                       <Stack.Screen name="ExportJson" component={ExportJson} />
+                      <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
+                      <Stack.Screen name="BrowserTab" component={BrowserTabWrapper} />
+                      <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
+                      <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                      <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
+                      <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                     </Stack.Group>
                   )}
                   <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>
                     {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
                     <Stack.Screen name="LockScreen" component={LockScreen} />
+                  </Stack.Group>
+                  <Stack.Group
+                    screenOptions={{
+                      presentation: 'transparentModal',
+                      contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
+                      headerShown: false,
+                    }}>
+                    <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
                   </Stack.Group>
                 </Stack.Navigator>
               </NavigationContainer>

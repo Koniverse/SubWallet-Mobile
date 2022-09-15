@@ -16,7 +16,7 @@ import i18n from 'utils/i18n/i18n';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
-import { BrowserScreen } from 'screens/Home/Browser/BrowserScreen';
+import { BrowserScreen } from 'screens/Home/Browser';
 
 type HomeStackParamList = {
   Crypto: undefined;
@@ -30,7 +30,7 @@ export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['na
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
 function checkTabCompleted(target: string) {
-  return target.includes('Crypto') || target.includes('Crowdloans');
+  return target.includes('Crypto') || target.includes('Crowdloans') || target.includes('Browser');
 }
 
 const MainScreen = () => {

@@ -27,7 +27,7 @@ const balanceValText: StyleProp<any> = {
 };
 
 function getDisplayedBalance(value: string | BigN): string {
-  const number = value.toString();
+  const number = typeof value !== 'string' ? value.toFixed() : value;
 
   if (+number < 1) {
     return getRoundedDecimalNumber(number, 4);

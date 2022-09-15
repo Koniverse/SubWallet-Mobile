@@ -16,10 +16,10 @@ const searchContainerStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   borderRadius: 5,
   alignItems: 'center',
-  paddingRight: 12,
+  paddingRight: 16,
   paddingLeft: 16,
   flexDirection: 'row',
-  height: 48,
+  height: 44,
 };
 
 export const Search = (searchProps: Props) => {
@@ -34,7 +34,7 @@ export const Search = (searchProps: Props) => {
         {...searchProps}
         ref={searchRef}
         style={{
-          marginHorizontal: 8,
+          marginHorizontal: 16,
           ...sharedStyles.mainText,
           lineHeight: 20,
           ...FontMedium,

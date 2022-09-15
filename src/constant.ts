@@ -1,6 +1,13 @@
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
+
+type DeviceInfo = {
+  isIos: boolean;
+  isAndroid: boolean;
+  width: number;
+  height: number;
+};
 
 export const WIKI_URL = 'https://docs.subwallet.app/';
 export const PRIVACY_AND_POLICY_URL = 'https://docs.subwallet.app/privacy-and-security/privacy-policy';
@@ -24,3 +31,9 @@ export enum BitLengthOption {
   NORMAL_NUMBERS = 32,
 }
 export const CELL_COUNT = 6;
+export const DEVICE: DeviceInfo = {
+  isIos: Platform.OS === 'ios',
+  isAndroid: Platform.OS === 'android',
+  width: deviceWidth,
+  height: deviceHeight,
+};
