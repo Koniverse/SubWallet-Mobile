@@ -22,7 +22,6 @@ target 'SubWalletMobile' do
   )
 
 
-  pod 'react-native-video', :path => '../node_modules/react-native-video'
 
   target 'SubWalletMobileTests' do
     inherit! :complete

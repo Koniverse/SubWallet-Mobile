@@ -6,11 +6,11 @@ import React, { useCallback } from 'react';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import NftCollectionImportText from 'screens/Home/NFT/Shared/NftCollectionImportText';
 import NftItem from './NftItem';
+import { NftScreenActionParams, NftScreenState } from '../../../../types';
 
 interface Props {
-  handlePress: (item: _NftItem) => () => void;
-  nftCollection: NftCollection;
-  handleBack: () => void;
+  dispatchNftState: React.Dispatch<NftScreenActionParams>;
+  nftState: NftScreenState;
 }
 
 const NftItemListStyle: StyleProp<any> = {
@@ -27,25 +27,32 @@ const filteredNftItem = (items: _NftItem[], searchString: string) => {
   });
 };
 
-const NftItemList = ({ handleBack, handlePress, nftCollection }: Props) => {
-  const nftItems = useFetchNftItem(nftCollection).nftItems;
+const NftItemList = ({ dispatchNftState, nftState }: Props) => {
+  const collection = nftState.collection as NftCollection;
+  const nftItems = useFetchNftItem(collection).nftItems;
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<_NftItem>) => {
       const key = `${item.collectionId}-${item.id}`;
-      const onPress = handlePress(item);
+      const onPress = () => {
+        dispatchNftState({ type: 'openNft', payload: { nft: item } });
+      };
 
       return <NftItem key={key} nftItem={item} onPress={onPress} />;
     },
-    [handlePress],
+    [dispatchNftState],
   );
+
+  const handleBack = () => {
+    dispatchNftState({ type: 'openCollectionList', payload: {} });
+  };
 
   return (
     <View style={NftItemListStyle}>
       <FlatListScreen
-        title={nftCollection.collectionName || 'NFT Items'}
+        withSubHeader={false}
         autoFocus={false}
-        showLeftBtn={true}
+        showLeftBtn={false}
         renderItem={renderItem}
         renderListEmptyComponent={renderEmpty}
         filterFunction={filteredNftItem}

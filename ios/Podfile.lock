@@ -319,6 +319,11 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
+  - react-native-video (5.2.0):
+    - React-Core
+    - react-native-video/Video (= 5.2.0)
+  - react-native-video/Video (5.2.0):
+    - React-Core
   - react-native-webview (11.22.7):
     - React-Core
   - React-perflogger (0.68.1)
@@ -498,6 +503,7 @@ DEPENDENCIES:
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-static-server (from `../node_modules/react-native-static-server`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -606,6 +612,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-static-server"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -706,6 +714,7 @@ SPEC CHECKSUMS:
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-static-server: 201b2a945a35096be3ae7f43e367c65bcbd61343
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
+  react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
   react-native-webview: 227ba9205abb8579116b69ea5774d9744267c65a
   React-perflogger: 30ab8d6db10e175626069e742eead3ebe8f24fd5
   React-RCTActionSheet: 4b45da334a175b24dabe75f856b98fed3dfd6201
@@ -736,6 +745,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 584f7a04714896e349290d6a053be9f009b5a72f
+PODFILE CHECKSUM: 386f8bfc94b2d088b7c71586b864e0320673f3bb
 
 COCOAPODS: 1.11.3

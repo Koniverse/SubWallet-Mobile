@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import { NftItem } from '@subwallet/extension-base/background/KoniTypes';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import ImagePreview from 'components/ImagePreview';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
@@ -20,10 +19,6 @@ interface Props {
   collectionId: string;
   onBack: () => void;
 }
-
-const ContainerHeaderStyle: StyleProp<any> = {
-  width: '100%',
-};
 
 const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
@@ -114,7 +109,7 @@ const propDetail = (title: string, valueDict: Record<string, any>, key: number):
   return <View />;
 };
 
-const NftDetail = ({ data, collectionImage, collectionId, onBack }: Props) => {
+const NftDetail = ({ data, collectionImage, collectionId }: Props) => {
   const { show } = useToast();
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -140,48 +135,41 @@ const NftDetail = ({ data, collectionImage, collectionId, onBack }: Props) => {
   }, [currentAccount, isAccountAll, data, networkJson.isEthereum, collectionImage, collectionId, navigation, show]);
 
   return (
-    <ContainerWithSubHeader
-      showLeftBtn={true}
-      onPressBack={onBack}
-      title={data.name as string}
-      style={ContainerHeaderStyle}
-      isShowPlaceHolder={false}>
-      <View style={ContainerDetailStyle}>
-        <View style={ImageContainerStyle}>
-          <ImagePreview style={ImageStyle} mainUrl={data.image} backupUrl={collectionImage} />
-        </View>
-        {!isAccountAll && (
-          <View style={SendContainerStyle}>
-            <TouchableOpacity style={SendButtonStyle} activeOpacity={0.8} onPress={handleClickTransfer}>
-              <Text>Send</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        {data.description && (
-          <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
-            <Text style={AttValueStyle}>{data?.description}</Text>
-          </View>
-        )}
-        {data.rarity && (
-          <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
-            <Text style={AttValueStyle}>{data?.rarity}</Text>
-          </View>
-        )}
-        {data.properties && (
-          <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
-            <View style={PropContainerStyle}>
-              {Object.keys(data?.properties).map((key, index) => {
-                // @ts-ignore
-                return propDetail(key, data?.properties[key], index);
-              })}
-            </View>
-          </View>
-        )}
+    <View style={ContainerDetailStyle}>
+      <View style={ImageContainerStyle}>
+        <ImagePreview style={ImageStyle} mainUrl={data.image} backupUrl={collectionImage} />
       </View>
-    </ContainerWithSubHeader>
+      {!isAccountAll && (
+        <View style={SendContainerStyle}>
+          <TouchableOpacity style={SendButtonStyle} activeOpacity={0.8} onPress={handleClickTransfer}>
+            <Text>Send</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {data.description && (
+        <View>
+          <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
+          <Text style={AttValueStyle}>{data?.description}</Text>
+        </View>
+      )}
+      {data.rarity && (
+        <View>
+          <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
+          <Text style={AttValueStyle}>{data?.rarity}</Text>
+        </View>
+      )}
+      {data.properties && (
+        <View>
+          <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
+          <View style={PropContainerStyle}>
+            {Object.keys(data?.properties).map((key, index) => {
+              // @ts-ignore
+              return propDetail(key, data?.properties[key], index);
+            })}
+          </View>
+        </View>
+      )}
+    </View>
   );
 };
 

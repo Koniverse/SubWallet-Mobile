@@ -1,5 +1,10 @@
 import BigN from 'bignumber.js';
-import { BalanceItem, CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  BalanceItem,
+  CrowdloanParaState,
+  NftCollection,
+  NftItem,
+} from '@subwallet/extension-base/background/KoniTypes';
 
 export interface WebViewMessageBase<T> {
   id: string;
@@ -50,3 +55,15 @@ export type CrowdloanItemType = {
   paraState?: CrowdloanParaState;
   crowdloanUrl?: string;
 };
+
+export interface NftScreenState {
+  title: string;
+  screen: 'CollectionList' | 'Collection' | 'NFT';
+  collection?: NftCollection;
+  nft?: NftItem;
+}
+
+export interface NftScreenActionParams {
+  type: string;
+  payload: Partial<NftScreenState>;
+}

@@ -23,7 +23,7 @@ export default function useFetchNftCollection(): NftCollectionType {
     }
 
     return {
-      nftCollections: nftCollections,
+      nftCollections,
     };
   }, [nftCollectionList, nftList]);
 }

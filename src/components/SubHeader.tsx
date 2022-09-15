@@ -9,7 +9,7 @@ import { ColorMap } from 'styles/color';
 
 export interface SubHeaderProps {
   showRightBtn?: boolean;
-  title: string;
+  title?: string;
   onPressBack: (event: GestureResponderEvent) => void;
   disabled?: boolean;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
@@ -56,15 +56,21 @@ export const SubHeader = ({
   disableRightButton,
   showLeftBtn = true,
 }: SubHeaderProps) => {
+  const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
+
+  if (hideSubHeader) {
+    return <></>;
+  }
+
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
-      {headerContent ? (
-        headerContent()
-      ) : (
-        <View style={headerTitle}>
-          <Text style={subHeaderTitle}>{title}</Text>
-        </View>
-      )}
+      {headerContent
+        ? headerContent()
+        : title && (
+            <View style={headerTitle}>
+              <Text style={subHeaderTitle}>{title}</Text>
+            </View>
+          )}
 
       {!!showLeftBtn && (
         <IconButton

@@ -72,7 +72,11 @@ const DEFAULT_IMAGE_STATE: ImageState = {
 };
 
 const ImagePreview = ({ style, mainUrl, backupUrl }: Props) => {
-  const [imageState, dispatchImageState] = useReducer(handleReducer, DEFAULT_IMAGE_STATE, handleIntState);
+  const [imageState, dispatchImageState] = useReducer(
+    handleReducer,
+    { ...DEFAULT_IMAGE_STATE, url: backupUrl },
+    handleIntState,
+  );
   const { url, showImage, imageError, loading } = imageState;
 
   const videoRef = useRef<Video>(null);

@@ -18,7 +18,8 @@ interface RightIconOpt {
 
 interface Props<T> {
   items: any[];
-  title: string;
+  title?: string;
+  withSubHeader?: boolean;
   autoFocus: boolean;
   renderListEmptyComponent: () => JSX.Element;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
@@ -36,6 +37,7 @@ export function FlatListScreen<T>({
   autoFocus = true,
   onPressBack,
   showLeftBtn = true,
+  withSubHeader = true,
   style,
   rightIconOption,
   renderItem,
@@ -91,6 +93,26 @@ export function FlatListScreen<T>({
     );
   }, [isLoading, lazyList, onLoadMore, renderItem, renderListEmptyComponent]);
 
+  const renderContent = () => (
+    <View style={{ ...sharedStyles.layoutContainer }}>
+      <Search
+        autoFocus={false}
+        placeholder={i18n.common.search}
+        onClearSearchString={() => setSearchString('')}
+        onSearch={setSearchString}
+        searchText={searchString}
+        style={{ marginBottom: 8 }}
+        searchRef={searchRef}
+      />
+      {children}
+      {afterListItem}
+    </View>
+  );
+
+  if (!withSubHeader) {
+    return renderContent();
+  }
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={showLeftBtn}
@@ -101,19 +123,7 @@ export function FlatListScreen<T>({
       rightIcon={rightIconOption?.icon}
       onPressRightIcon={rightIconOption?.onPress}
       isShowPlaceHolder={false}>
-      <View style={{ ...sharedStyles.layoutContainer }}>
-        <Search
-          autoFocus={false}
-          placeholder={i18n.common.search}
-          onClearSearchString={() => setSearchString('')}
-          onSearch={setSearchString}
-          searchText={searchString}
-          style={{ marginBottom: 8 }}
-          searchRef={searchRef}
-        />
-        {children}
-        {afterListItem}
-      </View>
+      {renderContent()}
     </ContainerWithSubHeader>
   );
 }
