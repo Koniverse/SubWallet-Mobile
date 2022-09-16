@@ -28,8 +28,8 @@ import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
-import { BrowserOptionModal } from 'screens/Home/Browser/BrowserOptionModal';
-import { addToHistory } from 'stores/updater';
+import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
+import { addToHistory, updateLatestItemInHistory } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
@@ -160,10 +160,10 @@ const PhishingBlockerLayer = () => {
 };
 
 export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
-  const { url: propUrl, name } = params;
+  const { url: propSiteUrl, name: propSiteName } = params;
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [initWebViewSource, setInitWebViewSource] = useState(propUrl);
+  const [initWebViewSource, setInitWebViewSource] = useState(propSiteUrl);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -173,19 +173,14 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const [isShowPhishingWarning, setIsShowPhishingWarning] = useState<boolean>(false);
   const webviewRef = useRef<WebView>(null);
   const browserSv = useRef<BrowserService | null>(null);
-  const url = useRef<string | null>(null);
-  const title = useRef('');
-  const browserOptionModalRef = useRef(null);
-  const hostname = url.current ? getHostName(url.current) : null;
-  const isUrlSecure = url.current ? url.current.startsWith('https://') : false;
+  const siteUrl = useRef<string | null>(null);
+  const siteName = useRef('');
+  const browserOptionModalRef = useRef<BrowserOptionModalRef>(null);
+  const hostname = siteUrl.current ? getHostName(siteUrl.current) : null;
+  const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
 
   const isWebviewReady = initWebViewSource && injectedPageJs;
-
-  const changeUrl = (nativeEvent: WebViewNavigation) => {
-    url.current = nativeEvent.url;
-    title.current = nativeEvent.title;
-  };
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -198,10 +193,33 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
         browserWebviewRef: webviewRef,
         url: nativeEvent.url,
         onHandlePhishing: () => {
+          // clear content of the phishing site
+          webviewRef.current?.injectJavaScript("(function(){document.documentElement.innerHTML='' })()");
           setIsShowPhishingWarning(true);
         },
       });
     }
+  };
+
+  const updateSiteInfo = ({ url, title }: WebViewNavigation) => {
+    siteUrl.current = url;
+    siteName.current = title || url;
+  };
+
+  const updateNavigationInfo = (nativeEvent: WebViewNavigation) => {
+    setNavigationInfo({
+      canGoBack: nativeEvent.canGoBack,
+      // currently the method goForward() of react webview does not work on Android
+      // todo: find a way to overcome this issue
+      canGoForward: DEVICE.isAndroid ? false : nativeEvent.canGoForward,
+    });
+  };
+
+  const updateBrowserOptionModalRef = ({ url, title }: WebViewNavigation) => {
+    browserOptionModalRef.current?.onUpdateSiteInfo({
+      url,
+      name: title || url,
+    });
   };
 
   const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
@@ -219,26 +237,32 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
   };
 
-  const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
-    if (nativeEvent.url !== url.current && nativeEvent.loading) {
-      setNavigationInfo({
-        canGoBack: nativeEvent.canGoBack,
-        // currently the method goForward() of react webview does not work on Android
-        // todo: find a way to overcome this issue
-        canGoForward: DEVICE.isAndroid ? false : nativeEvent.canGoForward,
+  const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
+    if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
+      updateSiteInfo(nativeEvent);
+      updateNavigationInfo(nativeEvent);
+
+      updateLatestItemInHistory({
+        url: nativeEvent.url,
+        name: nativeEvent.title || nativeEvent.url,
       });
+      updateBrowserOptionModalRef(nativeEvent);
+    }
+  };
+
+  const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
+    updateSiteInfo(nativeEvent);
+
+    if (nativeEvent.url !== siteUrl.current) {
+      updateNavigationInfo(nativeEvent);
     }
 
-    changeUrl(nativeEvent);
     addToHistory({
       url: nativeEvent.url,
-      name: nativeEvent.title,
+      name: nativeEvent.title || nativeEvent.url,
     });
-    // @ts-ignore
-    browserOptionModalRef.current?.onUpdateSiteInfo({
-      url: nativeEvent.url,
-      name: nativeEvent.title,
-    });
+
+    updateBrowserOptionModalRef(nativeEvent);
 
     setIsShowPhishingWarning(false);
 
@@ -326,7 +350,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     if (!initWebViewSource) {
       setInitWebViewSource(params.url);
     } else {
-      if (url.current !== params.url) {
+      if (siteUrl.current !== params.url) {
         webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${params.url}' })()`);
       }
     }
@@ -352,7 +376,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
                   </Text>
                 </View>
                 <Text numberOfLines={1} style={nameSiteTextStyle}>
-                  {title.current || name}
+                  {siteName.current || propSiteName}
                 </Text>
               </>
             )}
@@ -374,6 +398,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
               injectedJavaScriptBeforeContentLoaded={injectedPageJs}
               injectedJavaScript={getJsInjectContent()}
               onLoadStart={onLoadStart}
+              onLoad={onLoad}
               onMessage={onWebviewMessage}
               javaScriptEnabled={true}
               allowFileAccess={true}

@@ -26,6 +26,7 @@ export const ColorMap = {
   placeholderIconColor: 'rgba(255, 255, 255, 0.3)',
   buttonOverlayButtonColor: 'rgba(34, 34, 34, 0.7)',
   switchInactiveButtonColor: 'rgba(120,120,128,0.32)',
+  modalSeparatorColor: 'rgba(255, 255, 255, 0.1)',
 };
 
 export const Background = StyleSheet.create({

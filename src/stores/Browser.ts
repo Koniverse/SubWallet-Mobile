@@ -42,6 +42,14 @@ const browserSlice = createSlice({
         state.history = [{ ...payload, id: generateId('his') }, ...state.history].slice(0, 50); //max 50 items
       }
     },
+    updateLatestItemInHistory: (state, { payload }: PayloadAction<SiteInfo>) => {
+      if (state.history[0]) {
+        const firstItem = state.history[0];
+        state.history.shift();
+
+        state.history = [{ ...firstItem, ...payload }, ...state.history];
+      }
+    },
     clearHistory: state => {
       state.history = [];
     },

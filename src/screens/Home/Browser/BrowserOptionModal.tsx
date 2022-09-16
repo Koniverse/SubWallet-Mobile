@@ -24,6 +24,10 @@ interface OptionType {
   onPress: () => void;
 }
 
+export interface BrowserOptionModalRef {
+  onUpdateSiteInfo: (siteInfo: SiteInfo) => void;
+}
+
 const titleStyle: StyleProp<any> = {
   ...sharedStyles.mediumText,
   ...FontSemiBold,
@@ -32,7 +36,7 @@ const titleStyle: StyleProp<any> = {
   paddingBottom: 16,
 };
 
-const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<any>) => {
+const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
 
   const [siteInfo, setSiteInfo] = useState<SiteInfo>({

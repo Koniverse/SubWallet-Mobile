@@ -24,7 +24,7 @@ const subWalletModalSeparator: StyleProp<any> = {
   width: 56,
   height: 4,
   borderRadius: 2,
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  backgroundColor: ColorMap.modalSeparatorColor,
   marginBottom: 19,
   textAlign: 'center',
 };
@@ -36,7 +36,7 @@ export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, m
       onModalHide={onModalHide}
       swipeDirection="down"
       style={{ margin: 0 }}
-      backdropColor={'rgba(22, 22, 22, 0.8)'}
+      backdropColor={ColorMap.modalBackDropDarkColor}
       onSwipeComplete={onChangeModalVisible}
       onBackdropPress={onChangeModalVisible}
       animationIn={'slideInUp'}
