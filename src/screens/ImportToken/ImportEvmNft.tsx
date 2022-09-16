@@ -24,7 +24,7 @@ const WrapperStyle: StyleProp<ViewStyle> = {
 };
 
 const InputContainerStyle: StyleProp<ViewStyle> = {
-  marginTop: 10,
+  marginBottom: 8,
 };
 
 const WarningStyle: StyleProp<TextStyle> = {
@@ -204,15 +204,13 @@ const ImportEvmNft = () => {
       style={ContainerHeaderStyle}
       isShowPlaceHolder={false}>
       <View style={WrapperStyle}>
-        <View style={InputContainerStyle}>
-          <InputText
-            ref={formState.refs.smartContract}
-            label={formState.labels.smartContract}
-            onChangeText={handleChangeValue('smartContract')}
-            errorMessages={formState.errors.smartContract}
-            value={smartContract}
-          />
-        </View>
+        <InputText
+          ref={formState.refs.smartContract}
+          label={formState.labels.smartContract}
+          onChangeText={handleChangeValue('smartContract')}
+          errorMessages={formState.errors.smartContract}
+          value={smartContract}
+        />
         <View style={InputContainerStyle}>
           <Dropdown
             items={chainOptions}
@@ -221,15 +219,13 @@ const ImportEvmNft = () => {
             value={formState.data.chain}
           />
         </View>
-        <View style={InputContainerStyle}>
-          <InputText
-            ref={formState.refs.collectionName}
-            label={formState.labels.collectionName}
-            onChangeText={handleChangeValue('collectionName')}
-            errorMessages={formState.errors.collectionName}
-            value={collectionName}
-          />
-        </View>
+        <InputText
+          ref={formState.refs.collectionName}
+          label={formState.labels.collectionName}
+          onChangeText={handleChangeValue('collectionName')}
+          errorMessages={formState.errors.collectionName}
+          value={collectionName}
+        />
         <Text style={WarningStyle}>{warning}</Text>
         <View style={AddTokenContainerStyle}>
           <TouchableOpacity
