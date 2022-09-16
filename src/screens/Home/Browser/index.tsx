@@ -87,7 +87,7 @@ export const BrowserScreen = () => {
   };
 
   return (
-    <ScreenContainer placeholderBgc={ColorMap.dark1}>
+    <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
         <View style={browserScreenHeader}>
           <AccountSettingButton navigation={navigation} />

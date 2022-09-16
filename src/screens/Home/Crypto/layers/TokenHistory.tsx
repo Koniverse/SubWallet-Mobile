@@ -122,7 +122,7 @@ const TokenHistoryLayer = ({
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
         <SubHeader
           showRightBtn

@@ -164,7 +164,7 @@ const ChainDetailLayer = ({
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
         {selectedNetworkInfo && (
           <SubHeader

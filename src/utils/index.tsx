@@ -2,13 +2,18 @@ import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
 import { AccountType, Recoded } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
-import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  ChainRegistry,
+  NETWORK_STATUS,
+  NetWorkGroup,
+  NetworkJson,
+  TokenInfo,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
 import { Image, StyleProp, View } from 'react-native';
-import { NetworkSelectOption } from 'hooks/useGenesisHashOptions';
 import { ColorMap } from 'styles/color';
 import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
 import { SiDef } from '@polkadot/util/types';
@@ -26,6 +31,18 @@ export const accountAllRecoded: Recoded = {
   prefix: 42,
   isEthereum: false,
 };
+
+export interface NetworkSelectOption {
+  text: string;
+  value: string;
+  networkKey: string;
+  networkPrefix: number;
+  icon: string;
+  groups: NetWorkGroup[];
+  isEthereum: boolean;
+  active: boolean;
+  apiStatus: NETWORK_STATUS;
+}
 
 export function getTokenNetworkKeyMap(): Record<string, string[]> {
   const result: Record<string, string[]> = {};

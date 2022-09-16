@@ -82,7 +82,7 @@ export const BrowserSearch = () => {
   };
 
   return (
-    <ScreenContainer placeholderBgc={ColorMap.dark1}>
+    <ScreenContainer>
       <>
         <View style={{ flexDirection: 'row', alignItems: 'center', ...ContainerHorizontalPadding }}>
           <Search
