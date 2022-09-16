@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import ImagePreview from 'components/ImagePreview';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
@@ -12,12 +12,10 @@ import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
+import { NftScreenState } from '../../../../types';
 
 interface Props {
-  data: NftItem;
-  collectionImage?: string;
-  collectionId: string;
-  onBack: () => void;
+  nftState: NftScreenState;
 }
 
 const ContainerDetailStyle: StyleProp<any> = {
@@ -109,7 +107,9 @@ const propDetail = (title: string, valueDict: Record<string, any>, key: number):
   return <View />;
 };
 
-const NftDetail = ({ data, collectionImage, collectionId }: Props) => {
+const NftDetail = ({ nftState }: Props) => {
+  const data = nftState.nft as NftItem;
+  const { image: collectionImage, collectionId } = nftState.collection as NftCollection;
   const { show } = useToast();
   const navigation = useNavigation<RootNavigationProps>();
 

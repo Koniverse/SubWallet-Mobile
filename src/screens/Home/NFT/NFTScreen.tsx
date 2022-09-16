@@ -1,5 +1,5 @@
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { StyleProp, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
@@ -77,10 +77,6 @@ const NFTScreen = () => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
 
-  const handleBackToSelectItem = useCallback(() => {
-    dispatchNftState({ type: 'openCollection', payload: { collection: nftState.collection } });
-  }, [nftState.collection]);
-
   useEffect(() => {
     dispatchNftState({ type: 'openCollectionList', payload: {} });
   }, [showedNetworks, currentAccountAddress]);
@@ -107,14 +103,7 @@ const NFTScreen = () => {
 
       case 'NFT':
         if (nftState.collection && nftState.nft) {
-          return (
-            <NftDetail
-              data={nftState.nft}
-              collectionId={nftState.collection.collectionId}
-              collectionImage={nftState.collection.image}
-              onBack={handleBackToSelectItem}
-            />
-          );
+          return <NftDetail nftState={nftState} />;
         } else {
           dispatchNftState({ type: 'openCollectionList', payload: {} });
           return EMPTY_NFT;
