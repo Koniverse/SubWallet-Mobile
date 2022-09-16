@@ -23,6 +23,13 @@ export type RootStackParamList = {
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   ExportJson: undefined;
+  BrowserSearch: undefined;
+  BrowserTab: { url: string; name: string };
+  ConfirmationPopup: undefined;
+  FavouritesGroupDetail: undefined;
+  HistoryGroupDetail: undefined;
+  DAppAccess: undefined;
+  DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
   ImportEvmNft: undefined;
   SendNft: TransferNftParams;
@@ -39,3 +46,5 @@ export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditA
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
 export type SendNftProps = NativeStackScreenProps<RootStackParamList, 'SendNft'>;
+export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
+export type BrowserTabProps = NativeStackScreenProps<RootStackParamList, 'BrowserTab'>;

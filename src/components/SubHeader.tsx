@@ -6,6 +6,7 @@ import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
 import { ArrowLeft, IconProps } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
 import { ColorMap } from 'styles/color';
+import { Button } from 'components/Button';
 
 export interface SubHeaderProps {
   showRightBtn?: boolean;
@@ -18,6 +19,7 @@ export interface SubHeaderProps {
   headerContent?: () => JSX.Element;
   backgroundColor?: string;
   showLeftBtn?: boolean;
+  rightButtonTitle?: string;
 }
 
 function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
@@ -25,10 +27,10 @@ function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): Sty
     backgroundColor: backgroundColor,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     position: 'relative',
     height: 40,
     zIndex: 10,
+    width: '100%',
   };
 }
 
@@ -43,6 +45,7 @@ const subHeaderTitle: StyleProp<any> = {
   ...FontSize4,
   ...FontBold,
   color: ColorMap.light,
+  paddingHorizontal: 72,
 };
 
 export const SubHeader = ({
@@ -55,6 +58,7 @@ export const SubHeader = ({
   backgroundColor,
   disableRightButton,
   showLeftBtn = true,
+  rightButtonTitle = '',
 }: SubHeaderProps) => {
   const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
 
@@ -64,13 +68,15 @@ export const SubHeader = ({
 
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
-      {headerContent
-        ? headerContent()
-        : title && (
-            <View style={headerTitle}>
-              <Text style={subHeaderTitle}>{title}</Text>
-            </View>
-          )}
+      {headerContent ? (
+        headerContent()
+      ) : (
+        <View style={headerTitle}>
+          <Text numberOfLines={1} style={subHeaderTitle}>
+            {title}
+          </Text>
+        </View>
+      )}
 
       {!!showLeftBtn && (
         <IconButton
@@ -83,12 +89,13 @@ export const SubHeader = ({
       )}
 
       {!!rightIcon && (
-        <IconButton
+        <Button
           icon={rightIcon}
           onPress={onPressRightIcon}
           style={{ position: 'absolute', right: 16, top: 0 }}
           disabled={disableRightButton}
           color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
+          title={rightButtonTitle}
         />
       )}
     </View>

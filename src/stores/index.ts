@@ -11,7 +11,9 @@ import crowdloanReducer from './Crowdloan';
 import confirmationReducer from './Confirmation';
 import nftReducer from './Nft';
 import nftCollectionReducer from './NftCollection';
+import authUrlsReducer from './AuthUrls';
 import appStateReducer from './AppState';
+import browserReducer from './Browser';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -30,12 +32,16 @@ const persistConfig = {
     'crowdloan',
     'nftCollection',
     'nft',
+    'authUrls',
+    'browser',
   ],
 };
 
 const rootReducer = combineReducers({
   appState: appStateReducer,
   accounts: accountsReducer,
+  authUrls: authUrlsReducer,
+  browser: browserReducer,
   price: priceReducer,
   networkMap: networkMapReducer,
   settings: settingsReducer,

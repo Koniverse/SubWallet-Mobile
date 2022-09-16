@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListRenderItemInfo, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, StyleProp, TouchableOpacity, View } from 'react-native';
 import { Warning } from 'components/Warning';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { Account } from 'components/Account';
@@ -7,6 +7,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
+import { ContainerHorizontalPadding } from 'styles/sharedStyles';
 
 interface Props {
   modalVisible: boolean;
@@ -39,16 +40,19 @@ export const AccountSelect = ({
 
   const renderItem = ({ item }: ListRenderItemInfo<AccountJson>) => {
     return (
-      <View>
+      <TouchableOpacity
+        style={{ ...ContainerHorizontalPadding }}
+        onPress={() => onChangeAddress && onChangeAddress(item.address)}>
         <Account
           name={item.name || ''}
           address={item.address}
           showCopyBtn={false}
           showSelectedIcon={false}
           selectAccount={onChangeAddress}
+          isDisabled={true}
         />
         <View style={itemSeparator} />
-      </View>
+      </TouchableOpacity>
     );
   };
 

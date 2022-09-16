@@ -1,4 +1,4 @@
-import { StyleProp, TouchableOpacity, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -22,9 +22,7 @@ export interface AccountProps extends AccountJson {
   isShowAddress?: boolean;
   showCopyBtn?: boolean;
   showSelectedIcon?: boolean;
-  isDisabled?: boolean;
   isSelected?: boolean;
-  selectAccount?: (address: string) => void;
 }
 
 const accountNameStyle: StyleProp<any> = {
@@ -53,6 +51,7 @@ const accountCopyBtn: StyleProp<any> = {
 const nameWrapper: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
+  paddingBottom: 6,
 };
 
 export const Account = ({
@@ -62,9 +61,7 @@ export const Account = ({
   isShowAddress = true,
   showCopyBtn = true,
   showSelectedIcon = true,
-  isDisabled = false,
   isSelected,
-  selectAccount,
   type: givenType,
 }: AccountProps) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
@@ -138,30 +135,28 @@ export const Account = ({
   };
 
   return (
-    <TouchableOpacity style={{ flex: 1 }} onPress={() => selectAccount && selectAccount(address)} disabled={isDisabled}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8, paddingBottom: 8 }}>
-        <SubWalletAvatar address={address} size={34} />
-        <View style={{ marginLeft: 16 }}>
-          <Name />
+    <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingTop: 16, paddingBottom: 16 }}>
+      <SubWalletAvatar address={address} size={34} />
+      <View style={{ marginLeft: 16 }}>
+        <Name />
 
-          <View style={accountAddressBlock}>
-            {isShowAddress && (
-              <Text style={accountAddressStyle}>
-                {_isAccountAll ? `${i18n.common.allAccounts}` : toShortAddress(address, 10)}
-              </Text>
-            )}
+        <View style={accountAddressBlock}>
+          {isShowAddress && (
+            <Text style={accountAddressStyle}>
+              {_isAccountAll ? `${i18n.common.allAccounts}` : toShortAddress(address, 10)}
+            </Text>
+          )}
 
-            {showCopyBtn && (
-              <IconButton style={accountCopyBtn} icon={CopySimple} onPress={() => copyToClipboard(address || '')} />
-            )}
-          </View>
+          {showCopyBtn && (
+            <IconButton style={accountCopyBtn} icon={CopySimple} onPress={() => copyToClipboard(address || '')} />
+          )}
         </View>
-        {/*{networkInfo?.genesisHash && isShowBanner && (*/}
-        {/*  <View style={chainTagStyle} data-field="chain">*/}
-        {/*    <Text>{networkInfo.chain.replace(' Relay Chain', '')}</Text>*/}
-        {/*  </View>*/}
-        {/*)}*/}
       </View>
-    </TouchableOpacity>
+      {/*{networkInfo?.genesisHash && isShowBanner && (*/}
+      {/*  <View style={chainTagStyle} data-field="chain">*/}
+      {/*    <Text>{networkInfo.chain.replace(' Relay Chain', '')}</Text>*/}
+      {/*  </View>*/}
+      {/*)}*/}
+    </View>
   );
 };

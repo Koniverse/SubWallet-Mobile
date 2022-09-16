@@ -15,7 +15,6 @@ interface Props {
   modalVisible: boolean;
   onChangeModalVisible: () => void;
   secretTypeList: AccountActionType[];
-  modalHeight: number;
   onModalHide?: () => void;
   toastRef?: React.RefObject<ToastContainer>;
 }
@@ -32,17 +31,12 @@ export const SelectImportAccountModal = ({
   secretTypeList,
   modalVisible,
   onChangeModalVisible,
-  modalHeight,
   onModalHide,
   modalTitle,
   toastRef,
 }: Props) => {
   return (
-    <SubWalletModal
-      modalVisible={modalVisible}
-      onModalHide={onModalHide}
-      onChangeModalVisible={onChangeModalVisible}
-      modalStyle={{ height: modalHeight }}>
+    <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitleStyle}>{modalTitle}</Text>
         {secretTypeList.map(item => (

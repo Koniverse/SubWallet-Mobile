@@ -10,9 +10,11 @@ import { RootNavigationProps } from 'types/routes';
 import { useLazyList } from 'hooks/useLazyList';
 import { ActivityLoading } from 'components/ActivityLoading';
 import i18n from 'utils/i18n/i18n';
-
+//TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 interface RightIconOpt {
-  icon: (iconProps: IconProps) => JSX.Element;
+  icon?: (iconProps: IconProps) => JSX.Element;
+  title?: string;
+  disabled?: boolean;
   onPress: () => void;
 }
 
@@ -29,6 +31,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
+  placeholder?: string;
 }
 
 export function FlatListScreen<T>({
@@ -44,6 +47,7 @@ export function FlatListScreen<T>({
   afterListItem,
   renderListEmptyComponent,
   filterFunction,
+  placeholder = i18n.common.search,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -97,7 +101,7 @@ export function FlatListScreen<T>({
     <View style={{ ...sharedStyles.layoutContainer }}>
       <Search
         autoFocus={false}
-        placeholder={i18n.common.search}
+        placeholder={placeholder}
         onClearSearchString={() => setSearchString('')}
         onSearch={setSearchString}
         searchText={searchString}
@@ -122,6 +126,8 @@ export function FlatListScreen<T>({
       showRightBtn={!!rightIconOption?.icon}
       rightIcon={rightIconOption?.icon}
       onPressRightIcon={rightIconOption?.onPress}
+      rightButtonTitle={rightIconOption?.title}
+      disableRightButton={rightIconOption?.disabled}
       isShowPlaceHolder={false}>
       {renderContent()}
     </ContainerWithSubHeader>

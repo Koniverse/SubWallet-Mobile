@@ -130,8 +130,7 @@ function getDecimalsAndSymbolInfo(item: TransactionHistoryItemType, registry: Ch
 export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
   const HistorySendIcon = ArrowUp;
   const HistoryReceiveIcon = ArrowDown;
-  // todo: do i18n here
-  const actionName = item.action === 'received' ? 'Received' : 'Send';
+  const actionName = item.action === 'received' ? i18n.common.received : i18n.common.send;
 
   const { changeDecimals, changeSymbol, feeDecimals, feeSymbol } = getDecimalsAndSymbolInfo(item, registry);
 

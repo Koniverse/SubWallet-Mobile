@@ -17,6 +17,7 @@
 		F1554EFC286D590F00301F08 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1554EF8286D4F5B00301F08 /* Images-2.xcassets */; };
 		F16BB9D9288A5C7B00F9E935 /* Web.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F16BB9D8288A5C7B00F9E935 /* Web.bundle */; };
 		F1E29C3F285729950011DCCF /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = F1E29C3E285729950011DCCF /* fonts */; };
+		F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F1F1508628C6028D004B2C94 /* PageJs.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		F1554EF8286D4F5B00301F08 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "SubWalletMobile/Images-2.xcassets"; sourceTree = "<group>"; };
 		F16BB9D8288A5C7B00F9E935 /* Web.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Web.bundle; path = ../html/Web.bundle; sourceTree = "<group>"; };
 		F1E29C3E285729950011DCCF /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
+		F1F1508628C6028D004B2C94 /* PageJs.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PageJs.bundle; path = ../html/PageJs.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				F1F1508628C6028D004B2C94 /* PageJs.bundle */,
 				F16BB9D8288A5C7B00F9E935 /* Web.bundle */,
 				F1E29C3E285729950011DCCF /* fonts */,
 				13B07FAE1A68108700A75B9A /* SubWalletMobile */,
@@ -260,6 +263,7 @@
 			files = (
 				F1E29C3F285729950011DCCF /* fonts in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				F1F1508728C6028D004B2C94 /* PageJs.bundle in Resources */,
 				F16BB9D9288A5C7B00F9E935 /* Web.bundle in Resources */,
 				F1554EF9286D4F5B00301F08 /* Images-2.xcassets in Resources */,
 			);
@@ -504,7 +508,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
@@ -534,7 +538,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = ZUZ7T3GQMT;
 				INFOPLIST_FILE = SubWalletMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;

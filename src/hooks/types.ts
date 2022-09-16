@@ -3,6 +3,7 @@ import { BalanceInfo } from '../types';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { CrowdloanParaState, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { BalanceValueType } from 'utils/chainBalances';
+import { ConfirmationSlice } from 'stores/types';
 
 export type AccountBalanceType = {
   totalBalanceValue: BigN;
@@ -22,3 +23,25 @@ export interface NftCollectionType {
 export interface NftItemType {
   nftItems: NftItem[];
 }
+export type ConfirmationType = keyof ConfirmationSlice['details'];
+
+export type ConfirmationItem = {
+  type: keyof ConfirmationSlice['details'];
+  payload: unknown;
+};
+
+export type ConfirmationHookType = {
+  confirmationRequestMap: ConfirmationSlice['details'];
+  cancelRequest: (type: ConfirmationType, id: string) => Promise<void>;
+  approveRequest: (
+    type: ConfirmationType,
+    id: string,
+    payload?: { password?: string; data?: unknown },
+  ) => Promise<void>;
+  rejectRequest: (type: ConfirmationType, id: string) => Promise<void>;
+  isEmptyRequests: boolean;
+  isDisplayConfirmation: boolean;
+  toggleConfirmation: () => void;
+  confirmationItems: ConfirmationItem[];
+  confirmationItemsLength: number;
+};

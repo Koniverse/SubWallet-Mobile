@@ -15,6 +15,7 @@ import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../types';
 import { BN_ZERO } from 'utils/chainBalances';
+import { IconProps } from 'phosphor-react-native';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -536,3 +537,27 @@ export function getRoundedDecimalNumber(numberString: string, digits: number = 2
 
   return (+(Math.round(+(number + `e+${digits}`)) + `e-${digits}`)).toString();
 }
+
+export function getLeftSelectItemIcon(icon: (iconProps: IconProps) => JSX.Element) {
+  const Icon = icon;
+  return <Icon size={20} color={ColorMap.disabled} weight={'bold'} />;
+}
+
+export const getNetworkJsonByGenesisHash = (
+  networkMap: Record<string, NetworkJson>,
+  hash: string,
+): NetworkJson | null => {
+  for (const n in networkMap) {
+    if (!Object.prototype.hasOwnProperty.call(networkMap, n)) {
+      continue;
+    }
+
+    const networkInfo = networkMap[n];
+
+    if (networkInfo.genesisHash === hash) {
+      return networkInfo;
+    }
+  }
+
+  return null;
+};

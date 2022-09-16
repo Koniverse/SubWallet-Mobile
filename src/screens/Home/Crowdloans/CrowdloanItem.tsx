@@ -4,7 +4,7 @@ import { CrowdloanItemType } from '../../../types';
 import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { BalanceVal } from 'components/BalanceVal';
-import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
 import { getNetworkLogo } from 'utils/index';
@@ -111,6 +111,7 @@ export function getGroupKey(groupDisplayName: string) {
 export const CrowdloanItem = ({ item }: Props) => {
   return (
     <TouchableOpacity
+      style={{ ...ContainerHorizontalPadding }}
       activeOpacity={BUTTON_ACTIVE_OPACITY}
       onPress={() => Linking.openURL(item.crowdloanUrl ? item.crowdloanUrl : '')}
       disabled={!item.crowdloanUrl}>
