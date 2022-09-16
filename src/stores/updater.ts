@@ -53,7 +53,7 @@ export function updateCrowdloan(payload: CrowdloanJson): void {
 }
 
 export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
-  store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap } });
+  store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap || {} } });
 }
 
 // App State
