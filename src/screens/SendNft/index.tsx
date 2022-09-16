@@ -14,6 +14,7 @@ import { QrScannerScreen } from 'screens/QrScannerScreen';
 import AuthTransaction from 'screens/SendNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
+import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
 import { RootNavigationProps, SendNftProps } from 'types/routes';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
@@ -67,14 +68,14 @@ const MetaValueStyle: StyleProp<TextStyle> = {
 };
 
 const SendButtonStyle: StyleProp<ViewStyle> = {
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: 10,
-  marginTop: 40,
+  ...ButtonStyle,
+  marginTop: 30,
   backgroundColor: ColorMap.secondary,
-  borderRadius: 8,
+};
+
+const SendButtonTextStyle: StyleProp<TextStyle> = {
+  ...TextButtonStyle,
+  color: ColorMap.light,
 };
 
 const isValidRecipient = (address: string, isEthereum: boolean) => {
@@ -257,7 +258,7 @@ const SendNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
 
             <TouchableOpacity style={SendButtonStyle} onPress={handleSend}>
               {!loading ? (
-                <Text style={{ color: ColorMap.light }}>{i18n.sendNft.send}</Text>
+                <Text style={SendButtonTextStyle}>{i18n.sendNft.send}</Text>
               ) : (
                 <ActivityIndicator animating={true} />
               )}

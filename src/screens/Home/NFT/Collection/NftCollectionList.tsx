@@ -1,11 +1,11 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import React, { useCallback } from 'react';
+import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import NftCollectionImportText from 'screens/Home/NFT/Shared/NftCollectionImportText';
-import { NftScreenActionParams } from '../../../../types';
+import { NftScreenActionParams, NftScreenActionType } from 'reducers/nftScreen';
 
 interface Props {
   dispatchNftState: React.Dispatch<NftScreenActionParams>;
@@ -31,7 +31,7 @@ const NftCollectionList = ({ dispatchNftState, nftCollections }: Props) => {
     ({ item }: ListRenderItemInfo<NftCollection>) => {
       const key = `${item.collectionName}-${item.collectionId}`;
       const onPress = () => {
-        dispatchNftState({ type: 'openCollection', payload: { collection: item } });
+        dispatchNftState({ type: NftScreenActionType.OPEN_COLLECTION, payload: { collection: item } });
       };
 
       return <NftCollectionItem key={key} nftCollection={item} onPress={onPress} />;

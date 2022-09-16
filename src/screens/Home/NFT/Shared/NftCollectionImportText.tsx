@@ -1,20 +1,26 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import React, { useCallback, useMemo } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 
-const textContainerStyle: StyleProp<any> = {
+const TextContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 24,
+  height: 80,
   alignItems: 'center',
   width: '100%',
 };
 
-const importTextStyle: StyleProp<any> = {
+const DontSeeTextStyle: StyleProp<TextStyle> = {
+  color: ColorMap.iconNeutralColor,
+};
+
+const ImportTextStyle: StyleProp<TextStyle> = {
   marginTop: 8,
   color: ColorMap.primary,
 };
@@ -24,7 +30,10 @@ const NftCollectionImportText = () => {
 
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
-  const isEthAccount = useMemo(() => isEthereumAddress(currentAccount?.address), [currentAccount?.address]);
+  const isEthAccount = useMemo(
+    () => isEthereumAddress(currentAccount?.address) || isAccountAll(currentAccount?.address as string),
+    [currentAccount?.address],
+  );
 
   const handleChangeToImport = useCallback(() => {
     navigation.navigate('ImportEvmNft');
@@ -35,9 +44,9 @@ const NftCollectionImportText = () => {
   }
 
   return (
-    <View style={textContainerStyle}>
-      <Text>{i18n.nftScreen.dontSeeNft}</Text>
-      <Text style={importTextStyle} onPress={handleChangeToImport}>
+    <View style={TextContainerStyle}>
+      <Text style={DontSeeTextStyle}>{i18n.nftScreen.dontSeeNft}</Text>
+      <Text style={ImportTextStyle} onPress={handleChangeToImport}>
         {i18n.nftScreen.importNft}
       </Text>
     </View>

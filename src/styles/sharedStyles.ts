@@ -100,6 +100,22 @@ const layoutContainer = {
   flex: 1,
 };
 
+export const ButtonStyle: StyleProp<any> = {
+  position: 'relative',
+  height: 52,
+  borderRadius: 5,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingLeft: 32,
+  paddingRight: 32,
+};
+
+export const TextButtonStyle: StyleProp<any> = {
+  ...mediumText,
+  ...FontBold,
+};
+
 export const sharedStyles = StyleSheet.create({
   smallText,
   mainText,

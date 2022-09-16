@@ -163,6 +163,7 @@ export const vi = {
     send: 'Send',
     nft: 'NFT',
     chain: 'Chain',
+    signAndSubmit: 'Sign and Submit',
   },
   settings: {
     notifications: 'Notifications',

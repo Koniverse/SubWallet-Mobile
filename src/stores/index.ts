@@ -19,7 +19,18 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'accounts', 'networkMap', 'settings', 'chainRegistry', 'price', 'balance', 'crowdloan'],
+  whitelist: [
+    'mobileSettings',
+    'accounts',
+    'networkMap',
+    'settings',
+    'chainRegistry',
+    'price',
+    'balance',
+    'crowdloan',
+    'nftCollection',
+    'nft',
+  ],
 };
 
 const rootReducer = combineReducers({

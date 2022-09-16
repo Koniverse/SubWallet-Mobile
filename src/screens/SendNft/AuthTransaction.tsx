@@ -18,6 +18,7 @@ import {
 import { useToast } from 'react-native-toast-notifications';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
+import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
 import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction } from '../../messaging';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import i18n from 'utils/i18n/i18n';
@@ -51,13 +52,13 @@ const AuthContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const SubmitButtonStyle: StyleProp<ViewStyle> = {
-  position: 'relative',
-  borderRadius: 8,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: 10,
+  ...ButtonStyle,
   marginTop: 10,
+};
+
+const SubmitButtonTextStyle: StyleProp<TextStyle> = {
+  ...TextButtonStyle,
+  color: ColorMap.light,
 };
 
 const FeeStyle: StyleProp<TextStyle> = {
@@ -337,7 +338,11 @@ const AuthTransaction = (props: Props) => {
             },
           ]}
           onPress={handleSignAndSubmit}>
-          {!loading ? <Text>Sign and Submit</Text> : <ActivityIndicator animating={true} />}
+          {!loading ? (
+            <Text style={SubmitButtonTextStyle}>{i18n.sendNft.signAndSubmit}</Text>
+          ) : (
+            <ActivityIndicator animating={true} />
+          )}
         </TouchableOpacity>
       </View>
     </ContainerWithSubHeader>

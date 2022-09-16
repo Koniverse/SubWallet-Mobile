@@ -55,15 +55,3 @@ export type CrowdloanItemType = {
   paraState?: CrowdloanParaState;
   crowdloanUrl?: string;
 };
-
-export interface NftScreenState {
-  title: string;
-  screen: 'CollectionList' | 'Collection' | 'NFT';
-  collection?: NftCollection;
-  nft?: NftItem;
-}
-
-export interface NftScreenActionParams {
-  type: string;
-  payload: Partial<NftScreenState>;
-}

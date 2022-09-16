@@ -8,6 +8,7 @@ import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
+import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
 import { upsertEvmToken, validateEvmToken } from '../../messaging';
 import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
@@ -42,37 +43,21 @@ const AddTokenContainerStyle: StyleProp<ViewStyle> = {
   flexWrap: 'wrap',
 };
 
-const ButtonStyle: StyleProp<ViewStyle> = {
+const _ButtonStyle: StyleProp<any> = {
+  ...ButtonStyle,
   paddingHorizontal: 10,
   paddingVertical: 10,
   flex: 1,
-  borderRadius: 10,
-};
-
-const TextButtonStyle: StyleProp<TextStyle> = {
-  textAlign: 'center',
 };
 
 const PrimaryButtonStyle: StyleProp<ViewStyle> = {
-  ...ButtonStyle,
-  marginLeft: 8,
+  ..._ButtonStyle,
   backgroundColor: ColorMap.secondary,
 };
 
 const PrimaryTextStyle: StyleProp<TextStyle> = {
   ...TextButtonStyle,
   color: ColorMap.light,
-};
-
-const SecondaryButtonStyle: StyleProp<ViewStyle> = {
-  ...ButtonStyle,
-  marginRight: 8,
-  backgroundColor: ColorMap.buttonBackground1,
-};
-
-const SecondaryTextStyle: StyleProp<TextStyle> = {
-  ...TextButtonStyle,
-  color: ColorMap.primary,
 };
 
 const formConfig = {
@@ -247,9 +232,6 @@ const ImportEvmNft = () => {
         </View>
         <Text style={WarningStyle}>{warning}</Text>
         <View style={AddTokenContainerStyle}>
-          <TouchableOpacity style={SecondaryButtonStyle} onPress={onBack}>
-            <Text style={SecondaryTextStyle}>{i18n.importEvmNft.cancel}</Text>
-          </TouchableOpacity>
           <TouchableOpacity
             style={PrimaryButtonStyle}
             disabled={

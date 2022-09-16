@@ -11,7 +11,6 @@ const EmptyListStyle: StyleProp<any> = {
 };
 
 export const EmptyList = () => {
-
   return (
     <View style={EmptyListStyle}>
       <Image source={require('assets/nft-coming-soon.png')} />

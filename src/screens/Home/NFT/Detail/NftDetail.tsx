@@ -4,15 +4,16 @@ import ImagePreview from 'components/ImagePreview';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import React, { useCallback } from 'react';
-import { StyleProp, View, Text, TouchableOpacity } from 'react-native';
+import { StyleProp, View, Text, TouchableOpacity, ViewStyle, ScrollView, TextStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
-import { NftScreenState } from '../../../../types';
+import { NftScreenState } from 'reducers/nftScreen';
 
 interface Props {
   nftState: NftScreenState;
@@ -23,19 +24,21 @@ const ContainerDetailStyle: StyleProp<any> = {
   paddingHorizontal: 20,
 };
 
-const PropContainerStyle: StyleProp<any> = {
+const PropContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 5,
   display: 'flex',
   flexWrap: 'wrap',
-  gap: 10,
+  flexDirection: 'row',
 };
 
-const PropDetailStyle: StyleProp<any> = {
+const PropDetailStyle: StyleProp<ViewStyle> = {
   paddingVertical: 5,
   paddingHorizontal: 10,
   backgroundColor: ColorMap.popupBackground,
-  boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.15)',
+  // boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.15)',
   borderRadius: 5,
+  marginRight: 10,
+  marginBottom: 10,
 };
 
 const PropTitleStyle: StyleProp<any> = {
@@ -70,18 +73,17 @@ const ImageStyle: StyleProp<any> = {
   borderRadius: 10,
 };
 
-const SendContainerStyle: StyleProp<any> = {
+const SendContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 20,
 };
 
-const SendButtonStyle: StyleProp<any> = {
-  marginTop: 5,
+const SendButtonStyle: StyleProp<ViewStyle> = {
+  ...ButtonStyle,
   backgroundColor: ColorMap.secondary,
-  borderRadius: 8,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: 10,
+};
+
+const SendButtonTextStyle: StyleProp<TextStyle> = {
+  ...TextButtonStyle,
   color: ColorMap.light,
 };
 
@@ -135,14 +137,14 @@ const NftDetail = ({ nftState }: Props) => {
   }, [currentAccount, isAccountAll, data, networkJson.isEthereum, collectionImage, collectionId, navigation, show]);
 
   return (
-    <View style={ContainerDetailStyle}>
+    <ScrollView style={ContainerDetailStyle}>
       <View style={ImageContainerStyle}>
         <ImagePreview style={ImageStyle} mainUrl={data.image} backupUrl={collectionImage} />
       </View>
       {!isAccountAll && (
         <View style={SendContainerStyle}>
-          <TouchableOpacity style={SendButtonStyle} activeOpacity={0.8} onPress={handleClickTransfer}>
-            <Text>Send</Text>
+          <TouchableOpacity style={SendButtonStyle} onPress={handleClickTransfer}>
+            <Text style={SendButtonTextStyle}>Send</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -169,7 +171,7 @@ const NftDetail = ({ nftState }: Props) => {
           </View>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
