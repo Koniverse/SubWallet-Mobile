@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
-import { AppState, StatusBar, StyleProp, Text, View } from 'react-native';
+import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -207,11 +207,7 @@ export const App = () => {
             offsetTop={STATUS_BAR_HEIGHT + 40}
             dangerColor={theme.colors.notification_danger}>
             <ThemeContext.Provider value={theme}>
-              <NavigationContainer
-                linking={linking}
-                ref={navigationRef}
-                theme={theme}
-                fallback={<Text>Loading...</Text>}>
+              <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
                 <Stack.Navigator
                   screenOptions={{
                     animation: 'fade_from_bottom',
