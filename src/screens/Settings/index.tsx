@@ -49,6 +49,7 @@ const versionAppStyle: StyleProp<any> = {
   color: ColorMap.light,
   ...FontMedium,
   ...sharedStyles.mainText,
+  paddingBottom: 16,
 };
 
 type settingItemType = {
