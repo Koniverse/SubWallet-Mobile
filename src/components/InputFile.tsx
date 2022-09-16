@@ -9,6 +9,7 @@ import i18n from 'utils/i18n/i18n';
 
 interface Props {
   onChangeResult: (value: Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null) => void;
+  style?: StyleProp<any>;
 }
 
 const inputFileContainer: StyleProp<any> = {
@@ -27,7 +28,7 @@ const inputFileLabel: StyleProp<any> = {
   paddingBottom: 4,
 };
 
-export const InputFile = ({ onChangeResult }: Props) => {
+export const InputFile = ({ onChangeResult, style }: Props) => {
   const onChangeFile = useCallback(async () => {
     try {
       const pickerResult = await DocumentPicker.pickSingle({
@@ -41,7 +42,7 @@ export const InputFile = ({ onChangeResult }: Props) => {
   }, [onChangeResult]);
 
   return (
-    <TouchableOpacity style={inputFileContainer} onPress={onChangeFile}>
+    <TouchableOpacity style={[inputFileContainer, style]} onPress={onChangeFile}>
       <FileArrowUp size={32} weight={'regular'} color={ColorMap.light} />
       <Text style={inputFileLabel}>{i18n.common.inputFileLabel}</Text>
     </TouchableOpacity>
