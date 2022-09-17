@@ -2,7 +2,7 @@ import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendFundProps } from 'types/routes';
 import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { InputAddress } from 'components/InputAddress';
+import { InputAddress } from 'components/Input/InputAddress';
 import Text from 'components/Text';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { getEthereumChains, getNetworkLogo } from 'utils/index';
@@ -21,7 +21,7 @@ import {
   isContainGasRequiredExceedsError,
 } from 'screens/Sending/utils';
 import BigN from 'bignumber.js';
-import { InputBalance } from 'components/InputBalance';
+import { InputBalance } from 'components/Input/InputBalance';
 import { BN_TEN } from 'utils/chainBalances';
 import { BalanceToUsd } from 'components/BalanceToUsd';
 import {

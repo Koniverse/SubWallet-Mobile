@@ -6,6 +6,7 @@ import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
+import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'types/routes';
@@ -45,6 +46,9 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import useStoreCrowdloan from 'hooks/store/useStoreCrowdloan';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
+import useStoreNftCollection from 'hooks/store/useStoreNftCollection';
+import useStoreNft from 'hooks/store/useStoreNft';
+import SendNft from 'screens/SendNft';
 import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
 import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
@@ -157,6 +161,8 @@ export const App = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
+  useStoreNftCollection();
+  useStoreNft();
   useStoreChainRegistry();
   useStorePrice();
   useStoreBalance();
@@ -237,6 +243,8 @@ export const App = () => {
                       <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
                       <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                       <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
+                      <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
+                      <Stack.Screen name="SendNft" component={SendNft} />
                     </Stack.Group>
                   )}
                   <Stack.Group

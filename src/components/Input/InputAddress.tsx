@@ -1,10 +1,10 @@
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
-import Text from '../components/Text';
+import Text from '../Text';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { QrCode } from 'phosphor-react-native';
-import { BUTTON_ACTIVE_OPACITY } from '../constant';
+import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress } from '@polkadot/util-crypto';

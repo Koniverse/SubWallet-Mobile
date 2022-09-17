@@ -10,7 +10,7 @@ import { Button } from 'components/Button';
 
 export interface SubHeaderProps {
   showRightBtn?: boolean;
-  title: string;
+  title?: string;
   onPressBack: (event: GestureResponderEvent) => void;
   disabled?: boolean;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
@@ -60,6 +60,12 @@ export const SubHeader = ({
   showLeftBtn = true,
   rightButtonTitle = '',
 }: SubHeaderProps) => {
+  const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
+
+  if (hideSubHeader) {
+    return <></>;
+  }
+
   return (
     <View style={[SpaceStyle.oneContainer, getSubHeaderWrapperStyle(backgroundColor)]}>
       {headerContent ? (

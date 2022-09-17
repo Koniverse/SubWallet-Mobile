@@ -9,6 +9,8 @@ import mobileSettingsReducer from './MobileSettings';
 import transactionHistoryReducer from './TransactionHistory';
 import crowdloanReducer from './Crowdloan';
 import confirmationReducer from './Confirmation';
+import nftReducer from './Nft';
+import nftCollectionReducer from './NftCollection';
 import authUrlsReducer from './AuthUrls';
 import appStateReducer from './AppState';
 import browserReducer from './Browser';
@@ -28,6 +30,8 @@ const persistConfig = {
     'price',
     'balance',
     'crowdloan',
+    'nftCollection',
+    'nft',
     'authUrls',
     'browser',
   ],
@@ -47,6 +51,8 @@ const rootReducer = combineReducers({
   transactionHistory: transactionHistoryReducer,
   crowdloan: crowdloanReducer,
   confirmation: confirmationReducer,
+  nftCollection: nftCollectionReducer,
+  nft: nftReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

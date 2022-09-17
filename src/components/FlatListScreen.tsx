@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { FlatList, ListRenderItemInfo, StyleProp, TextInput } from 'react-native';
-import { ScrollViewStyle } from 'styles/sharedStyles';
+import { FlatList, ListRenderItemInfo, StyleProp, TextInput, View } from 'react-native';
+import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { HIDE_MODAL_DURATION } from '../constant';
@@ -20,7 +20,8 @@ interface RightIconOpt {
 
 interface Props<T> {
   items: any[];
-  title: string;
+  title?: string;
+  withSubHeader?: boolean;
   autoFocus: boolean;
   renderListEmptyComponent: () => JSX.Element;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
@@ -39,6 +40,7 @@ export function FlatListScreen<T>({
   autoFocus = true,
   onPressBack,
   showLeftBtn = true,
+  withSubHeader = true,
   style,
   rightIconOption,
   renderItem,
@@ -95,6 +97,26 @@ export function FlatListScreen<T>({
     );
   }, [isLoading, lazyList, onLoadMore, renderItem, renderListEmptyComponent]);
 
+  const renderContent = () => (
+    <View style={{ ...sharedStyles.layoutContainer }}>
+      <Search
+        autoFocus={false}
+        placeholder={placeholder}
+        onClearSearchString={() => setSearchString('')}
+        onSearch={setSearchString}
+        searchText={searchString}
+        style={{ marginBottom: 8 }}
+        searchRef={searchRef}
+      />
+      {children}
+      {afterListItem}
+    </View>
+  );
+
+  if (!withSubHeader) {
+    return renderContent();
+  }
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={showLeftBtn}
@@ -107,19 +129,7 @@ export function FlatListScreen<T>({
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       isShowPlaceHolder={false}>
-      <>
-        <Search
-          autoFocus={false}
-          placeholder={placeholder}
-          onClearSearchString={() => setSearchString('')}
-          onSearch={setSearchString}
-          searchText={searchString}
-          style={{ marginBottom: 8, marginHorizontal: 16, marginTop: 10 }}
-          searchRef={searchRef}
-        />
-        {children}
-        {afterListItem}
-      </>
+      {renderContent()}
     </ContainerWithSubHeader>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NFTScreen } from './NFTScreen';
+import NFTScreen from 'screens/Home/NFT/NFTScreen';
 import { StakingScreen } from './StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
@@ -30,7 +30,7 @@ export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['na
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
 function checkTabNotCompleted(target: string) {
-  return target.includes('Staking') || target.includes('NFT');
+  return target.includes('Staking');
 }
 
 const MainScreen = () => {

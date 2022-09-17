@@ -1,4 +1,4 @@
-import { RefObject, useReducer, useRef } from 'react';
+import { RefObject, useCallback, useReducer, useRef } from 'react';
 import { Keyboard } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 
@@ -159,26 +159,29 @@ export type FormControlConfig = Record<FormItemKey, FormControlItem>;
 export default function useFormControl(formConfig: FormControlConfig, formControlOption: FormControlOption) {
   const [formState, dispatchForm] = useReducer(formReducer, initForm(formConfig, formControlOption));
 
-  const onChangeValue = (fieldName: string) => {
+  const onChangeValue = useCallback((fieldName: string) => {
     return (currentValue: string) => {
       dispatchForm({ type: 'change_value', payload: { fieldName, value: currentValue } });
     };
-  };
+  }, []);
 
-  const onUpdateErrors = (fieldName: string) => {
+  const onUpdateErrors = useCallback((fieldName: string) => {
     return (errors?: string[]) => {
       dispatchForm({ type: 'update_errors', payload: { fieldName, errors: errors } });
     };
-  };
+  }, []);
 
-  const onSubmitField = (fieldName: string, value?: string) => {
+  const onSubmitField = useCallback((fieldName: string, value?: string) => {
     return () => dispatchForm({ type: 'submit', payload: { fieldName, value: value } });
-  };
+  }, []);
 
-  const focus = (target: string | number) => {
-    const fieldName = typeof target === 'string' ? target : Object.keys(formState.refs)[target];
-    return () => dispatchForm({ type: 'focus', payload: { fieldName } });
-  };
+  const focus = useCallback(
+    (target: string | number) => {
+      const fieldName = typeof target === 'string' ? target : Object.keys(formState.refs)[target];
+      return () => dispatchForm({ type: 'focus', payload: { fieldName } });
+    },
+    [formState.refs],
+  );
   return {
     formState,
     onUpdateErrors,
