@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { Platform, ScrollView, StyleProp, View } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, ListRenderItemInfo, Platform, StyleProp, Text, View } from 'react-native';
 import { InputFile } from 'components/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
@@ -9,9 +9,8 @@ import { SubmitButton } from 'components/SubmitButton';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging';
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
-import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { RootNavigationProps } from 'types/routes';
 import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
@@ -21,7 +20,8 @@ import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import reformatAddress from 'utils/index';
+import { toShort } from 'utils/index';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -29,8 +29,22 @@ const footerAreaStyle: StyleProp<any> = {
   ...MarginBottomForSubmitButton,
 };
 
+const itemWrapperStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark2,
+  borderRadius: 5,
+  paddingHorizontal: 16,
+};
+
 const formConfig = {
   file: {
+    name: '',
+    value: '',
+  },
+  fileConfig: {
+    name: '',
+    value: '',
+  },
+  accountAddress: {
     name: '',
     value: '',
   },
@@ -55,14 +69,32 @@ const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
   return currentAccountsInfo;
 };
 
+function formatJsonFile(jsonFile: any) {
+  let newJsonFile = jsonFile;
+  if (isKeyringPairs$Json(jsonFile)) {
+    newJsonFile.accounts.forEach((acc: { meta: { genesisHash: string } }) => (acc.meta.genesisHash = ''));
+
+    return newJsonFile;
+  } else {
+    newJsonFile.meta.genesisHash = '';
+    return newJsonFile;
+  }
+}
+
+const ViewStep = {
+  PASTE_JSON: 1,
+  ENTER_PW: 2,
+};
+
 export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [file, setFile] = useState<KeyringPair$Json | KeyringPairs$Json | undefined>(undefined);
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
+  const [currentViewStep, setCurrentViewStep] = useState<number>(1);
   const _onRestore = (formState: FormState) => {
     const password = formState.data.password;
+    const accountAddress = formState.data.accountAddress;
     let jsonFile;
     if (formState.data.file) {
       jsonFile = JSON.parse(formState.data.file) as KeyringPair$Json | KeyringPairs$Json;
@@ -75,10 +107,12 @@ export const RestoreJson = () => {
       return;
     }
 
+    const formattedJsonFile = formatJsonFile(jsonFile);
+
     setIsBusy(true);
-    (isKeyringPairs$Json(jsonFile)
-      ? batchRestoreV2(jsonFile, password, getAccountsInfo(jsonFile), true)
-      : jsonRestoreV2(jsonFile, password, reformatAddress(jsonFile.address, 42), true)
+    (isKeyringPairs$Json(formattedJsonFile)
+      ? batchRestoreV2(formattedJsonFile, password, getAccountsInfo(formattedJsonFile), true)
+      : jsonRestoreV2(formattedJsonFile, password, accountAddress, true)
     )
       .then(() => {
         setFileError(false);
@@ -96,8 +130,6 @@ export const RestoreJson = () => {
     onSubmitForm: _onRestore,
   });
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
-    setFile(fileContent);
-
     try {
       if (isKeyringPairs$Json(fileContent)) {
         fileContent.accounts.forEach(account => {
@@ -113,6 +145,7 @@ export const RestoreJson = () => {
       } else {
         jsonGetAccountInfo(fileContent)
           .then(accountInfo => {
+            onChangeValue('accountAddress')(accountInfo.address);
             setAccountsInfo(old => [...old, accountInfo]);
           })
           .catch(() => {
@@ -136,7 +169,7 @@ export const RestoreJson = () => {
 
     fileInfo = fileInfo as Array<DocumentPickerResponse>;
     const fileUri = Platform.OS === 'ios' ? decodeURIComponent(fileInfo[0].uri) : fileInfo[0].uri;
-
+    onChangeValue('fileConfig')(`${fileInfo[0].name} (${fileInfo[0].size} bytes)`);
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
         onChangeValue('file')(res);
@@ -147,54 +180,80 @@ export const RestoreJson = () => {
       });
   };
 
-  const renderAccount = useCallback(() => {
+  const renderAccount = ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
     return (
-      <>
-        {accountsInfo.map(account => (
-          <View
-            key={account.address}
-            style={{ backgroundColor: ColorMap.dark2, marginBottom: 8, borderRadius: 5, paddingHorizontal: 16 }}>
-            <Account
-              address={account.address}
-              name={account.name}
-              showCopyBtn={false}
-              showSelectedIcon={false}
-              isDisabled
-            />
-          </View>
-        ))}
-      </>
+      <View key={item.address} style={[itemWrapperStyle, { marginTop: 8 }]}>
+        <Account address={item.address} name={item.name} showCopyBtn={false} showSelectedIcon={false} isDisabled />
+      </View>
     );
-  }, [accountsInfo]);
+  };
+
+  const _onPressBack = () => {
+    if (currentViewStep === ViewStep.PASTE_JSON) {
+      navigation.goBack();
+    } else {
+      setCurrentViewStep(ViewStep.PASTE_JSON);
+    }
+  };
+
+  const onPressSubmitButton = () => {
+    if (currentViewStep === ViewStep.PASTE_JSON) {
+      setCurrentViewStep(ViewStep.ENTER_PW);
+    } else {
+      _onRestore(formState);
+    }
+  };
 
   return (
-    <SubScreenContainer title={i18n.title.importFromJson} navigation={navigation}>
+    <ContainerWithSubHeader title={i18n.title.importFromJson} onPressBack={_onPressBack}>
       <View style={{ flex: 1 }}>
-        <ScrollView style={{ ...sharedStyles.layoutContainer }}>
-          <InputFile onChangeResult={_onChangeFile} />
-          {renderAccount()}
-          <PasswordField
-            ref={formState.refs.password}
-            label={formState.labels.password}
-            defaultValue={formState.data.password}
-            onChangeText={onChangeValue('password')}
-            errorMessages={formState.errors.password}
-            onSubmitField={onSubmitField('password')}
-          />
-          {isFileError && (
-            <Warning title={i18n.warningTitle.error} message={i18n.warningMessage.invalidJsonFile} isDanger />
-          )}
-        </ScrollView>
+        {currentViewStep === ViewStep.PASTE_JSON && (
+          <View style={{ ...ContainerHorizontalPadding, flex: 1, paddingTop: 26 }}>
+            <InputFile onChangeResult={_onChangeFile} />
+            {isFileError && (
+              <Warning title={i18n.warningTitle.error} message={i18n.warningMessage.invalidJsonFile} isDanger />
+            )}
+            {!!formState.data.fileConfig && (
+              <View style={[itemWrapperStyle, { paddingVertical: 16 }]}>
+                <Text style={{ ...sharedStyles.mainText, color: ColorMap.light, ...FontMedium }}>
+                  {toShort(formState.data.fileConfig, 10, 25)}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {currentViewStep === ViewStep.ENTER_PW && (
+          <View style={{ flex: 1, paddingTop: 18 }}>
+            <View style={{ flexShrink: 1 }}>
+              <FlatList data={accountsInfo} renderItem={renderAccount} style={ContainerHorizontalPadding} />
+              <View style={{ paddingHorizontal: 16, marginTop: 8 }}>
+                <PasswordField
+                  ref={formState.refs.password}
+                  label={formState.labels.password}
+                  defaultValue={formState.data.password}
+                  onChangeText={onChangeValue('password')}
+                  errorMessages={formState.errors.password}
+                  onSubmitField={onSubmitField('password')}
+                />
+              </View>
+            </View>
+          </View>
+        )}
 
         <View style={footerAreaStyle}>
           <SubmitButton
             isBusy={isBusy}
-            title={i18n.common.importAccount}
-            onPress={() => _onRestore(formState)}
-            disabled={isFileError || !formState.isValidated.password || !formState.data.password || !file}
+            title={currentViewStep === ViewStep.PASTE_JSON ? i18n.common.continue : i18n.common.importAccount}
+            onPress={onPressSubmitButton}
+            disabled={
+              currentViewStep === ViewStep.PASTE_JSON
+                ? !formState.data.file
+                : isFileError || !formState.isValidated.password || !formState.data.password || !formState.data.file
+            }
           />
         </View>
       </View>
-    </SubScreenContainer>
+    </ContainerWithSubHeader>
   );
 };

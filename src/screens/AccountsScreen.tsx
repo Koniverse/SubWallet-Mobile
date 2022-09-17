@@ -102,7 +102,12 @@ export const AccountsScreen = () => {
         }).catch(console.error);
       }
 
-      navigation.navigate('Home');
+      if (navigation.getState()?.routes.length >= 3) {
+        // back to previous 3rd screen
+        navigation.pop(2);
+      } else {
+        navigation.navigate('Home');
+      }
     },
     [navigation, currentAccountAddress],
   );
@@ -144,7 +149,7 @@ export const AccountsScreen = () => {
 
   const renderFooterComponent = () => {
     return (
-      <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
+      <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton, marginTop: 16 }}>
         <SubmitButton backgroundColor={ColorMap.dark2} title={i18n.common.addAccount} onPress={onCreateAccount} />
       </View>
     );

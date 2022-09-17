@@ -29,8 +29,8 @@ type HomeStackParamList = {
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
 
-function checkTabCompleted(target: string) {
-  return target.includes('Crypto') || target.includes('Crowdloans') || target.includes('NFT') || target.includes('Browser');
+function checkTabNotCompleted(target: string) {
+  return target.includes('Staking');
 }
 
 const MainScreen = () => {
@@ -63,7 +63,7 @@ const MainScreen = () => {
           }
           // @ts-ignore
           props.style = [[...props.style], customStyle];
-          if (!checkTabCompleted(props.to || '')) {
+          if (checkTabNotCompleted(props.to || '')) {
             return <TouchableOpacity {...props} activeOpacity={1} onPress={() => onPressComingSoonTab()} />;
           } else {
             return <TouchableOpacity {...props} activeOpacity={1} />;

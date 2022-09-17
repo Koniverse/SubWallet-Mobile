@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, StackActions, useNavigationContainerRef } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
@@ -63,6 +63,16 @@ const viewContainerStyle: StyleProp<any> = {
   flex: 1,
 };
 
+const layerScreenStyle: StyleProp<any> = {
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  position: 'absolute',
+  backgroundColor: ColorMap.dark1,
+  zIndex: 10,
+};
+
 function checkRequiredStoresReady(
   accountsStoreStatus: StoreStatus,
   settingsStoreStatus: StoreStatus,
@@ -105,7 +115,34 @@ AppState.addEventListener('change', (state: string) => {
 });
 
 let firstTimeCheckPincode: boolean | undefined;
-const DONT_GO_BACK_LIST = ['LoadingScreen', 'LockScreen'];
+
+const config: LinkingOptions<RootStackParamList>['config'] = {
+  screens: {
+    BrowserTab: {
+      path: 'browser-tab',
+      parse: {
+        url: url => {
+          try {
+            return decodeURIComponent(url);
+          } catch (e) {
+            console.log('Cannot decode url ' + url);
+            return url;
+          }
+        },
+        name: name => name || '',
+      },
+      stringify: {
+        url: url => url,
+        name: name => name || '',
+      },
+    },
+  },
+};
+
+const linking: LinkingOptions<RootStackParamList> = {
+  prefixes: ['subwallet://'],
+  config,
+};
 
 export const App = () => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
@@ -163,23 +200,6 @@ export const App = () => {
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
 
-  useEffect(() => {
-    if (isLocked) {
-      navigationRef.navigate('LockScreen');
-    } else if (!isAppReady) {
-      navigationRef.navigate('LoadingScreen');
-    } else {
-      // Go back to latest screen not in DONT_GO_BACK_LIST
-      const currentRoutes = navigationRef?.getState().routes || [];
-      const needGoBackTimes = [...currentRoutes].filter(r => DONT_GO_BACK_LIST.includes(r.name)).length;
-      if (needGoBackTimes > 0 && navigationRef.canGoBack() && currentRoutes.length > needGoBackTimes) {
-        navigationRef.dispatch(StackActions.pop(needGoBackTimes));
-      } else {
-        navigationRef.navigate('Home');
-      }
-    }
-  }, [isAppReady, isLocked, navigationRef]);
-
   return useMemo(
     () => (
       <View style={viewContainerStyle}>
@@ -193,7 +213,7 @@ export const App = () => {
             offsetTop={STATUS_BAR_HEIGHT + 40}
             dangerColor={theme.colors.notification_danger}>
             <ThemeContext.Provider value={theme}>
-              <NavigationContainer ref={navigationRef} theme={theme}>
+              <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
                 <Stack.Navigator
                   screenOptions={{
                     animation: 'fade_from_bottom',
@@ -227,10 +247,6 @@ export const App = () => {
                       <Stack.Screen name="SendNft" component={SendNft} />
                     </Stack.Group>
                   )}
-                  <Stack.Group screenOptions={{ headerShown: false, animation: 'fade' }}>
-                    {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
-                    <Stack.Screen name="LockScreen" component={LockScreen} />
-                  </Stack.Group>
                   <Stack.Group
                     screenOptions={{
                       presentation: 'transparentModal',
@@ -244,9 +260,19 @@ export const App = () => {
             </ThemeContext.Provider>
           </ToastProvider>
         </View>
+        {!isAppReady && (
+          <View style={layerScreenStyle}>
+            <LoadingScreen />
+          </View>
+        )}
+        {isLocked && (
+          <View style={layerScreenStyle}>
+            <LockScreen />
+          </View>
+        )}
       </View>
     ),
-    [Stack, isAppReady, navigationRef, theme],
+    [theme, navigationRef, Stack, isAppReady, isLocked],
   );
 };
 

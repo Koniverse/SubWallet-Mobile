@@ -20,6 +20,7 @@ const browserScreenHeader: StyleProp<any> = {
   flexDirection: 'row',
   paddingHorizontal: 16,
   alignItems: 'center',
+  height: 40,
 };
 
 const searchBtnWrapperStyle: StyleProp<any> = {
