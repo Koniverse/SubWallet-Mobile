@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, SafeAreaView, StyleProp, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import NftCollectionImportText from 'screens/Home/NFT/Shared/NftCollectionImportText';
@@ -51,6 +51,7 @@ const NftCollectionList = ({ dispatchNftState, nftCollections }: Props) => {
         afterListItem={<NftCollectionImportText />}
         items={nftCollections}
       />
+      <SafeAreaView />
     </View>
   );
 };

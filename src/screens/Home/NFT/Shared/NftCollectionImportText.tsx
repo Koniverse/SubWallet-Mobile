@@ -22,7 +22,7 @@ const DontSeeTextStyle: StyleProp<TextStyle> = {
 
 const ImportTextStyle: StyleProp<TextStyle> = {
   marginTop: 8,
-  color: ColorMap.primary,
+  color: ColorMap.secondary,
 };
 
 const NftCollectionImportText = () => {

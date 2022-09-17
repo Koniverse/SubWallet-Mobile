@@ -2,18 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 
 export function useLazyList<T>(items: T[], options = { itemPerPage: 20, lazyTime: 300 }) {
   const [isLoading, setLoading] = useState<boolean>(false);
-  const [lazyList, setLazyList] = useState<T[]>([]);
+  const [lazyList, setLazyList] = useState<T[]>(items.slice(0, options.itemPerPage));
   const [pageNumber, setPageNumber] = useState<number>(1);
 
-  const sliceArray = (array: T[], curPageNumber: number) => {
-    return array.slice(0, options.itemPerPage * curPageNumber);
-  };
-
   useEffect(() => {
-    const currentLazyList = sliceArray(items, pageNumber);
+    const currentLazyList = items.slice(0, options.itemPerPage * pageNumber);
     setLazyList(currentLazyList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(items), pageNumber]);
+  }, [JSON.stringify(items), options.itemPerPage, pageNumber]);
 
   const onLoadMore = useCallback(() => {
     if (lazyList.length === items.length) {
