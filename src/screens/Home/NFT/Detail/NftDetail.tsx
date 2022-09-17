@@ -4,7 +4,7 @@ import ImagePreview from 'components/ImagePreview';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import React, { useCallback } from 'react';
-import { StyleProp, View, Text, TouchableOpacity, ViewStyle, ScrollView, TextStyle } from 'react-native';
+import { StyleProp, View, Text, TouchableOpacity, ViewStyle, ScrollView, TextStyle, Platform } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
@@ -31,6 +31,10 @@ const PropContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
 };
 
+if (Platform.OS === 'ios') {
+  PropContainerStyle.paddingBottom = 30;
+}
+
 const PropDetailStyle: StyleProp<ViewStyle> = {
   paddingVertical: 5,
   paddingHorizontal: 10,
@@ -49,12 +53,14 @@ const PropTitleStyle: StyleProp<any> = {
 
 const PropValueStyle: StyleProp<any> = {
   fontSize: 14,
+  color: ColorMap.light,
 };
 
 const AttTitleStyle: StyleProp<any> = {
   fontSize: 16,
   fontWeight: '500',
   marginTop: 20,
+  color: ColorMap.light,
 };
 
 const AttValueStyle: StyleProp<any> = {
