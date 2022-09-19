@@ -32,7 +32,7 @@ export type RootStackParamList = {
   DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
   ImportEvmNft: undefined;
-  SendNft: TransferNftParams;
+  TransferNft: TransferNftParams;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -45,6 +45,6 @@ export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
-export type SendNftProps = NativeStackScreenProps<RootStackParamList, 'SendNft'>;
+export type SendNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabProps = NativeStackScreenProps<RootStackParamList, 'BrowserTab'>;

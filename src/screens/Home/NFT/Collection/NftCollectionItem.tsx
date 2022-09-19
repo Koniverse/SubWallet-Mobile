@@ -1,29 +1,36 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import ImagePreview from 'components/ImagePreview';
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
 interface Props {
   nftCollection: NftCollection;
   onPress: () => void;
 }
 
-const ContainerStyle: StyleProp<any> = {
+const WrapperStyle: StyleProp<ViewStyle> = {
+  width: '50%',
+  paddingHorizontal: 8,
+};
+
+const ContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
   position: 'relative',
-  paddingVertical: 12,
+  borderRadius: 5,
+  backgroundColor: ColorMap.dark2,
 };
 
-const LogoStyle: StyleProp<any> = {
-  width: 60,
-  height: 60,
-  borderRadius: 10,
+const LogoStyle: StyleProp<ViewStyle> = {
+  width: '100%',
+  borderTopLeftRadius: 5,
+  borderTopRightRadius: 5,
+  aspectRatio: 1,
 };
 
-const InfoStyle: StyleProp<any> = {
+const InfoStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   justifyContent: 'space-between',
   position: 'relative',
@@ -31,46 +38,41 @@ const InfoStyle: StyleProp<any> = {
   alignItems: 'center',
   width: '100%',
   flex: 1,
-  paddingHorizontal: 10,
-  borderBottom: 1,
+  marginTop: 10,
+  marginBottom: 16,
+  paddingHorizontal: 12,
 };
 
-const NameStyle: StyleProp<any> = {
-  ...sharedStyles.smallText,
+const NameStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mediumText,
   ...FontSemiBold,
+  fontSize: 18,
   width: '80%',
   color: ColorMap.light,
 };
 
 const CountStyle: StyleProp<any> = {
-  ...sharedStyles.smallText,
-  ...FontSemiBold,
+  ...sharedStyles.mainText,
+  ...FontMedium,
   textAlign: 'right',
   width: '20%',
-};
-
-const SeparatorStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  height: 2,
-  width: '100%',
-  position: 'absolute',
-  bottom: 0,
-  left: 70,
+  color: ColorMap.disabled,
 };
 
 const NftCollectionItem = ({ nftCollection, onPress }: Props) => {
   const { itemCount, collectionName, image } = nftCollection;
 
   return (
-    <TouchableOpacity style={ContainerStyle} onPress={onPress} activeOpacity={0.8}>
-      <ImagePreview style={LogoStyle} mainUrl={image} />
-      <View style={InfoStyle}>
-        <Text style={NameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
-          {collectionName}
-        </Text>
-        <Text style={CountStyle}>{itemCount}</Text>
+    <TouchableOpacity style={WrapperStyle} onPress={onPress} activeOpacity={0.8}>
+      <View style={ContainerStyle}>
+        <ImagePreview style={LogoStyle} mainUrl={image} borderRadius={5} borderPlace={'top'} />
+        <View style={InfoStyle}>
+          <Text style={NameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
+            {collectionName}
+          </Text>
+          <Text style={CountStyle}>{itemCount}</Text>
+        </View>
       </View>
-      <View style={SeparatorStyle} />
     </TouchableOpacity>
   );
 };

@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 import { StyleProp, View, Text, TouchableOpacity, ViewStyle, ScrollView, TextStyle, Platform } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
+import { ButtonStyle, FontMedium, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { RootState } from 'stores/index';
@@ -21,14 +21,15 @@ interface Props {
 
 const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
 };
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
-  marginTop: 5,
+  marginTop: 24,
   display: 'flex',
   flexWrap: 'wrap',
   flexDirection: 'row',
+  marginHorizontal: -8,
 };
 
 if (Platform.OS === 'ios') {
@@ -36,36 +37,45 @@ if (Platform.OS === 'ios') {
 }
 
 const PropDetailStyle: StyleProp<ViewStyle> = {
-  paddingVertical: 5,
-  paddingHorizontal: 10,
-  backgroundColor: ColorMap.popupBackground,
-  // boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.15)',
+  paddingTop: 4,
+  paddingBottom: 10,
+  paddingHorizontal: 16,
+  backgroundColor: ColorMap.dark2,
   borderRadius: 5,
-  marginRight: 10,
-  marginBottom: 10,
 };
 
-const PropTitleStyle: StyleProp<any> = {
-  textTransform: 'uppercase',
-  color: ColorMap.iconNeutralColor,
-  fontSize: 13,
+const PropWrapperStyle: StyleProp<ViewStyle> = {
+  paddingHorizontal: 8,
+  marginBottom: 16,
+};
+
+const PropTitleStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.smallText,
+  ...FontMedium,
+  color: ColorMap.disabled,
+  fontSize: 12,
 };
 
 const PropValueStyle: StyleProp<any> = {
-  fontSize: 14,
-  color: ColorMap.light,
-};
-
-const AttTitleStyle: StyleProp<any> = {
-  fontSize: 16,
-  fontWeight: '500',
-  marginTop: 20,
-  color: ColorMap.light,
-};
-
-const AttValueStyle: StyleProp<any> = {
+  ...sharedStyles.smallText,
+  ...FontMedium,
   fontSize: 15,
-  color: ColorMap.iconNeutralColor,
+  color: ColorMap.light,
+};
+
+const AttTitleStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mediumText,
+  ...FontSemiBold,
+  marginTop: 12,
+  color: ColorMap.light,
+};
+
+const AttValueStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  marginTop: 8,
+  fontSize: 15,
+  color: ColorMap.disabled,
 };
 
 const ImageContainerStyle: StyleProp<any> = {
@@ -73,10 +83,9 @@ const ImageContainerStyle: StyleProp<any> = {
   alignItems: 'center',
 };
 
-const ImageStyle: StyleProp<any> = {
-  width: 300,
-  height: 300,
-  borderRadius: 10,
+const ImageStyle: StyleProp<ViewStyle> = {
+  width: '100%',
+  aspectRatio: 1,
 };
 
 const SendContainerStyle: StyleProp<ViewStyle> = {
@@ -96,18 +105,22 @@ const SendButtonTextStyle: StyleProp<TextStyle> = {
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
   if (valueDict.type && valueDict.type === 'string') {
     return (
-      <View style={PropDetailStyle} key={key}>
-        <Text style={PropTitleStyle}>{title}</Text>
-        <Text style={PropValueStyle}>{valueDict.value}</Text>
+      <View style={PropWrapperStyle} key={key}>
+        <View style={PropDetailStyle}>
+          <Text style={PropTitleStyle}>{title}</Text>
+          <Text style={PropValueStyle}>{valueDict.value}</Text>
+        </View>
       </View>
     );
   }
 
   if (!valueDict.type) {
     return (
-      <View style={PropDetailStyle} key={key}>
-        <Text style={PropTitleStyle}>{title}</Text>
-        <Text style={PropValueStyle}>{valueDict.value}</Text>
+      <View style={PropWrapperStyle} key={key}>
+        <View style={PropDetailStyle}>
+          <Text style={PropTitleStyle}>{title}</Text>
+          <Text style={PropValueStyle}>{valueDict.value}</Text>
+        </View>
       </View>
     );
   }
@@ -139,13 +152,19 @@ const NftDetail = ({ nftState }: Props) => {
       return;
     }
 
-    navigation.navigate('SendNft', { nftItem: data, collectionImage: collectionImage, collectionId: collectionId });
+    navigation.navigate('TransferNft', { nftItem: data, collectionImage: collectionImage, collectionId: collectionId });
   }, [currentAccount, isAccountAll, data, networkJson.isEthereum, collectionImage, collectionId, navigation, show]);
 
   return (
     <ScrollView style={ContainerDetailStyle}>
       <View style={ImageContainerStyle}>
-        <ImagePreview style={ImageStyle} mainUrl={data.image} backupUrl={collectionImage} />
+        <ImagePreview
+          style={ImageStyle}
+          mainUrl={data.image}
+          backupUrl={collectionImage}
+          borderRadius={5}
+          borderPlace={'full'}
+        />
       </View>
       {!isAccountAll && (
         <View style={SendContainerStyle}>
@@ -160,6 +179,10 @@ const NftDetail = ({ nftState }: Props) => {
           <Text style={AttValueStyle}>{data?.description}</Text>
         </View>
       )}
+      <View>
+        <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
+        <Text style={AttValueStyle}>{data?.rarity}</Text>
+      </View>
       {data.rarity && (
         <View>
           <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>

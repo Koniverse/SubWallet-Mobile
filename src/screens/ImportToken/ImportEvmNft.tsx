@@ -1,111 +1,73 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Dropdown } from 'components/Dropdown';
 import InputText from 'components/Input/InputText';
 import useGetActiveEvmChains from 'hooks/screen/ImportNft/useGetActiveEvmChains';
 import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
-import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertEvmToken, validateEvmToken } from '../../messaging';
 import { RootNavigationProps } from 'types/routes';
 import i18n from 'utils/i18n/i18n';
 import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
+import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { InputAddress } from 'components/Input/InputAddress';
+import { Warning } from 'components/Warning';
+import { NetworkField } from 'components/Field/Network';
+import { BUTTON_ACTIVE_OPACITY } from '../../constant';
+import { ChainSelect } from 'screens/ImportToken/ChainSelect';
+import { SubmitButton } from 'components/SubmitButton';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
 };
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
   marginTop: 10,
-};
-
-const InputContainerStyle: StyleProp<ViewStyle> = {
-  marginBottom: 8,
-};
-
-const WarningStyle: StyleProp<TextStyle> = {
-  color: ColorMap.iconWarningColor,
-  marginBottom: 10,
-  flex: 1,
-  textAlign: 'center',
-};
-
-const AddTokenContainerStyle: StyleProp<ViewStyle> = {
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-};
-
-const _ButtonStyle: StyleProp<any> = {
-  ...ButtonStyle,
-  paddingHorizontal: 10,
-  paddingVertical: 10,
-  flex: 1,
-};
-
-const PrimaryButtonStyle: StyleProp<ViewStyle> = {
-  ..._ButtonStyle,
-  backgroundColor: ColorMap.secondary,
-};
-
-const PrimaryTextStyle: StyleProp<TextStyle> = {
-  ...TextButtonStyle,
-  color: ColorMap.light,
 };
 
 const formConfig = {
   smartContract: {
     require: true,
-    name: i18n.importEvmNft.smartContract.toUpperCase(),
+    name: i18n.importEvmNft.smartContract,
     value: '',
   },
   chain: {
     require: true,
-    name: i18n.importEvmNft.chain.toUpperCase(),
+    name: i18n.importEvmNft.chain,
     value: '',
   },
   collectionName: {
     require: true,
-    name: i18n.importEvmNft.nftCollectionName.toUpperCase(),
+    name: i18n.importEvmNft.nftCollectionName,
     value: '',
   },
 };
 
 const ImportEvmNft = () => {
   const navigation = useNavigation<RootNavigationProps>();
-
   const chainOptions = useGetActiveEvmChains();
-
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [isValidContract, setIsValidContract] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
-  const [warning, setWarning] = useState('');
-
+  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
+  const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const onBack = useCallback(() => {
     navigation.navigate('Home');
   }, [navigation]);
-
-  const { formState, onChangeValue } = useFormControl(formConfig, {});
-
+  const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {});
   const { data: formData } = formState;
   const { chain, smartContract, collectionName } = formData;
 
   const handleChangeValue = useCallback(
     (key: string) => {
       return (text: string) => {
-        setWarning('');
+        onUpdateErrors('smartContract')(undefined);
         onChangeValue(key)(text);
       };
     },
-    [onChangeValue],
+    [onChangeValue, onUpdateErrors],
   );
 
   const handleAddToken = useCallback(() => {
@@ -124,26 +86,27 @@ const ImportEvmNft = () => {
     upsertEvmToken(evmToken)
       .then(resp => {
         if (resp) {
-          setWarning('Successfully added a NFT collection');
+          onUpdateErrors('smartContract')(['Successfully added a NFT collection']);
           onBack();
         } else {
-          setWarning('An error has occurred. Please try again later');
+          onUpdateErrors('smartContract')(['An error has occurred. Please try again later']);
         }
+        setLoading(false);
       })
       .catch(() => {
-        setWarning('An error has occurred. Please try again later');
+        onUpdateErrors('smartContract')(['An error has occurred. Please try again later']);
+        setLoading(false);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [chain, collectionName, onBack, smartContract]);
+  }, [chain, collectionName, onBack, onUpdateErrors, smartContract]);
 
   useEffect(() => {
     let unamount = false;
     if (smartContract !== '') {
       if (!isEthereumAddress(smartContract)) {
-        setIsValidContract(false);
-        setWarning('Invalid EVM contract address');
+        onUpdateErrors('smartContract')(['Invalid EVM contract address']);
       } else {
         setChecking(true);
         validateEvmToken({
@@ -156,19 +119,17 @@ const ImportEvmNft = () => {
               return;
             }
             if (resp.isExist) {
-              setWarning('This token has already been added');
-              setIsValidContract(false);
+              onUpdateErrors('smartContract')(['This token has already been added']);
             } else {
               onChangeValue('collectionName')(resp.name);
-              setIsValidContract(true);
+              onUpdateErrors('smartContract')(undefined);
             }
           })
           .catch(() => {
             if (unamount) {
               return;
             }
-            setWarning('Invalid contract for the selected chain');
-            setIsValidContract(false);
+            onUpdateErrors('smartContract')(['Invalid contract for the selected chain']);
           })
           .finally(() => {
             if (unamount) {
@@ -182,7 +143,7 @@ const ImportEvmNft = () => {
     return () => {
       unamount = true;
     };
-  }, [chain, smartContract, onChangeValue]);
+  }, [chain, onChangeValue, onUpdateErrors, smartContract]);
 
   useEffect(() => {
     if (collectionName.split(' ').join('') === '') {
@@ -196,6 +157,15 @@ const ImportEvmNft = () => {
     onChangeValue('chain')((chainOptions[0].value as string) || '');
   }, [chainOptions, onChangeValue]);
 
+  const isDisableAddNFT =
+    !isValidName ||
+    smartContract === '' ||
+    collectionName === '' ||
+    chainOptions.length === 0 ||
+    checking ||
+    loading ||
+    !!(formState.errors.smartContract && formState.errors.smartContract.length);
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -204,21 +174,32 @@ const ImportEvmNft = () => {
       style={ContainerHeaderStyle}
       isShowPlaceHolder={false}>
       <View style={WrapperStyle}>
-        <InputText
+        <InputAddress
+          containerStyle={{ marginBottom: 8 }}
           ref={formState.refs.smartContract}
           label={formState.labels.smartContract}
-          onChangeText={handleChangeValue('smartContract')}
-          errorMessages={formState.errors.smartContract}
           value={smartContract}
+          onPressQrButton={() => setShowQrModalVisible(true)}
+          onChange={(output: string | null, currentValue: string) => {
+            handleChangeValue('smartContract')(currentValue);
+          }}
         />
-        <View style={InputContainerStyle}>
-          <Dropdown
-            items={chainOptions}
-            label={formState.labels.chain}
-            onValueChange={handleChangeValue('chain')}
-            value={formState.data.chain}
-          />
-        </View>
+
+        <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
+          <NetworkField networkKey={formState.data.chain} label={formState.labels.chain} />
+        </TouchableOpacity>
+
+        <ChainSelect
+          items={chainOptions}
+          modalVisible={isShowChainModal}
+          onChangeModalVisible={() => setShowChainModal(false)}
+          onChangeValue={(text: string) => {
+            handleChangeValue('chain')(text);
+            setShowChainModal(false);
+          }}
+          selectedItem={formState.data.chain}
+        />
+
         <InputText
           ref={formState.refs.collectionName}
           label={formState.labels.collectionName}
@@ -226,23 +207,22 @@ const ImportEvmNft = () => {
           errorMessages={formState.errors.collectionName}
           value={collectionName}
         />
-        <Text style={WarningStyle}>{warning}</Text>
-        <View style={AddTokenContainerStyle}>
-          <TouchableOpacity
-            style={PrimaryButtonStyle}
-            disabled={
-              !isValidContract ||
-              !isValidName ||
-              smartContract === '' ||
-              collectionName === '' ||
-              chainOptions.length === 0 ||
-              checking ||
-              loading
-            }
-            onPress={handleAddToken}>
-            <Text style={PrimaryTextStyle}>{i18n.importEvmNft.addNft}</Text>
-          </TouchableOpacity>
-        </View>
+
+        {!!formState.errors.smartContract.length &&
+          formState.errors.smartContract.map(err => <Warning style={{ marginBottom: 8 }} isDanger message={err} />)}
+
+        <SubmitButton
+          title={i18n.importEvmNft.addNft}
+          activeOpacity={BUTTON_ACTIVE_OPACITY}
+          onPress={handleAddToken}
+          disabled={isDisableAddNFT}
+        />
+
+        <QrScannerScreen
+          qrModalVisible={isShowQrModalVisible}
+          onPressCancel={() => setShowQrModalVisible(false)}
+          onChangeAddress={handleChangeValue('smartContract')}
+        />
       </View>
     </ContainerWithSubHeader>
   );

@@ -59,7 +59,7 @@ export const nftReducer = (state: NftScreenState, { type, payload }: NftScreenAc
       return {
         ...state,
         screen: 'Collection',
-        title: payload.collection?.collectionName || i18n.title.nftList,
+        title: payload.collection.collectionName ? `${payload.collection.collectionName} (${payload.collection.itemCount})` : i18n.title.nftList,
         collection: payload.collection,
         nft: undefined,
       };

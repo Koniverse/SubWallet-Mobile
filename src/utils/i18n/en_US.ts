@@ -176,10 +176,10 @@ export const en = {
     unitSelection: 'Unit Selection',
     filters: 'Filters',
     importEvmNft: 'Import EVM NFT',
-    nftCollections: 'NFT Collections',
+    nftCollections: 'Your Collectibles',
     nftList: 'NFT List',
     nftDetail: 'NFT Detail',
-    sendNft: 'Send NFT',
+    transferNft: 'Transfer NFT',
     authorizeTransaction: 'Authorize transaction',
     metadataTitlePart1: 'Approving this update will sync your metadata for the',
     metadataTitlePart2: 'chain from',
@@ -204,13 +204,14 @@ export const en = {
     swap: 'Swap',
   },
   nftScreen: {
-    nftAppearHere: 'Your NFTs will appear here',
+    nftAppearHere: 'Your NFT will appear here',
     dontSeeNft: "Don't see your NFTs?",
     importNft: 'Import NFTs',
     nftDetail: {
       description: 'Description',
       rarity: 'Rarity',
       properties: 'Properties',
+      resourcesOrInventory: 'Resources or Inventory',
     },
   },
   importEvmNft: {
@@ -220,7 +221,7 @@ export const en = {
     cancel: 'Cancel',
     addNft: 'Add NFT',
   },
-  sendNft: {
+  transferNft: {
     send: 'Send',
     nft: 'NFT',
     chain: 'Chain',

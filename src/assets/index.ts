@@ -5,6 +5,7 @@ const SubWalletLogo = React.lazy(() => import('./sub-wallet-logo.svg'));
 const SubWalletLogo2 = React.lazy(() => import('./logo-subwallet.svg'));
 const CheckBoxIcon = React.lazy(() => import('./checkbox.svg'));
 const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
+const NftIcon = React.lazy(() => import('./logo-nft.svg'));
 
 export const Logo = {
   SubWallet: SubWalletLogo,
@@ -15,6 +16,7 @@ export const SVGImages = {
   CheckBoxIcon: CheckBoxIcon,
   CheckBoxFilledIcon: CheckBoxFilledIcon,
   SubWallet2: SubWalletLogo2,
+  NftIcon: NftIcon,
 };
 
 export const Images = {

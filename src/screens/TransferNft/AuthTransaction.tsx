@@ -1,13 +1,18 @@
+import { formatBalance } from '@polkadot/util';
 import { NftItem, RequestNftForceUpdate } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
+import { BalanceField } from 'components/Field/Balance';
+import { NetworkField } from 'components/Field/Network';
 import { PasswordField } from 'components/Field/Password';
+import ImagePreview from 'components/ImagePreview';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
+  ScrollView,
   StyleProp,
   Text,
   TextStyle,
@@ -18,15 +23,16 @@ import {
 import { useToast } from 'react-native-toast-notifications';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
-import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
-import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction } from '../../messaging';
+import { ButtonStyle, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import i18n from 'utils/i18n/i18n';
+import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction } from '../../messaging';
 
 interface Props {
   setShowConfirm: (val: boolean) => void;
   senderAccount: AccountJson;
   substrateTransferParams: SubstrateTransferParams | null;
+  collectionImage?: string;
   setShowResult: (val: boolean) => void;
   setExtrinsicHash: (val: string) => void;
   setIsTxSuccess: (val: boolean) => void;
@@ -44,6 +50,11 @@ interface AddressProxy {
   signPassword: string;
 }
 
+interface FeeInfo {
+  value: string;
+  symbol: string;
+}
+
 const AuthContainerStyle: StyleProp<ViewStyle> = {
   paddingLeft: 15,
   paddingRight: 15,
@@ -51,19 +62,34 @@ const AuthContainerStyle: StyleProp<ViewStyle> = {
   paddingTop: 10,
 };
 
+const ImageContainerStyle: StyleProp<ViewStyle> = {
+  display: 'flex',
+  alignItems: 'center',
+};
+
+const ImageStyle: StyleProp<ViewStyle> = {
+  width: 200,
+  height: 200,
+  borderRadius: 10,
+};
+
+const NftNameTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mediumText,
+  ...FontSemiBold,
+  color: ColorMap.light,
+  marginTop: 8,
+  marginBottom: 16,
+  textAlign: 'center',
+};
+
 const SubmitButtonStyle: StyleProp<ViewStyle> = {
   ...ButtonStyle,
-  marginTop: 10,
+  marginTop: 16,
 };
 
 const SubmitButtonTextStyle: StyleProp<TextStyle> = {
   ...TextButtonStyle,
   color: ColorMap.light,
-};
-
-const FeeStyle: StyleProp<TextStyle> = {
-  fontSize: 16,
-  marginBottom: 20,
 };
 
 const formConfig = {
@@ -82,6 +108,7 @@ const AuthTransaction = (props: Props) => {
     web3TransferParams,
     senderAccount,
     setShowResult,
+    collectionImage,
     chain,
     nftItem,
     setIsTxSuccess,
@@ -110,7 +137,20 @@ const AuthTransaction = (props: Props) => {
   const web3Gas = web3TransferParams !== null ? web3TransferParams.estimatedGas : null;
   const web3BalanceError = web3TransferParams !== null ? web3TransferParams.balanceError : false;
 
+  const nftName = useMemo((): string => {
+    return nftItem.name ? nftItem.name : '#' + nftItem.id;
+  }, [nftItem.id, nftItem.name]);
+
   const [balanceError] = useState(substrateTransferParams !== null ? substrateBalanceError : web3BalanceError);
+
+  const feeInfo = useMemo((): FeeInfo => {
+    const raw = substrateGas || web3Gas || '0';
+
+    return {
+      value: raw.split(' ')[0] || '0',
+      symbol: raw.split(' ')[1] || 'Token',
+    };
+  }, [substrateGas, web3Gas]);
 
   const onClose = useCallback(() => {
     setShowConfirm(false);
@@ -312,14 +352,23 @@ const AuthTransaction = (props: Props) => {
   }, [senderInfoSubstrate]);
 
   return (
-    <ContainerWithSubHeader
-      title={i18n.title.authorizeTransaction}
-      onPressBack={onClose}
-      style={{ width: '100%', height: '100%', top: 0 }}>
-      <View style={AuthContainerStyle}>
-        <Text style={FeeStyle}>Fees of {substrateGas || web3Gas} will be applied to the submission</Text>
+    <ContainerWithSubHeader title={nftName} onPressBack={onClose}>
+      <ScrollView style={AuthContainerStyle}>
+        <View style={ImageContainerStyle}>
+          <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
+        </View>
+        <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
 
-        <AddressField label={'Sending from my account'} address={senderAccount.address} />
+        <AddressField label={i18n.common.sendFromAddress} address={senderAccount.address} />
+        <AddressField label={i18n.common.sendToAddress} address={recipientAddress} />
+        <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
+        <BalanceField
+          label={i18n.common.networkFee}
+          value={feeInfo.value}
+          token={feeInfo.symbol}
+          decimal={0}
+          si={formatBalance.findSi('-')}
+        />
 
         <PasswordField
           ref={formState.refs.password}
@@ -328,6 +377,7 @@ const AuthTransaction = (props: Props) => {
           defaultValue={formState.data.password}
           errorMessages={formState.errors.password || [passwordError]}
           onSubmitField={onSubmitField('password')}
+          autoFocus={true}
         />
 
         <TouchableOpacity
@@ -337,14 +387,15 @@ const AuthTransaction = (props: Props) => {
               backgroundColor: loading ? 'rgba(0, 75, 255, 0.25)' : ColorMap.secondary,
             },
           ]}
+          disabled={loading}
           onPress={handleSignAndSubmit}>
           {!loading ? (
-            <Text style={SubmitButtonTextStyle}>{i18n.sendNft.signAndSubmit}</Text>
+            <Text style={SubmitButtonTextStyle}>{i18n.transferNft.signAndSubmit}</Text>
           ) : (
             <ActivityIndicator animating={true} />
           )}
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </ContainerWithSubHeader>
   );
 };

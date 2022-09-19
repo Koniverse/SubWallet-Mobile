@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isValidAddress } from '@subwallet/extension-koni-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { NetworkField } from 'components/Field/Network';
 import ImagePreview from 'components/ImagePreview';
 import { InputAddress } from 'components/Input/InputAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
@@ -11,10 +12,10 @@ import { ActivityIndicator, StyleProp, Text, TextStyle, TouchableOpacity, View, 
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
-import AuthTransaction from 'screens/SendNft/AuthTransaction';
+import AuthTransaction from 'screens/TransferNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
+import { ButtonStyle, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
 import { RootNavigationProps, SendNftProps } from 'types/routes';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
@@ -24,7 +25,7 @@ import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import TransferResult from './TransferResult';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
   paddingBottom: 15,
   paddingTop: 25,
 };
@@ -32,7 +33,6 @@ const WrapperStyle: StyleProp<ViewStyle> = {
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   alignItems: 'center',
-  marginBottom: 20,
 };
 
 const ImageStyle: StyleProp<ViewStyle> = {
@@ -41,35 +41,22 @@ const ImageStyle: StyleProp<ViewStyle> = {
   borderRadius: 10,
 };
 
-const InputAddressStyle: StyleProp<any> = {
-  marginBottom: 20,
+const InputStyle: StyleProp<any> = {
+  marginBottom: 8,
 };
 
-const TransferMetaStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  flexDirection: 'row',
-  borderStyle: 'dashed',
-  borderWidth: 2,
-  borderColor: ColorMap.borderNftMeta,
-  borderRadius: 8,
-  padding: 10,
-  marginTop: 20,
-};
-
-const MetaTitleStyle: StyleProp<TextStyle> = {
-  fontSize: 14,
-  color: ColorMap.iconNeutralColor,
-};
-
-const MetaValueStyle: StyleProp<TextStyle> = {
-  textAlign: 'right',
-  fontSize: 14,
+const NftNameTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mediumText,
+  ...FontSemiBold,
+  color: ColorMap.light,
+  marginTop: 8,
+  marginBottom: 16,
+  textAlign: 'center',
 };
 
 const SendButtonStyle: StyleProp<ViewStyle> = {
   ...ButtonStyle,
-  marginTop: 30,
+  marginTop: 16,
   backgroundColor: ColorMap.secondary,
 };
 
@@ -86,7 +73,7 @@ const isValidRecipient = (address: string, isEthereum: boolean) => {
   }
 };
 
-const SendNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
+const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
   const { show } = useToast();
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -213,6 +200,7 @@ const SendNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
       <AuthTransaction
         chain={nftItem.chain as string}
         nftItem={nftItem}
+        collectionImage={collectionImage}
         setShowConfirm={setShowConfirm}
         senderAccount={currentAccount}
         recipientAddress={recipientAddress}
@@ -228,37 +216,31 @@ const SendNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
   }
 
   return (
-    <ContainerWithSubHeader title={i18n.title.sendNft} onPressBack={goBack}>
+    <ContainerWithSubHeader
+      title={i18n.title.transferNft}
+      onPressBack={goBack}
+      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : ''}
+      disableRightButton={loading}
+      onPressRightIcon={handleSend}>
       <View style={WrapperStyle}>
         {!showTransferResult && (
           <View>
             <View style={ImageContainerStyle}>
               <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
             </View>
+            <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
             <InputAddress
               ref={inputAddressRef}
               onPressQrButton={openQrScan}
-              containerStyle={InputAddressStyle}
+              containerStyle={InputStyle}
               label={i18n.common.sendToAddress}
               value={recipientAddress}
               onChange={onChangeReceiverAddress}
             />
-
-            <View style={TransferMetaStyle}>
-              <View>
-                <Text style={MetaTitleStyle}>{i18n.sendNft.nft}</Text>
-                <Text style={MetaTitleStyle}>{i18n.sendNft.chain}</Text>
-              </View>
-
-              <View>
-                <Text style={MetaValueStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
-                <Text style={[MetaValueStyle, { textTransform: 'capitalize' }]}>{networkJson?.chain}</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity style={SendButtonStyle} onPress={handleSend}>
+            <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
+            <TouchableOpacity style={SendButtonStyle} disabled={loading} onPress={handleSend}>
               {!loading ? (
-                <Text style={SendButtonTextStyle}>{i18n.sendNft.send}</Text>
+                <Text style={SendButtonTextStyle}>{i18n.transferNft.send}</Text>
               ) : (
                 <ActivityIndicator animating={true} />
               )}
@@ -286,4 +268,4 @@ const SendNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
   );
 };
 
-export default React.memo(SendNft);
+export default React.memo(TransferNft);

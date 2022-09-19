@@ -2,11 +2,12 @@ import { NftCollection, NftItem as _NftItem } from '@subwallet/extension-base/ba
 import { FlatListScreen } from 'components/FlatListScreen';
 import useFetchNftItem from 'hooks/useFetchNftItem';
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, Platform, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, SafeAreaView, StyleProp, View } from 'react-native';
 import { NftScreenActionParams, NftScreenActionType, NftScreenState } from 'reducers/nftScreen';
-import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
-import NftCollectionImportText from 'screens/Home/NFT/Shared/NftCollectionImportText';
 import NftItem from './NftItem';
+import { EmptyList } from 'components/EmptyList';
+import i18n from 'utils/i18n/i18n';
+import { Aperture } from 'phosphor-react-native';
 
 interface Props {
   dispatchNftState: React.Dispatch<NftScreenActionParams>;
@@ -15,14 +16,11 @@ interface Props {
 
 const NftItemListStyle: StyleProp<any> = {
   height: '100%',
+  paddingBottom: 16,
 };
 
-if (Platform.OS === 'ios') {
-  NftItemListStyle.paddingBottom = 50;
-}
-
 const renderEmpty = () => {
-  return <EmptyList />;
+  return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
 };
 
 const filteredNftItem = (items: _NftItem[], searchString: string) => {
@@ -60,10 +58,12 @@ const NftItemList = ({ dispatchNftState, nftState }: Props) => {
         renderItem={renderItem}
         renderListEmptyComponent={renderEmpty}
         filterFunction={filteredNftItem}
-        afterListItem={<NftCollectionImportText />}
         items={nftItems}
         onPressBack={handleBack}
+        numberColumns={2}
+        searchMarginBottom={16}
       />
+      <SafeAreaView />
     </View>
   );
 };

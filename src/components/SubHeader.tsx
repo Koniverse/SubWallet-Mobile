@@ -88,11 +88,11 @@ export const SubHeader = ({
         />
       )}
 
-      {!!rightIcon && (
+      {(!!rightIcon || !!rightButtonTitle) && (
         <Button
           icon={rightIcon}
           onPress={onPressRightIcon}
-          style={{ position: 'absolute', right: 16, top: 0 }}
+          style={{ position: 'absolute', right: 16, top: 0}}
           disabled={disableRightButton}
           color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
           title={rightButtonTitle}

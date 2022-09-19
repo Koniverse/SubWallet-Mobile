@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { FlatList, ListRenderItemInfo, StyleProp, TextInput, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
@@ -31,8 +31,15 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
+  searchMarginBottom?: number;
   placeholder?: string;
+  numberColumns?: number;
 }
+
+const ColumnWrapperStyle: StyleProp<ViewStyle> = {
+  justifyContent: 'space-between',
+  marginBottom: 16,
+};
 
 export function FlatListScreen<T>({
   items,
@@ -48,6 +55,8 @@ export function FlatListScreen<T>({
   renderListEmptyComponent,
   filterFunction,
   placeholder = i18n.common.search,
+  numberColumns = 1,
+  searchMarginBottom = 8,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -88,14 +97,17 @@ export function FlatListScreen<T>({
             onEndReached={onLoadMore}
             renderItem={renderItem}
             onEndReachedThreshold={0.3}
+            numColumns={numberColumns}
+            columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
+            contentContainerStyle={numberColumns > 1 ? { marginHorizontal: -8 } : undefined}
           />
         ) : (
           renderListEmptyComponent()
         )}
       </>
     );
-  }, [isLoading, lazyList, onLoadMore, renderItem, renderListEmptyComponent]);
+  }, [isLoading, lazyList, numberColumns, onLoadMore, renderItem, renderListEmptyComponent]);
 
   const renderContent = () => (
     <View style={{ ...sharedStyles.layoutContainer }}>
@@ -105,7 +117,7 @@ export function FlatListScreen<T>({
         onClearSearchString={() => setSearchString('')}
         onSearch={setSearchString}
         searchText={searchString}
-        style={{ marginBottom: 8 }}
+        style={{ marginBottom: searchMarginBottom }}
         searchRef={searchRef}
       />
       {children}
