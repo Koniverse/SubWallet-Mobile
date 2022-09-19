@@ -1,11 +1,13 @@
 import { Images } from 'assets/index';
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Image, StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
 import Video from 'react-native-video';
 import { ColorMap } from 'styles/color';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
+  borderRadius?: number;
+  borderPlace?: 'full' | 'top' | 'bottom';
   mainUrl?: string;
   backupUrl?: string;
 }
@@ -29,20 +31,18 @@ interface ImageAction {
 
 const ContainerStyle: StyleProp<any> = {
   position: 'relative',
-  backgroundColor: ColorMap.dark,
+  backgroundColor: ColorMap.dark2,
 };
 
 const ImageStyle: StyleProp<any> = {
   width: '100%',
   height: '100%',
   resizeMode: 'contain',
-  borderRadius: 10,
 };
 
 const VideoStyle: StyleProp<any> = {
   width: '100%',
   height: '100%',
-  borderRadius: 10,
 };
 
 const IndicatorStyle: StyleProp<any> = {
@@ -71,13 +71,36 @@ const DEFAULT_IMAGE_STATE: ImageState = {
   loading: true,
 };
 
-const ImagePreview = ({ style, mainUrl, backupUrl }: Props) => {
+const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: Props) => {
   const [imageState, dispatchImageState] = useReducer(
     handleReducer,
     { ...DEFAULT_IMAGE_STATE, url: backupUrl },
     handleIntState,
   );
   const { url, showImage, imageError, loading } = imageState;
+
+  const borderStyle = useMemo((): StyleProp<ViewStyle> => {
+    if (borderRadius) {
+      if (borderPlace) {
+        switch (borderPlace) {
+          case 'full':
+            return {
+              borderRadius: borderRadius,
+            };
+          case 'bottom':
+            return {
+              borderBottomLeftRadius: borderRadius,
+              borderBottomRightRadius: borderRadius,
+            };
+          case 'top':
+            return {
+              borderTopLeftRadius: borderRadius,
+              borderTopRightRadius: borderRadius,
+            };
+        }
+      }
+    }
+  }, [borderPlace, borderRadius]);
 
   const videoRef = useRef<Video>(null);
 
@@ -127,7 +150,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl }: Props) => {
     <View style={[ContainerStyle, style]}>
       {showImage ? (
         <Image
-          style={ImageStyle}
+          style={[ImageStyle, borderStyle]}
           source={{ uri: url }}
           onLoad={handleOnLoad}
           onError={handleImageError}
@@ -138,7 +161,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl }: Props) => {
           ref={videoRef}
           resizeMode={'contain'}
           source={{ uri: url }}
-          style={VideoStyle}
+          style={[VideoStyle, borderStyle]}
           onError={handleVideoError}
           onLoad={handleOnLoad}
           repeat={true}

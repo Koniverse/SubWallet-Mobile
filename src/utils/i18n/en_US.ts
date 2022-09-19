@@ -176,7 +176,7 @@ export const en = {
     unitSelection: 'Unit Selection',
     filters: 'Filters',
     importEvmNft: 'Import EVM NFT',
-    nftCollections: 'NFT Collections',
+    nftCollections: 'Your Collectibles',
     nftList: 'NFT List',
     nftDetail: 'NFT Detail',
     sendNft: 'Send NFT',

@@ -7,7 +7,7 @@ import React, { useCallback } from 'react';
 import { StyleProp, View, Text, TouchableOpacity, ViewStyle, ScrollView, TextStyle, Platform } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { ButtonStyle, TextButtonStyle } from 'styles/sharedStyles';
+import { ButtonStyle, FontMedium, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { RootState } from 'stores/index';
@@ -25,10 +25,11 @@ const ContainerDetailStyle: StyleProp<any> = {
 };
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
-  marginTop: 5,
+  marginTop: 24,
   display: 'flex',
   flexWrap: 'wrap',
   flexDirection: 'row',
+  marginHorizontal: -8,
 };
 
 if (Platform.OS === 'ios') {
@@ -36,34 +37,44 @@ if (Platform.OS === 'ios') {
 }
 
 const PropDetailStyle: StyleProp<ViewStyle> = {
-  paddingVertical: 5,
-  paddingHorizontal: 10,
-  backgroundColor: ColorMap.popupBackground,
-  // boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.15)',
+  paddingTop: 4,
+  paddingBottom: 10,
+  paddingHorizontal: 16,
+  backgroundColor: ColorMap.dark2,
   borderRadius: 5,
-  marginRight: 10,
-  marginBottom: 10,
 };
 
-const PropTitleStyle: StyleProp<any> = {
-  textTransform: 'uppercase',
-  color: ColorMap.iconNeutralColor,
-  fontSize: 13,
+const PropWrapperStyle: StyleProp<ViewStyle> = {
+  width: '33.3333333%',
+  paddingHorizontal: 8,
+  marginBottom: 16,
+};
+
+const PropTitleStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.smallText,
+  ...FontMedium,
+  color: ColorMap.disabled,
+  fontSize: 12,
 };
 
 const PropValueStyle: StyleProp<any> = {
-  fontSize: 14,
+  ...sharedStyles.smallText,
+  ...FontMedium,
+  fontSize: 15,
   color: ColorMap.light,
 };
 
-const AttTitleStyle: StyleProp<any> = {
-  fontSize: 16,
-  fontWeight: '500',
-  marginTop: 20,
+const AttTitleStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mediumText,
+  ...FontSemiBold,
+  marginTop: 12,
   color: ColorMap.light,
 };
 
-const AttValueStyle: StyleProp<any> = {
+const AttValueStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  marginTop: 8,
   fontSize: 15,
   color: ColorMap.iconNeutralColor,
 };
@@ -73,10 +84,9 @@ const ImageContainerStyle: StyleProp<any> = {
   alignItems: 'center',
 };
 
-const ImageStyle: StyleProp<any> = {
-  width: 300,
-  height: 300,
-  borderRadius: 10,
+const ImageStyle: StyleProp<ViewStyle> = {
+  width: '100%',
+  aspectRatio: 1,
 };
 
 const SendContainerStyle: StyleProp<ViewStyle> = {
@@ -96,18 +106,22 @@ const SendButtonTextStyle: StyleProp<TextStyle> = {
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
   if (valueDict.type && valueDict.type === 'string') {
     return (
-      <View style={PropDetailStyle} key={key}>
-        <Text style={PropTitleStyle}>{title}</Text>
-        <Text style={PropValueStyle}>{valueDict.value}</Text>
+      <View style={PropWrapperStyle} key={key}>
+        <View style={PropDetailStyle}>
+          <Text style={PropTitleStyle}>{title}</Text>
+          <Text style={PropValueStyle}>{valueDict.value}</Text>
+        </View>
       </View>
     );
   }
 
   if (!valueDict.type) {
     return (
-      <View style={PropDetailStyle} key={key}>
-        <Text style={PropTitleStyle}>{title}</Text>
-        <Text style={PropValueStyle}>{valueDict.value}</Text>
+      <View style={PropWrapperStyle} key={key}>
+        <View style={PropDetailStyle}>
+          <Text style={PropTitleStyle}>{title}</Text>
+          <Text style={PropValueStyle}>{valueDict.value}</Text>
+        </View>
       </View>
     );
   }
@@ -145,7 +159,13 @@ const NftDetail = ({ nftState }: Props) => {
   return (
     <ScrollView style={ContainerDetailStyle}>
       <View style={ImageContainerStyle}>
-        <ImagePreview style={ImageStyle} mainUrl={data.image} backupUrl={collectionImage} />
+        <ImagePreview
+          style={ImageStyle}
+          mainUrl={data.image}
+          backupUrl={collectionImage}
+          borderRadius={5}
+          borderPlace={'full'}
+        />
       </View>
       {!isAccountAll && (
         <View style={SendContainerStyle}>

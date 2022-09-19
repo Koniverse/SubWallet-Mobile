@@ -54,6 +54,7 @@ const NftCollectionList = ({ dispatchNftState, nftCollections }: Props) => {
         filterFunction={filteredCollection}
         afterListItem={<NftCollectionImportText />}
         items={nftCollections}
+        numberColumns={2}
       />
       <SafeAreaView />
     </View>

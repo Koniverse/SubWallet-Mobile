@@ -1,6 +1,6 @@
 import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import React from 'react';
-import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import ImagePreview from 'components/ImagePreview';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -10,17 +10,24 @@ interface Props {
   onPress: () => void;
 }
 
-const ContainerStyle: StyleProp<any> = {
+const WrapperStyle: StyleProp<ViewStyle> = {
+  width: '50%',
+  paddingHorizontal: 8,
+};
+
+const ContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
   position: 'relative',
-  paddingVertical: 12,
+  borderRadius: 5,
+  backgroundColor: ColorMap.dark2,
 };
 
 const LogoStyle: StyleProp<any> = {
-  width: 60,
-  height: 60,
-  borderRadius: 10,
+  width: '100%',
+  borderTopLeftRadius: 5,
+  borderTopRightRadius: 5,
+  aspectRatio: 1,
 };
 
 const InfoStyle: StyleProp<any> = {
@@ -31,38 +38,31 @@ const InfoStyle: StyleProp<any> = {
   alignItems: 'center',
   width: '100%',
   flex: 1,
-  paddingHorizontal: 10,
-  borderBottom: 1,
+  marginTop: 10,
+  marginBottom: 16,
+  paddingHorizontal: 12,
 };
 
 const NameStyle: StyleProp<any> = {
-  ...sharedStyles.smallText,
+  ...sharedStyles.mediumText,
   ...FontSemiBold,
   width: '100%',
   color: ColorMap.light,
-};
-
-const SeparatorStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  height: 2,
-  width: '100%',
-  position: 'absolute',
-  bottom: 0,
-  left: 70,
 };
 
 const NftItem = ({ nftItem, onPress }: Props) => {
   const { name, image } = nftItem;
 
   return (
-    <TouchableOpacity style={ContainerStyle} onPress={onPress} activeOpacity={0.8}>
-      <ImagePreview mainUrl={image} style={LogoStyle} />
-      <View style={InfoStyle}>
-        <Text style={NameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
-          {name}
-        </Text>
+    <TouchableOpacity style={WrapperStyle} onPress={onPress} activeOpacity={0.8}>
+      <View style={ContainerStyle}>
+        <ImagePreview mainUrl={image} style={LogoStyle} borderPlace={'top'} borderRadius={5} />
+        <View style={InfoStyle}>
+          <Text style={NameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
+            {name}
+          </Text>
+        </View>
       </View>
-      <View style={SeparatorStyle} />
     </TouchableOpacity>
   );
 };

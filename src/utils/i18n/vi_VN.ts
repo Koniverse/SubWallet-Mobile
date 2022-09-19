@@ -175,7 +175,7 @@ export const vi = {
     qrScanner: 'QR Scanner',
     unitSelection: 'Unit Selection',
     filters: 'Filters',
-    nftCollections: 'NFT Collections',
+    nftCollections: 'Your Collectibles',
     nftList: 'NFT List',
     nftDetail: 'NFT Detail',
     importEvmNft: 'Import EVM NFT',

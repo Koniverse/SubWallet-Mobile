@@ -63,6 +63,7 @@ const NftItemList = ({ dispatchNftState, nftState }: Props) => {
         afterListItem={<NftCollectionImportText />}
         items={nftItems}
         onPressBack={handleBack}
+        numberColumns={2}
       />
     </View>
   );
