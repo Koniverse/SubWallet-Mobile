@@ -10,6 +10,9 @@ import NftItemList from 'screens/Home/NFT/Item/NftItemList';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import { RootState } from 'stores/index';
 import NftDetail from './Detail/NftDetail';
+import { Plus } from 'phosphor-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'types/routes';
 
 const EMPTY_NFT = (
   <View>
@@ -27,6 +30,7 @@ const NFTScreen = () => {
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
+  const navigation = useNavigation<RootNavigationProps>();
 
   useEffect(() => {
     dispatchNftState({ type: NftScreenActionType.OPEN_COLLECTION_LIST, payload: null });
@@ -72,6 +76,8 @@ const NFTScreen = () => {
       onPressBack={goBack}
       title={nftState.title}
       style={ContainerHeaderStyle}
+      rightIcon={Plus}
+      onPressRightIcon={() => navigation.navigate('ImportEvmNft')}
       isShowPlaceHolder={false}>
       <NftContent />
     </ContainerWithSubHeader>

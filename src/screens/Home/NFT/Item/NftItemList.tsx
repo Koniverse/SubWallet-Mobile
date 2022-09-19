@@ -5,7 +5,6 @@ import React, { useCallback } from 'react';
 import { ListRenderItemInfo, Platform, StyleProp, View } from 'react-native';
 import { NftScreenActionParams, NftScreenActionType, NftScreenState } from 'reducers/nftScreen';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
-import NftCollectionImportText from 'screens/Home/NFT/Shared/NftCollectionImportText';
 import NftItem from './NftItem';
 
 interface Props {
@@ -60,7 +59,6 @@ const NftItemList = ({ dispatchNftState, nftState }: Props) => {
         renderItem={renderItem}
         renderListEmptyComponent={renderEmpty}
         filterFunction={filteredNftItem}
-        afterListItem={<NftCollectionImportText />}
         items={nftItems}
         onPressBack={handleBack}
         numberColumns={2}
