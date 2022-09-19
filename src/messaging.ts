@@ -137,7 +137,7 @@ export async function clearWebRunnerHandler(id: string): Promise<boolean> {
   if (handlerTypeMapValue) {
     delete handlerTypeMap[id];
 
-    if (handlerTypeMapValue === 'PRI' || handlerTypeMapValue === 'PUB') {
+    if (['PRI', 'PUB', 'EVM'].includes(handlerTypeMapValue)) {
       return cancelSubscription(id);
     }
   }
