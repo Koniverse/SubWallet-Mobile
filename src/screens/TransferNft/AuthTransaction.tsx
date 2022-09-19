@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
+  ScrollView,
   StyleProp,
   Text,
   TextStyle,
@@ -352,7 +353,7 @@ const AuthTransaction = (props: Props) => {
 
   return (
     <ContainerWithSubHeader title={nftName} onPressBack={onClose}>
-      <View style={AuthContainerStyle}>
+      <ScrollView style={AuthContainerStyle}>
         <View style={ImageContainerStyle}>
           <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
         </View>
@@ -376,6 +377,7 @@ const AuthTransaction = (props: Props) => {
           defaultValue={formState.data.password}
           errorMessages={formState.errors.password || [passwordError]}
           onSubmitField={onSubmitField('password')}
+          autoFocus={true}
         />
 
         <TouchableOpacity
@@ -393,7 +395,7 @@ const AuthTransaction = (props: Props) => {
             <ActivityIndicator animating={true} />
           )}
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </ContainerWithSubHeader>
   );
 };
