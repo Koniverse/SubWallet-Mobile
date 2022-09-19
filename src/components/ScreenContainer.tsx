@@ -1,34 +1,34 @@
 import React from 'react';
 import { SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import {
-  getStatusBarPlaceholderStyle,
-  sharedStyles,
-  STATUS_BAR_HEIGHT,
-  STATUS_BAR_LIGHT_CONTENT,
-} from 'styles/sharedStyles';
+import { sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 
 interface Props {
   children: JSX.Element;
-  placeholderBgc?: string;
+  backgroundColor?: string;
+  safeAreaBottomViewColor?: string;
 }
 
-const containerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark1,
-  position: 'relative',
-  ...sharedStyles.container,
-  paddingTop: STATUS_BAR_HEIGHT + 13.5,
-};
+function getContainerStyle(backgroundColor: string): StyleProp<any> {
+  return {
+    backgroundColor: backgroundColor,
+    position: 'relative',
+    ...sharedStyles.container,
+  };
+}
 
-export const ScreenContainer = ({ children, placeholderBgc = ColorMap.dark2 }: Props) => {
+export const ScreenContainer = ({
+  children,
+  backgroundColor = ColorMap.dark1,
+  safeAreaBottomViewColor = ColorMap.dark1,
+}: Props) => {
   return (
-    <View style={containerStyle}>
-      <View style={getStatusBarPlaceholderStyle(placeholderBgc)} />
+    <View style={getContainerStyle(backgroundColor)}>
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
-      {children}
-      <SafeAreaView />
+      <View style={{ flex: 1, overflow: 'hidden', marginTop: 13 }}>{children}</View>
+      <SafeAreaView style={{ backgroundColor: safeAreaBottomViewColor }} />
     </View>
   );
 };

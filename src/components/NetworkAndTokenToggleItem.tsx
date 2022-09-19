@@ -3,7 +3,7 @@ import { StyleProp, Switch, View } from 'react-native';
 import Text from 'components/Text';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 interface Props {
   itemName: string;
   itemKey: string;
@@ -50,7 +50,7 @@ export const NetworkAndTokenToggleItem = ({
   isDisableSwitching,
 }: Props) => {
   return (
-    <View style={{ ...ContainerHorizontalPadding }}>
+    <View>
       <View style={itemArea}>
         <View style={itemBodyArea}>
           <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 40)}</View>

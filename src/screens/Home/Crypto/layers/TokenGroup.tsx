@@ -178,7 +178,7 @@ const TokenGroupLayer = ({
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
         {!isGroupDetail && <Header navigation={navigation} onPressSearchButton={onPressSearchButton} />}
         {isGroupDetail && (

@@ -371,7 +371,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   }, []);
 
   return (
-    <ScreenContainer>
+    <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
         <View style={browserTabHeaderWrapperStyle}>
           <AccountSettingButton navigation={navigation} />

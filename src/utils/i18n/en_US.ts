@@ -189,6 +189,7 @@ export const en = {
     requestToSendPayload: 'Request to send payload',
     manageDAppAccess: 'Manage DApp Access',
     moreOptions: 'More Options',
+    scanQrCode: 'Scan QR Code',
   },
   tabName: {
     crypto: 'Crypto',

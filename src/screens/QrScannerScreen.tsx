@@ -1,7 +1,7 @@
 import React from 'react';
-import { StatusBar, StyleProp, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, StatusBar, StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from 'components/Text';
-import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BUTTON_ACTIVE_OPACITY, deviceHeight, deviceWidth } from '../constant';
 import { X } from 'phosphor-react-native';
@@ -41,7 +41,7 @@ const topOverlay: StyleProp<any> = {
   height: topOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
-  paddingTop: STATUS_BAR_HEIGHT + 12.5,
+  paddingTop: 13,
 };
 
 const bottomOverlay: StyleProp<any> = {
@@ -115,6 +115,7 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
 
   return (
     <Modal isVisible={qrModalVisible} style={{ flex: 1, width: '100%', margin: 0 }}>
+      <SafeAreaView style={{ backgroundColor: ColorMap.buttonOverlayButtonColor }} />
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
       <QRCodeScanner
         reactivate={true}
@@ -130,7 +131,9 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
           <View style={rectangleContainer}>
             <View style={topOverlay}>
               <View style={headerStyle}>
-                <Text style={{ ...sharedStyles.mediumText, color: ColorMap.light, ...FontSemiBold }}>Scan QR Code</Text>
+                <Text style={{ ...sharedStyles.mediumText, color: ColorMap.light, ...FontSemiBold }}>
+                  {i18n.title.scanQrCode}
+                </Text>
                 <TouchableOpacity
                   activeOpacity={BUTTON_ACTIVE_OPACITY}
                   style={cancelButtonStyle}
