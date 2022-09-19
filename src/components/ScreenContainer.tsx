@@ -27,7 +27,7 @@ export const ScreenContainer = ({
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
-      <View style={{ flex: 1, overflow: 'hidden' }}>{children}</View>
+      <View style={{ flex: 1, overflow: 'hidden', marginTop: 13 }}>{children}</View>
       <SafeAreaView style={{ backgroundColor: safeAreaBottomViewColor }} />
     </View>
   );

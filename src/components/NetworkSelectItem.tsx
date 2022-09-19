@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { NetworkSelectItemContent } from 'components/NetworkSelectItemContent';
-import { ContainerHorizontalPadding } from 'styles/sharedStyles';
 
 interface Props extends TouchableOpacityProps {
   itemName: string;
@@ -13,7 +12,7 @@ interface Props extends TouchableOpacityProps {
 
 export const NetworkSelectItem = ({ itemName, itemKey, isSelected, onSelectNetwork, defaultItemKey }: Props) => {
   return (
-    <TouchableOpacity onPress={onSelectNetwork} style={{ ...ContainerHorizontalPadding }}>
+    <TouchableOpacity onPress={onSelectNetwork}>
       <NetworkSelectItemContent
         itemName={itemName}
         itemKey={itemKey}
