@@ -15,6 +15,7 @@ function getButtonWrapperStyle(): StyleProp<any> {
   return {
     minHeight: 40,
     minWidth: 40,
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

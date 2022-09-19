@@ -2,12 +2,13 @@ import { SVGImages } from 'assets/index';
 import Text from 'components/Text';
 import { StyleProp, View } from 'react-native';
 import React, { Suspense } from 'react';
-import NftCollectionImportText from 'screens/Home/NFT/Shared/NftCollectionImportText';
+import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 
 const imageSize = 80;
 
 const EmptyListStyle: StyleProp<any> = {
+  position: 'relative',
   alignItems: 'center',
   height: '100%',
   justifyContent: 'center',
@@ -22,6 +23,10 @@ const FallBackStyle: StyleProp<any> = {
   height: imageSize,
 };
 
+const TextStyle: StyleProp<any> = {
+  color: ColorMap.light,
+};
+
 export const EmptyList = () => {
   return (
     <View style={EmptyListStyle}>
@@ -31,9 +36,8 @@ export const EmptyList = () => {
         </Suspense>
       </View>
       <View>
-        <Text>{i18n.nftScreen.nftAppearHere}</Text>
+        <Text style={TextStyle}>{i18n.nftScreen.nftAppearHere}</Text>
       </View>
-      <NftCollectionImportText />
     </View>
   );
 };

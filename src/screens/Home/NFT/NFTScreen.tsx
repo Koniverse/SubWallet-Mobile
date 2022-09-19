@@ -14,14 +14,11 @@ import { Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
 
-const EMPTY_NFT = (
-  <View>
-    <EmptyList />
-  </View>
-);
+const EMPTY_NFT = <EmptyList />;
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
+  position: 'relative',
 };
 
 const NFTScreen = () => {

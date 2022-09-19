@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, Platform, SafeAreaView, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, SafeAreaView, StyleProp, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import { NftScreenActionParams, NftScreenActionType } from 'reducers/nftScreen';
@@ -13,11 +13,8 @@ interface Props {
 
 const NftCollectionListStyle: StyleProp<any> = {
   height: '100%',
+  paddingBottom: 16,
 };
-
-if (Platform.OS === 'ios') {
-  NftCollectionListStyle.paddingBottom = 50;
-}
 
 const renderEmpty = () => {
   return <EmptyList />;

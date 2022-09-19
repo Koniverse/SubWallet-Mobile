@@ -23,7 +23,7 @@ const ContainerHeaderStyle: StyleProp<any> = {
 };
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
   marginTop: 10,
 };
 

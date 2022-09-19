@@ -21,7 +21,7 @@ interface Props {
 
 const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
-  paddingHorizontal: 20,
+  paddingHorizontal: 16,
 };
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
@@ -152,7 +152,7 @@ const NftDetail = ({ nftState }: Props) => {
       return;
     }
 
-    navigation.navigate('SendNft', { nftItem: data, collectionImage: collectionImage, collectionId: collectionId });
+    navigation.navigate('TransferNft', { nftItem: data, collectionImage: collectionImage, collectionId: collectionId });
   }, [currentAccount, isAccountAll, data, networkJson.isEthereum, collectionImage, collectionId, navigation, show]);
 
   return (

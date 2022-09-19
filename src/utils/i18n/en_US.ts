@@ -179,7 +179,7 @@ export const en = {
     nftCollections: 'Your Collectibles',
     nftList: 'NFT List',
     nftDetail: 'NFT Detail',
-    sendNft: 'Send NFT',
+    transferNft: 'Transfer NFT',
     authorizeTransaction: 'Authorize transaction',
     metadataTitlePart1: 'Approving this update will sync your metadata for the',
     metadataTitlePart2: 'chain from',
@@ -221,7 +221,7 @@ export const en = {
     cancel: 'Cancel',
     addNft: 'Add NFT',
   },
-  sendNft: {
+  transferNft: {
     send: 'Send',
     nft: 'NFT',
     chain: 'Chain',
