@@ -99,8 +99,8 @@ interface Props {
   onPressCancel: () => void;
   onChangeAddress: (data: string) => void;
   qrModalVisible: boolean;
-  networkKey: string;
-  token: string;
+  networkKey?: string;
+  token?: string;
 }
 
 export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible, networkKey, token }: Props) => {
@@ -158,21 +158,25 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
             </View>
             <View style={bottomOverlay}>
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: 22 }}>
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 20,
-                    borderWidth: 2,
-                    borderColor: ColorMap.secondary,
-                    marginBottom: 16,
-                  }}>
-                  {getNetworkLogo(networkKey, 34)}
-                </View>
+                {networkKey && (
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 20,
+                      borderWidth: 2,
+                      borderColor: ColorMap.secondary,
+                      marginBottom: 16,
+                    }}>
+                    {getNetworkLogo(networkKey, 34)}
+                  </View>
+                )}
 
-                <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.toAddressToSendFunds}`}</Text>
+                {token && (
+                  <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.toAddressToSendFunds}`}</Text>
+                )}
               </View>
             </View>
           </View>

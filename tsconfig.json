@@ -48,7 +48,9 @@
           "stores/*": ["./src/stores/*"],
           "styles/*": ["./src/styles/*"],
           "types/*": ["./src/types/*"],
-          "utils/*": ["./src/utils/*"]
+          "utils/*": ["./src/utils/*"],
+          "services/*": ["./src/services/*"],
+          "reducers/*": ["./src/reducers/*"]
      },                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                       /* List of folders to include type definitions from. */

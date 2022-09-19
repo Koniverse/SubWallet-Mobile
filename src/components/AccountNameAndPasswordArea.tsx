@@ -11,6 +11,13 @@ interface Props {
 }
 
 export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitField }: Props) => {
+  const _onChangePasswordValue = (currentValue: string) => {
+    if (formState.data.repeatPassword) {
+      onChangeValue('repeatPassword')('');
+    }
+    onChangeValue('password')(currentValue);
+  };
+
   return (
     <>
       <EditAccountInputText
@@ -26,7 +33,7 @@ export const AccountNameAndPasswordArea = ({ formState, onChangeValue, onSubmitF
         ref={formState.refs.password}
         label={formState.labels.password}
         defaultValue={formState.data.password}
-        onChangeText={onChangeValue('password')}
+        onChangeText={_onChangePasswordValue}
         errorMessages={formState.errors.password}
         onSubmitField={onSubmitField('password')}
       />

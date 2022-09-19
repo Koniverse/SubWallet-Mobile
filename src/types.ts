@@ -1,5 +1,10 @@
 import BigN from 'bignumber.js';
-import { BalanceItem, CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  BalanceItem,
+  CrowdloanParaState,
+  NftCollection,
+  NftItem,
+} from '@subwallet/extension-base/background/KoniTypes';
 
 export interface WebViewMessageBase<T> {
   id: string;

@@ -3,7 +3,7 @@ import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
-import { useNavigation } from '@react-navigation/native';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import { BrowserTabProps, RootNavigationProps } from 'types/routes';
 import {
   ArrowClockwise,
@@ -271,6 +271,18 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     initBrowserSv(nativeEvent);
   };
 
+  const goBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.dispatch(
+        StackActions.replace('Home', {
+          screen: 'Browser',
+        }),
+      );
+    }
+  };
+
   const bottomButtonList: BrowserActionButtonType[] = [
     {
       key: 'back',
@@ -314,9 +326,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     {
       key: 'home',
       icon: HouseSimple,
-      onPress: () => {
-        navigation.canGoBack() && navigation.goBack();
-      },
+      onPress: goBack,
     },
     {
       key: 'more',
@@ -382,12 +392,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
             )}
           </View>
 
-          <IconButton
-            icon={X}
-            onPress={() => {
-              navigation.canGoBack() && navigation.goBack();
-            }}
-          />
+          <IconButton icon={X} onPress={goBack} />
         </View>
         <View style={{ flex: 1, position: 'relative' }}>
           {isWebviewReady ? (

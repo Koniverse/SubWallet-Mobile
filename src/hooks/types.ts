@@ -1,7 +1,7 @@
 import BigN from 'bignumber.js';
 import { BalanceInfo } from '../types';
 import { TokenBalanceItemType } from 'types/ui-types';
-import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
+import { CrowdloanParaState, NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { BalanceValueType } from 'utils/chainBalances';
 import { ConfirmationSlice } from 'stores/types';
 
@@ -16,6 +16,13 @@ export type CrowdloanContributeValueType = {
   contribute: BalanceValueType;
 };
 
+export interface NftCollectionType {
+  nftCollections: NftCollection[];
+}
+
+export interface NftItemType {
+  nftItems: NftItem[];
+}
 export type ConfirmationType = keyof ConfirmationSlice['details'];
 
 export type ConfirmationItem = {

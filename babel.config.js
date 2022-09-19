@@ -22,6 +22,8 @@ module.exports = {
           styles: './src/styles',
           types: './src/types',
           utils: './src/utils',
+          services: './src/services',
+          reducers: './src/reducers',
         },
         root: ['.'],
       },

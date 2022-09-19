@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -13,17 +13,39 @@ interface Props {}
 
 let networkKeys: Array<string> | undefined;
 
-let cachePendingNetworkMap = {};
+let cachePendingNetworkMap: Record<string, boolean> = {};
 
 const filterFunction = (items: NetworkJson[], searchString: string) => {
   return items.filter(network => network.chain.toLowerCase().includes(searchString.toLowerCase()));
 };
 
+const processNetworkMap = (
+  networkMap: Record<string, NetworkJson>,
+  pendingKeys = Object.keys(cachePendingNetworkMap),
+  updateKeys = false,
+): NetworkJson[] => {
+  if (!networkKeys || updateKeys) {
+    networkKeys = Object.keys(networkMap).sort((a, b) => {
+      const aActive = pendingKeys.includes(a) ? cachePendingNetworkMap[a] : networkMap[a]?.active;
+      const bActive = pendingKeys.includes(b) ? cachePendingNetworkMap[b] : networkMap[b]?.active;
+
+      if (aActive === bActive) {
+        return 0;
+      } else if (aActive) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+  }
+
+  return networkKeys.map(key => networkMap[key]);
+};
+
 export const NetworksSetting = ({}: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const [currentNetworkList, setCurrentNetworkList] = useState(Object.values(networkMap));
   const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
-  const [needUpdateList, setNeedUpdateList] = useState(true);
+  const [currentNetworkList, setCurrentNetworkList] = useState(processNetworkMap(networkMap));
 
   useEffect(() => {
     setPendingNetworkMap(prevPendingNetworkMap => {
@@ -39,30 +61,8 @@ export const NetworksSetting = ({}: Props) => {
   }, [networkMap]);
 
   useEffect(() => {
-    const newNetworkMap = {};
-    if (!networkKeys || needUpdateList || networkKeys.length === 0) {
-      const pendingKeys = Object.keys(pendingNetworkMap);
-      networkKeys = Object.keys(networkMap).sort((a, b) => {
-        const aActive = pendingKeys.includes(a) ? pendingNetworkMap[a] : networkMap[a]?.active;
-        const bActive = pendingKeys.includes(b) ? pendingNetworkMap[b] : networkMap[b]?.active;
-
-        if (aActive === bActive) {
-          return 0;
-        } else if (aActive) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
-      setNeedUpdateList(false);
-    }
-
-    networkKeys.forEach(key => {
-      // @ts-ignore
-      newNetworkMap[key] = networkMap[key];
-    });
-    setCurrentNetworkList(Object.values(newNetworkMap));
-  }, [needUpdateList, networkMap, pendingNetworkMap]);
+    setCurrentNetworkList(processNetworkMap(networkMap, Object.keys(pendingNetworkMap)));
+  }, [networkMap, pendingNetworkMap]);
 
   useEffect(() => {
     cachePendingNetworkMap = pendingNetworkMap;
