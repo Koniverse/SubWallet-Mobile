@@ -76,7 +76,7 @@ const NFTScreen = () => {
       onPressBack={goBack}
       title={nftState.title}
       style={ContainerHeaderStyle}
-      rightIcon={Plus}
+      rightIcon={nftState.screen === 'CollectionList' ? Plus : undefined}
       onPressRightIcon={() => navigation.navigate('ImportEvmNft')}
       isShowPlaceHolder={false}>
       <NftContent />
