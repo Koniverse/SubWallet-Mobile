@@ -4,16 +4,17 @@ import ImagePreview from 'components/ImagePreview';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import React, { useCallback } from 'react';
-import { StyleProp, View, Text, TouchableOpacity, ViewStyle, ScrollView, TextStyle, Platform } from 'react-native';
+import { StyleProp, View, Text, ViewStyle, ScrollView, TextStyle, Platform } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { ButtonStyle, FontMedium, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'types/routes';
 import { NftScreenState } from 'reducers/nftScreen';
+import { SubmitButton } from 'components/SubmitButton';
 
 interface Props {
   nftState: NftScreenState;
@@ -88,20 +89,6 @@ const ImageStyle: StyleProp<ViewStyle> = {
   aspectRatio: 1,
 };
 
-const SendContainerStyle: StyleProp<ViewStyle> = {
-  marginTop: 20,
-};
-
-const SendButtonStyle: StyleProp<ViewStyle> = {
-  ...ButtonStyle,
-  backgroundColor: ColorMap.secondary,
-};
-
-const SendButtonTextStyle: StyleProp<TextStyle> = {
-  ...TextButtonStyle,
-  color: ColorMap.light,
-};
-
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
   if (!valueDict.type || valueDict.type === 'string') {
     return (
@@ -156,11 +143,7 @@ const NftDetail = ({ nftState }: Props) => {
         />
       </View>
       {!isAccountAll && (
-        <View style={SendContainerStyle}>
-          <TouchableOpacity style={SendButtonStyle} onPress={handleClickTransfer}>
-            <Text style={SendButtonTextStyle}>Send</Text>
-          </TouchableOpacity>
-        </View>
+        <SubmitButton style={{ marginTop: 16 }} onPress={handleClickTransfer} title={i18n.common.send} />
       )}
       {data.description && (
         <View>
@@ -168,10 +151,6 @@ const NftDetail = ({ nftState }: Props) => {
           <Text style={AttValueStyle}>{data?.description}</Text>
         </View>
       )}
-      <View>
-        <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
-        <Text style={AttValueStyle}>{data?.rarity}</Text>
-      </View>
       {data.rarity && (
         <View>
           <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
