@@ -7,7 +7,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { ContainerHorizontalPadding } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FlatListScreenPaddingTop } from 'styles/sharedStyles';
 
 interface Props {
   modalVisible: boolean;
@@ -62,7 +62,7 @@ export const AccountSelect = ({
         onPressBack={onPressBack}
         autoFocus={false}
         items={accountList}
-        style={{ paddingTop: 0 }}
+        style={FlatListScreenPaddingTop}
         title={i18n.title.selectAccount}
         renderItem={renderItem}
         filterFunction={filteredAccounts}

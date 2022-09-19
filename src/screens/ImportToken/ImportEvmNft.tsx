@@ -166,6 +166,13 @@ const ImportEvmNft = () => {
     loading ||
     !!(formState.errors.smartContract && formState.errors.smartContract.length);
 
+  const onUpdateNftContractAddress = (text: string) => {
+    if (formState.refs.smartContract && formState.refs.smartContract.current) {
+      // @ts-ignore
+      formState.refs.smartContract.current.onChange(text);
+    }
+  };
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -221,7 +228,7 @@ const ImportEvmNft = () => {
         <QrScannerScreen
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
-          onChangeAddress={handleChangeValue('smartContract')}
+          onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
         />
       </View>
     </ContainerWithSubHeader>

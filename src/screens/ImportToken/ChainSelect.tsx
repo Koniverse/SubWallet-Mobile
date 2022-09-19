@@ -4,6 +4,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { Item } from 'react-native-picker-select';
 import { ListRenderItemInfo } from 'react-native';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
+import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 
 interface Props {
   items: Item[];
@@ -32,6 +33,7 @@ export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChang
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <FlatListScreen
+        style={FlatListScreenPaddingTop}
         title={'Chain Select'}
         autoFocus={true}
         items={items}
