@@ -2,19 +2,20 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import useFetchNftCollection from 'hooks/useFetchNftCollection';
 import React, { useEffect, useReducer } from 'react';
-import { StyleProp, View } from 'react-native';
+import { StyleProp } from 'react-native';
 import { useSelector } from 'react-redux';
 import { NFT_INITIAL_STATE, nftReducer, NftScreenActionType } from 'reducers/nftScreen';
 import NftCollectionList from 'screens/Home/NFT/Collection/NftCollectionList';
 import NftItemList from 'screens/Home/NFT/Item/NftItemList';
-import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import { RootState } from 'stores/index';
 import NftDetail from './Detail/NftDetail';
-import { Plus } from 'phosphor-react-native';
+import { Aperture, Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'types/routes';
+import { EmptyList } from 'components/EmptyList';
+import i18n from 'utils/i18n/i18n';
 
-const EMPTY_NFT = <EmptyList />;
+const EMPTY_NFT = <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',

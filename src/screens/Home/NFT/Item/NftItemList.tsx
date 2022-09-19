@@ -4,8 +4,10 @@ import useFetchNftItem from 'hooks/useFetchNftItem';
 import React, { useCallback } from 'react';
 import { ListRenderItemInfo, SafeAreaView, StyleProp, View } from 'react-native';
 import { NftScreenActionParams, NftScreenActionType, NftScreenState } from 'reducers/nftScreen';
-import { EmptyList } from 'screens/Home/NFT/Shared/EmptyList';
 import NftItem from './NftItem';
+import { EmptyList } from 'components/EmptyList';
+import i18n from 'utils/i18n/i18n';
+import { Aperture } from 'phosphor-react-native';
 
 interface Props {
   dispatchNftState: React.Dispatch<NftScreenActionParams>;
@@ -18,7 +20,7 @@ const NftItemListStyle: StyleProp<any> = {
 };
 
 const renderEmpty = () => {
-  return <EmptyList />;
+  return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
 };
 
 const filteredNftItem = (items: _NftItem[], searchString: string) => {
