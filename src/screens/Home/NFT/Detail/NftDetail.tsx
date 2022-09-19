@@ -103,18 +103,7 @@ const SendButtonTextStyle: StyleProp<TextStyle> = {
 };
 
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
-  if (valueDict.type && valueDict.type === 'string') {
-    return (
-      <View style={PropWrapperStyle} key={key}>
-        <View style={PropDetailStyle}>
-          <Text style={PropTitleStyle}>{title}</Text>
-          <Text style={PropValueStyle}>{valueDict.value}</Text>
-        </View>
-      </View>
-    );
-  }
-
-  if (!valueDict.type) {
+  if (!valueDict.type || valueDict.type === 'string') {
     return (
       <View style={PropWrapperStyle} key={key}>
         <View style={PropDetailStyle}>
