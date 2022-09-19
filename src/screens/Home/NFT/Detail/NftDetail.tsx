@@ -75,7 +75,7 @@ const AttValueStyle: StyleProp<TextStyle> = {
   ...FontMedium,
   marginTop: 8,
   fontSize: 15,
-  color: ColorMap.iconNeutralColor,
+  color: ColorMap.disabled,
 };
 
 const ImageContainerStyle: StyleProp<any> = {
@@ -179,6 +179,10 @@ const NftDetail = ({ nftState }: Props) => {
           <Text style={AttValueStyle}>{data?.description}</Text>
         </View>
       )}
+      <View>
+        <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
+        <Text style={AttValueStyle}>{data?.rarity}</Text>
+      </View>
       {data.rarity && (
         <View>
           <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>

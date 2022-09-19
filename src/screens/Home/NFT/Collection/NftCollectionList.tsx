@@ -53,6 +53,7 @@ const NftCollectionList = ({ dispatchNftState, nftCollections }: Props) => {
         filterFunction={filteredCollection}
         items={nftCollections}
         numberColumns={2}
+        searchMarginBottom={16}
       />
       <SafeAreaView />
     </View>

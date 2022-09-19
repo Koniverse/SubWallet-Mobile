@@ -204,13 +204,14 @@ export const en = {
     swap: 'Swap',
   },
   nftScreen: {
-    nftAppearHere: 'Your NFTs will appear here',
+    nftAppearHere: 'Your NFT will appear here',
     dontSeeNft: "Don't see your NFTs?",
     importNft: 'Import NFTs',
     nftDetail: {
       description: 'Description',
       rarity: 'Rarity',
       properties: 'Properties',
+      resourcesOrInventory: 'Resources or Inventory',
     },
   },
   importEvmNft: {

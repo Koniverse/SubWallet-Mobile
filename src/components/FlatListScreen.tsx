@@ -31,6 +31,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
+  searchMarginBottom?: number;
   placeholder?: string;
   numberColumns?: number;
 }
@@ -55,6 +56,7 @@ export function FlatListScreen<T>({
   filterFunction,
   placeholder = i18n.common.search,
   numberColumns = 1,
+  searchMarginBottom = 8,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -115,7 +117,7 @@ export function FlatListScreen<T>({
         onClearSearchString={() => setSearchString('')}
         onSearch={setSearchString}
         searchText={searchString}
-        style={{ marginBottom: 8 }}
+        style={{ marginBottom: searchMarginBottom }}
         searchRef={searchRef}
       />
       {children}

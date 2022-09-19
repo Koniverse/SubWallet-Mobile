@@ -154,7 +154,6 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           source={{ uri: url }}
           onLoad={handleOnLoad}
           onError={handleImageError}
-          defaultSource={Images.default}
         />
       ) : !imageError ? (
         <Video

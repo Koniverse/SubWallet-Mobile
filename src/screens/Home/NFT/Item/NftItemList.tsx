@@ -62,6 +62,7 @@ const NftItemList = ({ dispatchNftState, nftState }: Props) => {
         items={nftItems}
         onPressBack={handleBack}
         numberColumns={2}
+        searchMarginBottom={16}
       />
     </View>
   );
