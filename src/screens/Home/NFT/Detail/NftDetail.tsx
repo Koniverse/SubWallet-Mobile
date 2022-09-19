@@ -45,7 +45,6 @@ const PropDetailStyle: StyleProp<ViewStyle> = {
 };
 
 const PropWrapperStyle: StyleProp<ViewStyle> = {
-  width: '33.3333333%',
   paddingHorizontal: 8,
   marginBottom: 16,
 };
