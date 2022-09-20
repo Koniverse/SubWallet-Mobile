@@ -25,7 +25,12 @@ import { QrScannerScreen } from 'screens/QrScannerScreen';
 import AuthTransaction from 'screens/TransferNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontSemiBold, sharedStyles, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import {
+  ContainerHorizontalPadding,
+  FontSemiBold,
+  sharedStyles,
+  MarginBottomForSubmitButton,
+} from 'styles/sharedStyles';
 import { TransferNftProps } from 'routes/index';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
@@ -238,9 +243,9 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     <ContainerWithSubHeader
       title={i18n.title.transferNft}
       onPressBack={goBack}
-      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : ''}
+      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : i18n.common.resend}
       disableRightButton={loading}
-      onPressRightIcon={handleSend}>
+      onPressRightIcon={!showTransferResult ? handleSend : handleResend}>
       <>
         {!showTransferResult && (
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
