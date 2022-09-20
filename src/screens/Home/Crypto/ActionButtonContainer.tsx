@@ -17,7 +17,7 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { HIDE_MODAL_DURATION } from '../../../constant';
 import ToastContainer, { useToast } from 'react-native-toast-notifications';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';

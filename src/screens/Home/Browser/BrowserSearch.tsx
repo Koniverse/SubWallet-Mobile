@@ -10,7 +10,7 @@ import { BrowserItem } from 'components/BrowserItem';
 import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { isValidURL } from 'utils/browser';

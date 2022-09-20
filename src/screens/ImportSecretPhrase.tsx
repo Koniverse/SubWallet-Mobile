@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { useNavigation } from '@react-navigation/native';
-import { ImportSecretPhraseProps, RootNavigationProps } from 'types/routes';
+import { ImportSecretPhraseProps, RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';

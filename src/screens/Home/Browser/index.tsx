@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';

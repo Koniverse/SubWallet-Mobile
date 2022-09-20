@@ -4,21 +4,21 @@ import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import { TextField } from 'components/Field/Text';
 import ImagePreview from 'components/ImagePreview';
+import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
-import React, { useCallback } from 'react';
-import { StyleProp, View, Text, ViewStyle, ScrollView, TextStyle, Platform, TouchableOpacity } from 'react-native';
 import { SlidersHorizontal } from 'phosphor-react-native';
+import React, { useCallback } from 'react';
+import { Platform, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import i18n from 'utils/i18n/i18n';
-import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
+import { NftScreenState } from 'reducers/nftScreen';
+import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { RootNavigationProps } from 'types/routes';
-import { NftScreenState } from 'reducers/nftScreen';
-import { SubmitButton } from 'components/SubmitButton';
+import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   nftState: NftScreenState;
@@ -162,7 +162,11 @@ const NftDetail = ({ nftState }: Props) => {
       return;
     }
 
-    navigation.navigate('TransferNft', { nftItem: data, collectionImage: collectionImage, collectionId: collectionId });
+    navigation.navigate('TransferNft', {
+      nftItem: data,
+      collectionImage: collectionImage,
+      collectionId: collectionId,
+    });
   }, [
     currentAccount,
     isAccountAll,

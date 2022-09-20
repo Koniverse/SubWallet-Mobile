@@ -22,7 +22,7 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import {
   DISCORD_URL,

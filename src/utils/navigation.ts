@@ -1,4 +1,4 @@
-import { RootNavigationProps, RootStackParamList } from 'types/routes';
+import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import { updateAccountsWaitingStatus } from 'stores/updater';
 import { CommonActions } from '@react-navigation/native';
 

@@ -6,7 +6,7 @@ import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 
 const TextContainerStyle: StyleProp<ViewStyle> = {

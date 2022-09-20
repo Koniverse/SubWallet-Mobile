@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
 import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';

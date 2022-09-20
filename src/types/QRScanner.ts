@@ -1,5 +1,5 @@
 import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
-import { RootStackParamList } from 'types/routes';
+import { RootStackParamList } from 'routes/index';
 import React from 'react';
 
 export type QrValue = string | undefined;

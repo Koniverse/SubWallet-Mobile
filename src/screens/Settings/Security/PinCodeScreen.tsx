@@ -4,7 +4,7 @@ import { PinCode } from 'screens/Settings/Security/PinCode';
 import { updateFaceIdEnable, updatePinCode, updatePinCodeEnable } from 'stores/MobileSettings';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { PinCodeProps, RootNavigationProps } from 'types/routes';
+import { PinCodeProps, RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import bcrypt from 'react-native-bcrypt';
 import i18n from 'utils/i18n/i18n';

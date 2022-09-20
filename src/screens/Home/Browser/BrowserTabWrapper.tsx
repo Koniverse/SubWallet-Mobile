@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserTabProps, RootNavigationProps } from 'types/routes';
+import { BrowserTabProps, RootNavigationProps } from 'routes/index';
 import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
 import { useNavigation } from '@react-navigation/native';
 import useConfirmations from 'hooks/useConfirmations';

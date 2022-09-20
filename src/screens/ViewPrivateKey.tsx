@@ -18,7 +18,7 @@ import { BUTTON_ACTIVE_OPACITY } from '../constant';
 import { useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
-import { ExportPrivateKeyProps, RootNavigationProps } from 'types/routes';
+import { ExportPrivateKeyProps, RootNavigationProps } from 'routes/index';
 import { exportAccountPrivateKey } from '../messaging';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';

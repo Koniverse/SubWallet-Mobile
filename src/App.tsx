@@ -9,7 +9,7 @@ import { ThemeContext } from 'providers/contexts';
 import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { RootStackParamList } from 'types/routes';
+import { RootStackParamList } from 'routes/index';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
 import { EditAccount } from 'screens/EditAccount';

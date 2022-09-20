@@ -10,7 +10,7 @@ import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus } from '
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
-import { RootNavigationProps, RootStackParamList } from 'types/routes';
+import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';

@@ -7,7 +7,7 @@ import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOption
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { DAppAccessDetailProps, RootNavigationProps } from 'types/routes';
+import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { Account } from 'components/Account';
 import { Divider } from 'components/Divider';

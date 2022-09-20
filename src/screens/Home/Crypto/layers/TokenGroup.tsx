@@ -4,7 +4,7 @@ import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from 'types/routes';
+import { RootStackParamList } from 'routes/index';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { isItemAllowedToShow, renderTabBar } from 'screens/Home/Crypto/layers/shared';
 import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';

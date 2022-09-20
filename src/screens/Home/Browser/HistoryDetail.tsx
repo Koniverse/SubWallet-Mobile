@@ -8,7 +8,7 @@ import { BrowserItem } from 'components/BrowserItem';
 import { ClockCounterClockwise, GlobeHemisphereEast, Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { Alert, ListRenderItemInfo } from 'react-native';
 import { clearHistory } from 'stores/updater';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';

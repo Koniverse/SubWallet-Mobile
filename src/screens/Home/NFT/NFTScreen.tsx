@@ -5,13 +5,14 @@ import React, { useEffect, useReducer } from 'react';
 import { StyleProp } from 'react-native';
 import { useSelector } from 'react-redux';
 import { NFT_INITIAL_STATE, nftReducer, NftScreenActionType } from 'reducers/nftScreen';
+import { HomeNFTProps } from 'routes/home';
 import NftCollectionList from 'screens/Home/NFT/Collection/NftCollectionList';
 import NftItemList from 'screens/Home/NFT/Item/NftItemList';
 import { RootState } from 'stores/index';
 import NftDetail from './Detail/NftDetail';
 import { Aperture, Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
 
@@ -22,17 +23,13 @@ const ContainerHeaderStyle: StyleProp<any> = {
   position: 'relative',
 };
 
-const NFTScreen = () => {
-  const [nftState, dispatchNftState] = useReducer(nftReducer, NFT_INITIAL_STATE);
+const NFTScreen = ({ route: { params: initParams } }: HomeNFTProps) => {
+  const [nftState, dispatchNftState] = useReducer(nftReducer, { ...NFT_INITIAL_STATE, ...initParams });
   const { nftCollections } = useFetchNftCollection();
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
   const navigation = useNavigation<RootNavigationProps>();
-
-  useEffect(() => {
-    dispatchNftState({ type: NftScreenActionType.OPEN_COLLECTION_LIST, payload: null });
-  }, [showedNetworks, currentAccountAddress]);
 
   const goBack = () => {
     dispatchNftState({ type: NftScreenActionType.GO_BACK, payload: null });
@@ -67,6 +64,16 @@ const NFTScreen = () => {
         return EMPTY_NFT;
     }
   };
+
+  useEffect(() => {
+    dispatchNftState({ type: NftScreenActionType.OPEN_COLLECTION_LIST, payload: null });
+  }, [showedNetworks, currentAccountAddress]);
+
+  useEffect(() => {
+    if (initParams?.refresh) {
+      dispatchNftState({ type: NftScreenActionType.INIT, payload: initParams });
+    }
+  }, [initParams]);
 
   return (
     <ContainerWithSubHeader

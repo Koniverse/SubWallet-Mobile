@@ -6,7 +6,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { HIDE_MODAL_DURATION } from '../constant';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { useLazyList } from 'hooks/useLazyList';
 import { ActivityLoading } from 'components/ActivityLoading';
 import i18n from 'utils/i18n/i18n';

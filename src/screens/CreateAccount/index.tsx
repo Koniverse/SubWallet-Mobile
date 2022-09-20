@@ -5,7 +5,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
 import { createAccountSuriV2, createSeedV2 } from '../../messaging';
 import { useNavigation } from '@react-navigation/native';
-import { CreateAccountProps, RootNavigationProps } from 'types/routes';
+import { CreateAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 

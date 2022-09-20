@@ -4,7 +4,7 @@ import { ColorMap } from 'styles/color';
 import { NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { StackActions, useNavigation } from '@react-navigation/native';
-import { BrowserTabProps, RootNavigationProps } from 'types/routes';
+import { BrowserTabProps, RootNavigationProps } from 'routes/index';
 import {
   ArrowClockwise,
   CaretLeft,

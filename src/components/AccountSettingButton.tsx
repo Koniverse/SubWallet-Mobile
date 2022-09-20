@@ -3,7 +3,7 @@ import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { ColorMap } from 'styles/color';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from 'types/routes';
+import { RootStackParamList } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 

@@ -7,7 +7,7 @@ import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertEvmToken, validateEvmToken } from '../../messaging';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
 import { QrScannerScreen } from 'screens/QrScannerScreen';

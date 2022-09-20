@@ -14,7 +14,7 @@ import {
 import { TransferResultType } from 'types/tx';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { TransferError } from '@subwallet/extension-base/background/KoniTypes';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';

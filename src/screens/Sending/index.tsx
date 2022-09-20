@@ -1,6 +1,6 @@
 import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps, SendFundProps } from 'types/routes';
+import { RootNavigationProps, SendFundProps } from 'routes/index';
 import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { InputAddress } from 'components/Input/InputAddress';
 import Text from 'components/Text';

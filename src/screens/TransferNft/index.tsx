@@ -20,12 +20,13 @@ import {
 } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import { HomeNavigationProps } from 'routes/home';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
 import AuthTransaction from 'screens/TransferNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { RootNavigationProps, SendNftProps } from 'types/routes';
+import { TransferNftProps } from 'routes/index';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
 import transferHandler from 'services/nft/transferHandler';
@@ -66,9 +67,9 @@ const isValidRecipient = (address: string, isEthereum: boolean) => {
   }
 };
 
-const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => {
+const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps) => {
   const { show } = useToast();
-  const navigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<HomeNavigationProps>();
 
   const _currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
@@ -114,7 +115,21 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
   }, []);
 
   const goBack = useCallback(() => {
-    navigation.navigate('Home');
+    navigation.navigate('NFT', {
+      screen: 'CollectionList',
+      title: i18n.title.nftCollections,
+      refresh: false,
+      time: new Date().getTime(),
+    });
+  }, [navigation]);
+
+  const goHome = useCallback(() => {
+    navigation.navigate('NFT', {
+      screen: 'CollectionList',
+      title: i18n.title.nftCollections,
+      refresh: true,
+      time: new Date().getTime(),
+    });
   }, [navigation]);
 
   const onUpdateInputAddress = useCallback(
@@ -184,7 +199,12 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
   useEffect(() => {
     // handle user change account during sending process
     if (currentAccount?.address !== _currentAccount?.address) {
-      navigation.navigate('Home');
+      navigation.navigate('NFT', {
+        screen: 'CollectionList',
+        title: i18n.title.nftCollections,
+        refresh: true,
+        time: new Date().getTime(),
+      });
     }
   }, [_currentAccount?.address, currentAccount?.address, navigation]);
 
@@ -235,7 +255,11 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
                 <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
               </ScrollView>
               <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
-                <SubmitButton disabled={loading} title={i18n.transferNft.send} onPress={handleSend} />
+                <SubmitButton
+                  disabled={loading || !recipientAddress}
+                  title={i18n.transferNft.send}
+                  onPress={handleSend}
+                />
               </View>
 
               <QrScannerScreen
@@ -253,7 +277,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
             isTxSuccess={isTxSuccess}
             txError={txError}
             handleResend={handleResend}
-            backToHome={goBack}
+            backToHome={goHome}
           />
         )}
       </>

@@ -5,7 +5,7 @@ import getLanguageOptions from 'utils/getLanguageOptions';
 import { SelectItem } from 'components/SelectItem';
 import { SubmitButton } from 'components/SubmitButton';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import RNRestart from 'react-native-restart';
 import i18n from 'utils/i18n/i18n';
 import { useDispatch, useSelector } from 'react-redux';

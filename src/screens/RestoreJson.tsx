@@ -11,7 +11,7 @@ import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging'
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
 import { Account } from 'components/Account';

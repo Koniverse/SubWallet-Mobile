@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight } from 'phosphor-react-native';
 import useConfirmations from 'hooks/useConfirmations';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { AuthorizeConfirmation } from 'screens/Home/Browser/ConfirmationPopup/AuthorizeConfirmation';
 import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
 import { MetadataConfirmation } from 'screens/Home/Browser/ConfirmationPopup/MetadataConfirmation';

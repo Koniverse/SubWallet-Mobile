@@ -1,11 +1,12 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { HomeScreenParams } from 'routes/home';
 import { TransferNftParams } from 'stores/types';
 
 export type RootStackParamList = {
   LockScreen: undefined;
   LoadingScreen: undefined;
-  Home: undefined;
+  Home: HomeScreenParams | undefined;
   CreateAccount: { keyTypes: KeypairType };
   QrScanner: undefined;
   AccountsScreen: undefined;
@@ -45,6 +46,7 @@ export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
-export type SendNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
+export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabProps = NativeStackScreenProps<RootStackParamList, 'BrowserTab'>;
+export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

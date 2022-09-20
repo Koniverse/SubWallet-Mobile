@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from '../components/Text';
-import { RootStackParamList } from 'types/routes';
+import { RootStackParamList } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';

@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import NFTScreen from 'screens/Home/NFT/NFTScreen';
+import { HomeScreenProps } from 'routes/index';
 import { StakingScreen } from './StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
@@ -17,14 +18,7 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser';
-
-type HomeStackParamList = {
-  Crypto: undefined;
-  NFT: undefined;
-  Crowdloans: undefined;
-  Staking: undefined;
-  Browser: undefined;
-};
+import { HomeScreenParams, HomeStackParamList } from 'routes/home';
 
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
@@ -33,10 +27,18 @@ function checkTabNotCompleted(target: string) {
   return target.includes('Staking');
 }
 
-const MainScreen = () => {
+interface MainScreenProps {
+  params?: HomeScreenParams;
+}
+
+const MainScreen = ({ params }: MainScreenProps) => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const toast = useToast();
+
+  const tab = useMemo((): keyof HomeStackParamList => {
+    return params?.tab || 'Crypto';
+  }, [params?.tab]);
 
   const onPressComingSoonTab = useCallback(() => {
     toast.hideAll();
@@ -45,7 +47,7 @@ const MainScreen = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName={'Crypto'}
+      initialRouteName={tab}
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
@@ -139,8 +141,8 @@ const MainScreen = () => {
   );
 };
 
-export const Home = () => {
+export const Home = ({ route: { params: params } }: HomeScreenProps) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
 
-  return <>{isEmptyAccounts ? <FirstScreen /> : <MainScreen />}</>;
+  return <>{isEmptyAccounts ? <FirstScreen /> : <MainScreen params={params} />}</>;
 };

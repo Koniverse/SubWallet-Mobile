@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';

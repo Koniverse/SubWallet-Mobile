@@ -7,7 +7,7 @@ import { Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { useNavigation } from '@react-navigation/native';
-import { RemoveAccountProps, RootNavigationProps } from 'types/routes';
+import { RemoveAccountProps, RootNavigationProps } from 'routes/index';
 import { forgetAccount } from '../messaging';
 import { toShort } from 'utils/index';
 import i18n from 'utils/i18n/i18n';

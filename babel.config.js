@@ -24,6 +24,7 @@ module.exports = {
           utils: './src/utils',
           services: './src/services',
           reducers: './src/reducers',
+          routes: './src/routes',
         },
         root: ['.'],
       },

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { sharedStyles } from 'styles/sharedStyles';
 import { WebRunnerContext } from 'providers/contexts';

@@ -9,6 +9,7 @@ export interface NftScreenState {
 }
 
 export enum NftScreenActionType {
+  INIT = 'INIT',
   OPEN_NFT = 'OPEN_NFT',
   OPEN_COLLECTION = 'OPEN_COLLECTION',
   OPEN_COLLECTION_LIST = 'OPEN_COLLECTION_LIST',
@@ -20,6 +21,10 @@ export interface AbstractNftScreenActionParams {
   payload: Partial<NftScreenState> | null;
 }
 
+export interface NftScreenInitAction extends AbstractNftScreenActionParams {
+  type: NftScreenActionType.INIT;
+  payload: Partial<NftScreenState> | null;
+}
 export interface NftScreenOpenNFTAction extends AbstractNftScreenActionParams {
   type: NftScreenActionType.OPEN_NFT;
   payload: Required<Pick<NftScreenState, 'nft'>>;
@@ -41,6 +46,7 @@ export interface NftScreenGoBackAction extends AbstractNftScreenActionParams {
 }
 
 export type NftScreenActionParams =
+  | NftScreenInitAction
   | NftScreenOpenCollectionListAction
   | NftScreenOpenNFTAction
   | NftScreenOpenCollectionAction
@@ -49,17 +55,23 @@ export type NftScreenActionParams =
 export const NFT_INITIAL_STATE: NftScreenState = {
   screen: 'CollectionList',
   title: i18n.title.nftCollections,
+  collection: undefined,
+  nft: undefined,
 };
 
 export const nftReducer = (state: NftScreenState, { type, payload }: NftScreenActionParams): NftScreenState => {
   switch (type) {
+    case NftScreenActionType.INIT:
+      return { ...NFT_INITIAL_STATE, ...payload };
     case NftScreenActionType.OPEN_NFT:
       return { ...state, screen: 'NFT', title: payload.nft.name || i18n.title.nftDetail, nft: payload.nft };
     case NftScreenActionType.OPEN_COLLECTION:
       return {
         ...state,
         screen: 'Collection',
-        title: payload.collection.collectionName ? `${payload.collection.collectionName} (${payload.collection.itemCount})` : i18n.title.nftList,
+        title: payload.collection.collectionName
+          ? `${payload.collection.collectionName} (${payload.collection.itemCount})`
+          : i18n.title.nftList,
         collection: payload.collection,
         nft: undefined,
       };

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoredSiteInfo } from 'stores/types';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'types/routes';
+import { RootNavigationProps } from 'routes/index';
 import { ListRenderItemInfo } from 'react-native';
 import { BrowserItem } from 'components/BrowserItem';
 import { GlobeHemisphereEast, Star } from 'phosphor-react-native';

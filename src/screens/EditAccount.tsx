@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { EditAccountProps, RootNavigationProps } from 'types/routes';
+import { EditAccountProps, RootNavigationProps } from 'routes/index';
 import { Platform, StyleProp, View } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { EditAccountInputText } from 'components/EditAccountInputText';
