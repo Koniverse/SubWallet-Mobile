@@ -1,8 +1,11 @@
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import React, { useCallback } from 'react';
-import { Image, Linking, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Image, Linking, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
+import { SubmitButton } from 'components/SubmitButton';
+import i18n from 'utils/i18n/i18n';
+import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
 interface Props {
   isTxSuccess: boolean;
@@ -25,16 +28,17 @@ const ResultContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const ResultTitleStyle: StyleProp<TextStyle> = {
-  fontSize: 20,
-  lineHeight: 36,
+  ...sharedStyles.mediumText,
+  ...FontSemiBold,
   color: ColorMap.light,
   fontWeight: '500',
   textAlign: 'center',
 };
 
 const ResultSubTextStyle: StyleProp<TextStyle> = {
-  fontSize: 14,
-  color: ColorMap.light,
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.disabled,
   textAlign: 'center',
   marginBottom: 10,
 };
@@ -48,31 +52,9 @@ const ErrorTextStyle: StyleProp<TextStyle> = {
 
 const ActionContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
+  width: '100%',
   flexDirection: 'column',
   alignItems: 'center',
-  width: '100%',
-};
-
-const PrimaryButtonStyle: StyleProp<ViewStyle> = {
-  width: '100%',
-  padding: 10,
-  backgroundColor: ColorMap.secondary,
-  borderRadius: 8,
-};
-
-const SecondaryButtonStyle: StyleProp<ViewStyle> = {
-  width: '100%',
-  padding: 10,
-  backgroundColor: ColorMap.primary,
-  borderRadius: 8,
-  marginTop: 15,
-};
-
-const ButtonTextStyle: StyleProp<TextStyle> = {
-  color: ColorMap.light,
-  fontWeight: '500',
-  width: '100%',
-  textAlign: 'center',
 };
 
 const TransferResult = ({ backToHome, handleResend, isTxSuccess, txError, networkKey, extrinsicHash }: Props) => {
@@ -89,41 +71,32 @@ const TransferResult = ({ backToHome, handleResend, isTxSuccess, txError, networ
         <View style={ResultContainerStyle}>
           <Image source={require('assets/success-status.png')} />
 
-          <Text style={ResultTitleStyle}>Transfer NFT Successfully</Text>
+          <Text style={ResultTitleStyle}>{i18n.title.transferNFTSuccessfully}</Text>
 
-          <Text style={ResultSubTextStyle}>
-            Your transfer request has been confirmed. It might take a minute to see changes in your wallet.
-          </Text>
+          <Text style={ResultSubTextStyle}>{i18n.common.transferNFTSuccessfullyMessage}</Text>
 
           <View style={ActionContainerStyle}>
-            <TouchableOpacity style={PrimaryButtonStyle} onPress={backToHome}>
-              <Text style={ButtonTextStyle}>Back To Home</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={SecondaryButtonStyle}
+            <SubmitButton title={i18n.common.backToHome} onPress={backToHome} />
+            <SubmitButton
               disabled={!isSupportScanExplorer || !scanExplorerTxUrl}
-              onPress={openUrl}>
-              <Text style={ButtonTextStyle}>View Transaction</Text>
-            </TouchableOpacity>
+              title={i18n.common.viewTransaction}
+              onPress={openUrl}
+            />
           </View>
         </View>
       ) : (
         <View style={ResultContainerStyle}>
           <Image source={require('assets/fail-status.png')} />
 
-          <Text style={ResultTitleStyle}>Transfer NFT Failed</Text>
+          <Text style={ResultTitleStyle}>{i18n.title.transferNFTFailed}</Text>
 
-          <Text style={ResultSubTextStyle}>There was a problem with your request. You can try again.</Text>
+          <Text style={ResultSubTextStyle}>{i18n.common.transferNFTFailedMessage}</Text>
 
           <Text style={ErrorTextStyle}>{txError}</Text>
 
           <View style={ActionContainerStyle}>
-            <TouchableOpacity style={PrimaryButtonStyle} onPress={backToHome}>
-              <Text style={ButtonTextStyle}>Back To Home</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={SecondaryButtonStyle} onPress={handleResend}>
-              <Text style={ButtonTextStyle}>Resend</Text>
-            </TouchableOpacity>
+            <SubmitButton title={i18n.common.backToHome} onPress={backToHome} />
+            <SubmitButton title={i18n.common.resend} onPress={handleResend} />
           </View>
         </View>
       )}
