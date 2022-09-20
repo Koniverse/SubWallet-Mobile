@@ -30,7 +30,7 @@ const ContainerDetailStyle: StyleProp<any> = {
 };
 
 if (Platform.OS === 'ios') {
-  ContainerDetailStyle.marginBottom = 16
+  ContainerDetailStyle.marginBottom = 16;
 }
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
@@ -207,9 +207,7 @@ const NftDetail = ({ nftState }: Props) => {
         <Text style={ResourceTitleStyle}>Resources or Inventory</Text>
       </TouchableOpacity>
       <TextField text={collectionName || ''} label={i18n.nftScreen.nftDetail.collectionName} />
-      {!isAccountAll && currentAccount?.address && (
-        <AddressField address={currentAccount.address} label={i18n.nftScreen.nftDetail.ownedBy} />
-      )}
+      {data.owner && <AddressField address={data.owner} label={i18n.nftScreen.nftDetail.ownedBy} />}
       {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
       <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
       {data.rarity && (
