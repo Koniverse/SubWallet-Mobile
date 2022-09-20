@@ -8,7 +8,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { SlidersHorizontal } from 'phosphor-react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Platform, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import i18n from 'utils/i18n/i18n';
+import reformatAddress from 'utils/index';
 
 interface Props {
   nftState: NftScreenState;
@@ -117,6 +118,10 @@ const ResourceTitleStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
+const SendButtonStyle: StyleProp<ViewStyle> = {
+  marginTop: 16,
+};
+
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
   if (!valueDict.type || valueDict.type === 'string') {
     return (
@@ -139,9 +144,23 @@ const NftDetail = ({ nftState }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
 
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
   const networkJson = useGetNetworkJson(data.chain as string);
   const isAccountAll = useIsAccountAll();
+
+  const canSend = useMemo((): boolean => {
+    if (!currentAccount) {
+      return false;
+    } else {
+      if (isAccountAll) {
+        const accountList = accounts.map(acc => acc.address);
+        return !!accountList.find(address => reformatAddress(data.owner || '', 42, false) === address);
+      } else {
+        return reformatAddress(data.owner || '', 42, false) === currentAccount.address;
+      }
+    }
+  }, [currentAccount, isAccountAll, accounts, data.owner]);
 
   const handleClickComingSoon = useCallback(() => {
     hideAll();
@@ -149,7 +168,7 @@ const NftDetail = ({ nftState }: Props) => {
   }, [hideAll, show]);
 
   const handleClickTransfer = useCallback(() => {
-    if (!currentAccount || isAccountAll || !data.chain) {
+    if (!canSend || !data.chain) {
       hideAll();
       show(i18n.common.anErrorHasOccurred);
 
@@ -167,15 +186,17 @@ const NftDetail = ({ nftState }: Props) => {
       nftItem: data,
       collectionImage: collectionImage,
       collectionId: collectionId,
+      senderAddress: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
     });
   }, [
-    currentAccount,
-    isAccountAll,
+    canSend,
     data,
     networkJson.isEthereum,
+    networkJson.ss58Format,
     navigation,
     collectionImage,
     collectionId,
+    currentAccount?.address,
     hideAll,
     show,
   ]);
@@ -191,9 +212,7 @@ const NftDetail = ({ nftState }: Props) => {
           borderPlace={'full'}
         />
       </View>
-      {!isAccountAll && (
-        <SubmitButton style={{ marginTop: 16 }} onPress={handleClickTransfer} title={i18n.common.send} />
-      )}
+      {canSend && <SubmitButton style={SendButtonStyle} onPress={handleClickTransfer} title={i18n.common.send} />}
       {data.description && (
         <View>
           <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
@@ -207,7 +226,13 @@ const NftDetail = ({ nftState }: Props) => {
         <Text style={ResourceTitleStyle}>Resources or Inventory</Text>
       </TouchableOpacity>
       <TextField text={collectionName || ''} label={i18n.nftScreen.nftDetail.collectionName} />
-      {data.owner && <AddressField address={data.owner} label={i18n.nftScreen.nftDetail.ownedBy} />}
+      {data.owner && (
+        <AddressField
+          address={data.owner}
+          networkPrefix={networkJson.ss58Format}
+          label={i18n.nftScreen.nftDetail.ownedBy}
+        />
+      )}
       {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
       <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
       {data.rarity && (

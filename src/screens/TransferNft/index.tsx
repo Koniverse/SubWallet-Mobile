@@ -1,6 +1,5 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isValidAddress } from '@subwallet/extension-koni-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { NetworkField } from 'components/Field/Network';
@@ -36,6 +35,7 @@ import paramsHandler from 'services/nft/paramsHandler';
 import transferHandler from 'services/nft/transferHandler';
 import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
+import reformatAddress from 'utils/index';
 import TransferResult from './TransferResult';
 import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';
@@ -78,13 +78,12 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   // const { show } = useToast();
   const navigation = useNavigation<HomeNavigationProps>();
 
-  const _currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
-  const { nftItem, collectionImage, collectionId } = transferNftParams;
+  const { nftItem, collectionImage, collectionId, senderAddress } = transferNftParams;
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
-  const [addressError, setAddressError] = useState(false);
-  const [currentAccount] = useState<AccountJson | undefined>(_currentAccount);
+  const [addressError, setAddressError] = useState(true);
   const networkKey = nftItem.chain as string;
   const networkJson = useGetNetworkJson(networkKey);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
@@ -159,13 +158,12 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   }, []);
 
   const handleSend = useCallback(async () => {
-    if (!currentAccount?.address) {
+    if (addressError || !senderAddress) {
       setError(i18n.errorMessage.invalidAddress);
       return;
     }
     setError(undefined);
     setLoading(true);
-    const senderAddress = currentAccount.address;
     const params = paramsHandler(nftItem, networkKey, networkJson);
     const transferMeta = await transferHandler(
       networkKey,
@@ -198,7 +196,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     }
 
     setLoading(false);
-  }, [currentAccount?.address, networkJson, networkKey, nftItem, recipientAddress]);
+  }, [addressError, networkJson, networkKey, nftItem, recipientAddress, senderAddress]);
 
   useEffect(() => {
     const isValidCurrentRecipient =
@@ -219,7 +217,8 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
 
   useEffect(() => {
     // handle user change account during sending process
-    if (currentAccount?.address !== _currentAccount?.address) {
+    const addressList = accounts.map(acc => acc.address);
+    if (!senderAddress || !addressList.includes(reformatAddress(senderAddress, 42, false))) {
       navigation.navigate('NFT', {
         screen: 'CollectionList',
         title: i18n.title.nftCollections,
@@ -227,16 +226,16 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
         time: new Date().getTime(),
       });
     }
-  }, [_currentAccount?.address, currentAccount?.address, navigation]);
+  }, [accounts, navigation, senderAddress]);
 
-  if (showConfirm && currentAccount && (substrateTransferParams || web3TransferParams)) {
+  if (showConfirm && senderAddress && (substrateTransferParams || web3TransferParams)) {
     return (
       <AuthTransaction
         chain={nftItem.chain as string}
         nftItem={nftItem}
         collectionImage={collectionImage}
         setShowConfirm={setShowConfirm}
-        senderAccount={currentAccount}
+        senderAddress={senderAddress}
         recipientAddress={recipientAddress}
         collectionId={collectionId}
         setExtrinsicHash={setExtrinsicHash}
@@ -254,11 +253,10 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   return (
     <ContainerWithSubHeader
       title={i18n.title.transferNft}
-      onPressBack={goBack}
-      disabled={loading}
-      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : undefined}
-      disableRightButton={loading || showTransferResult || !recipientAddress || addressError}
-      onPressRightIcon={!showTransferResult ? handleSend : undefined}>
+      onPressBack={!showTransferResult ? goBack : goHome}
+      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : i18n.common.resend}
+      disableRightButton={loading || !recipientAddress || addressError}
+      onPressRightIcon={!showTransferResult ? handleSend : handleResend}>
       <>
         {!showTransferResult && (
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

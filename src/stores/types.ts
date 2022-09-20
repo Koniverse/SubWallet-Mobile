@@ -108,6 +108,7 @@ export type TransferNftParams = {
   nftItem: NftItem;
   collectionImage?: string;
   collectionId: string;
+  senderAddress: string;
 };
 
 export type TransferNftParamsSlice = TransferNftParams & StoreSlice;

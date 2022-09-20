@@ -1,6 +1,5 @@
 import { formatBalance } from '@polkadot/util';
 import { NftItem, RequestNftForceUpdate } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
@@ -26,7 +25,7 @@ import { Warning } from 'components/Warning';
 
 interface Props {
   setShowConfirm: (val: boolean) => void;
-  senderAccount: AccountJson;
+  senderAddress: string;
   substrateTransferParams: SubstrateTransferParams | null;
   collectionImage?: string;
   setShowResult: (val: boolean) => void;
@@ -92,7 +91,7 @@ const AuthTransaction = (props: Props) => {
     recipientAddress,
     substrateTransferParams,
     web3TransferParams,
-    senderAccount,
+    senderAddress,
     setShowResult,
     collectionImage,
     chain,
@@ -108,7 +107,7 @@ const AuthTransaction = (props: Props) => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [senderInfoSubstrate, setSenderInfoSubstrate] = useState<AddressProxy>(() => ({
     isUnlockCached: false,
-    signAddress: senderAccount.address,
+    signAddress: senderAddress,
     signPassword: '',
   }));
 
@@ -141,7 +140,7 @@ const AuthTransaction = (props: Props) => {
     if (web3Tx) {
       await evmNftSubmitTransaction(
         {
-          senderAddress: senderAccount.address,
+          senderAddress: senderAddress,
           recipientAddress,
           password: senderInfoSubstrate.signPassword,
           networkKey: chain,
@@ -185,7 +184,7 @@ const AuthTransaction = (props: Props) => {
                 collectionId,
                 isSendingSelf: data.isSendingSelf,
                 chain,
-                senderAddress: senderAccount.address,
+                senderAddress: senderAddress,
                 recipientAddress,
               } as RequestNftForceUpdate).catch(console.error);
             } else {
@@ -207,7 +206,7 @@ const AuthTransaction = (props: Props) => {
     collectionId,
     nftItem,
     recipientAddress,
-    senderAccount.address,
+    senderAddress,
     senderInfoSubstrate.signPassword,
     setExtrinsicHash,
     setIsTxSuccess,
@@ -223,7 +222,7 @@ const AuthTransaction = (props: Props) => {
       {
         params: substrateParams,
         password: senderInfoSubstrate.signPassword,
-        senderAddress: senderAccount.address,
+        senderAddress: senderAddress,
         recipientAddress,
       },
       data => {
@@ -263,7 +262,7 @@ const AuthTransaction = (props: Props) => {
               collectionId,
               isSendingSelf: data.isSendingSelf,
               chain,
-              senderAddress: senderAccount.address,
+              senderAddress: senderAddress,
               recipientAddress,
             } as RequestNftForceUpdate).catch(console.error);
           } else {
@@ -279,7 +278,7 @@ const AuthTransaction = (props: Props) => {
   }, [
     substrateParams,
     senderInfoSubstrate.signPassword,
-    senderAccount.address,
+    senderAddress,
     recipientAddress,
     balanceError,
     setLoading,
@@ -343,7 +342,7 @@ const AuthTransaction = (props: Props) => {
           </View>
           <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
 
-          <AddressField label={i18n.common.sendFromAddress} address={senderAccount.address} />
+          <AddressField label={i18n.common.sendFromAddress} address={senderAddress} />
           <AddressField label={i18n.common.sendToAddress} address={recipientAddress} />
           <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
           <BalanceField
