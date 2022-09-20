@@ -116,6 +116,10 @@ export const TextButtonStyle: StyleProp<any> = {
   ...FontBold,
 };
 
+export const FlatListScreenPaddingTop: StyleProp<any> = {
+  paddingTop: Platform.OS === 'android' && 0,
+};
+
 export const sharedStyles = StyleSheet.create({
   smallText,
   mainText,

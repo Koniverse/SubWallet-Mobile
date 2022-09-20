@@ -8,14 +8,23 @@ import ImagePreview from 'components/ImagePreview';
 import { InputAddress } from 'components/Input/InputAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import {
+  Keyboard,
+  ScrollView,
+  StyleProp,
+  Text,
+  TextStyle,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
 import AuthTransaction from 'screens/TransferNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { ButtonStyle, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { RootNavigationProps, SendNftProps } from 'types/routes';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
@@ -23,12 +32,7 @@ import transferHandler from 'services/nft/transferHandler';
 import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import TransferResult from './TransferResult';
-
-const WrapperStyle: StyleProp<ViewStyle> = {
-  paddingHorizontal: 16,
-  paddingBottom: 15,
-  paddingTop: 25,
-};
+import { SubmitButton } from 'components/SubmitButton';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -36,8 +40,8 @@ const ImageContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const ImageStyle: StyleProp<ViewStyle> = {
-  width: 200,
-  height: 200,
+  width: 172,
+  height: 172,
   borderRadius: 10,
 };
 
@@ -52,17 +56,6 @@ const NftNameTextStyle: StyleProp<TextStyle> = {
   marginTop: 8,
   marginBottom: 16,
   textAlign: 'center',
-};
-
-const SendButtonStyle: StyleProp<ViewStyle> = {
-  ...ButtonStyle,
-  marginTop: 16,
-  backgroundColor: ColorMap.secondary,
-};
-
-const SendButtonTextStyle: StyleProp<TextStyle> = {
-  ...TextButtonStyle,
-  color: ColorMap.light,
 };
 
 const isValidRecipient = (address: string, isEthereum: boolean) => {
@@ -82,7 +75,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
   const { nftItem, collectionImage, collectionId } = transferNftParams;
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
-  const [addressError, setAddressError] = useState(true);
+  const [addressError, setAddressError] = useState(false);
   const [currentAccount] = useState<AccountJson | undefined>(_currentAccount);
   const networkKey = nftItem.chain as string;
   const networkJson = useGetNetworkJson(networkKey);
@@ -222,36 +215,36 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
       rightButtonTitle={!showTransferResult ? i18n.transferNft.send : ''}
       disableRightButton={loading}
       onPressRightIcon={handleSend}>
-      <View style={WrapperStyle}>
+      <>
         {!showTransferResult && (
-          <View>
-            <View style={ImageContainerStyle}>
-              <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
-            </View>
-            <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
-            <InputAddress
-              ref={inputAddressRef}
-              onPressQrButton={openQrScan}
-              containerStyle={InputStyle}
-              label={i18n.common.sendToAddress}
-              value={recipientAddress}
-              onChange={onChangeReceiverAddress}
-            />
-            <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
-            <TouchableOpacity style={SendButtonStyle} disabled={loading} onPress={handleSend}>
-              {!loading ? (
-                <Text style={SendButtonTextStyle}>{i18n.transferNft.send}</Text>
-              ) : (
-                <ActivityIndicator animating={true} />
-              )}
-            </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <>
+              <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: 10 }}>
+                <View style={ImageContainerStyle}>
+                  <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
+                </View>
+                <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
+                <InputAddress
+                  ref={inputAddressRef}
+                  onPressQrButton={openQrScan}
+                  containerStyle={InputStyle}
+                  label={i18n.common.sendToAddress}
+                  value={recipientAddress}
+                  onChange={onChangeReceiverAddress}
+                />
+                <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
+              </ScrollView>
+              <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
+                <SubmitButton disabled={loading} title={i18n.transferNft.send} onPress={handleSend} />
+              </View>
 
-            <QrScannerScreen
-              qrModalVisible={isShowQrModalVisible}
-              onPressCancel={closeQrScan}
-              onChangeAddress={text => onUpdateInputAddress(text)}
-            />
-          </View>
+              <QrScannerScreen
+                qrModalVisible={isShowQrModalVisible}
+                onPressCancel={closeQrScan}
+                onChangeAddress={text => onUpdateInputAddress(text)}
+              />
+            </>
+          </TouchableWithoutFeedback>
         )}
         {showTransferResult && (
           <TransferResult
@@ -263,7 +256,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: SendNftProps) => 
             backToHome={goBack}
           />
         )}
-      </View>
+      </>
     </ContainerWithSubHeader>
   );
 };
