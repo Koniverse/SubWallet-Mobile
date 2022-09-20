@@ -34,6 +34,7 @@ export const emptyListTextStyle: StyleProp<any> = {
   color: ColorMap.light,
   ...FontMedium,
   paddingTop: 8,
+  textAlign: 'center',
 };
 
 export const getStatusBarPlaceholderStyle = (backgroundColor = ColorMap.dark1): StyleProp<any> => {
