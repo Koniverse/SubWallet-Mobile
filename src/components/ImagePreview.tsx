@@ -29,9 +29,10 @@ interface ImageAction {
   payload: Partial<ImageState>;
 }
 
-const ContainerStyle: StyleProp<any> = {
+const ContainerStyle: StyleProp<ViewStyle> = {
   position: 'relative',
   backgroundColor: ColorMap.dark2,
+  overflow: 'hidden',
 };
 
 const ImageStyle: StyleProp<any> = {
@@ -147,20 +148,15 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   }, [mainUrl]);
 
   return (
-    <View style={[ContainerStyle, style]}>
+    <View style={[ContainerStyle, style, borderStyle]}>
       {showImage ? (
-        <Image
-          style={[ImageStyle, borderStyle]}
-          source={{ uri: url }}
-          onLoad={handleOnLoad}
-          onError={handleImageError}
-        />
+        <Image style={ImageStyle} source={{ uri: url }} onLoad={handleOnLoad} onError={handleImageError} />
       ) : !imageError ? (
         <Video
           ref={videoRef}
           resizeMode={'contain'}
           source={{ uri: url }}
-          style={[VideoStyle, borderStyle]}
+          style={VideoStyle}
           onError={handleVideoError}
           onLoad={handleOnLoad}
           repeat={true}
