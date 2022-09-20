@@ -38,7 +38,10 @@ interface Props<T> {
 
 const ColumnWrapperStyle: StyleProp<ViewStyle> = {
   justifyContent: 'space-between',
-  marginBottom: 16,
+};
+
+const ItemSeparatorStyle: StyleProp<ViewStyle> = {
+  height: 16,
 };
 
 export function FlatListScreen<T>({
@@ -87,6 +90,10 @@ export function FlatListScreen<T>({
       return isLoading ? <ActivityLoading /> : null;
     };
 
+    const renderSeparatorComponent = () => {
+      return numberColumns > 1 ? <View style={ItemSeparatorStyle} /> : null;
+    };
+
     return (
       <>
         {lazyList.length ? (
@@ -100,6 +107,7 @@ export function FlatListScreen<T>({
             numColumns={numberColumns}
             columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
+            ItemSeparatorComponent={renderSeparatorComponent}
             contentContainerStyle={numberColumns > 1 ? { marginHorizontal: -8 } : undefined}
           />
         ) : (

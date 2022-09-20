@@ -9,7 +9,7 @@ import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import React, { useCallback } from 'react';
-import { ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Platform, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { NftScreenState } from 'reducers/nftScreen';
@@ -27,8 +27,11 @@ interface Props {
 const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
   paddingHorizontal: 16,
-  marginBottom: 16,
 };
+
+if (Platform.OS === 'ios') {
+  ContainerDetailStyle.marginBottom = 16
+}
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 24,
@@ -36,6 +39,7 @@ const PropContainerStyle: StyleProp<ViewStyle> = {
   flexWrap: 'wrap',
   flexDirection: 'row',
   marginHorizontal: -8,
+  marginBottom: -16,
 };
 
 const PropDetailStyle: StyleProp<ViewStyle> = {
