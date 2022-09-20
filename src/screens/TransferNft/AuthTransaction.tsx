@@ -122,9 +122,6 @@ const AuthTransaction = (props: Props) => {
 
   const balanceError = substrateTransferParams !== null ? substrateBalanceError : web3BalanceError;
 
-  const nftName = useMemo((): string => {
-    return nftItem.name ? nftItem.name : '#' + nftItem.id;
-  }, [nftItem.id, nftItem.name]);
   const [error, setError] = useState<string>('');
 
   const feeInfo = useMemo((): FeeInfo => {
@@ -141,7 +138,6 @@ const AuthTransaction = (props: Props) => {
   }, [setShowConfirm]);
 
   const onSendEvm = useCallback(async () => {
-    console.log('data');
     if (web3Tx) {
       await evmNftSubmitTransaction(
         {
@@ -304,7 +300,7 @@ const AuthTransaction = (props: Props) => {
     Keyboard.dismiss();
 
     setLoading(true);
-
+    Keyboard.dismiss();
     setTimeout(async () => {
       if (substrateParams !== null) {
         await onSendSubstrate();
@@ -339,7 +335,7 @@ const AuthTransaction = (props: Props) => {
   ];
 
   return (
-    <ContainerWithSubHeader title={nftName} onPressBack={onClose}>
+    <ContainerWithSubHeader title={i18n.title.transferNft} onPressBack={onClose} disabled={loading}>
       <>
         <ScrollView style={AuthContainerStyle}>
           <View style={ImageContainerStyle}>

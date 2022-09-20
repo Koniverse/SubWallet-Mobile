@@ -257,7 +257,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
       onPressBack={goBack}
       disabled={loading}
       rightButtonTitle={!showTransferResult ? i18n.transferNft.send : undefined}
-      disableRightButton={loading || showTransferResult}
+      disableRightButton={loading || showTransferResult || !recipientAddress || addressError}
       onPressRightIcon={!showTransferResult ? handleSend : undefined}>
       <>
         {!showTransferResult && (
