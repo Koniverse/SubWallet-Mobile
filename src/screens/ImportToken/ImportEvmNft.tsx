@@ -17,6 +17,9 @@ import { NetworkField } from 'components/Field/Network';
 import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
+import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import { requestCameraPermission } from 'utils/validators';
+import { RESULTS } from 'react-native-permissions';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -59,16 +62,24 @@ const ImportEvmNft = () => {
   const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {});
   const { data: formData } = formState;
   const { chain, smartContract, collectionName } = formData;
-
+  const networkJson = useGetNetworkJson(chain);
   const handleChangeValue = useCallback(
     (key: string) => {
       return (text: string) => {
-        onUpdateErrors('smartContract')(undefined);
+        onUpdateErrors(key)(undefined);
         onChangeValue(key)(text);
       };
     },
     [onChangeValue, onUpdateErrors],
   );
+
+  const onPressQrButton = async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      setShowQrModalVisible(true);
+    }
+  };
 
   const handleAddToken = useCallback(() => {
     setLoading(true);
@@ -186,11 +197,16 @@ const ImportEvmNft = () => {
           ref={formState.refs.smartContract}
           label={formState.labels.smartContract}
           value={smartContract}
-          onPressQrButton={() => setShowQrModalVisible(true)}
+          onPressQrButton={onPressQrButton}
           onChange={(output: string | null, currentValue: string) => {
             handleChangeValue('smartContract')(currentValue);
           }}
         />
+
+        {!!formState.errors.smartContract.length &&
+          formState.errors.smartContract.map(err => (
+            <Warning key={err} style={{ marginBottom: 8 }} isDanger message={err} />
+          ))}
 
         <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
           <NetworkField networkKey={formState.data.chain} label={formState.labels.chain} />
@@ -215,9 +231,6 @@ const ImportEvmNft = () => {
           value={collectionName}
         />
 
-        {!!formState.errors.smartContract.length &&
-          formState.errors.smartContract.map(err => <Warning style={{ marginBottom: 8 }} isDanger message={err} />)}
-
         <SubmitButton
           title={i18n.importEvmNft.addNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
@@ -229,6 +242,8 @@ const ImportEvmNft = () => {
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
           onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
+          networkKey={chain}
+          token={networkJson ? networkJson.nativeToken : ''}
         />
       </View>
     </ContainerWithSubHeader>
