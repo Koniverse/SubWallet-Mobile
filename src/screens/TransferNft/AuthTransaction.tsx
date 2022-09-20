@@ -335,6 +335,11 @@ const AuthTransaction = (props: Props) => {
     setPasswordError(null);
   }, [senderInfoSubstrate]);
 
+  const errorMessages = [
+    ...(formState.errors.password ? formState.errors.password : []),
+    ...(passwordError ? [passwordError] : []),
+  ];
+
   return (
     <ContainerWithSubHeader title={nftName} onPressBack={onClose}>
       <>
@@ -360,10 +365,7 @@ const AuthTransaction = (props: Props) => {
             label={formState.labels.password}
             onChangeText={handlerChangePassword}
             defaultValue={formState.data.password}
-            errorMessages={[
-              ...(formState.errors.password ? formState.errors.password : []),
-              ...(passwordError ? [passwordError] : []),
-            ]}
+            errorMessages={errorMessages}
             onSubmitField={onSubmitField('password')}
             autoFocus={true}
           />
@@ -373,7 +375,7 @@ const AuthTransaction = (props: Props) => {
             style={{ width: '100%', ...MarginBottomForSubmitButton }}
             title={i18n.common.confirm}
             onPress={handleSignAndSubmit}
-            disabled={loading}
+            disabled={!formState.data.password || errorMessages.length > 0 || loading}
           />
         </View>
       </>
