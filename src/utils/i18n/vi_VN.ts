@@ -212,6 +212,9 @@ export const vi = {
       rarity: 'Rarity',
       properties: 'Properties',
       resourcesOrInventory: 'Resources or Inventory',
+      collectionName: 'Collection Name',
+      ownedBy: 'Owned by',
+      createdBy: 'Created by',
     },
   },
   importEvmNft: {

@@ -1,6 +1,6 @@
 import { NftCollection, NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
-import useFetchNftItem from 'hooks/useFetchNftItem';
+import useFetchNftItem from 'hooks/screen/Home/Nft/useFetchNftItem';
 import React, { useCallback } from 'react';
 import { ListRenderItemInfo, SafeAreaView, StyleProp, View } from 'react-native';
 import { NftScreenActionParams, NftScreenActionType, NftScreenState } from 'reducers/nftScreen';
