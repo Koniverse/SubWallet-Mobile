@@ -7,7 +7,7 @@ import ImagePreview from 'components/ImagePreview';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import React, { useCallback } from 'react';
-import { StyleProp, View, Text, ViewStyle, ScrollView, TextStyle, Platform, TouchableOpacity } from 'react-native';
+import { StyleProp, View, Text, ViewStyle, ScrollView, TextStyle, TouchableOpacity } from 'react-native';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -27,6 +27,7 @@ interface Props {
 const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
   paddingHorizontal: 16,
+  marginBottom: 16,
 };
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
@@ -36,10 +37,6 @@ const PropContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   marginHorizontal: -8,
 };
-
-if (Platform.OS === 'ios') {
-  PropContainerStyle.paddingBottom = 30;
-}
 
 const PropDetailStyle: StyleProp<ViewStyle> = {
   paddingTop: 4,
