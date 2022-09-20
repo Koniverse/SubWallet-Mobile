@@ -9,24 +9,20 @@ import { PasswordField } from 'components/Field/Password';
 import ImagePreview from 'components/ImagePreview';
 import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Keyboard,
-  ScrollView,
-  StyleProp,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Keyboard, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
-import { ButtonStyle, FontSemiBold, sharedStyles, TextButtonStyle } from 'styles/sharedStyles';
+import {
+  ContainerHorizontalPadding,
+  FontSemiBold,
+  MarginBottomForSubmitButton,
+  sharedStyles,
+} from 'styles/sharedStyles';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import i18n from 'utils/i18n/i18n';
 import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction } from '../../messaging';
+import { SubmitButton } from 'components/SubmitButton';
 
 interface Props {
   setShowConfirm: (val: boolean) => void;
@@ -56,10 +52,8 @@ interface FeeInfo {
 }
 
 const AuthContainerStyle: StyleProp<ViewStyle> = {
-  paddingLeft: 15,
-  paddingRight: 15,
-  paddingBottom: 15,
-  paddingTop: 10,
+  ...ContainerHorizontalPadding,
+  marginTop: 10,
 };
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
@@ -68,8 +62,8 @@ const ImageContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const ImageStyle: StyleProp<ViewStyle> = {
-  width: 200,
-  height: 200,
+  width: 182,
+  height: 182,
   borderRadius: 10,
 };
 
@@ -80,17 +74,6 @@ const NftNameTextStyle: StyleProp<TextStyle> = {
   marginTop: 8,
   marginBottom: 16,
   textAlign: 'center',
-};
-
-const SubmitButtonStyle: StyleProp<ViewStyle> = {
-  ...ButtonStyle,
-  marginTop: 16,
-  marginBottom: 16,
-};
-
-const SubmitButtonTextStyle: StyleProp<TextStyle> = {
-  ...TextButtonStyle,
-  color: ColorMap.light,
 };
 
 const formConfig = {
@@ -354,52 +337,46 @@ const AuthTransaction = (props: Props) => {
 
   return (
     <ContainerWithSubHeader title={nftName} onPressBack={onClose}>
-      <ScrollView style={AuthContainerStyle}>
-        <View style={ImageContainerStyle}>
-          <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
+      <>
+        <ScrollView style={AuthContainerStyle}>
+          <View style={ImageContainerStyle}>
+            <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionImage} />
+          </View>
+          <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
+
+          <AddressField label={i18n.common.sendFromAddress} address={senderAccount.address} />
+          <AddressField label={i18n.common.sendToAddress} address={recipientAddress} />
+          <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
+          <BalanceField
+            label={i18n.common.networkFee}
+            value={feeInfo.value}
+            token={feeInfo.symbol}
+            decimal={0}
+            si={formatBalance.findSi('-')}
+          />
+
+          <PasswordField
+            ref={formState.refs.password}
+            label={formState.labels.password}
+            onChangeText={handlerChangePassword}
+            defaultValue={formState.data.password}
+            errorMessages={[
+              ...(formState.errors.password ? formState.errors.password : []),
+              ...(passwordError ? [passwordError] : []),
+            ]}
+            onSubmitField={onSubmitField('password')}
+            autoFocus={true}
+          />
+        </ScrollView>
+        <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
+          <SubmitButton
+            style={{ width: '100%', ...MarginBottomForSubmitButton }}
+            title={i18n.common.confirm}
+            onPress={handleSignAndSubmit}
+            disabled={loading}
+          />
         </View>
-        <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
-
-        <AddressField label={i18n.common.sendFromAddress} address={senderAccount.address} />
-        <AddressField label={i18n.common.sendToAddress} address={recipientAddress} />
-        <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
-        <BalanceField
-          label={i18n.common.networkFee}
-          value={feeInfo.value}
-          token={feeInfo.symbol}
-          decimal={0}
-          si={formatBalance.findSi('-')}
-        />
-
-        <PasswordField
-          ref={formState.refs.password}
-          label={formState.labels.password}
-          onChangeText={handlerChangePassword}
-          defaultValue={formState.data.password}
-          errorMessages={[
-            ...(formState.errors.password ? formState.errors.password : []),
-            ...(passwordError ? [passwordError] : []),
-          ]}
-          onSubmitField={onSubmitField('password')}
-          autoFocus={true}
-        />
-
-        <TouchableOpacity
-          style={[
-            SubmitButtonStyle,
-            {
-              backgroundColor: loading ? 'rgba(0, 75, 255, 0.25)' : ColorMap.secondary,
-            },
-          ]}
-          disabled={loading}
-          onPress={handleSignAndSubmit}>
-          {!loading ? (
-            <Text style={SubmitButtonTextStyle}>{i18n.transferNft.signAndSubmit}</Text>
-          ) : (
-            <ActivityIndicator animating={true} />
-          )}
-        </TouchableOpacity>
-      </ScrollView>
+      </>
     </ContainerWithSubHeader>
   );
 };

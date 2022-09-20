@@ -25,7 +25,7 @@ import { QrScannerScreen } from 'screens/QrScannerScreen';
 import AuthTransaction from 'screens/TransferNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontSemiBold, sharedStyles, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransferNftProps } from 'routes/index';
 import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import paramsHandler from 'services/nft/paramsHandler';
@@ -34,6 +34,8 @@ import i18n from 'utils/i18n/i18n';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import TransferResult from './TransferResult';
 import { SubmitButton } from 'components/SubmitButton';
+import { requestCameraPermission } from 'utils/validators';
+import { RESULTS } from 'react-native-permissions';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -41,7 +43,7 @@ const ImageContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const ImageStyle: StyleProp<ViewStyle> = {
-  width: 172,
+  width: 182,
   height: 172,
   borderRadius: 10,
 };
@@ -76,7 +78,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   const { nftItem, collectionImage, collectionId } = transferNftParams;
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
-  const [addressError, setAddressError] = useState(false);
+  const [addressError, setAddressError] = useState(true);
   const [currentAccount] = useState<AccountJson | undefined>(_currentAccount);
   const networkKey = nftItem.chain as string;
   const networkJson = useGetNetworkJson(networkKey);
@@ -98,9 +100,13 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   const [isTxSuccess, setIsTxSuccess] = useState(false);
   const [txError, setTxError] = useState('');
 
-  const openQrScan = useCallback(() => {
-    setIsShowQrModalVisible(true);
-  }, []);
+  const onPressQrButton = async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      setIsShowQrModalVisible(true);
+    }
+  };
 
   const closeQrScan = useCallback(() => {
     setIsShowQrModalVisible(false);
@@ -246,7 +252,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                 <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
                 <InputAddress
                   ref={inputAddressRef}
-                  onPressQrButton={openQrScan}
+                  onPressQrButton={onPressQrButton}
                   containerStyle={InputStyle}
                   label={i18n.common.sendToAddress}
                   value={recipientAddress}
@@ -257,6 +263,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
               <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
                 <SubmitButton
                   disabled={loading || !recipientAddress}
+                  style={{ width: '100%', ...MarginBottomForSubmitButton }}
                   title={i18n.transferNft.send}
                   onPress={handleSend}
                 />
@@ -266,6 +273,8 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                 qrModalVisible={isShowQrModalVisible}
                 onPressCancel={closeQrScan}
                 onChangeAddress={text => onUpdateInputAddress(text)}
+                networkKey={nftItem.chain}
+                token={networkJson.nativeToken}
               />
             </>
           </TouchableWithoutFeedback>

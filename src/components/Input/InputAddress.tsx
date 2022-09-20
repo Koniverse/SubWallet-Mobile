@@ -7,7 +7,8 @@ import { QrCode } from 'phosphor-react-native';
 import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
-import { isAddress } from '@polkadot/util-crypto';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isValidAddress } from '@subwallet/extension-koni-base/utils';
 
 interface InputProps {
   label: string;
@@ -45,19 +46,21 @@ const identiconPlaceholderStyle: StyleProp<any> = {
   height: 16,
 };
 
-const inputStyle: StyleProp<any> = {
-  ...FontSize2,
-  flex: 1,
-  paddingTop: 0,
-  paddingBottom: 0,
-  paddingHorizontal: 4,
-  paddingRight: 40,
-  height: 25,
-  ...FontMedium,
-  color: ColorMap.light,
+const getTextInputStyle = (isAddressValid: boolean) => {
+  return {
+    ...FontSize2,
+    flex: 1,
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingHorizontal: 4,
+    paddingRight: 40,
+    height: 25,
+    ...FontMedium,
+    color: isAddressValid ? ColorMap.light : ColorMap.danger,
+  };
 };
 
-const getTextInputStyle = (isAddressValid: boolean) => {
+const getFormattedTextInputStyle = (isAddressValid: boolean) => {
   return {
     ...sharedStyles.mainText,
     flex: 1,
@@ -78,24 +81,32 @@ const qrButtonStyle: StyleProp<any> = {
   alignItems: 'center',
 };
 
+const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
+  if (isEthereum) {
+    return isEthereumAddress(address);
+  } else {
+    return isValidAddress(address);
+  }
+};
+
 const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   const { containerStyle, label, onChange, onPressQrButton, value } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
-  const isAddressValid = isAddress(address);
+  const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address));
   const onChangeInputText = (text: string) => {
     setAddress(text);
+    if (isValidCurrentAddress(text, isEthereumAddress(address))) {
+      onChange(reformatAddress(text, 42), text);
+    } else {
+      onChange(null, text);
+    }
   };
   const onPressContainer = () => {
     setInputBlur(false);
   };
   const onInputBlur = () => {
     setInputBlur(true);
-    if (isAddressValid) {
-      onChange(reformatAddress(address, 42), address);
-    } else {
-      onChange(null, address);
-    }
   };
 
   useImperativeHandle(ref, () => ({
@@ -124,7 +135,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
             <TextInput
               autoCorrect={false}
               autoFocus={true}
-              style={inputStyle}
+              style={getTextInputStyle(isAddressValid)}
               placeholderTextColor={ColorMap.disabled}
               selectionColor={ColorMap.disabled}
               blurOnSubmit={false}
@@ -133,7 +144,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
               onChangeText={onChangeInputText}
             />
           ) : (
-            <Text style={getTextInputStyle(isAddressValid)}>{toShort(address, 9, 9)}</Text>
+            <Text style={getFormattedTextInputStyle(isAddressValid)}>{toShort(address, 9, 9)}</Text>
           )}
         </View>
       </TouchableOpacity>

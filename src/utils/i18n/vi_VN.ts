@@ -147,6 +147,7 @@ export const vi = {
     noDAppAvailable: 'No DApp available',
     noAccountAvailableForThisDApp: 'No account available for this DApp',
     received: 'Received',
+    confirm: 'Confirm',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

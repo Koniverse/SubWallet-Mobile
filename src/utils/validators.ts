@@ -27,13 +27,13 @@ export const requestCameraPermission = async () => {
     case RESULTS.BLOCKED:
       Alert.alert(i18n.common.notify, i18n.common.cannotScanQRCodeWithoutPermission, [
         {
+          text: 'Cancel',
+        },
+        {
           text: i18n.common.goToSetting,
           onPress: () => {
             Linking.openSettings();
           },
-        },
-        {
-          text: 'OK',
         },
       ]);
       return;
