@@ -5,6 +5,8 @@ import { Item } from 'react-native-picker-select';
 import { ListRenderItemInfo } from 'react-native';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
+import { EmptyList } from 'components/EmptyList';
+import { Aperture } from 'phosphor-react-native';
 
 interface Props {
   items: Item[];
@@ -18,7 +20,16 @@ const filterFunction = (items: Item[], searchString: string) => {
   return items.filter(item => item.label.toLowerCase().includes(searchString.toLowerCase()));
 };
 
+const formatItemList = (items: Item[]) => {
+  if (items.length === 1 && !items[0].value) {
+    return [] as Item[];
+  } else {
+    return items;
+  }
+};
+
 export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChangeValue, selectedItem }: Props) => {
+  const formattedItemList = formatItemList(items);
   const renderItem = ({ item }: ListRenderItemInfo<Item>) => {
     return (
       <NetworkSelectItem
@@ -36,8 +47,8 @@ export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChang
         style={FlatListScreenPaddingTop}
         title={'Chain Select'}
         autoFocus={true}
-        items={items}
-        renderListEmptyComponent={() => <></>}
+        items={formattedItemList}
+        renderListEmptyComponent={() => <EmptyList title={items[0].label} icon={Aperture} />}
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onChangeModalVisible}
