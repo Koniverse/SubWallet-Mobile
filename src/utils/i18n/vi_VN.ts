@@ -148,6 +148,10 @@ export const vi = {
     noAccountAvailableForThisDApp: 'No account available for this DApp',
     received: 'Received',
     confirm: 'Confirm',
+    viewTransaction: 'View Transaction',
+    transferNFTSuccessfullyMessage:
+      'Your transfer request has been confirmed. It might take a minute to see changes in your wallet.',
+    transferNFTFailedMessage: 'There was a problem with your request. You can try again.',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -191,6 +195,8 @@ export const vi = {
     manageDAppAccess: 'Manage DApp Access',
     moreOptions: 'More Options',
     scanQrCode: 'Scan QR Code',
+    transferNFTSuccessfully: 'Transfer NFT Successfully',
+    transferNFTFailed: 'Transfer NFT Failed',
   },
   tabName: {
     crypto: 'Crypto',
