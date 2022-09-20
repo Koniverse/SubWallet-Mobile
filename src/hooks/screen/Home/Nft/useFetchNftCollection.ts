@@ -10,10 +10,10 @@ export default function useFetchNftCollection(): NftCollectionType {
   const nftList = useSelector((state: RootState) => state.nft.nftList);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const networkList = Object.keys(networkMap);
+  const accountList = accounts.map(account => account.address);
 
   return useMemo((): NftCollectionType => {
-    const networkList = Object.keys(networkMap);
-    const accountList = accounts.map(account => account.address);
     const nftCollections: NftCollection[] = [];
     for (const nftCollection of nftCollectionList) {
       if (!networkList.includes(nftCollection.chain || '')) {
@@ -40,5 +40,6 @@ export default function useFetchNftCollection(): NftCollectionType {
     return {
       nftCollections,
     };
-  }, [accounts, networkMap, nftCollectionList, nftList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(accountList), JSON.stringify(networkList), nftCollectionList, nftList]);
 }
