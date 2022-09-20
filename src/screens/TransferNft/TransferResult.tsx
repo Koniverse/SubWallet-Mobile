@@ -27,8 +27,6 @@ interface Props {
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...sharedStyles.layoutContainer,
   ...centerStyle,
-  paddingLeft: 45,
-  paddingRight: 45,
 };
 
 const ResultContainerStyle: StyleProp<ViewStyle> = {

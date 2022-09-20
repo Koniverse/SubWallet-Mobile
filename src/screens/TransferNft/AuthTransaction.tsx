@@ -10,7 +10,6 @@ import ImagePreview from 'components/ImagePreview';
 import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
 import {
@@ -23,6 +22,7 @@ import { SubstrateTransferParams, Web3TransferParams } from 'types/nft';
 import i18n from 'utils/i18n/i18n';
 import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction } from '../../messaging';
 import { SubmitButton } from 'components/SubmitButton';
+import { Warning } from 'components/Warning';
 
 interface Props {
   setShowConfirm: (val: boolean) => void;
@@ -38,6 +38,8 @@ interface Props {
   recipientAddress: string;
   chain: string;
   web3TransferParams: Web3TransferParams | null;
+  loading: boolean;
+  setLoading: (isLoading: boolean) => void;
 }
 
 interface AddressProxy {
@@ -100,13 +102,10 @@ const AuthTransaction = (props: Props) => {
     setExtrinsicHash,
     collectionId,
     setShowConfirm,
+    loading,
+    setLoading,
   } = props;
-
-  const { show } = useToast();
-
   const [passwordError, setPasswordError] = useState<string | null>(null);
-
-  const [loading, setLoading] = useState(false);
   const [senderInfoSubstrate, setSenderInfoSubstrate] = useState<AddressProxy>(() => ({
     isUnlockCached: false,
     signAddress: senderAccount.address,
@@ -121,11 +120,12 @@ const AuthTransaction = (props: Props) => {
   const web3Gas = web3TransferParams !== null ? web3TransferParams.estimatedGas : null;
   const web3BalanceError = web3TransferParams !== null ? web3TransferParams.balanceError : false;
 
+  const balanceError = substrateTransferParams !== null ? substrateBalanceError : web3BalanceError;
+
   const nftName = useMemo((): string => {
     return nftItem.name ? nftItem.name : '#' + nftItem.id;
   }, [nftItem.id, nftItem.name]);
-
-  const [balanceError] = useState(substrateTransferParams !== null ? substrateBalanceError : web3BalanceError);
+  const [error, setError] = useState<string>('');
 
   const feeInfo = useMemo((): FeeInfo => {
     const raw = substrateGas || web3Gas || '0';
@@ -141,6 +141,7 @@ const AuthTransaction = (props: Props) => {
   }, [setShowConfirm]);
 
   const onSendEvm = useCallback(async () => {
+    console.log('data');
     if (web3Tx) {
       await evmNftSubmitTransaction(
         {
@@ -154,11 +155,12 @@ const AuthTransaction = (props: Props) => {
           if (data.passwordError) {
             setPasswordError(data.passwordError);
             setLoading(false);
+            return;
           }
 
           if (balanceError && !data.passwordError) {
             setLoading(false);
-            show('Your balance is too low to cover fees');
+            setError(i18n.errorMessage.transferNFTBalanceError);
 
             return;
           }
@@ -168,7 +170,7 @@ const AuthTransaction = (props: Props) => {
           // }
 
           if (data.txError) {
-            show('Encountered an error, please try again.');
+            setError(i18n.errorMessage.transferNFTTxError);
             setLoading(false);
 
             return;
@@ -201,7 +203,7 @@ const AuthTransaction = (props: Props) => {
         },
       );
     } else {
-      show('Encountered an error, please try again.');
+      setError(i18n.errorMessage.transferNFTTxError);
     }
   }, [
     balanceError,
@@ -210,13 +212,13 @@ const AuthTransaction = (props: Props) => {
     nftItem,
     recipientAddress,
     senderAccount.address,
-    senderInfoSubstrate,
+    senderInfoSubstrate.signPassword,
     setExtrinsicHash,
     setIsTxSuccess,
+    setLoading,
     setShowConfirm,
     setShowResult,
     setTxError,
-    show,
     web3Tx,
   ]);
 
@@ -236,7 +238,7 @@ const AuthTransaction = (props: Props) => {
 
         if (balanceError && !data.passwordError) {
           setLoading(false);
-          show('Your balance is too low to cover fees');
+          setError(i18n.errorMessage.transferNFTBalanceError);
 
           return;
         }
@@ -246,7 +248,7 @@ const AuthTransaction = (props: Props) => {
         // }
 
         if (data.txError && data.txError) {
-          show('Encountered an error, please try again.');
+          setError(i18n.errorMessage.transferNFTTxError);
           setLoading(false);
 
           return;
@@ -284,7 +286,7 @@ const AuthTransaction = (props: Props) => {
     senderAccount.address,
     recipientAddress,
     balanceError,
-    show,
+    setLoading,
     setIsTxSuccess,
     setShowConfirm,
     setShowResult,
@@ -301,10 +303,6 @@ const AuthTransaction = (props: Props) => {
     }
     Keyboard.dismiss();
 
-    if (balanceError) {
-      show('Your balance is too low to cover fees');
-      return;
-    }
     setLoading(true);
 
     setTimeout(async () => {
@@ -314,7 +312,7 @@ const AuthTransaction = (props: Props) => {
         await onSendEvm();
       }
     }, 10);
-  }, [loading, balanceError, show, substrateParams, web3Tx, onSendSubstrate, onSendEvm]);
+  }, [loading, setLoading, substrateParams, web3Tx, onSendSubstrate, onSendEvm]);
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, { onSubmitForm: handleSignAndSubmit });
 
@@ -369,13 +367,16 @@ const AuthTransaction = (props: Props) => {
             onSubmitField={onSubmitField('password')}
             autoFocus={true}
           />
+
+          {!!error && <Warning message={error} isDanger />}
         </ScrollView>
         <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
           <SubmitButton
             style={{ width: '100%', ...MarginBottomForSubmitButton }}
             title={i18n.common.confirm}
             onPress={handleSignAndSubmit}
-            disabled={!formState.data.password || errorMessages.length > 0 || loading}
+            isBusy={loading}
+            disabled={!formState.data.password || errorMessages.length > 0}
           />
         </View>
       </>

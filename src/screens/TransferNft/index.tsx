@@ -18,7 +18,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { HomeNavigationProps } from 'routes/home';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
@@ -41,6 +40,7 @@ import TransferResult from './TransferResult';
 import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
+import { Warning } from 'components/Warning';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -49,7 +49,7 @@ const ImageContainerStyle: StyleProp<ViewStyle> = {
 
 const ImageStyle: StyleProp<ViewStyle> = {
   width: 182,
-  height: 172,
+  height: 182,
   borderRadius: 10,
 };
 
@@ -75,7 +75,7 @@ const isValidRecipient = (address: string, isEthereum: boolean) => {
 };
 
 const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps) => {
-  const { show } = useToast();
+  // const { show } = useToast();
   const navigation = useNavigation<HomeNavigationProps>();
 
   const _currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
@@ -83,7 +83,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   const { nftItem, collectionImage, collectionId } = transferNftParams;
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
-  const [addressError, setAddressError] = useState(true);
+  const [addressError, setAddressError] = useState(false);
   const [currentAccount] = useState<AccountJson | undefined>(_currentAccount);
   const networkKey = nftItem.chain as string;
   const networkJson = useGetNetworkJson(networkKey);
@@ -100,7 +100,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [showTransferResult, setShowTransferResult] = useState(false);
-
+  const [error, setError] = useState<string | undefined>(undefined);
   const [extrinsicHash, setExtrinsicHash] = useState('');
   const [isTxSuccess, setIsTxSuccess] = useState(false);
   const [txError, setTxError] = useState('');
@@ -155,14 +155,15 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
 
   const onChangeReceiverAddress = useCallback((receiverAddress: string | null, currentTextValue: string) => {
     setRecipientAddress(currentTextValue);
+    setAddressError(false);
   }, []);
 
   const handleSend = useCallback(async () => {
-    if (addressError || !currentAccount?.address) {
-      show(i18n.errorMessage.invalidAddress);
+    if (!currentAccount?.address) {
+      setError(i18n.errorMessage.invalidAddress);
       return;
     }
-
+    setError(undefined);
     setLoading(true);
     const senderAddress = currentAccount.address;
     const params = paramsHandler(nftItem, networkKey, networkJson);
@@ -193,17 +194,26 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
 
       setShowConfirm(true);
     } else {
-      show('Some error occurred. Please try again later.');
+      setError(i18n.errorMessage.transferNFTError);
     }
 
     setLoading(false);
-  }, [addressError, currentAccount?.address, networkJson, networkKey, nftItem, recipientAddress, show]);
+  }, [currentAccount?.address, networkJson, networkKey, nftItem, recipientAddress]);
 
   useEffect(() => {
-    if (networkJson.isEthereum) {
-      setAddressError(!isValidRecipient(recipientAddress as string, true));
+    const isValidCurrentRecipient =
+      !!recipientAddress && isValidRecipient(recipientAddress as string, !!networkJson.isEthereum);
+
+    if (!recipientAddress) {
+      return;
     } else {
-      setAddressError(!isValidRecipient(recipientAddress as string, false));
+      if (!isValidCurrentRecipient) {
+        setAddressError(true);
+        setError(i18n.errorMessage.invalidAddress);
+      } else {
+        setAddressError(false);
+        setError(undefined);
+      }
     }
   }, [networkJson.isEthereum, recipientAddress]);
 
@@ -235,6 +245,8 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
         setTxError={setTxError}
         substrateTransferParams={substrateTransferParams}
         web3TransferParams={web3TransferParams}
+        loading={loading}
+        setLoading={(isLoading: boolean) => setLoading(isLoading)}
       />
     );
   }
@@ -243,9 +255,10 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     <ContainerWithSubHeader
       title={i18n.title.transferNft}
       onPressBack={goBack}
-      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : i18n.common.resend}
-      disableRightButton={loading}
-      onPressRightIcon={!showTransferResult ? handleSend : handleResend}>
+      disabled={loading}
+      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : undefined}
+      disableRightButton={loading || showTransferResult}
+      onPressRightIcon={!showTransferResult ? handleSend : undefined}>
       <>
         {!showTransferResult && (
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -262,12 +275,16 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                   label={i18n.common.sendToAddress}
                   value={recipientAddress}
                   onChange={onChangeReceiverAddress}
+                  isValidValue={!addressError}
                 />
                 <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
+
+                {!!error && <Warning message={error} isDanger />}
               </ScrollView>
               <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
                 <SubmitButton
-                  disabled={loading || !recipientAddress}
+                  isBusy={loading}
+                  disabled={!recipientAddress || addressError}
                   style={{ width: '100%', ...MarginBottomForSubmitButton }}
                   title={i18n.transferNft.send}
                   onPress={handleSend}

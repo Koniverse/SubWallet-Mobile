@@ -16,6 +16,7 @@ interface InputProps {
   containerStyle?: StyleProp<any>;
   onChange: (output: string | null, currentValue: string) => void;
   onPressQrButton: () => void;
+  isValidValue?: boolean;
 }
 
 const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
@@ -90,10 +91,10 @@ const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
 };
 
 const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
-  const { containerStyle, label, onChange, onPressQrButton, value } = inputAddressProps;
+  const { containerStyle, label, onChange, onPressQrButton, value, isValidValue = true } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
-  const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address));
+  const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address)) && isValidValue;
   const onChangeInputText = (text: string) => {
     setAddress(text);
     if (isValidCurrentAddress(text, isEthereumAddress(address))) {

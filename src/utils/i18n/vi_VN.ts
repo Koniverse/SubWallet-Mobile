@@ -310,5 +310,8 @@ export const vi = {
     wrongPassword: 'Wrong password',
     invalidMnemonicSeed: 'Invalid mnemonic seed',
     invalidAddress: 'Invalid address',
+    transferNFTBalanceError: 'Your balance is too low to cover fees',
+    transferNFTTxError: 'Encountered an error, please try again.',
+    transferNFTError: 'Some error occurred. Please try again later.',
   },
 };
