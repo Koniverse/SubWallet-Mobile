@@ -85,6 +85,7 @@ const NftNameTextStyle: StyleProp<TextStyle> = {
 const SubmitButtonStyle: StyleProp<ViewStyle> = {
   ...ButtonStyle,
   marginTop: 16,
+  marginBottom: 16,
 };
 
 const SubmitButtonTextStyle: StyleProp<TextStyle> = {
@@ -375,7 +376,10 @@ const AuthTransaction = (props: Props) => {
           label={formState.labels.password}
           onChangeText={handlerChangePassword}
           defaultValue={formState.data.password}
-          errorMessages={formState.errors.password || [passwordError]}
+          errorMessages={[
+            ...(formState.errors.password ? formState.errors.password : []),
+            ...(passwordError ? [passwordError] : []),
+          ]}
           onSubmitField={onSubmitField('password')}
           autoFocus={true}
         />

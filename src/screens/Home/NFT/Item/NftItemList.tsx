@@ -25,7 +25,8 @@ const renderEmpty = () => {
 
 const filteredNftItem = (items: _NftItem[], searchString: string) => {
   return items.filter(item => {
-    return item.name && item.name.toLowerCase().includes(searchString.toLowerCase());
+    const name = item.name ? item.name : `#${item.id}`;
+    return name.toLowerCase().includes(searchString.toLowerCase());
   });
 };
 

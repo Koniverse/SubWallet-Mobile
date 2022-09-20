@@ -1,5 +1,5 @@
 import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import ImagePreview from 'components/ImagePreview';
 import { ColorMap } from 'styles/color';
@@ -51,7 +51,11 @@ const NameStyle: StyleProp<any> = {
 };
 
 const NftItem = ({ nftItem, onPress }: Props) => {
-  const { name, image } = nftItem;
+  const { name: _name, image, id } = nftItem;
+
+  const name = useMemo((): string => {
+    return _name ? _name : `#${id}`;
+  }, [_name, id]);
 
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress} activeOpacity={0.8}>
