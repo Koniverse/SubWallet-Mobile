@@ -22,7 +22,7 @@ export default function useFetchNftCollection(): NftCollectionType {
       const collection: NftCollection = { ...nftCollection };
       let count = 0;
       for (const nft of nftList) {
-        const owner = reformatAddress(nft.owner || '', 42, false);
+        const owner = nft.owner ? reformatAddress(nft.owner, 42, false) : '';
         if (
           nft.chain === nftCollection.chain &&
           nft.collectionId === nftCollection.collectionId &&
