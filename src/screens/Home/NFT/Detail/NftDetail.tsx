@@ -10,17 +10,7 @@ import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import React, { useCallback, useMemo } from 'react';
-import {
-  Linking,
-  Platform,
-  ScrollView,
-  StyleProp,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { NftScreenState } from 'reducers/nftScreen';
@@ -41,10 +31,6 @@ const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
   paddingHorizontal: 16,
 };
-
-if (Platform.OS === 'ios') {
-  ContainerDetailStyle.marginBottom = 16;
-}
 
 const PropContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 24,
@@ -224,7 +210,7 @@ const NftDetail = ({ nftState }: Props) => {
   }, []);
 
   return (
-    <ScrollView style={ContainerDetailStyle}>
+    <ScrollView style={ContainerDetailStyle} contentContainerStyle={{ paddingBottom: 16 }}>
       <View style={ImageContainerStyle}>
         <ImagePreview
           style={ImageStyle}

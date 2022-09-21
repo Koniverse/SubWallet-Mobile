@@ -20,7 +20,6 @@ const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgro
   return {
     ...sharedStyles.container,
     backgroundColor: backgroundColor || ColorMap.dark1,
-    paddingBottom: 22,
     paddingTop: STATUS_BAR_HEIGHT + 13.5,
   };
 };

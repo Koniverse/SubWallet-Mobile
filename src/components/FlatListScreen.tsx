@@ -108,7 +108,7 @@ export function FlatListScreen<T>({
             columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
-            contentContainerStyle={numberColumns > 1 ? { marginHorizontal: -8 } : undefined}
+            contentContainerStyle={numberColumns > 1 ? { marginHorizontal: -8, paddingBottom: 16 } : undefined}
           />
         ) : (
           renderListEmptyComponent()

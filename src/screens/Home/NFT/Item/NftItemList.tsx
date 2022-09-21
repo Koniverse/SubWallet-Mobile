@@ -2,7 +2,7 @@ import { NftCollection, NftItem as _NftItem } from '@subwallet/extension-base/ba
 import { FlatListScreen } from 'components/FlatListScreen';
 import useFetchNftItem from 'hooks/screen/Home/Nft/useFetchNftItem';
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, Platform, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import { NftScreenActionParams, NftScreenActionType, NftScreenState } from 'reducers/nftScreen';
 import NftItem from './NftItem';
 import { EmptyList } from 'components/EmptyList';
@@ -17,10 +17,6 @@ interface Props {
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
 };
-
-if (Platform.OS === 'ios') {
-  NftItemListStyle.paddingBottom = 16;
-}
 
 const renderEmpty = () => {
   return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
