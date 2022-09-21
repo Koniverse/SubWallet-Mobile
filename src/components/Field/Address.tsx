@@ -12,6 +12,8 @@ import { IconButton } from 'components/IconButton';
 interface Props extends FieldBaseProps {
   address: string;
   networkPrefix?: number;
+  showRightIcon?: boolean;
+  onPressRightIcon?: () => void;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -41,7 +43,13 @@ const infoIconStyle: StyleProp<any> = {
 };
 
 // todo: onPress infoIcon
-export const AddressField = ({ address, networkPrefix, ...fieldBase }: Props) => {
+export const AddressField = ({
+  address,
+  networkPrefix,
+  onPressRightIcon,
+  showRightIcon = true,
+  ...fieldBase
+}: Props) => {
   const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
 
   return (
@@ -49,7 +57,9 @@ export const AddressField = ({ address, networkPrefix, ...fieldBase }: Props) =>
       <View style={blockContentStyle}>
         <SubWalletAvatar address={address} size={18} style={avatarStyle} />
         <Text style={addressStyle}>{toShort(formattedAddress, 10, 10)}</Text>
-        <IconButton color={ColorMap.disabled} style={infoIconStyle} icon={Info} onPress={() => {}} />
+        {showRightIcon && (
+          <IconButton color={ColorMap.disabled} style={infoIconStyle} icon={Info} onPress={onPressRightIcon} />
+        )}
       </View>
     </FieldBase>
   );

@@ -7,9 +7,20 @@ import ImagePreview from 'components/ImagePreview';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
+import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import React, { useCallback, useMemo } from 'react';
-import { Platform, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import {
+  Linking,
+  Platform,
+  ScrollView,
+  StyleProp,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { NftScreenState } from 'reducers/nftScreen';
@@ -18,6 +29,7 @@ import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
+import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
 
@@ -148,6 +160,7 @@ const NftDetail = ({ nftState }: Props) => {
 
   const networkJson = useGetNetworkJson(data.chain as string);
   const isAccountAll = useIsAccountAll();
+  const ownerUrl = useScanExplorerAddressUrl(networkJson.key, data.owner || '');
 
   const canSend = useMemo((): boolean => {
     if (!currentAccount) {
@@ -201,6 +214,15 @@ const NftDetail = ({ nftState }: Props) => {
     show,
   ]);
 
+  const handleClickInfoIcon = useCallback((url?: string) => {
+    if (!url) {
+      return noop;
+    }
+    return () => {
+      Linking.openURL(url);
+    };
+  }, []);
+
   return (
     <ScrollView style={ContainerDetailStyle}>
       <View style={ImageContainerStyle}>
@@ -225,12 +247,18 @@ const NftDetail = ({ nftState }: Props) => {
         </View>
         <Text style={ResourceTitleStyle}>Resources or Inventory</Text>
       </TouchableOpacity>
-      <TextField text={collectionName || ''} label={i18n.nftScreen.nftDetail.collectionName} />
+      <TextField
+        text={collectionName || ''}
+        label={i18n.nftScreen.nftDetail.collectionName}
+        showRightIcon={!!data.external_url}
+        onPressRightIcon={handleClickInfoIcon(data.external_url)}
+      />
       {data.owner && (
         <AddressField
           address={data.owner}
           networkPrefix={networkJson.ss58Format}
           label={i18n.nftScreen.nftDetail.ownedBy}
+          onPressRightIcon={handleClickInfoIcon(ownerUrl)}
         />
       )}
       {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
