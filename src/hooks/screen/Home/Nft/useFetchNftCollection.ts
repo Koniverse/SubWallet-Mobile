@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import reformatAddress from 'utils/index';
-import {ALL_ACCOUNT_KEY} from "@subwallet/extension-koni-base/constants";
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 
 export default function useFetchNftCollection(): NftCollectionType {
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
