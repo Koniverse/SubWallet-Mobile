@@ -10,6 +10,7 @@ interface Props extends TextInputProps {
   onClearSearchString: () => void;
   autoFocus?: boolean;
   searchRef?: React.RefObject<TextInput>;
+  onSubmitEditing?: TextInputProps['onSubmitEditing'];
 }
 
 const searchContainerStyle: StyleProp<any> = {
@@ -22,16 +23,17 @@ const searchContainerStyle: StyleProp<any> = {
   height: 44,
 };
 
+const SearchIcon = MagnifyingGlass;
+const CancelIcon = XCircle;
+
 export const Search = (searchProps: Props) => {
-  const { onSearch, searchText, style, onClearSearchString, autoFocus, searchRef } = searchProps;
-  const SearchIcon = MagnifyingGlass;
-  const CancelIcon = XCircle;
+  const { onSearch, searchText, style, onClearSearchString, autoFocus, searchRef, onSubmitEditing, placeholder } =
+    searchProps;
 
   return (
     <View style={[searchContainerStyle, style]}>
       <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
       <TextInput
-        {...searchProps}
         ref={searchRef}
         style={{
           marginHorizontal: 16,
@@ -42,11 +44,13 @@ export const Search = (searchProps: Props) => {
           flexDirection: 'row',
           flex: 1,
         }}
+        placeholder={placeholder}
         autoCorrect={false}
         autoFocus={autoFocus}
         onChangeText={text => onSearch(text)}
         placeholderTextColor={ColorMap.disabled}
         value={searchText}
+        onSubmitEditing={onSubmitEditing}
       />
       {!!searchText && (
         <TouchableOpacity onPress={onClearSearchString}>

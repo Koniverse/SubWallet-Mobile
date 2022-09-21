@@ -13,8 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
-import { isValidURL } from 'utils/browser';
-import { getHostName } from 'utils/browser';
+import { getHostName, isValidURL } from 'utils/browser';
 
 function doFilter(searchString: string) {
   return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -93,6 +92,9 @@ export const BrowserSearch = () => {
             onSearch={setSearchString}
             onClearSearchString={() => setSearchString('')}
             placeholder={i18n.common.searchPlaceholder}
+            onSubmitEditing={({ nativeEvent: { text } }) => {
+              onPressItem(getFirstSearchItem(text));
+            }}
           />
 
           <Button title={i18n.common.cancel} onPress={() => navigation.canGoBack() && navigation.goBack()} />
@@ -100,7 +102,7 @@ export const BrowserSearch = () => {
 
         <View style={{ flex: 1 }}>
           <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
-          <FlatList data={filteredList} renderItem={renderItem} />
+          <FlatList data={filteredList} renderItem={renderItem} keyboardShouldPersistTaps="always" />
         </View>
       </>
     </ScreenContainer>
