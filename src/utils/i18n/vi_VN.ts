@@ -29,7 +29,7 @@ export const vi = {
     cannotScanQRCodeWithoutPermission: 'Please grant Camera access to scan QR code',
     goToSetting: 'Go to Setting',
     scan: 'Scan',
-    toAddressToSend: 'address to send',
+    toSendFund: 'to send fund',
     emptyTransactionListMessage: 'Your transactions will appear here',
     emptyCrowdloanListMessage: 'Your crowdloans will appear here',
     emptyBrowserMessage: 'Type a URL or search the web',
@@ -152,6 +152,9 @@ export const vi = {
     transferNFTSuccessfullyMessage:
       'Your transfer request has been confirmed. It might take a minute to see changes in your wallet.',
     transferNFTFailedMessage: 'There was a problem with your request. You can try again.',
+    address: 'address',
+    toImportNFT: 'to import NFT',
+    toSendNFT: 'to send NFT',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

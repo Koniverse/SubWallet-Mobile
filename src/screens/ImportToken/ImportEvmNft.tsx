@@ -17,7 +17,6 @@ import { NetworkField } from 'components/Field/Network';
 import { BUTTON_ACTIVE_OPACITY } from '../../constant';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
-import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
 
@@ -62,7 +61,6 @@ const ImportEvmNft = () => {
   const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {});
   const { data: formData } = formState;
   const { chain, smartContract, collectionName } = formData;
-  const networkJson = useGetNetworkJson(chain);
   const handleChangeValue = useCallback(
     (key: string) => {
       return (text: string) => {
@@ -243,7 +241,8 @@ const ImportEvmNft = () => {
           onPressCancel={() => setShowQrModalVisible(false)}
           onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
           networkKey={chain}
-          token={networkJson ? networkJson.nativeToken : ''}
+          token={'contract'}
+          scanMessage={i18n.common.toImportNFT}
         />
       </View>
     </ContainerWithSubHeader>

@@ -101,9 +101,17 @@ interface Props {
   qrModalVisible: boolean;
   networkKey?: string;
   token?: string;
+  scanMessage?: string;
 }
 
-export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible, networkKey, token }: Props) => {
+export const QrScannerScreen = ({
+  onPressCancel,
+  onChangeAddress,
+  qrModalVisible,
+  networkKey,
+  token,
+  scanMessage = i18n.common.toSend,
+}: Props) => {
   const onSuccess = (e: BarCodeReadEvent) => {
     try {
       onChangeAddress(e.data);
@@ -175,7 +183,7 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
                 )}
 
                 {token && (
-                  <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.toAddressToSend}`}</Text>
+                  <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.address} ${scanMessage}`}</Text>
                 )}
               </View>
             </View>

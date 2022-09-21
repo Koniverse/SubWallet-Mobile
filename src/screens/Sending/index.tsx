@@ -428,6 +428,7 @@ export const SendFund = ({
                     qrModalVisible={isShowQrModalVisible}
                     onPressCancel={() => setShowQrModalVisible(false)}
                     onChangeAddress={text => onUpdateInputAddress(text)}
+                    scanMessage={i18n.common.toSendFund}
                   />
                 </View>
               </TouchableWithoutFeedback>

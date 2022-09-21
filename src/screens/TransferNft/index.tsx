@@ -254,6 +254,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     <ContainerWithSubHeader
       title={i18n.title.transferNft}
       onPressBack={!showTransferResult ? goBack : goHome}
+      disabled={loading}
       rightButtonTitle={!showTransferResult ? i18n.transferNft.send : undefined}
       disableRightButton={loading || !recipientAddress || addressError}
       onPressRightIcon={!showTransferResult ? handleSend : undefined}>
@@ -295,6 +296,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                 onChangeAddress={text => onUpdateInputAddress(text)}
                 networkKey={nftItem.chain}
                 token={networkJson.nativeToken}
+                scanMessage={i18n.common.toSendNFT}
               />
             </>
           </TouchableWithoutFeedback>
