@@ -155,9 +155,9 @@ const NftDetail = ({ nftState }: Props) => {
     } else {
       if (isAccountAll) {
         const accountList = accounts.map(acc => acc.address);
-        return !!accountList.find(address => reformatAddress(data.owner || '', 42, false) === address);
+        return !!accountList.find(address => data.owner && reformatAddress(data.owner, 42, false) === address);
       } else {
-        return reformatAddress(data.owner || '', 42, false) === currentAccount.address;
+        return !!data.owner && reformatAddress(data.owner, 42, false) === currentAccount.address;
       }
     }
   }, [currentAccount, isAccountAll, accounts, data.owner]);
