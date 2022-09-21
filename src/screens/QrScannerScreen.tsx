@@ -175,7 +175,7 @@ export const QrScannerScreen = ({ onPressCancel, onChangeAddress, qrModalVisible
                 )}
 
                 {token && (
-                  <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.toAddressToSendFunds}`}</Text>
+                  <Text style={centerText}>{`${i18n.common.scan} ${token} ${i18n.common.toAddressToSend}`}</Text>
                 )}
               </View>
             </View>
