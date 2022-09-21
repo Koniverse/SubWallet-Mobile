@@ -254,9 +254,9 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     <ContainerWithSubHeader
       title={i18n.title.transferNft}
       onPressBack={!showTransferResult ? goBack : goHome}
-      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : i18n.common.resend}
+      rightButtonTitle={!showTransferResult ? i18n.transferNft.send : undefined}
       disableRightButton={loading || !recipientAddress || addressError}
-      onPressRightIcon={!showTransferResult ? handleSend : handleResend}>
+      onPressRightIcon={!showTransferResult ? handleSend : undefined}>
       <>
         {!showTransferResult && (
           <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

@@ -29,7 +29,7 @@ export const en = {
     cannotScanQRCodeWithoutPermission: 'Please grant Camera access to scan QR code',
     goToSetting: 'Go to Setting',
     scan: 'Scan',
-    toAddressToSendFunds: 'address to send funds',
+    toAddressToSend: 'address to send',
     emptyTransactionListMessage: 'Your transactions will appear here',
     emptyCrowdloanListMessage: 'Your crowdloans will appear here',
     emptyBrowserMessage: 'Type a URL or search the web',
