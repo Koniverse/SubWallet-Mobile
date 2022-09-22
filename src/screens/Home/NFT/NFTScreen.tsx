@@ -1,7 +1,7 @@
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useMemo, useReducer } from 'react';
 import { StyleProp } from 'react-native';
 import { useSelector } from 'react-redux';
 import { NFT_INITIAL_STATE, nftReducer, NftScreenActionType } from 'reducers/nftScreen';
@@ -30,6 +30,10 @@ const NFTScreen = ({ route: { params: initParams } }: HomeNFTProps) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
   const navigation = useNavigation<RootNavigationProps>();
+
+  const listActiveNetwork = useMemo((): string => {
+    return showedNetworks.join(';');
+  }, [showedNetworks]);
 
   const goBack = () => {
     dispatchNftState({ type: NftScreenActionType.GO_BACK, payload: null });
@@ -67,7 +71,7 @@ const NFTScreen = ({ route: { params: initParams } }: HomeNFTProps) => {
 
   useEffect(() => {
     dispatchNftState({ type: NftScreenActionType.OPEN_COLLECTION_LIST, payload: null });
-  }, [showedNetworks, currentAccountAddress]);
+  }, [listActiveNetwork, currentAccountAddress]);
 
   useEffect(() => {
     if (initParams?.refresh) {
