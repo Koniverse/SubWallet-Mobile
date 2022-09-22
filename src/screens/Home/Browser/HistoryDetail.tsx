@@ -12,6 +12,7 @@ import { RootNavigationProps } from 'routes/index';
 import { Alert, ListRenderItemInfo } from 'react-native';
 import { clearHistory } from 'stores/updater';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
+import { openPressSiteItem } from 'screens/Home/Browser/shared';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
   return items.filter(info => info.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -19,11 +20,8 @@ const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
 
 export const HistoryDetail = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
+  const tabsLength = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
-
-  const onPressItem = (item: StoredSiteInfo) => {
-    navigation.navigate('BrowserTab', { url: item.url, name: item.name });
-  };
 
   const _clearHistory = () => {
     Alert.alert(i18n.warningTitle.clearHistory, i18n.warningMessage.clearHistoryWarningMessage, [
@@ -43,7 +41,7 @@ export const HistoryDetail = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => onPressItem(item)}
+        onPress={() => openPressSiteItem(navigation, item, !tabsLength)}
       />
     );
   };

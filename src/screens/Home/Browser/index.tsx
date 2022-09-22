@@ -15,6 +15,7 @@ import { RootState } from 'stores/index';
 import { BrowserItem } from 'components/BrowserItem';
 import { StoredSiteInfo } from 'stores/types';
 import { Button } from 'components/Button';
+import { openPressSiteItem } from 'screens/Home/Browser/shared';
 
 const browserScreenHeader: StyleProp<any> = {
   flexDirection: 'row',
@@ -70,11 +71,8 @@ const SearchIcon = MagnifyingGlass;
 export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
+  const tabsLength = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
-
-  const onPressItem = (item: StoredSiteInfo) => {
-    navigation.navigate('BrowserTab', { url: item.url, name: item.name });
-  };
 
   const renderSiteItem = (item: StoredSiteInfo) => {
     return (
@@ -82,7 +80,9 @@ export const BrowserScreen = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => onPressItem(item)}
+        onPress={() => {
+          openPressSiteItem(navigation, item, !tabsLength);
+        }}
       />
     );
   };

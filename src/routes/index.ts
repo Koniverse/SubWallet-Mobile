@@ -25,7 +25,7 @@ export type RootStackParamList = {
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   ExportJson: undefined;
   BrowserSearch: undefined;
-  BrowserTab: { url: string; name: string };
+  BrowserTab: { url?: string; name?: string };
   ConfirmationPopup: undefined;
   FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;

@@ -3,8 +3,8 @@ import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
-import { StackActions, useNavigation } from '@react-navigation/native';
-import { BrowserTabProps, RootNavigationProps } from 'routes/index';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 import {
   ArrowClockwise,
   CaretLeft,
@@ -23,7 +23,12 @@ import { centerStyle, FontMedium, FontSize0, sharedStyles } from 'styles/sharedS
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
-import { WebViewMessage, WebViewNavigation, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import {
+  WebViewMessage,
+  WebViewNavigation,
+  WebViewNavigationEvent,
+  WebViewProgressEvent,
+} from 'react-native-webview/lib/WebViewTypes';
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
 import { DEVICE } from '../../../constant';
@@ -33,6 +38,11 @@ import { addToHistory, updateLatestItemInHistory } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
+
+type Props = {
+  url?: string;
+  name?: string;
+};
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -159,11 +169,10 @@ const PhishingBlockerLayer = () => {
   );
 };
 
-export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
-  const { url: propSiteUrl, name: propSiteName } = params;
+export const BrowserTab = ({ url: propSiteUrl, name: propSiteName }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [initWebViewSource, setInitWebViewSource] = useState(propSiteUrl);
+  const [initWebViewSource, setInitWebViewSource] = useState<string | null>(propSiteUrl || null);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -251,9 +260,8 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   };
 
   const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
-    updateSiteInfo(nativeEvent);
-
     if (nativeEvent.url !== siteUrl.current) {
+      updateSiteInfo(nativeEvent);
       updateNavigationInfo(nativeEvent);
     }
 
@@ -272,15 +280,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   };
 
   const goBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.dispatch(
-        StackActions.replace('Home', {
-          screen: 'Browser',
-        }),
-      );
-    }
+    navigation.navigate('Home', { tab: 'Browser' });
   };
 
   const bottomButtonList: BrowserActionButtonType[] = [
@@ -357,18 +357,25 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   }, []);
 
   useEffect(() => {
-    if (!initWebViewSource) {
-      setInitWebViewSource(params.url);
-    } else {
-      if (siteUrl.current !== params.url) {
-        webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${params.url}' })()`);
+    if (propSiteUrl) {
+      if (!initWebViewSource) {
+        setInitWebViewSource(propSiteUrl);
+      } else {
+        if (siteUrl.current !== propSiteUrl) {
+          webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${propSiteUrl}' })()`);
+        }
       }
     }
-  }, [params, initWebViewSource]);
+  }, [propSiteUrl, initWebViewSource]);
 
   const onCloseBrowserOptionModal = useCallback(() => {
     setModalVisible(false);
   }, []);
+
+  const onLoadProgress = ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
+    //todo: set process bar for the tab
+    console.log('==== Current progress ====', progress);
+  };
 
   return (
     <ScreenContainer backgroundColor={ColorMap.dark2}>
@@ -404,6 +411,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
               injectedJavaScript={getJsInjectContent()}
               onLoadStart={onLoadStart}
               onLoad={onLoad}
+              onLoadProgress={onLoadProgress}
               onMessage={onWebviewMessage}
               javaScriptEnabled={true}
               allowFileAccess={true}

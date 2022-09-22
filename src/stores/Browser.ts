@@ -21,10 +21,35 @@ const browserSlice = createSlice({
       state.activeTab = action.payload;
     },
     createNewTab: (state, { payload: url }: PayloadAction<string>) => {
-      state.tabs = [...state.tabs, { url, id: generateId('tab') }];
+      const id = generateId('tab');
+
+      if (!state.tabs.length) {
+        state.activeTab = id;
+      }
+
+      state.tabs = [...state.tabs, { url, id }];
     },
     closeTab: (state, { payload: id }: PayloadAction<string>) => {
-      state.tabs = state.tabs.filter(t => t.id !== id);
+      const targetTabIndex = state.tabs.findIndex(t => t.id === id);
+
+      if (targetTabIndex < 0) {
+        return state;
+      }
+
+      const tabsLength = state.tabs.length;
+
+      if (tabsLength > 1) {
+        if (targetTabIndex === tabsLength - 1) {
+          state.activeTab = state.tabs[tabsLength - 2].id;
+        } else {
+          state.activeTab = state.tabs[targetTabIndex + 1].id;
+        }
+
+        state.tabs = state.tabs.filter(t => t.id !== id);
+      } else {
+        state.activeTab = null;
+        state.tabs = [];
+      }
     },
     updateTab: (state, { payload }: PayloadAction<BrowserSliceTab>) => {
       state.tabs = [
@@ -38,6 +63,7 @@ const browserSlice = createSlice({
       ];
     },
     closeAllTab: state => {
+      state.activeTab = null;
       state.tabs = [];
     },
     addToHistory: (state, { payload }: PayloadAction<SiteInfo>) => {

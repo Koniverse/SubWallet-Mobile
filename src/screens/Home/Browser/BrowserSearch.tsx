@@ -11,7 +11,7 @@ import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
+import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { getHostName, isValidURL } from 'utils/browser';
 
@@ -67,7 +67,7 @@ export const BrowserSearch = () => {
   }, [searchString]);
 
   const onPressItem = (item: SearchItemType) => {
-    nativeAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
+    navigateAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {

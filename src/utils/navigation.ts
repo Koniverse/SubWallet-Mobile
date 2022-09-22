@@ -10,7 +10,7 @@ export function backToHome(navigation: RootNavigationProps, isDispatchWaiting?: 
   navigation.navigate('Home');
 }
 
-export function nativeAndClearCurrentScreenHistory(
+export function navigateAndClearCurrentScreenHistory(
   navigation: RootNavigationProps,
   currentScreenKey: keyof RootStackParamList,
   navigateTo: keyof RootStackParamList,
