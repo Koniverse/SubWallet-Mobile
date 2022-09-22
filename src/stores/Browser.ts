@@ -37,6 +37,9 @@ const browserSlice = createSlice({
         }),
       ];
     },
+    closeAllTab: state => {
+      state.tabs = [];
+    },
     addToHistory: (state, { payload }: PayloadAction<SiteInfo>) => {
       if (!state.history.length || state.history[0].url !== payload.url) {
         state.history = [{ ...payload, id: generateId('his') }, ...state.history].slice(0, 50); //max 50 items

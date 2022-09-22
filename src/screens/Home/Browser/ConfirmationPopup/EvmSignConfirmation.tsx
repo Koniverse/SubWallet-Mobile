@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Divider } from 'components/Divider';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { Warning } from 'components/Warning';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
+import { AccountInfoField } from 'components/Field/AccountInfo';
 
 interface Props {
   payload: ConfirmationsQueue['evmSignatureRequest'][0];
@@ -22,6 +21,13 @@ interface SignTypedDataObjectV1 {
   name: string;
   value: any;
 }
+
+const warningTextStyle: StyleProp<any> = {
+  color: ColorMap.danger,
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  marginBottom: 16,
+};
 
 function getNodeStyle(isLeaf: boolean): StyleProp<any> {
   return {
@@ -56,6 +62,7 @@ export const EvmSignConfirmation = ({
   const [rawData, setRawData] = useState<string | object>('');
   const account = accounts.find(acc => acc.address === payload.address);
   const [warning, setWarning] = useState<string | undefined>(undefined);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   useEffect(() => {
     if (payload.type === 'eth_sign') {
       setWarning(i18n.warningMessage.ethSignWarningMessage);
@@ -147,31 +154,45 @@ export const EvmSignConfirmation = ({
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
 
+  const renderSignData = () => {
+    return (
+      <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
+        <View style={{ marginBottom: 16 }}>
+          <Text style={labelStyle}>{i18n.common.signMethod}: </Text>
+          <Text style={valueStyle}>{signMethod}</Text>
+        </View>
+
+        {warning && <Text style={warningTextStyle}>{warning}</Text>}
+
+        <View>
+          <Text style={labelStyle}>{i18n.common.rawData}: </Text>
+          {handlerRenderContent()}
+        </View>
+      </ScrollView>
+    );
+  };
+
   return (
     <ConfirmationBase
-      headerProps={{ title: i18n.title.requestToSignMessage, url, senderAccount: account }}
+      headerProps={{ title: i18n.title.authorizeRequestTitle, url }}
       isShowPassword={true}
       footerProps={{
-        cancelButtonTitle: i18n.common.cancel,
-        submitButtonTitle: i18n.common.sign,
+        cancelButtonTitle: i18n.common.reject,
+        submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
-      }}>
+      }}
+      detailModalVisible={modalVisible}
+      onPressViewDetail={() => setModalVisible(true)}
+      onChangeDetailModalVisible={() => setModalVisible(false)}
+      isUseScrollView={false}
+      renderDetailModalContent={renderSignData}>
       <>
-        <Divider style={{ marginVertical: 16, paddingHorizontal: 16 }} />
-
         <View style={{ width: '100%', paddingHorizontal: 16 }}>
-          <Text>
-            <Text style={labelStyle}>{i18n.common.signMethod}: </Text>
-            <Text style={valueStyle}>{signMethod}</Text>
+          <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
+            {i18n.common.approveRequestMessage}
           </Text>
-
-          {warning && <Warning message={warning} style={{ marginVertical: 8 }} />}
-
-          <View>
-            <Text style={labelStyle}>{i18n.common.rawData}: </Text>
-            {handlerRenderContent()}
-          </View>
+          <AccountInfoField name={account?.name || ''} address={account?.address || ''} />
         </View>
       </>
     </ConfirmationBase>

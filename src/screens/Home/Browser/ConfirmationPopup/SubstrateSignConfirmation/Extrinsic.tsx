@@ -34,7 +34,7 @@ function mortalityAsString(era: ExtrinsicEra, hexBlockNumber: string): string {
 }
 
 const itemWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
+  paddingBottom: 8,
 };
 
 const labelStyle: StyleProp<any> = {
@@ -42,10 +42,7 @@ const labelStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.light,
   flex: 1,
-  maxWidth: 100,
-  textAlign: 'right',
   paddingRight: 8,
-  paddingLeft: 16,
 };
 
 const valueStyle: StyleProp<any> = {
@@ -53,7 +50,6 @@ const valueStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.disabled,
   flex: 1,
-  paddingRight: 16,
 };
 
 export const Extrinsic = ({
@@ -64,7 +60,7 @@ export const Extrinsic = ({
   const specVersion = useRef(bnToBn(hexSpec)).current;
 
   return (
-    <ScrollView style={{ width: '100%', marginTop: 16, marginBottom: 24 }}>
+    <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
       <View style={itemWrapperStyle}>
         <Text style={labelStyle}>{i18n.common.from}</Text>
         <Text style={valueStyle}>{url}</Text>
@@ -87,6 +83,22 @@ export const Extrinsic = ({
           <Text style={valueStyle}>{formatNumber(tip)}</Text>
         </View>
       )}
+      <View style={itemWrapperStyle}>
+        <Text style={labelStyle}>{i18n.common.method}</Text>
+        <Text style={valueStyle}>{method}</Text>
+      </View>
+      <View style={itemWrapperStyle}>
+        <Text style={labelStyle}>{i18n.common.lifetime}</Text>
+        <Text style={valueStyle}>{mortalityAsString(era, blockNumber)}</Text>
+      </View>
+      <View style={itemWrapperStyle}>
+        <Text style={labelStyle}>{i18n.common.method}</Text>
+        <Text style={valueStyle}>{method}</Text>
+      </View>
+      <View style={itemWrapperStyle}>
+        <Text style={labelStyle}>{i18n.common.lifetime}</Text>
+        <Text style={valueStyle}>{mortalityAsString(era, blockNumber)}</Text>
+      </View>
       <View style={itemWrapperStyle}>
         <Text style={labelStyle}>{i18n.common.method}</Text>
         <Text style={valueStyle}>{method}</Text>

@@ -11,19 +11,12 @@ interface Props {
   url: string;
 }
 
-const itemWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
-};
-
 const labelStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.light,
   flex: 1,
-  maxWidth: 100,
-  textAlign: 'right',
   paddingRight: 8,
-  paddingLeft: 16,
 };
 
 const valueStyle: StyleProp<any> = {
@@ -31,19 +24,18 @@ const valueStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.disabled,
   flex: 1,
-  paddingRight: 16,
 };
 
 export const Bytes = ({ bytes, url }: Props) => {
   const text = useMemo(() => (isAscii(bytes) ? u8aToString(u8aUnwrapBytes(bytes)) : bytes), [bytes]);
 
   return (
-    <ScrollView style={{ width: '100%', marginTop: 16, marginBottom: 24 }}>
-      <View style={itemWrapperStyle}>
+    <ScrollView style={{ width: '100%', marginTop: 32, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
+      <View>
         <Text style={labelStyle}>{i18n.common.from}</Text>
         <Text style={valueStyle}>{url}</Text>
       </View>
-      <View style={itemWrapperStyle}>
+      <View>
         <Text style={labelStyle}>{i18n.common.bytes}</Text>
         <Text style={valueStyle}>{text}</Text>
       </View>
