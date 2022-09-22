@@ -40,9 +40,9 @@ const NftItemList = ({ dispatchNftState, nftState }: Props) => {
         dispatchNftState({ type: NftScreenActionType.OPEN_NFT, payload: { nft: item } });
       };
 
-      return <NftItem key={key} nftItem={item} onPress={onPress} />;
+      return <NftItem key={key} nftItem={item} collectionImage={collection.image} onPress={onPress} />;
     },
-    [dispatchNftState],
+    [dispatchNftState, collection.image],
   );
 
   const handleBack = () => {

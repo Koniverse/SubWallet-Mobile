@@ -132,6 +132,13 @@ export default async function transferHandler(
           recipientAddress,
           params,
         );
+      case SUPPORTED_TRANSFER_CHAIN_NAME.pioneer:
+        return await substrateTransferHandler(
+          SUPPORTED_TRANSFER_CHAIN_NAME.pioneer,
+          senderAddress,
+          recipientAddress,
+          params,
+        );
     }
   }
 

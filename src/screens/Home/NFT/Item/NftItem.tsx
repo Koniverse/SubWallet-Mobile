@@ -7,6 +7,7 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
 interface Props {
   nftItem: _NftItem;
+  collectionImage?: string;
   onPress: () => void;
 }
 
@@ -50,7 +51,7 @@ const NameStyle: StyleProp<any> = {
   color: ColorMap.light,
 };
 
-const NftItem = ({ nftItem, onPress }: Props) => {
+const NftItem = ({ nftItem, onPress, collectionImage }: Props) => {
   const { name: _name, image, id } = nftItem;
 
   const name = useMemo((): string => {
@@ -60,7 +61,13 @@ const NftItem = ({ nftItem, onPress }: Props) => {
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress} activeOpacity={0.8}>
       <View style={ContainerStyle}>
-        <ImagePreview mainUrl={image} style={LogoStyle} borderPlace={'top'} borderRadius={5} />
+        <ImagePreview
+          mainUrl={image}
+          backupUrl={collectionImage}
+          style={LogoStyle}
+          borderPlace={'top'}
+          borderRadius={5}
+        />
         <View style={InfoStyle}>
           <Text style={NameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
             {name}
