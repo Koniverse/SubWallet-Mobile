@@ -361,6 +361,7 @@ const AuthTransaction = (props: Props) => {
             errorMessages={errorMessages}
             onSubmitField={onSubmitField('password')}
             autoFocus={true}
+            isBusy={loading}
           />
 
           {!!error && <Warning message={error} isDanger />}
