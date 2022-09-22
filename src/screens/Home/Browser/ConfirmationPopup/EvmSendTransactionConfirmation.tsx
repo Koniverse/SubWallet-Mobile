@@ -5,14 +5,12 @@ import {
   NetworkJson,
   ResponseParseEVMTransactionInput,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { ColorMap } from 'styles/color';
 import { toShort } from 'utils/index';
-import { FontMedium, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { Divider } from 'components/Divider';
+import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { IconButton } from 'components/IconButton';
 import { CopySimple } from 'phosphor-react-native';
 import useGetEvmTransactionInfos from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetEvmTransactionInfos';
@@ -23,10 +21,9 @@ import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/Confirm
 import { ConfirmationHookType } from 'hooks/types';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
-import { deviceHeight } from '../../../../constant';
 import ToastContainer from 'react-native-toast-notifications';
+import { AccountInfoField } from 'components/Field/AccountInfo';
 
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 80;
 enum TAB_SELECTION_TYPE {
   BASIC,
   HEX,
@@ -50,7 +47,7 @@ interface TabOptionProps {
 
 const CONFIRMATION_TYPE = 'evmSendTransactionRequest';
 
-const textStyle: StyleProp<any> = { ...sharedStyles.mainText, ...FontMedium, color: ColorMap.light };
+const textStyle: StyleProp<any> = { ...sharedStyles.smallText, ...FontSize0, ...FontMedium, color: ColorMap.light };
 
 const subTextStyle: StyleProp<any> = { ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled };
 
@@ -60,39 +57,44 @@ function getTabStyle(isSelected: boolean) {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderColor: ColorMap.light,
+    marginBottom: 8,
   };
 }
 
 function getTabTextStyle(isSelected: boolean) {
   return {
     ...textStyle,
+    ...FontSize2,
     color: isSelected ? ColorMap.light : ColorMap.disabled,
   };
 }
 
-const receiveAccountWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
-  width: '100%',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingHorizontal: 16,
-};
-
 const valueWrapperStyle: StyleProp<any> = { flexDirection: 'row', alignItems: 'center' };
 
-const scrollViewStyle: StyleProp<any> = { marginVertical: 16, width: '100%', paddingHorizontal: 16 };
+const scrollViewStyle: StyleProp<any> = { width: '100%' };
+
+const itemWrapperStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark1,
+  paddingHorizontal: 16,
+  paddingTop: 4,
+  paddingBottom: 10,
+  borderRadius: 5,
+  marginBottom: 8,
+};
 
 const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: string) => void) => {
   return (
-    <View style={receiveAccountWrapperStyle}>
+    <View style={[itemWrapperStyle, { position: 'relative', marginTop: 8, marginBottom: 0 }]}>
+      <Text style={textStyle}>{i18n.common.defaultReceiveAccountName}</Text>
       <View style={valueWrapperStyle}>
-        <SubWalletAvatar address={receiveAddress} size={20} />
-        <View style={{ paddingLeft: 8 }}>
-          <Text style={textStyle}>{i18n.common.defaultReceiveAccountName}</Text>
-          <Text style={subTextStyle}>{toShort(receiveAddress, 12, 12)}</Text>
-        </View>
+        <Text style={subTextStyle}>{toShort(receiveAddress, 12, 12)}</Text>
+        <IconButton
+          color={ColorMap.disabled}
+          icon={CopySimple}
+          onPress={() => onPressCopyButton(receiveAddress)}
+          style={{ position: 'absolute', right: -10, bottom: -8 }}
+        />
       </View>
-      <IconButton icon={CopySimple} onPress={() => onPressCopyButton(receiveAddress)} />
     </View>
   );
 };
@@ -105,6 +107,7 @@ export const EvmSendTransactionConfirmation = ({
 }: Props) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const senderAccount = accounts.find(acc => acc.address === payload.from);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState<TAB_SELECTION_TYPE>(TAB_SELECTION_TYPE.BASIC);
   const { inputInfo, XCMToken } = useGetEvmTransactionInfos(payload, network);
   const handleChangeTab = (tabIndex: TAB_SELECTION_TYPE) => setSelectedTab(tabIndex);
@@ -141,7 +144,7 @@ export const EvmSendTransactionConfirmation = ({
 
     if (arr.length > 1) {
       return (
-        <View style={{ flexDirection: 'row', width: '100%', paddingHorizontal: 16 }}>
+        <View style={{ flexDirection: 'row', width: '100%' }}>
           {arr.map(item => {
             const isSelected = selectedTab === item.key;
 
@@ -251,7 +254,7 @@ export const EvmSendTransactionConfirmation = ({
           <View style={scrollViewStyle}>
             {payload.value && (
               <View>
-                <Text style={textStyle}>{i18n.common.amount}</Text>
+                <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.amount}</Text>
                 <View style={valueWrapperStyle}>
                   <FormatBalance
                     format={[network?.decimals || 18, '', undefined]}
@@ -265,7 +268,7 @@ export const EvmSendTransactionConfirmation = ({
 
             {payload.estimateGas && (
               <View>
-                <Text style={textStyle}>{i18n.common.estimateGas}</Text>
+                <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.estimateGas}</Text>
                 <View style={valueWrapperStyle}>
                   <FormatBalance
                     format={[(network?.decimals || 18) - 3, '', undefined]}
@@ -298,13 +301,20 @@ export const EvmSendTransactionConfirmation = ({
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
 
+  const renderTransactionData = () => {
+    return (
+      <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
+        {handleRenderTab()}
+        {handleRenderContent()}
+      </ScrollView>
+    );
+  };
+
   return (
     <ConfirmationBase
       headerProps={{
-        title: i18n.title.requestToSendPayload,
+        title: i18n.title.sendTransaction,
         url: url,
-        targetNetwork: network,
-        senderAccount,
       }}
       isShowPassword={true}
       footerProps={{
@@ -312,14 +322,23 @@ export const EvmSendTransactionConfirmation = ({
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
-      }}>
-      <>
-        <Divider style={{ marginVertical: 24, paddingHorizontal: 16 }} />
+      }}
+      detailModalVisible={modalVisible}
+      onChangeDetailModalVisible={() => setModalVisible(false)}
+      onPressViewDetail={() => setModalVisible(true)}
+      renderDetailModalContent={renderTransactionData}>
+      <View style={{ paddingHorizontal: 16 }}>
+        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
+          {i18n.common.approveTransactionMessage}
+        </Text>
+        <AccountInfoField
+          name={senderAccount?.name || ''}
+          address={senderAccount?.address || ''}
+          networkKey={network?.key}
+          networkPrefix={network?.ss58Format}
+        />
 
         {payload.to && renderReceiveAccount(payload.to, copyToClipboard)}
-
-        {handleRenderTab()}
-        {handleRenderContent()}
 
         {
           <Toast
@@ -327,10 +346,10 @@ export const EvmSendTransactionConfirmation = ({
             normalColor={ColorMap.notification}
             ref={toastRef}
             placement={'bottom'}
-            offsetBottom={OFFSET_BOTTOM}
+            offsetBottom={200}
           />
         }
-      </>
+      </View>
     </ConfirmationBase>
   );
 };

@@ -155,6 +155,9 @@ export const vi = {
     address: 'address',
     toImportNFT: 'to import NFT',
     toSendNFT: 'to send NFT',
+    approveRequestMessage: 'Only approve this request if you trust the app',
+    approveTransactionMessage: 'You are approving a request send transaction',
+    reject: 'Reject',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -200,6 +203,7 @@ export const vi = {
     scanQrCode: 'Scan QR Code',
     transferNFTSuccessfully: 'Transfer NFT Successfully',
     transferNFTFailed: 'Transfer NFT Failed',
+    sendTransaction: 'Send Transaction',
   },
   tabName: {
     crypto: 'Crypto',

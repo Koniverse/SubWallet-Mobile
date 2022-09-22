@@ -5,19 +5,23 @@ import Modal from 'components/Modal';
 interface Props {
   children: React.ReactNode;
   modalVisible: boolean;
-  onChangeModalVisible: () => void;
+  onChangeModalVisible?: () => void;
   modalStyle?: object;
   onModalHide?: () => void;
+  isFullHeight?: boolean;
 }
 
-const subWalletModalContainer: StyleProp<any> = {
-  marginTop: 'auto',
-  backgroundColor: ColorMap.dark2,
-  alignItems: 'center',
-  borderTopLeftRadius: 15,
-  borderTopRightRadius: 15,
-  paddingTop: 8,
-  paddingHorizontal: 16,
+const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
+  return {
+    marginTop: 'auto',
+    backgroundColor: ColorMap.dark2,
+    alignItems: 'center',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    paddingTop: 8,
+    paddingHorizontal: 16,
+    flex: isFullHeight ? 1 : undefined,
+  };
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
@@ -29,12 +33,19 @@ const subWalletModalSeparator: StyleProp<any> = {
   textAlign: 'center',
 };
 
-export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, modalStyle, onModalHide }: Props) => {
+export const SubWalletModal = ({
+  children,
+  modalVisible,
+  onChangeModalVisible,
+  modalStyle,
+  onModalHide,
+  isFullHeight = false,
+}: Props) => {
   return (
     <Modal
       isVisible={modalVisible}
       onModalHide={onModalHide}
-      swipeDirection="down"
+      swipeDirection={onChangeModalVisible ? 'down' : undefined}
       style={{ margin: 0 }}
       backdropColor={ColorMap.modalBackDropDarkColor}
       onSwipeComplete={onChangeModalVisible}
@@ -44,8 +55,8 @@ export const SubWalletModal = ({ children, modalVisible, onChangeModalVisible, m
       // useNativeDriver
       hideModalContentWhileAnimating
       propagateSwipe>
-      <View style={[subWalletModalContainer, modalStyle]}>
-        <View style={{ width: '100%', paddingBottom: 16, alignItems: 'center' }}>
+      <View style={[getSubWalletModalContainerStyle(!!isFullHeight), modalStyle]}>
+        <View style={{ width: '100%', paddingBottom: 16, alignItems: 'center', flex: isFullHeight ? 1 : undefined }}>
           <View style={subWalletModalSeparator} />
 
           {children}
