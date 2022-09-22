@@ -8,7 +8,15 @@ import {
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsSlice, NftCollectionSlice, NftSlice, AuthUrlsSlice, SiteInfo, BrowserSliceTab } from 'stores/types';
+import {
+  AccountsSlice,
+  NftCollectionSlice,
+  NftSlice,
+  AuthUrlsSlice,
+  SiteInfo,
+  BrowserSliceTab,
+  BrowserSlice
+} from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
@@ -71,6 +79,10 @@ export function toggleConfirmationDisplayState(): void {
 }
 
 // browser
+
+export function updateActiveTab(tabId: BrowserSlice['activeTab']): void {
+  store.dispatch({ type: 'browser/updateActiveTab', payload: tabId });
+}
 
 export function createNewTab(url: string): void {
   store.dispatch({ type: 'browser/createNewTab', payload: url });

@@ -35,6 +35,7 @@ function ConfirmationTrigger() {
   return <></>;
 }
 
+//todo: prevent reload tab when changing tab
 export const BrowserTabWrapper = ({ route: { params } }: BrowserTabProps) => {
   const activeTab = useSelector((state: RootState) => state.browser.activeTab);
   const tabs = useSelector((state: RootState) => state.browser.tabs);
@@ -46,7 +47,12 @@ export const BrowserTabWrapper = ({ route: { params } }: BrowserTabProps) => {
 
         return (
           <View key={t.id} style={getTabItemWrapperStyle(isTabActive)}>
-            <BrowserTab url={isTabActive ? params.url : undefined} name={isTabActive ? params.name : undefined} />
+            <BrowserTab
+              url={isTabActive && params.url ? params.url : t.url}
+              name={isTabActive && params.name ? params.name : undefined}
+              tabId={t.id}
+              tabsLength={tabs.length}
+            />
           </View>
         );
       })}

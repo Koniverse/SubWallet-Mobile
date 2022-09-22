@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
+import { NativeSyntheticEvent, Platform, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -11,7 +11,6 @@ import {
   CaretRight,
   DotsThree,
   GlobeSimple,
-  HouseSimple,
   IconProps,
   LockSimple,
   LockSimpleOpen,
@@ -34,12 +33,14 @@ import * as RNFS from 'react-native-fs';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
-import { addToHistory, updateLatestItemInHistory } from 'stores/updater';
+import { addToHistory, updateLatestItemInHistory, updateTab } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 
 type Props = {
+  tabId: string;
+  tabsLength: number;
   url?: string;
   name?: string;
 };
@@ -56,7 +57,7 @@ const browserTabHeaderWrapperStyle: StyleProp<any> = {
 
 type BrowserActionButtonType = {
   key: string;
-  icon: (iconProps: IconProps) => JSX.Element;
+  icon?: (iconProps: IconProps) => JSX.Element;
   onPress: () => void;
   isDisabled?: boolean;
 };
@@ -169,7 +170,7 @@ const PhishingBlockerLayer = () => {
   );
 };
 
-export const BrowserTab = ({ url: propSiteUrl, name: propSiteName }: Props) => {
+export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLength }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(propSiteUrl || null);
@@ -262,6 +263,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName }: Props) => {
   const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url !== siteUrl.current) {
       updateSiteInfo(nativeEvent);
+      updateTab({ id: tabId, url: nativeEvent.url });
       updateNavigationInfo(nativeEvent);
     }
 
@@ -324,9 +326,10 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName }: Props) => {
       },
     },
     {
-      key: 'home',
-      icon: HouseSimple,
-      onPress: goBack,
+      key: 'tabs',
+      onPress: () => {
+        navigation.navigate('BrowserTabs');
+      },
     },
     {
       key: 'more',
@@ -393,7 +396,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName }: Props) => {
                   </Text>
                 </View>
                 <Text numberOfLines={1} style={nameSiteTextStyle}>
-                  {siteName.current || propSiteName}
+                  {siteName.current || propSiteName || propSiteUrl}
                 </Text>
               </>
             )}
@@ -427,16 +430,42 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName }: Props) => {
         </View>
 
         <View style={bottomButtonAreaStyle}>
-          {bottomButtonList.map(button => (
-            <IconButton
-              key={button.key}
-              disabled={button.isDisabled}
-              color={(button.isDisabled && ColorMap.disabled) || undefined}
-              icon={button.icon}
-              onPress={button.onPress}
-              size={24}
-            />
-          ))}
+          {bottomButtonList.map(button => {
+            // todo: write this as render function
+
+            if (!button.icon) {
+              if (button.key === 'tabs') {
+                return (
+                  <TouchableOpacity
+                    key={button.key}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderWidth: 1,
+                      borderColor: ColorMap.light,
+                    }}
+                    onPress={button.onPress}>
+                    <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
+                  </TouchableOpacity>
+                );
+              }
+
+              return null;
+            }
+
+            return (
+              <IconButton
+                key={button.key}
+                disabled={button.isDisabled}
+                color={(button.isDisabled && ColorMap.disabled) || undefined}
+                icon={button.icon}
+                onPress={button.onPress}
+                size={24}
+              />
+            );
+          })}
         </View>
 
         <BrowserOptionModal

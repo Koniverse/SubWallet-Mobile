@@ -24,8 +24,9 @@ export type RootStackParamList = {
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   ExportJson: undefined;
-  BrowserSearch: undefined;
+  BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTab: { url?: string; name?: string };
+  BrowserTabs: undefined;
   ConfirmationPopup: undefined;
   FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;
@@ -49,4 +50,5 @@ export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'Rem
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabProps = NativeStackScreenProps<RootStackParamList, 'BrowserTab'>;
+export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

@@ -10,10 +10,11 @@ import { BrowserItem } from 'components/BrowserItem';
 import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { BrowserSearchProps, BrowserTabProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { getHostName, isValidURL } from 'utils/browser';
+import { createNewTab } from 'stores/updater';
 
 function doFilter(searchString: string) {
   return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -53,10 +54,11 @@ const searchResultStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
 };
 
-export const BrowserSearch = () => {
+export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
   const [filteredList, setFilteredList] = useState<SearchItemType[]>(dAppSites);
+  const isOpenNewTab = params && params.isOpenNewTab;
 
   useEffect(() => {
     if (searchString) {
@@ -67,6 +69,10 @@ export const BrowserSearch = () => {
   }, [searchString]);
 
   const onPressItem = (item: SearchItemType) => {
+    if (isOpenNewTab) {
+      createNewTab(item.url);
+    }
+
     navigateAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
   };
 

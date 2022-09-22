@@ -17,16 +17,13 @@ const browserSlice = createSlice({
   initialState,
   name: 'browser',
   reducers: {
-    updateActiveTab: (state, action: PayloadAction<string>) => {
+    updateActiveTab: (state, action: PayloadAction<BrowserSlice['activeTab']>) => {
       state.activeTab = action.payload;
     },
     createNewTab: (state, { payload: url }: PayloadAction<string>) => {
       const id = generateId('tab');
 
-      if (!state.tabs.length) {
-        state.activeTab = id;
-      }
-
+      state.activeTab = id;
       state.tabs = [...state.tabs, { url, id }];
     },
     closeTab: (state, { payload: id }: PayloadAction<string>) => {

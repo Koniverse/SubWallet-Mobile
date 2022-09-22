@@ -7,7 +7,7 @@ import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { GlobeHemisphereEast, GlobeSimple, MagnifyingGlass } from 'phosphor-react-native';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
@@ -101,6 +101,12 @@ export const BrowserScreen = () => {
               <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
               <Text style={searchBtnTextStyle}>{i18n.common.searchPlaceholder}</Text>
             </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{ width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }}
+            onPress={() => navigation.navigate('BrowserTabs')}>
+            <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
           </TouchableOpacity>
         </View>
 
