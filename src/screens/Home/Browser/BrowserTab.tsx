@@ -1,4 +1,13 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { NativeSyntheticEvent, Platform, StyleProp, Text, TouchableOpacity, View } from 'react-native';
@@ -37,12 +46,15 @@ import { addToHistory, updateLatestItemInHistory, updateTab } from 'stores/updat
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
+import { SiteInfo } from 'stores/types';
+
+export interface BrowserTabRef {
+  goToSite: (siteInfo: SiteInfo) => void;
+}
 
 type Props = {
   tabId: string;
   tabsLength: number;
-  url?: string;
-  name?: string;
   onOpenBrowserTabs: () => void;
 };
 
@@ -182,10 +194,10 @@ const PhishingBlockerLayer = () => {
   );
 };
 
-export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLength, onOpenBrowserTabs }: Props) => {
+const Component = ({ tabId, tabsLength, onOpenBrowserTabs }: Props, ref: ForwardedRef<BrowserTabRef>) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [initWebViewSource, setInitWebViewSource] = useState<string | null>(propSiteUrl || null);
+  const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -223,9 +235,9 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
     }
   };
 
-  const updateSiteInfo = ({ url, title }: WebViewNavigation) => {
+  const updateSiteInfo = ({ url, name }: SiteInfo) => {
     siteUrl.current = url;
-    siteName.current = title || url;
+    siteName.current = name || url;
   };
 
   const updateNavigationInfo = (nativeEvent: WebViewNavigation) => {
@@ -261,7 +273,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
 
   const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
-      updateSiteInfo(nativeEvent);
+      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateNavigationInfo(nativeEvent);
 
       updateLatestItemInHistory({
@@ -274,10 +286,11 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
 
   const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url !== siteUrl.current) {
-      updateSiteInfo(nativeEvent);
+      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateTab({ id: tabId, url: nativeEvent.url });
-      updateNavigationInfo(nativeEvent);
     }
+
+    updateNavigationInfo(nativeEvent);
 
     addToHistory({
       url: nativeEvent.url,
@@ -372,18 +385,6 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
     };
   }, [tabId]);
 
-  useEffect(() => {
-    if (propSiteUrl) {
-      if (!initWebViewSource) {
-        setInitWebViewSource(propSiteUrl);
-      } else {
-        if (siteUrl.current !== propSiteUrl) {
-          webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${propSiteUrl}' })()`);
-        }
-      }
-    }
-  }, [propSiteUrl, initWebViewSource]);
-
   const onCloseBrowserOptionModal = useCallback(() => {
     setModalVisible(false);
   }, []);
@@ -418,6 +419,20 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
     );
   };
 
+  useImperativeHandle(ref, () => ({
+    goToSite: (siteInfo: SiteInfo) => {
+      if (!initWebViewSource) {
+        updateSiteInfo(siteInfo);
+        setInitWebViewSource(siteInfo.url);
+      } else {
+        if (siteUrl.current !== siteInfo.url) {
+          updateSiteInfo(siteInfo);
+          webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${siteInfo.url}' })()`);
+        }
+      }
+    },
+  }));
+
   return (
     <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
@@ -434,7 +449,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
                   </Text>
                 </View>
                 <Text numberOfLines={1} style={nameSiteTextStyle}>
-                  {siteName.current || propSiteName || propSiteUrl}
+                  {siteName.current || siteUrl.current}
                 </Text>
               </>
             )}
@@ -478,3 +493,5 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
     </ScreenContainer>
   );
 };
+
+export const BrowserTab = forwardRef(Component);

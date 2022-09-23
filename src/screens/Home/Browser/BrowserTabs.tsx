@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
 import { Plus, X } from 'phosphor-react-native';
-import { closeAllTab, closeTab, updateActiveTab } from 'stores/updater';
+import { closeAllTab, closeTab } from 'stores/updater';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { getHostName } from 'utils/browser';
@@ -18,6 +18,7 @@ interface Props {
   activeTab: BrowserSlice['activeTab'];
   tabs: BrowserSlice['tabs'];
   onClose: () => void;
+  onPressTabItem: (tab: BrowserSliceTab) => void;
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
@@ -79,7 +80,11 @@ function getTabItemOverlayStyle(isActive: boolean): StyleProp<any> {
   return style;
 }
 
-const renderBrowserTabItem = (item: BrowserSliceTab, activeTab: string | null, onPressItem: (id: string) => void) => {
+const renderBrowserTabItem = (
+  item: BrowserSliceTab,
+  activeTab: string | null,
+  onPressItem: (tab: BrowserSliceTab) => void,
+) => {
   return (
     <View key={item.id} style={tabItemStyle}>
       <View style={tabItemHeaderStyle}>
@@ -91,7 +96,7 @@ const renderBrowserTabItem = (item: BrowserSliceTab, activeTab: string | null, o
       <View style={tabItemBodyStyle}>
         <Text>{item.url}</Text>
       </View>
-      <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item.id)} />
+      <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item)} />
       <IconButton
         icon={X}
         size={16}
@@ -104,12 +109,7 @@ const renderBrowserTabItem = (item: BrowserSliceTab, activeTab: string | null, o
 };
 
 //todo: take screenshot of site to make tab thumbnail
-export const BrowserTabs = ({ activeTab, tabs, navigation, onClose }: Props) => {
-  const onPressItem = (id: string) => {
-    updateActiveTab(id);
-    onClose();
-  };
-
+export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
   const onCreateNewTab = () => {
     navigation.navigate('BrowserSearch', { isOpenNewTab: true });
   };
@@ -119,7 +119,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose }: Props) => 
       <>
         <BrowserHeader />
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
-          {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressItem))}
+          {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
         </ScrollView>
         <View style={bottomTabBarWrapperStyle}>
           <Button

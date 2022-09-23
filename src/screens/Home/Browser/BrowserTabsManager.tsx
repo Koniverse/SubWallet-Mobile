@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BrowserTabsManagerProps, RootNavigationProps } from 'routes/index';
-import { BrowserTab } from 'screens/Home/Browser/BrowserTab';
+import { BrowserTab, BrowserTabRef } from 'screens/Home/Browser/BrowserTab';
 import { useNavigation } from '@react-navigation/native';
 import useConfirmations from 'hooks/useConfirmations';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StyleProp, View } from 'react-native';
 import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
+import { BrowserSliceTab, SiteInfo } from 'stores/types';
+import { updateActiveTab } from 'stores/updater';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -59,16 +61,41 @@ function ConfirmationTrigger() {
 
 //todo: prevent reload tab when changing tab
 export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProps) => {
-  const { name: propsSiteName, url: propsSiteUrl } = params;
+  const [{ name: propsSiteName, url: propsSiteUrl }, setPropSiteInfo] = useState<SiteInfo>({
+    name: params.name || '',
+    url: params.url || '',
+  });
   const propsIsOpenTabs = !!params.isOpenTabs;
   const activeTab = useSelector((state: RootState) => state.browser.activeTab);
   const tabs = useSelector((state: RootState) => state.browser.tabs);
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
   const navigation = useNavigation<RootNavigationProps>();
+  const currentActiveTabRef = useRef<BrowserTabRef>(null);
+
+  console.log('params++++++', params);
+
+  useEffect(() => {
+    if (params.url) {
+      setPropSiteInfo({
+        name: params.name || '',
+        url: params.url || '',
+      });
+    }
+  }, [params.name, params.url]);
 
   useEffect(() => {
     setIsTabsShowed(propsIsOpenTabs);
   }, [propsIsOpenTabs]);
+
+  useEffect(() => {
+    if (propsSiteUrl) {
+      currentActiveTabRef.current?.goToSite({
+        url: propsSiteUrl,
+        name: propsSiteName || propsSiteUrl,
+      });
+      setIsTabsShowed(false);
+    }
+  }, [propsSiteName, propsSiteUrl]);
 
   useEffect(() => {
     if (!tabs.length) {
@@ -84,6 +111,12 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
     setIsTabsShowed(false);
   }, []);
 
+  const onPressTabItem = useCallback((tab: BrowserSliceTab) => {
+    updateActiveTab(tab.id);
+    setPropSiteInfo({ name: tab.url, url: tab.url });
+    setIsTabsShowed(false);
+  }, []);
+
   return (
     <View style={viewContainerStyle}>
       {tabs.map(t => {
@@ -92,8 +125,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
         return (
           <View key={t.id} style={getTabItemWrapperStyle(isTabActive)}>
             <BrowserTab
-              url={isTabActive && propsSiteUrl ? propsSiteUrl : t.url}
-              name={isTabActive && propsSiteName ? propsSiteName : undefined}
+              ref={isTabActive ? currentActiveTabRef : undefined}
               tabId={t.id}
               tabsLength={tabs.length}
               onOpenBrowserTabs={onOpenBrowserTabs}
@@ -105,7 +137,13 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
       <ConfirmationTrigger />
 
       <View style={getBrowserTabsWrapperStyle(isTabsShowed)}>
-        <BrowserTabs activeTab={activeTab} tabs={tabs} navigation={navigation} onClose={onCloseBrowserTabs} />
+        <BrowserTabs
+          activeTab={activeTab}
+          tabs={tabs}
+          navigation={navigation}
+          onClose={onCloseBrowserTabs}
+          onPressTabItem={onPressTabItem}
+        />
       </View>
     </View>
   );
