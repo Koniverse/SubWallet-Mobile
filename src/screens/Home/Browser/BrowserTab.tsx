@@ -191,7 +191,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
   const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
 
-  const isWebviewReady = initWebViewSource && injectedPageJs;
+  const isWebviewReady = !!(initWebViewSource && injectedPageJs);
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();

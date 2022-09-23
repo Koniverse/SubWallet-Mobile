@@ -92,8 +92,8 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
         return (
           <View key={t.id} style={getTabItemWrapperStyle(isTabActive)}>
             <BrowserTab
-              url={isTabActive && propsSiteName ? propsSiteName : t.url}
-              name={isTabActive && propsSiteUrl ? propsSiteUrl : undefined}
+              url={isTabActive && propsSiteUrl ? propsSiteUrl : t.url}
+              name={isTabActive && propsSiteName ? propsSiteName : undefined}
               tabId={t.id}
               tabsLength={tabs.length}
               onOpenBrowserTabs={onOpenBrowserTabs}

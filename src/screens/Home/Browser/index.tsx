@@ -87,6 +87,10 @@ export const BrowserScreen = () => {
     );
   };
 
+  const onOpenBrowserSearch = () => {
+    navigation.navigate('BrowserSearch', { isOpenNewTab: !tabsLength });
+  };
+
   return (
     <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
@@ -96,7 +100,7 @@ export const BrowserScreen = () => {
           <TouchableOpacity
             activeOpacity={BUTTON_ACTIVE_OPACITY}
             style={{ flex: 1, marginLeft: 8 }}
-            onPress={() => navigation.navigate('BrowserSearch')}>
+            onPress={onOpenBrowserSearch}>
             <View style={searchBtnWrapperStyle}>
               <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
               <Text style={searchBtnTextStyle}>{i18n.common.searchPlaceholder}</Text>
