@@ -7,5 +7,5 @@ export function openPressSiteItem(navigation: RootNavigationProps, item: StoredS
     createNewTab(item.url);
   }
 
-  navigation.navigate('BrowserTab', { url: item.url, name: item.name });
+  navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
 }

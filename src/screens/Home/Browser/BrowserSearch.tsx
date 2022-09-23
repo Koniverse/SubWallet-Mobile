@@ -10,7 +10,7 @@ import { BrowserItem } from 'components/BrowserItem';
 import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { BrowserSearchProps, BrowserTabProps, RootNavigationProps } from 'routes/index';
+import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { getHostName, isValidURL } from 'utils/browser';
@@ -73,7 +73,10 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       createNewTab(item.url);
     }
 
-    navigateAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
+    navigateAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTabsManager', {
+      url: item.url,
+      name: item.name,
+    });
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {

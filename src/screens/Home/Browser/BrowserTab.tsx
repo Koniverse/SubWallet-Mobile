@@ -43,6 +43,7 @@ type Props = {
   tabsLength: number;
   url?: string;
   name?: string;
+  onOpenBrowserTabs: () => void;
 };
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
@@ -170,7 +171,7 @@ const PhishingBlockerLayer = () => {
   );
 };
 
-export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLength }: Props) => {
+export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLength, onOpenBrowserTabs }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(propSiteUrl || null);
@@ -327,9 +328,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
     },
     {
       key: 'tabs',
-      onPress: () => {
-        navigation.navigate('BrowserTabs');
-      },
+      onPress: onOpenBrowserTabs,
     },
     {
       key: 'more',
@@ -342,6 +341,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
   ];
 
   useEffect(() => {
+    console.log(`---- TAB ${tabId} INIT ----`);
     let isSync = true;
 
     (async () => {
@@ -356,8 +356,10 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
       isSync = false;
 
       clearCurrentBrowserSv();
+
+      console.log(`---- TAB ${tabId} KILL ----`);
     };
-  }, []);
+  }, [tabId]);
 
   useEffect(() => {
     if (propSiteUrl) {

@@ -105,7 +105,7 @@ export const BrowserScreen = () => {
 
           <TouchableOpacity
             style={{ width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }}
-            onPress={() => navigation.navigate('BrowserTabs')}>
+            onPress={() => navigation.navigate('BrowserTabsManager', { isOpenTabs: true })}>
             <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
           </TouchableOpacity>
         </View>

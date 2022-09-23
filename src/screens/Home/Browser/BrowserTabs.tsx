@@ -1,15 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
 import { X } from 'phosphor-react-native';
 import { closeAllTab, closeTab, updateActiveTab } from 'stores/updater';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { getHostName } from 'utils/browser';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
+import { BrowserSlice } from 'stores/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+interface Props {
+  activeTab: BrowserSlice['activeTab'];
+  tabs: BrowserSlice['tabs'];
+  onClose: () => void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+}
 
 const tabItemStyle: StyleProp<any> = {
   marginBottom: 20,
@@ -70,24 +76,18 @@ const actionButtonTitleStyle: StyleProp<any> = {
 //todo: style
 //todo: i18n
 //todo: take screenshot of site to make tab thumbnail
-export const BrowserTabs = () => {
-  const activeTab = useSelector((state: RootState) => state.browser.activeTab);
-  const tabs = useSelector((state: RootState) => state.browser.tabs);
-  const navigation = useNavigation<RootNavigationProps>();
-
-  useEffect(() => {
-    if (!tabs.length) {
-      navigation.navigate('Home', { tab: 'Browser' });
-    }
-  }, [tabs.length, navigation]);
-
+export const BrowserTabs = ({ activeTab, tabs, navigation, onClose }: Props) => {
   const onPressItem = (id: string) => {
     updateActiveTab(id);
-    navigation.navigate('BrowserTab', {});
+    onClose();
+  };
+
+  const onCreateNewTab = () => {
+    navigation.navigate('BrowserSearch', { isOpenNewTab: true });
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: ColorMap.dark1 }}>
       <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 20 }}>
         {tabs.map(t => (
           <View key={t.id} style={tabItemStyle}>
@@ -116,28 +116,15 @@ export const BrowserTabs = () => {
           borderTopWidth: 1,
           borderTopColor: ColorMap.dark2,
         }}>
-        <TouchableOpacity
-          style={actionButtonStyle}
-          onPress={() => {
-            closeAllTab();
-            // go back to tab Browser in screen Home
-          }}>
+        <TouchableOpacity style={actionButtonStyle} onPress={() => closeAllTab()}>
           <Text style={actionButtonTitleStyle}>Close All</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={actionButtonStyle}
-          onPress={() => {
-            navigation.navigate('BrowserSearch', { isOpenNewTab: true });
-          }}>
+        <TouchableOpacity style={actionButtonStyle} onPress={onCreateNewTab}>
           <Text style={actionButtonTitleStyle}>Create New Tab</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={actionButtonStyle}
-          onPress={() => {
-            navigation.canGoBack() && navigation.goBack();
-          }}>
+        <TouchableOpacity style={actionButtonStyle} onPress={onClose}>
           <Text style={actionButtonTitleStyle}>Done</Text>
         </TouchableOpacity>
       </View>
