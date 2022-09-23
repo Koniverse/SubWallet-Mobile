@@ -1,5 +1,5 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
-import { NativeSyntheticEvent, Platform, View } from 'react-native';
+import { AppState, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
 import React, { useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
@@ -44,27 +44,53 @@ let eventEmitter: EventEmitter;
 let webRef: React.RefObject<WebView<{}>>;
 let webViewState: WebRunnerState = {};
 
-// Handle ping
-let pingInterval: NodeJS.Timer | undefined;
+let lastTimeResponse: number | undefined;
 let reloadTimeout: NodeJS.Timeout | undefined;
+let pingInterval: NodeJS.Timer | undefined;
 
-const startPingInterval = () => {
-  console.log('Start ping interval');
-  pingInterval = setInterval(() => {
-    webRef?.current?.injectJavaScript(
-      "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))",
-    );
-
-    reloadTimeout = setTimeout(() => {
-      console.warn('Ping check failed: Reload web runner!!!');
-      reloadTimeout && clearTimeout(reloadTimeout);
-      pingInterval && clearTimeout(pingInterval);
-      webRef?.current?.reload();
-    }, 27000);
-  }, 30000);
+const runPing = () => {
+  webRef?.current?.injectJavaScript(
+    "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))",
+  );
 };
 
+const checkTimeout = (timeout: number = 9999, directTimeCheck?: number) => {
+  reloadTimeout && clearTimeout(reloadTimeout);
+
+  reloadTimeout = setTimeout(() => {
+    const offsetTime = (lastTimeResponse && new Date().getTime() - lastTimeResponse) || 0;
+    if (offsetTime > timeout) {
+      webRef?.current?.reload();
+      console.warn('Reload the web-runner!!!');
+    } else {
+      checkTimeout(timeout);
+    }
+  }, directTimeCheck || timeout);
+};
+
+// Handle ping
+const startPingInterval = () => {
+  console.log('### Start ping interval');
+  pingInterval && clearInterval(pingInterval);
+  pingInterval = setInterval(() => {
+    runPing();
+  }, 6666);
+};
+
+AppState.addEventListener('change', (state: string) => {
+  if (state === 'active') {
+    runPing();
+    startPingInterval();
+    checkTimeout(9999, 3333);
+  } else {
+    reloadTimeout && clearTimeout(reloadTimeout);
+    pingInterval && clearInterval(pingInterval);
+  }
+});
+
 const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+  // Save the lastTimeResponse to check it later
+  lastTimeResponse = new Date().getTime();
   listenMessage(JSON.parse(eventData.nativeEvent.data), eventEmitter, (unHandleData: Message['data']) => {
     const { id, response } = unHandleData as { id: string; response: Object };
     if (id === '0') {
@@ -72,19 +98,17 @@ const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
       const webViewStatus = statusData?.status;
 
       // ping is used to check web-runner is alive, not put into web-runner state
-      if (webViewStatus === 'ping') {
-        // Clear ping timeout
-        reloadTimeout && clearTimeout(reloadTimeout);
-      } else {
+      if (webViewStatus !== 'ping') {
         webViewState.status = webViewStatus;
         eventEmitter?.emit('update-status', webViewStatus);
         console.debug(`### Web Runner Status: ${webViewStatus}`);
 
-        // Clear ping interval and ping timeout
-        reloadTimeout && clearTimeout(reloadTimeout);
-        pingInterval && clearInterval(pingInterval);
         if (webViewStatus === 'crypto_ready') {
           webViewStatus === 'crypto_ready' && startPingInterval();
+          webViewStatus === 'crypto_ready' && checkTimeout();
+        } else {
+          reloadTimeout && clearTimeout(reloadTimeout);
+          pingInterval && clearInterval(pingInterval);
         }
       }
       return true;
