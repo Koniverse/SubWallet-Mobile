@@ -60,15 +60,16 @@ export const ConfirmationPopup = () => {
   const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
   const currentConfirmationItem = confirmationItems[confirmationIndex];
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const isDisabled = confirmationIndex === confirmationItemsLength - 1;
+  const isArrowLeftDisabled = !(confirmationIndex > 0);
+  const isArrowRightDisabled = !(confirmationIndex < confirmationItemsLength - 1);
   const onPressPrevButton = () => {
-    if (confirmationIndex > 0) {
+    if (!isArrowLeftDisabled) {
       setConfirmationIndex(confirmationIndex - 1);
     }
   };
 
   const onPressNextButton = () => {
-    if (confirmationIndex < confirmationItemsLength - 1) {
+    if (!isArrowRightDisabled) {
       setConfirmationIndex(confirmationIndex + 1);
     }
   };
@@ -147,18 +148,18 @@ export const ConfirmationPopup = () => {
           <View style={confirmationHeader}>
             <IconButton
               icon={ArrowLeft}
-              color={isDisabled ? ColorMap.disabled : ColorMap.light}
+              color={isArrowLeftDisabled ? ColorMap.disabled : ColorMap.light}
               onPress={onPressPrevButton}
-              disabled={isDisabled}
+              disabled={isArrowLeftDisabled}
             />
             <Text style={authorizeIndexTextStyle}>
               <Text>{confirmationIndex + 1}</Text>/<Text>{confirmationItemsLength}</Text>
             </Text>
             <IconButton
               icon={ArrowRight}
-              color={isDisabled ? ColorMap.disabled : ColorMap.light}
+              color={isArrowRightDisabled ? ColorMap.disabled : ColorMap.light}
               onPress={onPressNextButton}
-              disabled={isDisabled}
+              disabled={isArrowRightDisabled}
             />
           </View>
           {renderConfirmation()}
