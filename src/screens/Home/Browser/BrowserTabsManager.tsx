@@ -71,6 +71,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
   const navigation = useNavigation<RootNavigationProps>();
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
+  const isEmptyTabs = !tabs.length;
 
   console.log('params++++++', params);
 
@@ -98,10 +99,10 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   }, [propsSiteName, propsSiteUrl]);
 
   useEffect(() => {
-    if (!tabs.length) {
+    if (isEmptyTabs) {
       navigation.navigate('Home', { tab: 'Browser' });
     }
-  }, [tabs.length, navigation]);
+  }, [isEmptyTabs, navigation]);
 
   const onOpenBrowserTabs = useCallback(() => {
     setIsTabsShowed(true);
@@ -109,13 +110,38 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
 
   const onCloseBrowserTabs = useCallback(() => {
     setIsTabsShowed(false);
-  }, []);
 
-  const onPressTabItem = useCallback((tab: BrowserSliceTab) => {
-    updateActiveTab(tab.id);
-    setPropSiteInfo({ name: tab.url, url: tab.url });
-    setIsTabsShowed(false);
-  }, []);
+    const currentActiveTab = tabs.find(t => t.id === activeTab);
+
+    if (currentActiveTab) {
+      setPropSiteInfo(prev => {
+        if (prev.url === currentActiveTab.url) {
+          return prev;
+        }
+
+        return { name: currentActiveTab.url, url: currentActiveTab.url };
+      });
+    }
+  }, [activeTab, tabs]);
+
+  const onPressTabItem = useCallback(
+    (tab: BrowserSliceTab) => {
+      if (activeTab !== tab.id) {
+        updateActiveTab(tab.id);
+      }
+
+      setPropSiteInfo(prev => {
+        if (prev.url === tab.url) {
+          return prev;
+        }
+
+        return { name: tab.url, url: tab.url };
+      });
+
+      setIsTabsShowed(false);
+    },
+    [activeTab],
+  );
 
   return (
     <View style={viewContainerStyle}>
