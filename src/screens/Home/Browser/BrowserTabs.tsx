@@ -1,14 +1,18 @@
 import React from 'react';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
-import { X } from 'phosphor-react-native';
+import { Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab, updateActiveTab } from 'stores/updater';
-import { FontMedium, FontSize2 } from 'styles/sharedStyles';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { getHostName } from 'utils/browser';
 import { RootStackParamList } from 'routes/index';
-import { BrowserSlice } from 'stores/types';
+import { BrowserSlice, BrowserSliceTab } from 'stores/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Button } from 'components/Button';
+import i18n from 'utils/i18n/i18n';
+import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
+import { ScreenContainer } from 'components/ScreenContainer';
 
 interface Props {
   activeTab: BrowserSlice['activeTab'];
@@ -23,7 +27,8 @@ const tabItemStyle: StyleProp<any> = {
 };
 
 const tabItemHeaderStyle: StyleProp<any> = {
-  justifyContent: 'center',
+  flexDirection: 'row',
+  alignItems: 'center',
   backgroundColor: ColorMap.dark2,
   height: 32,
   paddingHorizontal: 14,
@@ -39,10 +44,22 @@ const tabItemBodyStyle: StyleProp<any> = {
 };
 
 const tabItemTitleStyle: StyleProp<any> = {
-  ...FontSize2,
+  paddingLeft: 8,
+  ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.light,
 };
+
+const bottomTabBarWrapperStyle: StyleProp<any> = {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  borderTopWidth: 1,
+  borderTopColor: ColorMap.dark2,
+  paddingHorizontal: 16,
+  paddingTop: 4,
+};
+
+const cancelButtonStyle: StyleProp<any> = { width: 40, height: 40, position: 'absolute', right: -4, top: -4 };
 
 function getTabItemOverlayStyle(isActive: boolean): StyleProp<any> {
   const style: StyleProp<any> = {
@@ -62,19 +79,30 @@ function getTabItemOverlayStyle(isActive: boolean): StyleProp<any> {
   return style;
 }
 
-const actionButtonStyle: StyleProp<any> = {
-  paddingHorizontal: 16,
+const renderBrowserTabItem = (item: BrowserSliceTab, activeTab: string | null, onPressItem: (id: string) => void) => {
+  return (
+    <View key={item.id} style={tabItemStyle}>
+      <View style={tabItemHeaderStyle}>
+        <Image
+          source={{ uri: `https://icons.duckduckgo.com/ip2/${getHostName(item.url)}.ico`, width: 16, height: 16 }}
+        />
+        <Text style={tabItemTitleStyle}>{getHostName(item.url)}</Text>
+      </View>
+      <View style={tabItemBodyStyle}>
+        <Text>{item.url}</Text>
+      </View>
+      <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item.id)} />
+      <IconButton
+        icon={X}
+        size={16}
+        color={ColorMap.disabled}
+        style={cancelButtonStyle}
+        onPress={() => closeTab(item.id)}
+      />
+    </View>
+  );
 };
 
-const actionButtonTitleStyle: StyleProp<any> = {
-  ...FontSize2,
-  ...FontMedium,
-  lineHeight: 50,
-  color: ColorMap.light,
-};
-
-//todo: style
-//todo: i18n
 //todo: take screenshot of site to make tab thumbnail
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose }: Props) => {
   const onPressItem = (id: string) => {
@@ -87,47 +115,25 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose }: Props) => 
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: ColorMap.dark1 }}>
-      <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 20 }}>
-        {tabs.map(t => (
-          <View key={t.id} style={tabItemStyle}>
-            <View style={tabItemHeaderStyle}>
-              <Text style={tabItemTitleStyle}>{getHostName(t.url)}</Text>
-            </View>
-            <View style={tabItemBodyStyle}>
-              <Text>{t.url}</Text>
-            </View>
-            <TouchableOpacity style={getTabItemOverlayStyle(t.id === activeTab)} onPress={() => onPressItem(t.id)} />
-            <IconButton
-              icon={X}
-              size={16}
-              color={ColorMap.disabled}
-              style={{ width: 40, height: 40, position: 'absolute', right: -4, top: -4 }}
-              onPress={() => closeTab(t.id)}
-            />
-          </View>
-        ))}
-      </ScrollView>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingBottom: 20,
-          borderTopWidth: 1,
-          borderTopColor: ColorMap.dark2,
-        }}>
-        <TouchableOpacity style={actionButtonStyle} onPress={() => closeAllTab()}>
-          <Text style={actionButtonTitleStyle}>Close All</Text>
-        </TouchableOpacity>
+    <ScreenContainer>
+      <>
+        <BrowserHeader />
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
+          {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressItem))}
+        </ScrollView>
+        <View style={bottomTabBarWrapperStyle}>
+          <Button
+            title={i18n.common.closeAll}
+            onPress={() => closeAllTab()}
+            color={ColorMap.light}
+            textStyle={{ ...FontMedium }}
+          />
 
-        <TouchableOpacity style={actionButtonStyle} onPress={onCreateNewTab}>
-          <Text style={actionButtonTitleStyle}>Create New Tab</Text>
-        </TouchableOpacity>
+          <IconButton icon={Plus} size={24} onPress={onCreateNewTab} />
 
-        <TouchableOpacity style={actionButtonStyle} onPress={onClose}>
-          <Text style={actionButtonTitleStyle}>Done</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <Button title={i18n.common.done} onPress={onClose} color={ColorMap.light} textStyle={{ ...FontMedium }} />
+        </View>
+      </>
+    </ScreenContainer>
   );
 };

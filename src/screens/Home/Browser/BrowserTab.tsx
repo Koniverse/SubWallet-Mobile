@@ -141,6 +141,16 @@ const hostNameTextStyle: StyleProp<any> = {
   color: ColorMap.light,
 };
 
+const tabButtonStyle: StyleProp<any> = {
+  width: 20,
+  height: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderWidth: 2,
+  borderRadius: 4,
+  borderColor: ColorMap.light,
+};
+
 const bottomButtonAreaStyle: StyleProp<any> = {
   flexDirection: 'row',
   width: '100%',
@@ -150,6 +160,7 @@ const bottomButtonAreaStyle: StyleProp<any> = {
   borderTopColor: ColorMap.dark2,
   borderTopWidth: 1,
   paddingVertical: 12,
+  alignItems: 'center',
 };
 
 //todo: Update better style
@@ -319,16 +330,16 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
       },
     },
     {
+      key: 'tabs',
+      onPress: onOpenBrowserTabs,
+    },
+    {
       key: 'reload',
       icon: ArrowClockwise,
       onPress: () => {
         const { current } = webviewRef;
         current && current.reload && current.reload();
       },
-    },
-    {
-      key: 'tabs',
-      onPress: onOpenBrowserTabs,
     },
     {
       key: 'more',
@@ -382,6 +393,31 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
     console.log('==== Current progress ====', progress);
   };
 
+  const renderBrowserTabBar = (button: BrowserActionButtonType) => {
+    if (!button.icon) {
+      if (button.key === 'tabs') {
+        return (
+          <TouchableOpacity key={button.key} style={tabButtonStyle} onPress={button.onPress}>
+            <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
+          </TouchableOpacity>
+        );
+      }
+
+      return null;
+    }
+
+    return (
+      <IconButton
+        key={button.key}
+        disabled={button.isDisabled}
+        color={(button.isDisabled && ColorMap.disabled) || undefined}
+        icon={button.icon}
+        onPress={button.onPress}
+        size={24}
+      />
+    );
+  };
+
   return (
     <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
@@ -431,44 +467,7 @@ export const BrowserTab = ({ url: propSiteUrl, name: propSiteName, tabId, tabsLe
           {isShowPhishingWarning && <PhishingBlockerLayer />}
         </View>
 
-        <View style={bottomButtonAreaStyle}>
-          {bottomButtonList.map(button => {
-            // todo: write this as render function
-
-            if (!button.icon) {
-              if (button.key === 'tabs') {
-                return (
-                  <TouchableOpacity
-                    key={button.key}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderWidth: 1,
-                      borderColor: ColorMap.light,
-                    }}
-                    onPress={button.onPress}>
-                    <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
-                  </TouchableOpacity>
-                );
-              }
-
-              return null;
-            }
-
-            return (
-              <IconButton
-                key={button.key}
-                disabled={button.isDisabled}
-                color={(button.isDisabled && ColorMap.disabled) || undefined}
-                icon={button.icon}
-                onPress={button.onPress}
-                size={24}
-              />
-            );
-          })}
-        </View>
+        <View style={bottomButtonAreaStyle}>{bottomButtonList.map(button => renderBrowserTabBar(button))}</View>
 
         <BrowserOptionModal
           ref={browserOptionModalRef}

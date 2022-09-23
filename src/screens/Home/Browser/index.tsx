@@ -1,14 +1,12 @@
 import React from 'react';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { AccountSettingButton } from 'components/AccountSettingButton';
+import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
-import { GlobeHemisphereEast, GlobeSimple, MagnifyingGlass } from 'phosphor-react-native';
-import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
-import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
+import { GlobeHemisphereEast, GlobeSimple } from 'phosphor-react-native';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -16,31 +14,7 @@ import { BrowserItem } from 'components/BrowserItem';
 import { StoredSiteInfo } from 'stores/types';
 import { Button } from 'components/Button';
 import { openPressSiteItem } from 'screens/Home/Browser/shared';
-
-const browserScreenHeader: StyleProp<any> = {
-  flexDirection: 'row',
-  paddingHorizontal: 16,
-  alignItems: 'center',
-  height: 40,
-};
-
-const searchBtnWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  borderRadius: 5,
-  alignItems: 'center',
-  paddingRight: 16,
-  paddingLeft: 16,
-  flexDirection: 'row',
-  height: 44,
-};
-
-const searchBtnTextStyle: StyleProp<any> = {
-  marginHorizontal: 16,
-  ...sharedStyles.mainText,
-  lineHeight: 20,
-  ...FontMedium,
-  color: ColorMap.disabled,
-};
+import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 
 const searchTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -66,8 +40,6 @@ function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
   );
 }
 
-const SearchIcon = MagnifyingGlass;
-
 export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
@@ -87,32 +59,14 @@ export const BrowserScreen = () => {
     );
   };
 
-  const onOpenBrowserSearch = () => {
-    navigation.navigate('BrowserSearch', { isOpenNewTab: !tabsLength });
+  const onOpenBrowserTabs = () => {
+    navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
   };
 
   return (
     <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
-        <View style={browserScreenHeader}>
-          <AccountSettingButton navigation={navigation} />
-
-          <TouchableOpacity
-            activeOpacity={BUTTON_ACTIVE_OPACITY}
-            style={{ flex: 1, marginLeft: 8 }}
-            onPress={onOpenBrowserSearch}>
-            <View style={searchBtnWrapperStyle}>
-              <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
-              <Text style={searchBtnTextStyle}>{i18n.common.searchPlaceholder}</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{ width: 50, height: 50, alignItems: 'center', justifyContent: 'center' }}
-            onPress={() => navigation.navigate('BrowserTabsManager', { isOpenTabs: true })}>
-            <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
-          </TouchableOpacity>
-        </View>
+        <BrowserHeader tabNumbers={tabsLength} onPressTabButton={onOpenBrowserTabs} />
 
         {!!bookmarkItems.length || !!historyItems.length ? (
           <ScrollView style={{ flex: 1, marginVertical: 16 }}>
