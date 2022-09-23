@@ -42,7 +42,6 @@ export default function useGetEvmTransactionInfos(payload: EvmSendTransactionReq
         contract: payload.to,
       })
         .then(result => {
-          console.log('result', result);
           if (amount) {
             setInputInfo(result);
           }

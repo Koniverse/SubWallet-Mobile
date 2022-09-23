@@ -6,12 +6,15 @@ import {
   ConfirmationFooter,
   ConfirmationFooterType,
 } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationFooter';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { PasswordField } from 'components/Field/Password';
 import { ColorMap } from 'styles/color';
 import useFormControl from 'hooks/screen/useFormControl';
 import i18n from 'utils/i18n/i18n';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { CaretRight } from 'phosphor-react-native';
+import { DetailModal } from 'screens/Home/Browser/ConfirmationPopup/Shared/DetailModal';
 
 interface Props {
   headerProps: ConfirmationHeaderType;
@@ -23,6 +26,11 @@ interface Props {
   children?: JSX.Element;
   isShowPassword?: boolean;
   isUseScrollView?: boolean;
+  onPressViewDetail?: () => void;
+  detailModalVisible?: boolean;
+  onChangeDetailModalVisible?: () => void;
+  renderDetailModalContent?: () => JSX.Element | null;
+  isShowViewDetailButton?: boolean;
 }
 
 type BusyKey = 'CANCEL' | 'SUBMIT' | 'BLOCK';
@@ -36,6 +44,14 @@ const formConfig = {
     name: i18n.common.password,
     value: '',
   },
+};
+
+const viewDetailButtonStyle: StyleProp<any> = {
+  paddingHorizontal: 8,
+  height: 40,
+  marginBottom: 16,
+  flexDirection: 'row',
+  alignItems: 'center',
 };
 
 interface BusyType {
@@ -58,6 +74,11 @@ export const ConfirmationBase = ({
     ...footerProps
   },
   children,
+  onPressViewDetail,
+  detailModalVisible,
+  onChangeDetailModalVisible,
+  renderDetailModalContent,
+  isShowViewDetailButton = true,
   isShowPassword,
   isUseScrollView = true,
 }: Props) => {
@@ -127,6 +148,18 @@ export const ConfirmationBase = ({
           />
         </View>
       )}
+
+      {!!isShowViewDetailButton && (
+        <View style={{ alignItems: 'center', marginBottom: 8 }}>
+          <TouchableOpacity style={viewDetailButtonStyle} onPress={onPressViewDetail}>
+            <Text style={{ color: ColorMap.disabled, ...sharedStyles.mainText, ...FontSemiBold, paddingRight: 4 }}>
+              {i18n.common.viewDetail}
+            </Text>
+            <CaretRight size={16} color={ColorMap.disabled} weight={'bold'} />
+          </TouchableOpacity>
+        </View>
+      )}
+
       <ConfirmationFooter
         {...footerProps}
         onPressCancelButton={_onPressCancelButton}
@@ -138,6 +171,13 @@ export const ConfirmationBase = ({
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
         isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isShowPassword && !formState.data.password)}
+      />
+
+      <DetailModal
+        {...headerProps}
+        modalVisible={!!detailModalVisible}
+        onChangeModalVisible={onChangeDetailModalVisible}
+        renderContent={renderDetailModalContent}
       />
     </>
   );

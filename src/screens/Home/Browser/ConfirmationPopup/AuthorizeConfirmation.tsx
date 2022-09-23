@@ -90,7 +90,8 @@ export const AuthorizeConfirmation = ({
         onPressSubmitButton: onPressSubmitButton,
         onPressBlockButton: onPressBlockButton,
         isSubmitButtonDisabled: !(selectedAccounts && selectedAccounts.length),
-      }}>
+      }}
+      isShowViewDetailButton={false}>
       <>
         {accountList && accountList.length ? (
           <>
@@ -131,7 +132,7 @@ export const AuthorizeConfirmation = ({
           />
         )}
 
-        <Text style={[textStyle, { paddingTop: 16, paddingBottom: 24, width: '100%', paddingLeft: 16 }]}>
+        <Text style={[textStyle, { paddingTop: 8, paddingBottom: 32, width: '100%', paddingLeft: 16 }]}>
           {i18n.warningMessage.trustSiteMessage}
         </Text>
       </>

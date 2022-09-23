@@ -6,7 +6,6 @@ import i18n from 'utils/i18n/i18n';
 import { MetadataRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
-import { Divider } from 'components/Divider';
 
 interface Props {
   payload: MetadataRequest;
@@ -14,14 +13,12 @@ interface Props {
   approveRequest: ConfirmationHookType['approveRequest'];
 }
 
-const metadataLabelStyle: StyleProp<any> = {
-  flex: 4,
-  alignItems: 'flex-end',
-};
-
-const metadataValueStyle: StyleProp<any> = {
-  flex: 6,
-  alignItems: 'flex-start',
+const metadataInfosWrapperStyle: StyleProp<any> = {
+  width: '100%',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  paddingBottom: 40,
+  paddingTop: 16,
 };
 
 const metadataTextStyle: StyleProp<any> = {
@@ -42,13 +39,9 @@ function getMetadataTextStyle(color: string): StyleProp<any> {
 
 function renderMetadataInfo(label: string, value: string | number) {
   return (
-    <View key={label} style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <View style={metadataLabelStyle}>
-        <Text style={getMetadataTextStyle(ColorMap.disabled)}>{`${label}: `}</Text>
-      </View>
-      <View style={metadataValueStyle}>
-        <Text style={getMetadataTextStyle(ColorMap.light)}>{value}</Text>
-      </View>
+    <View key={label} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 }}>
+      <Text style={getMetadataTextStyle(ColorMap.disabled)}>{`${label}: `}</Text>
+      <Text style={getMetadataTextStyle(ColorMap.light)}>{value}</Text>
     </View>
   );
 }
@@ -85,8 +78,9 @@ export const MetadataConfirmation = ({
         title: i18n.common.metadataIsOutOfDate,
         url,
       }}
+      isShowViewDetailButton={false}
       footerProps={{
-        cancelButtonTitle: i18n.common.cancel,
+        cancelButtonTitle: i18n.common.reject,
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
@@ -96,9 +90,7 @@ export const MetadataConfirmation = ({
           {`${i18n.title.metadataTitlePart1} ${request.chain} ${i18n.title.metadataTitlePart2} ${url}`}
         </Text>
 
-        <Divider style={{ marginVertical: 24, paddingHorizontal: 16 }} />
-
-        <View style={{ width: '100%', paddingBottom: 32 }}>
+        <View style={metadataInfosWrapperStyle}>
           {metadataInfos.map(info => renderMetadataInfo(info.label, info.value))}
         </View>
       </>
