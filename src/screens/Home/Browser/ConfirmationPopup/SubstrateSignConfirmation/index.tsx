@@ -76,7 +76,6 @@ export const SubstrateSignConfirmation = ({
         url,
       }}
       isShowPassword
-      isUseScrollView={false}
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}

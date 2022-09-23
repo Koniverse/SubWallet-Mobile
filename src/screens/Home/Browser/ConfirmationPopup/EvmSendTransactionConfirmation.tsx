@@ -5,7 +5,7 @@ import {
   NetworkJson,
   ResponseParseEVMTransactionInput,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
@@ -24,12 +24,6 @@ import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import { AccountInfoField } from 'components/Field/AccountInfo';
 
-enum TAB_SELECTION_TYPE {
-  BASIC,
-  HEX,
-  DETAIL,
-}
-
 export const XCM_METHOD = 'transfer(address,uint256,(uint8,bytes[]),uint64)';
 export const XCM_ARGS = ['currency_address', 'amount'];
 
@@ -40,34 +34,15 @@ interface Props {
   approveRequest: ConfirmationHookType['approveRequest'];
 }
 
-interface TabOptionProps {
-  key: TAB_SELECTION_TYPE;
-  label: string;
-}
-
 const CONFIRMATION_TYPE = 'evmSendTransactionRequest';
+
+const itemMarginBottomStyle: StyleProp<any> = {
+  marginBottom: 8,
+};
 
 const textStyle: StyleProp<any> = { ...sharedStyles.smallText, ...FontSize0, ...FontMedium, color: ColorMap.light };
 
 const subTextStyle: StyleProp<any> = { ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled };
-
-function getTabStyle(isSelected: boolean) {
-  return {
-    borderBottomWidth: isSelected ? 2 : 0,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderColor: ColorMap.light,
-    marginBottom: 8,
-  };
-}
-
-function getTabTextStyle(isSelected: boolean) {
-  return {
-    ...textStyle,
-    ...FontSize2,
-    color: isSelected ? ColorMap.light : ColorMap.disabled,
-  };
-}
 
 const valueWrapperStyle: StyleProp<any> = { flexDirection: 'row', alignItems: 'center' };
 
@@ -106,11 +81,11 @@ export const EvmSendTransactionConfirmation = ({
   approveRequest,
 }: Props) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const senderAccount = accounts.find(acc => acc.address === payload.from);
+  const senderAccount = accounts.find(
+    acc => payload.from && typeof payload.from === 'string' && acc.address.toLowerCase() === payload.from.toLowerCase(),
+  );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [selectedTab, setSelectedTab] = useState<TAB_SELECTION_TYPE>(TAB_SELECTION_TYPE.BASIC);
   const { inputInfo, XCMToken } = useGetEvmTransactionInfos(payload, network);
-  const handleChangeTab = (tabIndex: TAB_SELECTION_TYPE) => setSelectedTab(tabIndex);
   const toastRef = useRef<ToastContainer>(null);
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
@@ -119,51 +94,6 @@ export const EvmSendTransactionConfirmation = ({
       toastRef.current.show(i18n.common.copiedToClipboard);
     }
   };
-
-  const handleRenderTab = useCallback(() => {
-    const arr: TabOptionProps[] = [
-      {
-        key: TAB_SELECTION_TYPE.BASIC,
-        label: i18n.common.info,
-      },
-    ];
-
-    if (payload.data) {
-      arr.push({
-        key: TAB_SELECTION_TYPE.HEX,
-        label: i18n.common.hexData,
-      });
-    }
-
-    if (inputInfo && typeof inputInfo.result !== 'string') {
-      arr.push({
-        key: TAB_SELECTION_TYPE.DETAIL,
-        label: i18n.common.detail,
-      });
-    }
-
-    if (arr.length > 1) {
-      return (
-        <View style={{ flexDirection: 'row', width: '100%' }}>
-          {arr.map(item => {
-            const isSelected = selectedTab === item.key;
-
-            return (
-              <TouchableOpacity
-                activeOpacity={1}
-                key={item.key}
-                onPress={() => handleChangeTab(item.key)}
-                style={getTabStyle(isSelected)}>
-                <Text style={getTabTextStyle(isSelected)}>{item.label}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      );
-    } else {
-      return null;
-    }
-  }, [inputInfo, selectedTab, payload.data]);
 
   const handlerRenderArg = useCallback(
     (data: EVMTransactionArg, parentName: string, isXcmTransaction: boolean): JSX.Element => {
@@ -189,8 +119,8 @@ export const EvmSendTransactionConfirmation = ({
       }
 
       return (
-        <View key={_name}>
-          <Text style={textStyle}>{_name}:</Text>
+        <View key={_name} style={{ ...itemMarginBottomStyle, paddingLeft: 16 }}>
+          <Text style={[textStyle, { ...FontSize2 }]}>{_name}:</Text>
           <Text style={subTextStyle}>{_value}</Text>
         </View>
       );
@@ -203,8 +133,8 @@ export const EvmSendTransactionConfirmation = ({
       const info = response.result;
       if (typeof info === 'string') {
         return (
-          <Text>
-            <Text style={textStyle}>{i18n.common.data}</Text>
+          <Text style={itemMarginBottomStyle}>
+            <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.data}</Text>
             <Text style={subTextStyle}>{info}</Text>
           </Text>
         );
@@ -215,12 +145,12 @@ export const EvmSendTransactionConfirmation = ({
 
       return (
         <View style={scrollViewStyle}>
-          <View>
-            <Text style={textStyle}>Method</Text>
+          <View style={itemMarginBottomStyle}>
+            <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.method}</Text>
             <Text style={subTextStyle}>{info.methodName}</Text>
           </View>
           <View>
-            <Text style={textStyle}>{i18n.common.arguments}</Text>
+            <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.arguments}</Text>
             <View>{info.args.map(value => handlerRenderArg(value, '', isXcmTransaction))}</View>
           </View>
         </View>
@@ -230,67 +160,51 @@ export const EvmSendTransactionConfirmation = ({
   );
 
   const handleRenderContent = useCallback(() => {
-    switch (selectedTab) {
-      case TAB_SELECTION_TYPE.DETAIL:
-        if (!inputInfo || typeof inputInfo.result === 'string') {
-          return null;
-        }
-
-        return handleRenderInputInfo(inputInfo);
-      case TAB_SELECTION_TYPE.HEX:
-        if (!payload.data) {
-          return null;
-        }
-
-        return (
+    return (
+      <>
+        {payload.value && (
+          <View style={itemMarginBottomStyle}>
+            <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.amount}</Text>
+            <View style={valueWrapperStyle}>
+              <FormatBalance
+                format={[network?.decimals || 18, '', undefined]}
+                value={new BN(payload.value || '0')}
+                valueColor={ColorMap.disabled}
+              />
+              <Text style={subTextStyle}>{network?.nativeToken}</Text>
+            </View>
+          </View>
+        )}
+        {payload.estimateGas && (
+          <View style={itemMarginBottomStyle}>
+            <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.estimateGas}</Text>
+            <View style={valueWrapperStyle}>
+              <FormatBalance
+                format={[(network?.decimals || 18) - 3, '', undefined]}
+                value={new BN(payload?.estimateGas || '0')}
+                valueColor={ColorMap.disabled}
+              />
+              <Text style={subTextStyle}>{network?.nativeToken && `mili${network?.nativeToken}`}</Text>
+            </View>
+          </View>
+        )}
+        {!!inputInfo && typeof inputInfo.result !== 'string' && handleRenderInputInfo(inputInfo)}
+        {!!payload.data && (
           <View style={scrollViewStyle}>
-            <Text style={textStyle}>{i18n.common.data}</Text>
+            <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.hexData}</Text>
             <Text style={subTextStyle}>{payload.data}</Text>
           </View>
-        );
-      case TAB_SELECTION_TYPE.BASIC:
-      default:
-        return (
-          <View style={scrollViewStyle}>
-            {payload.value && (
-              <View>
-                <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.amount}</Text>
-                <View style={valueWrapperStyle}>
-                  <FormatBalance
-                    format={[network?.decimals || 18, '', undefined]}
-                    value={new BN(payload.value || '0')}
-                    valueColor={ColorMap.disabled}
-                  />
-                  <Text style={subTextStyle}>{network?.nativeToken}</Text>
-                </View>
-              </View>
-            )}
-
-            {payload.estimateGas && (
-              <View>
-                <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.estimateGas}</Text>
-                <View style={valueWrapperStyle}>
-                  <FormatBalance
-                    format={[(network?.decimals || 18) - 3, '', undefined]}
-                    value={new BN(payload?.estimateGas || '0')}
-                    valueColor={ColorMap.disabled}
-                  />
-                  <Text style={subTextStyle}>{network?.nativeToken && `mili${network?.nativeToken}`}</Text>
-                </View>
-              </View>
-            )}
-          </View>
-        );
-    }
+        )}
+      </>
+    );
   }, [
-    selectedTab,
-    inputInfo,
     handleRenderInputInfo,
-    payload.data,
-    payload.value,
-    payload.estimateGas,
+    inputInfo,
     network?.decimals,
     network?.nativeToken,
+    payload.data,
+    payload.estimateGas,
+    payload.value,
   ]);
 
   const onPressCancelButton = () => {
@@ -304,7 +218,6 @@ export const EvmSendTransactionConfirmation = ({
   const renderTransactionData = () => {
     return (
       <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
-        {handleRenderTab()}
         {handleRenderContent()}
       </ScrollView>
     );

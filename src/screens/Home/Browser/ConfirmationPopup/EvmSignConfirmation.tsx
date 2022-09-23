@@ -26,7 +26,7 @@ const warningTextStyle: StyleProp<any> = {
   color: ColorMap.danger,
   ...sharedStyles.mainText,
   ...FontMedium,
-  marginBottom: 16,
+  marginBottom: 8,
 };
 
 function getNodeStyle(isLeaf: boolean): StyleProp<any> {
@@ -157,7 +157,7 @@ export const EvmSignConfirmation = ({
   const renderSignData = () => {
     return (
       <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
-        <View style={{ marginBottom: 16 }}>
+        <View style={{ marginBottom: 8 }}>
           <Text style={labelStyle}>{i18n.common.signMethod}: </Text>
           <Text style={valueStyle}>{signMethod}</Text>
         </View>
@@ -185,7 +185,6 @@ export const EvmSignConfirmation = ({
       detailModalVisible={modalVisible}
       onPressViewDetail={() => setModalVisible(true)}
       onChangeDetailModalVisible={() => setModalVisible(false)}
-      isUseScrollView={false}
       renderDetailModalContent={renderSignData}>
       <>
         <View style={{ width: '100%', paddingHorizontal: 16 }}>

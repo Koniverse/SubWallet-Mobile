@@ -31,7 +31,7 @@ export const Bytes = ({ bytes, url }: Props) => {
 
   return (
     <ScrollView style={{ width: '100%', marginTop: 32, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
-      <View>
+      <View style={{ marginBottom: 8 }}>
         <Text style={labelStyle}>{i18n.common.from}</Text>
         <Text style={valueStyle}>{url}</Text>
       </View>

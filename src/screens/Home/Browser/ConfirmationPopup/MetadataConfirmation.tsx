@@ -17,7 +17,7 @@ const metadataInfosWrapperStyle: StyleProp<any> = {
   width: '100%',
   flexDirection: 'row',
   justifyContent: 'center',
-  paddingBottom: 40,
+  paddingBottom: 32,
   paddingTop: 16,
 };
 
