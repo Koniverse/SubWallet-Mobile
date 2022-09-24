@@ -158,6 +158,7 @@ export const en = {
     approveRequestMessage: 'Only approve this request if you trust the app',
     approveTransactionMessage: 'You are approving a request send transaction',
     reject: 'Reject',
+    closeAll: 'Close All',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

@@ -78,6 +78,7 @@ export type StoredSiteInfo = {
 export type BrowserSliceTab = {
   id: string;
   url: string;
+  screenshot?: string;
 };
 
 export type BrowserSlice = {

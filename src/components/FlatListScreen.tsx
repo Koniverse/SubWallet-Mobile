@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
 import { FlatList, ListRenderItemInfo, StyleProp, TextInput, View, ViewStyle } from 'react-native';
-import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { ScrollViewStyle } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { HIDE_MODAL_DURATION } from '../constant';
@@ -34,6 +34,7 @@ interface Props<T> {
   searchMarginBottom?: number;
   placeholder?: string;
   numberColumns?: number;
+  flatListStyle?: StyleProp<any>;
 }
 
 const ColumnWrapperStyle: StyleProp<ViewStyle> = {
@@ -60,6 +61,7 @@ export function FlatListScreen<T>({
   placeholder = i18n.common.search,
   numberColumns = 1,
   searchMarginBottom = 8,
+  flatListStyle,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -108,24 +110,24 @@ export function FlatListScreen<T>({
             columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
-            contentContainerStyle={numberColumns > 1 ? { marginHorizontal: -8, paddingBottom: 16 } : undefined}
+            contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
           />
         ) : (
           renderListEmptyComponent()
         )}
       </>
     );
-  }, [isLoading, lazyList, numberColumns, onLoadMore, renderItem, renderListEmptyComponent]);
+  }, [flatListStyle, isLoading, lazyList, numberColumns, onLoadMore, renderItem, renderListEmptyComponent]);
 
   const renderContent = () => (
-    <View style={{ ...sharedStyles.layoutContainer }}>
+    <View style={{ flex: 1 }}>
       <Search
         autoFocus={false}
         placeholder={placeholder}
         onClearSearchString={() => setSearchString('')}
         onSearch={setSearchString}
         searchText={searchString}
-        style={{ marginBottom: searchMarginBottom }}
+        style={{ marginBottom: searchMarginBottom, marginTop: 10, marginHorizontal: 16 }}
         searchRef={searchRef}
       />
       {children}
