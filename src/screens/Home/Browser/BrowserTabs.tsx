@@ -110,6 +110,10 @@ const renderBrowserTabItem = (
 
 //todo: take screenshot of site to make tab thumbnail
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
+  const onPressSearchBar = useCallback(() => {
+    navigation.navigate('BrowserSearch');
+  }, [navigation]);
+
   const onCreateNewTab = useCallback(() => {
     navigation.navigate('BrowserSearch', { isOpenNewTab: true });
   }, [navigation]);
@@ -117,7 +121,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
   return (
     <ScreenContainer>
       <>
-        <BrowserHeader onPressSearchBar={onCreateNewTab} isShowTabNumber={false} />
+        <BrowserHeader onPressSearchBar={onPressSearchBar} isShowTabNumber={false} />
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
           {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
         </ScrollView>

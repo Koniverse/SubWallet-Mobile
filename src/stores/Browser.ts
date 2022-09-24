@@ -36,10 +36,12 @@ const browserSlice = createSlice({
       const tabsLength = state.tabs.length;
 
       if (tabsLength > 1) {
-        if (targetTabIndex === tabsLength - 1) {
-          state.activeTab = state.tabs[tabsLength - 2].id;
-        } else {
-          state.activeTab = state.tabs[targetTabIndex + 1].id;
+        if (id === state.activeTab) {
+          if (targetTabIndex === tabsLength - 1) {
+            state.activeTab = state.tabs[tabsLength - 2].id;
+          } else {
+            state.activeTab = state.tabs[targetTabIndex + 1].id;
+          }
         }
 
         state.tabs = state.tabs.filter(t => t.id !== id);
