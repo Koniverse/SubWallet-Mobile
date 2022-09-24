@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -43,8 +43,9 @@ function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
 export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const tabsLength = useSelector((state: RootState) => state.browser.tabs.length);
+  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
+  const isEmptyTabs = !tabsNumber;
 
   const renderSiteItem = (item: StoredSiteInfo) => {
     return (
@@ -53,20 +54,28 @@ export const BrowserScreen = () => {
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
         onPress={() => {
-          openPressSiteItem(navigation, item, !tabsLength);
+          openPressSiteItem(navigation, item, isEmptyTabs);
         }}
       />
     );
   };
 
-  const onOpenBrowserTabs = () => {
+  const onPressSearchBar = useCallback(() => {
+    navigation.navigate('BrowserSearch', { isOpenNewTab: isEmptyTabs });
+  }, [navigation, isEmptyTabs]);
+
+  const onOpenBrowserTabs = useCallback(() => {
     navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
-  };
+  }, [navigation]);
 
   return (
     <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
-        <BrowserHeader tabNumbers={tabsLength} onPressTabButton={onOpenBrowserTabs} />
+        <BrowserHeader
+          tabsNumber={tabsNumber}
+          onPressSearchBar={onPressSearchBar}
+          onPressTabButton={onOpenBrowserTabs}
+        />
 
         {!!bookmarkItems.length || !!historyItems.length ? (
           <ScrollView style={{ flex: 1, marginVertical: 16 }}>

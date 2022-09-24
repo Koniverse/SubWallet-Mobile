@@ -20,7 +20,7 @@ const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
 
 export const HistoryDetail = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
-  const tabsLength = useSelector((state: RootState) => state.browser.tabs.length);
+  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
 
   const _clearHistory = () => {
@@ -41,7 +41,7 @@ export const HistoryDetail = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => openPressSiteItem(navigation, item, !tabsLength)}
+        onPress={() => openPressSiteItem(navigation, item, !tabsNumber)}
       />
     );
   };

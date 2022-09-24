@@ -19,7 +19,7 @@ const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
 
 export const FavouritesDetail = () => {
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const tabsLength = useSelector((state: RootState) => state.browser.tabs.length);
+  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
 
   const renderSiteItem = ({ item }: ListRenderItemInfo<StoredSiteInfo>) => {
@@ -28,7 +28,7 @@ export const FavouritesDetail = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => openPressSiteItem(navigation, item, !tabsLength)}
+        onPress={() => openPressSiteItem(navigation, item, !tabsNumber)}
       />
     );
   };

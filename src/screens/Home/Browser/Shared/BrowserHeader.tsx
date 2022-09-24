@@ -63,29 +63,30 @@ const getSelectTabButtonTextStyle = (isDisabled: boolean) => {
 const selectTabButtonStyle: StyleProp<any> = { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' };
 
 interface Props {
-  tabNumbers?: number;
+  tabsNumber?: number;
+  onPressSearchBar?: () => void;
   onPressTabButton?: () => void;
 }
 
-export const BrowserHeader = ({ tabNumbers, onPressTabButton }: Props) => {
+export const BrowserHeader = ({ tabsNumber, onPressSearchBar, onPressTabButton }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   return (
-    <View style={getBrowserWrapperStyle(!!tabNumbers)}>
+    <View style={getBrowserWrapperStyle(!!tabsNumber)}>
       <AccountSettingButton navigation={navigation} />
       <TouchableOpacity
         activeOpacity={BUTTON_ACTIVE_OPACITY}
         style={{ flex: 1, marginLeft: 8, marginRight: 6 }}
-        onPress={() => navigation.navigate('BrowserSearch')}>
+        onPress={onPressSearchBar}>
         <View style={searchBtnWrapperStyle}>
           <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
           <Text style={searchBtnTextStyle}>{i18n.common.searchPlaceholder}</Text>
         </View>
       </TouchableOpacity>
 
-      {!!tabNumbers && (
-        <TouchableOpacity disabled={!tabNumbers} style={selectTabButtonStyle} onPress={onPressTabButton}>
+      {!!tabsNumber && (
+        <TouchableOpacity disabled={!tabsNumber} style={selectTabButtonStyle} onPress={onPressTabButton}>
           <View style={getSelectTabButtonWrapperStyle(!onPressTabButton)}>
-            <Text style={getSelectTabButtonTextStyle(!onPressTabButton)}>{tabNumbers}</Text>
+            <Text style={getSelectTabButtonTextStyle(!onPressTabButton)}>{tabsNumber}</Text>
           </View>
         </TouchableOpacity>
       )}

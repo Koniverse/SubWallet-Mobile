@@ -54,7 +54,7 @@ export interface BrowserTabRef {
 
 type Props = {
   tabId: string;
-  tabsLength: number;
+  tabsNumber: number;
   onOpenBrowserTabs: () => void;
 };
 
@@ -194,7 +194,7 @@ const PhishingBlockerLayer = () => {
   );
 };
 
-const Component = ({ tabId, tabsLength, onOpenBrowserTabs }: Props, ref: ForwardedRef<BrowserTabRef>) => {
+const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: ForwardedRef<BrowserTabRef>) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
@@ -272,7 +272,13 @@ const Component = ({ tabId, tabsLength, onOpenBrowserTabs }: Props, ref: Forward
   };
 
   const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
+    console.log('onLoad =============', nativeEvent);
+
     if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
+      if (nativeEvent.url !== siteUrl.current) {
+        updateTab({ id: tabId, url: nativeEvent.url });
+      }
+
       updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateNavigationInfo(nativeEvent);
 
@@ -285,9 +291,11 @@ const Component = ({ tabId, tabsLength, onOpenBrowserTabs }: Props, ref: Forward
   };
 
   const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
+    console.log('onLoadStart =============', nativeEvent, siteUrl.current);
+
     if (nativeEvent.url !== siteUrl.current) {
-      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateTab({ id: tabId, url: nativeEvent.url });
+      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
     }
 
     updateNavigationInfo(nativeEvent);
@@ -399,7 +407,7 @@ const Component = ({ tabId, tabsLength, onOpenBrowserTabs }: Props, ref: Forward
       if (button.key === 'tabs') {
         return (
           <TouchableOpacity key={button.key} style={tabButtonStyle} onPress={button.onPress}>
-            <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsLength}</Text>
+            <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsNumber}</Text>
           </TouchableOpacity>
         );
       }
@@ -426,6 +434,7 @@ const Component = ({ tabId, tabsLength, onOpenBrowserTabs }: Props, ref: Forward
         setInitWebViewSource(siteInfo.url);
       } else {
         if (siteUrl.current !== siteInfo.url) {
+          updateTab({ id: tabId, url: siteInfo.url });
           updateSiteInfo(siteInfo);
           webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${siteInfo.url}' })()`);
         }

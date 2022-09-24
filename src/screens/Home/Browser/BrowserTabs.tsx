@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
 import { Plus, X } from 'phosphor-react-native';
@@ -110,14 +110,14 @@ const renderBrowserTabItem = (
 
 //todo: take screenshot of site to make tab thumbnail
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
-  const onCreateNewTab = () => {
+  const onCreateNewTab = useCallback(() => {
     navigation.navigate('BrowserSearch', { isOpenNewTab: true });
-  };
+  }, [navigation]);
 
   return (
     <ScreenContainer>
       <>
-        <BrowserHeader />
+        <BrowserHeader onPressSearchBar={onCreateNewTab} />
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
           {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
         </ScrollView>

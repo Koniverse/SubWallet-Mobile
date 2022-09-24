@@ -73,13 +73,13 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
   const isEmptyTabs = !tabs.length;
 
-  console.log('params++++++', params);
+  console.log('params++++++', params, tabs);
 
   useEffect(() => {
     if (params.url) {
       setPropSiteInfo({
-        name: params.name || '',
-        url: params.url || '',
+        name: params.name || params.url,
+        url: params.url,
       });
     }
   }, [params.name, params.url]);
@@ -153,7 +153,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
             <BrowserTab
               ref={isTabActive ? currentActiveTabRef : undefined}
               tabId={t.id}
-              tabsLength={tabs.length}
+              tabsNumber={tabs.length}
               onOpenBrowserTabs={onOpenBrowserTabs}
             />
           </View>
