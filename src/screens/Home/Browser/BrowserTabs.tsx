@@ -121,7 +121,6 @@ const renderBrowserTabItem = (
   );
 };
 
-//todo: take screenshot of site to make tab thumbnail
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
   const onPressSearchBar = useCallback(() => {
     navigation.navigate('BrowserSearch');

@@ -59,7 +59,6 @@ function ConfirmationTrigger() {
   return <></>;
 }
 
-//todo: prevent reload tab when changing tab
 export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProps) => {
   const [propSiteInfo, setPropSiteInfo] = useState<SiteInfo>({
     name: params.name || '',
@@ -72,8 +71,6 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const navigation = useNavigation<RootNavigationProps>();
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
   const isEmptyTabs = !tabs.length;
-
-  console.log('params++++++', params, tabs);
 
   useEffect(() => {
     if (params.url) {

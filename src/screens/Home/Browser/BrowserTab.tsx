@@ -275,8 +275,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   };
 
   const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
-    console.log('onLoad =============', nativeEvent);
-
     if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
       if (nativeEvent.url !== siteUrl.current) {
         updateTab({ id: tabId, url: nativeEvent.url });
@@ -294,8 +292,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   };
 
   const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
-    console.log('onLoadStart =============', nativeEvent, siteUrl.current);
-
     if (nativeEvent.url !== siteUrl.current) {
       updateTab({ id: tabId, url: nativeEvent.url });
       updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
@@ -392,7 +388,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   ];
 
   useEffect(() => {
-    console.log(`---- TAB ${tabId} INIT ----`);
     let isSync = true;
 
     (async () => {
@@ -407,8 +402,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       isSync = false;
 
       clearCurrentBrowserSv();
-
-      console.log(`---- TAB ${tabId} KILL ----`);
     };
   }, [tabId]);
 
@@ -424,8 +417,13 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
     if (!button.icon) {
       if (button.key === 'tabs') {
         return (
-          <TouchableOpacity key={button.key} style={tabButtonStyle} onPress={button.onPress}>
-            <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsNumber}</Text>
+          <TouchableOpacity
+            key={button.key}
+            onPress={button.onPress}
+            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={tabButtonStyle}>
+              <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsNumber}</Text>
+            </View>
           </TouchableOpacity>
         );
       }
