@@ -446,6 +446,9 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   useImperativeHandle(ref, () => ({
     goToSite: (siteInfo: SiteInfo) => {
       if (!initWebViewSource) {
+        if (siteUrl.current !== siteInfo.url) {
+          updateTab({ id: tabId, url: siteInfo.url });
+        }
         updateSiteInfo(siteInfo);
         setInitWebViewSource(siteInfo.url);
       } else {
