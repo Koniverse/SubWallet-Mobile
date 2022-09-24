@@ -78,7 +78,7 @@ export const BrowserScreen = () => {
         />
 
         {!!bookmarkItems.length || !!historyItems.length ? (
-          <ScrollView style={{ flex: 1, marginVertical: 16 }}>
+          <ScrollView style={{ flex: 1, marginTop: 16 }} contentContainerStyle={{ paddingBottom: 12 }}>
             {!!bookmarkItems.length && (
               <>
                 {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}

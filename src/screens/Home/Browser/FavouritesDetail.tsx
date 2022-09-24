@@ -37,6 +37,7 @@ export const FavouritesDetail = () => {
       title={i18n.common.favorites}
       items={bookmarkItems}
       autoFocus={false}
+      flatListStyle={{ paddingBottom: 12 }}
       renderItem={renderSiteItem}
       filterFunction={filterFunction}
       renderListEmptyComponent={() => {

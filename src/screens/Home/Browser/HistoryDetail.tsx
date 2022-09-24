@@ -57,6 +57,7 @@ export const HistoryDetail = () => {
         onPress: () => _clearHistory(),
         disabled: !(historyItems && historyItems.length),
       }}
+      flatListStyle={{ paddingBottom: 12 }}
       renderListEmptyComponent={() => {
         return <EmptyListPlaceholder icon={ClockCounterClockwise} title={i18n.common.historyEmptyListPlaceholder} />;
       }}

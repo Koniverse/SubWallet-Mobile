@@ -7,6 +7,7 @@ import { TokenItemType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import { FlatListScreen } from 'components/FlatListScreen';
+import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 
 interface Props {
   address: string;
@@ -66,7 +67,7 @@ export const TokenSelect = ({
       <FlatListScreen
         autoFocus={true}
         items={tokenOptions}
-        style={{ paddingTop: 0 }}
+        style={FlatListScreenPaddingTop}
         title={i18n.title.selectToken}
         filterFunction={filterFunction}
         renderItem={renderItem}

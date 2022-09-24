@@ -57,6 +57,7 @@ const getSelectTabButtonTextStyle = (isDisabled: boolean) => {
     ...FontSize0,
     color: isDisabled ? ColorMap.disabled : ColorMap.light,
     ...FontMedium,
+    lineHeight: 16,
   };
 };
 

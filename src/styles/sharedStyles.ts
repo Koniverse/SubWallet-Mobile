@@ -118,7 +118,7 @@ export const TextButtonStyle: StyleProp<any> = {
 };
 
 export const FlatListScreenPaddingTop: StyleProp<any> = {
-  paddingTop: Platform.OS === 'android' && 0,
+  paddingTop: Platform.OS === 'android' ? 4 : STATUS_BAR_HEIGHT + 4,
 };
 
 export const sharedStyles = StyleSheet.create({

@@ -111,7 +111,12 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
         <View style={{ flex: 1 }}>
           <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
-          <FlatList data={filteredList} renderItem={renderItem} keyboardShouldPersistTaps="always" />
+          <FlatList
+            data={filteredList}
+            renderItem={renderItem}
+            keyboardShouldPersistTaps="always"
+            contentContainerStyle={{ paddingBottom: 12 }}
+          />
         </View>
       </>
     </ScreenContainer>
