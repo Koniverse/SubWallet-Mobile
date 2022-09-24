@@ -61,6 +61,20 @@ const browserSlice = createSlice({
         }),
       ];
     },
+    updateTabScreenshot: (
+      state,
+      { payload: { id, screenshot } }: PayloadAction<{ id: string; screenshot: string }>,
+    ) => {
+      state.tabs = [
+        ...state.tabs.map(t => {
+          if (t.id === id) {
+            return { ...t, screenshot };
+          }
+
+          return t;
+        }),
+      ];
+    },
     closeAllTab: state => {
       state.activeTab = null;
       state.tabs = [];

@@ -13,6 +13,7 @@ import { Button } from 'components/Button';
 import i18n from 'utils/i18n/i18n';
 import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 import { ScreenContainer } from 'components/ScreenContainer';
+import { DEVICE } from '../../../constant';
 
 interface Props {
   activeTab: BrowserSlice['activeTab'];
@@ -42,6 +43,18 @@ const tabItemBodyStyle: StyleProp<any> = {
   backgroundColor: ColorMap.light,
   borderBottomLeftRadius: 5,
   borderBottomRightRadius: 5,
+  position: 'relative',
+  overflow: 'hidden',
+};
+
+const tabScreenshotStyle: StyleProp<any> = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  resizeMode: 'cover',
+  paddingTop: DEVICE.height - 242,
 };
 
 const tabItemTitleStyle: StyleProp<any> = {
@@ -94,7 +107,7 @@ const renderBrowserTabItem = (
         <Text style={tabItemTitleStyle}>{getHostName(item.url)}</Text>
       </View>
       <View style={tabItemBodyStyle}>
-        <Text>{item.url}</Text>
+        {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={tabScreenshotStyle} />}
       </View>
       <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item)} />
       <IconButton

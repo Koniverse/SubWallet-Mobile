@@ -42,12 +42,13 @@ import * as RNFS from 'react-native-fs';
 import { DEVICE } from '../../../constant';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
-import { addToHistory, updateLatestItemInHistory, updateTab } from 'stores/updater';
+import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { SiteInfo } from 'stores/types';
 import { Bar as ProgressBar } from 'react-native-progress';
+import { captureScreen } from 'react-native-view-shot';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -354,7 +355,23 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
     },
     {
       key: 'tabs',
-      onPress: onOpenBrowserTabs,
+      onPress: () => {
+        captureScreen({
+          format: 'jpg',
+          quality: 1,
+          width: DEVICE.width,
+          height: DEVICE.height,
+        })
+          .then(screenShot => {
+            updateTabScreenshot(tabId, screenShot);
+          })
+          .catch(e => {
+            console.log('Error when taking screenshot:', e);
+          })
+          .finally(() => {
+            onOpenBrowserTabs();
+          });
+      },
     },
     {
       key: 'reload',

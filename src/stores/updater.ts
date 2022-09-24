@@ -15,7 +15,7 @@ import {
   AuthUrlsSlice,
   SiteInfo,
   BrowserSliceTab,
-  BrowserSlice
+  BrowserSlice,
 } from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
@@ -94,6 +94,10 @@ export function closeTab(tabId: string): void {
 
 export function updateTab(payload: BrowserSliceTab): void {
   store.dispatch({ type: 'browser/updateTab', payload });
+}
+
+export function updateTabScreenshot(id: string, screenshot: string): void {
+  store.dispatch({ type: 'browser/updateTabScreenshot', payload: { id, screenshot } });
 }
 
 export function closeAllTab(): void {

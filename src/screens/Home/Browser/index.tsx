@@ -44,6 +44,7 @@ export const BrowserScreen = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
+  const tabs = useSelector((state: RootState) => state.browser.tabs);
   const navigation = useNavigation<RootNavigationProps>();
   const isEmptyTabs = !tabsNumber;
 
