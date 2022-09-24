@@ -61,7 +61,7 @@ function ConfirmationTrigger() {
 
 //todo: prevent reload tab when changing tab
 export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProps) => {
-  const [{ name: propsSiteName, url: propsSiteUrl }, setPropSiteInfo] = useState<SiteInfo>({
+  const [propSiteInfo, setPropSiteInfo] = useState<SiteInfo>({
     name: params.name || '',
     url: params.url || '',
   });
@@ -82,21 +82,21 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
         url: params.url,
       });
     }
-  }, [params.name, params.url]);
+  }, [params]);
 
   useEffect(() => {
     setIsTabsShowed(propsIsOpenTabs);
   }, [propsIsOpenTabs]);
 
   useEffect(() => {
-    if (propsSiteUrl) {
+    if (propSiteInfo.url) {
       currentActiveTabRef.current?.goToSite({
-        url: propsSiteUrl,
-        name: propsSiteName || propsSiteUrl,
+        url: propSiteInfo.url,
+        name: propSiteInfo.name || propSiteInfo.url,
       });
       setIsTabsShowed(false);
     }
-  }, [propsSiteName, propsSiteUrl]);
+  }, [propSiteInfo]);
 
   useEffect(() => {
     if (isEmptyTabs) {
