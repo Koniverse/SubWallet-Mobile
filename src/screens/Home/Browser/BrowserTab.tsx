@@ -422,7 +422,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
             onPress={button.onPress}
             style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
             <View style={tabButtonStyle}>
-              <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium }}>{tabsNumber}</Text>
+              <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium, lineHeight: 16 }}>{tabsNumber}</Text>
             </View>
           </TouchableOpacity>
         );
