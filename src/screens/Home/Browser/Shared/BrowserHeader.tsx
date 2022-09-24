@@ -66,9 +66,10 @@ interface Props {
   tabsNumber?: number;
   onPressSearchBar?: () => void;
   onPressTabButton?: () => void;
+  isShowTabNumber?: boolean;
 }
 
-export const BrowserHeader = ({ tabsNumber, onPressSearchBar, onPressTabButton }: Props) => {
+export const BrowserHeader = ({ tabsNumber, onPressSearchBar, onPressTabButton, isShowTabNumber = true }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   return (
     <View style={getBrowserWrapperStyle(!!tabsNumber)}>
@@ -83,7 +84,7 @@ export const BrowserHeader = ({ tabsNumber, onPressSearchBar, onPressTabButton }
         </View>
       </TouchableOpacity>
 
-      {!!tabsNumber && (
+      {isShowTabNumber && (
         <TouchableOpacity disabled={!tabsNumber} style={selectTabButtonStyle} onPress={onPressTabButton}>
           <View style={getSelectTabButtonWrapperStyle(!onPressTabButton)}>
             <Text style={getSelectTabButtonTextStyle(!onPressTabButton)}>{tabsNumber}</Text>

@@ -47,6 +47,7 @@ import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { SiteInfo } from 'stores/types';
+import { Bar as ProgressBar } from 'react-native-progress';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -59,11 +60,9 @@ type Props = {
 };
 
 const browserTabHeaderWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
   backgroundColor: ColorMap.dark2,
   paddingBottom: 12,
   width: '100%',
-  alignItems: 'center',
   paddingLeft: 16,
   paddingRight: 4,
 };
@@ -163,6 +162,8 @@ const tabButtonStyle: StyleProp<any> = {
   borderColor: ColorMap.light,
 };
 
+const progressBarStyle: StyleProp<any> = { position: 'absolute', top: 0, right: 0, left: 0, height: 3 };
+
 const bottomButtonAreaStyle: StyleProp<any> = {
   flexDirection: 'row',
   width: '100%',
@@ -198,6 +199,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
+  const [progressNumber, setProgressNumber] = useState<number>(0);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -398,8 +400,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   }, []);
 
   const onLoadProgress = ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
-    //todo: set process bar for the tab
-    console.log('==== Current progress ====', progress);
+    setProgressNumber(progress);
   };
 
   const renderBrowserTabBar = (button: BrowserActionButtonType) => {
@@ -446,25 +447,27 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
     <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
         <View style={browserTabHeaderWrapperStyle}>
-          <AccountSettingButton navigation={navigation} />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <AccountSettingButton navigation={navigation} />
 
-          <View style={centerStyle}>
-            {hostname && (
-              <>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
-                  <Text numberOfLines={1} style={hostNameTextStyle}>
-                    {hostname}
+            <View style={centerStyle}>
+              {hostname && (
+                <>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
+                    <Text numberOfLines={1} style={hostNameTextStyle}>
+                      {hostname}
+                    </Text>
+                  </View>
+                  <Text numberOfLines={1} style={nameSiteTextStyle}>
+                    {siteName.current || siteUrl.current}
                   </Text>
-                </View>
-                <Text numberOfLines={1} style={nameSiteTextStyle}>
-                  {siteName.current || siteUrl.current}
-                </Text>
-              </>
-            )}
-          </View>
+                </>
+              )}
+            </View>
 
-          <IconButton icon={X} onPress={goBack} />
+            <IconButton icon={X} onPress={goBack} />
+          </View>
         </View>
         <View style={{ flex: 1, position: 'relative' }}>
           {isWebviewReady ? (
@@ -489,6 +492,19 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
           )}
 
           {isShowPhishingWarning && <PhishingBlockerLayer />}
+          {progressNumber !== 1 && (
+            <View style={progressBarStyle}>
+              <ProgressBar
+                progress={progressNumber}
+                width={null}
+                color={ColorMap.primary}
+                height={3}
+                borderRadius={0}
+                borderWidth={0}
+                useNativeDriver
+              />
+            </View>
+          )}
         </View>
 
         <View style={bottomButtonAreaStyle}>{bottomButtonList.map(button => renderBrowserTabBar(button))}</View>

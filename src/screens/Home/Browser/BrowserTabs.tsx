@@ -57,7 +57,7 @@ const bottomTabBarWrapperStyle: StyleProp<any> = {
   borderTopWidth: 1,
   borderTopColor: ColorMap.dark2,
   paddingHorizontal: 16,
-  paddingTop: 4,
+  paddingVertical: 4,
 };
 
 const cancelButtonStyle: StyleProp<any> = { width: 40, height: 40, position: 'absolute', right: -4, top: -4 };
@@ -117,7 +117,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
   return (
     <ScreenContainer>
       <>
-        <BrowserHeader onPressSearchBar={onCreateNewTab} />
+        <BrowserHeader onPressSearchBar={onCreateNewTab} isShowTabNumber={false} />
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
           {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
         </ScrollView>
