@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import NFTScreen from 'screens/Home/NFT/NFTScreen';
 import { HomeScreenProps } from 'routes/index';
-import { StakingScreen } from './StakingScreen';
+import { StakingScreen } from './Staking/StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -22,10 +22,6 @@ import { HomeScreenParams, HomeStackParamList } from 'routes/home';
 
 export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
 export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
-
-function checkTabNotCompleted(target: string) {
-  return target.includes('Staking');
-}
 
 interface MainScreenProps {
   params?: HomeScreenParams;
@@ -65,11 +61,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
           }
           // @ts-ignore
           props.style = [[...props.style], customStyle];
-          if (checkTabNotCompleted(props.to || '')) {
-            return <TouchableOpacity {...props} activeOpacity={1} onPress={() => onPressComingSoonTab()} />;
-          } else {
-            return <TouchableOpacity {...props} activeOpacity={1} />;
-          }
+          return <TouchableOpacity {...props} activeOpacity={1} />;
         },
         tabBarIconStyle: {
           marginTop: 10,

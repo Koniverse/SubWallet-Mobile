@@ -200,6 +200,10 @@ export const vi = {
     scanQrCode: 'Scan QR Code',
     transferNFTSuccessfully: 'Transfer NFT Successfully',
     transferNFTFailed: 'Transfer NFT Failed',
+    staking: 'Staking',
+    stakingDetail: 'Staking detail',
+    stakingNetwork: 'Select a network',
+    validators: 'Select a validator',
   },
   tabName: {
     crypto: 'Crypto',
@@ -239,6 +243,29 @@ export const vi = {
     nft: 'NFT',
     chain: 'Chain',
     signAndSubmit: 'Sign and Submit',
+  },
+  stakingScreen: {
+    stakingAnyChain: 'Staking anychain',
+    startStaking: 'Start Staking',
+    unStakeFunds: 'Unstake funds',
+    balanceList: {
+      stakingBalance: 'Staking balance',
+    },
+    stakingDetail: {
+      activeStake: 'Active Stake',
+      unlockingStake: 'Unlocking Stake',
+      totalReward: 'Total Reward',
+      latestReward: 'Latest Reward',
+      totalSlash: 'Total Slash',
+      unStakeFunds: 'Unstake funds',
+    },
+    networkList: {
+      validators: 'Validators',
+      searchNetwork: 'Search network...',
+    },
+    validatorList: {
+      searchValidator: 'Search validator...',
+    },
   },
   settings: {
     notifications: 'Notifications',

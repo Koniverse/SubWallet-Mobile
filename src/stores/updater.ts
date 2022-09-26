@@ -5,6 +5,9 @@ import {
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
+  StakeUnlockingJson,
+  StakingJson,
+  StakingRewardJson,
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
@@ -90,4 +93,16 @@ export function addBookmark(payload: SiteInfo): void {
 
 export function removeBookmark(payload: SiteInfo): void {
   store.dispatch({ type: 'browser/removeBookmark', payload });
+}
+
+export function updateStaking(stakingData: StakingJson): void {
+  store.dispatch({ type: 'staking/update', payload: stakingData });
+}
+
+export function updateStakeUnlockingInfo(data: StakeUnlockingJson) {
+  store.dispatch({ type: 'stakeUnlockingInfo/update', payload: data });
+}
+
+export function updateStakingReward(stakingRewardData: StakingRewardJson): void {
+  store.dispatch({ type: 'stakingReward/update', payload: stakingRewardData });
 }

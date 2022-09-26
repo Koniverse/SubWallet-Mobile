@@ -1,4 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
+import useStoreStakeUnlockingInfo from 'hooks/store/useStoreStakeUnlockingInfo';
+import useStoreStaking from 'hooks/store/useStoreStaking';
+import useStoreStakingReward from 'hooks/store/useStoreStakingReward';
 // SPDX-License-Identifier: Apache-2.0
 import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -161,8 +164,11 @@ export const App = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
+
+  // Nft
   useStoreNftCollection();
   useStoreNft();
+
   useStoreChainRegistry();
   useStorePrice();
   useStoreBalance();
@@ -170,6 +176,11 @@ export const App = () => {
   useStoreCrowdloan();
   useStoreAuthUrls();
   useStoreConfirmation();
+
+  // Staking
+  useStoreStaking();
+  useStoreStakingReward();
+  useStoreStakeUnlockingInfo();
 
   // Enable lock screen on the start app
   useEffect(() => {

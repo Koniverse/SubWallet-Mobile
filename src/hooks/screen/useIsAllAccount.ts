@@ -1,13 +1,12 @@
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 export default function useIsAccountAll(): boolean {
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
-  if (!currentAccount) {
-    return false;
-  } else {
-    return isAccountAll(currentAccount.address);
-  }
+  return useMemo((): boolean => {
+    return isAccountAll(currentAccountAddress);
+  }, [currentAccountAddress]);
 }
