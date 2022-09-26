@@ -70,7 +70,6 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
   const navigation = useNavigation<RootNavigationProps>();
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
-  const isEmptyTabs = !tabs.length;
 
   useEffect(() => {
     if (params.url) {
@@ -94,12 +93,6 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
       setIsTabsShowed(false);
     }
   }, [propSiteInfo]);
-
-  useEffect(() => {
-    if (isEmptyTabs) {
-      navigation.navigate('Home', { tab: 'Browser' });
-    }
-  }, [isEmptyTabs, navigation]);
 
   const onOpenBrowserTabs = useCallback(() => {
     setIsTabsShowed(true);

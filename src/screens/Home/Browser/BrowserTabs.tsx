@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
-import { Plus, X } from 'phosphor-react-native';
+import { Browsers, Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -14,6 +14,7 @@ import i18n from 'utils/i18n/i18n';
 import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { DEVICE } from '../../../constant';
+import { EmptyList } from 'components/EmptyList';
 
 interface Props {
   activeTab: BrowserSlice['activeTab'];
@@ -97,6 +98,7 @@ const renderBrowserTabItem = (
   item: BrowserSliceTab,
   activeTab: string | null,
   onPressItem: (tab: BrowserSliceTab) => void,
+  isTabMounted?: boolean,
 ) => {
   return (
     <View key={item.id} style={tabItemStyle}>
@@ -107,7 +109,7 @@ const renderBrowserTabItem = (
         <Text style={tabItemTitleStyle}>{getHostName(item.url)}</Text>
       </View>
       <View style={tabItemBodyStyle}>
-        {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={tabScreenshotStyle} />}
+        {!!isTabMounted && !!item.screenshot && <Image source={{ uri: item.screenshot }} style={tabScreenshotStyle} />}
       </View>
       <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item)} />
       <IconButton
@@ -122,32 +124,61 @@ const renderBrowserTabItem = (
 };
 
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
+  const [mountedTabMap, setMountedTabMap] = useState<Record<string, boolean>>({});
+  const isEmptyTabs = !tabs.length;
+
   const onPressSearchBar = useCallback(() => {
-    navigation.navigate('BrowserSearch');
-  }, [navigation]);
+    if (isEmptyTabs) {
+      navigation.navigate('BrowserSearch', { isOpenNewTab: true });
+    } else {
+      navigation.navigate('BrowserSearch');
+    }
+  }, [navigation, isEmptyTabs]);
 
   const onCreateNewTab = useCallback(() => {
     navigation.navigate('BrowserSearch', { isOpenNewTab: true });
   }, [navigation]);
 
+  const _onPressTabItem = (tab: BrowserSliceTab) => {
+    if (!mountedTabMap[tab.id]) {
+      setMountedTabMap(prev => {
+        return {
+          ...prev,
+          [tab.id]: true,
+        };
+      });
+    }
+    onPressTabItem(tab);
+  };
+
   return (
     <ScreenContainer>
       <>
         <BrowserHeader onPressSearchBar={onPressSearchBar} isShowTabNumber={false} />
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
-          {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
-        </ScrollView>
+        {!!tabs.length && (
+          <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
+            {tabs.map(t => renderBrowserTabItem(t, activeTab, _onPressTabItem, mountedTabMap[t.id]))}
+          </ScrollView>
+        )}
+        {!tabs.length && <EmptyList title={i18n.common.emptyBrowserTabsMessage} icon={Browsers} />}
         <View style={bottomTabBarWrapperStyle}>
           <Button
             title={i18n.common.closeAll}
             onPress={() => closeAllTab()}
-            color={ColorMap.light}
+            color={isEmptyTabs ? ColorMap.disabled : ColorMap.light}
             textStyle={{ ...FontMedium }}
+            disabled={isEmptyTabs}
           />
 
           <IconButton icon={Plus} size={24} onPress={onCreateNewTab} />
 
-          <Button title={i18n.common.done} onPress={onClose} color={ColorMap.light} textStyle={{ ...FontMedium }} />
+          <Button
+            title={i18n.common.done}
+            onPress={onClose}
+            color={isEmptyTabs ? ColorMap.disabled : ColorMap.light}
+            textStyle={{ ...FontMedium }}
+            disabled={isEmptyTabs}
+          />
         </View>
       </>
     </ScreenContainer>

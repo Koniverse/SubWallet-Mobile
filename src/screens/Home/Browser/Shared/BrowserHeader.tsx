@@ -86,7 +86,7 @@ export const BrowserHeader = ({ tabsNumber, onPressSearchBar, onPressTabButton, 
       </TouchableOpacity>
 
       {isShowTabNumber && (
-        <TouchableOpacity disabled={!tabsNumber} style={selectTabButtonStyle} onPress={onPressTabButton}>
+        <TouchableOpacity style={selectTabButtonStyle} onPress={onPressTabButton}>
           <View style={getSelectTabButtonWrapperStyle(!onPressTabButton)}>
             <Text style={getSelectTabButtonTextStyle(!onPressTabButton)}>{tabsNumber}</Text>
           </View>

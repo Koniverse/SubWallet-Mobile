@@ -33,6 +33,7 @@ export const vi = {
     emptyTransactionListMessage: 'Your transactions will appear here',
     emptyCrowdloanListMessage: 'Your crowdloans will appear here',
     emptyBrowserMessage: 'Type a URL or search the web',
+    emptyBrowserTabsMessage: 'Your browsing tabs will appear here',
     copyToClipboard: 'Copy to clipboard',
     copiedToClipboard: 'Copied to Clipboard',
     continue: 'Continue',
