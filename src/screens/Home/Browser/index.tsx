@@ -1,12 +1,12 @@
-import React, { useCallback } from 'react';
-import { ScrollView, StyleProp, Text, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { GlobeHemisphereEast, GlobeSimple } from 'phosphor-react-native';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -28,6 +28,31 @@ const groupHeaderWrapperStyle: StyleProp<any> = {
   alignItems: 'center',
   paddingHorizontal: 16,
   paddingBottom: 16,
+};
+
+const rightHeaderButtonStyle: StyleProp<any> = {
+  width: 40,
+  height: 40,
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginHorizontal: 6,
+};
+
+const rightHeaderButtonTextOutlineStyle: StyleProp<any> = {
+  width: 20,
+  height: 20,
+  borderRadius: 4,
+  borderWidth: 2,
+  borderColor: ColorMap.light,
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const rightHeaderButtonTextStyle: StyleProp<any> = {
+  ...FontSize0,
+  color: ColorMap.light,
+  ...FontMedium,
+  lineHeight: 16,
 };
 
 function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
@@ -68,14 +93,20 @@ export const BrowserScreen = () => {
     navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
   }, [navigation]);
 
+  const browserHeaderRightComponent = useMemo(() => {
+    return (
+      <TouchableOpacity style={rightHeaderButtonStyle} onPress={onOpenBrowserTabs}>
+        <View style={rightHeaderButtonTextOutlineStyle}>
+          <Text style={rightHeaderButtonTextStyle}>{tabsNumber}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }, [onOpenBrowserTabs, tabsNumber]);
+
   return (
     <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
-        <BrowserHeader
-          tabsNumber={tabsNumber}
-          onPressSearchBar={onPressSearchBar}
-          onPressTabButton={onOpenBrowserTabs}
-        />
+        <BrowserHeader onPressSearchBar={onPressSearchBar} rightComponent={browserHeaderRightComponent} />
 
         {!!bookmarkItems.length || !!historyItems.length ? (
           <ScrollView style={{ flex: 1, marginTop: 16 }} contentContainerStyle={{ paddingBottom: 12 }}>

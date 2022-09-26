@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
-import { Browsers, Plus, X } from 'phosphor-react-native';
+import { Browsers, HouseSimple, Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -137,10 +137,18 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
     navigation.navigate('BrowserSearch', { isOpenNewTab: true });
   }, [navigation]);
 
+  const goToBrowserHome = useCallback(() => {
+    navigation.navigate('Home', { tab: 'Browser' });
+  }, [navigation]);
+
+  const browserHeaderRightComponent = useMemo(() => {
+    return <IconButton style={{ marginHorizontal: 6 }} icon={HouseSimple} onPress={goToBrowserHome} />;
+  }, [goToBrowserHome]);
+
   return (
     <ScreenContainer>
       <>
-        <BrowserHeader onPressSearchBar={onPressSearchBar} isShowTabNumber={false} />
+        <BrowserHeader onPressSearchBar={onPressSearchBar} rightComponent={browserHeaderRightComponent} />
         {!!tabs.length && (
           <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
             {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}

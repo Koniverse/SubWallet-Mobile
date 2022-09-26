@@ -19,7 +19,7 @@ import {
   CaretLeft,
   CaretRight,
   DotsThree,
-  GlobeSimple,
+  GlobeSimple, HouseSimple,
   IconProps,
   LockSimple,
   LockSimpleOpen,
@@ -65,7 +65,7 @@ const browserTabHeaderWrapperStyle: StyleProp<any> = {
   paddingBottom: 12,
   width: '100%',
   paddingLeft: 16,
-  paddingRight: 4,
+  paddingRight: 6,
 };
 
 type BrowserActionButtonType = {
@@ -484,7 +484,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
               )}
             </View>
 
-            <IconButton icon={X} onPress={goBack} />
+            <IconButton icon={HouseSimple} onPress={goBack} />
           </View>
         </View>
         <View style={{ flex: 1, position: 'relative' }}>
