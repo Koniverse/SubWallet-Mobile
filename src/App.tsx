@@ -230,42 +230,45 @@ export const App = () => {
                     animation: 'fade_from_bottom',
                   }}>
                   {isAppReady && (
-                    <Stack.Group screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
-                      <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                      <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                      <Stack.Screen name="EditAccount" component={EditAccount} />
-                      <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                      <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
-                      <Stack.Screen name="Settings" component={Settings} />
-                      <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
-                      <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
-                      <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
-                      <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
-                      <Stack.Screen name="SendFund" component={SendFund} />
-                      <Stack.Screen name="Languages" component={Languages} />
-                      <Stack.Screen name="Security" component={Security} />
-                      <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                      <Stack.Screen name="ExportJson" component={ExportJson} />
-                      <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
-                      <Stack.Screen name="BrowserTab" component={BrowserTabWrapper} />
-                      <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
-                      <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
-                      <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
-                      <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
-                      <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                      <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
-                      <Stack.Screen name="TransferNft" component={TransferNft} />
-                    </Stack.Group>
+                    <>
+                      <Stack.Group screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
+                        <Stack.Screen name="CreateAccount" component={CreateAccount} />
+                        <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
+                        <Stack.Screen name="EditAccount" component={EditAccount} />
+                        <Stack.Screen name="RestoreJson" component={RestoreJson} />
+                        <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
+                        <Stack.Screen name="Settings" component={Settings} />
+                        <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
+                        <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
+                        <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
+                        <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
+                        <Stack.Screen name="SendFund" component={SendFund} />
+                        <Stack.Screen name="Languages" component={Languages} />
+                        <Stack.Screen name="Security" component={Security} />
+                        <Stack.Screen name="PinCode" component={PinCodeScreen} />
+                        <Stack.Screen name="ExportJson" component={ExportJson} />
+                        <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
+                        <Stack.Screen name="BrowserTab" component={BrowserTabWrapper} />
+                        <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
+                        <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                        <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
+                        <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
+                        <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
+                        <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
+                        <Stack.Screen name="TransferNft" component={TransferNft} />
+                      </Stack.Group>
+                      <Stack.Group
+                        screenOptions={{
+                          presentation: 'transparentModal',
+                          contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
+                          headerShown: false,
+                        }}>
+                        <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
+                      </Stack.Group>
+                    </>
                   )}
-                  <Stack.Group
-                    screenOptions={{
-                      presentation: 'transparentModal',
-                      contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
-                      headerShown: false,
-                    }}>
-                    <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
-                  </Stack.Group>
+                  {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
                 </Stack.Navigator>
               </NavigationContainer>
             </ThemeContext.Provider>

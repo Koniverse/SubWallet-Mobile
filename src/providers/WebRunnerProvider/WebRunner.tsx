@@ -60,8 +60,8 @@ const startPingInterval = () => {
       reloadTimeout && clearTimeout(reloadTimeout);
       pingInterval && clearTimeout(pingInterval);
       webRef?.current?.reload();
-    }, 16000);
-  }, 18000);
+    }, 27000);
+  }, 30000);
 };
 
 const onWebviewMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
