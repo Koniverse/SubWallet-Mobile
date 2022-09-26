@@ -6,7 +6,7 @@ import EventEmitter from 'eventemitter3';
 
 const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
 
-export type WebRunnerStatus = 'init' | 'load' | 'reloading' | 'crypto_ready' | 'ping';
+export type WebRunnerStatus = 'init' | 'load' | 'reloading' | 'crypto_ready' | 'ping' | 'sleep';
 export interface WebRunnerState {
   status?: WebRunnerStatus;
   url?: string;
