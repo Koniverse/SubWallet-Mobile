@@ -14,7 +14,7 @@ import {
   sharedStyles,
 } from 'styles/sharedStyles';
 import { LeftIconButton } from 'components/LeftIconButton';
-import { BUTTON_ACTIVE_OPACITY } from '../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';

@@ -6,7 +6,7 @@ import i18n from 'utils/i18n/i18n';
 import { BalanceVal } from 'components/BalanceVal';
 import { ContainerHorizontalPadding, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { getNetworkLogo } from 'utils/index';
 
 interface Props {

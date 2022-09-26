@@ -8,7 +8,7 @@ import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { GlobeHemisphereEast, GlobeSimple, MagnifyingGlass } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { BUTTON_ACTIVE_OPACITY } from '../../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';

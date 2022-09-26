@@ -87,3 +87,5 @@ export interface UseViewStepType {
 }
 
 export type FilterOptsType = Record<string, string>;
+
+export type SortFunctionInterface<T> = (a: T, b: T) => number;

@@ -16,7 +16,7 @@ import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { SubWalletModal } from 'components/SubWalletModal';
 import { ExportJson } from 'screens/ExportJson';
-import { deviceHeight } from '../constant';
+import { deviceHeight } from 'constants/index';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 

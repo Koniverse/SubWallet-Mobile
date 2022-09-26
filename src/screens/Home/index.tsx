@@ -10,7 +10,7 @@ import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'p
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BOTTOM_BAR_HEIGHT } from '../../constant';
+import { BOTTOM_BAR_HEIGHT } from 'constants/index';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';

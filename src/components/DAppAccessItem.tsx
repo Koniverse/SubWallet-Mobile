@@ -6,7 +6,7 @@ import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { Divider } from 'components/Divider';
 import { getHostName } from 'utils/browser';
-import { BUTTON_ACTIVE_OPACITY } from '../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
 interface Props {
   item: AuthUrlInfo;

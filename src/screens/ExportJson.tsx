@@ -11,7 +11,7 @@ import { LeftIconButton } from 'components/LeftIconButton';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
-import { deviceHeight, HIDE_MODAL_DURATION } from '../constant';
+import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import ToastContainer from 'react-native-toast-notifications';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';

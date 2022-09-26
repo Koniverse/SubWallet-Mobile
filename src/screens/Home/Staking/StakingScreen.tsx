@@ -1,6 +1,5 @@
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
-import { StakingDataType } from 'hooks/types';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -17,10 +16,10 @@ import { Plus } from 'phosphor-react-native';
 import StakingDetail from 'screens/Home/Staking/StakingDetail/StakingDetail';
 import { RootState } from 'stores/index';
 import StakingValidatorList from './Validator/StakingValidatorList';
+import { ScreenCanStaking, ScreenNonHeader } from 'constants/stakingScreen';
 
 const EMPTY_STAKING = <EmptyStaking />;
 
-const ScreenCanStaking: StakingScreenName[] = ['StakingList', 'StakingDetail'];
 
 export const StakingScreen = () => {
   const isAllAccount = useIsAccountAll();
@@ -101,6 +100,10 @@ export const StakingScreen = () => {
     }
     return EMPTY_STAKING;
   }, [stakingData, stakingPriceMap, stakingState]);
+
+  if (ScreenNonHeader.includes(stakingState.screen)) {
+    return stakingContent();
+  }
 
   return (
     <ContainerWithSubHeader

@@ -78,6 +78,7 @@ const SeparatorStyle: StyleProp<any> = {
 const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
   const { key: networkKey, chain: networkName } = network;
   const stakedReturn = bondingMeta?.stakedReturn;
+  const validatorCount = bondingMeta?.validatorCount;
 
   return (
     <TouchableOpacity style={WrapperStyle} activeOpacity={0.5} onPress={onPress(network)}>
@@ -89,7 +90,7 @@ const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
               {networkName}
             </Text>
             <Text style={ValidatorTextStyle}>
-              {Math.ceil(stakedReturn || 0)}&nbsp;{i18n.stakingScreen.networkList.validators}
+              {Math.ceil(validatorCount || 0)}&nbsp;{i18n.stakingScreen.networkList.validators}
             </Text>
           </View>
         </View>

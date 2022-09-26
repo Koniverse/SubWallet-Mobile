@@ -3,7 +3,7 @@ import { StyleProp, TextInput, View } from 'react-native';
 import { Search } from 'components/Search';
 import { sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { HIDE_MODAL_DURATION } from '../constant';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import { IconProps } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 

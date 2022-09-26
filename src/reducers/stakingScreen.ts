@@ -1,15 +1,13 @@
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 
-export type StakingScreenName = 'StakingList' | 'StakingDetail' | 'NetworkList' | 'ValidatorList';
-export type ValidatorSortBy = 'Default' | 'Commission' | 'Return';
+export type StakingScreenName = 'StakingList' | 'StakingDetail' | 'NetworkList' | 'ValidatorList' | 'ValidatorDetail';
 
 export interface StakingScreenState {
   title: string;
   screen: StakingScreenName;
   stakingKey?: string;
   selectedNetwork?: string;
-  validatorSortBy: ValidatorSortBy;
   selectedValidator?: ValidatorInfo;
 }
 
@@ -20,6 +18,7 @@ export enum StakingScreenActionType {
   OPEN_STAKING_DETAIL = 'OPEN_STAKING_DETAIL',
   START_STAKING = 'START_STAKING',
   OPEN_VALIDATOR_LIST = 'OPEN_VALIDATOR_LIST',
+  OPEN_VALIDATOR_DETAIL = 'OPEN_VALIDATOR_DETAIL',
 }
 
 export interface AbstractStakingScreenActionParams {
@@ -61,6 +60,14 @@ export interface StakingScreenOpenValidatorListAction extends AbstractStakingScr
   };
 }
 
+export interface StakingScreenOpenValidatorDetailAction extends AbstractStakingScreenActionParams {
+  type: StakingScreenActionType.OPEN_VALIDATOR_DETAIL;
+  payload: {
+    selectedNetwork: string;
+    title?: string;
+  };
+}
+
 export interface StakingScreenGoBackAction extends AbstractStakingScreenActionParams {
   type: StakingScreenActionType.GO_BACK;
   payload: null;
@@ -79,7 +86,6 @@ export const STAKING_INITIAL_STATE: StakingScreenState = {
   title: i18n.title.staking,
   stakingKey: undefined,
   selectedNetwork: undefined,
-  validatorSortBy: 'Default',
 };
 
 const handleInitAction = (action: StakingScreenInitAction): StakingScreenState => {
@@ -93,7 +99,6 @@ const handleOpenStakingListAction = (): StakingScreenState => {
     title: i18n.title.staking,
     stakingKey: undefined,
     selectedNetwork: undefined,
-    validatorSortBy: 'Default',
   };
 };
 
@@ -103,7 +108,6 @@ const handleOpenStakingDetail = ({ payload }: StakingScreenOpenStakingDetailActi
     stakingKey: payload.stakingKey,
     title: payload.title || i18n.title.stakingDetail,
     selectedNetwork: undefined,
-    validatorSortBy: 'Default',
   };
 };
 
@@ -117,7 +121,6 @@ const handleStartStaking = (
       screen: 'ValidatorList',
       title: payload.title || i18n.title.validators,
       selectedNetwork: payload.selectedNetwork,
-      validatorSortBy: 'Default',
     };
   } else {
     return {
@@ -125,7 +128,6 @@ const handleStartStaking = (
       screen: 'NetworkList',
       title: i18n.title.stakingNetwork,
       selectedNetwork: undefined,
-      validatorSortBy: 'Default',
     };
   }
 };
@@ -152,7 +154,6 @@ const handleGoBackAction = (state: StakingScreenState): StakingScreenState => {
         title: i18n.title.stakingNetwork,
         stakingKey: undefined,
         selectedNetwork: undefined,
-        validatorSortBy: 'Default',
       };
     case 'NetworkList':
       if (stakingKey) {
@@ -161,7 +162,6 @@ const handleGoBackAction = (state: StakingScreenState): StakingScreenState => {
           screen: 'StakingDetail',
           title: i18n.title.stakingDetail,
           selectedNetwork: undefined,
-          validatorSortBy: 'Default',
         };
       }
       return {
@@ -170,7 +170,6 @@ const handleGoBackAction = (state: StakingScreenState): StakingScreenState => {
         title: i18n.title.staking,
         stakingKey: undefined,
         selectedNetwork: undefined,
-        validatorSortBy: 'Default',
       };
   }
   return {
@@ -179,7 +178,6 @@ const handleGoBackAction = (state: StakingScreenState): StakingScreenState => {
     title: i18n.title.staking,
     stakingKey: undefined,
     selectedNetwork: undefined,
-    validatorSortBy: 'Default',
   };
 };
 

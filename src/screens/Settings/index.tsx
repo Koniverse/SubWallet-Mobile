@@ -32,7 +32,7 @@ import {
   TWITTER_URL,
   WEBSITE_URL,
   WIKI_URL,
-} from '../../constant';
+} from 'constants/index';
 import { useToast } from 'react-native-toast-notifications';
 import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';

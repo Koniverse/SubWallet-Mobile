@@ -4,7 +4,7 @@ import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
-import { BUTTON_ACTIVE_OPACITY } from '../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { CaretRight, IconProps } from 'phosphor-react-native';
 
 interface ButtonProps extends TouchableOpacityProps {

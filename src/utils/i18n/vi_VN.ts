@@ -158,6 +158,7 @@ export const vi = {
     approveRequestMessage: 'Only approve this request if you trust the app',
     approveTransactionMessage: 'You are approving a request send transaction',
     reject: 'Reject',
+    sortBy: 'Sort by',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -269,6 +270,10 @@ export const vi = {
     },
     validatorList: {
       searchValidator: 'Search validator...',
+      totalStake: 'Total Stake',
+      minStake: 'Min Stake',
+      lowestCommission: 'Lowest commission',
+      highestReturn: 'Highest return',
     },
   },
   settings: {

@@ -16,7 +16,7 @@ import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../constant';
+import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
 import { updateAccountsWaitingStatus } from 'stores/updater';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';

@@ -4,3 +4,5 @@ export interface NetworkValidatorsInfo {
   bondedValidators: string[];
   maxNominations: number;
 }
+
+export type ValidatorSortBy = 'Default' | 'Commission' | 'Return';

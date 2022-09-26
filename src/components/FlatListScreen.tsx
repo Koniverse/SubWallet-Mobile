@@ -4,8 +4,9 @@ import { ActivityIndicator, FlatList, ListRenderItemInfo, StyleProp, TextInput, 
 import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
+import { SortFunctionInterface } from 'types/ui-types';
 import { defaultSortFunc } from 'utils/function';
-import { HIDE_MODAL_DURATION } from '../constant';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useLazyList } from 'hooks/useLazyList';
@@ -33,7 +34,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
-  sortFunction?: (a: T, b: T) => number;
+  sortFunction?: SortFunctionInterface<T>;
   searchMarginBottom?: number;
   placeholder?: string;
   numberColumns?: number;
@@ -79,6 +80,13 @@ export function FlatListScreen<T>({
   const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
   const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
   const searchRef = useRef<TextInput>(null);
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+    }
+  }, [sortFunction]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -114,6 +122,7 @@ export function FlatListScreen<T>({
       <>
         {lazyList.length ? (
           <FlatList
+            ref={flatListRef}
             style={{ ...ScrollViewStyle }}
             keyboardShouldPersistTaps={'handled'}
             data={lazyList}

@@ -9,6 +9,7 @@ import { Image, ImageStyle, StyleProp, Text, TextStyle, TouchableOpacity, View, 
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { NetworkValidatorsInfo } from 'types/staking';
+import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi, toShort } from 'utils/index';
 
 interface Props {
@@ -83,7 +84,7 @@ const NominatorInfoContainerStyle: StyleProp<ViewStyle> = {
   flex: 2,
 };
 
-const CommissionTextStyle: StyleProp<TextStyle> = {
+const ExpectedReturnTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.primary,
@@ -119,7 +120,7 @@ const AvatarImageStyle: StyleProp<ImageStyle> = {
 };
 
 const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }: Props) => {
-  const { icon, totalStake, commission, identity, nominatorCount, minBond, isVerified, address } = data;
+  const { icon, totalStake, expectedReturn, identity, nominatorCount, minBond, isVerified, address } = data;
   const tokenSymbol = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [totalStakeValue, totalStakeToken] = getBalanceWithSi(
@@ -154,7 +155,7 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
               {isVerified && <CircleWavyCheck size={16} color={ColorMap.primary} style={VerifiedIconStyle} />}
             </View>
             <View style={RowCenterContainerStyle}>
-              <Text style={TitleStakeInfoTextStyle}>{'Total Stake '}</Text>
+              <Text style={TitleStakeInfoTextStyle}>{i18n.stakingScreen.validatorList.totalStake}&nbsp;</Text>
               <BalanceVal
                 balanceValTextStyle={ValueStakeInfoTextStyle}
                 value={new BigN(totalStakeValue)}
@@ -163,7 +164,7 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
               />
             </View>
             <View style={RowCenterContainerStyle}>
-              <Text style={TitleStakeInfoTextStyle}>{'Min Stake '}</Text>
+              <Text style={TitleStakeInfoTextStyle}>{i18n.stakingScreen.validatorList.minStake}&nbsp;</Text>
               <BalanceVal
                 balanceValTextStyle={ValueStakeInfoTextStyle}
                 value={new BigN(minBond)}
@@ -176,10 +177,10 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
 
         <View style={NominatorInfoContainerStyle}>
           <BalanceVal
-            balanceValTextStyle={CommissionTextStyle}
+            balanceValTextStyle={ExpectedReturnTextStyle}
             symbol={'%'}
             withSymbol={true}
-            value={new BigN(commission)}
+            value={new BigN(expectedReturn)}
           />
           <View style={RowCenterContainerStyle}>
             <Text style={[NominatorCountTextStyle, { color: isMax ? ColorMap.danger : ColorMap.light }]}>

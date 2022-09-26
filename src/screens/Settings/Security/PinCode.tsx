@@ -4,7 +4,7 @@ import { ColorMap } from 'styles/color';
 import { SubmitButton } from 'components/SubmitButton';
 import { PinCodeField } from 'components/PinCodeField';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
-import { CELL_COUNT } from '../../../constant';
+import { CELL_COUNT } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 
 const bottomAreaStyle: StyleProp<any> = {
