@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
 import { Browsers, Plus, X } from 'phosphor-react-native';
@@ -98,7 +98,6 @@ const renderBrowserTabItem = (
   item: BrowserSliceTab,
   activeTab: string | null,
   onPressItem: (tab: BrowserSliceTab) => void,
-  isTabMounted?: boolean,
 ) => {
   return (
     <View key={item.id} style={tabItemStyle}>
@@ -109,7 +108,7 @@ const renderBrowserTabItem = (
         <Text style={tabItemTitleStyle}>{getHostName(item.url)}</Text>
       </View>
       <View style={tabItemBodyStyle}>
-        {!!isTabMounted && !!item.screenshot && <Image source={{ uri: item.screenshot }} style={tabScreenshotStyle} />}
+        {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={tabScreenshotStyle} />}
       </View>
       <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item)} />
       <IconButton
@@ -124,7 +123,6 @@ const renderBrowserTabItem = (
 };
 
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
-  const [mountedTabMap, setMountedTabMap] = useState<Record<string, boolean>>({});
   const isEmptyTabs = !tabs.length;
 
   const onPressSearchBar = useCallback(() => {
@@ -139,25 +137,13 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
     navigation.navigate('BrowserSearch', { isOpenNewTab: true });
   }, [navigation]);
 
-  const _onPressTabItem = (tab: BrowserSliceTab) => {
-    if (!mountedTabMap[tab.id]) {
-      setMountedTabMap(prev => {
-        return {
-          ...prev,
-          [tab.id]: true,
-        };
-      });
-    }
-    onPressTabItem(tab);
-  };
-
   return (
     <ScreenContainer>
       <>
         <BrowserHeader onPressSearchBar={onPressSearchBar} isShowTabNumber={false} />
         {!!tabs.length && (
           <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
-            {tabs.map(t => renderBrowserTabItem(t, activeTab, _onPressTabItem, mountedTabMap[t.id]))}
+            {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
           </ScrollView>
         )}
         {!tabs.length && <EmptyList title={i18n.common.emptyBrowserTabsMessage} icon={Browsers} />}

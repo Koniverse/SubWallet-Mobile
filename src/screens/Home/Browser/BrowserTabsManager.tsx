@@ -8,7 +8,7 @@ import { RootState } from 'stores/index';
 import { StyleProp, View } from 'react-native';
 import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
 import { BrowserSliceTab, SiteInfo } from 'stores/types';
-import { updateActiveTab } from 'stores/updater';
+import { clearAllTabScreenshots, updateActiveTab } from 'stores/updater';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -70,6 +70,13 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
   const navigation = useNavigation<RootNavigationProps>();
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
+
+  useEffect(() => {
+    return () => {
+      // after component BrowserTabsManager is unmounted, clear all tab screenshots
+      clearAllTabScreenshots();
+    };
+  }, []);
 
   useEffect(() => {
     if (params.url) {

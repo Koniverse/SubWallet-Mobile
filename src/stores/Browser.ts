@@ -75,6 +75,12 @@ const browserSlice = createSlice({
         }),
       ];
     },
+    clearAllTabScreenshots: state => {
+      state.tabs = state.tabs.map(t => ({
+        ...t,
+        screenshot: undefined,
+      }));
+    },
     closeAllTab: state => {
       state.activeTab = null;
       state.tabs = [];

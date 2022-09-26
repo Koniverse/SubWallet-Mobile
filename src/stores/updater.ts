@@ -100,6 +100,10 @@ export function updateTabScreenshot(id: string, screenshot: string): void {
   store.dispatch({ type: 'browser/updateTabScreenshot', payload: { id, screenshot } });
 }
 
+export function clearAllTabScreenshots(): void {
+  store.dispatch({ type: 'browser/clearAllTabScreenshots' });
+}
+
 export function closeAllTab(): void {
   store.dispatch({ type: 'browser/closeAllTab' });
 }
