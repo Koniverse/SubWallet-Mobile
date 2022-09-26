@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, ListRenderItemInfo, StyleProp, TextInput, 
 import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
+import { defaultSortFunc } from 'utils/function';
 import { HIDE_MODAL_DURATION } from '../constant';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -32,6 +33,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
   filterFunction: (items: T[], searchString: string) => T[];
+  sortFunction?: (a: T, b: T) => number;
   searchMarginBottom?: number;
   placeholder?: string;
   numberColumns?: number;
@@ -69,11 +71,13 @@ export function FlatListScreen<T>({
   placeholder = i18n.common.search,
   numberColumns = 1,
   searchMarginBottom = 8,
+  sortFunction = defaultSortFunc,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
   const filteredItems = useMemo(() => filterFunction(items, searchString), [filterFunction, items, searchString]);
-  const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(filteredItems);
+  const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
+  const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
   const searchRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -104,9 +108,7 @@ export function FlatListScreen<T>({
     };
 
     if (loading) {
-      return (
-        <ActivityIndicator style={IndicatorStyle} size={'large'} animating={true} />
-      )
+      return <ActivityIndicator style={IndicatorStyle} size={'large'} animating={true} />;
     }
     return (
       <>

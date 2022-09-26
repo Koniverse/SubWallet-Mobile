@@ -5,15 +5,17 @@ import { BalanceVal } from 'components/BalanceVal';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { CircleWavyCheck, Users } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
-import { Image, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Image, ImageStyle, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { NetworkValidatorsInfo } from 'types/staking';
 import { getBalanceWithSi, toShort } from 'utils/index';
 
 interface Props {
   data: ValidatorInfo;
   onPress: (val: ValidatorInfo) => () => void;
   network: NetworkJson;
+  networkValidatorsInfo: NetworkValidatorsInfo;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -25,68 +27,99 @@ const InfoContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
   width: '100%',
-  paddingTop: 20,
-  paddingBottom: 12,
+  paddingTop: 16,
+  paddingBottom: 16,
 };
-const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
+const InfoContentWrapperStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   overflow: 'hidden',
-  flex: 5,
+  flex: 9,
 };
 
-const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
-  paddingLeft: 16,
+const ValidatorInfoContentStyle: StyleProp<ViewStyle> = {
+  paddingLeft: 12,
   paddingRight: 8,
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
 };
 
-const NetworkNameStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
+const RowCenterContainerStyle: StyleProp<ViewStyle> = {
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+};
+
+const ValidatorNameStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
   color: ColorMap.light,
 };
 
-const ValidatorTextStyle: StyleProp<TextStyle> = {
+const TitleStakeInfoTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   ...FontSize0,
   color: ColorMap.disabled,
+  marginRight: 4,
 };
 
-const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
+const ValueStakeInfoTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  ...FontSize0,
+  color: ColorMap.light,
+};
+
+const VerifiedIconStyle: StyleProp<ViewStyle> = {
+  marginLeft: 8,
+};
+
+const NominatorInfoContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-end',
-  justifyContent: 'center',
   paddingLeft: 2,
   flex: 2,
 };
 
-const ReturnedTextStyle: StyleProp<TextStyle> = {
+const CommissionTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.primary,
 };
 
+const NominatorCountTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  ...FontSize0,
+  marginRight: 4,
+};
+
 const SeparatorStyle: StyleProp<any> = {
   borderBottomWidth: 1,
   borderBottomColor: ColorMap.dark2,
-  marginLeft: 56,
+  marginLeft: 36,
 };
 
-const StakingValidatorItem = ({ onPress, data, network }: Props) => {
-  const {
-    icon,
-    totalStake,
-    commission,
-    identity,
-    nominatorCount,
-    minBond,
-    isVerified,
-    address,
-  } = data;
+const AvatarContainerStyle: StyleProp<ViewStyle> = {
+  width: 24,
+  height: 24,
+  borderRadius: 24,
+  borderColor: ColorMap.secondary,
+  padding: 2,
+  borderWidth: 2,
+  backgroundColor: ColorMap.dark,
+};
+
+const AvatarImageStyle: StyleProp<ImageStyle> = {
+  width: 16,
+  height: 16,
+  borderRadius: 16,
+};
+
+const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }: Props) => {
+  const { icon, totalStake, commission, identity, nominatorCount, minBond, isVerified, address } = data;
   const tokenSymbol = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [totalStakeValue, totalStakeToken] = getBalanceWithSi(
@@ -96,48 +129,67 @@ const StakingValidatorItem = ({ onPress, data, network }: Props) => {
     tokenSymbol,
   );
 
+  const isMax = useMemo(() => {
+    return networkValidatorsInfo.maxNominatorPerValidator <= nominatorCount;
+  }, [networkValidatorsInfo.maxNominatorPerValidator, nominatorCount]);
+
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress(data)}>
       <View style={InfoContainerStyle}>
-        <View style={NetworkInfoWrapperStyle}>
-          {icon && (
+        <View style={InfoContentWrapperStyle}>
+          {icon ? (
+            <View style={AvatarContainerStyle}>
+              <Image source={{ uri: icon }} style={AvatarImageStyle} />
+            </View>
+          ) : (
             <View>
-              <Image source={{}} />
+              <SubWalletAvatar size={16} address={address} />
             </View>
           )}
-          {!icon && <SubWalletAvatar size={40} address={address} />}
-          <View style={NetworkInfoContentStyle}>
-            <View>
-              <Text style={NetworkNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
+          <View style={ValidatorInfoContentStyle}>
+            <View style={RowCenterContainerStyle}>
+              <Text style={ValidatorNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
                 {identity ? identity : toShort(address)}
               </Text>
-              { isVerified && <CircleWavyCheck size={40} /> }
+              {isVerified && <CircleWavyCheck size={16} color={ColorMap.primary} style={VerifiedIconStyle} />}
             </View>
-            <View>
-              <Text style={ValidatorTextStyle}>{'Total Stake '}</Text>
-              <BalanceVal value={new BigN(totalStakeValue)} symbol={totalStakeToken} withSymbol={true} />
+            <View style={RowCenterContainerStyle}>
+              <Text style={TitleStakeInfoTextStyle}>{'Total Stake '}</Text>
+              <BalanceVal
+                balanceValTextStyle={ValueStakeInfoTextStyle}
+                value={new BigN(totalStakeValue)}
+                symbol={totalStakeToken}
+                withSymbol={true}
+              />
             </View>
-            <View>
-              <Text style={ValidatorTextStyle}>{'Min Stake '}</Text>
-              <BalanceVal value={new BigN(minBond)} symbol={tokenSymbol} withSymbol={true} />
+            <View style={RowCenterContainerStyle}>
+              <Text style={TitleStakeInfoTextStyle}>{'Min Stake '}</Text>
+              <BalanceVal
+                balanceValTextStyle={ValueStakeInfoTextStyle}
+                value={new BigN(minBond)}
+                symbol={tokenSymbol}
+                withSymbol={true}
+              />
             </View>
           </View>
         </View>
 
-        <View style={BalanceInfoContainerStyle}>
+        <View style={NominatorInfoContainerStyle}>
           <BalanceVal
-            // balanceValTextStyle={BalanceTokenTextStyle}
-            // symbolTextStyle={BalanceSymbolTextStyle}
+            balanceValTextStyle={CommissionTextStyle}
             symbol={'%'}
             withSymbol={true}
             value={new BigN(commission)}
           />
-          <View>
-            <Text>{nominatorCount}</Text>
-            <Users size={40} />
+          <View style={RowCenterContainerStyle}>
+            <Text style={[NominatorCountTextStyle, { color: isMax ? ColorMap.danger : ColorMap.light }]}>
+              {nominatorCount}
+            </Text>
+            <Users size={16} color={isMax ? ColorMap.danger : ColorMap.light} />
           </View>
         </View>
       </View>
+      <View style={SeparatorStyle} />
     </TouchableOpacity>
   );
 };
