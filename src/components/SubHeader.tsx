@@ -45,7 +45,7 @@ const subHeaderTitle: StyleProp<any> = {
   ...FontSize4,
   ...FontBold,
   color: ColorMap.light,
-  paddingHorizontal: 72,
+  paddingHorizontal: 56,
 };
 
 export const SubHeader = ({
@@ -92,7 +92,7 @@ export const SubHeader = ({
         <Button
           icon={rightIcon}
           onPress={onPressRightIcon}
-          style={{ position: 'absolute', right: 16, top: 0}}
+          style={{ position: 'absolute', right: 16, top: 0 }}
           disabled={disableRightButton}
           color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
           title={rightButtonTitle}
