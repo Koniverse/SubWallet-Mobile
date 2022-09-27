@@ -207,7 +207,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
 
       <SubWalletModal modalVisible={isShowTokenList} onChangeModalVisible={() => setShowTokenList(false)}>
         <View style={unitModalContentWrapper}>
-          <Text style={unitModalTitle}>{i18n.title.unitSelection}</Text>
+          <Text style={unitModalTitle}>{i18n.title.selectUnit}</Text>
           <FlatList style={{ width: '100%', maxHeight: 500 }} data={siOptions} renderItem={renderItem} />
         </View>
       </SubWalletModal>
