@@ -237,7 +237,7 @@ const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlA
       state.eventEmitter.emit('reloading');
       return { ...state };
     case 'active':
-      const targetURI = `${BASE_URI}/${URI_PARAMS}`;
+      const targetURI = `${BASE_URI}/index.html${URI_PARAMS}`;
       return { ...state, uri: targetURI };
     case 'sleep':
       state.uri = undefined;
