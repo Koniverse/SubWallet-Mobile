@@ -57,6 +57,7 @@ import { ColorMap } from 'styles/color';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
+import { getValidURL } from 'utils/browser';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -116,27 +117,26 @@ AppState.addEventListener('change', (state: string) => {
 
 let firstTimeCheckPincode: boolean | undefined;
 
-//todo: Setup deeplink for DApp browser again after multi tabs feature is completed
 const config: LinkingOptions<RootStackParamList>['config'] = {
   screens: {
-    //   BrowserTab: {
-    //     path: 'browser-tab',
-    //     parse: {
-    //       url: url => {
-    //         try {
-    //           return decodeURIComponent(url);
-    //         } catch (e) {
-    //           console.log('Cannot decode url ' + url);
-    //           return url;
-    //         }
-    //       },
-    //       name: name => name || '',
-    //     },
-    //     stringify: {
-    //       url: url => url,
-    //       name: name => name || '',
-    //     },
-    //   },
+    BrowserTabsManager: {
+      path: 'browser',
+      parse: {
+        url: url => {
+          try {
+            return getValidURL(decodeURIComponent(url));
+          } catch (e) {
+            console.log('Cannot decode url ' + url);
+            return getValidURL(url);
+          }
+        },
+        name: name => name || '',
+      },
+      stringify: {
+        url: url => url,
+        name: name => name || '',
+      },
+    },
   },
 };
 

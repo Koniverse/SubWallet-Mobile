@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
-import { getHostName, isValidURL } from 'utils/browser';
+import { getHostName, getValidURL } from 'utils/browser';
 import { createNewTab } from 'stores/updater';
 
 function doFilter(searchString: string) {
@@ -25,23 +25,18 @@ type SearchItemType = {
 } & SiteInfo;
 
 function getFirstSearchItem(searchString: string): SearchItemType {
-  if (isValidURL(searchString)) {
-    const url =
-      searchString.startsWith('http://') || searchString.startsWith('https://')
-        ? searchString
-        : `https://${searchString}`;
+  const url = getValidURL(searchString);
 
-    const hostname = getHostName(url);
-
+  if (url.startsWith('https://duckduckgo.com')) {
     return {
       url,
-      name: hostname,
+      displayUrl: `${searchString} - ${i18n.common.searchAtDuckDuckGo}`,
+      name: 'duckduckgo.com',
     };
   } else {
     return {
-      url: `https://duckduckgo.com/?q=${encodeURIComponent(searchString)}`,
-      displayUrl: `${searchString} - ${i18n.common.searchAtDuckDuckGo}`,
-      name: 'duckduckgo.com',
+      url,
+      name: getHostName(url),
     };
   }
 }
