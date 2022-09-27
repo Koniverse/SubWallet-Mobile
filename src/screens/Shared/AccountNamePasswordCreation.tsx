@@ -72,7 +72,7 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
 
   const formConfig = {
     accountName: {
-      name: i18n.common.accountName,
+      name: i18n.common.walletName,
       value: '',
       require: true,
     },

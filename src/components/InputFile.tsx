@@ -22,7 +22,7 @@ const inputFileContainer: StyleProp<any> = {
 
 const inputFileLabel: StyleProp<any> = {
   ...sharedStyles.mainText,
-  color: ColorMap.light,
+  color: ColorMap.disabled,
   ...FontMedium,
   paddingTop: 8,
   paddingBottom: 4,
@@ -43,7 +43,7 @@ export const InputFile = ({ onChangeResult, style }: Props) => {
 
   return (
     <TouchableOpacity style={[inputFileContainer, style]} onPress={onChangeFile}>
-      <FileArrowUp size={32} weight={'regular'} color={ColorMap.light} />
+      <FileArrowUp size={32} weight={'regular'} color={ColorMap.disabled} />
       <Text style={inputFileLabel}>{i18n.common.inputFileLabel}</Text>
     </TouchableOpacity>
   );

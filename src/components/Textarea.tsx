@@ -15,11 +15,24 @@ interface Props extends TextInputProps {
 }
 
 export const Textarea = forwardRef((textAreaProps: Props, ref: React.Ref<TextInput>) => {
-  const { style, onChangeText, value, onBlur, onEndEditing, autoFocus, onSubmitEditing, errorMessages } = textAreaProps;
+  const {
+    style,
+    onChangeText,
+    value,
+    onBlur,
+    onEndEditing,
+    autoFocus,
+    onSubmitEditing,
+    errorMessages,
+    placeholder,
+    placeholderTextColor,
+  } = textAreaProps;
   return (
     <>
       <TextInput
         ref={ref}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
         returnKeyType="go"
         autoCorrect={false}
         autoFocus={autoFocus}
