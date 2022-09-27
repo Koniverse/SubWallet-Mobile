@@ -29,7 +29,7 @@ interface Props {
   onPressViewDetail?: () => void;
   detailModalVisible?: boolean;
   onChangeDetailModalVisible?: () => void;
-  renderDetailModalContent?: () => JSX.Element | null;
+  detailModalContent?: JSX.Element | null;
   isShowViewDetailButton?: boolean;
 }
 
@@ -77,7 +77,7 @@ export const ConfirmationBase = ({
   onPressViewDetail,
   detailModalVisible,
   onChangeDetailModalVisible,
-  renderDetailModalContent,
+  detailModalContent,
   isShowViewDetailButton = true,
   isShowPassword,
   isUseScrollView = true,
@@ -173,7 +173,7 @@ export const ConfirmationBase = ({
         {...headerProps}
         modalVisible={!!detailModalVisible}
         onChangeModalVisible={onChangeDetailModalVisible}
-        renderContent={renderDetailModalContent}
+        content={detailModalContent}
       />
     </>
   );

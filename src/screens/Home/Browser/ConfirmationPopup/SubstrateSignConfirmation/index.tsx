@@ -55,7 +55,7 @@ export const SubstrateSignConfirmation = ({
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
 
-  const renderSignData = () => {
+  const detailModalContent = useMemo(() => {
     if (payload !== null) {
       const json = request.payload as SignerPayloadJSON;
 
@@ -67,7 +67,7 @@ export const SubstrateSignConfirmation = ({
     }
 
     return null;
-  };
+  }, [hexBytes, payload, request.payload, url]);
 
   return (
     <ConfirmationBase
@@ -79,7 +79,7 @@ export const SubstrateSignConfirmation = ({
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}
-      renderDetailModalContent={renderSignData}
+      detailModalContent={detailModalContent}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
         submitButtonTitle: i18n.common.approve,

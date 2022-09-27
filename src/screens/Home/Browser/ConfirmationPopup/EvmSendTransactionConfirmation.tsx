@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   ConfirmationsQueue,
   EVMTransactionArg,
@@ -159,9 +159,9 @@ export const EvmSendTransactionConfirmation = ({
     [handlerRenderArg],
   );
 
-  const handleRenderContent = useCallback(() => {
+  const detailModalContent = useMemo(() => {
     return (
-      <>
+      <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
         {payload.value && (
           <View style={itemMarginBottomStyle}>
             <Text style={[textStyle, { ...FontSize2 }]}>{i18n.common.amount}</Text>
@@ -195,7 +195,7 @@ export const EvmSendTransactionConfirmation = ({
             <Text style={subTextStyle}>{payload.data}</Text>
           </View>
         )}
-      </>
+      </ScrollView>
     );
   }, [
     handleRenderInputInfo,
@@ -215,14 +215,6 @@ export const EvmSendTransactionConfirmation = ({
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
 
-  const renderTransactionData = () => {
-    return (
-      <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
-        {handleRenderContent()}
-      </ScrollView>
-    );
-  };
-
   return (
     <ConfirmationBase
       headerProps={{
@@ -239,7 +231,7 @@ export const EvmSendTransactionConfirmation = ({
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}
-      renderDetailModalContent={renderTransactionData}>
+      detailModalContent={detailModalContent}>
       <View style={{ paddingHorizontal: 16 }}>
         <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
           {i18n.common.approveTransactionMessage}
