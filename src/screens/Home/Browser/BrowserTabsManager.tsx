@@ -128,7 +128,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
       }
 
       setPropSiteInfo(prev => {
-        if (prev.url === tab.url) {
+        if (activeTab === tab.id && prev.url === tab.url) {
           return prev;
         }
 
