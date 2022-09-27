@@ -30,7 +30,7 @@ export const ConfirmationHeader = ({ title, url }: ConfirmationHeaderType) => {
 
   return (
     <View style={{ alignItems: 'center' }}>
-      <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 56, height: 56 }} />
+      <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 54, height: 54 }} />
       <Text style={titleStyle}>{title}</Text>
       <Text style={[getTextStyle(ColorMap.disabled), { textAlign: 'center' }]}>{hostName}</Text>
     </View>

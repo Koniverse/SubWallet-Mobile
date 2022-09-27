@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { useSelector } from 'react-redux';
@@ -26,7 +26,7 @@ const warningTextStyle: StyleProp<any> = {
   color: ColorMap.danger,
   ...sharedStyles.mainText,
   ...FontMedium,
-  marginBottom: 16,
+  marginBottom: 8,
 };
 
 function getNodeStyle(isLeaf: boolean): StyleProp<any> {
@@ -63,6 +63,7 @@ export const EvmSignConfirmation = ({
   const account = accounts.find(acc => acc.address === payload.address);
   const [warning, setWarning] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   useEffect(() => {
     if (payload.type === 'eth_sign') {
       setWarning(i18n.warningMessage.ethSignWarningMessage);
@@ -129,7 +130,7 @@ export const EvmSignConfirmation = ({
     );
   }, []);
 
-  const handlerRenderContent = useCallback(() => {
+  const signDataContent = useMemo(() => {
     if (!rawData) {
       return null;
     }
@@ -154,10 +155,10 @@ export const EvmSignConfirmation = ({
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
   };
 
-  const renderSignData = () => {
+  const detailModalContent = useMemo(() => {
     return (
       <ScrollView style={{ width: '100%', marginTop: 32, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
-        <View style={{ marginBottom: 16 }}>
+        <View style={{ marginBottom: 8 }}>
           <Text style={labelStyle}>{i18n.common.signMethod}: </Text>
           <Text style={valueStyle}>{signMethod}</Text>
         </View>
@@ -166,11 +167,11 @@ export const EvmSignConfirmation = ({
 
         <View>
           <Text style={labelStyle}>{i18n.common.rawData}: </Text>
-          {handlerRenderContent()}
+          {signDataContent}
         </View>
       </ScrollView>
     );
-  };
+  }, [signDataContent, signMethod, warning]);
 
   return (
     <ConfirmationBase
@@ -185,16 +186,13 @@ export const EvmSignConfirmation = ({
       detailModalVisible={modalVisible}
       onPressViewDetail={() => setModalVisible(true)}
       onChangeDetailModalVisible={() => setModalVisible(false)}
-      isUseScrollView={false}
-      renderDetailModalContent={renderSignData}>
-      <>
-        <View style={{ width: '100%', paddingHorizontal: 16 }}>
-          <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
-            {i18n.common.approveRequestMessage}
-          </Text>
-          <AccountInfoField name={account?.name || ''} address={account?.address || ''} />
-        </View>
-      </>
+      detailModalContent={detailModalContent}>
+      <View style={{ width: '100%', paddingHorizontal: 16 }}>
+        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
+          {i18n.common.approveRequestMessage}
+        </Text>
+        <AccountInfoField name={account?.name || ''} address={account?.address || ''} />
+      </View>
     </ConfirmationBase>
   );
 };

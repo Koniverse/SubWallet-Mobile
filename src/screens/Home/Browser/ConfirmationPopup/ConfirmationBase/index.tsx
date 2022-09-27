@@ -29,7 +29,7 @@ interface Props {
   onPressViewDetail?: () => void;
   detailModalVisible?: boolean;
   onChangeDetailModalVisible?: () => void;
-  renderDetailModalContent?: () => JSX.Element | null;
+  detailModalContent?: JSX.Element | null;
   isShowViewDetailButton?: boolean;
 }
 
@@ -77,7 +77,7 @@ export const ConfirmationBase = ({
   onPressViewDetail,
   detailModalVisible,
   onChangeDetailModalVisible,
-  renderDetailModalContent,
+  detailModalContent,
   isShowViewDetailButton = true,
   isShowPassword,
   isUseScrollView = true,
@@ -123,35 +123,31 @@ export const ConfirmationBase = ({
 
   return (
     <>
-      {isUseScrollView ? (
-        <ScrollView style={{ width: '100%' }}>
-          <ConfirmationHeader {...headerProps} />
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={{ width: '100%' }}>
-          <ConfirmationHeader {...headerProps} />
-          {children}
-        </View>
-      )}
+      <ScrollView style={{ width: '100%' }} scrollEnabled={isUseScrollView}>
+        <ConfirmationHeader {...headerProps} />
+        {children}
 
-      {isShowPassword && (
-        <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16 }}>
-          <PasswordField
-            label={formState.labels.password}
-            fieldBgc={ColorMap.dark1}
-            defaultValue={formState.data.password}
-            onChangeText={onChangeValue('password')}
-            isBusy={false}
-            errorMessages={formState.errors.password}
-            onSubmitField={onSubmitField('password')}
-          />
-        </View>
-      )}
+        {isShowPassword && (
+          <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16, marginBottom: -4 }}>
+            <PasswordField
+              label={formState.labels.password}
+              fieldBgc={ColorMap.dark1}
+              defaultValue={formState.data.password}
+              onChangeText={onChangeValue('password')}
+              isBusy={false}
+              errorMessages={formState.errors.password}
+              onSubmitField={onSubmitField('password')}
+            />
+          </View>
+        )}
+      </ScrollView>
 
       {!!isShowViewDetailButton && (
-        <View style={{ alignItems: 'center', marginBottom: 8 }}>
-          <TouchableOpacity style={viewDetailButtonStyle} onPress={onPressViewDetail}>
+        <View style={{ alignItems: 'center', marginBottom: 8, marginTop: 4 }}>
+          <TouchableOpacity
+            style={viewDetailButtonStyle}
+            onPress={onPressViewDetail}
+            disabled={isCancelButtonDisabled || isSubmitButtonBusy || isBusy}>
             <Text style={{ color: ColorMap.disabled, ...sharedStyles.mainText, ...FontSemiBold, paddingRight: 4 }}>
               {i18n.common.viewDetail}
             </Text>
@@ -177,7 +173,7 @@ export const ConfirmationBase = ({
         {...headerProps}
         modalVisible={!!detailModalVisible}
         onChangeModalVisible={onChangeDetailModalVisible}
-        renderContent={renderDetailModalContent}
+        content={detailModalContent}
       />
     </>
   );

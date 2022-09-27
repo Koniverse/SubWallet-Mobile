@@ -17,7 +17,7 @@ const itemArea: StyleProp<any> = {
   justifyContent: 'space-between',
   paddingVertical: 12,
   alignItems: 'center',
-  paddingRight: 16,
+  paddingHorizontal: 16,
 };
 
 const itemBodyArea: StyleProp<any> = {
@@ -28,7 +28,8 @@ const itemBodyArea: StyleProp<any> = {
 const itemSeparator: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   height: 1,
-  marginLeft: 48,
+  marginLeft: 64,
+  marginRight: 16,
 };
 
 const itemTextStyle: StyleProp<any> = {

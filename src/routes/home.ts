@@ -8,7 +8,7 @@ export interface NftScreenParams extends NftScreenState {
 
 export type HomeStackParamList = {
   Crypto: undefined;
-  NFT: undefined | NftScreenParams;
+  NFT: NftScreenParams;
   Crowdloans: undefined;
   Staking: undefined;
   Browser: undefined;
@@ -16,32 +16,32 @@ export type HomeStackParamList = {
 
 interface AbstractHomeScreenParams {
   tab: keyof HomeStackParamList;
-  params: HomeStackParamList[keyof HomeStackParamList];
+  params?: HomeStackParamList[keyof HomeStackParamList];
 }
 
 interface HomeCryptoParams extends AbstractHomeScreenParams {
   tab: 'Crypto';
-  params: undefined;
+  params?: HomeStackParamList['Crypto'];
 }
 
 interface HomeNFTParams extends AbstractHomeScreenParams {
   tab: 'NFT';
-  params: NftScreenParams | undefined;
+  params?: HomeStackParamList['NFT'];
 }
 
 interface HomeCrowdloansParams extends AbstractHomeScreenParams {
   tab: 'Crowdloans';
-  params: undefined;
+  params?: HomeStackParamList['Crowdloans'];
 }
 
 interface HomeStakingParams extends AbstractHomeScreenParams {
   tab: 'Staking';
-  params: undefined;
+  params?: HomeStackParamList['Staking'];
 }
 
 interface HomeBrowserParams extends AbstractHomeScreenParams {
   tab: 'Browser';
-  params: undefined;
+  params?: HomeStackParamList['Browser'];
 }
 
 export type HomeScreenParams =

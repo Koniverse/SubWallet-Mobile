@@ -53,10 +53,11 @@ import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
 import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
 import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
-import { BrowserTabWrapper } from 'screens/Home/Browser/BrowserTabWrapper';
 import { ColorMap } from 'styles/color';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
+import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
+import { getValidURL } from 'utils/browser';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -118,15 +119,15 @@ let firstTimeCheckPincode: boolean | undefined;
 
 const config: LinkingOptions<RootStackParamList>['config'] = {
   screens: {
-    BrowserTab: {
-      path: 'browser-tab',
+    BrowserTabsManager: {
+      path: 'browser',
       parse: {
         url: url => {
           try {
-            return decodeURIComponent(url);
+            return getValidURL(decodeURIComponent(url));
           } catch (e) {
             console.log('Cannot decode url ' + url);
-            return url;
+            return getValidURL(url);
           }
         },
         name: name => name || '',
@@ -238,7 +239,7 @@ export const App = () => {
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
                         <Stack.Screen name="ExportJson" component={ExportJson} />
                         <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
-                        <Stack.Screen name="BrowserTab" component={BrowserTabWrapper} />
+                        <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                         <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                         <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                         <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />

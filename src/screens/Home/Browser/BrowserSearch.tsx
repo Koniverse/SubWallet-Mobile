@@ -10,10 +10,11 @@ import { BrowserItem } from 'components/BrowserItem';
 import { dAppSites } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
-import { nativeAndClearCurrentScreenHistory } from 'utils/navigation';
+import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
+import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
-import { getHostName, isValidURL } from 'utils/browser';
+import { getHostName, getValidURL } from 'utils/browser';
+import { createNewTab } from 'stores/updater';
 
 function doFilter(searchString: string) {
   return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -24,23 +25,18 @@ type SearchItemType = {
 } & SiteInfo;
 
 function getFirstSearchItem(searchString: string): SearchItemType {
-  if (isValidURL(searchString)) {
-    const url =
-      searchString.startsWith('http://') || searchString.startsWith('https://')
-        ? searchString
-        : `https://${searchString}`;
+  const url = getValidURL(searchString);
 
-    const hostname = getHostName(url);
-
+  if (url.startsWith('https://duckduckgo.com')) {
     return {
       url,
-      name: hostname,
+      displayUrl: `${searchString} - ${i18n.common.searchAtDuckDuckGo}`,
+      name: 'duckduckgo.com',
     };
   } else {
     return {
-      url: `https://duckduckgo.com/?q=${encodeURIComponent(searchString)}`,
-      displayUrl: `${searchString} - ${i18n.common.searchAtDuckDuckGo}`,
-      name: 'duckduckgo.com',
+      url,
+      name: getHostName(url),
     };
   }
 }
@@ -53,10 +49,11 @@ const searchResultStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
 };
 
-export const BrowserSearch = () => {
+export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
   const [filteredList, setFilteredList] = useState<SearchItemType[]>(dAppSites);
+  const isOpenNewTab = params && params.isOpenNewTab;
 
   useEffect(() => {
     if (searchString) {
@@ -67,7 +64,14 @@ export const BrowserSearch = () => {
   }, [searchString]);
 
   const onPressItem = (item: SearchItemType) => {
-    nativeAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTab', { url: item.url, name: item.name });
+    if (isOpenNewTab) {
+      createNewTab(item.url);
+    }
+
+    navigateAndClearCurrentScreenHistory(navigation, 'BrowserSearch', 'BrowserTabsManager', {
+      url: item.url,
+      name: item.name,
+    });
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {
@@ -102,7 +106,12 @@ export const BrowserSearch = () => {
 
         <View style={{ flex: 1 }}>
           <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
-          <FlatList data={filteredList} renderItem={renderItem} keyboardShouldPersistTaps="always" />
+          <FlatList
+            data={filteredList}
+            renderItem={renderItem}
+            keyboardShouldPersistTaps="always"
+            contentContainerStyle={{ paddingBottom: 12 }}
+          />
         </View>
       </>
     </ScreenContainer>
