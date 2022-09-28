@@ -2,6 +2,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { HomeScreenParams } from 'routes/home';
 import { TransferNftParams } from 'stores/types';
+import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -34,6 +35,9 @@ export type RootStackParamList = {
   WebViewDebugger: undefined;
   ImportEvmNft: undefined;
   TransferNft: TransferNftParams;
+  EvmTokens: undefined;
+  ConfigureToken: { contractAddress: string };
+  ImportEvmToken: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -51,3 +55,5 @@ export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, '
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
+export type ImportEvmTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportEvmToken'>;

@@ -14,6 +14,7 @@ import nftCollectionReducer from './NftCollection';
 import authUrlsReducer from './AuthUrls';
 import appStateReducer from './AppState';
 import browserReducer from './Browser';
+import evmTokenReducer from './EvmToken';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,6 +24,7 @@ const persistConfig = {
   storage: AsyncStorage,
   whitelist: [
     'mobileSettings',
+    'evmToken',
     'accounts',
     'networkMap',
     'settings',
@@ -40,6 +42,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   appState: appStateReducer,
   accounts: accountsReducer,
+  evmToken: evmTokenReducer,
   authUrls: authUrlsReducer,
   browser: browserReducer,
   price: priceReducer,

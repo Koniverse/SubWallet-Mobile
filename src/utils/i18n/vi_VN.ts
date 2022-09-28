@@ -161,6 +161,13 @@ export const vi = {
     reject: 'Reject',
     closeAll: 'Close All',
     enterYourPrivateKey: 'Enter your private key',
+    tokenType: 'Token Type',
+    save: 'Save',
+    addToken: 'Add Token',
+    edit: 'Edit',
+    importTokenSuccessMessage: 'Your changes are saved successfully',
+    deleteToken: 'Delete Token',
+    importToken: 'Import Token',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -207,6 +214,8 @@ export const vi = {
     transferNFTSuccessfully: 'Transfer NFT Successfully',
     transferNFTFailed: 'Transfer NFT Failed',
     sendTransaction: 'Send Transaction',
+    configureEvmToken: 'Configure EVM Token',
+    importEvmToken: 'Import EVM Token',
   },
   tabName: {
     crypto: 'Crypto',
@@ -240,6 +249,11 @@ export const vi = {
     nftCollectionName: 'NFT Collection Name (*)',
     cancel: 'Cancel',
     addNft: 'Add NFT',
+  },
+  importEvmToken: {
+    contractAddress: 'Contract Address',
+    tokenName: 'Token Name',
+    chain: 'Chain',
   },
   transferNft: {
     send: 'Send',
@@ -322,5 +336,10 @@ export const vi = {
     transferNFTBalanceError: 'Your balance is too low to cover fees',
     transferNFTTxError: 'Encountered an error, please try again.',
     transferNFTError: 'Some error occurred. Please try again later.',
+    occurredError: 'An error has occurred. Please try again later',
+    invalidEvmContractAddress: 'Invalid EVM contract address',
+    tokenAlreadyAdded: 'This token has already been added',
+    invalidContractForSelectedChain: 'Invalid contract for the selected chain',
+    noTokenAvailable: 'No Token Available',
   },
 };

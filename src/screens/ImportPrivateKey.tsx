@@ -104,7 +104,7 @@ export const ImportPrivateKey = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.importEVMPrivateKey} navigation={navigation}>
+    <SubScreenContainer title={i18n.title.importEVMPrivateKey} navigation={navigation} disabled={isBusy}>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea

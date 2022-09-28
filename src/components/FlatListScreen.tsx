@@ -35,6 +35,7 @@ interface Props<T> {
   placeholder?: string;
   numberColumns?: number;
   flatListStyle?: StyleProp<any>;
+  leftButtonDisabled?: boolean;
 }
 
 const ColumnWrapperStyle: StyleProp<ViewStyle> = {
@@ -62,6 +63,7 @@ export function FlatListScreen<T>({
   numberColumns = 1,
   searchMarginBottom = 8,
   flatListStyle,
+  leftButtonDisabled,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -143,6 +145,7 @@ export function FlatListScreen<T>({
     <ContainerWithSubHeader
       showLeftBtn={showLeftBtn}
       onPressBack={_onPressBack}
+      disabled={!!leftButtonDisabled}
       title={title}
       style={[{ width: '100%' }, style]}
       showRightBtn={!!rightIconOption?.icon}

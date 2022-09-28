@@ -48,7 +48,6 @@ import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
 import useStoreNftCollection from 'hooks/store/useStoreNftCollection';
 import useStoreNft from 'hooks/store/useStoreNft';
-import TransferNft from 'screens/TransferNft';
 import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
 import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
@@ -58,6 +57,10 @@ import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { getValidURL } from 'utils/browser';
+import { Tokens } from 'screens/EvmTokens';
+import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
+import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
+import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -171,6 +174,7 @@ export const App = () => {
   useStoreCrowdloan();
   useStoreAuthUrls();
   useStoreConfirmation();
+  useStoreEvmToken();
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -246,7 +250,9 @@ export const App = () => {
                         <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                         <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
-                        <Stack.Screen name="TransferNft" component={TransferNft} />
+                        <Stack.Screen name="EvmTokens" component={Tokens} />
+                        <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
+                        <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

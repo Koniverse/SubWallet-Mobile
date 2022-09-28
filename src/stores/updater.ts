@@ -2,6 +2,7 @@ import {
   BalanceJson,
   ChainRegistry,
   CrowdloanJson,
+  CustomEvmToken,
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
@@ -20,6 +21,10 @@ import {
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
+}
+
+export function updateEvmToken(evmToken: Record<string, CustomEvmToken>): void {
+  store.dispatch({ type: 'evmToken/update', payload: { details: evmToken } });
 }
 
 export function updateChainRegistry(chainRegistryMap: Record<string, ChainRegistry>): void {
