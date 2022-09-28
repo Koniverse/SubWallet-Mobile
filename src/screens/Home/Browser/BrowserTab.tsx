@@ -19,15 +19,15 @@ import {
   CaretLeft,
   CaretRight,
   DotsThree,
-  GlobeSimple, HouseSimple,
+  GlobeSimple,
+  HouseSimple,
   IconProps,
   LockSimple,
   LockSimpleOpen,
   MagnifyingGlass,
-  X,
 } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
-import { centerStyle, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
@@ -60,12 +60,26 @@ type Props = {
   onOpenBrowserTabs: () => void;
 };
 
-const browserTabHeaderWrapperStyle: StyleProp<any> = {
+const headerWrapperStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   paddingBottom: 12,
   width: '100%',
-  paddingLeft: 16,
-  paddingRight: 6,
+  paddingLeft: 60,
+  paddingRight: 60,
+  position: 'relative',
+  height: 56,
+};
+
+const headerLeftSideStyle: StyleProp<any> = {
+  position: 'absolute',
+  left: 16,
+  top: 2,
+};
+
+const headerRightSideStyle: StyleProp<any> = {
+  position: 'absolute',
+  right: 7,
+  top: 2,
 };
 
 type BrowserActionButtonType = {
@@ -143,7 +157,8 @@ const nameSiteTextStyle: StyleProp<any> = {
   ...FontMedium,
   ...FontSize0,
   color: ColorMap.disabled,
-  paddingHorizontal: 40,
+  paddingHorizontal: 20,
+  marginTop: -2,
 };
 
 const hostNameTextStyle: StyleProp<any> = {
@@ -464,26 +479,28 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   return (
     <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
-        <View style={browserTabHeaderWrapperStyle}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <AccountSettingButton navigation={navigation} />
-
-            <View style={centerStyle}>
-              {hostname && (
-                <>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
-                    <Text numberOfLines={1} style={hostNameTextStyle}>
-                      {hostname}
-                    </Text>
-                  </View>
-                  <Text numberOfLines={1} style={nameSiteTextStyle}>
-                    {siteName.current || siteUrl.current}
+        <View style={headerWrapperStyle}>
+          <View style={{ alignItems: 'center' }}>
+            {hostname && (
+              <>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
+                  <Text numberOfLines={1} style={hostNameTextStyle}>
+                    {hostname}
                   </Text>
-                </>
-              )}
-            </View>
+                </View>
+                <Text numberOfLines={1} style={nameSiteTextStyle}>
+                  {siteName.current || siteUrl.current}
+                </Text>
+              </>
+            )}
+          </View>
 
+          <View style={headerLeftSideStyle}>
+            <AccountSettingButton navigation={navigation} />
+          </View>
+
+          <View style={headerRightSideStyle}>
             <IconButton icon={HouseSimple} onPress={goBack} />
           </View>
         </View>
