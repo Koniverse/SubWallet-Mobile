@@ -10,6 +10,7 @@ import {
   TransactionHistoryItemType,
   NftCollectionJson,
   NftItem,
+  CustomEvmToken,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AccountJson,
@@ -92,6 +93,8 @@ export type BrowserSlice = {
 export type NetworkMapSlice = {
   details: Record<string, NetworkJson>;
 } & StoreSlice;
+
+export type EvmTokenSlice = { details: Record<string, CustomEvmToken> } & StoreSlice;
 
 export type PriceSlice = Omit<PriceJson, 'ready'> & StoreSlice;
 

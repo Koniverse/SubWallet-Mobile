@@ -115,7 +115,6 @@ export const FirstScreen = () => {
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessage}</Text>
         <SelectImportAccountModal
           modalTitle={i18n.common.selectYourImport}
-          modalHeight={256}
           secretTypeList={SECRET_TYPE}
           modalVisible={importSelectModalVisible}
           onChangeModalVisible={() => setSelectModalVisible(false)}
@@ -124,7 +123,6 @@ export const FirstScreen = () => {
         <SelectAccountTypeModal
           modalVisible={selectTypeModalVisible}
           onChangeModalVisible={() => setSelectTypeModalVisible(false)}
-          modalHeight={206}
           onSelectSubstrateAccount={onSelectSubstrateAccount}
           onSelectEvmAccount={onSelectEvmAccount}
         />

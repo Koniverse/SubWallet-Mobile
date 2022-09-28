@@ -117,7 +117,7 @@ export const ImportSecretPhrase = ({
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.title.importSecretPhrase}>
+    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.title.importSecretPhrase} disabled={isBusy}>
       <>
         {currentViewStep === ViewStep.ENTER_SEED && (
           <View style={sharedStyles.layoutContainer}>

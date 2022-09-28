@@ -205,7 +205,7 @@ export const RestoreJson = () => {
   };
 
   return (
-    <ContainerWithSubHeader title={i18n.title.importFromJson} onPressBack={_onPressBack}>
+    <ContainerWithSubHeader title={i18n.title.importFromJson} onPressBack={_onPressBack} disabled={isBusy}>
       <View style={{ flex: 1 }}>
         {currentViewStep === ViewStep.PASTE_JSON && (
           <View style={{ ...ContainerHorizontalPadding, flex: 1, paddingTop: 26 }}>

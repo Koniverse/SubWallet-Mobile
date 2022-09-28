@@ -92,7 +92,7 @@ export const RemoveAccount = ({
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={i18n.title.removeAccount}>
+    <SubScreenContainer navigation={navigation} title={i18n.title.removeAccount} disabled={isBusy}>
       <View style={layoutContainerStyle}>
         <View style={bodyAreaStyle}>
           <View style={bodyContentStyle}>
@@ -107,6 +107,8 @@ export const RemoveAccount = ({
 
         <View style={footerAreaStyle}>
           <SubmitButton
+            disabled={isBusy}
+            disabledColor={ColorMap.buttonOverlayButtonColor}
             title={i18n.common.cancel}
             backgroundColor={ColorMap.dark2}
             style={buttonStyle}
