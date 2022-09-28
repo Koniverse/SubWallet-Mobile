@@ -35,7 +35,7 @@ const rightHeaderButtonStyle: StyleProp<any> = {
   height: 40,
   alignItems: 'center',
   justifyContent: 'center',
-  marginHorizontal: 6,
+  marginHorizontal: 7,
 };
 
 const rightHeaderButtonTextOutlineStyle: StyleProp<any> = {

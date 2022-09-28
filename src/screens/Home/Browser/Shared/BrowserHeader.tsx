@@ -23,7 +23,7 @@ const getBrowserWrapperStyle = (hasRightComponent: boolean): StyleProp<any> => {
     paddingLeft: 16,
     paddingRight: hasRightComponent ? 0 : 10,
     width: '100%',
-    height: 40,
+    height: 44,
   };
 };
 

@@ -142,7 +142,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
   }, [navigation]);
 
   const browserHeaderRightComponent = useMemo(() => {
-    return <IconButton style={{ marginHorizontal: 6 }} icon={HouseSimple} onPress={goToBrowserHome} />;
+    return <IconButton style={{ marginHorizontal: 7 }} icon={HouseSimple} onPress={goToBrowserHome} />;
   }, [goToBrowserHome]);
 
   return (
