@@ -125,20 +125,12 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   }, []);
 
   const goBack = useCallback(() => {
-    navigation.navigate('NFT', {
-      screen: 'CollectionList',
-      title: i18n.title.nftCollections,
-      refresh: false,
-      time: new Date().getTime(),
-    });
+    navigation.goBack();
   }, [navigation]);
 
   const goHome = useCallback(() => {
     navigation.navigate('NFT', {
       screen: 'CollectionList',
-      title: i18n.title.nftCollections,
-      refresh: true,
-      time: new Date().getTime(),
     });
   }, [navigation]);
 
@@ -221,9 +213,6 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     if (!senderAddress || !addressList.includes(reformatAddress(senderAddress, 42, false))) {
       navigation.navigate('NFT', {
         screen: 'CollectionList',
-        title: i18n.title.nftCollections,
-        refresh: true,
-        time: new Date().getTime(),
       });
     }
   }, [accounts, navigation, senderAddress]);
