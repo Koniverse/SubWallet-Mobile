@@ -31,7 +31,7 @@ export const ImportEvmToken = ({
   const tokenInfo = payload?.payload;
   const formConfig = {
     contractAddress: {
-      name: i18n.importEvmToken.tokenName,
+      name: i18n.importEvmToken.contractAddress,
       value: tokenInfo?.smartContract || '',
     },
     chain: {
