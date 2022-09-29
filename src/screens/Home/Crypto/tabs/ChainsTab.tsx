@@ -116,7 +116,7 @@ export const ChainsTab = ({
     <Tabs.FlatList
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled
-      contentContainerStyle={{ backgroundColor: ColorMap.dark1, flex: 1 }}
+      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
       style={{ ...CollapsibleFlatListStyle }}
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}

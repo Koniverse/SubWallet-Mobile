@@ -9,6 +9,9 @@ import { Coins, SlidersHorizontal } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   items: TokenBalanceItemType[];
@@ -36,8 +39,9 @@ const emptyListWrapperStyle: StyleProp<any> = {
 
 export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, refresh, refreshTabId }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const renderFooterComponent = () => {
-    if (!tokenBalanceItems.length) {
+    if (!tokenBalanceItems.length || !isEthereumAddress(currentAccountAddress)) {
       return null;
     }
 
@@ -69,7 +73,7 @@ export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, ref
     <Tabs.FlatList
       nestedScrollEnabled
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ backgroundColor: ColorMap.dark1, flex: 1 }}
+      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
       style={{ ...CollapsibleFlatListStyle }}
       keyboardShouldPersistTaps={'handled'}
       data={tokenBalanceItems}
