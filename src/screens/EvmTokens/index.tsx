@@ -130,8 +130,10 @@ export const Tokens = () => {
         {isEditMode ? (
           <SubmitButton
             isBusy={isBusy}
+            disabled={!selectedTokens.length}
             title={i18n.common.deleteToken}
             backgroundColor={ColorMap.danger}
+            disabledColor={ColorMap.dangerOverlay2}
             onPress={onDeleteTokens}
           />
         ) : (
