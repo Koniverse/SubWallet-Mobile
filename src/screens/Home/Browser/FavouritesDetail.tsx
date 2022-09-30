@@ -10,8 +10,8 @@ import { ListRenderItemInfo } from 'react-native';
 import { BrowserItem } from 'components/BrowserItem';
 import { GlobeHemisphereEast, Star } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { openPressSiteItem } from 'screens/Home/Browser/shared';
+import { EmptyList } from 'components/EmptyList';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
   return items.filter(info => info.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -41,7 +41,7 @@ export const FavouritesDetail = () => {
       renderItem={renderSiteItem}
       filterFunction={filterFunction}
       renderListEmptyComponent={() => {
-        return <EmptyListPlaceholder icon={Star} title={i18n.common.favouritesEmptyListPlaceholder} />;
+        return <EmptyList icon={Star} title={i18n.common.favouritesEmptyListPlaceholder} />;
       }}
     />
   );

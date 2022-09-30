@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, StyleProp, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
 import { DotsThree, PushPinSlash } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -23,6 +22,7 @@ import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'utils/i18n/i18n';
 import { ContainerHorizontalPadding } from 'styles/sharedStyles';
+import { EmptyList } from 'components/EmptyList';
 
 type Props = {
   origin: string;
@@ -184,7 +184,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       items={accountItems}
       filterFunction={filterFunction}
       renderListEmptyComponent={() => (
-        <EmptyListScreen icon={PushPinSlash} title={i18n.common.noAccountAvailableForThisDApp} />
+        <EmptyList icon={PushPinSlash} title={i18n.common.noAccountAvailableForThisDApp} />
       )}
       rightIconOption={rightIconOption}
       renderItem={renderItem}

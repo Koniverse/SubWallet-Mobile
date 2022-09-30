@@ -29,6 +29,7 @@ const blockContentStyle: StyleProp<any> = {
   position: 'relative',
   flexDirection: 'row',
   alignItems: 'center',
+  height: 34,
 };
 
 const infoIconStyle: StyleProp<any> = {

@@ -38,7 +38,7 @@ const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
     value: 30 * 1000,
   },
   {
-    text: i18n.settings.ifLeftFor1Minutes,
+    text: i18n.settings.ifLeftFor1Minute,
     value: 60 * 1000,
   },
   {
@@ -105,7 +105,7 @@ export const Security = () => {
           style={{ marginBottom: 8 }}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
           icon={Key}
-          title={i18n.common.changePinCode}
+          title={i18n.common.changeYourPinCode}
           hasRightArrow
           onPress={() => navigation.navigate('PinCode', { screen: 'ChangePinCode' })}
         />
@@ -114,7 +114,7 @@ export const Security = () => {
           style={{ marginBottom: 8 }}
           color={ColorMap.light}
           icon={GlobeHemisphereWest}
-          title={i18n.common.dApp}
+          title={i18n.common.manageDAppAccess}
           hasRightArrow
           onPress={() => navigation.navigate('DAppAccess')}
         />
@@ -122,7 +122,7 @@ export const Security = () => {
         <ActionItem
           style={{ marginBottom: 4 }}
           icon={LockKeyOpen}
-          title={i18n.common.manageAutoLock}
+          title={i18n.common.appLock}
           hasRightArrow
           disabled={!pinCode}
           color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}

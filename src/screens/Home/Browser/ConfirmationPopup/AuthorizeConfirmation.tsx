@@ -124,6 +124,7 @@ export const AuthorizeConfirmation = ({
           </>
         ) : (
           <Warning
+            style={{ marginHorizontal: 16, marginTop: 16 }}
             message={
               accountAuthType === 'evm'
                 ? i18n.warningMessage.noEvmAccountMessage

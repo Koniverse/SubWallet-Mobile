@@ -161,7 +161,7 @@ export const ViewPrivateKey = ({
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={i18n.title.yourPrivateKey}>
+    <SubScreenContainer navigation={navigation} title={i18n.title.exportPrivateKey}>
       <View style={layoutContainerStyle}>
         <ScrollView style={bodyAreaStyle}>
           <View style={warningBlockStyle}>

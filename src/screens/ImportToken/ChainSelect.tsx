@@ -7,6 +7,7 @@ import { NetworkSelectItem } from 'components/NetworkSelectItem';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { EmptyList } from 'components/EmptyList';
 import { Aperture } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   items: Item[];
@@ -46,10 +47,10 @@ export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChang
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <FlatListScreen
         style={FlatListScreenPaddingTop}
-        title={'Chain Select'}
+        title={i18n.title.chainSelect}
         autoFocus={true}
         items={formattedItemList}
-        renderListEmptyComponent={() => <EmptyList title={'No EVM chain available'} icon={Aperture} />}
+        renderListEmptyComponent={() => <EmptyList title={i18n.common.noEvmChainAvailable} icon={Aperture} />}
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onChangeModalVisible}
