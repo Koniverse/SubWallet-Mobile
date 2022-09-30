@@ -37,7 +37,7 @@ const formConfig = {
   },
   chain: {
     require: true,
-    name: i18n.importEvmNft.chain,
+    name: i18n.common.network,
     value: '',
   },
   collectionName: {
@@ -240,7 +240,7 @@ const ImportEvmNft = () => {
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
           onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
-          networkKey={chain}
+          networkKey={chain || 'default'}
           token={'contract'}
           scanMessage={i18n.common.toImportNFT}
         />
