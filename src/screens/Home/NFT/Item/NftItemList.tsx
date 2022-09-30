@@ -3,20 +3,14 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useMemo } from 'react';
 import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import NftItem from './NftItem';
-import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
-import { Aperture } from 'phosphor-react-native';
-import { NFTCollectionProps, NFTNavigationProps } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTCollectionProps, NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
-};
-
-const renderEmpty = () => {
-  return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
 };
 
 const filteredNftItem = (items: _NftItem[], searchString: string) => {
@@ -60,7 +54,7 @@ const NftItemList = ({
         title={collection?.collectionName || i18n.title.nftList}
         showLeftBtn={true}
         renderItem={renderItem}
-        renderListEmptyComponent={renderEmpty}
+        renderListEmptyComponent={renderEmptyNFT}
         filterFunction={filteredNftItem}
         items={nftItems}
         numberColumns={2}

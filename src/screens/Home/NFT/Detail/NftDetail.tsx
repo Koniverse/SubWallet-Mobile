@@ -158,9 +158,9 @@ const NftDetail = ({
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
-  const networkJson = useGetNetworkJson(data.chain as string);
+  const networkJson = useGetNetworkJson(data.chain as string) || {};
   const isAccountAll = useIsAccountAll();
-  const ownerUrl = useScanExplorerAddressUrl(networkJson.key, data.owner || '');
+  const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
     if (!currentAccount) {
