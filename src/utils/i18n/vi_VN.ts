@@ -155,6 +155,7 @@ export const vi = {
     transferNFTFailedMessage: 'There was a problem with your request. You can try again.',
     address: 'address',
     toImportNFT: 'to import NFT',
+    toImportToken: 'to import token',
     toSendNFT: 'to send NFT',
     approveRequestMessage: 'Only approve this request if you trust the app',
     approveTransactionMessage: 'You are approving a request send transaction',
@@ -168,6 +169,10 @@ export const vi = {
     importTokenSuccessMessage: 'Your changes are saved successfully',
     deleteToken: 'Delete Token',
     importToken: 'Import Token',
+    emptyChainListMessage: 'Your chain will appear here',
+    emptyTokenListMessage: 'Your token will appear here',
+    customNetwork: 'Custom Network',
+    manageTokenList: 'Manage Token List',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

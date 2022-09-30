@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
@@ -104,7 +104,12 @@ export const NetworksSetting = ({}: Props) => {
 
   const renderListEmptyComponent = () => {
     return (
-      <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />
+      <Warning
+        style={{ marginHorizontal: 16 }}
+        title={i18n.warningTitle.warning}
+        message={i18n.warningMessage.noNetworkAvailable}
+        isDanger={false}
+      />
     );
   };
 

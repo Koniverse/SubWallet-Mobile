@@ -9,9 +9,7 @@ import { Coins, SlidersHorizontal } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   items: TokenBalanceItemType[];
@@ -39,17 +37,12 @@ const emptyListWrapperStyle: StyleProp<any> = {
 
 export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, refresh, refreshTabId }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const renderFooterComponent = () => {
-    if (!tokenBalanceItems.length || !isEthereumAddress(currentAccountAddress)) {
-      return null;
-    }
-
     return (
       <View style={{ width: '100%', alignItems: 'center', paddingVertical: 16 }}>
         <LeftIconButton
           icon={SlidersHorizontal}
-          title={'Manage Token List'}
+          title={i18n.common.manageTokenList}
           onPress={() => navigation.navigate('EvmTokens')}
         />
       </View>
@@ -63,7 +56,8 @@ export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, ref
         accessibilityComponentType
         contentContainerStyle={flatListContentContainerStyle}>
         <View style={emptyListWrapperStyle}>
-          <EmptyList icon={Coins} title={'Your token will appear here'} />
+          <EmptyList icon={Coins} title={i18n.common.emptyTokenListMessage} />
+          {renderFooterComponent()}
         </View>
       </Tabs.ScrollView>
     );

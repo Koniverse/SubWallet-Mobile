@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportEvmTokenProps, RootNavigationProps } from 'routes/index';
-import InputText from 'components/Input/InputText';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -18,6 +17,10 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { completeConfirmation, upsertEvmToken, validateEvmToken } from '../../messaging';
 import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
 import { Warning } from 'components/Warning';
+import { InputAddress } from 'components/Input/InputAddress';
+import { requestCameraPermission } from 'utils/validators';
+import { RESULTS } from 'react-native-permissions';
+import { QrScannerScreen } from 'screens/QrScannerScreen';
 
 export const ImportEvmToken = ({
   route: {
@@ -28,9 +31,11 @@ export const ImportEvmToken = ({
   const chainOptions = useGetActiveEvmChains();
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
+  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const tokenInfo = payload?.payload;
   const formConfig = {
     contractAddress: {
+      require: true,
       name: i18n.importEvmToken.contractAddress,
       value: tokenInfo?.smartContract || '',
     },
@@ -84,7 +89,7 @@ export const ImportEvmToken = ({
       });
   };
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
   useEffect(() => {
@@ -105,6 +110,7 @@ export const ImportEvmToken = ({
             if (resp.isExist) {
               onUpdateErrors('contractAddress')([i18n.errorMessage.tokenAlreadyAdded]);
             } else {
+              onUpdateErrors('contractAddress')(undefined);
               onChangeValue('symbol')(resp.symbol);
               if (resp.decimals) {
                 onChangeValue('decimals')(String(resp.decimals));
@@ -112,6 +118,8 @@ export const ImportEvmToken = ({
             }
           })
           .catch(() => {
+            onChangeValue('symbol')('');
+            onChangeValue('decimals')('');
             onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
           });
       }
@@ -136,6 +144,14 @@ export const ImportEvmToken = ({
     navigation.canGoBack() && navigation.goBack();
   };
 
+  const onPressQrButton = async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      setShowQrModalVisible(true);
+    }
+  };
+
   const addTokenButtonDisabled =
     !formState.data.contractAddress ||
     !!formState.errors.contractAddress.length ||
@@ -146,12 +162,15 @@ export const ImportEvmToken = ({
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importEvmToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
-          <InputText
+          <InputAddress
+            containerStyle={{ marginBottom: 8 }}
             ref={formState.refs.contractAddress}
             label={formState.labels.contractAddress}
             value={formState.data.contractAddress}
-            onSubmitField={onSubmitField('contractAddress')}
-            onChangeText={onChangeValue('contractAddress')}
+            onChange={(output: string | null, currentValue: string) => {
+              onChangeValue('contractAddress')(currentValue);
+            }}
+            onPressQrButton={onPressQrButton}
           />
 
           {!!formState.errors.contractAddress.length && (
@@ -176,6 +195,15 @@ export const ImportEvmToken = ({
           <TextField disabled={true} label={i18n.common.symbol} text={formState.data.symbol} />
 
           <TextField disabled={true} label={i18n.common.decimals} text={formState.data.decimals} />
+
+          <QrScannerScreen
+            qrModalVisible={isShowQrModalVisible}
+            onPressCancel={() => setShowQrModalVisible(false)}
+            onChangeAddress={(text: string) => onChangeValue('smartContract')(text)}
+            networkKey={formState.data.chain}
+            token={'contract'}
+            scanMessage={i18n.common.toImportToken}
+          />
         </ScrollView>
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
           <SubmitButton

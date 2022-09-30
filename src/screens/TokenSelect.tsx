@@ -30,7 +30,14 @@ const filterFunction = (items: TokenItemType[], searchString: string) => {
 };
 
 const renderListEmptyComponent = () => {
-  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />;
+  return (
+    <Warning
+      style={{ marginHorizontal: 16 }}
+      title={i18n.warningTitle.warning}
+      message={i18n.warningMessage.noTokenAvailable}
+      isDanger={false}
+    />
+  );
 };
 
 export const TokenSelect = ({
