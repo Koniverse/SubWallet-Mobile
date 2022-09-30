@@ -11,8 +11,8 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { Alert, ListRenderItemInfo } from 'react-native';
 import { clearHistory } from 'stores/updater';
-import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { openPressSiteItem } from 'screens/Home/Browser/shared';
+import { EmptyList } from 'components/EmptyList';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
   return items.filter(info => info.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -59,7 +59,7 @@ export const HistoryDetail = () => {
       }}
       flatListStyle={{ paddingBottom: 12 }}
       renderListEmptyComponent={() => {
-        return <EmptyListPlaceholder icon={ClockCounterClockwise} title={i18n.common.historyEmptyListPlaceholder} />;
+        return <EmptyList icon={ClockCounterClockwise} title={i18n.common.historyEmptyListPlaceholder} />;
       }}
     />
   );

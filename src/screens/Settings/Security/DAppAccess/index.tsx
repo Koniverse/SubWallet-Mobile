@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
-import { EmptyListScreen } from 'screens/Settings/Security/DAppAccess/EmptyListScreen';
 import { DotsThree, PushPinSlash } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
@@ -13,6 +12,7 @@ import { RootNavigationProps } from 'routes/index';
 import { changeAuthorizationAll, forgetAllSite } from '../../../../messaging';
 import { updateAuthUrls } from 'stores/updater';
 import i18n from 'utils/i18n/i18n';
+import { EmptyList } from 'components/EmptyList';
 
 function filterFunction(items: AuthUrlInfo[], searchString: string) {
   return items.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -87,7 +87,7 @@ export const DAppAccessScreen = () => {
       autoFocus={false}
       items={dAppItems}
       filterFunction={filterFunction}
-      renderListEmptyComponent={() => <EmptyListScreen icon={PushPinSlash} title={i18n.common.noDAppAvailable} />}
+      renderListEmptyComponent={() => <EmptyList icon={PushPinSlash} title={i18n.common.noDAppAvailable} />}
       rightIconOption={rightIconOption}
       renderItem={renderItem}
       afterListItem={
