@@ -61,7 +61,7 @@ import { Tokens } from 'screens/EvmTokens';
 import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
 import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
 import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
-import TransferNft from "screens/TransferNft";
+import TransferNft from 'screens/TransferNft';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -222,39 +222,41 @@ export const App = () => {
               <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
                 <Stack.Navigator
                   screenOptions={{
-                    animation: 'fade_from_bottom',
+                    animation: 'fade',
                   }}>
                   {isAppReady && (
                     <>
-                      <Stack.Group screenOptions={{ headerShown: false }}>
+                      <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
                         <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
+                        <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
+                        <Stack.Screen name="Settings" component={Settings} />
+                        <Stack.Screen name="SendFund" component={SendFund} />
+                        <Stack.Screen name="TransferNft" component={TransferNft} />
+                        <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
+                        <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
+                        <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
+                        <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                      </Stack.Group>
+                      <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                         <Stack.Screen name="CreateAccount" component={CreateAccount} />
                         <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                         <Stack.Screen name="EditAccount" component={EditAccount} />
                         <Stack.Screen name="RestoreJson" component={RestoreJson} />
                         <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
-                        <Stack.Screen name="Settings" component={Settings} />
                         <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
-                        <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                         <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
                         <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
-                        <Stack.Screen name="SendFund" component={SendFund} />
+                        <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
+                        <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                         <Stack.Screen name="Languages" component={Languages} />
                         <Stack.Screen name="Security" component={Security} />
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
                         <Stack.Screen name="ExportJson" component={ExportJson} />
-                        <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
-                        <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
-                        <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
-                        <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
-                        <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
-                        <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
-                        <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                        <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
-                        <Stack.Screen name="TransferNft" component={TransferNft} />
                         <Stack.Screen name="EvmTokens" component={Tokens} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                         <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
+                        <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
+                        <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{
