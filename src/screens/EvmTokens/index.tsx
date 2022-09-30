@@ -82,7 +82,7 @@ export const Tokens = () => {
         setSelectedTokens([]);
       })
       .catch(e => {
-        console.log('delete token err', e);
+        console.warn(`delete token err: ${e}`);
         setBusy(false);
       });
   }, [selectedTokens, showToast]);
