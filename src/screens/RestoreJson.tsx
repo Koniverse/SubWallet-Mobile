@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, ListRenderItemInfo, Platform, StyleProp, Text, View } from 'react-native';
 import { InputFile } from 'components/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
@@ -126,9 +126,16 @@ export const RestoreJson = () => {
         onUpdateErrors('password')([i18n.warningMessage.unableDecode]);
       });
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: _onRestore,
   });
+
+  useEffect(() => {
+    if (currentViewStep === ViewStep.ENTER_PW) {
+      focus('password')();
+    }
+  }, [currentViewStep, focus]);
+
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
     try {
       if (isKeyringPairs$Json(fileContent)) {
