@@ -50,7 +50,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: Article,
-      title: i18n.title.importSecretPhrase,
+      title: i18n.title.importBySecretPhrase,
       onCLickButton: () => {
         setSelectedAction('ImportSecretPhrase');
         setModalVisible(false);
@@ -61,7 +61,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.title.importEVMPrivateKey,
+      title: i18n.title.importByPrivateKey,
       onCLickButton: () => {
         navigation.navigate('ImportPrivateKey');
         setModalVisible(false);

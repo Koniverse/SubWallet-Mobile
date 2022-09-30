@@ -204,7 +204,7 @@ const TokenGroupLayer = ({
               refreshTabId={refreshTabId}
             />
           </Tabs.Tab>
-          <Tabs.Tab name={'two'} label={i18n.title.chain}>
+          <Tabs.Tab name={'two'} label={i18n.title.network}>
             <ChainsTab
               isShowZeroBalance={isShowZeroBalance}
               onPressChainItem={onPressChainItem}

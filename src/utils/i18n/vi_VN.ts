@@ -1,10 +1,10 @@
 export const vi = {
   common: {
     welcomeBack: 'Welcome Back!',
-    enterPinToUnlock: 'Enter your PIN to unlock',
+    enterPinToUnlock: 'Enter PIN to unlock',
     addAccount: 'Add Account',
-    createNewWalletAccount: 'Create New Wallet',
-    importExistingWallet: 'Import Existing Wallet',
+    createNewWalletAccount: 'Create a new account',
+    importExistingWallet: 'Import an existing account',
     firstScreenNotification: 'By continuing, you agree to our Terms and Privacy Policy',
     createWalletName: 'Create A New Account',
     createWalletNotification: 'Your wallet name will only be used locally in this application. You can edit it later.',
@@ -188,7 +188,9 @@ export const vi = {
     editAccount: 'Edit Account',
     exportJson: 'Export JSON',
     importEVMPrivateKey: 'Import EVM Private Key',
+    importByPrivateKey: 'Import By Private Key',
     importSecretPhrase: 'Import Secret Phrase',
+    importBySecretPhrase: 'Import By Secret Phrase',
     networkSetting: 'Network Setting',
     removeAccount: 'Remove Account',
     importFromJson: 'Import By JSON File',
@@ -199,7 +201,7 @@ export const vi = {
     token: 'Token',
     history: 'History',
     qrScanner: 'QR Scanner',
-    selectUnit: 'Select Unit',
+    selectUnit: 'Select unit',
     filters: 'Filters',
     nftCollections: 'Your Collectibles',
     nftList: 'NFT List',
@@ -221,6 +223,8 @@ export const vi = {
     sendTransaction: 'Send Transaction',
     configureEvmToken: 'Configure EVM Token',
     importEvmToken: 'Import EVM Token',
+    network: 'Network',
+    receiveAsset: 'Receive Asset',
   },
   tabName: {
     crypto: 'Crypto',
@@ -235,7 +239,7 @@ export const vi = {
     swap: 'Swap',
   },
   nftScreen: {
-    nftAppearHere: 'Your NFT will appear here',
+    nftAppearHere: 'Your NFTs will appear here',
     dontSeeNft: "Don't see your NFTs?",
     importNft: 'Import NFTs',
     nftDetail: {
