@@ -15,7 +15,6 @@ import { AccountsScreen } from 'screens/AccountsScreen';
 import { EditAccount } from 'screens/EditAccount';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
-import { ViewPrivateKey } from 'screens/ViewPrivateKey';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -23,7 +22,6 @@ import { SendFund } from 'screens/Sending';
 import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
-import { ExportJson } from 'screens/ExportJson';
 import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
@@ -62,6 +60,7 @@ import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
 import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
 import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
 import TransferNft from 'screens/TransferNft';
+import { ExportAccount } from 'screens/ExportAccount';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -242,7 +241,6 @@ export const App = () => {
                         <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                         <Stack.Screen name="EditAccount" component={EditAccount} />
                         <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                        <Stack.Screen name="ExportPrivateKey" component={ViewPrivateKey} />
                         <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                         <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
                         <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
@@ -251,7 +249,7 @@ export const App = () => {
                         <Stack.Screen name="Languages" component={Languages} />
                         <Stack.Screen name="Security" component={Security} />
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                        <Stack.Screen name="ExportJson" component={ExportJson} />
+                        <Stack.Screen name="ExportAccount" component={ExportAccount} />
                         <Stack.Screen name="EvmTokens" component={Tokens} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                         <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />

@@ -186,6 +186,7 @@ export const vi = {
     language: 'Language',
     accounts: 'Accounts',
     editAccount: 'Edit Account',
+    exportAccount: 'Export Account',
     exportJson: 'Export JSON',
     importEVMPrivateKey: 'Import EVM Private Key',
     importSecretPhrase: 'Import Secret Phrase',

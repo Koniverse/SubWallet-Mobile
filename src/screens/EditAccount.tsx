@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
-import { Platform, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { editAccount } from '../messaging';
@@ -14,10 +14,6 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { ActionItem } from 'components/ActionItem';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
-import { SubWalletModal } from 'components/SubWalletModal';
-import { ExportJson } from 'screens/ExportJson';
-import { deviceHeight } from '../constant';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 
 const editAccountAddressItem: StyleProp<any> = {
@@ -42,7 +38,6 @@ export const EditAccount = ({
     },
   };
   const navigation = useNavigation<RootNavigationProps>();
-  const [isShowExportModal, setShowExportModal] = useState<boolean>(false);
   const _saveChange = useCallback(
     (formState: FormState) => {
       const editName = formState.data.accountName;
@@ -64,11 +59,11 @@ export const EditAccount = ({
   };
 
   const onExportPrivateKey = () => {
-    navigation.navigate('ExportPrivateKey', { address: currentAddress });
+    navigation.navigate('ExportAccount', { address: currentAddress, exportType: 'privateKey' });
   };
 
   const onExportJson = () => {
-    setShowExportModal(true);
+    navigation.navigate('ExportAccount', { address: currentAddress, exportType: 'json' });
   };
 
   const onRemoveAccount = () => {
@@ -127,13 +122,6 @@ export const EditAccount = ({
           color={ColorMap.danger}
           onPress={onRemoveAccount}
         />
-
-        <SubWalletModal
-          modalVisible={isShowExportModal}
-          onChangeModalVisible={() => setShowExportModal(false)}
-          modalStyle={{ height: Platform.OS === 'ios' ? deviceHeight - STATUS_BAR_HEIGHT : '100%' }}>
-          {<ExportJson address={currentAddress} closeModal={setShowExportModal} />}
-        </SubWalletModal>
       </View>
     </SubScreenContainer>
   );
