@@ -16,6 +16,7 @@ export const ColorMap = {
   notification: 'rgba(0, 0, 0, 0.8)',
   disabledOverlay: 'rgba(0, 7, 45, 0.7)',
   dangerOverlay: 'rgba(245, 0, 14, 0.12)',
+  dangerOverlay2: 'rgba(235, 64, 52, 0.7)',
   warningBackgroundColor: 'rgba(231, 185, 23, 0.2)',
   dangerBackgroundColor: 'rgba(175, 17, 17, 0.25)',
   warningOverlay: 'rgba(231, 185, 23, 0.05)',

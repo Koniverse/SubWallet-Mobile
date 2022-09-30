@@ -7,6 +7,7 @@ import { TokenItemType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import { FlatListScreen } from 'components/FlatListScreen';
+import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 
 interface Props {
   address: string;
@@ -29,7 +30,14 @@ const filterFunction = (items: TokenItemType[], searchString: string) => {
 };
 
 const renderListEmptyComponent = () => {
-  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noTokenAvailable} isDanger={false} />;
+  return (
+    <Warning
+      style={{ marginHorizontal: 16 }}
+      title={i18n.warningTitle.warning}
+      message={i18n.warningMessage.noTokenAvailable}
+      isDanger={false}
+    />
+  );
 };
 
 export const TokenSelect = ({
@@ -66,7 +74,7 @@ export const TokenSelect = ({
       <FlatListScreen
         autoFocus={true}
         items={tokenOptions}
-        style={{ paddingTop: 0 }}
+        style={FlatListScreenPaddingTop}
         title={i18n.title.selectToken}
         filterFunction={filterFunction}
         renderItem={renderItem}

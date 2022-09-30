@@ -10,16 +10,15 @@ interface Props {
   title: string;
   url: string;
   onChangeModalVisible?: () => void;
-  renderContent?: () => JSX.Element | null;
+  content?: JSX.Element | null;
 }
 
-export const DetailModal = ({ modalVisible, onChangeModalVisible, renderContent, title, url }: Props) => {
+export const DetailModal = ({ modalVisible, onChangeModalVisible, content, title, url }: Props) => {
   return (
     <SubWalletModal isFullHeight modalVisible={modalVisible} modalStyle={{ maxHeight: '90%', width: '100%' }}>
       <View style={{ width: '100%', flex: 1, alignItems: 'center' }}>
         <ConfirmationHeader title={title} url={url} />
-
-        {renderContent && renderContent()}
+        {content}
         <SubmitButton
           title={i18n.common.close}
           onPress={onChangeModalVisible}

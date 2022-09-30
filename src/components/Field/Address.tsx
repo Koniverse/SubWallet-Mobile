@@ -6,7 +6,7 @@ import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { Info } from 'phosphor-react-native';
+import { IconProps, Info } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
 
 interface Props extends FieldBaseProps {
@@ -14,6 +14,7 @@ interface Props extends FieldBaseProps {
   networkPrefix?: number;
   showRightIcon?: boolean;
   onPressRightIcon?: () => void;
+  rightIcon?: (iconProps: IconProps) => JSX.Element;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -48,6 +49,7 @@ export const AddressField = ({
   networkPrefix,
   onPressRightIcon,
   showRightIcon = true,
+  rightIcon: RightIcon,
   ...fieldBase
 }: Props) => {
   const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
@@ -58,7 +60,12 @@ export const AddressField = ({
         <SubWalletAvatar address={address} size={18} style={avatarStyle} />
         <Text style={addressStyle}>{toShort(formattedAddress, 10, 10)}</Text>
         {showRightIcon && (
-          <IconButton color={ColorMap.disabled} style={infoIconStyle} icon={Info} onPress={onPressRightIcon} />
+          <IconButton
+            color={ColorMap.disabled}
+            style={infoIconStyle}
+            icon={RightIcon || Info}
+            onPress={onPressRightIcon}
+          />
         )}
       </View>
     </FieldBase>

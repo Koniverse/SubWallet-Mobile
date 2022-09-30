@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
 import { ActivityIndicator, FlatList, ListRenderItemInfo, StyleProp, TextInput, View, ViewStyle } from 'react-native';
-import { ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { ScrollViewStyle } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -39,6 +39,8 @@ interface Props<T> {
   placeholder?: string;
   numberColumns?: number;
   loading?: boolean;
+  flatListStyle?: StyleProp<any>;
+  leftButtonDisabled?: boolean;
 }
 
 const ColumnWrapperStyle: StyleProp<ViewStyle> = {
@@ -73,6 +75,8 @@ export function FlatListScreen<T>({
   numberColumns = 1,
   searchMarginBottom = 8,
   sortFunction = defaultSortFunc,
+  flatListStyle,
+  leftButtonDisabled,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -133,17 +137,17 @@ export function FlatListScreen<T>({
             columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
-            contentContainerStyle={numberColumns > 1 ? { marginHorizontal: -8, paddingBottom: 16 } : undefined}
+            contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
           />
         ) : (
           renderListEmptyComponent()
         )}
       </>
     );
-  }, [isLoading, lazyList, loading, numberColumns, onLoadMore, renderItem, renderListEmptyComponent]);
+  }, [isLoading, lazyList, loading, numberColumns, onLoadMore, renderItem, renderListEmptyComponent, flatListStyle]);
 
   const renderContent = () => (
-    <View style={{ ...sharedStyles.layoutContainer }}>
+    <View style={{ flex: 1 }}>
       {withSearchInput && (
         <Search
           autoFocus={false}
@@ -151,7 +155,7 @@ export function FlatListScreen<T>({
           onClearSearchString={() => setSearchString('')}
           onSearch={setSearchString}
           searchText={searchString}
-          style={{ marginBottom: searchMarginBottom }}
+          style={{ marginBottom: searchMarginBottom, marginTop: 10, marginHorizontal: 16 }}
           searchRef={searchRef}
         />
       )}
@@ -168,6 +172,7 @@ export function FlatListScreen<T>({
     <ContainerWithSubHeader
       showLeftBtn={showLeftBtn}
       onPressBack={_onPressBack}
+      disabled={!!leftButtonDisabled}
       title={title}
       style={[{ width: '100%' }, style]}
       showRightBtn={!!rightIconOption?.icon}

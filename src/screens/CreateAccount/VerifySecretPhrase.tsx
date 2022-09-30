@@ -100,7 +100,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
     <View style={sharedStyles.layoutContainer}>
       <View style={bodyAreaStyle}>
         <View style={infoBlockStyle}>
-          <Text style={infoTextStyle}>{i18n.common.verifySecretPhraseMessage}</Text>
+          <Text style={infoTextStyle}>{i18n.warningMessage.initSecretPhrase}</Text>
         </View>
         <SeedPhraseArea
           currentWords={selectedWords}

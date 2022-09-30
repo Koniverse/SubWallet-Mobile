@@ -17,6 +17,12 @@ const avatarStyle: StyleProp<any> = {
   marginRight: 6,
 };
 
+const textStyle: StyleProp<any> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.disabled,
+};
+
 export const AccountInfoField = ({ address, name, networkKey, networkPrefix }: Props) => {
   const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
 
@@ -32,12 +38,12 @@ export const AccountInfoField = ({ address, name, networkKey, networkPrefix }: P
       }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
         <SubWalletAvatar address={address} size={18} style={avatarStyle} />
-        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled }}>
-          <Text numberOfLines={1} style={{ maxWidth: 100 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text numberOfLines={1} style={[{ maxWidth: 100 }, textStyle]}>
             {name}
           </Text>
-          <Text>{` (${toShort(formattedAddress, 5, 5)})`}</Text>
-        </Text>
+          <Text style={textStyle}>{` (${toShort(formattedAddress, 5, 5)})`}</Text>
+        </View>
       </View>
 
       {getNetworkLogo(networkKey || '', 20)}

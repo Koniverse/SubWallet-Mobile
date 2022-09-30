@@ -11,6 +11,7 @@ import { BrowserItem } from 'components/BrowserItem';
 import { GlobeHemisphereEast, Star } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
+import { openPressSiteItem } from 'screens/Home/Browser/shared';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
   return items.filter(info => info.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -18,11 +19,8 @@ const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
 
 export const FavouritesDetail = () => {
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
+  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
-
-  const onPressItem = (item: StoredSiteInfo) => {
-    navigation.navigate('BrowserTab', { url: item.url, name: item.name });
-  };
 
   const renderSiteItem = ({ item }: ListRenderItemInfo<StoredSiteInfo>) => {
     return (
@@ -30,7 +28,7 @@ export const FavouritesDetail = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => onPressItem(item)}
+        onPress={() => openPressSiteItem(navigation, item, !tabsNumber)}
       />
     );
   };
@@ -39,6 +37,7 @@ export const FavouritesDetail = () => {
       title={i18n.common.favorites}
       items={bookmarkItems}
       autoFocus={false}
+      flatListStyle={{ paddingBottom: 12 }}
       renderItem={renderSiteItem}
       filterFunction={filterFunction}
       renderListEmptyComponent={() => {

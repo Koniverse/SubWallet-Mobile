@@ -1,10 +1,19 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { NativeSyntheticEvent, Platform, StyleProp, Text, View } from 'react-native';
+import { NativeSyntheticEvent, Platform, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
-import { StackActions, useNavigation } from '@react-navigation/native';
-import { BrowserTabProps, RootNavigationProps } from 'routes/index';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 import {
   ArrowClockwise,
   CaretLeft,
@@ -16,37 +25,66 @@ import {
   LockSimple,
   LockSimpleOpen,
   MagnifyingGlass,
-  X,
 } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
-import { centerStyle, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
-import { WebViewMessage, WebViewNavigation, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import {
+  WebViewMessage,
+  WebViewNavigation,
+  WebViewNavigationEvent,
+  WebViewProgressEvent,
+} from 'react-native-webview/lib/WebViewTypes';
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
 import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
-import { addToHistory, updateLatestItemInHistory } from 'stores/updater';
+import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
 import { getHostName } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
+import { SiteInfo } from 'stores/types';
+import { Bar as ProgressBar } from 'react-native-progress';
+import { captureScreen } from 'react-native-view-shot';
 
-const browserTabHeaderWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
+export interface BrowserTabRef {
+  goToSite: (siteInfo: SiteInfo) => void;
+}
+
+type Props = {
+  tabId: string;
+  tabsNumber: number;
+  onOpenBrowserTabs: () => void;
+};
+
+const headerWrapperStyle: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   paddingBottom: 12,
   width: '100%',
-  alignItems: 'center',
-  paddingLeft: 16,
-  paddingRight: 4,
+  paddingLeft: 60,
+  paddingRight: 60,
+  position: 'relative',
+  height: 56,
+};
+
+const headerLeftSideStyle: StyleProp<any> = {
+  position: 'absolute',
+  left: 16,
+  top: 2,
+};
+
+const headerRightSideStyle: StyleProp<any> = {
+  position: 'absolute',
+  right: 7,
+  top: 2,
 };
 
 type BrowserActionButtonType = {
   key: string;
-  icon: (iconProps: IconProps) => JSX.Element;
+  icon?: (iconProps: IconProps) => JSX.Element;
   onPress: () => void;
   isDisabled?: boolean;
 };
@@ -119,7 +157,8 @@ const nameSiteTextStyle: StyleProp<any> = {
   ...FontMedium,
   ...FontSize0,
   color: ColorMap.disabled,
-  paddingHorizontal: 40,
+  paddingHorizontal: 20,
+  marginTop: -2,
 };
 
 const hostNameTextStyle: StyleProp<any> = {
@@ -128,6 +167,18 @@ const hostNameTextStyle: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.light,
 };
+
+const tabButtonStyle: StyleProp<any> = {
+  width: 20,
+  height: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderWidth: 2,
+  borderRadius: 4,
+  borderColor: ColorMap.light,
+};
+
+const progressBarStyle: StyleProp<any> = { position: 'absolute', top: 0, right: 0, left: 0, height: 3 };
 
 const bottomButtonAreaStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -138,6 +189,7 @@ const bottomButtonAreaStyle: StyleProp<any> = {
   borderTopColor: ColorMap.dark2,
   borderTopWidth: 1,
   paddingVertical: 12,
+  alignItems: 'center',
 };
 
 //todo: Update better style
@@ -159,11 +211,11 @@ const PhishingBlockerLayer = () => {
   );
 };
 
-export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
-  const { url: propSiteUrl, name: propSiteName } = params;
+const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: ForwardedRef<BrowserTabRef>) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [initWebViewSource, setInitWebViewSource] = useState(propSiteUrl);
+  const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
+  const [progressNumber, setProgressNumber] = useState<number>(0);
   const { eventEmitter } = useContext(WebRunnerContext);
   const [{ canGoBack, canGoForward }, setNavigationInfo] = useState<NavigationInfo>({
     canGoBack: false,
@@ -180,7 +232,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
 
-  const isWebviewReady = initWebViewSource && injectedPageJs;
+  const isWebviewReady = !!(initWebViewSource && injectedPageJs);
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -201,9 +253,9 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     }
   };
 
-  const updateSiteInfo = ({ url, title }: WebViewNavigation) => {
+  const updateSiteInfo = ({ url, name }: SiteInfo) => {
     siteUrl.current = url;
-    siteName.current = title || url;
+    siteName.current = name || url;
   };
 
   const updateNavigationInfo = (nativeEvent: WebViewNavigation) => {
@@ -239,7 +291,11 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
 
   const onLoad = ({ nativeEvent }: WebViewNavigationEvent) => {
     if (nativeEvent.url !== siteUrl.current || nativeEvent.title !== siteName.current) {
-      updateSiteInfo(nativeEvent);
+      if (nativeEvent.url !== siteUrl.current) {
+        updateTab({ id: tabId, url: nativeEvent.url });
+      }
+
+      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateNavigationInfo(nativeEvent);
 
       updateLatestItemInHistory({
@@ -251,11 +307,12 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   };
 
   const onLoadStart = ({ nativeEvent }: WebViewNavigationEvent) => {
-    updateSiteInfo(nativeEvent);
-
     if (nativeEvent.url !== siteUrl.current) {
-      updateNavigationInfo(nativeEvent);
+      updateTab({ id: tabId, url: nativeEvent.url });
+      updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
     }
+
+    updateNavigationInfo(nativeEvent);
 
     addToHistory({
       url: nativeEvent.url,
@@ -272,15 +329,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
   };
 
   const goBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.dispatch(
-        StackActions.replace('Home', {
-          screen: 'Browser',
-        }),
-      );
-    }
+    navigation.navigate('Home', { tab: 'Browser' });
   };
 
   const bottomButtonList: BrowserActionButtonType[] = [
@@ -316,17 +365,32 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
       },
     },
     {
+      key: 'tabs',
+      onPress: () => {
+        captureScreen({
+          format: 'jpg',
+          quality: 1,
+          width: DEVICE.width,
+          height: DEVICE.height,
+        })
+          .then(screenShot => {
+            updateTabScreenshot(tabId, screenShot);
+          })
+          .catch(e => {
+            console.log('Error when taking screenshot:', e);
+          })
+          .finally(() => {
+            onOpenBrowserTabs();
+          });
+      },
+    },
+    {
       key: 'reload',
       icon: ArrowClockwise,
       onPress: () => {
         const { current } = webviewRef;
         current && current.reload && current.reload();
       },
-    },
-    {
-      key: 'home',
-      icon: HouseSimple,
-      onPress: goBack,
     },
     {
       key: 'more',
@@ -354,29 +418,69 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
 
       clearCurrentBrowserSv();
     };
-  }, []);
-
-  useEffect(() => {
-    if (!initWebViewSource) {
-      setInitWebViewSource(params.url);
-    } else {
-      if (siteUrl.current !== params.url) {
-        webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${params.url}' })()`);
-      }
-    }
-  }, [params, initWebViewSource]);
+  }, [tabId]);
 
   const onCloseBrowserOptionModal = useCallback(() => {
     setModalVisible(false);
   }, []);
 
+  const onLoadProgress = ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
+    setProgressNumber(progress);
+  };
+
+  const renderBrowserTabBar = (button: BrowserActionButtonType) => {
+    if (!button.icon) {
+      if (button.key === 'tabs') {
+        return (
+          <TouchableOpacity
+            key={button.key}
+            onPress={button.onPress}
+            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={tabButtonStyle}>
+              <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium, lineHeight: 16 }}>{tabsNumber}</Text>
+            </View>
+          </TouchableOpacity>
+        );
+      }
+
+      return null;
+    }
+
+    return (
+      <IconButton
+        key={button.key}
+        disabled={button.isDisabled}
+        color={(button.isDisabled && ColorMap.disabled) || undefined}
+        icon={button.icon}
+        onPress={button.onPress}
+        size={24}
+      />
+    );
+  };
+
+  useImperativeHandle(ref, () => ({
+    goToSite: (siteInfo: SiteInfo) => {
+      if (!initWebViewSource) {
+        if (siteUrl.current !== siteInfo.url) {
+          updateTab({ id: tabId, url: siteInfo.url });
+        }
+        updateSiteInfo(siteInfo);
+        setInitWebViewSource(siteInfo.url);
+      } else {
+        if (siteUrl.current !== siteInfo.url) {
+          updateTab({ id: tabId, url: siteInfo.url });
+          updateSiteInfo(siteInfo);
+          webviewRef.current?.injectJavaScript(`(function(){window.location.href = '${siteInfo.url}' })()`);
+        }
+      }
+    },
+  }));
+
   return (
     <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
-        <View style={browserTabHeaderWrapperStyle}>
-          <AccountSettingButton navigation={navigation} />
-
-          <View style={centerStyle}>
+        <View style={headerWrapperStyle}>
+          <View style={{ alignItems: 'center' }}>
             {hostname && (
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -386,13 +490,19 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
                   </Text>
                 </View>
                 <Text numberOfLines={1} style={nameSiteTextStyle}>
-                  {siteName.current || propSiteName}
+                  {siteName.current || siteUrl.current}
                 </Text>
               </>
             )}
           </View>
 
-          <IconButton icon={X} onPress={goBack} />
+          <View style={headerLeftSideStyle}>
+            <AccountSettingButton navigation={navigation} />
+          </View>
+
+          <View style={headerRightSideStyle}>
+            <IconButton icon={HouseSimple} onPress={goBack} />
+          </View>
         </View>
         <View style={{ flex: 1, position: 'relative' }}>
           {isWebviewReady ? (
@@ -404,6 +514,7 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
               injectedJavaScript={getJsInjectContent()}
               onLoadStart={onLoadStart}
               onLoad={onLoad}
+              onLoadProgress={onLoadProgress}
               onMessage={onWebviewMessage}
               javaScriptEnabled={true}
               allowFileAccess={true}
@@ -416,20 +527,22 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
           )}
 
           {isShowPhishingWarning && <PhishingBlockerLayer />}
+          {progressNumber !== 1 && (
+            <View style={progressBarStyle}>
+              <ProgressBar
+                progress={progressNumber}
+                width={null}
+                color={ColorMap.primary}
+                height={3}
+                borderRadius={0}
+                borderWidth={0}
+                useNativeDriver
+              />
+            </View>
+          )}
         </View>
 
-        <View style={bottomButtonAreaStyle}>
-          {bottomButtonList.map(button => (
-            <IconButton
-              key={button.key}
-              disabled={button.isDisabled}
-              color={(button.isDisabled && ColorMap.disabled) || undefined}
-              icon={button.icon}
-              onPress={button.onPress}
-              size={24}
-            />
-          ))}
-        </View>
+        <View style={bottomButtonAreaStyle}>{bottomButtonList.map(button => renderBrowserTabBar(button))}</View>
 
         <BrowserOptionModal
           ref={browserOptionModalRef}
@@ -440,3 +553,5 @@ export const BrowserTab = ({ route: { params } }: BrowserTabProps) => {
     </ScreenContainer>
   );
 };
+
+export const BrowserTab = forwardRef(Component);

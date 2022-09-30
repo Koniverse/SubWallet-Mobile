@@ -105,7 +105,7 @@ export const Settings = () => {
           icon: Coin,
           title: i18n.settings.tokens,
           hasRightArrow: true,
-          onPress: onPressComingSoonFeature,
+          onPress: () => navigation.navigate('EvmTokens'),
         },
       ],
       [

@@ -2,6 +2,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { HomeScreenParams } from 'routes/home';
 import { TransferNftParams } from 'stores/types';
+import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -24,8 +25,8 @@ export type RootStackParamList = {
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   ExportJson: undefined;
-  BrowserSearch: undefined;
-  BrowserTab: { url: string; name: string };
+  BrowserSearch: { isOpenNewTab: boolean } | undefined;
+  BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   ConfirmationPopup: undefined;
   FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;
@@ -34,6 +35,9 @@ export type RootStackParamList = {
   WebViewDebugger: undefined;
   ImportEvmNft: undefined;
   TransferNft: TransferNftParams;
+  EvmTokens: undefined;
+  ConfigureToken: { contractAddress: string };
+  ImportEvmToken: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -48,5 +52,8 @@ export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, '
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
-export type BrowserTabProps = NativeStackScreenProps<RootStackParamList, 'BrowserTab'>;
+export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
+export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
+export type ImportEvmTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportEvmToken'>;

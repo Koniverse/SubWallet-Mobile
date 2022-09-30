@@ -51,15 +51,20 @@ import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import useStoreConfirmation from 'hooks/store/useStoreConfirmation';
 import useStoreNftCollection from 'hooks/store/useStoreNftCollection';
 import useStoreNft from 'hooks/store/useStoreNft';
-import TransferNft from 'screens/TransferNft';
 import useStoreAuthUrls from 'hooks/store/useStoreAuthUrls';
 import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
 import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
-import { BrowserTabWrapper } from 'screens/Home/Browser/BrowserTabWrapper';
 import { ColorMap } from 'styles/color';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
+import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
+import { getValidURL } from 'utils/browser';
+import { Tokens } from 'screens/EvmTokens';
+import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
+import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
+import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
+import TransferNft from "screens/TransferNft";
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -121,15 +126,15 @@ let firstTimeCheckPincode: boolean | undefined;
 
 const config: LinkingOptions<RootStackParamList>['config'] = {
   screens: {
-    BrowserTab: {
-      path: 'browser-tab',
+    BrowserTabsManager: {
+      path: 'browser',
       parse: {
         url: url => {
           try {
-            return decodeURIComponent(url);
+            return getValidURL(decodeURIComponent(url));
           } catch (e) {
             console.log('Cannot decode url ' + url);
-            return url;
+            return getValidURL(url);
           }
         },
         name: name => name || '',
@@ -176,6 +181,7 @@ export const App = () => {
   useStoreCrowdloan();
   useStoreAuthUrls();
   useStoreConfirmation();
+  useStoreEvmToken();
 
   // Staking
   useStoreStaking();
@@ -249,7 +255,7 @@ export const App = () => {
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
                         <Stack.Screen name="ExportJson" component={ExportJson} />
                         <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
-                        <Stack.Screen name="BrowserTab" component={BrowserTabWrapper} />
+                        <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                         <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                         <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                         <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
@@ -257,6 +263,9 @@ export const App = () => {
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                         <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
                         <Stack.Screen name="TransferNft" component={TransferNft} />
+                        <Stack.Screen name="EvmTokens" component={Tokens} />
+                        <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
+                        <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

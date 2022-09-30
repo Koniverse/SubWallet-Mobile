@@ -15,3 +15,11 @@ export function getHostName(url: string) {
   const address = url.split('://')[1].split('/')[0];
   return address.split(':')[0];
 }
+
+export function getValidURL(address: string): string {
+  if (isValidURL(address)) {
+    return address.startsWith('http://') || address.startsWith('https://') ? address : `https://${address}`;
+  } else {
+    return `https://duckduckgo.com/?q=${encodeURIComponent(address)}`;
+  }
+}

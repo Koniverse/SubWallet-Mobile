@@ -272,7 +272,6 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
         secretTypeList={SEND_FUND_TYPE}
         modalVisible={sendFundTypeModal}
         onChangeModalVisible={() => setSendFundTypeModal(false)}
-        modalHeight={256}
         toastRef={toastRef}
       />
 

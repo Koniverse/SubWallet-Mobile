@@ -11,6 +11,7 @@ import { ColorMap } from 'styles/color';
 
 interface Props extends FieldBaseProps {
   networkKey: string;
+  disabled?: boolean;
 }
 
 const getNetworkName = (networkKey: string, networkMap: Record<string, NetworkJson>) => {
@@ -21,14 +22,16 @@ const getNetworkName = (networkKey: string, networkMap: Record<string, NetworkJs
   return networkMap[networkKey].chain;
 };
 
-const textStyle: StyleProp<any> = {
-  ...FontSize2,
-  ...FontMedium,
-  lineHeight: 25,
-  paddingLeft: 16,
-  paddingRight: 40,
-  paddingBottom: 10,
-  color: ColorMap.light,
+const getTextStyle = (disabled: boolean): StyleProp<any> => {
+  return {
+    ...FontSize2,
+    ...FontMedium,
+    lineHeight: 25,
+    paddingLeft: 16,
+    paddingRight: 40,
+    paddingBottom: 10,
+    color: disabled ? ColorMap.disabled : ColorMap.light,
+  };
 };
 
 const blockContentStyle: StyleProp<any> = {
@@ -41,13 +44,13 @@ const logoWrapperStyle: StyleProp<any> = {
   bottom: 12,
 };
 
-export const NetworkField = ({ networkKey, ...fieldBase }: Props) => {
+export const NetworkField = ({ networkKey, disabled, ...fieldBase }: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <Text style={textStyle}>{getNetworkName(networkKey, networkMap)}</Text>
+        <Text style={getTextStyle(!!disabled)}>{getNetworkName(networkKey, networkMap)}</Text>
         <View style={logoWrapperStyle}>{getNetworkLogo(networkKey, 20)}</View>
       </View>
     </FieldBase>

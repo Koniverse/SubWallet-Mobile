@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListRenderItemInfo, RefreshControl } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, StyleProp, View } from 'react-native';
 import { ChainBalance } from 'components/ChainBalance';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from '../../../../types';
@@ -7,6 +7,12 @@ import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
+import { LeftIconButton } from 'components/LeftIconButton';
+import { Coins, SlidersHorizontal } from 'phosphor-react-native';
+import { EmptyList } from 'components/EmptyList';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   isShowZeroBalance?: boolean;
@@ -20,6 +26,22 @@ interface Props {
 }
 
 const alwaysShowedNetworkKeys = ['kusama', 'polkadot'];
+
+const flatListContentContainerStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark1,
+  flexGrow: 1,
+  justifyContent: 'center',
+  position: 'relative',
+};
+
+const emptyListWrapperStyle: StyleProp<any> = {
+  position: 'absolute',
+  marginVertical: 'auto',
+  alignItems: 'center',
+  left: 0,
+  right: 0,
+  paddingTop: 48,
+};
 
 function getEmptyBalanceInfo(nativeToken?: string) {
   return {
@@ -43,6 +65,7 @@ export const ChainsTab = ({
   refreshTabId,
   isShowZeroBalance,
 }: Props) => {
+  const navigation = useNavigation<RootNavigationProps>();
   const renderItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMap[networkKey] || getEmptyBalanceInfo(info.nativeToken);
@@ -61,6 +84,32 @@ export const ChainsTab = ({
     );
   };
 
+  const renderFooterComponent = () => {
+    return (
+      <View style={{ width: '100%', alignItems: 'center', paddingVertical: 16 }}>
+        <LeftIconButton
+          icon={SlidersHorizontal}
+          title={i18n.common.customNetwork}
+          onPress={() => navigation.navigate('NetworksSetting')}
+        />
+      </View>
+    );
+  };
+
+  if (!networkKeys.length) {
+    return (
+      <Tabs.ScrollView
+        accessibilityTraits
+        accessibilityComponentType
+        contentContainerStyle={flatListContentContainerStyle}>
+        <View style={emptyListWrapperStyle}>
+          <EmptyList icon={Coins} title={i18n.common.emptyChainListMessage} />
+          {renderFooterComponent()}
+        </View>
+      </Tabs.ScrollView>
+    );
+  }
+
   return (
     <Tabs.FlatList
       showsVerticalScrollIndicator={false}
@@ -70,6 +119,7 @@ export const ChainsTab = ({
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}
       renderItem={renderItem}
+      ListFooterComponent={renderFooterComponent}
       refreshControl={
         <RefreshControl
           style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'two' ? 1 : 0 }}

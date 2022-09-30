@@ -13,6 +13,7 @@ import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
+import { ColorMap } from 'styles/color';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -103,10 +104,12 @@ export const ImportPrivateKey = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.importEVMPrivateKey} navigation={navigation}>
+    <SubScreenContainer title={i18n.title.importEVMPrivateKey} navigation={navigation} disabled={isBusy}>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea
+            placeholder={i18n.common.enterYourPrivateKey}
+            placeholderTextColor={ColorMap.disabled}
             ref={formState.refs.privateKey}
             style={{ height: 94, marginBottom: 8, paddingTop: 16 }}
             onChangeText={onChangeValue('privateKey')}

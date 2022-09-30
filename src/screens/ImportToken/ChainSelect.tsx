@@ -30,6 +30,7 @@ const formatItemList = (items: Item[]) => {
 
 export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChangeValue, selectedItem }: Props) => {
   const formattedItemList = formatItemList(items);
+
   const renderItem = ({ item }: ListRenderItemInfo<Item>) => {
     return (
       <NetworkSelectItem
@@ -48,7 +49,7 @@ export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChang
         title={'Chain Select'}
         autoFocus={true}
         items={formattedItemList}
-        renderListEmptyComponent={() => <EmptyList title={items[0].label} icon={Aperture} />}
+        renderListEmptyComponent={() => <EmptyList title={'No EVM chain available'} icon={Aperture} />}
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onChangeModalVisible}

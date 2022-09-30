@@ -11,15 +11,18 @@ interface Props extends FieldBaseProps {
   text: string;
   showRightIcon?: boolean;
   onPressRightIcon?: () => void;
+  disabled?: boolean;
 }
 
-const textStyle: StyleProp<any> = {
-  ...FontSize2,
-  ...FontMedium,
-  lineHeight: 25,
-  paddingHorizontal: 16,
-  paddingBottom: 10,
-  color: ColorMap.light,
+const getTextStyle = (isDisabled: boolean): StyleProp<any> => {
+  return {
+    ...FontSize2,
+    ...FontMedium,
+    lineHeight: 25,
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    color: isDisabled ? ColorMap.disabled : ColorMap.light,
+  };
 };
 
 const blockContentStyle: StyleProp<any> = {
@@ -34,11 +37,11 @@ const infoIconStyle: StyleProp<any> = {
   bottom: 3,
 };
 
-export const TextField = ({ text, showRightIcon, onPressRightIcon, ...fieldBase }: Props) => {
+export const TextField = ({ text, showRightIcon, onPressRightIcon, disabled, ...fieldBase }: Props) => {
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <Text style={textStyle}>{text}</Text>
+        <Text style={getTextStyle(!!disabled)}>{text}</Text>
         {showRightIcon && (
           <IconButton color={ColorMap.disabled} style={infoIconStyle} icon={Info} onPress={onPressRightIcon} />
         )}

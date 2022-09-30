@@ -110,7 +110,7 @@ export const QrScannerScreen = ({
   qrModalVisible,
   networkKey,
   token,
-  scanMessage = i18n.common.toSend,
+  scanMessage = i18n.common.toSendFund,
 }: Props) => {
   const onSuccess = (e: BarCodeReadEvent) => {
     try {

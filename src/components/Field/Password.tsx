@@ -69,6 +69,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
             onEndEditing={onEndEditing}
             defaultValue={defaultValue || ''}
             onBlur={onBlur}
+            textContentType="oneTimeCode"
             editable={!isBusy}
             selectTextOnFocus={!isBusy}
           />
