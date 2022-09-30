@@ -13,7 +13,6 @@ import React, { useCallback, useMemo } from 'react';
 import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -145,7 +144,6 @@ const NftDetail = ({
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
   const nftList = useSelector((state: RootState) => state.nft.nftList);
   const navigation = useNavigation<NFTNavigationProps>();
-  const rootNavigation = useNavigation<RootNavigationProps>();
   const collection = useMemo(() => {
     return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
   }, [collectionId, nftCollectionList]);
@@ -195,7 +193,7 @@ const NftDetail = ({
       return;
     }
 
-    rootNavigation.navigate('TransferNft', {
+    navigation.navigate('TransferNft', {
       nftItem: data,
       collectionImage: collectionImage,
       collectionId: collectionRawId,
@@ -206,7 +204,7 @@ const NftDetail = ({
     data,
     networkJson.isEthereum,
     networkJson.ss58Format,
-    rootNavigation,
+    navigation,
     collectionImage,
     collectionRawId,
     currentAccount?.address,
