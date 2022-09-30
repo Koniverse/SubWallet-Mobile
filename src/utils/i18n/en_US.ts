@@ -188,6 +188,7 @@ export const en = {
     languages: 'Languages',
     accounts: 'Accounts',
     editAccount: 'Edit Account',
+    exportAccount: 'Export Account',
     exportJson: 'Export JSON',
     importEVMPrivateKey: 'Import EVM Private Key',
     importByPrivateKey: 'Import By Private Key',

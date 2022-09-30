@@ -1,25 +1,16 @@
-import { NftCollection, NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
-import useFetchNftItem from 'hooks/screen/Home/Nft/useFetchNftItem';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ListRenderItemInfo, StyleProp, View } from 'react-native';
-import { NftScreenActionParams, NftScreenActionType, NftScreenState } from 'reducers/nftScreen';
 import NftItem from './NftItem';
-import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
-import { Aperture } from 'phosphor-react-native';
-
-interface Props {
-  dispatchNftState: React.Dispatch<NftScreenActionParams>;
-  nftState: NftScreenState;
-}
+import { NFTCollectionProps, NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { useNavigation } from '@react-navigation/native';
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
-};
-
-const renderEmpty = () => {
-  return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
 };
 
 const filteredNftItem = (items: _NftItem[], searchString: string) => {
@@ -29,37 +20,43 @@ const filteredNftItem = (items: _NftItem[], searchString: string) => {
   });
 };
 
-const NftItemList = ({ dispatchNftState, nftState }: Props) => {
-  const collection = nftState.collection as NftCollection;
-  const nftItems = useFetchNftItem(collection).nftItems;
+const NftItemList = ({
+  route: {
+    params: { collectionId },
+  },
+}: NFTCollectionProps) => {
+  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
+  const nftList = useSelector((state: RootState) => state.nft.nftList);
+  const collection = useMemo(() => {
+    return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
+  }, [collectionId, nftCollectionList]);
+  const nftItems = useMemo(() => {
+    return nftList.filter(item => item.collectionId === (collection?.collectionId || '__'));
+  }, [collection?.collectionId, nftList]);
+  const navigation = useNavigation<NFTNavigationProps>();
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<_NftItem>) => {
       const key = `${item.collectionId}-${item.id}`;
       const onPress = () => {
-        dispatchNftState({ type: NftScreenActionType.OPEN_NFT, payload: { nft: item } });
+        navigation.navigate('NftDetail', { collectionId, nftId: key });
       };
 
-      return <NftItem key={key} nftItem={item} collectionImage={collection.image} onPress={onPress} />;
+      return <NftItem key={key} nftItem={item} collectionImage={collection?.image} onPress={onPress} />;
     },
-    [dispatchNftState, collection.image],
+    [collection?.image, collectionId, navigation],
   );
-
-  const handleBack = () => {
-    dispatchNftState({ type: NftScreenActionType.OPEN_COLLECTION_LIST, payload: null });
-  };
 
   return (
     <View style={NftItemListStyle}>
       <FlatListScreen
-        withSubHeader={false}
         autoFocus={false}
-        showLeftBtn={false}
+        title={collection?.collectionName || i18n.title.nftList}
+        showLeftBtn={true}
         renderItem={renderItem}
-        renderListEmptyComponent={renderEmpty}
+        renderListEmptyComponent={renderEmptyNFT}
         filterFunction={filteredNftItem}
         items={nftItems}
-        onPressBack={handleBack}
         numberColumns={2}
         searchMarginBottom={16}
       />

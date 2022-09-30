@@ -1,11 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import NFTScreen from 'screens/Home/NFT/NFTScreen';
 import { HomeScreenProps } from 'routes/index';
 import { StakingScreen } from './StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
@@ -19,9 +17,7 @@ import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeScreenParams, HomeStackParamList } from 'routes/home';
-
-export type HomeNavigationProps = NativeStackScreenProps<HomeStackParamList>['navigation'];
-export type HomeRouteProps = NativeStackScreenProps<HomeStackParamList>['route'];
+import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 
 function checkTabNotCompleted(target: string) {
   return target.includes('Staking');
@@ -103,7 +99,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
       />
       <Tab.Screen
         name={'NFT'}
-        component={NFTScreen}
+        component={NFTStackScreen}
         options={{
           tabBarIcon: ({ color }) => {
             return <Aperture size={24} color={color} weight={'bold'} />;

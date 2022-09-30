@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import { TextField } from 'components/Field/Text';
@@ -13,8 +13,6 @@ import React, { useCallback, useMemo } from 'react';
 import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { NftScreenState } from 'reducers/nftScreen';
-import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -22,10 +20,13 @@ import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
+import { NFTDetailProps, NFTNavigationProps } from 'screens/Home/NFT/NFTStackScreen';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
-interface Props {
-  nftState: NftScreenState;
-}
+const ContainerHeaderStyle: StyleProp<any> = {
+  width: '100%',
+  position: 'relative',
+};
 
 const ContainerDetailStyle: StyleProp<any> = {
   marginTop: 20,
@@ -135,18 +136,29 @@ const propDetail = (title: string, valueDict: Record<string, any>, key: number):
   return <View />;
 };
 
-const NftDetail = ({ nftState }: Props) => {
-  const data = nftState.nft as NftItem;
-  const { image: collectionImage, collectionId, collectionName, chain } = nftState.collection as NftCollection;
+const NftDetail = ({
+  route: {
+    params: { collectionId, nftId },
+  },
+}: NFTDetailProps) => {
+  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
+  const nftList = useSelector((state: RootState) => state.nft.nftList);
+  const navigation = useNavigation<NFTNavigationProps>();
+  const collection = useMemo(() => {
+    return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
+  }, [collectionId, nftCollectionList]);
+  const data = useMemo(() => {
+    return nftList.find(item => nftId === `${item.collectionId}-${item.id}`) || {};
+  }, [nftId, nftList]);
+  const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
   const { show, hideAll } = useToast();
-  const navigation = useNavigation<RootNavigationProps>();
 
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
-  const networkJson = useGetNetworkJson(data.chain as string);
+  const networkJson = useGetNetworkJson(data.chain as string) || {};
   const isAccountAll = useIsAccountAll();
-  const ownerUrl = useScanExplorerAddressUrl(networkJson.key, data.owner || '');
+  const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
     if (!currentAccount) {
@@ -184,7 +196,7 @@ const NftDetail = ({ nftState }: Props) => {
     navigation.navigate('TransferNft', {
       nftItem: data,
       collectionImage: collectionImage,
-      collectionId: collectionId,
+      collectionId: collectionRawId,
       senderAddress: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
     });
   }, [
@@ -194,7 +206,7 @@ const NftDetail = ({ nftState }: Props) => {
     networkJson.ss58Format,
     navigation,
     collectionImage,
-    collectionId,
+    collectionRawId,
     currentAccount?.address,
     hideAll,
     show,
@@ -210,63 +222,69 @@ const NftDetail = ({ nftState }: Props) => {
   }, []);
 
   return (
-    <ScrollView style={ContainerDetailStyle} contentContainerStyle={{ paddingBottom: 16 }}>
-      <View style={ImageContainerStyle}>
-        <ImagePreview
-          style={ImageStyle}
-          mainUrl={data.image}
-          backupUrl={collectionImage}
-          borderRadius={5}
-          borderPlace={'full'}
-        />
-      </View>
-      {canSend && <SubmitButton style={SendButtonStyle} onPress={handleClickTransfer} title={i18n.common.send} />}
-      {data.description && (
-        <View>
-          <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
-          <Text style={AttValueStyle}>{data?.description}</Text>
+    <ContainerWithSubHeader
+      showLeftBtn={true}
+      title={data.name || i18n.title.nftDetail}
+      style={ContainerHeaderStyle}
+      onPressBack={() => navigation.goBack()}>
+      <ScrollView style={ContainerDetailStyle} contentContainerStyle={{ paddingBottom: 16 }}>
+        <View style={ImageContainerStyle}>
+          <ImagePreview
+            style={ImageStyle}
+            mainUrl={data.image}
+            backupUrl={collectionImage}
+            borderRadius={5}
+            borderPlace={'full'}
+          />
         </View>
-      )}
-      <TouchableOpacity style={ResourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
-        <View style={ResourceIconContainerStyle}>
-          <SlidersHorizontal size={20} color={ColorMap.primary} />
-        </View>
-        <Text style={ResourceTitleStyle}>Resources or Inventory</Text>
-      </TouchableOpacity>
-      <TextField
-        text={collectionName || ''}
-        label={i18n.nftScreen.nftDetail.collectionName}
-        showRightIcon={!!data.external_url}
-        onPressRightIcon={handleClickInfoIcon(data.external_url)}
-      />
-      {data.owner && (
-        <AddressField
-          address={data.owner}
-          networkPrefix={networkJson.ss58Format}
-          label={i18n.nftScreen.nftDetail.ownedBy}
-          onPressRightIcon={handleClickInfoIcon(ownerUrl)}
-        />
-      )}
-      {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
-      <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
-      {data.rarity && (
-        <View>
-          <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
-          <Text style={AttValueStyle}>{data?.rarity}</Text>
-        </View>
-      )}
-      {data.properties && (
-        <View>
-          <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
-          <View style={PropContainerStyle}>
-            {Object.keys(data?.properties).map((key, index) => {
-              // @ts-ignore
-              return propDetail(key, data?.properties[key], index);
-            })}
+        {canSend && <SubmitButton style={SendButtonStyle} onPress={handleClickTransfer} title={i18n.common.send} />}
+        {data.description && (
+          <View>
+            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
+            <Text style={AttValueStyle}>{data?.description}</Text>
           </View>
-        </View>
-      )}
-    </ScrollView>
+        )}
+        <TouchableOpacity style={ResourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
+          <View style={ResourceIconContainerStyle}>
+            <SlidersHorizontal size={20} color={ColorMap.primary} />
+          </View>
+          <Text style={ResourceTitleStyle}>Resources or Inventory</Text>
+        </TouchableOpacity>
+        <TextField
+          text={collectionName || ''}
+          label={i18n.nftScreen.nftDetail.collectionName}
+          showRightIcon={!!data.external_url}
+          onPressRightIcon={handleClickInfoIcon(data.external_url)}
+        />
+        {data.owner && (
+          <AddressField
+            address={data.owner}
+            networkPrefix={networkJson.ss58Format}
+            label={i18n.nftScreen.nftDetail.ownedBy}
+            onPressRightIcon={handleClickInfoIcon(ownerUrl)}
+          />
+        )}
+        {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
+        <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
+        {data.rarity && (
+          <View>
+            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
+            <Text style={AttValueStyle}>{data?.rarity}</Text>
+          </View>
+        )}
+        {data.properties && (
+          <View>
+            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
+            <View style={PropContainerStyle}>
+              {Object.keys(data?.properties).map((key, index) => {
+                // @ts-ignore
+                return propDetail(key, data?.properties[key], index);
+              })}
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </ContainerWithSubHeader>
   );
 };
 

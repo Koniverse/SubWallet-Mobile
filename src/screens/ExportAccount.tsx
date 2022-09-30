@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubmitButton } from 'components/SubmitButton';
-import { CopySimple, FingerprintSimple } from 'phosphor-react-native';
+import { CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
 import {
@@ -14,12 +14,11 @@ import {
   sharedStyles,
 } from 'styles/sharedStyles';
 import { LeftIconButton } from 'components/LeftIconButton';
-import { BUTTON_ACTIVE_OPACITY } from '../constant';
 import { useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
-import { ExportPrivateKeyProps, RootNavigationProps } from 'routes/index';
-import { exportAccountPrivateKey } from '../messaging';
+import { ExportAccountProps, RootNavigationProps } from 'routes/index';
+import { exportAccount, exportAccountPrivateKey } from '../messaging';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
@@ -64,28 +63,28 @@ const warningBlockTitleStyle: StyleProp<any> = {
   marginBottom: 8,
 };
 
-const privateBlockStyle: StyleProp<any> = {
+const rsBlockStyle: StyleProp<any> = {
   ...sharedStyles.blockContent,
   height: 238,
   backgroundColor: ColorMap.dark2,
   marginBottom: 16,
 };
 
-const privateBlockOverlayStyle: StyleProp<any> = {
-  flex: 1,
-  justifyContent: 'center',
-};
+// const privateBlockOverlayStyle: StyleProp<any> = {
+//   flex: 1,
+//   justifyContent: 'center',
+// };
 
-const privateBlockTextStyle: StyleProp<any> = {
+const rsBlockTextStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.disabled,
   textAlign: 'center',
 };
 
-const privateBlockIconStyle: StyleProp<any> = {
-  alignItems: 'center',
-};
+// const privateBlockIconStyle: StyleProp<any> = {
+//   alignItems: 'center',
+// };
 
 const copyButtonWrapperStyle: StyleProp<any> = {
   alignItems: 'center',
@@ -99,9 +98,9 @@ const buttonStyle: StyleProp<any> = {
 const ViewStep = {
   HIDE_PK: 1,
   ENTER_PW: 2,
-  SHOW_PK: 3,
+  SHOW_RS: 3,
 };
-const PrivateBlockIcon = FingerprintSimple;
+// const PrivateBlockIcon = FingerprintSimple;
 
 const formConfig = {
   password: {
@@ -112,16 +111,16 @@ const formConfig = {
   },
 };
 
-export const ViewPrivateKey = ({
+export const ExportAccount = ({
   route: {
-    params: { address },
+    params: { address, exportType },
   },
-}: ExportPrivateKeyProps) => {
+}: ExportAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [privateKey, setPrivateKey] = useState<string>('');
-  const toast = useToast();
+  const [result, setResult] = useState<string>('');
   const [isBusy, setIsBusy] = useState(false);
-  const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  const [currentViewStep, setCurrentViewStep] = useState<number>(2);
+  const toast = useToast();
 
   useEffect(() => {
     if (currentViewStep === ViewStep.ENTER_PW) {
@@ -132,16 +131,29 @@ export const ViewPrivateKey = ({
   const onSetPassword = (formState: FormState) => {
     const password = formState.data.password;
     setIsBusy(true);
-    exportAccountPrivateKey(address, password)
-      .then(({ privateKey: resPrivateKey }) => {
-        setPrivateKey(resPrivateKey);
-        setIsBusy(false);
-        setCurrentViewStep(ViewStep.SHOW_PK);
-      })
-      .catch((error: Error) => {
-        onUpdateErrors('password')([error.message]);
-        setIsBusy(false);
-      });
+    if (exportType === 'json') {
+      exportAccount(address, password)
+        .then(({ exportedJson }) => {
+          setResult(JSON.stringify(exportedJson));
+          setIsBusy(false);
+          setCurrentViewStep(ViewStep.SHOW_RS);
+        })
+        .catch((error: Error) => {
+          onUpdateErrors('password')([error.message]);
+          setIsBusy(false);
+        });
+    } else {
+      exportAccountPrivateKey(address, password)
+        .then(({ privateKey: resPrivateKey }) => {
+          setResult(resPrivateKey);
+          setIsBusy(false);
+          setCurrentViewStep(ViewStep.SHOW_RS);
+        })
+        .catch((error: Error) => {
+          onUpdateErrors('password')([error.message]);
+          setIsBusy(false);
+        });
+    }
   };
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSetPassword,
@@ -152,36 +164,42 @@ export const ViewPrivateKey = ({
     toast.show(i18n.common.copiedToClipboard);
   };
 
-  const onTapPrivate = () => {
-    setCurrentViewStep(ViewStep.ENTER_PW);
-  };
+  // const onTapPrivate = () => {
+  //   setCurrentViewStep(ViewStep.ENTER_PW);
+  // };
 
   const onPressDone = () => {
     navigation.goBack();
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={i18n.title.yourPrivateKey}>
+    <SubScreenContainer
+      navigation={navigation}
+      title={exportType === 'json' ? i18n.title.exportAccount : i18n.title.yourPrivateKey}>
       <View style={layoutContainerStyle}>
         <ScrollView style={bodyAreaStyle}>
           <View style={warningBlockStyle}>
-            <Text style={warningBlockTitleStyle}>{i18n.warningTitle.doNotSharePrivateKey}</Text>
-            <Text style={warningBlockTextStyle}>{i18n.warningMessage.privateKeyWarning}</Text>
+            <Text style={warningBlockTitleStyle}>
+              {exportType === 'json' ? i18n.warningTitle.doNotShareJsonFile : i18n.warningTitle.doNotSharePrivateKey}
+            </Text>
+            <Text style={warningBlockTextStyle}>
+              {exportType === 'json' ? i18n.warningMessage.exportAccountWarning : i18n.warningMessage.privateKeyWarning}
+            </Text>
           </View>
 
-          {currentViewStep === ViewStep.HIDE_PK && (
-            <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={privateBlockStyle} onPress={onTapPrivate}>
-              <View style={privateBlockOverlayStyle}>
-                <Text style={{ ...privateBlockTextStyle, marginBottom: 4, color: ColorMap.light }}>
-                  {i18n.common.tapToRevealPrivateKey}
-                </Text>
-                <Text style={{ ...privateBlockTextStyle, marginBottom: 8 }}>{i18n.common.viewPrivateKeyTitle}</Text>
-                <View style={privateBlockIconStyle}>
-                  <PrivateBlockIcon size={32} color={ColorMap.light} />
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
+          {/*{currentViewStep === ViewStep.HIDE_PK && (*/}
+          {/*  <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={rsBlockStyle} onPress={onTapPrivate}>*/}
+          {/*    <View style={privateBlockOverlayStyle}>*/}
+          {/*      <Text style={{ ...rsBlockTextStyle, marginBottom: 4, color: ColorMap.light }}>*/}
+          {/*        {i18n.common.tapToRevealPrivateKey}*/}
+          {/*      </Text>*/}
+          {/*      <Text style={{ ...rsBlockTextStyle, marginBottom: 8 }}>{i18n.common.viewPrivateKeyTitle}</Text>*/}
+          {/*      <View style={privateBlockIconStyle}>*/}
+          {/*        <PrivateBlockIcon size={32} color={ColorMap.light} />*/}
+          {/*      </View>*/}
+          {/*    </View>*/}
+          {/*  </TouchableOpacity>*/}
+          {/*)}*/}
 
           {currentViewStep === ViewStep.ENTER_PW && (
             <>
@@ -196,18 +214,18 @@ export const ViewPrivateKey = ({
             </>
           )}
 
-          {currentViewStep === ViewStep.SHOW_PK && (
-            <View style={privateBlockStyle}>
-              <Text style={privateBlockTextStyle}>{privateKey}</Text>
+          {currentViewStep === ViewStep.SHOW_RS && (
+            <View style={rsBlockStyle}>
+              <Text style={rsBlockTextStyle}>{result}</Text>
             </View>
           )}
 
-          {currentViewStep === ViewStep.SHOW_PK && (
+          {currentViewStep === ViewStep.SHOW_RS && (
             <View style={copyButtonWrapperStyle}>
               <LeftIconButton
                 icon={CopySimple}
                 title={i18n.common.copyToClipboard}
-                onPress={() => copyToClipboard(privateKey)}
+                onPress={() => copyToClipboard(result)}
               />
             </View>
           )}

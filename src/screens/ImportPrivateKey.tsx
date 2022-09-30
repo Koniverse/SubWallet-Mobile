@@ -62,7 +62,7 @@ export const ImportPrivateKey = () => {
       },
     },
     accountName: {
-      name: i18n.common.accountName,
+      name: i18n.common.walletName,
       value: '',
       require: true,
     },
@@ -104,7 +104,7 @@ export const ImportPrivateKey = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.importEVMPrivateKey} navigation={navigation} disabled={isBusy}>
+    <SubScreenContainer title={i18n.title.importByPrivateKey} navigation={navigation} disabled={isBusy}>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea

@@ -36,6 +36,7 @@ const getTextStyle = (disabled: boolean): StyleProp<any> => {
 
 const blockContentStyle: StyleProp<any> = {
   position: 'relative',
+  height: 34,
 };
 
 const logoWrapperStyle: StyleProp<any> = {

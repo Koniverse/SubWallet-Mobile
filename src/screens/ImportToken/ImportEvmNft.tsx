@@ -95,15 +95,15 @@ const ImportEvmNft = () => {
     upsertEvmToken(evmToken)
       .then(resp => {
         if (resp) {
-          onUpdateErrors('smartContract')(['Successfully added a NFT collection']);
+          onUpdateErrors('smartContract')([i18n.common.addNftSuccess]);
           onBack();
         } else {
-          onUpdateErrors('smartContract')(['An error has occurred. Please try again later']);
+          onUpdateErrors('smartContract')([i18n.errorMessage.occurredError]);
         }
         setLoading(false);
       })
       .catch(() => {
-        onUpdateErrors('smartContract')(['An error has occurred. Please try again later']);
+        onUpdateErrors('smartContract')([i18n.errorMessage.occurredError]);
         setLoading(false);
       })
       .finally(() => {
@@ -115,7 +115,7 @@ const ImportEvmNft = () => {
     let unamount = false;
     if (smartContract !== '') {
       if (!isEthereumAddress(smartContract)) {
-        onUpdateErrors('smartContract')(['Invalid EVM contract address']);
+        onUpdateErrors('smartContract')([i18n.errorMessage.invalidEvmContractAddress]);
       } else {
         setChecking(true);
         validateEvmToken({
@@ -128,7 +128,7 @@ const ImportEvmNft = () => {
               return;
             }
             if (resp.isExist) {
-              onUpdateErrors('smartContract')(['This token has already been added']);
+              onUpdateErrors('smartContract')([i18n.errorMessage.tokenAlreadyAdded]);
             } else {
               onChangeValue('collectionName')(resp.name);
               onUpdateErrors('smartContract')(undefined);
@@ -138,7 +138,7 @@ const ImportEvmNft = () => {
             if (unamount) {
               return;
             }
-            onUpdateErrors('smartContract')(['Invalid contract for the selected chain']);
+            onUpdateErrors('smartContract')([i18n.errorMessage.invalidContractForSelectedChain]);
           })
           .finally(() => {
             if (unamount) {

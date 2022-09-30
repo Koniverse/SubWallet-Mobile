@@ -28,7 +28,6 @@ import {
 } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
-import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
 import {
@@ -49,6 +48,7 @@ import { Warning } from 'components/Warning';
 import { SiteInfo } from 'stores/types';
 import { Bar as ProgressBar } from 'react-native-progress';
 import { captureScreen } from 'react-native-view-shot';
+import { EmptyList } from 'components/EmptyList';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -523,7 +523,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
               domStorageEnabled={true}
             />
           ) : (
-            <EmptyListPlaceholder icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
+            <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
           )}
 
           {isShowPhishingWarning && <PhishingBlockerLayer />}
