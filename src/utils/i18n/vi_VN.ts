@@ -278,6 +278,7 @@ export const vi = {
     notifications: 'Notifications',
     network: 'Network',
     manageTokens: 'Manage Tokens',
+    tokens: 'Tokens',
     telegram: 'Telegram',
     twitter: 'Twitter',
     discord: 'Discord',
