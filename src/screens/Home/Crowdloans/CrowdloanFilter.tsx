@@ -53,15 +53,15 @@ const crowdloanStatusFilterOptions: Record<string, FilterOptionType> = {
     icon: getLeftSelectItemIcon(ListChecks),
   },
   completed: {
-    label: 'Winner',
+    label: i18n.common.win,
     icon: getLeftSelectItemIcon(Trophy),
   },
   fail: {
-    label: 'Fail',
+    label: i18n.common.fail,
     icon: getLeftSelectItemIcon(Barricade),
   },
   ongoing: {
-    label: 'Active',
+    label: i18n.common.active,
     icon: getLeftSelectItemIcon(Activity),
   },
 };

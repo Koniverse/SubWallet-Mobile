@@ -83,7 +83,7 @@ export const Settings = () => {
         },
         {
           icon: GlobeHemisphereWest,
-          title: i18n.title.language,
+          title: i18n.title.languages,
           hasRightArrow: true,
           onPress: onPressComingSoonFeature,
         },
@@ -97,13 +97,13 @@ export const Settings = () => {
       [
         {
           icon: GitFork,
-          title: i18n.settings.networks,
+          title: i18n.settings.network,
           hasRightArrow: true,
           onPress: onPressComingSoonFeature,
         },
         {
           icon: Coin,
-          title: i18n.settings.tokens,
+          title: i18n.settings.manageTokens,
           hasRightArrow: true,
           onPress: () => navigation.navigate('EvmTokens'),
         },
@@ -202,7 +202,7 @@ export const Settings = () => {
             />
           ))}
 
-          <Text style={settingTitleStyle}>{i18n.settings.networksAndAssets}</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.networkAndAssets}</Text>
 
           {settingList[1].map(setting => (
             <ActionItem
