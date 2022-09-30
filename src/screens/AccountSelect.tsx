@@ -24,7 +24,14 @@ const itemSeparator: StyleProp<any> = {
 };
 
 const renderListEmptyComponent = () => {
-  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountMessage} isDanger={false} />;
+  return (
+    <Warning
+      style={{ marginHorizontal: 16 }}
+      title={i18n.warningTitle.warning}
+      message={i18n.warningMessage.noAccountMessage}
+      isDanger={false}
+    />
+  );
 };
 
 export const AccountSelect = ({

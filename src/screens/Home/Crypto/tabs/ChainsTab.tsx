@@ -12,6 +12,7 @@ import { Coins, SlidersHorizontal } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   isShowZeroBalance?: boolean;
@@ -84,15 +85,11 @@ export const ChainsTab = ({
   };
 
   const renderFooterComponent = () => {
-    if (!networkKeys.length) {
-      return null;
-    }
-
     return (
       <View style={{ width: '100%', alignItems: 'center', paddingVertical: 16 }}>
         <LeftIconButton
           icon={SlidersHorizontal}
-          title={'Custom Network'}
+          title={i18n.common.customNetwork}
           onPress={() => navigation.navigate('NetworksSetting')}
         />
       </View>
@@ -106,7 +103,8 @@ export const ChainsTab = ({
         accessibilityComponentType
         contentContainerStyle={flatListContentContainerStyle}>
         <View style={emptyListWrapperStyle}>
-          <EmptyList icon={Coins} title={'Your chain will appear here'} />
+          <EmptyList icon={Coins} title={i18n.common.emptyChainListMessage} />
+          {renderFooterComponent()}
         </View>
       </Tabs.ScrollView>
     );

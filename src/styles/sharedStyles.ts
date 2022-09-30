@@ -31,7 +31,7 @@ export const centerStyle: StyleProp<any> = {
 export const emptyListTextStyle: StyleProp<any> = {
   ...FontSize2,
   lineHeight: 24,
-  color: ColorMap.light,
+  color: ColorMap.disabled,
   ...FontMedium,
   paddingTop: 8,
   textAlign: 'center',

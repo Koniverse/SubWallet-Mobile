@@ -81,8 +81,8 @@ export const Tokens = () => {
         }
         setSelectedTokens([]);
       })
-      .catch(() => {
-        console.log('delete token err');
+      .catch(e => {
+        console.warn(`delete token err: ${e}`);
         setBusy(false);
       });
   }, [selectedTokens, showToast]);
@@ -125,24 +125,27 @@ export const Tokens = () => {
         renderItem={renderItem}
         leftButtonDisabled={isBusy}
         renderListEmptyComponent={() => <EmptyList icon={Coins} title={i18n.errorMessage.noTokenAvailable} />}
+        afterListItem={
+          <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
+            {isEditMode ? (
+              <SubmitButton
+                isBusy={isBusy}
+                disabled={!selectedTokens.length}
+                title={i18n.common.deleteToken}
+                backgroundColor={ColorMap.danger}
+                disabledColor={ColorMap.dangerOverlay2}
+                onPress={onDeleteTokens}
+              />
+            ) : (
+              <SubmitButton
+                title={i18n.common.importToken}
+                onPress={() => navigation.navigate('ImportEvmToken', { payload: undefined })}
+              />
+            )}
+          </View>
+        }
       />
-      <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
-        {isEditMode ? (
-          <SubmitButton
-            isBusy={isBusy}
-            disabled={!selectedTokens.length}
-            title={i18n.common.deleteToken}
-            backgroundColor={ColorMap.danger}
-            disabledColor={ColorMap.dangerOverlay2}
-            onPress={onDeleteTokens}
-          />
-        ) : (
-          <SubmitButton
-            title={i18n.common.importToken}
-            onPress={() => navigation.navigate('ImportEvmToken', { payload: undefined })}
-          />
-        )}
-      </View>
+
       <SafeAreaView />
     </>
   );
