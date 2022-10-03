@@ -9,6 +9,7 @@ import { StyleProp, View } from 'react-native';
 import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
 import { BrowserSliceTab, SiteInfo } from 'stores/types';
 import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -71,6 +72,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
   const navigation = useNavigation<RootNavigationProps>();
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
+  const isEmptyAccounts = useCheckEmptyAccounts();
 
   useEffect(() => {
     return () => {
@@ -78,6 +80,16 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
       clearAllTabScreenshots();
     };
   }, []);
+
+  useEffect(() => {
+    if (isEmptyAccounts) {
+      if (navigation.canGoBack()) {
+        navigation.navigate('Home');
+      } else {
+        navigation.replace('Home');
+      }
+    }
+  }, [navigation, isEmptyAccounts]);
 
   useEffect(() => {
     if (params.url) {
