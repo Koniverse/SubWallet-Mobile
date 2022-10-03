@@ -48,13 +48,14 @@ function getTabItemWrapperStyle(isTabActive: boolean): StyleProp<any> {
 
 function ConfirmationTrigger() {
   const navigation = useNavigation<RootNavigationProps>();
+  const isLocked = useSelector((state: RootState) => state.appState.isLocked);
   const { isEmptyRequests, isDisplayConfirmation } = useConfirmations();
 
   useEffect(() => {
-    if (isDisplayConfirmation && !isEmptyRequests) {
+    if (isDisplayConfirmation && !isLocked && !isEmptyRequests) {
       navigation.navigate('ConfirmationPopup');
     }
-  }, [isDisplayConfirmation, isEmptyRequests, navigation]);
+  }, [isDisplayConfirmation, isEmptyRequests, navigation, isLocked]);
 
   return <></>;
 }
