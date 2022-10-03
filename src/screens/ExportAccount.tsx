@@ -175,7 +175,7 @@ export const ExportAccount = ({
   return (
     <SubScreenContainer
       navigation={navigation}
-      title={exportType === 'json' ? i18n.title.exportAccount : i18n.title.yourPrivateKey}>
+      title={exportType === 'json' ? i18n.title.exportAccount : i18n.title.exportPrivateKey}>
       <View style={layoutContainerStyle}>
         <ScrollView style={bodyAreaStyle}>
           <View style={warningBlockStyle}>
