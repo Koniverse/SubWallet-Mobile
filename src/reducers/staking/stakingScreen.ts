@@ -1,4 +1,5 @@
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { NetworkValidatorsInfo } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
 
 export type StakingScreenName = 'StakingList' | 'StakingDetail' | 'NetworkList' | 'ValidatorList' | 'ValidatorDetail';
@@ -8,7 +9,10 @@ export interface StakingScreenState {
   screen: StakingScreenName;
   stakingKey?: string;
   selectedNetwork?: string;
-  selectedValidator?: ValidatorInfo;
+  selectedValidator?: {
+    validatorInfo: ValidatorInfo;
+    networkValidatorsInfo: NetworkValidatorsInfo;
+  };
 }
 
 export enum StakingScreenActionType {
@@ -63,8 +67,10 @@ export interface StakingScreenOpenValidatorListAction extends AbstractStakingScr
 export interface StakingScreenOpenValidatorDetailAction extends AbstractStakingScreenActionParams {
   type: StakingScreenActionType.OPEN_VALIDATOR_DETAIL;
   payload: {
-    selectedNetwork: string;
-    title?: string;
+    selectedValidator: {
+      validatorInfo: ValidatorInfo;
+      networkValidatorsInfo: NetworkValidatorsInfo;
+    };
   };
 }
 
@@ -79,6 +85,7 @@ export type StakingScreenActionParams =
   | StakingScreenOpenStakingDetailAction
   | StakingScreenStartStakingAction
   | StakingScreenOpenValidatorListAction
+  | StakingScreenOpenValidatorDetailAction
   | StakingScreenGoBackAction;
 
 export const STAKING_INITIAL_STATE: StakingScreenState = {
@@ -144,6 +151,17 @@ const handleOpenValidatorList = (
   };
 };
 
+const handleOpenValidatorDetail = (
+  state: StakingScreenState,
+  { payload }: StakingScreenOpenValidatorDetailAction,
+): StakingScreenState => {
+  return {
+    ...state,
+    screen: 'ValidatorDetail',
+    selectedValidator: payload.selectedValidator,
+  };
+};
+
 const handleGoBackAction = (state: StakingScreenState): StakingScreenState => {
   const { screen, stakingKey } = state;
   switch (screen) {
@@ -171,6 +189,12 @@ const handleGoBackAction = (state: StakingScreenState): StakingScreenState => {
         stakingKey: undefined,
         selectedNetwork: undefined,
       };
+    case 'ValidatorDetail':
+      return {
+        ...state,
+        screen: 'ValidatorList',
+        selectedValidator: undefined,
+      };
   }
   return {
     ...state,
@@ -196,6 +220,8 @@ export const stakingReducer = (state: StakingScreenState, action: StakingScreenA
       return handleOpenStakingDetail(action);
     case StakingScreenActionType.OPEN_VALIDATOR_LIST:
       return handleOpenValidatorList(state, action);
+    case StakingScreenActionType.OPEN_VALIDATOR_DETAIL:
+      return handleOpenValidatorDetail(state, action);
     default:
       throw new Error();
   }

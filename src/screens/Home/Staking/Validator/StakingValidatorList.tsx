@@ -2,19 +2,23 @@ import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { Dispatch, useCallback, useEffect, useState } from 'react';
+import { ArrowsDownUp } from 'phosphor-react-native';
+import React, { Dispatch, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
-import { StakingScreenActionParams, StakingScreenActionType, StakingScreenState } from 'reducers/stakingScreen';
+import { StakingScreenActionParams, StakingScreenActionType, StakingScreenState } from 'reducers/staking/stakingScreen';
+import {
+  DEFAULT_VALIDATOR_LIST_STATE,
+  ValidatorListActionName,
+  validatorListReducer,
+} from 'reducers/staking/validatorList';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import SortValidatorModal from 'screens/Home/Staking/Validator/SortValidatorModal';
 import StakingValidatorItem from 'screens/Home/Staking/Validator/StakingValidatorItem';
 import { RootState } from 'stores/index';
-import { NetworkValidatorsInfo, ValidatorSortBy } from 'types/staking';
-import { defaultSortFunc } from 'utils/function';
+import { ValidatorSortBy } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
 import { getBondingOptions } from '../../../../messaging';
-import { ArrowsDownUp } from 'phosphor-react-native';
 
 interface Props {
   stakingState: StakingScreenState;
@@ -26,37 +30,7 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   paddingBottom: 16,
 };
 
-const sortByDefaultFunc = (validator: ValidatorInfo, _validator: ValidatorInfo): number => {
-  if (validator.isVerified && !_validator.isVerified) {
-    return -1;
-  } else if (!validator.isVerified && _validator.isVerified) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const sortByReturnedFunc = (validator: ValidatorInfo, _validator: ValidatorInfo): number => {
-  if (validator.expectedReturn > _validator.expectedReturn) {
-    return -1;
-  } else if (validator.expectedReturn <= _validator.expectedReturn) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const sortByCommissionFunc = (validator: ValidatorInfo, _validator: ValidatorInfo): number => {
-  if (validator.commission <= _validator.commission) {
-    return -1;
-  } else if (validator.commission > _validator.commission) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const filterFunction = (items: ValidatorInfo[], searchString: string) => {
+const filterFunction = (items: ValidatorInfo[], searchString: string): ValidatorInfo[] => {
   return items.filter(item => {
     return (
       item.identity?.toLowerCase().includes(searchString.toLowerCase()) ||
@@ -70,37 +44,38 @@ const renderListEmptyComponent = (): JSX.Element => {
 };
 
 const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => {
-  const selectedNetwork = stakingState.selectedNetwork as string;
+  const selectedNetwork = useMemo((): string => stakingState.selectedNetwork || '', [stakingState.selectedNetwork]);
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
   const network = useGetNetworkJson(selectedNetwork);
 
-  const [networkValidatorsInfo, setNetworkValidatorsInfo] = useState<NetworkValidatorsInfo>({
-    bondedValidators: [],
-    isBondedBefore: false,
-    maxNominatorPerValidator: 0,
-    maxNominations: 0,
+  const [validatorListState, dispatchValidatorListState] = useReducer(validatorListReducer, {
+    ...DEFAULT_VALIDATOR_LIST_STATE,
   });
 
-  const [validators, setValidators] = useState<ValidatorInfo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { networkValidatorsInfo, validators, visible, loading, sortFunction } = validatorListState;
 
-  const [visible, setVisible] = useState(false);
-  const [sortBy, setSortBy] = useState<ValidatorSortBy>('Default');
+  const setVisible = useCallback((val: boolean) => {
+    dispatchValidatorListState({ type: ValidatorListActionName.CHANGE_VISIBLE, payload: { visible: val } });
+  }, []);
 
   const openModal = useCallback(() => {
     setVisible(true);
-  }, []);
+  }, [setVisible]);
 
   const closeModal = useCallback(() => {
     setVisible(false);
-  }, []);
+  }, [setVisible]);
 
   const onChangeSortBy = useCallback((val: ValidatorSortBy) => {
     return () => {
-      setSortBy(val);
-      setVisible(false);
+      dispatchValidatorListState({
+        type: ValidatorListActionName.CHANGE_SORT_BY,
+        payload: {
+          sortBy: val,
+        },
+      });
     };
   }, []);
 
@@ -108,25 +83,22 @@ const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => 
     dispatchStakingState({ type: StakingScreenActionType.GO_BACK, payload: null });
   }, [dispatchStakingState]);
 
-  const sortFunction = useCallback(
-    (a: ValidatorInfo, b: ValidatorInfo) => {
-      switch (sortBy) {
-        case 'Return':
-          return sortByReturnedFunc(a, b);
-        case 'Commission':
-          return sortByCommissionFunc(a, b);
-        case 'Default':
-          return sortByDefaultFunc(a, b);
-        default:
-          return defaultSortFunc();
-      }
+  const onPress = useCallback(
+    (val: ValidatorInfo) => {
+      return () => {
+        dispatchStakingState({
+          type: StakingScreenActionType.OPEN_VALIDATOR_DETAIL,
+          payload: {
+            selectedValidator: {
+              validatorInfo: val,
+              networkValidatorsInfo: networkValidatorsInfo,
+            },
+          },
+        });
+      };
     },
-    [sortBy],
+    [dispatchStakingState, networkValidatorsInfo],
   );
-
-  const onPress = useCallback((val: ValidatorInfo) => {
-    return () => {};
-  }, []);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ValidatorInfo>) => {
@@ -145,18 +117,31 @@ const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => 
 
   useEffect(() => {
     let mount = true;
-    setLoading(true);
+    dispatchValidatorListState({ type: ValidatorListActionName.CHANGE_LOADING, payload: { loading: true } });
     getBondingOptions(selectedNetwork, currentAccountAddress)
       .then(bondingOptionInfo => {
         if (mount) {
-          setNetworkValidatorsInfo({
-            maxNominatorPerValidator: bondingOptionInfo.maxNominatorPerValidator,
-            isBondedBefore: bondingOptionInfo.isBondedBefore,
-            bondedValidators: bondingOptionInfo.bondedValidators,
-            maxNominations: bondingOptionInfo.maxNominations,
+          dispatchValidatorListState({
+            type: ValidatorListActionName.INIT,
+            payload: {
+              networkValidatorsInfo: {
+                maxNominatorPerValidator: bondingOptionInfo.maxNominatorPerValidator,
+                isBondedBefore: bondingOptionInfo.isBondedBefore,
+                bondedValidators: bondingOptionInfo.bondedValidators,
+                maxNominations: bondingOptionInfo.maxNominations,
+              },
+              validators: [...bondingOptionInfo.validators],
+              loading: true,
+              sortBy: 'Default',
+              visible: false,
+            },
           });
-          setValidators([...bondingOptionInfo.validators]);
-          setLoading(false);
+
+          setTimeout(() => {
+            if (mount) {
+              dispatchValidatorListState({ type: ValidatorListActionName.CHANGE_LOADING, payload: { loading: false } });
+            }
+          }, 500);
         }
       })
       .catch(console.error);

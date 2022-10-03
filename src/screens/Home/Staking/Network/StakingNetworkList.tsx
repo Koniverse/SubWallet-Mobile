@@ -3,7 +3,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import useGetStakingNetworks from 'hooks/screen/Home/Staking/useGetStakingNetworks';
 import React, { Dispatch, useCallback, useEffect, useState } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
-import { StakingScreenActionParams, StakingScreenActionType } from 'reducers/stakingScreen';
+import { StakingScreenActionParams, StakingScreenActionType } from 'reducers/staking/stakingScreen';
 import StakingNetworkItem from 'screens/Home/Staking/Network/StakingNetworkItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import { getChainBondingBasics } from '../../../../messaging';

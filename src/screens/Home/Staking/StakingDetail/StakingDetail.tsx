@@ -6,7 +6,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { StakingDataType } from 'hooks/types';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
-import { StakingScreenState } from 'reducers/stakingScreen';
+import { StakingScreenState } from 'reducers/staking/stakingScreen';
 import React, { useCallback, useMemo } from 'react';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';

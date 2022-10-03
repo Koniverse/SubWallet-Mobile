@@ -174,6 +174,7 @@ export const en = {
     emptyTokenListMessage: 'Your token will appear here',
     customNetwork: 'Custom Network',
     manageTokenList: 'Manage Token List',
+    enterYourPassword: 'Enter your password',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -226,6 +227,8 @@ export const en = {
     validators: 'Select a validator',
     configureEvmToken: 'Configure EVM Token',
     importEvmToken: 'Import EVM Token',
+    validatorDetail: 'Validator detail',
+    stakingAction: 'Stake',
   },
   tabName: {
     crypto: 'Crypto',
@@ -295,6 +298,27 @@ export const en = {
       minStake: 'Min Stake',
       lowestCommission: 'Lowest commission',
       highestReturn: 'Highest return',
+    },
+    validatorDetail: {
+      totalStake: 'Total stake',
+      expected: 'Expected',
+      ownStake: 'Own Stake',
+      nominatorsCount: 'Nominators count',
+      minimumStake: 'Minimum Stake',
+      commission: 'Commission',
+    },
+  },
+  stakeAction: {
+    stakingAmount: 'Staking Amount',
+    stakingFee: 'Staking Fee',
+    total: 'Total',
+    success: {
+      title: 'Staked Successfully',
+      subText: 'Your staking request has been confirmed. It might take a minute to see changes in your wallet.',
+    },
+    fail: {
+      title: 'Staking Failed',
+      subText: 'There was a problem with your request. You can try again.',
     },
   },
   settings: {

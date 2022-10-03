@@ -1,3 +1,5 @@
+import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
+
 export interface NetworkValidatorsInfo {
   maxNominatorPerValidator: number;
   isBondedBefore: boolean;
@@ -6,3 +8,9 @@ export interface NetworkValidatorsInfo {
 }
 
 export type ValidatorSortBy = 'Default' | 'Commission' | 'Return';
+
+export interface StakeParams {
+  networkKey: string;
+  validator: ValidatorInfo;
+  networkValidatorsInfo: NetworkValidatorsInfo;
+}

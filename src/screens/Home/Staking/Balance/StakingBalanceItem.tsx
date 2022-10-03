@@ -17,6 +17,7 @@ interface Props {
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   width: '100%',
+  paddingHorizontal: 16,
 };
 
 const InfoContainerStyle: StyleProp<ViewStyle> = {

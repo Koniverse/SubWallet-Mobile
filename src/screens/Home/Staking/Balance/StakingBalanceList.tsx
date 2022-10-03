@@ -4,15 +4,18 @@ import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { StakingDataType } from 'hooks/types';
 import React, { Dispatch, useCallback } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
-import { StakingScreenActionParams, StakingScreenActionType } from 'reducers/stakingScreen';
+import { StakingScreenActionParams, StakingScreenActionType } from 'reducers/staking/stakingScreen';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
+import { ColorMap } from 'styles/color';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
   data: StakingDataType[];
   priceMap: Record<string, number>;
   dispatchStakingState: Dispatch<StakingScreenActionParams>;
+  loading: boolean;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -30,7 +33,7 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
   });
 };
 
-const StakingBalanceList = ({ data, priceMap, dispatchStakingState }: Props) => {
+const StakingBalanceList = ({ data, priceMap, dispatchStakingState, loading }: Props) => {
   const isAllAccount = useIsAccountAll();
 
   const handleOnPress = useCallback(
@@ -72,9 +75,12 @@ const StakingBalanceList = ({ data, priceMap, dispatchStakingState }: Props) => 
         renderListEmptyComponent={renderEmpty}
         filterFunction={filteredFunction}
         renderItem={renderItem}
+        loading={loading}
         afterListItem={
           !isAllAccount ? (
-            <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
+            <View style={{ ...ContainerHorizontalPadding, paddingTop: 16 }}>
+              <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
+            </View>
           ) : undefined
         }
       />

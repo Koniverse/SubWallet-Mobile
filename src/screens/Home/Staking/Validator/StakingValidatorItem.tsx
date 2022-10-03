@@ -3,14 +3,15 @@ import { NetworkJson, ValidatorInfo } from '@subwallet/extension-base/background
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { CircleWavyCheck, Users } from 'phosphor-react-native';
+import { Users } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { Image, ImageStyle, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { NetworkValidatorsInfo } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
-import { getBalanceWithSi, toShort } from 'utils/index';
+import { getBalanceWithSi } from 'utils/index';
+import ValidatorName from 'components/Staking/ValidatorName';
 
 interface Props {
   data: ValidatorInfo;
@@ -21,6 +22,7 @@ interface Props {
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   width: '100%',
+  paddingHorizontal: 16,
 };
 
 const InfoContainerStyle: StyleProp<ViewStyle> = {
@@ -34,15 +36,16 @@ const InfoContainerStyle: StyleProp<ViewStyle> = {
 const InfoContentWrapperStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   overflow: 'hidden',
-  flex: 9,
+  flexShrink: 1,
+  width: '100%',
 };
 
 const ValidatorInfoContentStyle: StyleProp<ViewStyle> = {
   paddingLeft: 12,
-  paddingRight: 8,
+  paddingRight: 20,
   display: 'flex',
   flexDirection: 'column',
-  flex: 1,
+  width: '90%',
 };
 
 const RowCenterContainerStyle: StyleProp<ViewStyle> = {
@@ -72,16 +75,13 @@ const ValueStakeInfoTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
-const VerifiedIconStyle: StyleProp<ViewStyle> = {
-  marginLeft: 8,
-};
-
 const NominatorInfoContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-end',
   paddingLeft: 2,
-  flex: 2,
+  flexGrow: 1,
+  flexShrink: 0,
 };
 
 const ExpectedReturnTextStyle: StyleProp<TextStyle> = {
@@ -120,7 +120,8 @@ const AvatarImageStyle: StyleProp<ImageStyle> = {
 };
 
 const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }: Props) => {
-  const { icon, totalStake, expectedReturn, identity, nominatorCount, minBond, isVerified, address } = data;
+  const { icon, totalStake, expectedReturn, nominatorCount, minBond, address } = data;
+  const { maxNominatorPerValidator, bondedValidators, isBondedBefore } = networkValidatorsInfo;
   const tokenSymbol = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [totalStakeValue, totalStakeToken] = getBalanceWithSi(
@@ -131,8 +132,12 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
   );
 
   const isMax = useMemo(() => {
-    return networkValidatorsInfo.maxNominatorPerValidator <= nominatorCount;
-  }, [networkValidatorsInfo.maxNominatorPerValidator, nominatorCount]);
+    return maxNominatorPerValidator <= nominatorCount;
+  }, [maxNominatorPerValidator, nominatorCount]);
+
+  const isBonding = useMemo(() => {
+    return isBondedBefore ? !!bondedValidators.find(val => val.toLowerCase() === address.toLowerCase()) : false;
+  }, [address, bondedValidators, isBondedBefore]);
 
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress(data)}>
@@ -148,12 +153,13 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
             </View>
           )}
           <View style={ValidatorInfoContentStyle}>
-            <View style={RowCenterContainerStyle}>
-              <Text style={ValidatorNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
-                {identity ? identity : toShort(address)}
-              </Text>
-              {isVerified && <CircleWavyCheck size={16} color={ColorMap.primary} style={VerifiedIconStyle} />}
-            </View>
+            <ValidatorName
+              validatorInfo={data}
+              textStyle={ValidatorNameStyle}
+              iconColor={ColorMap.primary}
+              iconSize={16}
+              isBonding={isBonding}
+            />
             <View style={RowCenterContainerStyle}>
               <Text style={TitleStakeInfoTextStyle}>{i18n.stakingScreen.validatorList.totalStake}&nbsp;</Text>
               <BalanceVal

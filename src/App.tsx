@@ -65,6 +65,7 @@ import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
 import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
 import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
 import TransferNft from "screens/TransferNft";
+import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -266,6 +267,7 @@ export const App = () => {
                         <Stack.Screen name="EvmTokens" component={Tokens} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                         <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
+                        <Stack.Screen name="StakeAction" component={StakeActionScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

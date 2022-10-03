@@ -5,12 +5,12 @@ import { ScrollViewStyle } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
-import { defaultSortFunc } from 'utils/function';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useLazyList } from 'hooks/useLazyList';
 import { ActivityLoading } from 'components/ActivityLoading';
+import { defaultSortFunc } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 interface RightIconOpt {
@@ -87,10 +87,18 @@ export function FlatListScreen<T>({
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
+    let unmount = false;
     if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+      if (!unmount) {
+        setPageNumber(1);
+        flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+      }
     }
-  }, [sortFunction]);
+
+    return () => {
+      unmount = true;
+    };
+  }, [setPageNumber, sortFunction]);
 
   useEffect(() => {
     setTimeout(() => {

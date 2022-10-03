@@ -7,7 +7,7 @@ import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { BUTTON_ACTIVE_OPACITY } from '../../../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
 interface Props {
   onPressSearchBar?: () => void;
