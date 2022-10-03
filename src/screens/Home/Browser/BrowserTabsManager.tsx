@@ -8,7 +8,8 @@ import { RootState } from 'stores/index';
 import { StyleProp, View } from 'react-native';
 import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
 import { BrowserSliceTab, SiteInfo } from 'stores/types';
-import { clearAllTabScreenshots, updateActiveTab } from 'stores/updater';
+import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -48,13 +49,14 @@ function getTabItemWrapperStyle(isTabActive: boolean): StyleProp<any> {
 
 function ConfirmationTrigger() {
   const navigation = useNavigation<RootNavigationProps>();
+  const isLocked = useSelector((state: RootState) => state.appState.isLocked);
   const { isEmptyRequests, isDisplayConfirmation } = useConfirmations();
 
   useEffect(() => {
-    if (isDisplayConfirmation && !isEmptyRequests) {
+    if (isDisplayConfirmation && !isLocked && !isEmptyRequests) {
       navigation.navigate('ConfirmationPopup');
     }
-  }, [isDisplayConfirmation, isEmptyRequests, navigation]);
+  }, [isDisplayConfirmation, isEmptyRequests, navigation, isLocked]);
 
   return <></>;
 }
@@ -70,6 +72,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
   const navigation = useNavigation<RootNavigationProps>();
   const currentActiveTabRef = useRef<BrowserTabRef>(null);
+  const isEmptyAccounts = useCheckEmptyAccounts();
 
   useEffect(() => {
     return () => {
@@ -79,7 +82,19 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   }, []);
 
   useEffect(() => {
+    if (isEmptyAccounts) {
+      if (navigation.canGoBack()) {
+        navigation.navigate('Home');
+      } else {
+        navigation.replace('Home');
+      }
+    }
+  }, [navigation, isEmptyAccounts]);
+
+  useEffect(() => {
     if (params.url) {
+      createNewTabIfEmpty(params.url);
+
       setPropSiteInfo({
         name: params.name || params.url,
         url: params.url,

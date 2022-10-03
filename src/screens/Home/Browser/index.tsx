@@ -12,7 +12,6 @@ import { RootState } from 'stores/index';
 import { BrowserItem } from 'components/BrowserItem';
 import { StoredSiteInfo } from 'stores/types';
 import { Button } from 'components/Button';
-import { openPressSiteItem } from 'screens/Home/Browser/shared';
 import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 import { EmptyList } from 'components/EmptyList';
 
@@ -70,7 +69,6 @@ export const BrowserScreen = () => {
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
-  const isEmptyTabs = !tabsNumber;
 
   const renderSiteItem = (item: StoredSiteInfo) => {
     return (
@@ -78,16 +76,14 @@ export const BrowserScreen = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => {
-          openPressSiteItem(navigation, item, isEmptyTabs);
-        }}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
       />
     );
   };
 
   const onPressSearchBar = useCallback(() => {
-    navigation.navigate('BrowserSearch', { isOpenNewTab: isEmptyTabs });
-  }, [navigation, isEmptyTabs]);
+    navigation.navigate('BrowserSearch');
+  }, [navigation]);
 
   const onOpenBrowserTabs = useCallback(() => {
     navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
