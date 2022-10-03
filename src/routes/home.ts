@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {NavigatorScreenParams} from "@react-navigation/native";
-import {NFTStackParamList} from "screens/Home/NFT/NFTStackScreen";
+import { NavigatorScreenParams } from '@react-navigation/native';
+import { NFTStackParamList } from 'screens/Home/NFT/NFTStackScreen';
 
 export interface NftScreenParams {
   refresh: boolean;
