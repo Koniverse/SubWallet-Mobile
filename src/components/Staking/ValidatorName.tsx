@@ -1,5 +1,5 @@
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { CircleWavyCheck, CheckCircle } from 'phosphor-react-native';
+import { CircleWavyCheck, Trophy } from 'phosphor-react-native';
 import React from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
@@ -52,7 +52,7 @@ const ValidatorName = ({
       </View>
       <View style={ValidatorIconContainerStyle}>
         {isVerified && <CircleWavyCheck size={iconSize} color={iconColor} style={IconStyle} />}
-        {!onlyVerifiedIcon && isBonding && <CheckCircle size={iconSize} color={iconColor} style={IconStyle} />}
+        {!onlyVerifiedIcon && isBonding && <Trophy size={iconSize} color={iconColor} style={IconStyle} />}
       </View>
     </View>
   );

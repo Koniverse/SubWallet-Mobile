@@ -122,6 +122,8 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
   const [rawAmount, setRawAmount] = useState<number>(-1);
   const [loading, setLoading] = useState(false);
 
+  const canStake = parseFloat(senderFreeBalance) > rawAmount && rawAmount >= 0;
+
   const balanceFormat = useMemo((): BalanceFormatType => {
     return getBalanceFormat(networkKey, selectedToken, chainRegistry);
   }, [chainRegistry, networkKey, selectedToken]);
@@ -164,22 +166,16 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     validator,
   ]);
 
-  const onChangeAmount = useCallback(
-    (value?: string) => {
-      if (!value) {
-        return;
-      }
-
-      let parsedValue = parseFloat(value) / 10 ** (network.decimals as number);
-
-      if (isNaN(parsedValue)) {
-        setRawAmount(-1);
-      } else {
-        setRawAmount(parsedValue);
-      }
-    },
-    [network.decimals],
-  );
+  const onChangeAmount = useCallback((value?: string) => {
+    if (!value) {
+      return;
+    }
+    if (isNaN(parseFloat(value))) {
+      setRawAmount(-1);
+    } else {
+      setRawAmount(parseFloat(value));
+    }
+  }, []);
 
   const goBack = useCallback(() => {
     homeNavigation.navigate('Staking');
@@ -194,7 +190,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     getBondingTxInfo({
       networkKey: networkKey,
       nominatorAddress: currentAccountAddress,
-      amount: rawAmount,
+      amount: reformatAmount.toNumber(),
       validatorInfo: validator,
       isBondedBefore,
       bondedValidators,
@@ -218,6 +214,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     isBondedBefore,
     networkKey,
     rawAmount,
+    reformatAmount,
     stakeActionNavigation,
     stakeParams,
     validator,
@@ -269,7 +266,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
             </TouchableOpacity>
           </View>
           <SubmitButton
-            disabled={rawAmount <= 0}
+            disabled={!canStake}
             isBusy={loading}
             title={i18n.common.continue}
             style={{
