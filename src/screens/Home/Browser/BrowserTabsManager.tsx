@@ -8,7 +8,7 @@ import { RootState } from 'stores/index';
 import { StyleProp, View } from 'react-native';
 import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
 import { BrowserSliceTab, SiteInfo } from 'stores/types';
-import { clearAllTabScreenshots, updateActiveTab } from 'stores/updater';
+import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -80,6 +80,8 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
 
   useEffect(() => {
     if (params.url) {
+      createNewTabIfEmpty(params.url);
+
       setPropSiteInfo({
         name: params.name || params.url,
         url: params.url,

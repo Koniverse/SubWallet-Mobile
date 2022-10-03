@@ -11,7 +11,6 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { Alert, ListRenderItemInfo } from 'react-native';
 import { clearHistory } from 'stores/updater';
-import { openPressSiteItem } from 'screens/Home/Browser/shared';
 import { EmptyList } from 'components/EmptyList';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
@@ -20,7 +19,6 @@ const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
 
 export const HistoryDetail = () => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
-  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
 
   const _clearHistory = () => {
@@ -41,7 +39,7 @@ export const HistoryDetail = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => openPressSiteItem(navigation, item, !tabsNumber)}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
       />
     );
   };

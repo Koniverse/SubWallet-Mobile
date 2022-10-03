@@ -10,7 +10,6 @@ import { ListRenderItemInfo } from 'react-native';
 import { BrowserItem } from 'components/BrowserItem';
 import { GlobeHemisphereEast, Star } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import { openPressSiteItem } from 'screens/Home/Browser/shared';
 import { EmptyList } from 'components/EmptyList';
 
 const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
@@ -19,7 +18,6 @@ const filterFunction = (items: StoredSiteInfo[], searchString: string) => {
 
 export const FavouritesDetail = () => {
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
 
   const renderSiteItem = ({ item }: ListRenderItemInfo<StoredSiteInfo>) => {
@@ -28,7 +26,7 @@ export const FavouritesDetail = () => {
         key={item.id}
         leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
         text={item.url}
-        onPress={() => openPressSiteItem(navigation, item, !tabsNumber)}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
       />
     );
   };
