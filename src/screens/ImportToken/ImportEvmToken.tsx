@@ -192,15 +192,15 @@ export const ImportEvmToken = ({
             selectedItem={formState.data.chain}
           />
 
-          <TextField disabled={true} label={i18n.common.symbol} text={formState.data.symbol} />
+          <TextField label={i18n.common.symbol} text={formState.data.symbol} />
 
           <TextField disabled={true} label={i18n.common.decimals} text={formState.data.decimals} />
 
           <QrScannerScreen
             qrModalVisible={isShowQrModalVisible}
             onPressCancel={() => setShowQrModalVisible(false)}
-            onChangeAddress={(text: string) => onChangeValue('smartContract')(text)}
-            networkKey={formState.data.chain}
+            onChangeAddress={(text: string) => onChangeValue('contractAddress')(text)}
+            networkKey={formState.data.chain || 'default'}
             token={'contract'}
             scanMessage={i18n.common.toImportToken}
           />

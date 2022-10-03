@@ -11,12 +11,12 @@ import { Aperture } from 'phosphor-react-native';
 export type NFTStackParamList = {
   CollectionList: undefined;
   Collection: { collectionId: string };
-  NFT: { collectionId: string; nftId: string };
+  NftDetail: { collectionId: string; nftId: string };
 };
 export type NavigationProps = NativeStackScreenProps<NFTStackParamList & RootStackParamList>;
 export type NFTNavigationProps = NavigationProps['navigation'];
 export type NFTCollectionProps = NativeStackScreenProps<NFTStackParamList, 'Collection'>;
-export type NFTDetailProps = NativeStackScreenProps<NFTStackParamList, 'NFT'>;
+export type NFTDetailProps = NativeStackScreenProps<NFTStackParamList, 'NftDetail'>;
 export const renderEmptyNFT = () => {
   return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
 };
@@ -28,7 +28,7 @@ const NFTStackScreen = () => {
     <NFTStack.Navigator screenOptions={{ headerShown: false }}>
       <NFTStack.Screen name="CollectionList" component={NftCollectionList} />
       <NFTStack.Screen name="Collection" component={NftItemList} />
-      <NFTStack.Screen name="NFT" component={NftDetail} />
+      <NFTStack.Screen name="NftDetail" component={NftDetail} />
     </NFTStack.Navigator>
   );
 };

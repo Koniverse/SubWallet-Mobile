@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { EmptyListPlaceholder } from 'screens/Home/Browser/EmptyListPlaceholder';
 import { GlobeHemisphereEast, GlobeSimple } from 'phosphor-react-native';
 import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -15,6 +14,7 @@ import { StoredSiteInfo } from 'stores/types';
 import { Button } from 'components/Button';
 import { openPressSiteItem } from 'screens/Home/Browser/shared';
 import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
+import { EmptyList } from 'components/EmptyList';
 
 const searchTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -127,7 +127,7 @@ export const BrowserScreen = () => {
             )}
           </ScrollView>
         ) : (
-          <EmptyListPlaceholder icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
+          <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
         )}
       </>
     </ScreenContainer>

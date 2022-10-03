@@ -8,7 +8,6 @@ import { Plus } from 'phosphor-react-native';
 import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
 import { useNavigation } from '@react-navigation/native';
 import { NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
-import { RootNavigationProps } from 'routes/index';
 
 const NftCollectionListStyle: StyleProp<any> = {
   flex: 1,
@@ -23,7 +22,6 @@ const filteredCollection = (items: NftCollection[], searchString: string) => {
 const NftCollectionList = () => {
   const { nftCollections } = useFetchNftCollection();
   const navigation = useNavigation<NFTNavigationProps>();
-  const rootNavigation = useNavigation<RootNavigationProps>();
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NftCollection>) => {
@@ -50,7 +48,7 @@ const NftCollectionList = () => {
         rightIconOption={{
           icon: Plus,
           onPress: () => {
-            rootNavigation.navigate('ImportEvmNft');
+            navigation.navigate('ImportEvmNft');
           },
         }}
         numberColumns={2}

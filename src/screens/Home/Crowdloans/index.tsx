@@ -1,26 +1,21 @@
 import React, { useCallback, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo, Text, View } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import { CrowdloanItem, getGroupKey } from 'screens/Home/Crowdloans/CrowdloanItem';
 import { CrowdloanItemType } from '../../../types';
-import { centerStyle, emptyListTextStyle } from 'styles/sharedStyles';
 import { FunnelSimple, Rocket } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { CrowdloanFilter } from 'screens/Home/Crowdloans/CrowdloanFilter';
 import { FilterOptsType } from 'types/ui-types';
 import { FlatListScreen } from 'components/FlatListScreen';
+import { EmptyList } from 'components/EmptyList';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;
 };
 
 const renderListEmptyComponent = () => {
-  return (
-    <View style={centerStyle}>
-      <Rocket size={80} color={'rgba(255, 255, 255, 0.3)'} weight={'regular'} />
-      <Text style={emptyListTextStyle}>{i18n.common.emptyCrowdloanListMessage}</Text>
-    </View>
-  );
+  return <EmptyList title={i18n.common.emptyCrowdloanListMessage} icon={Rocket} />;
 };
 
 function getListByFilterOpt(items: CrowdloanItemType[], filterOpts: FilterOptsType) {

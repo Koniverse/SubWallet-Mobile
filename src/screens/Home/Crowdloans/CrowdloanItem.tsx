@@ -86,7 +86,7 @@ function getParaStateLabelStyle(paraState: CrowdloanParaState): StyleProp<any> {
 
 function getParaStateLabel(paraState: CrowdloanParaState) {
   if (paraState.valueOf() === CrowdloanParaState.COMPLETED.valueOf()) {
-    return i18n.common.winner;
+    return i18n.common.win;
   }
 
   if (paraState === CrowdloanParaState.FAILED.valueOf()) {

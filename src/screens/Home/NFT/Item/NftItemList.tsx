@@ -39,7 +39,7 @@ const NftItemList = ({
     ({ item }: ListRenderItemInfo<_NftItem>) => {
       const key = `${item.collectionId}-${item.id}`;
       const onPress = () => {
-        navigation.navigate('NFT', { collectionId, nftId: key });
+        navigation.navigate('NftDetail', { collectionId, nftId: key });
       };
 
       return <NftItem key={key} nftItem={item} collectionImage={collection?.image} onPress={onPress} />;

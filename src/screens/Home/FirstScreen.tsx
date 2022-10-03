@@ -42,7 +42,7 @@ export const FirstScreen = () => {
   const SECRET_TYPE: AccountActionType[] = [
     {
       icon: Article,
-      title: i18n.title.importSecretPhrase,
+      title: i18n.title.importBySecretPhrase,
       onCLickButton: () => {
         setSelectedAction('ImportSecretPhrase');
         setSelectModalVisible(false);
@@ -53,7 +53,7 @@ export const FirstScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.title.importEVMPrivateKey,
+      title: i18n.title.importByPrivateKey,
       onCLickButton: () => {
         navigation.navigate('ImportPrivateKey');
         setSelectModalVisible(false);

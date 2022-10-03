@@ -50,7 +50,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: Article,
-      title: i18n.title.importSecretPhrase,
+      title: i18n.title.importBySecretPhrase,
       onCLickButton: () => {
         setSelectedAction('ImportSecretPhrase');
         setModalVisible(false);
@@ -61,7 +61,7 @@ export const AccountsScreen = () => {
     },
     {
       icon: LockKey,
-      title: i18n.title.importEVMPrivateKey,
+      title: i18n.title.importByPrivateKey,
       onCLickButton: () => {
         navigation.navigate('ImportPrivateKey');
         setModalVisible(false);
@@ -150,7 +150,11 @@ export const AccountsScreen = () => {
   const renderFooterComponent = () => {
     return (
       <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton, marginTop: 16 }}>
-        <SubmitButton backgroundColor={ColorMap.dark2} title={i18n.common.addAccount} onPress={onCreateAccount} />
+        <SubmitButton
+          backgroundColor={ColorMap.dark2}
+          title={i18n.common.addOrConnectAccount}
+          onPress={onCreateAccount}
+        />
       </View>
     );
   };

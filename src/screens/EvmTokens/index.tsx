@@ -118,7 +118,7 @@ export const Tokens = () => {
           title: isEditMode ? i18n.common.done : i18n.common.edit,
           onPress: () => setEditMode(!isEditMode),
         }}
-        title={i18n.settings.tokens}
+        title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
         items={Object.values(evmTokenMap)}
         autoFocus={false}
         filterFunction={filterFunction}
