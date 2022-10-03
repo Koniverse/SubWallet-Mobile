@@ -126,6 +126,13 @@ export const ImportEvmToken = ({
     }
   }, [formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
 
+  const onUpdateContractAddress = (text: string) => {
+    if (formState.refs.contractAddress && formState.refs.contractAddress.current) {
+      // @ts-ignore
+      formState.refs.contractAddress.current.onChange(text);
+    }
+  };
+
   const handleChangeValue = useCallback(
     (key: string) => {
       return (text: string) => {
@@ -199,7 +206,7 @@ export const ImportEvmToken = ({
           <QrScannerScreen
             qrModalVisible={isShowQrModalVisible}
             onPressCancel={() => setShowQrModalVisible(false)}
-            onChangeAddress={(text: string) => onChangeValue('contractAddress')(text)}
+            onChangeAddress={(text: string) => onUpdateContractAddress(text)}
             networkKey={formState.data.chain || 'default'}
             token={'contract'}
             scanMessage={i18n.common.toImportToken}
