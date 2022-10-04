@@ -19,11 +19,12 @@ const getJsInjectContent = (showLog?: boolean) => {
   setTimeout(() => {
     var info = {
       url: window.location.href,
-      version: JSON.parse(localStorage.getItem('application') || '{}').version
+      version: JSON.parse(localStorage.getItem('application') || '{}').version,
+      userAgent: navigator.userAgent
     }
   
     window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': info }))
-  }, 2000);
+  }, 300);
 `;
   // Show webview log in development environment
   if (showLog) {
@@ -173,10 +174,11 @@ class WebRunnerHandler {
         }
         return true;
       } else if (id === '-1') {
-        const info = response as { url: string; version: string };
+        const info = response as { url: string; version: string, userAgent: string };
         console.debug('### Web Runner Info:', info);
         this.runnerState.url = info.url;
         this.runnerState.version = info.version;
+        this.runnerState.userAgent = info.userAgent;
         return true;
       } else if (id === '-2') {
         console.debug('### Web Runner Console:', ...(response as any[]));
