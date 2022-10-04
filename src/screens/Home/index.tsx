@@ -48,6 +48,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
         headerShown: false,
         tabBarButton: props => {
           let customStyle = {
+            flexDirection: 'column',
             // opacity: !props.accessibilityState?.selected ? 0.2 : 1,
           };
           if (props.accessibilityState?.selected) {
@@ -110,6 +111,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
         name={'Crowdloans'}
         component={CrowdloansScreen}
         options={{
+          tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => {
             return <Rocket size={24} color={color} weight={'bold'} />;
           },
