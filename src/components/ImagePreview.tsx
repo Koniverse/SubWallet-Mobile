@@ -1,8 +1,8 @@
 import { Images } from 'assets/index';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { Image, StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
-import Video from 'react-native-video';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
+import FastImage from 'react-native-fast-image';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
@@ -103,8 +103,6 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
     }
   }, [borderPlace, borderRadius]);
 
-  const videoRef = useRef<Video>(null);
-
   const handleOnLoad = useCallback(() => {
     dispatchImageState({ type: ImageActionType.UPDATE, payload: { loading: false } });
   }, []);
@@ -150,20 +148,17 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   return (
     <View style={[ContainerStyle, style, borderStyle]}>
       {showImage ? (
-        <Image style={ImageStyle} source={{ uri: url }} onLoad={handleOnLoad} onError={handleImageError} />
+        <FastImage style={ImageStyle} source={{ uri: url }} onLoad={handleOnLoad} onError={handleImageError} />
       ) : !imageError ? (
-        <Video
-          ref={videoRef}
+        <FastImage
           resizeMode={'contain'}
           source={{ uri: url }}
           style={VideoStyle}
           onError={handleVideoError}
           onLoad={handleOnLoad}
-          repeat={true}
-          muted={true}
         />
       ) : (
-        <Image style={ImageStyle} source={Images.default} />
+        <FastImage style={ImageStyle} source={Images.default} />
       )}
       {loading && <ActivityIndicator style={IndicatorStyle} animating={true} />}
     </View>

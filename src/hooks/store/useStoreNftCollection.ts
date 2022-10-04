@@ -16,7 +16,7 @@ export default function useStoreNftCollection(): StoreStatus {
     let cancel = false;
 
     if (isWebRunnerReady) {
-      console.log('--- Setup redux: networkMap');
+      console.log('--- Setup redux: nftCollection');
 
       const _update = (payload: NftCollectionJson) => {
         if (cancel) {
