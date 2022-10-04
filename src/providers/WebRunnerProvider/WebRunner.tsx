@@ -11,6 +11,7 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 
 const WEB_SERVER_PORT = 9135;
+const LONG_TIMEOUT = 3600000; //30*60*1000
 
 const getJsInjectContent = (showLog?: boolean) => {
   let injectedJS = `
@@ -72,7 +73,7 @@ class WebRunnerHandler {
     this.eventEmitter?.emit('update-status', 'reloading');
   }
 
-  pingCheck(timeCheck: number = 999, timeout = 6666) {
+  pingCheck(timeCheck: number = 999, timeout = 6666, maxRetry = 3) {
     let retry = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -82,7 +83,7 @@ class WebRunnerHandler {
       this.pingTimeout = setTimeout(() => {
         const offsetTime = (this.lastTimeResponse && new Date().getTime() - this.lastTimeResponse) || 0;
         if (offsetTime > timeout) {
-          if (retry < 3) {
+          if (retry < maxRetry) {
             this.ping();
             check();
             retry += 1;
@@ -193,14 +194,16 @@ class WebRunnerHandler {
     AppState.addEventListener('change', (state: string) => {
       const now = new Date().getTime();
       if (state === 'active') {
-        if (this.runnerState.status === 'crypto_ready') {
+        if (this.lastActiveTime && now - this.lastActiveTime > LONG_TIMEOUT) {
+          this.reload();
+        } else if (this.runnerState.status === 'crypto_ready') {
           this.ping();
-          this.pingCheck();
+          this.pingCheck(999, 6666, 0);
           this.startPing();
         }
       } else {
-        this.stopPing();
         this.lastActiveTime = now;
+        this.stopPing();
       }
     });
   }
