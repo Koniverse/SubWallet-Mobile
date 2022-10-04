@@ -329,7 +329,11 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   };
 
   const goBack = () => {
-    navigation.navigate('Home', { tab: 'Browser' });
+    if (navigation.canGoBack()) {
+      navigation.navigate('Home', { tab: 'Browser' });
+    } else {
+      navigation.replace('Home', { tab: 'Browser' });
+    }
   };
 
   const bottomButtonList: BrowserActionButtonType[] = [
@@ -504,7 +508,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
             <IconButton icon={HouseSimple} onPress={goBack} />
           </View>
         </View>
-        <View style={{ flex: 1, position: 'relative' }}>
+        <View style={{ flex: 1, position: 'relative', backgroundColor: ColorMap.dark1 }}>
           {isWebviewReady ? (
             <WebView
               ref={webviewRef}

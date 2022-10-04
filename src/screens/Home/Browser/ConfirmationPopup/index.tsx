@@ -60,6 +60,7 @@ export const ConfirmationPopup = () => {
   const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
   const currentConfirmationItem = confirmationItems[confirmationIndex];
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const isLocked = useSelector((state: RootState) => state.appState.isLocked);
   const isArrowLeftDisabled = !(confirmationIndex > 0);
   const isArrowRightDisabled = !(confirmationIndex < confirmationItemsLength - 1);
   const onPressPrevButton = () => {
@@ -129,10 +130,10 @@ export const ConfirmationPopup = () => {
   };
 
   useEffect(() => {
-    if (!isDisplayConfirmation || isEmptyRequests) {
+    if (isLocked || !isDisplayConfirmation || isEmptyRequests) {
       navigation.canGoBack() && navigation.goBack();
     }
-  }, [isEmptyRequests, isDisplayConfirmation, navigation]);
+  }, [isEmptyRequests, isDisplayConfirmation, navigation, isLocked]);
 
   useEffect(() => {
     if (confirmationIndex && (confirmationIndex < 0 || confirmationIndex > confirmationItemsLength - 1)) {
