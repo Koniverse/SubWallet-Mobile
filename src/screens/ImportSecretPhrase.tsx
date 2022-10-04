@@ -86,14 +86,16 @@ export const ImportSecretPhrase = ({
       .finally(() => setBusy(false));
   };
 
-  useEffect(() => {
-    focus('seed')();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
     onSubmitForm: validateSeedAndGoToNextScreen,
   });
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('transitionEnd', () => {
+      focus('seed')();
+    });
+
+    return unsubscribe;
+  }, [focus, navigation]);
 
   const _onImportSeed = (curName: string, password: string): void => {
     if (curName && password && account) {
@@ -128,7 +130,6 @@ export const ImportSecretPhrase = ({
                 ref={formState.refs.seed}
                 style={{ marginBottom: 8, paddingTop: 16 }}
                 value={formState.data.seed}
-                autoFocus={true}
                 onChangeText={onChangeValue('seed')}
                 onSubmitEditing={onSubmitField('seed')}
                 errorMessages={formState.errors.seed}
