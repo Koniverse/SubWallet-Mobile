@@ -206,7 +206,7 @@ class WebRunnerHandler {
 
           const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
           const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
-          if (chromeVersion && Number(chromeVersion) < 75) {
+          if (chromeVersion && Number(chromeVersion) < 74) {
             renderUpdateAndroidSystemWebView();
           }
         }
