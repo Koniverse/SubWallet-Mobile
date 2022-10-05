@@ -1,5 +1,5 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
-import { AppState, NativeSyntheticEvent, Platform, View } from 'react-native';
+import { Alert, AppState, Linking, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
 import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
@@ -174,11 +174,24 @@ class WebRunnerHandler {
         }
         return true;
       } else if (id === '-1') {
-        const info = response as { url: string; version: string, userAgent: string };
+        const info = response as { url: string; version: string; userAgent: string };
         console.debug('### Web Runner Info:', info);
         this.runnerState.url = info.url;
         this.runnerState.version = info.version;
         this.runnerState.userAgent = info.userAgent;
+        if (Platform.OS === 'android') {
+          const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
+          const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
+          if (chromeVersion && Number(chromeVersion) < 74) {
+            Alert.alert('Warning', 'Please update Android System Webview to continue', [
+              {
+                text: 'OK',
+                onPress: () => Linking.openURL('market://details?id=com.google.android.webview'),
+              },
+            ]);
+          }
+        }
+
         return true;
       } else if (id === '-2') {
         console.debug('### Web Runner Console:', ...(response as any[]));
