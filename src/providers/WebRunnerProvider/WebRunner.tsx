@@ -182,7 +182,7 @@ class WebRunnerHandler {
         this.runnerState.userAgent = info.userAgent;
         if (Platform.OS === 'android') {
           const renderWarningAlert = () => {
-            Alert.alert('Warning', 'Please use device which have Google Play Store to continue', [
+            Alert.alert(i18n.warningTitle.warning, i18n.common.useDeviceHaveGooglePlayStore, [
               {
                 text: i18n.common.ok,
                 onPress: renderWarningAlert,
@@ -190,19 +190,24 @@ class WebRunnerHandler {
             ]);
           };
 
-          const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
-          const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
-          if (chromeVersion && Number(chromeVersion) < 74) {
-            Alert.alert('Warning', 'Please update Android System Webview to continue', [
+          const renderUpdateAndroidSystemWebView = () => {
+            Alert.alert(i18n.warningTitle.warning, i18n.common.pleaseUpdateAndroidSystemWebView, [
               {
                 text: i18n.common.ok,
                 onPress: () => {
+                  renderUpdateAndroidSystemWebView();
                   Linking.canOpenURL('market://details?id=com.google.android.webview')
                     .then(() => Linking.openURL('market://details?id=com.google.android.webview'))
                     .catch(() => renderWarningAlert());
                 },
               },
             ]);
+          };
+
+          const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
+          const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
+          if (chromeVersion && Number(chromeVersion) < 75) {
+            renderUpdateAndroidSystemWebView();
           }
         }
 
