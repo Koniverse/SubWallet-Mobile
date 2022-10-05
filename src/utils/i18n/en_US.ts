@@ -175,6 +175,8 @@ export const en = {
     manageTokenList: 'Manage Token List',
     noEvmChainAvailable: 'No EVM chain available',
     addNftSuccess: 'Successfully added a NFT collection',
+    useDeviceHaveGooglePlayStore: 'Please use a device with Google Play Store installed to continue using this app.',
+    pleaseUpdateAndroidSystemWebView: 'Please update Android System Webview to continue using this app.',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
