@@ -107,6 +107,12 @@ import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 import { WebRunnerStatus } from 'providers/contexts';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from './errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
+import {
+  ActiveCronAndSubscriptionMap,
+  CronServiceType,
+  RequestInitCronAndSubscription,
+  SubscriptionServiceType,
+} from 'types/background';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -280,11 +286,6 @@ export function sendMessage<TMessageType extends MessageTypes>(
 
     postMessage({ id, message, request: request || {}, origin: undefined });
   });
-}
-
-export async function hotReload() {
-  // @ts-ignore
-  return sendMessage('mobile:hotReload', {});
 }
 
 export async function editAccount(address: string, name: string): Promise<boolean> {
@@ -1021,4 +1022,78 @@ export async function parseEVMTransactionInput(
 
 export async function subscribeAuthUrl(callback: (data: AuthUrls) => void): Promise<AuthUrls> {
   return sendMessage('pri(authorize.subscribe)', null, callback);
+}
+
+export async function initCronAndSubscription(
+  request: RequestInitCronAndSubscription,
+): Promise<ActiveCronAndSubscriptionMap> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.init)', request);
+}
+
+export async function subscribeActiveCronAndSubscriptionServiceMap(
+  callback: (data: ActiveCronAndSubscriptionMap) => void,
+): Promise<ActiveCronAndSubscriptionMap> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback);
+}
+
+export async function startCronService(request: CronServiceType): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cron.start)', request);
+}
+
+export async function startMultiCronServices(request: CronServiceType[]): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cron.multi.start)', request);
+}
+
+export async function stopCronService(request: CronServiceType): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cron.stop)', request);
+}
+
+export async function stopMultiCronServices(request: CronServiceType[]): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cron.multi.stop)', request);
+}
+
+export async function restartCronService(request: CronServiceType): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cron.restart)', request);
+}
+
+export async function restartMultiCronServices(request: CronServiceType[]): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cron.multi.restart)', request);
+}
+
+export async function startSubscriptionService(request: SubscriptionServiceType): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(subscription.start)', request);
+}
+
+export async function startMultiSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(subscription.multi.start)', request);
+}
+
+export async function stopSubscriptionService(request: SubscriptionServiceType): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(subscription.stop)', request);
+}
+
+export async function stopMultiSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(subscription.multi.stop)', request);
+}
+
+export async function restartSubscriptionService(request: SubscriptionServiceType): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(subscription.restart)', request);
+}
+
+export async function restartMultiSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(subscription.multi.restart)', request);
 }

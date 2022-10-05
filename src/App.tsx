@@ -61,6 +61,7 @@ import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
 import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
 import TransferNft from 'screens/TransferNft';
 import { ExportAccount } from 'screens/ExportAccount';
+import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -165,6 +166,7 @@ export const App = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
+  useStoreBackgroundService();
   useStoreNftCollection();
   useStoreNft();
   useStoreChainRegistry();

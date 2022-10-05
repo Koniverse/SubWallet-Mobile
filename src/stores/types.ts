@@ -19,6 +19,7 @@ import {
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
+import { ActiveCronAndSubscriptionMap } from 'types/background';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -116,3 +117,6 @@ export type TransferNftParams = {
 };
 
 export type TransferNftParamsSlice = TransferNftParams & StoreSlice;
+export type BackgroundServiceSlice = {
+  activeState: ActiveCronAndSubscriptionMap;
+};

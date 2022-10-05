@@ -14,6 +14,7 @@ import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
 import i18n from 'utils/i18n/i18n';
+import { restartSubscriptionService } from '../../../../messaging';
 
 interface Prop {
   onPressBack: () => void;
@@ -99,7 +100,7 @@ const TokenHistoryLayer = ({
 
   const _onRefresh = (tabId: string) => {
     setRefreshTabId(tabId);
-    refresh();
+    refresh(restartSubscriptionService('balance'));
   };
   const renderTabContainerHeader = () => {
     const [balanceValue, amountToUsd] = getBalanceValue(tokenBalanceMap, selectedTokenSymbol, selectedNetworkInfo);
