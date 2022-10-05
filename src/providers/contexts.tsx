@@ -11,6 +11,7 @@ export interface WebRunnerState {
   status?: WebRunnerStatus;
   url?: string;
   version?: string;
+  userAgent?: string;
 }
 export interface WebviewElement {
   webRef?: RefObject<WebView | undefined>;

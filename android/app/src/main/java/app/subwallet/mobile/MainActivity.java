@@ -1,4 +1,4 @@
-package com.subwalletmobile;
+package app.subwallet.mobile;
 
 import com.facebook.react.ReactActivity;
 import android.os.Bundle;

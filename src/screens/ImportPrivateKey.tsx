@@ -29,11 +29,6 @@ export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setIsBusy] = useState(false);
 
-  useEffect(() => {
-    focus('privateKey')();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const _onImport = (formState: FormState) => {
     const privateKey = formState.data.privateKey;
     const accountName = formState.data.accountName;
@@ -84,6 +79,13 @@ export const ImportPrivateKey = () => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(privateKeyFormConfig, {
     onSubmitForm: _onImport,
   });
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('transitionEnd', () => {
+      focus('privateKey')();
+    });
+
+    return unsubscribe;
+  }, [focus, navigation]);
   const validatePrivateKey = (currentPrivateKey: string) => {
     if (!currentPrivateKey) {
       return;
