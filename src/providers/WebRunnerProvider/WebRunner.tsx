@@ -1,5 +1,5 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
-import { AppState, NativeSyntheticEvent, Platform, View } from 'react-native';
+import { Alert, AppState, Linking, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
 import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
@@ -9,6 +9,7 @@ import StaticServer from 'react-native-static-server';
 import { initCronAndSubscription, listenMessage } from '../../messaging';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
+import i18n from 'utils/i18n/i18n';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 3600000; //30*60*1000
@@ -190,6 +191,37 @@ class WebRunnerHandler {
         this.runnerState.url = info.url;
         this.runnerState.version = info.version;
         this.runnerState.userAgent = info.userAgent;
+        if (Platform.OS === 'android') {
+          const renderWarningAlert = () => {
+            Alert.alert(i18n.warningTitle.warning, i18n.common.useDeviceHaveGooglePlayStore, [
+              {
+                text: i18n.common.ok,
+                onPress: renderWarningAlert,
+              },
+            ]);
+          };
+
+          const renderUpdateAndroidSystemWebView = () => {
+            Alert.alert(i18n.warningTitle.warning, i18n.common.pleaseUpdateAndroidSystemWebView, [
+              {
+                text: i18n.common.ok,
+                onPress: () => {
+                  renderUpdateAndroidSystemWebView();
+                  Linking.canOpenURL('market://details?id=com.google.android.webview')
+                    .then(() => Linking.openURL('market://details?id=com.google.android.webview'))
+                    .catch(() => renderWarningAlert());
+                },
+              },
+            ]);
+          };
+
+          const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
+          const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
+          if (chromeVersion && Number(chromeVersion) < 74) {
+            renderUpdateAndroidSystemWebView();
+          }
+        }
+
         return true;
       } else if (id === '-2') {
         console.debug('### Web Runner Console:', ...(response as any[]));
