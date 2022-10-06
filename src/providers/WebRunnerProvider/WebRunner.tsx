@@ -173,7 +173,15 @@ class WebRunnerHandler {
                 activeServices: ['chainRegistry', 'balance', 'crowdloan', 'staking'],
               },
               cron: {
-                intervalMap: {},
+                intervalMap: {
+                  recoverApiMap: 20000,
+                  checkApiMapStatus: 5000,
+                  refreshHistory: 60000,
+                  refreshNft: 60000,
+                  refreshPrice: 30000,
+                  refreshStakeUnlockingInfo: 60000,
+                  refreshStakingReward: 60000,
+                },
                 activeServices: ['price', 'nft', 'staking', 'history', 'recoverApi', 'checkApiStatus'],
               },
             }).catch(e => {

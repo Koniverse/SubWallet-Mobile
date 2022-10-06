@@ -1038,62 +1038,32 @@ export async function subscribeActiveCronAndSubscriptionServiceMap(
   return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback);
 }
 
-export async function startCronService(request: CronServiceType): Promise<void> {
+export async function startCronServices(request: CronServiceType[]): Promise<void> {
   // @ts-ignore
   return sendMessage('mobile(cron.start)', request);
 }
 
-export async function startMultiCronServices(request: CronServiceType[]): Promise<void> {
-  // @ts-ignore
-  return sendMessage('mobile(cron.multi.start)', request);
-}
-
-export async function stopCronService(request: CronServiceType): Promise<void> {
+export async function stopCronServices(request: CronServiceType[]): Promise<void> {
   // @ts-ignore
   return sendMessage('mobile(cron.stop)', request);
 }
 
-export async function stopMultiCronServices(request: CronServiceType[]): Promise<void> {
-  // @ts-ignore
-  return sendMessage('mobile(cron.multi.stop)', request);
-}
-
-export async function restartCronService(request: CronServiceType): Promise<void> {
+export async function restartCronServices(request: CronServiceType[]): Promise<void> {
   // @ts-ignore
   return sendMessage('mobile(cron.restart)', request);
 }
 
-export async function restartMultiCronServices(request: CronServiceType[]): Promise<void> {
-  // @ts-ignore
-  return sendMessage('mobile(cron.multi.restart)', request);
-}
-
-export async function startSubscriptionService(request: SubscriptionServiceType): Promise<void> {
+export async function startSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
   // @ts-ignore
   return sendMessage('mobile(subscription.start)', request);
 }
 
-export async function startMultiSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  // @ts-ignore
-  return sendMessage('mobile(subscription.multi.start)', request);
-}
-
-export async function stopSubscriptionService(request: SubscriptionServiceType): Promise<void> {
+export async function stopSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
   // @ts-ignore
   return sendMessage('mobile(subscription.stop)', request);
 }
 
-export async function stopMultiSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  // @ts-ignore
-  return sendMessage('mobile(subscription.multi.stop)', request);
-}
-
-export async function restartSubscriptionService(request: SubscriptionServiceType): Promise<void> {
+export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
   // @ts-ignore
   return sendMessage('mobile(subscription.restart)', request);
-}
-
-export async function restartMultiSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  // @ts-ignore
-  return sendMessage('mobile(subscription.multi.restart)', request);
 }

@@ -19,7 +19,7 @@ import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
 import i18n from 'utils/i18n/i18n';
 import useTokenBalanceItems from 'hooks/screen/Home/Crypto/layers/TokenGroup/useTokenBalanceItems';
-import { restartSubscriptionService } from '../../../../messaging';
+import { restartSubscriptionServices } from '../../../../messaging';
 
 interface Prop {
   isShowZeroBalance?: boolean;
@@ -175,7 +175,7 @@ const TokenGroupLayer = ({
 
   const _onRefresh = (tabId: string) => {
     setRefreshTabId(tabId);
-    refresh(restartSubscriptionService('balance'));
+    refresh(restartSubscriptionServices(['balance']));
   };
 
   return (
