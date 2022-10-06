@@ -33,7 +33,6 @@ export const Textarea = forwardRef((textAreaProps: Props, ref: React.Ref<TextInp
         ref={ref}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
-        returnKeyType="go"
         autoCorrect={false}
         autoFocus={autoFocus}
         autoCapitalize="none"
