@@ -7,7 +7,7 @@ import { Warning } from 'components/Warning';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
-import { CELL_COUNT } from '../constant';
+import { CELL_COUNT } from 'constants/index';
 import useAppLock from 'hooks/useAppLock';
 import TouchID from 'react-native-touch-id';
 import { useSelector } from 'react-redux';

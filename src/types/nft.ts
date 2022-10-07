@@ -1,3 +1,5 @@
+import { NftItem } from '@subwallet/extension-base/background/KoniTypes';
+
 export interface Web3TransferParams {
   rawTx: Record<string, any>;
   estimatedGas: string;
@@ -45,3 +47,10 @@ export interface TransferResponse {
   // common
   balanceError?: boolean;
 }
+
+export type TransferNftParams = {
+  nftItem: NftItem;
+  collectionImage?: string;
+  collectionId: string;
+  senderAddress: string;
+};

@@ -13,7 +13,7 @@ import { Button } from 'components/Button';
 import i18n from 'utils/i18n/i18n';
 import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { DEVICE } from '../../../constant';
+import { DEVICE } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
 
 interface Props {

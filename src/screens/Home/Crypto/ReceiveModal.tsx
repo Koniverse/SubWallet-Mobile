@@ -12,7 +12,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BUTTON_ACTIVE_OPACITY, deviceHeight } from '../../../constant';
+import { BUTTON_ACTIVE_OPACITY, deviceHeight } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';

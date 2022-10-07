@@ -9,7 +9,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging';
 import { Textarea } from 'components/Textarea';
-import { EVM_ACCOUNT_TYPE } from '../constant';
+import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';

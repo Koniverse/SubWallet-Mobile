@@ -4,7 +4,7 @@ import Text from '../Text';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { QrCode } from 'phosphor-react-native';
-import { BUTTON_ACTIVE_OPACITY } from '../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';

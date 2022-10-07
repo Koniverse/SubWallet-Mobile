@@ -3,7 +3,7 @@ import React from 'react';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { BUTTON_ACTIVE_OPACITY } from '../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 
 interface SeedWordProps extends TouchableOpacityProps {
   title: string;
