@@ -86,6 +86,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
         name={'NFT'}
         component={NFTStackScreen}
         options={{
+          tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => {
             return <Aperture size={24} color={color} weight={'bold'} />;
           },
@@ -105,6 +106,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
         name={'Staking'}
         component={StakingScreen}
         options={{
+          tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => {
             return <Database size={24} color={color} weight={'bold'} />;
           },
