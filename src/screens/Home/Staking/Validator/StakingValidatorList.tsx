@@ -1,17 +1,18 @@
+import { useNavigation } from '@react-navigation/native';
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
-import React, { Dispatch, useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
-import { StakingScreenActionParams, StakingScreenActionType, StakingScreenState } from 'reducers/staking/stakingScreen';
 import {
   DEFAULT_VALIDATOR_LIST_STATE,
   ValidatorListActionName,
   validatorListReducer,
 } from 'reducers/staking/validatorList';
+import { HomeNavigationProps } from 'routes/home';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import SortValidatorModal from 'screens/Home/Staking/Validator/SortValidatorModal';
 import StakingValidatorItem from 'screens/Home/Staking/Validator/StakingValidatorItem';
@@ -19,11 +20,7 @@ import { RootState } from 'stores/index';
 import { ValidatorSortBy } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
 import { getBondingOptions } from '../../../../messaging';
-
-interface Props {
-  stakingState: StakingScreenState;
-  dispatchStakingState: Dispatch<StakingScreenActionParams>;
-}
+import { StakingValidatorsProps } from 'routes/staking/stakingScreen';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -43,12 +40,17 @@ const renderListEmptyComponent = (): JSX.Element => {
   return <EmptyStaking />;
 };
 
-const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => {
-  const selectedNetwork = useMemo((): string => stakingState.selectedNetwork || '', [stakingState.selectedNetwork]);
+const StakingValidatorList = ({
+  route: {
+    params: { networkKey },
+  },
+  navigation: { goBack },
+}: StakingValidatorsProps) => {
+  const navigation = useNavigation<HomeNavigationProps>();
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
-  const network = useGetNetworkJson(selectedNetwork);
+  const network = useGetNetworkJson(networkKey);
 
   const [validatorListState, dispatchValidatorListState] = useReducer(validatorListReducer, {
     ...DEFAULT_VALIDATOR_LIST_STATE,
@@ -79,25 +81,20 @@ const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => 
     };
   }, []);
 
-  const goBack = useCallback(() => {
-    dispatchStakingState({ type: StakingScreenActionType.GO_BACK, payload: null });
-  }, [dispatchStakingState]);
-
   const onPress = useCallback(
     (val: ValidatorInfo) => {
       return () => {
-        dispatchStakingState({
-          type: StakingScreenActionType.OPEN_VALIDATOR_DETAIL,
-          payload: {
-            selectedValidator: {
-              validatorInfo: val,
-              networkValidatorsInfo: networkValidatorsInfo,
-            },
+        navigation.navigate('Staking', {
+          screen: 'StakingValidatorDetail',
+          params: {
+            networkKey: networkKey,
+            networkValidatorsInfo: networkValidatorsInfo,
+            validatorInfo: val,
           },
         });
       };
     },
-    [dispatchStakingState, networkValidatorsInfo],
+    [navigation, networkKey, networkValidatorsInfo],
   );
 
   const renderItem = useCallback(
@@ -118,7 +115,7 @@ const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => 
   useEffect(() => {
     let mount = true;
     dispatchValidatorListState({ type: ValidatorListActionName.CHANGE_LOADING, payload: { loading: true } });
-    getBondingOptions(selectedNetwork, currentAccountAddress)
+    getBondingOptions(networkKey, currentAccountAddress)
       .then(bondingOptionInfo => {
         if (mount) {
           dispatchValidatorListState({
@@ -149,13 +146,12 @@ const StakingValidatorList = ({ stakingState, dispatchStakingState }: Props) => 
     return () => {
       mount = false;
     };
-  }, [currentAccountAddress, selectedNetwork]);
+  }, [currentAccountAddress, networkKey]);
 
   return (
     <ContainerWithSubHeader
-      showLeftBtn={true}
       onPressBack={goBack}
-      title={stakingState.title}
+      title={network.chain}
       rightIcon={ArrowsDownUp}
       onPressRightIcon={openModal}>
       <>

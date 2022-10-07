@@ -10,6 +10,7 @@ import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
+import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
@@ -62,8 +63,9 @@ import { Tokens } from 'screens/EvmTokens';
 import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
 import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
 import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
-import TransferNft from "screens/TransferNft";
+import TransferNft from 'screens/TransferNft';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
+import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
 
 const viewContainerStyle: StyleProp<any> = {
@@ -268,6 +270,8 @@ export const App = () => {
                         <Stack.Screen name="StakeAction" component={StakeActionScreen} />
                         <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
+                        <Stack.Screen name="UnStakeAction" component={UnStakeActionScreen} />
+                        <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

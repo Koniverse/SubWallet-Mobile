@@ -1,6 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import {NavigatorScreenParams} from "@react-navigation/native";
-import {NFTStackParamList} from "screens/Home/NFT/NFTStackScreen";
+import { NavigatorScreenParams } from '@react-navigation/native';
+import { StakingScreenStackParamList } from 'routes/staking/stakingScreen';
+import { NFTStackParamList } from 'screens/Home/NFT/NFTStackScreen';
 
 export interface NftScreenParams {
   refresh: boolean;
@@ -11,7 +12,7 @@ export type HomeStackParamList = {
   Crypto: undefined;
   NFT: NavigatorScreenParams<NFTStackParamList>;
   Crowdloans: undefined;
-  Staking: undefined;
+  Staking: NavigatorScreenParams<StakingScreenStackParamList> | undefined;
   Browser: undefined;
 };
 

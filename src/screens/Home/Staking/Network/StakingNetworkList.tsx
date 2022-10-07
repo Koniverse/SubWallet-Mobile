@@ -1,16 +1,15 @@
+import { useNavigation } from '@react-navigation/native';
 import { ChainBondingBasics, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetStakingNetworks from 'hooks/screen/Home/Staking/useGetStakingNetworks';
-import React, { Dispatch, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
-import { StakingScreenActionParams, StakingScreenActionType } from 'reducers/staking/stakingScreen';
 import StakingNetworkItem from 'screens/Home/Staking/Network/StakingNetworkItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
+import i18n from 'utils/i18n/i18n';
 import { getChainBondingBasics } from '../../../../messaging';
-
-interface Props {
-  dispatchStakingState: Dispatch<StakingScreenActionParams>;
-}
+import { HomeNavigationProps } from 'routes/home';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -25,7 +24,9 @@ const filterFunction = (items: NetworkJson[], searchString: string) => {
   return items.filter(item => item.chain.toLowerCase().includes(searchString.toLowerCase()));
 };
 
-const StakingNetworkList = ({ dispatchStakingState }: Props) => {
+const StakingNetworkList = () => {
+  const navigation = useNavigation<HomeNavigationProps>();
+
   const stakingNetworks = useGetStakingNetworks();
   const [chainBondingBasics, setChainBondingBasics] = useState<Record<string, ChainBondingBasics>>({});
   const [loading, setLoading] = useState(true);
@@ -33,13 +34,15 @@ const StakingNetworkList = ({ dispatchStakingState }: Props) => {
   const handlePress = useCallback(
     (network: NetworkJson): (() => void) => {
       return () => {
-        dispatchStakingState({
-          type: StakingScreenActionType.OPEN_VALIDATOR_LIST,
-          payload: { selectedNetwork: network.key, title: network.chain },
+        navigation.navigate('Staking', {
+          screen: 'StakingValidators',
+          params: {
+            networkKey: network.key,
+          },
         });
       };
     },
-    [dispatchStakingState],
+    [navigation],
   );
 
   const renderItem = useCallback(
@@ -74,19 +77,27 @@ const StakingNetworkList = ({ dispatchStakingState }: Props) => {
     };
   }, [stakingNetworks]);
 
+  const goBack = useCallback(() => {
+    navigation.navigate('Staking', {
+      screen: 'StakingBalances',
+    });
+  }, [navigation]);
+
   return (
-    <View style={WrapperStyle}>
-      <FlatListScreen
-        withSubHeader={false}
-        items={stakingNetworks}
-        autoFocus={false}
-        renderListEmptyComponent={renderEmpty}
-        renderItem={renderItem}
-        loading={loading}
-        filterFunction={filterFunction}
-        placeholder={'Search network...'}
-      />
-    </View>
+    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.stakingNetwork}>
+      <View style={WrapperStyle}>
+        <FlatListScreen
+          withSubHeader={false}
+          items={stakingNetworks}
+          autoFocus={false}
+          renderListEmptyComponent={renderEmpty}
+          renderItem={renderItem}
+          loading={loading}
+          filterFunction={filterFunction}
+          placeholder={'Search network...'}
+        />
+      </View>
+    </ContainerWithSubHeader>
   );
 };
 

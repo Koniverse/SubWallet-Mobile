@@ -1,5 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StakeParams } from 'types/staking';
+import { TransactionResultParams } from 'types/tx';
 
 export type StakeActionStackParamList = {
   StakeConfirm: StakeParams;
@@ -10,9 +11,7 @@ export type StakeActionStackParamList = {
   };
   StakeResult: {
     stakeParams: StakeParams;
-    txError: string;
-    txSuccess: boolean;
-    extrinsicHash: string;
+    txParams: TransactionResultParams;
   };
 };
 

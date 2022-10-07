@@ -1,24 +1,23 @@
 import { formatBalance } from '@polkadot/util';
+import { useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
+import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
+import { Plus } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
-import { StakingScreenState } from 'reducers/staking/stakingScreen';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { HomeNavigationProps } from 'routes/home';
+import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
+import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
-
-interface Props {
-  stakingState: StakingScreenState;
-  priceMap: Record<string, number>;
-  stakingData: StakingDataType[];
-}
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -78,92 +77,121 @@ const BalanceConvertedTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.primary,
 };
 
-const StakingDetail = ({ stakingState, priceMap, stakingData }: Props) => {
-  const toast = useToast();
+const StakingDetail = ({
+  route: {
+    params: { networkKey },
+  },
+}: StakingBalanceDetailProps) => {
+  const navigation = useNavigation<HomeNavigationProps>();
 
-  const data = useMemo((): StakingDataType | undefined => {
-    return stakingData.find(item => item.key === stakingState.stakingKey);
-  }, [stakingData, stakingState.stakingKey]);
-  const { staking, reward } = data as StakingDataType;
+  const { data: stakingData, priceMap } = useFetchStaking();
+
+  const [visible, setVisible] = useState(false);
+
+  const data = useMemo((): StakingDataType => {
+    return stakingData.find(item => item.key === networkKey) as StakingDataType;
+  }, [stakingData, networkKey]);
+  const { staking, reward } = data;
 
   const convertedBalanceValue = useMemo(() => {
     return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chainId] || 0}`);
   }, [priceMap, staking.balance, staking.chainId]);
 
-  const handlePressUnStake = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.common.comingSoon);
-  }, [toast]);
+  const openModal = useCallback(() => {
+    setVisible(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setVisible(false);
+  }, []);
+
+  const handleGoBack = useCallback(() => {
+    navigation.navigate('Staking', {
+      screen: 'StakingBalances',
+    });
+  }, [navigation]);
+
+  const handlePressStartStaking = useCallback(() => {
+    navigation.navigate('Staking', {
+      screen: 'StakingValidators',
+      params: {
+        networkKey: networkKey,
+      },
+    });
+  }, [navigation, networkKey]);
 
   return (
-    <View style={WrapperStyle}>
-      <ScrollView style={ScrollViewStyle}>
-        <View style={CenterWrapperStyle}>
-          <View style={ImageContentStyle}>{getNetworkLogo(staking.chainId, 32)}</View>
-        </View>
-        <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
-          <BalanceVal
-            balanceValTextStyle={BalanceTextStyle}
-            // symbolTextStyle={BalanceSymbolTextStyle}
-            symbol={staking.nativeToken}
-            withComma={true}
-            value={staking.balance || '0'}
+    <ContainerWithSubHeader
+      onPressBack={handleGoBack}
+      title={i18n.title.staking}
+      rightIcon={Plus}
+      onPressRightIcon={handlePressStartStaking}>
+      <View style={WrapperStyle}>
+        <ScrollView style={ScrollViewStyle}>
+          <View style={CenterWrapperStyle}>
+            <View style={ImageContentStyle}>{getNetworkLogo(staking.chainId, 32)}</View>
+          </View>
+          <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
+            <BalanceVal
+              balanceValTextStyle={BalanceTextStyle}
+              // symbolTextStyle={BalanceSymbolTextStyle}
+              symbol={staking.nativeToken}
+              withComma={true}
+              value={staking.balance || '0'}
+            />
+          </View>
+          <View style={[CenterWrapperStyle, BalanceConvertedContainerStyle]}>
+            <Text style={BalanceConvertedTextStyle}>(</Text>
+            <BalanceVal
+              balanceValTextStyle={BalanceConvertedTextStyle}
+              // symbolTextStyle={BalanceSymbolTextStyle}
+              symbol={'$'}
+              startWithSymbol={true}
+              withComma={true}
+              value={convertedBalanceValue}
+            />
+            <Text style={BalanceConvertedTextStyle}>)</Text>
+          </View>
+          <BalanceField
+            label={i18n.stakingScreen.stakingDetail.activeStake}
+            value={staking.activeBalance || '0'}
+            token={staking.nativeToken}
+            decimal={0}
+            si={formatBalance.findSi('-')}
           />
-        </View>
-        <View style={[CenterWrapperStyle, BalanceConvertedContainerStyle]}>
-          <Text style={BalanceConvertedTextStyle}>(</Text>
-          <BalanceVal
-            balanceValTextStyle={BalanceConvertedTextStyle}
-            // symbolTextStyle={BalanceSymbolTextStyle}
-            symbol={'$'}
-            startWithSymbol={true}
-            withComma={true}
-            value={convertedBalanceValue}
+          <BalanceField
+            label={i18n.stakingScreen.stakingDetail.unlockingStake}
+            value={staking.unlockingBalance || '0'}
+            token={staking.nativeToken}
+            decimal={0}
+            si={formatBalance.findSi('-')}
           />
-          <Text style={BalanceConvertedTextStyle}>)</Text>
-        </View>
-        <BalanceField
-          label={i18n.stakingScreen.stakingDetail.activeStake}
-          value={staking.activeBalance || '0'}
-          token={staking.nativeToken}
-          decimal={0}
-          si={formatBalance.findSi('-')}
-        />
-        <BalanceField
-          label={i18n.stakingScreen.stakingDetail.unlockingStake}
-          value={staking.unlockingBalance || '0'}
-          token={staking.nativeToken}
-          decimal={0}
-          si={formatBalance.findSi('-')}
-        />
-        <BalanceField
-          label={i18n.stakingScreen.stakingDetail.totalReward}
-          value={reward?.totalReward || '0'}
-          token={staking.nativeToken}
-          decimal={0}
-          si={formatBalance.findSi('-')}
-        />
-        <BalanceField
-          label={i18n.stakingScreen.stakingDetail.latestReward}
-          value={reward?.latestReward || '0'}
-          token={staking.nativeToken}
-          decimal={0}
-          si={formatBalance.findSi('-')}
-        />
-        <BalanceField
-          label={i18n.stakingScreen.stakingDetail.totalSlash}
-          value={reward?.totalSlash || '0'}
-          token={staking.nativeToken}
-          decimal={0}
-          si={formatBalance.findSi('-')}
-        />
-      </ScrollView>
-      <SubmitButton
-        title={i18n.stakingScreen.stakingDetail.unStakeFunds}
-        backgroundColor={ColorMap.danger}
-        onPress={handlePressUnStake}
-      />
-    </View>
+          <BalanceField
+            label={i18n.stakingScreen.stakingDetail.totalReward}
+            value={reward?.totalReward || '0'}
+            token={staking.nativeToken}
+            decimal={0}
+            si={formatBalance.findSi('-')}
+          />
+          <BalanceField
+            label={i18n.stakingScreen.stakingDetail.latestReward}
+            value={reward?.latestReward || '0'}
+            token={staking.nativeToken}
+            decimal={0}
+            si={formatBalance.findSi('-')}
+          />
+          <BalanceField
+            label={i18n.stakingScreen.stakingDetail.totalSlash}
+            value={reward?.totalSlash || '0'}
+            token={staking.nativeToken}
+            decimal={0}
+            si={formatBalance.findSi('-')}
+          />
+        </ScrollView>
+        <SubmitButton title={i18n.stakingScreen.stakingDetail.moreActions} onPress={openModal} />
+        <StakingActionModal closeModal={closeModal} visible={visible} data={data} />
+      </View>
+    </ContainerWithSubHeader>
   );
 };
 

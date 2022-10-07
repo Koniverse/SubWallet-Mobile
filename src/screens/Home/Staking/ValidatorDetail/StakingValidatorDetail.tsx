@@ -7,20 +7,13 @@ import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import React, { useCallback, useMemo, Dispatch } from 'react';
-import { StakingScreenActionParams, StakingScreenActionType, StakingScreenState } from 'reducers/staking/stakingScreen';
+import React, { useCallback, useMemo } from 'react';
 import { RootNavigationProps } from 'routes/index';
 import ValidatorName from 'components/Staking/ValidatorName';
+import { StakingValidatorDetailProps } from 'routes/staking/stakingScreen';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontBold, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { NetworkValidatorsInfo } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
-import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
-
-interface Props {
-  stakingState: StakingScreenState;
-  dispatchStakingState: Dispatch<StakingScreenActionParams>;
-}
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -77,27 +70,17 @@ const HeaderTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
-const ValidatorDetail = ({ stakingState, dispatchStakingState }: Props) => {
+const StakingValidatorDetail = ({
+  route: {
+    params: { validatorInfo, networkValidatorsInfo, networkKey },
+  },
+  navigation: { goBack },
+}: StakingValidatorDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
 
-  const selectedNetwork = useMemo((): string => stakingState.selectedNetwork || '', [stakingState.selectedNetwork]);
-  const validatorInfo = useMemo(
-    (): ValidatorInfo => stakingState.selectedValidator?.validatorInfo as ValidatorInfo,
-    [stakingState.selectedValidator?.validatorInfo],
-  );
-
-  const networkValidatorsInfo = useMemo(
-    (): NetworkValidatorsInfo => stakingState.selectedValidator?.networkValidatorsInfo as NetworkValidatorsInfo,
-    [stakingState.selectedValidator?.networkValidatorsInfo],
-  );
-
-  const network = useGetNetworkJson(selectedNetwork);
+  const network = useGetNetworkJson(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
-
-  const goBack = useCallback(() => {
-    dispatchStakingState({ type: StakingScreenActionType.GO_BACK, payload: null });
-  }, [dispatchStakingState]);
 
   const headerContent = useCallback((): JSX.Element => {
     return (
@@ -117,11 +100,14 @@ const ValidatorDetail = ({ stakingState, dispatchStakingState }: Props) => {
 
   const handlePressStaking = useCallback((): void => {
     navigation.navigate('StakeAction', {
-      validator: validatorInfo,
-      networkKey: selectedNetwork,
-      networkValidatorsInfo: networkValidatorsInfo,
+      screen: 'StakeConfirm',
+      params: {
+        validator: validatorInfo,
+        networkKey: networkKey,
+        networkValidatorsInfo: networkValidatorsInfo,
+      },
     });
-  }, [navigation, selectedNetwork, validatorInfo]);
+  }, [navigation, networkValidatorsInfo, networkKey, validatorInfo]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
@@ -190,4 +176,4 @@ const ValidatorDetail = ({ stakingState, dispatchStakingState }: Props) => {
   );
 };
 
-export default React.memo(ValidatorDetail);
+export default React.memo(StakingValidatorDetail);

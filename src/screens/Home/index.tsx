@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreenProps } from 'routes/index';
-import { StakingScreen } from './Staking/StakingScreen';
+import StakingScreen from './Staking/StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
@@ -9,9 +9,7 @@ import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT } from 'constants/index';
-import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
-import i18n from 'utils/i18n/i18n';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
@@ -26,16 +24,10 @@ interface MainScreenProps {
 const MainScreen = ({ params }: MainScreenProps) => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
-  const toast = useToast();
 
   const tab = useMemo((): keyof HomeStackParamList => {
     return params?.tab || 'Crypto';
   }, [params?.tab]);
-
-  const onPressComingSoonTab = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.common.comingSoon);
-  }, [toast]);
 
   return (
     <Tab.Navigator

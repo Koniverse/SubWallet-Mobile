@@ -1,9 +1,13 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { HomeScreenParams } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
+import { ClaimStakeActionStackParamList } from 'routes/staking/claimAction';
+import { StakeActionStackParamList } from 'routes/staking/stakeAction';
+import { UnStakeActionStackParamList } from 'routes/staking/unStakeAction';
+import { WithdrawStakeActionStackParamList } from 'routes/staking/withdrawAction';
 import { TransferNftParams } from 'types/nft';
-import { StakeParams } from 'types/staking';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -40,7 +44,10 @@ export type RootStackParamList = {
   EvmTokens: undefined;
   ConfigureToken: { contractAddress: string };
   ImportEvmToken: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
-  StakeAction: StakeParams;
+  StakeAction: NavigatorScreenParams<StakeActionStackParamList>;
+  UnStakeAction: NavigatorScreenParams<UnStakeActionStackParamList>;
+  WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;
+  ClaimStakeAction: NavigatorScreenParams<ClaimStakeActionStackParamList>;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -63,3 +70,4 @@ export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
 export type ImportEvmTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportEvmToken'>;
 export type StakeActionProps = NativeStackScreenProps<RootStackParamList, 'StakeAction'>;
+export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeAction'>;

@@ -14,3 +14,22 @@ export interface StakeParams {
   validator: ValidatorInfo;
   networkValidatorsInfo: NetworkValidatorsInfo;
 }
+
+export interface UnStakeParams {
+  networkKey: string;
+  selectedAccount: string;
+  bondedAmount: number;
+}
+
+export interface WithdrawParams {
+  networkKey: string;
+  selectedAccount: string;
+  withdrawAmount: number;
+  nextWithdrawalAction?: string;
+  targetValidator?: string;
+}
+
+export interface ClaimParams {
+  networkKey: string;
+  selectedAccount: string;
+}

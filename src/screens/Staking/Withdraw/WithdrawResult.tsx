@@ -3,17 +3,17 @@ import TransactionResult from 'components/TransactionResult/TransactionResult';
 import React, { useCallback } from 'react';
 import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
-import { StakeResultProps } from 'routes/staking/stakeAction';
+import { WithdrawResultProps } from 'routes/staking/withdrawAction';
 import i18n from 'utils/i18n/i18n';
 
-const StakeResult = ({
+const WithdrawResult = ({
   route: {
     params: {
-      stakeParams,
+      withdrawParams,
       txParams: { txError, txSuccess, extrinsicHash },
     },
   },
-}: StakeResultProps) => {
+}: WithdrawResultProps) => {
   const homeNavigation = useNavigation<HomeNavigationProps>();
   const rootNavigation = useNavigation<RootNavigationProps>();
 
@@ -22,30 +22,30 @@ const StakeResult = ({
   }, [homeNavigation]);
 
   const handleReStake = useCallback(() => {
-    rootNavigation.navigate('StakeAction', {
-      screen: 'StakeConfirm',
-      params: stakeParams,
+    rootNavigation.navigate('WithdrawStakeAction', {
+      screen: 'WithdrawAuth',
+      params: withdrawParams,
     });
-  }, [rootNavigation, stakeParams]);
+  }, [rootNavigation, withdrawParams]);
 
   return (
     <TransactionResult
       isTxSuccess={txSuccess}
       txError={txError}
-      networkKey={stakeParams.networkKey}
+      networkKey={withdrawParams.networkKey}
       extrinsicHash={extrinsicHash}
       backToHome={goHome}
       success={{
-        title: i18n.stakeAction.success.title,
-        subText: i18n.stakeAction.success.subText,
+        title: i18n.withdrawStakeAction.success.title,
+        subText: i18n.withdrawStakeAction.success.subText,
       }}
       fail={{
-        title: i18n.stakeAction.fail.title,
-        subText: i18n.stakeAction.fail.subText,
+        title: i18n.withdrawStakeAction.fail.title,
+        subText: i18n.withdrawStakeAction.fail.subText,
       }}
       handleResend={handleReStake}
     />
   );
 };
 
-export default React.memo(StakeResult);
+export default React.memo(WithdrawResult);

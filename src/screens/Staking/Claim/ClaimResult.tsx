@@ -3,17 +3,17 @@ import TransactionResult from 'components/TransactionResult/TransactionResult';
 import React, { useCallback } from 'react';
 import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
-import { StakeResultProps } from 'routes/staking/stakeAction';
+import { ClaimResultProps } from 'routes/staking/claimAction';
 import i18n from 'utils/i18n/i18n';
 
-const StakeResult = ({
+const ClaimResult = ({
   route: {
     params: {
-      stakeParams,
+      claimParams,
       txParams: { txError, txSuccess, extrinsicHash },
     },
   },
-}: StakeResultProps) => {
+}: ClaimResultProps) => {
   const homeNavigation = useNavigation<HomeNavigationProps>();
   const rootNavigation = useNavigation<RootNavigationProps>();
 
@@ -22,30 +22,30 @@ const StakeResult = ({
   }, [homeNavigation]);
 
   const handleReStake = useCallback(() => {
-    rootNavigation.navigate('StakeAction', {
-      screen: 'StakeConfirm',
-      params: stakeParams,
+    rootNavigation.navigate('ClaimStakeAction', {
+      screen: 'ClaimAuth',
+      params: claimParams,
     });
-  }, [rootNavigation, stakeParams]);
+  }, [claimParams, rootNavigation]);
 
   return (
     <TransactionResult
       isTxSuccess={txSuccess}
       txError={txError}
-      networkKey={stakeParams.networkKey}
+      networkKey={claimParams.networkKey}
       extrinsicHash={extrinsicHash}
       backToHome={goHome}
       success={{
-        title: i18n.stakeAction.success.title,
-        subText: i18n.stakeAction.success.subText,
+        title: i18n.claimStakeAction.success.title,
+        subText: i18n.claimStakeAction.success.subText,
       }}
       fail={{
-        title: i18n.stakeAction.fail.title,
-        subText: i18n.stakeAction.fail.subText,
+        title: i18n.claimStakeAction.fail.title,
+        subText: i18n.claimStakeAction.fail.subText,
       }}
       handleResend={handleReStake}
     />
   );
 };
 
-export default React.memo(StakeResult);
+export default React.memo(ClaimResult);

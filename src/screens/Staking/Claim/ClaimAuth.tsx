@@ -1,7 +1,6 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
 import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
-import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
@@ -9,18 +8,19 @@ import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
-import { StakeAuthProps } from 'routes/staking/stakeAction';
-import ValidatorBriefInfo from 'screens/Staking/Stake/ValidatorBriefInfo';
-import { RootState } from 'stores/index';
+import { ClaimAuthProps } from 'routes/staking/claimAction';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
-import { BN_TEN } from 'utils/chainBalances';
+import {
+  centerStyle,
+  ContainerHorizontalPadding,
+  MarginBottomForSubmitButton,
+  ScrollViewStyle,
+} from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { submitBonding } from '../../../messaging';
+import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -41,37 +41,25 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const StakeAuth = ({
-  route: {
-    params: { stakeParams, feeString, amount: rawAmount },
-  },
-}: StakeAuthProps) => {
-  const { validator, networkKey, networkValidatorsInfo } = stakeParams;
-  const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
+const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
+  const { networkKey, selectedAccount } = claimParams;
 
   const navigation = useNavigation<RootNavigationProps>();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const network = useGetNetworkJson(networkKey);
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [feeString, setFeeString] = useState('');
 
-  const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
-  const amount = useMemo(
-    (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
-    [network.decimals, rawAmount],
-  );
+  const [isTxReady, setIsTxReady] = useState(false);
+  const [balanceError, setBalanceError] = useState(false);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];
   }, [feeString]);
-
-  const totalString = useMemo((): string => {
-    return `${amount} ${selectedToken} + ${feeString}`;
-  }, [amount, feeString, selectedToken]);
 
   const handleOpen = useCallback(() => {
     setVisible(true);
@@ -82,15 +70,16 @@ const StakeAuth = ({
   }, []);
 
   const goBack = useCallback(() => {
-    navigation.navigate('StakeAction', { screen: 'StakeConfirm', params: stakeParams });
-  }, [navigation, stakeParams]);
-
-  const onCancel = useCallback(() => {
     navigation.navigate('Home', { tab: 'Staking' });
   }, [navigation]);
 
-  const handleBondingResponse = useCallback(
+  const handleResponse = useCallback(
     (data: BasicTxResponse) => {
+      if (balanceError) {
+        setError('Your balance is too low to cover fees');
+        setLoading(false);
+      }
+
       if (data.passwordError) {
         setError(data.passwordError);
         setLoading(false);
@@ -107,10 +96,10 @@ const StakeAuth = ({
         setVisible(false);
 
         if (data.status) {
-          navigation.replace('StakeAction', {
-            screen: 'StakeResult',
+          navigation.replace('ClaimStakeAction', {
+            screen: 'ClaimResult',
             params: {
-              stakeParams: stakeParams,
+              claimParams: claimParams,
               txParams: {
                 txError: '',
                 extrinsicHash: data.transactionHash as string,
@@ -119,10 +108,10 @@ const StakeAuth = ({
             },
           });
         } else {
-          navigation.replace('StakeAction', {
-            screen: 'StakeResult',
+          navigation.replace('ClaimStakeAction', {
+            screen: 'ClaimResult',
             params: {
-              stakeParams: stakeParams,
+              claimParams: claimParams,
               txParams: {
                 txError: 'Error submitting transaction',
                 extrinsicHash: data.transactionHash as string,
@@ -133,64 +122,76 @@ const StakeAuth = ({
         }
       }
     },
-    [navigation, stakeParams],
+    [balanceError, navigation, claimParams],
   );
 
   const onSubmit = useCallback(
     (password: string) => {
       setLoading(true);
-      submitBonding(
+      submitStakeClaimReward(
         {
-          networkKey: networkKey,
-          nominatorAddress: currentAccountAddress,
-          amount,
-          validatorInfo: validator,
+          address: selectedAccount,
+          networkKey,
           password,
-          isBondedBefore,
-          bondedValidators,
         },
-        handleBondingResponse,
+        handleResponse,
       )
-        .then(handleBondingResponse)
+        .then(handleResponse)
         .catch(e => {
           console.log(e);
           setLoading(false);
         });
     },
-    [amount, bondedValidators, currentAccountAddress, handleBondingResponse, isBondedBefore, networkKey, validator],
+    [handleResponse, networkKey, selectedAccount],
   );
+
+  useEffect(() => {
+    getStakeClaimRewardTxInfo({
+      address: selectedAccount,
+      networkKey,
+    })
+      .then(resp => {
+        setIsTxReady(true);
+        setBalanceError(resp.balanceError);
+        setFeeString(resp.fee);
+      })
+      .catch(console.error);
+
+    return () => {
+      setIsTxReady(false);
+      setBalanceError(false);
+      setFeeString('');
+    };
+  }, [networkKey, selectedAccount]);
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.stakeAction}
+      title={i18n.title.withdrawStakeAction}
       rightButtonTitle={i18n.common.cancel}
-      onPressRightIcon={onCancel}>
+      onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }}>
-          <ValidatorBriefInfo validator={validator} rightIcon={true} />
-          <AddressField
-            address={currentAccountAddress}
-            label={i18n.common.account}
-            showRightIcon={false}
-            networkPrefix={network.ss58Format}
-          />
-          <BalanceField
-            value={amount.toString()}
-            decimal={0}
-            token={selectedToken}
-            si={formatBalance.findSi('-')}
-            label={i18n.stakeAction.stakingAmount}
-            color={ColorMap.light}
-          />
-          <BalanceField
-            value={fee}
-            decimal={0}
-            token={feeToken}
-            si={formatBalance.findSi('-')}
-            label={i18n.stakeAction.stakingFee}
-          />
-          <TextField text={totalString} label={i18n.stakeAction.total} disabled={true} />
+        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
+          {isTxReady ? (
+            <>
+              <AddressField
+                address={selectedAccount}
+                label={i18n.common.account}
+                showRightIcon={false}
+                networkPrefix={network.ss58Format}
+              />
+              <BalanceField
+                value={fee}
+                decimal={0}
+                token={feeToken}
+                si={formatBalance.findSi('-')}
+                label={i18n.withdrawStakeAction.withdrawFee}
+              />
+              <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
+            </>
+          ) : (
+            <ActivityIndicator animating={true} size={'large'} />
+          )}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -219,4 +220,4 @@ const StakeAuth = ({
   );
 };
 
-export default React.memo(StakeAuth);
+export default React.memo(ClaimAuth);

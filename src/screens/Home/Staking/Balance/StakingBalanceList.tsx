@@ -1,22 +1,19 @@
+import { useNavigation } from '@react-navigation/native';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { SubmitButton } from 'components/SubmitButton';
+import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { StakingDataType } from 'hooks/types';
-import React, { Dispatch, useCallback } from 'react';
+import { Plus } from 'phosphor-react-native';
+import React, { useCallback } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
-import { StakingScreenActionParams, StakingScreenActionType } from 'reducers/staking/stakingScreen';
+import { HomeNavigationProps } from 'routes/home';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
-import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding } from 'styles/sharedStyles';
+import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
-
-interface Props {
-  data: StakingDataType[];
-  priceMap: Record<string, number>;
-  dispatchStakingState: Dispatch<StakingScreenActionParams>;
-  loading: boolean;
-}
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -33,19 +30,24 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
   });
 };
 
-const StakingBalanceList = ({ data, priceMap, dispatchStakingState, loading }: Props) => {
+const StakingBalanceList = () => {
+  const { data, loading, priceMap } = useFetchStaking();
   const isAllAccount = useIsAccountAll();
+
+  const navigation = useNavigation<HomeNavigationProps>();
 
   const handleOnPress = useCallback(
     (stakingData: StakingDataType): (() => void) => {
       return () => {
-        dispatchStakingState({
-          type: StakingScreenActionType.OPEN_STAKING_DETAIL,
-          payload: { stakingKey: stakingData.key },
+        navigation.navigate('Staking', {
+          screen: 'StakingBalanceDetail',
+          params: {
+            networkKey: stakingData.key,
+          },
         });
       };
     },
-    [dispatchStakingState],
+    [navigation],
   );
 
   const renderItem = useCallback(
@@ -63,28 +65,37 @@ const StakingBalanceList = ({ data, priceMap, dispatchStakingState, loading }: P
   );
 
   const handlePressStartStaking = useCallback(() => {
-    dispatchStakingState({ type: StakingScreenActionType.START_STAKING, payload: null });
-  }, [dispatchStakingState]);
+    navigation.navigate('Staking', {
+      screen: 'StakingNetworks',
+    });
+  }, [navigation]);
 
   return (
-    <View style={WrapperStyle}>
-      <FlatListScreen
-        withSubHeader={false}
-        items={data}
-        autoFocus={false}
-        renderListEmptyComponent={renderEmpty}
-        filterFunction={filteredFunction}
-        renderItem={renderItem}
-        loading={loading}
-        afterListItem={
-          !isAllAccount ? (
-            <View style={{ ...ContainerHorizontalPadding, paddingTop: 16 }}>
-              <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
-            </View>
-          ) : undefined
-        }
-      />
-    </View>
+    <ContainerWithSubHeader
+      onPressBack={noop}
+      showLeftBtn={false}
+      title={i18n.title.staking}
+      rightIcon={Plus}
+      onPressRightIcon={handlePressStartStaking}>
+      <View style={WrapperStyle}>
+        <FlatListScreen
+          withSubHeader={false}
+          items={data}
+          autoFocus={false}
+          renderListEmptyComponent={renderEmpty}
+          filterFunction={filteredFunction}
+          renderItem={renderItem}
+          loading={loading}
+          afterListItem={
+            !isAllAccount ? (
+              <View style={{ ...ContainerHorizontalPadding, paddingTop: 16 }}>
+                <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
+              </View>
+            ) : undefined
+          }
+        />
+      </View>
+    </ContainerWithSubHeader>
   );
 };
 

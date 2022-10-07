@@ -24,7 +24,8 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { HomeNavigationProps } from 'routes/home';
-import { StakeActionNavigationProps, StakeConfirmProps } from 'routes/staking/stakeAction';
+import { RootNavigationProps } from 'routes/index';
+import { StakeConfirmProps } from 'routes/staking/stakeAction';
 import { getBalanceFormat } from 'screens/Sending/utils';
 import ValidatorBriefInfo from 'screens/Staking/Stake/ValidatorBriefInfo';
 import { RootState } from 'stores/index';
@@ -102,7 +103,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
   const { validator, networkKey, networkValidatorsInfo } = stakeParams;
 
   const homeNavigation = useNavigation<HomeNavigationProps>();
-  const stakeActionNavigation = useNavigation<StakeActionNavigationProps>();
+  const rootNavigation = useNavigation<RootNavigationProps>();
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
@@ -115,14 +116,12 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
 
   const senderFreeBalance = useFreeBalance(networkKey, currentAccountAddress, network.nativeToken);
 
-  const { icon, address } = validator;
+  const { icon, address, minBond } = validator;
   const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
 
   const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
   const [rawAmount, setRawAmount] = useState<number>(-1);
   const [loading, setLoading] = useState(false);
-
-  const canStake = parseFloat(senderFreeBalance) > rawAmount && rawAmount >= 0;
 
   const balanceFormat = useMemo((): BalanceFormatType => {
     return getBalanceFormat(networkKey, selectedToken, chainRegistry);
@@ -137,6 +136,8 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     (): BigN => new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0])),
     [balanceFormat, rawAmount],
   );
+
+  const canStake = parseFloat(senderFreeBalance) > rawAmount && rawAmount >= 0 && reformatAmount.gte(minBond);
 
   const amountToUsd = useMemo(() => reformatAmount.multipliedBy(new BigN(tokenPrice)), [reformatAmount, tokenPrice]);
 
@@ -167,7 +168,8 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
   ]);
 
   const onChangeAmount = useCallback((value?: string) => {
-    if (!value) {
+    if (value === undefined) {
+      setRawAmount(0);
       return;
     }
     if (isNaN(parseFloat(value))) {
@@ -198,10 +200,13 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     })
       .then(res => {
         if (!res.balanceError) {
-          stakeActionNavigation.navigate('StakeAuth', {
-            stakeParams: stakeParams,
-            amount: rawAmount,
-            feeString: res.fee,
+          rootNavigation.navigate('StakeAction', {
+            screen: 'StakeAuth',
+            params: {
+              stakeParams: stakeParams,
+              amount: rawAmount,
+              feeString: res.fee,
+            },
           });
         }
       })
@@ -215,7 +220,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     networkKey,
     rawAmount,
     reformatAmount,
-    stakeActionNavigation,
+    rootNavigation,
     stakeParams,
     validator,
   ]);
@@ -223,7 +228,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.stakingAction}
+      title={i18n.title.stakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
