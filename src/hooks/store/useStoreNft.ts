@@ -19,7 +19,8 @@ export default function useStoreNft(): StoreStatus {
       console.log('--- Setup redux: networkMap');
 
       const _update = (payload: NftJson) => {
-        if (cancel) {
+        // todo: currently payload may be undefined, need to investigate in web-runner
+        if (cancel || !payload) {
           return;
         }
 

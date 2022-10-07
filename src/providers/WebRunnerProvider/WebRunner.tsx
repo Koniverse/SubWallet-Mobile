@@ -177,7 +177,7 @@ class WebRunnerHandler {
                   recoverApiMap: 20000,
                   checkApiMapStatus: 5000,
                   refreshHistory: 60000,
-                  refreshNft: 60000,
+                  refreshNft: 6000,
                   refreshPrice: 30000,
                   refreshStakeUnlockingInfo: 60000,
                   refreshStakingReward: 60000,
