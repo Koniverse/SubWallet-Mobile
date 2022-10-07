@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { AccountActionType } from 'types/ui-types';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from '../../constant';
+import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 
 const imageBackgroundStyle: StyleProp<any> = {

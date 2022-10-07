@@ -31,8 +31,9 @@ const getBalanceWithDecimals = ({ balance, decimals }: BalanceWithDecimalsProps)
   return new BigN(balance).div(BN_TEN.pow(decimals));
 };
 
-const getConvertedBalance = (balance: BigN, price: string) =>
-  balance && price ? balance.multipliedBy(new BigN(price)) : BN_ZERO;
+export const getConvertedBalance = (balance: BigN, price: string) => {
+  return balance && price ? balance.multipliedBy(new BigN(price)) : BN_ZERO;
+};
 
 export type BalanceValueType = {
   balanceValue: BigN;

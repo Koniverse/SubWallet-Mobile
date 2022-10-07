@@ -4,7 +4,7 @@ import { StyleProp, TextInput, View } from 'react-native';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontBold } from 'styles/sharedStyles';
-import { CELL_COUNT } from '../constant';
+import { CELL_COUNT } from 'constants/index';
 
 const codeFiledRoot: StyleProp<any> = {
   marginTop: 20,

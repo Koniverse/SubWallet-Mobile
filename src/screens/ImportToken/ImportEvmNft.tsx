@@ -14,7 +14,7 @@ import { QrScannerScreen } from 'screens/QrScannerScreen';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
-import { BUTTON_ACTIVE_OPACITY } from '../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';

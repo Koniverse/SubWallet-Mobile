@@ -3,7 +3,7 @@ import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import { BUTTON_ACTIVE_OPACITY } from '../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { Eye, EyeSlash } from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
 

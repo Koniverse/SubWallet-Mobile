@@ -12,6 +12,7 @@ interface Props extends FieldBaseProps {
   decimal: number;
   token: string;
   si: SiDef;
+  color?: string;
 }
 
 const textStyle: StyleProp<any> = {
@@ -25,7 +26,6 @@ const balanceStyle: StyleProp<any> = {
   paddingLeft: 16,
   paddingRight: 8,
   paddingBottom: 10,
-  color: ColorMap.disabled,
   flex: 1,
 };
 
@@ -40,13 +40,13 @@ const unitStyle: StyleProp<any> = {
   paddingRight: 16,
 };
 
-export const BalanceField = ({ value, decimal, token, si, ...fieldBase }: Props) => {
+export const BalanceField = ({ value, decimal, token, si, color = ColorMap.disabled, ...fieldBase }: Props) => {
   const [balanceValue, balanceToken] = getBalanceWithSi(value, decimal, si, token);
 
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <Text style={balanceStyle}>{balanceValue}</Text>
+        <Text style={[balanceStyle, { color: color }]}>{balanceValue}</Text>
         <Text style={unitStyle}>{balanceToken}</Text>
       </View>
     </FieldBase>

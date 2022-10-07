@@ -1,4 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
+import useStoreStakeUnlockingInfo from 'hooks/store/useStoreStakeUnlockingInfo';
+import useStoreStaking from 'hooks/store/useStoreStaking';
+import useStoreStakingReward from 'hooks/store/useStoreStakingReward';
 // SPDX-License-Identifier: Apache-2.0
 import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,6 +10,7 @@ import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
+import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
@@ -60,6 +64,8 @@ import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
 import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
 import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
 import TransferNft from 'screens/TransferNft';
+import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
+import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 
@@ -166,9 +172,13 @@ export const App = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
+
   useStoreBackgroundService();
+
+  // Nft
   useStoreNftCollection();
   useStoreNft();
+
   useStoreChainRegistry();
   useStorePrice();
   useStoreBalance();
@@ -177,6 +187,11 @@ export const App = () => {
   useStoreAuthUrls();
   useStoreConfirmation();
   useStoreEvmToken();
+
+  // Staking
+  useStoreStaking();
+  useStoreStakingReward();
+  useStoreStakeUnlockingInfo();
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -255,8 +270,11 @@ export const App = () => {
                         <Stack.Screen name="EvmTokens" component={Tokens} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                         <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
+                        <Stack.Screen name="StakeAction" component={StakeActionScreen} />
                         <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
+                        <Stack.Screen name="UnStakeAction" component={UnStakeActionScreen} />
+                        <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

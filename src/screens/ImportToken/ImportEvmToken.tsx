@@ -8,7 +8,7 @@ import i18n from 'utils/i18n/i18n';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { BUTTON_ACTIVE_OPACITY } from '../../constant';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { NetworkField } from 'components/Field/Network';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import useGetActiveEvmChains from 'hooks/screen/ImportNft/useGetActiveEvmChains';

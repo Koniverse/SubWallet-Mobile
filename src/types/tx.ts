@@ -17,3 +17,9 @@ export interface TransferResultType {
   txError?: Array<TransferError>;
   extrinsicHash?: string;
 }
+
+export interface TransactionResultParams {
+  txError: string;
+  txSuccess: boolean;
+  extrinsicHash: string;
+}

@@ -1,27 +1,21 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreenProps } from 'routes/index';
-import { StakingScreen } from './StakingScreen';
+import StakingScreen from './Staking/StakingScreen';
 
 import { TouchableOpacity } from 'react-native';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BOTTOM_BAR_HEIGHT } from '../../constant';
-import { useToast } from 'react-native-toast-notifications';
+import { BOTTOM_BAR_HEIGHT } from 'constants/index';
 import { ColorMap } from 'styles/color';
-import i18n from 'utils/i18n/i18n';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeScreenParams, HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
-
-function checkTabNotCompleted(target: string) {
-  return target.includes('Staking');
-}
 
 interface MainScreenProps {
   params?: HomeScreenParams;
@@ -30,16 +24,10 @@ interface MainScreenProps {
 const MainScreen = ({ params }: MainScreenProps) => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
-  const toast = useToast();
 
   const tab = useMemo((): keyof HomeStackParamList => {
     return params?.tab || 'Crypto';
   }, [params?.tab]);
-
-  const onPressComingSoonTab = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.common.comingSoon);
-  }, [toast]);
 
   return (
     <Tab.Navigator
@@ -62,11 +50,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
           }
           // @ts-ignore
           props.style = [[...props.style], customStyle];
-          if (checkTabNotCompleted(props.to || '')) {
-            return <TouchableOpacity {...props} activeOpacity={1} onPress={() => onPressComingSoonTab()} />;
-          } else {
-            return <TouchableOpacity {...props} activeOpacity={1} />;
-          }
+          return <TouchableOpacity {...props} activeOpacity={1} />;
         },
         tabBarIconStyle: {
           marginTop: 10,
@@ -102,6 +86,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
         name={'NFT'}
         component={NFTStackScreen}
         options={{
+          tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => {
             return <Aperture size={24} color={color} weight={'bold'} />;
           },
@@ -121,6 +106,7 @@ const MainScreen = ({ params }: MainScreenProps) => {
         name={'Staking'}
         component={StakingScreen}
         options={{
+          tabBarHideOnKeyboard: true,
           tabBarIcon: ({ color }) => {
             return <Database size={24} color={color} weight={'bold'} />;
           },

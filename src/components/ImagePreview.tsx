@@ -1,8 +1,7 @@
 import { Images } from 'assets/index';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
+import { StyleProp, View, ActivityIndicator, ViewStyle, Image } from 'react-native';
 import { ColorMap } from 'styles/color';
-import FastImage from 'react-native-fast-image';
 import Video from 'react-native-video';
 
 interface Props {
@@ -73,6 +72,14 @@ const DEFAULT_IMAGE_STATE: ImageState = {
   loading: true,
 };
 
+const getIdFromUrl = (url?: string) => {
+  if (!url) {
+    return '';
+  }
+  const urlSplitArray = url.split('/');
+  return urlSplitArray[urlSplitArray.length - 1];
+};
+
 const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: Props) => {
   const [imageState, dispatchImageState] = useReducer(
     handleReducer,
@@ -134,7 +141,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   }, [backupUrl, url]);
 
   useEffect(() => {
-    if (url !== mainUrl) {
+    if (getIdFromUrl(url) !== getIdFromUrl(mainUrl)) {
       dispatchImageState({
         type: ImageActionType.INIT,
         payload: {
@@ -151,7 +158,12 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   return (
     <View style={[ContainerStyle, style, borderStyle]}>
       {showImage ? (
-        <FastImage style={ImageStyle} source={{ uri: url }} onLoad={handleOnLoad} onError={handleImageError} />
+        <Image
+          style={ImageStyle}
+          source={mainUrl ? { uri: url } : Images.default}
+          onLoad={handleOnLoad}
+          onError={handleImageError}
+        />
       ) : !imageError ? (
         <Video
           ref={videoRef}
@@ -164,7 +176,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           muted={true}
         />
       ) : (
-        <FastImage style={ImageStyle} source={Images.default} />
+        <Image style={ImageStyle} source={Images.default} />
       )}
       {loading && <ActivityIndicator style={IndicatorStyle} animating={true} />}
     </View>

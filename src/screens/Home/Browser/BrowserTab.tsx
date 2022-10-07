@@ -38,7 +38,7 @@ import {
 } from 'react-native-webview/lib/WebViewTypes';
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
-import { DEVICE } from '../../../constant';
+import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';

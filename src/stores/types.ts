@@ -9,7 +9,7 @@ import {
   ResponseSettingsType,
   TransactionHistoryItemType,
   NftCollectionJson,
-  NftItem,
+  NftItem, StakingJson, StakeUnlockingJson, StakingRewardJson,
   CustomEvmToken,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
@@ -109,14 +109,9 @@ export type NftSlice = NftJson & StoreSlice;
 
 export type NftCollectionSlice = NftCollectionJson & StoreSlice;
 
-export type TransferNftParams = {
-  nftItem: NftItem;
-  collectionImage?: string;
-  collectionId: string;
-  senderAddress: string;
-};
-
-export type TransferNftParamsSlice = TransferNftParams & StoreSlice;
+export type StakingSlice = StakingJson & StoreSlice;
+export type StakeUnlockingSlice = StakeUnlockingJson & StoreSlice;
+export type StakingRewardSlice = StakingRewardJson & StoreSlice;
 export type BackgroundServiceSlice = {
   activeState: ActiveCronAndSubscriptionMap;
 };

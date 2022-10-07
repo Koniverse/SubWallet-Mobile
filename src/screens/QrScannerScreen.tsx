@@ -3,7 +3,7 @@ import { SafeAreaView, StatusBar, StyleProp, TouchableOpacity, View } from 'reac
 import Text from 'components/Text';
 import { FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { BUTTON_ACTIVE_OPACITY, deviceHeight, deviceWidth } from '../constant';
+import { BUTTON_ACTIVE_OPACITY, deviceHeight, deviceWidth } from 'constants/index';
 import { X } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';

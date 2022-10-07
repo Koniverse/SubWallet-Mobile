@@ -14,6 +14,9 @@ import nftCollectionReducer from './NftCollection';
 import authUrlsReducer from './AuthUrls';
 import appStateReducer from './AppState';
 import browserReducer from './Browser';
+import stakingReducer from './Staking';
+import stakingRewardReducer from './StakingReward';
+import stakeUnlockingReducer from './StakeUnlockingInfo';
 import evmTokenReducer from './EvmToken';
 import backgroundServiceReducer from './BackgroundService';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
@@ -37,6 +40,7 @@ const persistConfig = {
     'nft',
     'authUrls',
     'browser',
+    'staking',
   ],
 };
 
@@ -58,6 +62,9 @@ const rootReducer = combineReducers({
   confirmation: confirmationReducer,
   nftCollection: nftCollectionReducer,
   nft: nftReducer,
+  staking: stakingReducer,
+  stakeUnlockingInfo: stakeUnlockingReducer,
+  stakingReward: stakingRewardReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
