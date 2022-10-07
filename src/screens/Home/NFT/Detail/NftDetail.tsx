@@ -133,7 +133,7 @@ const propDetail = (title: string, valueDict: Record<string, any>, key: number):
     );
   }
 
-  return <View />;
+  return <View key={key} />;
 };
 
 const NftDetail = ({

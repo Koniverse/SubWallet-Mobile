@@ -1,8 +1,9 @@
 import { Images } from 'assets/index';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { Image, StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
-import Video from 'react-native-video';
+import { StyleProp, View, ActivityIndicator, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
+import FastImage from 'react-native-fast-image';
+import Video from 'react-native-video';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
@@ -150,7 +151,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   return (
     <View style={[ContainerStyle, style, borderStyle]}>
       {showImage ? (
-        <Image style={ImageStyle} source={{ uri: url }} onLoad={handleOnLoad} onError={handleImageError} />
+        <FastImage style={ImageStyle} source={{ uri: url }} onLoad={handleOnLoad} onError={handleImageError} />
       ) : !imageError ? (
         <Video
           ref={videoRef}
@@ -163,7 +164,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           muted={true}
         />
       ) : (
-        <Image style={ImageStyle} source={Images.default} />
+        <FastImage style={ImageStyle} source={Images.default} />
       )}
       {loading && <ActivityIndicator style={IndicatorStyle} animating={true} />}
     </View>

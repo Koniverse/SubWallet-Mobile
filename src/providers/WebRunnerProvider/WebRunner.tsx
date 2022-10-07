@@ -1,5 +1,5 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
-import { AppState, NativeSyntheticEvent, Platform, View } from 'react-native';
+import { Alert, AppState, Linking, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
 import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
@@ -9,8 +9,10 @@ import StaticServer from 'react-native-static-server';
 import { listenMessage } from '../../messaging';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
+import i18n from 'utils/i18n/i18n';
 
 const WEB_SERVER_PORT = 9135;
+const LONG_TIMEOUT = 3600000; //30*60*1000
 
 const getJsInjectContent = (showLog?: boolean) => {
   let injectedJS = `
@@ -18,11 +20,12 @@ const getJsInjectContent = (showLog?: boolean) => {
   setTimeout(() => {
     var info = {
       url: window.location.href,
-      version: JSON.parse(localStorage.getItem('application') || '{}').version
+      version: JSON.parse(localStorage.getItem('application') || '{}').version,
+      userAgent: navigator.userAgent
     }
   
     window.ReactNativeWebView.postMessage(JSON.stringify({id: '-1', 'response': info }))
-  }, 2000);
+  }, 300);
 `;
   // Show webview log in development environment
   if (showLog) {
@@ -72,7 +75,7 @@ class WebRunnerHandler {
     this.eventEmitter?.emit('update-status', 'reloading');
   }
 
-  pingCheck(timeCheck: number = 999, timeout = 6666) {
+  pingCheck(timeCheck: number = 999, timeout = 6666, maxRetry = 3) {
     let retry = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -82,7 +85,7 @@ class WebRunnerHandler {
       this.pingTimeout = setTimeout(() => {
         const offsetTime = (this.lastTimeResponse && new Date().getTime() - this.lastTimeResponse) || 0;
         if (offsetTime > timeout) {
-          if (retry < 3) {
+          if (retry < maxRetry) {
             this.ping();
             check();
             retry += 1;
@@ -172,10 +175,42 @@ class WebRunnerHandler {
         }
         return true;
       } else if (id === '-1') {
-        const info = response as { url: string; version: string };
+        const info = response as { url: string; version: string; userAgent: string };
         console.debug('### Web Runner Info:', info);
         this.runnerState.url = info.url;
         this.runnerState.version = info.version;
+        this.runnerState.userAgent = info.userAgent;
+        if (Platform.OS === 'android') {
+          const renderWarningAlert = () => {
+            Alert.alert(i18n.warningTitle.warning, i18n.common.useDeviceHaveGooglePlayStore, [
+              {
+                text: i18n.common.ok,
+                onPress: renderWarningAlert,
+              },
+            ]);
+          };
+
+          const renderUpdateAndroidSystemWebView = () => {
+            Alert.alert(i18n.warningTitle.warning, i18n.common.pleaseUpdateAndroidSystemWebView, [
+              {
+                text: i18n.common.ok,
+                onPress: () => {
+                  renderUpdateAndroidSystemWebView();
+                  Linking.canOpenURL('market://details?id=com.google.android.webview')
+                    .then(() => Linking.openURL('market://details?id=com.google.android.webview'))
+                    .catch(() => renderWarningAlert());
+                },
+              },
+            ]);
+          };
+
+          const chromeVersionStr = info.userAgent.split(' ').find(item => item.startsWith('Chrome'));
+          const chromeVersion = chromeVersionStr?.split('/')[1].split('.')[0];
+          if (chromeVersion && Number(chromeVersion) < 74) {
+            renderUpdateAndroidSystemWebView();
+          }
+        }
+
         return true;
       } else if (id === '-2') {
         console.debug('### Web Runner Console:', ...(response as any[]));
@@ -193,14 +228,16 @@ class WebRunnerHandler {
     AppState.addEventListener('change', (state: string) => {
       const now = new Date().getTime();
       if (state === 'active') {
-        if (this.runnerState.status === 'crypto_ready') {
+        if (this.lastActiveTime && now - this.lastActiveTime > LONG_TIMEOUT) {
+          this.reload();
+        } else if (this.runnerState.status === 'crypto_ready') {
           this.ping();
-          this.pingCheck();
+          this.pingCheck(999, 6666, 0);
           this.startPing();
         }
       } else {
-        this.stopPing();
         this.lastActiveTime = now;
+        this.stopPing();
       }
     });
   }

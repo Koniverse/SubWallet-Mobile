@@ -6,4 +6,5 @@
   <color name="primary_light">#FFFFFF</color>
   <color name="transparent">#00ffffff</color>
   <color name="light_color">#a2191f</color>
+  <color name="ic_launcher_background">#242424</color>
 </resources>

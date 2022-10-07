@@ -96,6 +96,10 @@ export function createNewTab(url: string): void {
   store.dispatch({ type: 'browser/createNewTab', payload: url });
 }
 
+export function createNewTabIfEmpty(url: string): void {
+  store.dispatch({ type: 'browser/createNewTabIfEmpty', payload: url });
+}
+
 export function closeTab(tabId: string): void {
   store.dispatch({ type: 'browser/closeTab', payload: tabId });
 }

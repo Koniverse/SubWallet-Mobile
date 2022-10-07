@@ -180,6 +180,8 @@ export const vi = {
     maxUnBond: 'Max unbond',
     total: 'Total',
     chooseAction: 'Choose Action',
+    useDeviceHaveGooglePlayStore: 'Please use a device with Google Play Store installed to continue using this app.',
+    pleaseUpdateAndroidSystemWebView: 'Please update Android System Webview to continue using this app.',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',

@@ -1,4 +1,4 @@
-package com.subwalletmobile.newarchitecture;
+package app.subwallet.mobile.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.subwalletmobile.BuildConfig;
-import com.subwalletmobile.newarchitecture.components.MainComponentsRegistry;
-import com.subwalletmobile.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import app.subwallet.mobile.BuildConfig;
+import app.subwallet.mobile.newarchitecture.components.MainComponentsRegistry;
+import app.subwallet.mobile.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -138,7 +138,11 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
   }, [navigation]);
 
   const goToBrowserHome = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Browser' });
+    if (navigation.canGoBack()) {
+      navigation.navigate('Home', { tab: 'Browser' });
+    } else {
+      navigation.replace('Home', { tab: 'Browser' });
+    }
   }, [navigation]);
 
   const browserHeaderRightComponent = useMemo(() => {

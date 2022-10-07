@@ -50,6 +50,7 @@
     "react-native-confirmation-code-field": "^7.3.0",
     "react-native-document-picker": "^8.1.0",
     "react-native-elements": "^3.4.2",
+    "react-native-fast-image": "^8.6.1",
     "react-native-fs": "^2.20.0",
     "react-native-image-picker": "^4.8.4",
     "react-native-linear-gradient": "^2.5.6",

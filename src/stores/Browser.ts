@@ -26,6 +26,14 @@ const browserSlice = createSlice({
       state.activeTab = id;
       state.tabs = [...state.tabs, { url, id }];
     },
+    createNewTabIfEmpty: (state, { payload: url }: PayloadAction<string>) => {
+      if (!state.tabs.length) {
+        const id = generateId('tab');
+
+        state.activeTab = id;
+        state.tabs = [...state.tabs, { url, id }];
+      }
+    },
     closeTab: (state, { payload: id }: PayloadAction<string>) => {
       const targetTabIndex = state.tabs.findIndex(t => t.id === id);
 
