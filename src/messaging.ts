@@ -48,7 +48,7 @@ import {
   EvmNftTransactionRequest,
   EvmTokenJson,
   NetworkJson,
-  NftCollectionJson,
+  NftCollection,
   NftJson,
   NftTransactionResponse,
   NftTransferExtra,
@@ -746,7 +746,8 @@ export async function subscribeNft(
   return sendMessage('pri(nft.getSubscription)', request, callback);
 }
 
-export async function subscribeNftCollection(callback: (data: NftCollectionJson) => void): Promise<NftCollectionJson> {
+export async function subscribeNftCollection(callback: (data: NftCollection[]) => void): Promise<NftCollection[]> {
+  // @ts-ignore
   return sendMessage('pri(nftCollection.getSubscription)', null, callback);
 }
 
