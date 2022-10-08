@@ -14,6 +14,7 @@ import {
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
+import {ContainerWithSubHeader} from 'components/ContainerWithSubHeader';
 
 interface Props {
   isTxSuccess: boolean;
@@ -71,13 +72,12 @@ const ErrorTextStyle: StyleProp<TextStyle> = {
 
 const ActionContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 8,
-  display: 'flex',
   width: '100%',
   flexDirection: 'column',
 };
 
 const ButtonStyle: StyleProp<ViewStyle> = {
-  marginBottom: 18,
+  marginBottom: 16,
 };
 
 const ImageContentStyle: StyleProp<ImageStyle> = {
@@ -115,52 +115,59 @@ const TransactionResult = ({
   }, [scanExplorerTxUrl]);
 
   return (
-    <View style={ContainerStyle}>
-      <View style={ResultContainerStyle}>
-        {isTxSuccess ? (
-          <>
-            <Image source={require('assets/success-status.png')} style={ImageContentStyle} />
-            <Text style={ResultTitleStyle}>{success.title}</Text>
-            <Text style={ResultSubTextStyle}>{success.subText}</Text>
-          </>
-        ) : (
-          <ScrollView style={ScrollContentStyle} contentContainerStyle={ScrollContainerStyle}>
-            <Image source={require('assets/fail-status.png')} style={ImageContentStyle} />
-            <Text style={ResultTitleStyle}>{fail.title}</Text>
-            <Text style={ResultSubTextStyle}>{fail.subText}</Text>
-            <Text style={ErrorTextStyle}>{txError}</Text>
-          </ScrollView>
-        )}
+    <ContainerWithSubHeader onPressBack={() => {}} showLeftBtn={false}>
+      <View style={ContainerStyle}>
+        <View style={ResultContainerStyle}>
+          {isTxSuccess ? (
+            <>
+              <Image source={require('assets/success-status.png')} style={ImageContentStyle} />
+              <Text style={ResultTitleStyle}>{success.title}</Text>
+              <Text style={ResultSubTextStyle}>{success.subText}</Text>
+            </>
+          ) : (
+            <ScrollView style={ScrollContentStyle} contentContainerStyle={ScrollContainerStyle}>
+              <Image source={require('assets/fail-status.png')} style={ImageContentStyle} />
+              <Text style={ResultTitleStyle}>{fail.title}</Text>
+              <Text style={ResultSubTextStyle}>{fail.subText}</Text>
+              <Text style={ErrorTextStyle}>{txError}</Text>
+            </ScrollView>
+          )}
+        </View>
+        <View style={ActionContainerStyle}>
+          {isTxSuccess ? (
+            <>
+              <SubmitButton
+                backgroundColor={ColorMap.dark2}
+                title={i18n.common.backToHome}
+                onPress={backToHome}
+                style={ButtonStyle}
+              />
+              <SubmitButton
+                disabled={!isSupportScanExplorer || !scanExplorerTxUrl}
+                title={i18n.common.viewTransaction}
+                onPress={openUrl}
+                style={MarginBottomForSubmitButton}
+              />
+            </>
+          ) : (
+            <>
+              <SubmitButton
+                backgroundColor={ColorMap.dark2}
+                title={i18n.common.backToHome}
+                onPress={backToHome}
+                style={ButtonStyle}
+              />
+              <SubmitButton
+                title={resendText}
+                onPress={handleResend}
+                style={MarginBottomForSubmitButton}
+                disabled={!handleResend}
+              />
+            </>
+          )}
+        </View>
       </View>
-      <View style={ActionContainerStyle}>
-        {isTxSuccess ? (
-          <>
-            <SubmitButton
-              backgroundColor={ColorMap.dark2}
-              title={i18n.common.backToHome}
-              onPress={backToHome}
-              style={ButtonStyle}
-            />
-            <SubmitButton
-              disabled={!isSupportScanExplorer || !scanExplorerTxUrl}
-              title={i18n.common.viewTransaction}
-              onPress={openUrl}
-              style={MarginBottomForSubmitButton}
-            />
-          </>
-        ) : (
-          <>
-            <SubmitButton
-              backgroundColor={ColorMap.dark2}
-              title={i18n.common.backToHome}
-              onPress={backToHome}
-              style={ButtonStyle}
-            />
-            <SubmitButton title={resendText} onPress={handleResend} style={MarginBottomForSubmitButton} disabled={!handleResend} />
-          </>
-        )}
-      </View>
-    </View>
+    </ContainerWithSubHeader>
   );
 };
 
