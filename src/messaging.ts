@@ -747,7 +747,6 @@ export async function subscribeNft(
 }
 
 export async function subscribeNftCollection(callback: (data: NftCollection[]) => void): Promise<NftCollection[]> {
-  // @ts-ignore
   return sendMessage('pri(nftCollection.getSubscription)', null, callback);
 }
 
