@@ -67,6 +67,7 @@ import TransferNft from 'screens/TransferNft';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
+import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -271,6 +272,7 @@ export const App = () => {
                         <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                         <Stack.Screen name="UnStakeAction" component={UnStakeActionScreen} />
+                        <Stack.Screen name="ClaimStakeAction" component={ClaimActionScreen} />
                         <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
                       </Stack.Group>
                       <Stack.Group

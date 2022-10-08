@@ -167,7 +167,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.withdrawStakeAction}
+      title={i18n.title.claimStakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
@@ -185,7 +185,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
                 decimal={0}
                 token={feeToken}
                 si={formatBalance.findSi('-')}
-                label={i18n.withdrawStakeAction.withdrawFee}
+                label={i18n.claimStakeAction.claimFee}
               />
               <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
             </>

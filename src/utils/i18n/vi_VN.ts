@@ -241,7 +241,7 @@ export const vi = {
     stakeAction: 'Stake',
     unStakeAction: 'Unstake',
     withdrawStakeAction: 'Withdraw',
-    claimStakeAction: 'Claim',
+    claimStakeAction: 'Claim Reward',
     network: 'Network',
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
