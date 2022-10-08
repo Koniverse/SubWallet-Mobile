@@ -19,5 +19,5 @@ export default function Modal(props: SWModalProps) {
     }
   }, [isLocked]);
 
-  return <RNModal {...props} isVisible={isForcedHidden ? false : props.isVisible} />;
+  return <RNModal {...props} avoidKeyboard={true} isVisible={isForcedHidden ? false : props.isVisible} />;
 }

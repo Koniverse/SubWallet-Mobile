@@ -18,6 +18,7 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -25,7 +26,6 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 16,
-  paddingTop: 24,
 };
 
 const ScrollViewStyle: StyleProp<ViewStyle> = {
@@ -33,6 +33,7 @@ const ScrollViewStyle: StyleProp<ViewStyle> = {
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
+  paddingTop: 24,
 };
 
 const CenterWrapperStyle: StyleProp<ViewStyle> = {
@@ -83,6 +84,7 @@ const StakingDetail = ({
   },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<HomeNavigationProps>();
+  const isAllAccount = useIsAccountAll();
 
   const { data: stakingData, priceMap } = useFetchStaking();
 
@@ -124,8 +126,8 @@ const StakingDetail = ({
     <ContainerWithSubHeader
       onPressBack={handleGoBack}
       title={i18n.title.staking}
-      rightIcon={Plus}
-      onPressRightIcon={handlePressStartStaking}>
+      rightIcon={!isAllAccount ? Plus : undefined}
+      onPressRightIcon={!isAllAccount ? handlePressStartStaking : undefined}>
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle}>
           <View style={CenterWrapperStyle}>
@@ -188,7 +190,13 @@ const StakingDetail = ({
             si={formatBalance.findSi('-')}
           />
         </ScrollView>
-        <SubmitButton title={i18n.stakingScreen.stakingDetail.moreActions} onPress={openModal} />
+        {!isAllAccount && (
+          <SubmitButton
+            style={{ marginTop: 16 }}
+            title={i18n.stakingScreen.stakingDetail.moreActions}
+            onPress={openModal}
+          />
+        )}
         <StakingActionModal closeModal={closeModal} visible={visible} data={data} />
       </View>
     </ContainerWithSubHeader>
