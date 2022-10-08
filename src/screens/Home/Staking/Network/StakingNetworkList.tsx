@@ -63,8 +63,10 @@ const StakingNetworkList = () => {
         setLoading(false);
       })
         .then(data => {
-          setChainBondingBasics(data);
-          setLoading(false);
+          if (needUpdate) {
+            setChainBondingBasics(data);
+            setLoading(false);
+          }
         })
         .catch((e: Error) => {
           console.log(e);
