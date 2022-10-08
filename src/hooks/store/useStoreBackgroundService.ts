@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { WebRunnerContext } from 'providers/contexts';
 import { updateBackgroundServiceActiveState } from 'stores/updater';
 import { subscribeActiveCronAndSubscriptionServiceMap } from '../../messaging';
-import { ActiveCronAndSubscriptionMap } from 'types/background';
+import { ActiveCronAndSubscriptionMap } from '@subwallet/extension-base/background/KoniTypes';
 
 export default function useStoreBackgroundService(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;

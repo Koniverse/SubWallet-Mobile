@@ -1,4 +1,5 @@
 import {
+  ActiveCronAndSubscriptionMap,
   BalanceJson,
   ChainRegistry,
   CrowdloanJson,
@@ -14,14 +15,13 @@ import {
 import { store } from 'stores/index';
 import {
   AccountsSlice,
+  AuthUrlsSlice,
+  BrowserSlice,
+  BrowserSliceTab,
   NftCollectionSlice,
   NftSlice,
-  AuthUrlsSlice,
   SiteInfo,
-  BrowserSliceTab,
-  BrowserSlice,
 } from 'stores/types';
-import { ActiveCronAndSubscriptionMap } from 'types/background';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });

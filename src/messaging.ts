@@ -112,7 +112,7 @@ import {
   CronServiceType,
   RequestInitCronAndSubscription,
   SubscriptionServiceType,
-} from 'types/background';
+} from '@subwallet/extension-base/background/KoniTypes';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -1027,43 +1027,35 @@ export async function subscribeAuthUrl(callback: (data: AuthUrls) => void): Prom
 export async function initCronAndSubscription(
   request: RequestInitCronAndSubscription,
 ): Promise<ActiveCronAndSubscriptionMap> {
-  // @ts-ignore
   return sendMessage('mobile(cronAndSubscription.init)', request);
 }
 
 export async function subscribeActiveCronAndSubscriptionServiceMap(
   callback: (data: ActiveCronAndSubscriptionMap) => void,
 ): Promise<ActiveCronAndSubscriptionMap> {
-  // @ts-ignore
   return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback);
 }
 
 export async function startCronServices(request: CronServiceType[]): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(cron.start)', request);
 }
 
 export async function stopCronServices(request: CronServiceType[]): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(cron.stop)', request);
 }
 
 export async function restartCronServices(request: CronServiceType[]): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(cron.restart)', request);
 }
 
 export async function startSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(subscription.start)', request);
 }
 
 export async function stopSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(subscription.stop)', request);
 }
 
 export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(subscription.restart)', request);
 }

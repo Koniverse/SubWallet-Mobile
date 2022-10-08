@@ -3566,10 +3566,10 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.31.0.tgz#489e3a496081dc3ee7ef5ef2eb513962d5d29351"
   integrity sha512-OSOmdjaq9foXfHBy9aLVMwGheygvsiZlv4dggnLOYOuhSmNCsSB/PaW4DBz+/tSdK1Fo9+ZiFW6cF24RA+m0sw==
 
-"@subwallet/extension-base@0.6.7-0", "@subwallet/extension-base@^0.6.7-0":
-  version "0.6.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.6.7-0.tgz#20887c2c46e5ee02ce3f9ee0fd1938dcd6b2dab1"
-  integrity sha512-Rtj7hUUA1e6pqEjYQK4LlV38hNGsaXshyWAyfZUK7vBSN0Mn/LI5YBUY546rgh+vdvwBzZR3PeODMFp7Ld0SFg==
+"@subwallet/extension-base@0.6.7-0wr", "@subwallet/extension-base@^0.6.7-0wr":
+  version "0.6.7-0wr"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.6.7-0wr.tgz#0825bce8629a4da49f15cb55b4d412f2a4ba1ae2"
+  integrity sha512-f6lDEoqxjZM3bOoWKgYoUoTFQb6SJO3yIZc5Xo4KmvI2A06TvRatAqZY6TGR6mYsrkpmpww7AxJ+UODe5BbIKQ==
   dependencies:
     "@babel/runtime" "^7.19.0"
     "@ethereumjs/common" "^2.6.5"
@@ -3628,10 +3628,10 @@
     "@polkadot/x-global" "^10.1.9"
     web3-core "^1.8.0"
 
-"@subwallet/extension-koni-base@0.6.7-0":
-  version "0.6.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.6.7-0.tgz#bf3d5da123ba84ff41bacefc5ffc76e7a0fc5da8"
-  integrity sha512-IyksTrivfQO38j51v63VbhGXTTTbjYi2RDVE7m0fI89hLhMU/fRGSWL8qUJ8W4HZxY7g8NZanyUb3p0HNMV17w==
+"@subwallet/extension-koni-base@0.6.7-0wr":
+  version "0.6.7-0wr"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.6.7-0wr.tgz#e3d16ef7bc0ee8adde04b7a3d6e69643c07242f8"
+  integrity sha512-WxIwdnPlfBW3zXo53b0Xylo56NzQNWZruRwz6dOMU88mMqawS3Ak8JN4EmH5zqpgYUvfnQIOKoYy+8L5hHezpA==
   dependencies:
     "@acala-network/api" "^4.1.5"
     "@acala-network/type-definitions" "^4.1.5"
@@ -3672,7 +3672,7 @@
     "@snowfork/snowbridge-types" "^0.2.7"
     "@sora-substrate/type-definitions" "^1.10.0-beta.16"
     "@subsocial/types" "^0.6.8"
-    "@subwallet/extension-base" "^0.6.7-0"
+    "@subwallet/extension-base" "^0.6.7-0wr"
     "@subwallet/extension-chains" "^0.6.7-0"
     "@subwallet/extension-dapp" "^0.6.7-0"
     "@subwallet/extension-inject" "^0.6.7-0"
