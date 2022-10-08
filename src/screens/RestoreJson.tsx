@@ -218,7 +218,12 @@ export const RestoreJson = () => {
           <View style={{ ...ContainerHorizontalPadding, flex: 1, paddingTop: 26 }}>
             <InputFile onChangeResult={_onChangeFile} />
             {isFileError && (
-              <Warning title={i18n.warningTitle.error} message={i18n.warningMessage.invalidJsonFile} isDanger />
+              <Warning
+                style={{ marginBottom: 8 }}
+                title={i18n.warningTitle.error}
+                message={i18n.warningMessage.invalidJsonFile}
+                isDanger
+              />
             )}
             {!!formState.data.fileConfig && (
               <View style={[itemWrapperStyle, { paddingVertical: 16 }]}>
@@ -255,7 +260,7 @@ export const RestoreJson = () => {
             onPress={onPressSubmitButton}
             disabled={
               currentViewStep === ViewStep.PASTE_JSON
-                ? !formState.data.file
+                ? !formState.data.file || !formState.errors.file || isFileError
                 : isFileError || !formState.isValidated.password || !formState.data.password || !formState.data.file
             }
           />
