@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import TransactionResult from 'components/TransactionResult/TransactionResult';
 import React, { useCallback } from 'react';
-import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
 import { UnStakeResultProps } from 'routes/staking/unStakeAction';
 import i18n from 'utils/i18n/i18n';
@@ -14,19 +13,15 @@ const UnStakeResult = ({
     },
   },
 }: UnStakeResultProps) => {
-  const homeNavigation = useNavigation<HomeNavigationProps>();
-  const rootNavigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
 
   const goHome = useCallback(() => {
-    homeNavigation.navigate('Staking');
-  }, [homeNavigation]);
+    navigation.replace('Home', { tab: 'Staking' });
+  }, [navigation]);
 
   const handleReStake = useCallback(() => {
-    rootNavigation.navigate('UnStakeAction', {
-      screen: 'UnStakeConfirm',
-      params: unStakeParams,
-    });
-  }, [rootNavigation, unStakeParams]);
+    navigation.goBack();
+  }, [navigation]);
 
   return (
     <TransactionResult

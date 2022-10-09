@@ -101,6 +101,7 @@ const UnStakeAuth = ({
 
       if (data.status) {
         setLoading(false);
+        setVisible(false);
 
         if (data.status) {
           rootNavigation.navigate('UnStakeAction', {
@@ -152,7 +153,7 @@ const UnStakeAuth = ({
           setLoading(false);
         });
     },
-    [amount, collator, handleResponse, networkKey, selectedAccount, unstakeAll],
+    [amount, collator, handleResponse, network.decimals, networkKey, selectedAccount, unstakeAll],
   );
 
   return (

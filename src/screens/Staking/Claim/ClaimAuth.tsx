@@ -96,7 +96,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         setVisible(false);
 
         if (data.status) {
-          navigation.replace('ClaimStakeAction', {
+          navigation.navigate('ClaimStakeAction', {
             screen: 'ClaimResult',
             params: {
               claimParams: claimParams,
@@ -108,7 +108,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
             },
           });
         } else {
-          navigation.replace('ClaimStakeAction', {
+          navigation.navigate('ClaimStakeAction', {
             screen: 'ClaimResult',
             params: {
               claimParams: claimParams,
@@ -135,12 +135,10 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
           password,
         },
         handleResponse,
-      )
-        .then(handleResponse)
-        .catch(e => {
-          console.log(e);
-          setLoading(false);
-        });
+      ).catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
     },
     [handleResponse, networkKey, selectedAccount],
   );
