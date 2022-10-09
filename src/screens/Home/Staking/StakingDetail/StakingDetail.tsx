@@ -8,7 +8,7 @@ import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { HomeNavigationProps } from 'routes/home';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
@@ -93,7 +93,7 @@ const StakingDetail = ({
   const data = useMemo((): StakingDataType => {
     return stakingData.find(item => item.key === networkKey) as StakingDataType;
   }, [stakingData, networkKey]);
-  const { staking, reward } = data;
+  const { staking, reward } = data || { staking: {}, reward: {} };
 
   const convertedBalanceValue = useMemo(() => {
     return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chainId] || 0}`);
@@ -121,6 +121,18 @@ const StakingDetail = ({
       },
     });
   }, [navigation, networkKey]);
+
+  useEffect(() => {
+    if (data === undefined) {
+      navigation.navigate('Staking', {
+        screen: 'StakingBalances',
+      });
+    }
+  }, [data, navigation]);
+
+  if (data === undefined) {
+    return <></>;
+  }
 
   return (
     <ContainerWithSubHeader
