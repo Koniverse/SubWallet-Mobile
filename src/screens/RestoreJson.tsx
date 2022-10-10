@@ -22,6 +22,7 @@ import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { toShort } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -88,6 +89,7 @@ const ViewStep = {
 
 export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome();
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
@@ -119,7 +121,7 @@ export const RestoreJson = () => {
         setIsBusy(false);
         onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
-        backToHome(navigation, true);
+        backToHome(goHome, true);
       })
       .catch(() => {
         setIsBusy(false);

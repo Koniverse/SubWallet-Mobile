@@ -25,11 +25,8 @@ const WithdrawResult = ({
   }, [navigation]);
 
   const handleReStake = useCallback(() => {
-    navigation.navigate('WithdrawStakeAction', {
-      screen: 'WithdrawAuth',
-      params: withdrawParams,
-    });
-  }, [navigation, withdrawParams]);
+    navigation.goBack();
+  }, [navigation]);
 
   return (
     <TransactionResult

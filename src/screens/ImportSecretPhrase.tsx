@@ -14,6 +14,7 @@ import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -61,6 +62,7 @@ export const ImportSecretPhrase = ({
   },
 }: ImportSecretPhraseProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome();
   const [account, setAccount] = useState<AccountInfo | null>(null);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [isBusy, setBusy] = useState(false);
@@ -102,7 +104,7 @@ export const ImportSecretPhrase = ({
       setBusy(true);
       createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
         .then(() => {
-          backToHome(navigation, true);
+          backToHome(goHome, true);
         })
         .catch(() => {
           setBusy(false);

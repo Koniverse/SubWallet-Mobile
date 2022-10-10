@@ -98,7 +98,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
         setVisible(false);
 
         if (data.status) {
-          navigation.replace('WithdrawStakeAction', {
+          navigation.navigate('WithdrawStakeAction', {
             screen: 'WithdrawResult',
             params: {
               withdrawParams: withdrawParams,
@@ -110,7 +110,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
             },
           });
         } else {
-          navigation.replace('WithdrawStakeAction', {
+          navigation.navigate('WithdrawStakeAction', {
             screen: 'WithdrawResult',
             params: {
               withdrawParams: withdrawParams,
@@ -139,12 +139,10 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
           validatorAddress: targetValidator,
         },
         handleResponse,
-      )
-        .then(handleResponse)
-        .catch(e => {
-          console.log(e);
-          setLoading(false);
-        });
+      ).catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
     },
     [handleResponse, networkKey, nextWithdrawalAction, selectedAccount, targetValidator],
   );

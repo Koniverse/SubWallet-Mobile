@@ -14,6 +14,7 @@ import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -27,6 +28,7 @@ function checkValidateForm(isValidated: Record<string, boolean>) {
 
 export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome();
   const [isBusy, setIsBusy] = useState(false);
 
   const _onImport = (formState: FormState) => {
@@ -37,7 +39,7 @@ export const ImportPrivateKey = () => {
       setIsBusy(true);
       createAccountSuriV2(accountName, password, privateKey.trim(), false, [EVM_ACCOUNT_TYPE])
         .then(() => {
-          backToHome(navigation, true);
+          backToHome(goHome, true);
         })
         .catch(() => {
           setIsBusy(false);

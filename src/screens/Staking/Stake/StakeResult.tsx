@@ -25,11 +25,8 @@ const StakeResult = ({
   }, [navigation]);
 
   const handleReStake = useCallback(() => {
-    navigation.navigate('StakeAction', {
-      screen: 'StakeConfirm',
-      params: stakeParams,
-    });
-  }, [navigation, stakeParams]);
+    navigation.goBack();
+  }, [navigation]);
 
   return (
     <TransactionResult

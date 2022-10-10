@@ -21,6 +21,7 @@ import {
 } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -69,9 +70,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
     setVisible(false);
   }, []);
 
-  const goBack = useCallback(() => {
-    navigation.navigate('Home', { screen: 'Staking' });
-  }, [navigation]);
+  const goBack = useGoHome('Staking');
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
