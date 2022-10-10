@@ -1,5 +1,5 @@
 import { formatBalance } from '@polkadot/util';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { BalanceField } from 'components/Field/Balance';
@@ -19,6 +19,7 @@ import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -84,6 +85,8 @@ const StakingDetail = ({
   },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<HomeNavigationProps>();
+  const goHome = useGoHome('Staking');
+  const isFocused = useIsFocused();
   const isAllAccount = useIsAccountAll();
 
   const { data: stakingData, priceMap } = useFetchStaking();
@@ -124,11 +127,19 @@ const StakingDetail = ({
 
   useEffect(() => {
     if (data === undefined) {
-      navigation.navigate('Staking', {
-        screen: 'StakingBalances',
-      });
+      if (isFocused) {
+        goHome();
+      } else {
+        const listener = navigation.addListener('focus', () => {
+          goHome();
+        });
+
+        return () => {
+          navigation.removeListener('focus', listener);
+        };
+      }
     }
-  }, [data, navigation]);
+  }, [data, goHome, isFocused, navigation]);
 
   if (data === undefined) {
     return <></>;
