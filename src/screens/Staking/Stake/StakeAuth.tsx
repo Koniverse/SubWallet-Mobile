@@ -21,6 +21,7 @@ import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyl
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { submitBonding } from '../../../messaging';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -92,9 +93,7 @@ const StakeAuth = ({
     navigation.navigate('StakeAction', { screen: 'StakeConfirm', params: stakeParams });
   }, [navigation, stakeParams]);
 
-  const onCancel = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
-  }, [navigation]);
+  const onCancel = useGoHome('Staking');
 
   const handleBondingResponse = useCallback((data: BasicTxResponse) => {
     if (data.passwordError) {
@@ -133,12 +132,10 @@ const StakeAuth = ({
           bondedValidators,
         },
         handleBondingResponse,
-      )
-        .then(handleBondingResponse)
-        .catch(e => {
-          console.log(e);
-          setLoading(false);
-        });
+      ).catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
     },
     [amount, bondedValidators, currentAccountAddress, handleBondingResponse, isBondedBefore, networkKey, validator],
   );

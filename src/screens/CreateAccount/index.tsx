@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CreateAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -33,6 +34,7 @@ export const CreateAccount = ({
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome('Crypto');
 
   useEffect((): void => {
     createSeedV2(undefined, undefined, [keyTypes])
@@ -66,7 +68,7 @@ export const CreateAccount = ({
       setIsBusy(true);
       createAccountSuriV2(curName, password, seed, true, [keyTypes], '')
         .then(() => {
-          backToHome(navigation, true);
+          backToHome(goHome, true);
         })
         .catch((error: Error): void => {
           setIsBusy(false);

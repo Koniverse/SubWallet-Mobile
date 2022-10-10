@@ -4,6 +4,7 @@ import React, { useCallback } from 'react';
 import { RootNavigationProps } from 'routes/index';
 import { ClaimResultProps } from 'routes/staking/claimAction';
 import i18n from 'utils/i18n/i18n';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const ClaimResult = ({
   route: {
@@ -15,9 +16,7 @@ const ClaimResult = ({
 }: ClaimResultProps) => {
   const navigation = useNavigation<RootNavigationProps>();
 
-  const goHome = useCallback(() => {
-    navigation.replace('Home', { tab: 'Staking' });
-  }, [navigation]);
+  const goHome = useGoHome('Staking');
 
   const handleReStake = useCallback(() => {
     navigation.goBack();

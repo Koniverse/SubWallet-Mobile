@@ -76,7 +76,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
   }, []);
 
   const goBack = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
+    navigation.goBack();
   }, [navigation]);
 
   const handleResponse = useCallback(
@@ -102,7 +102,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
         setVisible(false);
 
         if (data.status) {
-          navigation.replace('WithdrawStakeAction', {
+          navigation.navigate('WithdrawStakeAction', {
             screen: 'WithdrawResult',
             params: {
               withdrawParams: withdrawParams,
@@ -114,7 +114,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
             },
           });
         } else {
-          navigation.replace('WithdrawStakeAction', {
+          navigation.navigate('WithdrawStakeAction', {
             screen: 'WithdrawResult',
             params: {
               withdrawParams: withdrawParams,
@@ -143,12 +143,10 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
           validatorAddress: targetValidator,
         },
         handleResponse,
-      )
-        .then(handleResponse)
-        .catch(e => {
-          console.log(e);
-          setLoading(false);
-        });
+      ).catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
     },
     [handleResponse, networkKey, nextWithdrawalAction, selectedAccount, targetValidator],
   );
