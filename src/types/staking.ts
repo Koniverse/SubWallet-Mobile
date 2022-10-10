@@ -33,3 +33,8 @@ export interface ClaimParams {
   networkKey: string;
   selectedAccount: string;
 }
+
+export interface CompoundParams {
+  networkKey: string;
+  selectedAccount: string;
+}

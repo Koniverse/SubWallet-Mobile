@@ -21,7 +21,9 @@ const renderEmpty = () => {
 };
 
 const filterFunction = (items: NetworkJson[], searchString: string) => {
-  return items.filter(item => item.chain.toLowerCase().includes(searchString.toLowerCase()));
+  return items.filter(item =>
+    item.chain.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase()),
+  );
 };
 
 const StakingNetworkList = () => {
@@ -64,13 +66,17 @@ const StakingNetworkList = () => {
       })
         .then(data => {
           if (needUpdate) {
-            setChainBondingBasics(data);
-            setLoading(false);
+            if (needUpdate) {
+              setChainBondingBasics(data);
+              setLoading(false);
+            }
           }
         })
         .catch((e: Error) => {
           console.log(e);
-          setLoading(false);
+          if (needUpdate) {
+            setLoading(false);
+          }
         });
     }
 

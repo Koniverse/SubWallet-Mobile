@@ -55,7 +55,7 @@ const StakingValidatorList = ({
     ...DEFAULT_VALIDATOR_LIST_STATE,
   });
 
-  const { networkValidatorsInfo, validators, visible, loading, sortFunction } = validatorListState;
+  const { networkValidatorsInfo, validators, visible, loading, sortFunction, sortBy } = validatorListState;
 
   const setVisible = useCallback((val: boolean) => {
     dispatchValidatorListState({ type: ValidatorListActionName.CHANGE_VISIBLE, payload: { visible: val } });
@@ -167,7 +167,7 @@ const StakingValidatorList = ({
             sortFunction={sortFunction}
           />
         </View>
-        <SortValidatorModal visible={visible} closeModal={closeModal} onPress={onChangeSortBy} />
+        <SortValidatorModal visible={visible} closeModal={closeModal} onPress={onChangeSortBy} sortBy={sortBy} />
       </>
     </ContainerWithSubHeader>
   );

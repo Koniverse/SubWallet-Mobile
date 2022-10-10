@@ -3,6 +3,7 @@ import { CircleWavyCheck, Trophy } from 'phosphor-react-native';
 import React from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
+import { toShort } from 'utils/index';
 
 interface Props {
   validatorInfo: ValidatorInfo;
@@ -47,7 +48,7 @@ const ValidatorName = ({
     <View style={WrapperStyle}>
       <View style={ValidatorNameContainerStyle}>
         <Text style={textStyle} numberOfLines={1} ellipsizeMode={'middle'}>
-          {identity ? identity : address}
+          {identity ? identity : toShort(address)}
         </Text>
       </View>
       <View style={ValidatorIconContainerStyle}>

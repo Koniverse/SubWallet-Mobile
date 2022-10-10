@@ -159,7 +159,7 @@ const UnStakeAuth = ({
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.stakeAction}
+      title={i18n.title.unStakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>

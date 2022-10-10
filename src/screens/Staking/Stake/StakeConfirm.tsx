@@ -8,6 +8,7 @@ import FormatBalance from 'components/FormatBalance';
 import { InputBalance } from 'components/Input/InputBalance';
 import { SubmitButton } from 'components/SubmitButton';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import { Warning } from 'components/Warning';
 import useFreeBalance from 'hooks/screen/useFreeBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useCallback, useMemo, useState } from 'react';
@@ -52,6 +53,7 @@ const RowCenterStyle: StyleProp<ViewStyle> = {
   justifyContent: 'center',
   display: 'flex',
   flexDirection: 'row',
+  marginBottom: 8,
 };
 
 const IconContainerStyle: StyleProp<ViewStyle> = {
@@ -137,7 +139,57 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     [balanceFormat, rawAmount],
   );
 
-  const canStake = parseFloat(senderFreeBalance) > rawAmount && rawAmount >= 0 && reformatAmount.gte(minBond);
+  const warningMessage = useMemo((): string => {
+    if (rawAmount <= 0) {
+      if (!networkValidatorsInfo.bondedValidators.includes(validator.address)) {
+        return `The minimum stake is ${validator.minBond} ${selectedToken}`;
+      } else {
+        return 'Amount must be greater than zero';
+      }
+    }
+
+    if (parseFloat(senderFreeBalance) <= rawAmount) {
+      return 'Your balance is not enough';
+    }
+
+    if (reformatAmount.lt(minBond)) {
+      if (networkValidatorsInfo.bondedValidators.includes(validator.address)) {
+        return '';
+      } else {
+        return `The minimum stake is ${validator.minBond} ${selectedToken}`;
+      }
+    }
+
+    return '';
+  }, [
+    minBond,
+    networkValidatorsInfo.bondedValidators,
+    rawAmount,
+    reformatAmount,
+    selectedToken,
+    senderFreeBalance,
+    validator.address,
+    validator.minBond,
+  ]);
+
+  const canStake = useMemo((): boolean => {
+    if (parseFloat(senderFreeBalance) > rawAmount && rawAmount > 0) {
+      if (networkValidatorsInfo.bondedValidators.includes(validator.address)) {
+        return true;
+      } else {
+        return reformatAmount.gte(minBond);
+      }
+    } else {
+      return false;
+    }
+  }, [
+    minBond,
+    networkValidatorsInfo.bondedValidators,
+    rawAmount,
+    reformatAmount,
+    senderFreeBalance,
+    validator.address,
+  ]);
 
   const amountToUsd = useMemo(() => reformatAmount.multipliedBy(new BigN(tokenPrice)), [reformatAmount, tokenPrice]);
 
@@ -258,6 +310,14 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
           <View style={RowCenterStyle}>
             {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
           </View>
+          {!!warningMessage && (
+            <Warning
+              style={{ marginHorizontal: 16 }}
+              title={i18n.warningTitle.warning}
+              message={warningMessage}
+              isDanger={false}
+            />
+          )}
         </ScrollView>
         <View>
           <View style={BalanceContainerStyle}>

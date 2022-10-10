@@ -53,6 +53,7 @@ const AvatarImageStyle: StyleProp<ImageStyle> = {
 const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
   marginLeft: 16,
   overflow: 'hidden',
+  width: '80%',
 };
 
 const ValidatorNameTextStyle: StyleProp<TextStyle> = {

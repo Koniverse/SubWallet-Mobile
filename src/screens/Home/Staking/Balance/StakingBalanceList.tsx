@@ -19,7 +19,7 @@ const renderEmpty = () => {
 
 const filteredFunction = (items: StakingDataType[], searchString: string) => {
   return items.filter(({ staking }) => {
-    return staking.name.replace('Relay Chain', '').toLowerCase().includes(searchString.toLowerCase());
+    return staking.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase());
   });
 };
 

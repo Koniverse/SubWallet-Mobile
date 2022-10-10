@@ -6,7 +6,7 @@ import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
-import { Plus } from 'phosphor-react-native';
+import { DotsThree } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { HomeNavigationProps } from 'routes/home';
@@ -113,15 +113,6 @@ const StakingDetail = ({
     });
   }, [navigation]);
 
-  const handlePressStartStaking = useCallback(() => {
-    navigation.navigate('Staking', {
-      screen: 'StakingValidators',
-      params: {
-        networkKey: networkKey,
-      },
-    });
-  }, [navigation, networkKey]);
-
   useEffect(() => {
     if (data === undefined) {
       navigation.navigate('Staking', {
@@ -137,9 +128,9 @@ const StakingDetail = ({
   return (
     <ContainerWithSubHeader
       onPressBack={handleGoBack}
-      title={i18n.title.staking}
-      rightIcon={!isAllAccount ? Plus : undefined}
-      onPressRightIcon={!isAllAccount ? handlePressStartStaking : undefined}>
+      title={i18n.title.stakingDetail}
+      rightIcon={!isAllAccount ? DotsThree : undefined}
+      onPressRightIcon={!isAllAccount ? openModal : undefined}>
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle}>
           <View style={CenterWrapperStyle}>

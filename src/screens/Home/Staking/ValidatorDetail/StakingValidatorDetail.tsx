@@ -5,12 +5,17 @@ import { BalanceVal } from 'components/BalanceVal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
+import useIsSufficientBalance from 'hooks/screen/Home/Staking/useIsSufficientBalance';
+import useFreeBalance from 'hooks/screen/useFreeBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useMemo } from 'react';
+import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import ValidatorName from 'components/Staking/ValidatorName';
 import { StakingValidatorDetailProps } from 'routes/staking/stakingScreen';
+import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import {
   ContainerHorizontalPadding,
@@ -20,6 +25,7 @@ import {
   MarginBottomForSubmitButton,
   sharedStyles,
 } from 'styles/sharedStyles';
+import { BN_TEN, parseBalanceString } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -67,7 +73,7 @@ const HeaderWrapperStyle: StyleProp<ViewStyle> = {
 const HeaderContentStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'center',
-  width: '60%',
+  width: '80%',
 };
 
 const HeaderTextStyle: StyleProp<TextStyle> = {
@@ -76,17 +82,55 @@ const HeaderTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
+const checkCurrentlyBonded = (bondedValidators: string[], validatorAddress: string): boolean => {
+  let isBonded = false;
+
+  bondedValidators.forEach(bondedValidator => {
+    if (bondedValidator.toLowerCase() === validatorAddress.toLowerCase()) {
+      isBonded = true;
+    }
+  });
+
+  return isBonded;
+};
+
 const StakingValidatorDetail = ({
   route: {
     params: { validatorInfo, networkValidatorsInfo, networkKey },
   },
   navigation: { goBack },
 }: StakingValidatorDetailProps) => {
+  const { bondedValidators, maxNominations, maxNominatorPerValidator } = networkValidatorsInfo;
+
   const navigation = useNavigation<RootNavigationProps>();
+  const toast = useToast();
 
   const network = useGetNetworkJson(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
+
+  const isCurrentlyBonded = useMemo(
+    (): boolean => checkCurrentlyBonded(bondedValidators, validatorInfo.address),
+    [bondedValidators, validatorInfo.address],
+  );
+
+  const isOversubscribed = useMemo(
+    (): boolean => validatorInfo.nominatorCount >= maxNominatorPerValidator,
+    [maxNominatorPerValidator, validatorInfo.nominatorCount],
+  );
+
+  const isSufficientFund = useIsSufficientBalance(networkKey, validatorInfo.minBond);
+
+  const hasOwnStake = useMemo((): boolean => validatorInfo.ownStake > 0, [validatorInfo.ownStake]);
+  const isMaxCommission = useMemo((): boolean => validatorInfo.commission === 100, [validatorInfo.commission]);
+
+  const show = useCallback(
+    (text: string) => {
+      toast.hideAll();
+      toast.show(text);
+    },
+    [toast],
+  );
 
   const headerContent = useCallback((): JSX.Element => {
     return (
@@ -105,6 +149,29 @@ const StakingValidatorDetail = ({
   }, [validatorInfo]);
 
   const handlePressStaking = useCallback((): void => {
+    if (validatorInfo.hasScheduledRequest) {
+      show('Please withdraw the unstaking amount first');
+
+      return;
+    }
+
+    if (!isSufficientFund && !isCurrentlyBonded) {
+      show(
+        `Your free balance needs to be at least ${parseBalanceString(
+          validatorInfo.minBond,
+          token,
+        )}.`,
+      );
+
+      return;
+    }
+
+    if (bondedValidators.length >= maxNominations && !bondedValidators.includes(validatorInfo.address)) {
+      show('Please choose among the nominating validators only');
+
+      return;
+    }
+
     navigation.navigate('StakeAction', {
       screen: 'StakeConfirm',
       params: {
@@ -113,7 +180,18 @@ const StakingValidatorDetail = ({
         networkValidatorsInfo: networkValidatorsInfo,
       },
     });
-  }, [navigation, networkValidatorsInfo, networkKey, validatorInfo]);
+  }, [
+    validatorInfo,
+    isSufficientFund,
+    isCurrentlyBonded,
+    bondedValidators,
+    maxNominations,
+    navigation,
+    networkKey,
+    networkValidatorsInfo,
+    show,
+    token,
+  ]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
@@ -145,7 +223,7 @@ const StakingValidatorDetail = ({
             token={token}
             decimal={0}
             si={formatBalance.findSi('-')}
-            color={ColorMap.light}
+            color={hasOwnStake ? ColorMap.warning : ColorMap.light}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.nominatorsCount}
@@ -153,7 +231,7 @@ const StakingValidatorDetail = ({
             token={''}
             decimal={0}
             si={formatBalance.findSi('-')}
-            color={ColorMap.light}
+            color={isOversubscribed ? ColorMap.errorColor : ColorMap.light}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.minimumStake}
@@ -161,15 +239,15 @@ const StakingValidatorDetail = ({
             token={token}
             decimal={0}
             si={formatBalance.findSi('-')}
-            color={ColorMap.danger}
+            color={isSufficientFund ? ColorMap.primary : ColorMap.danger}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.commission}
             value={validatorInfo.commission.toString() || '0'}
-            token={token}
+            token={'%'}
             decimal={0}
             si={formatBalance.findSi('-')}
-            color={ColorMap.primary}
+            color={!isMaxCommission ? ColorMap.primary : ColorMap.danger}
           />
         </ScrollView>
         <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16 }}>

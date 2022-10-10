@@ -93,7 +93,7 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
   const networkKey = staking.chainId;
 
   const networkDisplayName = useMemo((): string => {
-    return staking.name.replace('Relay Chain', '');
+    return staking.name.replace(' Relay Chain', '');
   }, [staking.name]);
 
   const balanceValue = useMemo((): BigN => {

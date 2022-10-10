@@ -88,7 +88,7 @@ const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
           {getNetworkLogo(networkKey, 40)}
           <View style={NetworkInfoContentStyle}>
             <Text style={NetworkNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
-              {networkName}
+              {networkName.replace(' Relay Chain', '')}
             </Text>
             <Text style={ValidatorTextStyle}>
               {Math.ceil(validatorCount || 0)}&nbsp;{i18n.stakingScreen.networkList.validators}
