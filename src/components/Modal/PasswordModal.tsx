@@ -31,7 +31,7 @@ const TitleTextStyle: StyleProp<TextStyle> = {
 };
 
 const ButtonStyle: StyleProp<ViewStyle> = {
-  marginTop: 20,
+  marginTop: 16,
 };
 
 const PasswordContainerStyle: StyleProp<ViewStyle> = {
@@ -77,7 +77,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, error, setError
   const errors = [...formState.errors.password, ...(error ? [error] : [])];
 
   return (
-    <SubWalletModal modalVisible={visible} onChangeModalVisible={closeModal}>
+    <SubWalletModal modalVisible={visible} onChangeModalVisible={!isBusy ? closeModal : undefined}>
       <View style={ContainerStyle}>
         <Text style={TitleTextStyle}>{i18n.common.enterYourPassword}</Text>
         <PasswordField

@@ -1,5 +1,5 @@
 import { formatBalance } from '@polkadot/util';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { BalanceField } from 'components/Field/Balance';
@@ -8,7 +8,7 @@ import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { HomeNavigationProps } from 'routes/home';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
@@ -18,6 +18,8 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import useIsAccountAll from 'hooks/screen/useIsAllAccount';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -25,7 +27,6 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 16,
-  paddingTop: 24,
 };
 
 const ScrollViewStyle: StyleProp<ViewStyle> = {
@@ -33,6 +34,7 @@ const ScrollViewStyle: StyleProp<ViewStyle> = {
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
+  paddingTop: 24,
 };
 
 const CenterWrapperStyle: StyleProp<ViewStyle> = {
@@ -83,6 +85,9 @@ const StakingDetail = ({
   },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<HomeNavigationProps>();
+  const goHome = useGoHome('Staking');
+  const isFocused = useIsFocused();
+  const isAllAccount = useIsAccountAll();
 
   const { data: stakingData, priceMap } = useFetchStaking();
 
@@ -91,7 +96,7 @@ const StakingDetail = ({
   const data = useMemo((): StakingDataType => {
     return stakingData.find(item => item.key === networkKey) as StakingDataType;
   }, [stakingData, networkKey]);
-  const { staking, reward } = data;
+  const { staking, reward } = data || { staking: {}, reward: {} };
 
   const convertedBalanceValue = useMemo(() => {
     return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chainId] || 0}`);
@@ -120,12 +125,32 @@ const StakingDetail = ({
     });
   }, [navigation, networkKey]);
 
+  useEffect(() => {
+    if (data === undefined) {
+      if (isFocused) {
+        goHome();
+      } else {
+        const listener = navigation.addListener('focus', () => {
+          goHome();
+        });
+
+        return () => {
+          navigation.removeListener('focus', listener);
+        };
+      }
+    }
+  }, [data, goHome, isFocused, navigation]);
+
+  if (data === undefined) {
+    return <></>;
+  }
+
   return (
     <ContainerWithSubHeader
       onPressBack={handleGoBack}
       title={i18n.title.staking}
-      rightIcon={Plus}
-      onPressRightIcon={handlePressStartStaking}>
+      rightIcon={!isAllAccount ? Plus : undefined}
+      onPressRightIcon={!isAllAccount ? handlePressStartStaking : undefined}>
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle}>
           <View style={CenterWrapperStyle}>
@@ -188,7 +213,13 @@ const StakingDetail = ({
             si={formatBalance.findSi('-')}
           />
         </ScrollView>
-        <SubmitButton title={i18n.stakingScreen.stakingDetail.moreActions} onPress={openModal} />
+        {!isAllAccount && (
+          <SubmitButton
+            style={{ marginTop: 16 }}
+            title={i18n.stakingScreen.stakingDetail.moreActions}
+            onPress={openModal}
+          />
+        )}
         <StakingActionModal closeModal={closeModal} visible={visible} data={data} />
       </View>
     </ContainerWithSubHeader>

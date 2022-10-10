@@ -2,12 +2,12 @@ import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import { updateAccountsWaitingStatus } from 'stores/updater';
 import { CommonActions } from '@react-navigation/native';
 
-export function backToHome(navigation: RootNavigationProps, isDispatchWaiting?: boolean) {
+export function backToHome(goHome: () => void, isDispatchWaiting?: boolean) {
   if (isDispatchWaiting) {
     updateAccountsWaitingStatus(true);
   }
 
-  navigation.navigate('Home');
+  goHome();
 }
 
 export function navigateAndClearCurrentScreenHistory(

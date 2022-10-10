@@ -21,6 +21,7 @@ import {
 } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -69,9 +70,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
     setVisible(false);
   }, []);
 
-  const goBack = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
-  }, [navigation]);
+  const goBack = useGoHome('Staking');
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
@@ -96,7 +95,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         setVisible(false);
 
         if (data.status) {
-          navigation.replace('ClaimStakeAction', {
+          navigation.navigate('ClaimStakeAction', {
             screen: 'ClaimResult',
             params: {
               claimParams: claimParams,
@@ -108,7 +107,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
             },
           });
         } else {
-          navigation.replace('ClaimStakeAction', {
+          navigation.navigate('ClaimStakeAction', {
             screen: 'ClaimResult',
             params: {
               claimParams: claimParams,
@@ -135,12 +134,10 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
           password,
         },
         handleResponse,
-      )
-        .then(handleResponse)
-        .catch(e => {
-          console.log(e);
-          setLoading(false);
-        });
+      ).catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
     },
     [handleResponse, networkKey, selectedAccount],
   );
@@ -167,7 +164,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.withdrawStakeAction}
+      title={i18n.title.claimStakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
@@ -185,7 +182,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
                 decimal={0}
                 token={feeToken}
                 si={formatBalance.findSi('-')}
-                label={i18n.withdrawStakeAction.withdrawFee}
+                label={i18n.claimStakeAction.claimFee}
               />
               <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
             </>

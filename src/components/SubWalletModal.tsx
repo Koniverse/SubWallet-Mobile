@@ -52,6 +52,7 @@ export const SubWalletModal = ({
       onBackdropPress={onChangeModalVisible}
       animationIn={'slideInUp'}
       animationOut={'slideOutDown'}
+      avoidKeyboard={true}
       // useNativeDriver
       hideModalContentWhileAnimating
       propagateSwipe>

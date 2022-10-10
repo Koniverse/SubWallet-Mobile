@@ -9,7 +9,7 @@ import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
@@ -21,6 +21,7 @@ import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyl
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { submitBonding } from '../../../messaging';
+import useGoHome from 'hooks/screen/useGoHome';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -41,6 +42,11 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
+type TransactionResult = {
+  hash: string;
+  isSuccess: boolean;
+};
+
 const StakeAuth = ({
   route: {
     params: { stakeParams, feeString, amount: rawAmount },
@@ -55,8 +61,10 @@ const StakeAuth = ({
   const network = useGetNetworkJson(networkKey);
 
   const [visible, setVisible] = useState(false);
+  const [unmountModal, setUnmountModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
@@ -85,56 +93,30 @@ const StakeAuth = ({
     navigation.navigate('StakeAction', { screen: 'StakeConfirm', params: stakeParams });
   }, [navigation, stakeParams]);
 
-  const onCancel = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
-  }, [navigation]);
+  const onCancel = useGoHome('Staking');
 
-  const handleBondingResponse = useCallback(
-    (data: BasicTxResponse) => {
-      if (data.passwordError) {
-        setError(data.passwordError);
-        setLoading(false);
-      }
+  const handleBondingResponse = useCallback((data: BasicTxResponse) => {
+    if (data.passwordError) {
+      setError(data.passwordError);
+      setLoading(false);
+    }
 
-      if (data.txError) {
-        setError('Encountered an error, please try again.');
-        setLoading(false);
-        return;
-      }
+    if (data.txError) {
+      setError('Encountered an error, please try again.');
+      setLoading(false);
+      return;
+    }
 
-      if (data.status !== undefined) {
-        setLoading(false);
-        setVisible(false);
+    if (data.status !== undefined) {
+      setLoading(false);
+      setUnmountModal(true);
 
-        if (data.status) {
-          navigation.replace('StakeAction', {
-            screen: 'StakeResult',
-            params: {
-              stakeParams: stakeParams,
-              txParams: {
-                txError: '',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: true,
-              },
-            },
-          });
-        } else {
-          navigation.replace('StakeAction', {
-            screen: 'StakeResult',
-            params: {
-              stakeParams: stakeParams,
-              txParams: {
-                txError: 'Error submitting transaction',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: false,
-              },
-            },
-          });
-        }
-      }
-    },
-    [navigation, stakeParams],
-  );
+      setTransactionResult({
+        hash: data.transactionHash as string,
+        isSuccess: data.status,
+      });
+    }
+  }, []);
 
   const onSubmit = useCallback(
     (password: string) => {
@@ -150,15 +132,29 @@ const StakeAuth = ({
           bondedValidators,
         },
         handleBondingResponse,
-      )
-        .then(handleBondingResponse)
-        .catch(e => {
-          console.log(e);
-          setLoading(false);
-        });
+      ).catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
     },
     [amount, bondedValidators, currentAccountAddress, handleBondingResponse, isBondedBefore, networkKey, validator],
   );
+
+  useEffect(() => {
+    if (transactionResult) {
+      navigation.replace('StakeAction', {
+        screen: 'StakeResult',
+        params: {
+          stakeParams: stakeParams,
+          txParams: {
+            txError: transactionResult.isSuccess ? '' : 'Error submitting transaction',
+            extrinsicHash: transactionResult.hash,
+            txSuccess: transactionResult.isSuccess,
+          },
+        },
+      });
+    }
+  }, [transactionResult, navigation, stakeParams]);
 
   return (
     <ContainerWithSubHeader
@@ -206,14 +202,16 @@ const StakeAuth = ({
             onPress={handleOpen}
           />
         </View>
-        <PasswordModal
-          onConfirm={onSubmit}
-          visible={visible}
-          closeModal={handleClose}
-          isBusy={loading}
-          error={error}
-          setError={setError}
-        />
+        {!unmountModal && (
+          <PasswordModal
+            onConfirm={onSubmit}
+            visible={visible}
+            closeModal={handleClose}
+            isBusy={loading}
+            error={error}
+            setError={setError}
+          />
+        )}
       </View>
     </ContainerWithSubHeader>
   );

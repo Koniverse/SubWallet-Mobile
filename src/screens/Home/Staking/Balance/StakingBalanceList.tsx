@@ -1,27 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
-import React, { useCallback } from 'react';
-import { ListRenderItemInfo, RefreshControl, StyleProp, View, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { ListRenderItemInfo, RefreshControl, SafeAreaView, StyleProp, View, ViewStyle } from 'react-native';
 import { HomeNavigationProps } from 'routes/home';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
-import { ContainerHorizontalPadding } from 'styles/sharedStyles';
-import { noop } from 'utils/function';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { restartCronServices, restartSubscriptionServices } from '../../../../messaging';
 import { useRefresh } from 'hooks/useRefresh';
-
-const WrapperStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-  paddingBottom: 16,
-};
 
 const renderEmpty = () => {
   return <EmptyStaking />;
@@ -73,43 +66,51 @@ const StakingBalanceList = () => {
     });
   }, [navigation]);
 
+  const rightIconOption = useMemo(() => {
+    if (isAllAccount) {
+      return undefined;
+    }
+
+    return {
+      icon: Plus,
+      onPress: handlePressStartStaking,
+    };
+  }, [handlePressStartStaking, isAllAccount]);
+
   return (
-    <ContainerWithSubHeader
-      onPressBack={noop}
-      showLeftBtn={false}
-      title={i18n.title.staking}
-      rightIcon={Plus}
-      onPressRightIcon={handlePressStartStaking}>
-      <View style={WrapperStyle}>
-        <FlatListScreen
-          withSubHeader={false}
-          items={data}
-          autoFocus={false}
-          renderListEmptyComponent={renderEmpty}
-          filterFunction={filteredFunction}
-          renderItem={renderItem}
-          loading={loading}
-          afterListItem={
-            !isAllAccount ? (
-              <View style={{ ...ContainerHorizontalPadding, paddingTop: 16 }}>
-                <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
-              </View>
-            ) : undefined
-          }
-          refreshControl={
-            <RefreshControl
-              style={{ backgroundColor: ColorMap.dark2 }}
-              tintColor={ColorMap.light}
-              refreshing={isRefresh}
-              onRefresh={() => {
-                refresh(restartSubscriptionServices(['staking']));
-                refresh(restartCronServices(['staking']));
-              }}
-            />
-          }
-        />
-      </View>
-    </ContainerWithSubHeader>
+    <>
+      <FlatListScreen
+        title={i18n.title.staking}
+        items={data}
+        showLeftBtn={false}
+        autoFocus={false}
+        renderListEmptyComponent={renderEmpty}
+        filterFunction={filteredFunction}
+        renderItem={renderItem}
+        loading={loading}
+        rightIconOption={rightIconOption}
+        afterListItem={
+          !isAllAccount ? (
+            <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
+              <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
+            </View>
+          ) : undefined
+        }
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark2 }}
+            tintColor={ColorMap.light}
+            refreshing={isRefresh}
+            onRefresh={() => {
+              refresh(restartSubscriptionServices(['staking']));
+              refresh(restartCronServices(['staking']));
+            }}
+          />
+        }
+      />
+
+      <SafeAreaView />
+    </>
   );
 };
 

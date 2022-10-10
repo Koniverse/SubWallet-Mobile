@@ -24,7 +24,6 @@ import { StakingValidatorsProps } from 'routes/staking/stakingScreen';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
-  paddingBottom: 16,
 };
 
 const filterFunction = (items: ValidatorInfo[], searchString: string): ValidatorInfo[] => {

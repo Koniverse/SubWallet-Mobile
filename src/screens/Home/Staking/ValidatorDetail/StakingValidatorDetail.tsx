@@ -12,7 +12,14 @@ import { RootNavigationProps } from 'routes/index';
 import ValidatorName from 'components/Staking/ValidatorName';
 import { StakingValidatorDetailProps } from 'routes/staking/stakingScreen';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontBold, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import {
+  ContainerHorizontalPadding,
+  FontBold,
+  FontMedium,
+  FontSemiBold,
+  MarginBottomForSubmitButton,
+  sharedStyles,
+} from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -20,7 +27,6 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
-  paddingBottom: 16,
   paddingTop: 22,
 };
 
@@ -166,11 +172,13 @@ const StakingValidatorDetail = ({
             color={ColorMap.primary}
           />
         </ScrollView>
-        <SubmitButton
-          title={i18n.stakingScreen.startStaking}
-          backgroundColor={ColorMap.secondary}
-          onPress={handlePressStaking}
-        />
+        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16 }}>
+          <SubmitButton
+            title={i18n.stakingScreen.startStaking}
+            backgroundColor={ColorMap.secondary}
+            onPress={handlePressStaking}
+          />
+        </View>
       </View>
     </ContainerWithSubHeader>
   );
