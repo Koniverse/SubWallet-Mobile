@@ -6,16 +6,13 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useIsSufficientBalance from 'hooks/screen/Home/Staking/useIsSufficientBalance';
-import useFreeBalance from 'hooks/screen/useFreeBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import ValidatorName from 'components/Staking/ValidatorName';
 import { StakingValidatorDetailProps } from 'routes/staking/stakingScreen';
-import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import {
   ContainerHorizontalPadding,
@@ -25,15 +22,13 @@ import {
   MarginBottomForSubmitButton,
   sharedStyles,
 } from 'styles/sharedStyles';
-import { BN_TEN, parseBalanceString } from 'utils/chainBalances';
+import { parseBalanceString } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  ...ContainerHorizontalPadding,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
-  paddingTop: 22,
 };
 
 const ScrollViewStyle: StyleProp<ViewStyle> = {
@@ -55,13 +50,38 @@ const TotalStakeTitleTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.disabled,
+  paddingBottom: 4,
 };
 
-const TotalStakeValTextStyle: StyleProp<TextStyle> = {
-  ...FontBold,
-  fontSize: 40,
-  lineHeight: 56,
-  marginBottom: 32,
+export const getInputValueStyle = (inputValue: string) => {
+  const initStyle = {
+    ...sharedStyles.largeText,
+    ...FontBold,
+  };
+
+  if (inputValue.length > 17) {
+    return {
+      ...initStyle,
+      fontSize: 24,
+      lineHeight: 30,
+    };
+  } else if (inputValue.length > 12) {
+    return {
+      ...initStyle,
+      fontSize: 32,
+      lineHeight: 38,
+    };
+  } else if (inputValue.length > 9) {
+    return {
+      ...initStyle,
+      fontSize: 36,
+      lineHeight: 42,
+    };
+  }
+
+  return {
+    ...initStyle,
+  };
 };
 
 const HeaderWrapperStyle: StyleProp<ViewStyle> = {
@@ -191,13 +211,13 @@ const StakingValidatorDetail = ({
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
       <View style={WrapperStyle}>
-        <ScrollView style={ScrollViewStyle}>
+        <ScrollView style={ScrollViewStyle} contentContainerStyle={{ paddingTop: 24, ...ContainerHorizontalPadding }}>
           <View style={CenterWrapperStyle}>
             <Text style={TotalStakeTitleTextStyle}>Total Stake</Text>
           </View>
           <View style={CenterWrapperStyle}>
             <BalanceVal
-              balanceValTextStyle={TotalStakeValTextStyle}
+              balanceValTextStyle={[getInputValueStyle(validatorInfo.totalStake.toString()), { marginBottom: 32 }]}
               // symbolTextStyle={BalanceSymbolTextStyle}
               symbol={token}
               withComma={true}
@@ -245,7 +265,7 @@ const StakingValidatorDetail = ({
             color={!isMaxCommission ? ColorMap.primary : ColorMap.danger}
           />
         </ScrollView>
-        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16 }}>
+        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16, ...ContainerHorizontalPadding }}>
           <SubmitButton
             title={i18n.stakingScreen.startStaking}
             backgroundColor={ColorMap.secondary}

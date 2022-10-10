@@ -13,15 +13,15 @@ import { HomeNavigationProps } from 'routes/home';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
+import { getInputValueStyle } from 'screens/Home/Staking/ValidatorDetail/StakingValidatorDetail';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  ...ContainerHorizontalPadding,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
@@ -33,7 +33,6 @@ const ScrollViewStyle: StyleProp<ViewStyle> = {
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
-  paddingTop: 24,
 };
 
 const CenterWrapperStyle: StyleProp<ViewStyle> = {
@@ -64,12 +63,6 @@ const BalanceContainerStyle: StyleProp<ViewStyle> = {
 const BalanceConvertedContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 8,
   marginBottom: 24,
-};
-
-const BalanceTextStyle: StyleProp<TextStyle> = {
-  ...FontBold,
-  fontSize: 40,
-  lineHeight: 56,
 };
 
 const BalanceConvertedTextStyle: StyleProp<TextStyle> = {
@@ -125,6 +118,8 @@ const StakingDetail = ({
     return <></>;
   }
 
+  const balanceValueForStyle = staking.balance ? parseFloat(staking.balance).toFixed(2).toString() : '0';
+
   return (
     <ContainerWithSubHeader
       onPressBack={handleGoBack}
@@ -132,13 +127,13 @@ const StakingDetail = ({
       rightIcon={!isAllAccount ? DotsThree : undefined}
       onPressRightIcon={!isAllAccount ? openModal : undefined}>
       <View style={WrapperStyle}>
-        <ScrollView style={ScrollViewStyle}>
-          <View style={CenterWrapperStyle}>
+        <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
+          <View style={[CenterWrapperStyle, { paddingTop: 24 }]}>
             <View style={ImageContentStyle}>{getNetworkLogo(staking.chainId, 32)}</View>
           </View>
           <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
             <BalanceVal
-              balanceValTextStyle={BalanceTextStyle}
+              balanceValTextStyle={getInputValueStyle(balanceValueForStyle)}
               // symbolTextStyle={BalanceSymbolTextStyle}
               symbol={staking.nativeToken}
               withComma={true}
@@ -195,7 +190,7 @@ const StakingDetail = ({
         </ScrollView>
         {!isAllAccount && (
           <SubmitButton
-            style={{ marginTop: 16 }}
+            style={{ marginTop: 16, marginHorizontal: 16 }}
             title={i18n.stakingScreen.stakingDetail.moreActions}
             onPress={openModal}
           />

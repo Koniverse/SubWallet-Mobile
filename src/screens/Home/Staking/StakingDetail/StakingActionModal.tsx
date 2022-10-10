@@ -4,17 +4,19 @@ import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { StakingDataType } from 'hooks/types';
 import moment from 'moment';
 import { ArrowSquareDown, ClockAfternoon, IconProps, Intersect, Minus, Plus } from 'phosphor-react-native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
+import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
+import ToastContainer from 'react-native-toast-notifications';
+import { deviceHeight } from 'constants/index';
 
 interface Props {
   visible: boolean;
@@ -58,13 +60,13 @@ const MANUAL_CLAIM_CHAINS = ['astar', 'shibuya', 'shiden'];
 
 const MANUAL_COMPOUND_CHAINS = ['turing', 'turingStaging'];
 
+const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
+
 const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const {
     staking: { chainId: networkKey, activeBalance, unlockingInfo },
   } = data;
-
-  const toast = useToast();
-
+  const toastRef = useRef<ToastContainer>(null);
   const rootNavigation = useNavigation<RootNavigationProps>();
   const homeNavigation = useNavigation<HomeNavigationProps>();
 
@@ -145,8 +147,10 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         },
       });
     } else {
-      toast.hideAll();
-      toast.show(withdrawNote);
+      if (toastRef.current) {
+        toastRef.current.hideAll();
+        toastRef.current.show(withdrawNote);
+      }
     }
   }, [
     closeModal,
@@ -155,7 +159,6 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     nextWithdrawalAction,
     redeemable,
     rootNavigation,
-    toast,
     validatorAddress,
     withdrawNote,
   ]);
@@ -172,9 +175,11 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   }, [closeModal, currentAccountAddress, networkKey, rootNavigation]);
 
   const compoundAction = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.common.comingSoon);
-  }, [toast]);
+    if (toastRef.current) {
+      toastRef.current.hideAll();
+      toastRef.current.show(i18n.common.comingSoon);
+    }
+  }, []);
 
   const items = useMemo((): SortItem[] => {
     const result: SortItem[] = [
@@ -241,6 +246,13 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
           </TouchableOpacity>
         );
       })}
+      <Toast
+        duration={1500}
+        normalColor={ColorMap.notification}
+        ref={toastRef}
+        placement={'bottom'}
+        offsetBottom={OFFSET_BOTTOM}
+      />
     </SubWalletModal>
   );
 };

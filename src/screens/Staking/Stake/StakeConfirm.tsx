@@ -45,7 +45,6 @@ import { getBondingTxInfo } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
-  paddingTop: 16,
   flex: 1,
 };
 
@@ -284,7 +283,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }}>
+        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
           <ValidatorBriefInfo validator={validator} rightIcon={true} />
           <View style={IconContainerStyle}>
             {icon ? (
@@ -310,14 +309,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
           <View style={RowCenterStyle}>
             {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
           </View>
-          {!!warningMessage && (
-            <Warning
-              style={{ marginHorizontal: 16 }}
-              title={i18n.warningTitle.warning}
-              message={warningMessage}
-              isDanger={false}
-            />
-          )}
+          {!!warningMessage && <Warning title={i18n.warningTitle.warning} message={warningMessage} isDanger={false} />}
         </ScrollView>
         <View>
           <View style={BalanceContainerStyle}>

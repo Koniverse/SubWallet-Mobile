@@ -31,7 +31,6 @@ import CollatorSelectModal from 'screens/Staking/UnStake/CollatorSelectModal';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import {
-  centerStyle,
   ContainerHorizontalPadding,
   FontMedium,
   MarginBottomForSubmitButton,
@@ -46,7 +45,6 @@ import { getStakeDelegationInfo, getUnbondingTxInfo } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
-  paddingTop: 16,
   flex: 1,
 };
 
@@ -300,7 +298,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
       <View style={ContainerStyle}>
         <ScrollView
           style={{ ...ScrollViewStyle }}
-          contentContainerStyle={!isDataReady ? { ...centerStyle } : undefined}>
+          contentContainerStyle={{ flex: 1, paddingTop: 24, alignItems: isDataReady ? 'center' : undefined }}>
           {isDataReady ? (
             <>
               {delegations && selectedCollator && (

@@ -24,7 +24,6 @@ import { submitBonding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
-  paddingTop: 16,
   flex: 1,
 };
 
@@ -166,7 +165,7 @@ const StakeAuth = ({
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }}>
+        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
           <ValidatorBriefInfo validator={validator} rightIcon={true} />
           <AddressField
             address={currentAccountAddress}

@@ -47,6 +47,7 @@ const NetworkNameStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mediumText,
   ...FontSemiBold,
   color: ColorMap.light,
+  paddingRight: 16,
 };
 
 const NetworkSubTextStyle: StyleProp<TextStyle> = {

@@ -1,12 +1,10 @@
 import { ChainBondingBasics, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import BigN from 'bignumber.js';
-import { BalanceVal } from 'components/BalanceVal';
 import React from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { getNetworkLogo } from 'utils/index';
+import { getNetworkLogo, getRoundedDecimalNumber } from 'utils/index';
 
 interface Props {
   network: NetworkJson;
@@ -76,6 +74,19 @@ const SeparatorStyle: StyleProp<any> = {
   marginLeft: 56,
 };
 
+const formatStakedReturn = (stakedReturn?: number) => {
+  if (stakedReturn) {
+    const stakedReturnArr = stakedReturn.toString().split('e');
+    if (stakedReturnArr.length === 2) {
+      return `~${getRoundedDecimalNumber(stakedReturnArr[0])}e${stakedReturnArr[1]} %`;
+    } else {
+      return `${getRoundedDecimalNumber(stakedReturnArr[0])} %`;
+    }
+  } else {
+    return `${getRoundedDecimalNumber('0')}.00 %`;
+  }
+};
+
 const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
   const { key: networkKey, chain: networkName } = network;
   const stakedReturn = bondingMeta?.stakedReturn;
@@ -97,12 +108,7 @@ const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
         </View>
 
         <View style={BalanceInfoContainerStyle}>
-          <BalanceVal
-            balanceValTextStyle={ReturnedTextStyle}
-            symbol={'%'}
-            withSymbol={true}
-            value={new BigN(stakedReturn || 0)}
-          />
+          <Text style={ReturnedTextStyle}>{formatStakedReturn(stakedReturn)}</Text>
         </View>
       </View>
 

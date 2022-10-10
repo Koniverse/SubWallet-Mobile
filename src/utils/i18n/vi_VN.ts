@@ -232,7 +232,7 @@ export const vi = {
     transferNFTFailed: 'Transfer NFT Failed',
     sendTransaction: 'Send Transaction',
     staking: 'Staking',
-    stakingDetail: 'Staking details',
+    stakingDetail: 'Staking Details',
     stakingNetwork: 'Select a network',
     validators: 'Select a validator',
     configureEvmToken: 'Configure EVM Token',

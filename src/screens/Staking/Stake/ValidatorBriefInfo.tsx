@@ -35,9 +35,9 @@ const LeftPartStyle: StyleProp<ViewStyle> = {
 };
 
 const AvatarContainerStyle: StyleProp<ViewStyle> = {
-  width: 20,
-  height: 20,
-  borderRadius: 20,
+  width: 24,
+  height: 24,
+  borderRadius: 24,
   borderColor: ColorMap.secondary,
   padding: 2,
   borderWidth: 2,
@@ -45,9 +45,9 @@ const AvatarContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const AvatarImageStyle: StyleProp<ImageStyle> = {
-  width: 12,
-  height: 12,
-  borderRadius: 12,
+  width: 16,
+  height: 16,
+  borderRadius: 16,
 };
 
 const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
@@ -101,7 +101,7 @@ const ValidatorBriefInfo = ({ validator, rightIcon = false }: Props) => {
           </View>
         ) : (
           <View>
-            <SubWalletAvatar size={20} address={address} />
+            <SubWalletAvatar size={16} address={address} />
           </View>
         )}
         <View style={ValidatorNameContainerStyle}>
@@ -119,7 +119,7 @@ const ValidatorBriefInfo = ({ validator, rightIcon = false }: Props) => {
           />
           <Text style={ReturnTextStyle}>)</Text>
         </View>
-        {rightIcon && <CaretRight size={20} style={RightIconStyle} color={ColorMap.disabled} />}
+        {rightIcon && <CaretRight size={20} style={RightIconStyle} color={ColorMap.disabled} weight={'bold'} />}
       </View>
     </View>
   );

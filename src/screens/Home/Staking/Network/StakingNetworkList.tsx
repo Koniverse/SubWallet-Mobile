@@ -13,7 +13,6 @@ import { HomeNavigationProps } from 'routes/home';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
-  paddingBottom: 16,
 };
 
 const renderEmpty = () => {
