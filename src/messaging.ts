@@ -113,6 +113,7 @@ import {
   RequestInitCronAndSubscription,
   SubscriptionServiceType,
 } from '@subwallet/extension-base/background/KoniTypes';
+import { RequestCronAndSubscriptionAction } from 'types/background';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -1034,6 +1035,21 @@ export async function subscribeActiveCronAndSubscriptionServiceMap(
   callback: (data: ActiveCronAndSubscriptionMap) => void,
 ): Promise<ActiveCronAndSubscriptionMap> {
   return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback);
+}
+
+export async function startCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.start)', request);
+}
+
+export async function stopCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.stop)', request);
+}
+
+export async function restartCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.restart)', request);
 }
 
 export async function startCronServices(request: CronServiceType[]): Promise<void> {

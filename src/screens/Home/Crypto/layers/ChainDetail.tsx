@@ -18,7 +18,7 @@ import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
 import { useRefresh } from 'hooks/useRefresh';
 import i18n from 'utils/i18n/i18n';
-import { restartSubscriptionServices } from '../../../../messaging';
+import { restartCronAndSubscriptionServices } from '../../../../messaging';
 
 interface Prop {
   isShowZeroBalance?: boolean;
@@ -161,7 +161,7 @@ const ChainDetailLayer = ({
 
   const _onRefresh = (tabId: string) => {
     setRefreshTabId(tabId);
-    refresh(restartSubscriptionServices(['balance']));
+    refresh(restartCronAndSubscriptionServices({ cronServices: ['history'], subscriptionServices: ['balance'] }));
   };
 
   return (
