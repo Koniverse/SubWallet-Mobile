@@ -156,12 +156,7 @@ const StakingValidatorDetail = ({
     }
 
     if (!isSufficientFund && !isCurrentlyBonded) {
-      show(
-        `Your free balance needs to be at least ${parseBalanceString(
-          validatorInfo.minBond,
-          token,
-        )}.`,
-      );
+      show(`Your free balance needs to be at least ${parseBalanceString(validatorInfo.minBond, token)}.`);
 
       return;
     }

@@ -13,6 +13,7 @@ import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -98,7 +99,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     if (redeemable > 0) {
       return `${redeemable} ${networkJson.nativeToken as string} can be withdrawn now`;
     } else {
-      if (nextWithdrawal === 0) {
+      if (nextWithdrawal === 0 || nextWithdrawalAmount === 0) {
         return `${nextWithdrawalAmount} ${networkJson.nativeToken as string} can be withdrawn soon`;
       }
 
@@ -187,14 +188,14 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         label: i18n.stakingScreen.stakingDetail.actions.unStake,
         key: 'unStake',
         icon: Minus,
-        onPress: unStakeAction,
+        onPress: parseFloat(activeBalance || '0') > 0 ? unStakeAction : noop,
       },
       {
         label: i18n.stakingScreen.stakingDetail.actions.withdraw,
         key: 'withdraw',
         icon: ClockAfternoon,
         color: canWithdraw ? ColorMap.primary : undefined,
-        onPress: withdrawAction,
+        onPress: canWithdraw ? withdrawAction : noop,
       },
     ];
 
@@ -218,6 +219,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
 
     return result;
   }, [
+    activeBalance,
     canWithdraw,
     claimAction,
     compoundAction,

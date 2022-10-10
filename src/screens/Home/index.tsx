@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HomeScreenProps } from 'routes/index';
 import StakingScreen from './Staking/StakingScreen';
 
 import { Platform, TouchableOpacity } from 'react-native';
@@ -14,24 +13,16 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
 import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser';
-import { HomeScreenParams, HomeStackParamList } from 'routes/home';
+import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 
-interface MainScreenProps {
-  params?: HomeScreenParams;
-}
-
-const MainScreen = ({ params }: MainScreenProps) => {
+const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
 
-  const tab = useMemo((): keyof HomeStackParamList => {
-    return params?.tab || 'Crypto';
-  }, [params?.tab]);
-
   return (
     <Tab.Navigator
-      initialRouteName={tab}
+      initialRouteName={'Crypto'}
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
@@ -125,8 +116,8 @@ const MainScreen = ({ params }: MainScreenProps) => {
   );
 };
 
-export const Home = ({ route: { params: params } }: HomeScreenProps) => {
+export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
 
-  return <>{isEmptyAccounts ? <FirstScreen /> : <MainScreen params={params} />}</>;
+  return <>{isEmptyAccounts ? <FirstScreen /> : <MainScreen />}</>;
 };
