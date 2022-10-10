@@ -6,7 +6,7 @@ import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 import StaticServer from 'react-native-static-server';
-import { listenMessage } from '../../messaging';
+import { initCronAndSubscription, listenMessage } from '../../messaging';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
@@ -168,6 +168,25 @@ class WebRunnerHandler {
           this.eventEmitter?.emit('update-status', webViewStatus);
           console.debug(`### Web Runner Status: ${webViewStatus}`);
           if (webViewStatus === 'crypto_ready') {
+            initCronAndSubscription({
+              subscription: {
+                activeServices: ['chainRegistry', 'balance', 'crowdloan', 'staking'],
+              },
+              cron: {
+                intervalMap: {
+                  recoverApiMap: 20000,
+                  checkApiMapStatus: 5000,
+                  refreshHistory: 60000,
+                  refreshNft: 60000,
+                  refreshPrice: 30000,
+                  refreshStakeUnlockingInfo: 60000,
+                  refreshStakingReward: 60000,
+                },
+                activeServices: ['price', 'nft', 'staking', 'history', 'recoverApi', 'checkApiStatus'],
+              },
+            }).catch(e => {
+              console.log('Init background services error', e);
+            });
             this.startPing();
           } else {
             this.stopPing();

@@ -1,16 +1,19 @@
 import {
+  ActiveCronAndSubscriptionMap,
   BalanceJson,
   ChainRegistry,
   ConfirmationsQueue,
   CrowdloanJson,
-  NetworkJson,
-  PriceJson,
-  NftJson,
-  ResponseSettingsType,
-  TransactionHistoryItemType,
-  NftCollectionJson,
-  NftItem, StakingJson, StakeUnlockingJson, StakingRewardJson,
   CustomEvmToken,
+  NetworkJson,
+  NftCollectionJson,
+  NftJson,
+  PriceJson,
+  ResponseSettingsType,
+  StakeUnlockingJson,
+  StakingJson,
+  StakingRewardJson,
+  TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AccountJson,
@@ -111,3 +114,6 @@ export type NftCollectionSlice = NftCollectionJson & StoreSlice;
 export type StakingSlice = StakingJson & StoreSlice;
 export type StakeUnlockingSlice = StakeUnlockingJson & StoreSlice;
 export type StakingRewardSlice = StakingRewardJson & StoreSlice;
+export type BackgroundServiceSlice = {
+  activeState: ActiveCronAndSubscriptionMap;
+};

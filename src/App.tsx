@@ -67,6 +67,7 @@ import TransferNft from 'screens/TransferNft';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
+import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 
 const viewContainerStyle: StyleProp<any> = {
@@ -172,6 +173,8 @@ export const App = () => {
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
   const networkMapStoreStatus = useStoreNetworkMap();
+
+  useStoreBackgroundService();
 
   // Nft
   useStoreNftCollection();

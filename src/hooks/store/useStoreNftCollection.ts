@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { updateNftCollection } from 'stores/updater';
 import { subscribeNftCollection } from '../../messaging';
-import { NftCollectionJson } from '@subwallet/extension-base/background/KoniTypes';
+import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -18,14 +18,17 @@ export default function useStoreNftCollection(): StoreStatus {
     if (isWebRunnerReady) {
       console.log('--- Setup redux: nftCollection');
 
-      const _update = (payload: NftCollectionJson) => {
+      const _update = (payload: NftCollection[]) => {
         if (cancel) {
           return;
         }
 
-        console.log('--- subscribeNftCollection updated');
+        console.log('--- subscribeNftCollection updated', payload);
 
-        updateNftCollection(payload);
+        updateNftCollection({
+          ready: true,
+          nftCollectionList: payload,
+        });
         setStoreStatus('SYNCED');
       };
 
