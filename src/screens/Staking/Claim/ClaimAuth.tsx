@@ -70,7 +70,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
   }, []);
 
   const goBack = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
+    navigation.navigate('Home', { screen: 'Staking' });
   }, [navigation]);
 
   const handleResponse = useCallback(

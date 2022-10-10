@@ -93,7 +93,7 @@ const StakeAuth = ({
   }, [navigation, stakeParams]);
 
   const onCancel = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
+    navigation.navigate('Home', { screen: 'Staking' });
   }, [navigation]);
 
   const handleBondingResponse = useCallback((data: BasicTxResponse) => {

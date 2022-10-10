@@ -16,7 +16,12 @@ const UnStakeResult = ({
   const navigation = useNavigation<RootNavigationProps>();
 
   const goHome = useCallback(() => {
-    navigation.replace('Home', { tab: 'Staking' });
+    navigation.replace('Home', {
+      screen: 'Staking',
+      params: {
+        screen: 'StakingBalances',
+      },
+    });
   }, [navigation]);
 
   const handleReStake = useCallback(() => {

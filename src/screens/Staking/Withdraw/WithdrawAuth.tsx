@@ -41,7 +41,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) => {
+const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack } }: WithdrawAuthProps) => {
   const { withdrawAmount: amount, networkKey, selectedAccount, nextWithdrawalAction, targetValidator } = withdrawParams;
 
   const navigation = useNavigation<RootNavigationProps>();
@@ -74,10 +74,6 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
   const handleClose = useCallback(() => {
     setVisible(false);
   }, []);
-
-  const goBack = useCallback(() => {
-    navigation.navigate('Home', { tab: 'Staking' });
-  }, [navigation]);
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
