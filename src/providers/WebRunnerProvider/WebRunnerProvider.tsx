@@ -4,10 +4,25 @@ import WebView from 'react-native-webview';
 import { setupWebview } from '../../messaging';
 import { WebRunner } from 'providers/WebRunnerProvider/WebRunner';
 import EventEmitter from 'eventemitter3';
+import { DelayBackgroundService } from 'types/background';
 
 interface WebRunnerProviderProps {
   children?: React.ReactNode;
   webRef?: MutableRefObject<WebView | undefined>;
+}
+
+const backgroundServiceTimeoutMap: Record<DelayBackgroundService, NodeJS.Timeout | undefined> = {
+  nft: undefined,
+  staking: undefined,
+  crowdloan: undefined,
+};
+
+function clearBackgroundServiceTimeout(service: DelayBackgroundService) {
+  clearTimeout(backgroundServiceTimeoutMap[service]);
+}
+
+function setBackgroundServiceTimeout(service: DelayBackgroundService, timeout: NodeJS.Timeout) {
+  backgroundServiceTimeoutMap[service] = timeout;
 }
 
 const eventEmitter = new EventEmitter();
@@ -43,8 +58,23 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
   }, [webRef]);
 
   return (
-    <WebRunnerContext.Provider value={{ webState: webStateRef.current, webRef, isReady, eventEmitter, reload }}>
-      <WebRunner webRunnerRef={webRef} webRunnerStateRef={webStateRef} webRunnerEventEmitter={eventEmitter} />
+    <WebRunnerContext.Provider
+      value={{
+        webState: webStateRef.current,
+        webRef,
+        isReady,
+        eventEmitter,
+        reload,
+        clearBackgroundServiceTimeout,
+        setBackgroundServiceTimeout,
+      }}>
+      <WebRunner
+        webRunnerRef={webRef}
+        webRunnerStateRef={webStateRef}
+        webRunnerEventEmitter={eventEmitter}
+        clearBackgroundServiceTimeout={clearBackgroundServiceTimeout}
+        setBackgroundServiceTimeout={setBackgroundServiceTimeout}
+      />
       {children}
     </WebRunnerContext.Provider>
   );
