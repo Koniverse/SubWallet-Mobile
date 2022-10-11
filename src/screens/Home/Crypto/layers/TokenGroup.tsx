@@ -119,16 +119,17 @@ function getEmptyBalanceInfo(nativeToken?: string) {
   };
 }
 
-function isTokenTabEmptyList(
+function isEmptyList(
   list: TokenBalanceItemType[],
   accountType: AccountType,
   tokenGroupMap: Record<string, string[]>,
   isShowZeroBalance?: boolean,
 ) {
   if (!list.length) {
-    return false;
+    return true;
   }
   const filteredList = list.filter(item => isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance));
+  console.log('filteredList', filteredList);
   return !filteredList.length;
 }
 
@@ -248,7 +249,7 @@ const TokenGroupLayer = ({
               isRefresh={isRefresh}
               refresh={_onRefresh}
               refreshTabId={refreshTabId}
-              isEmptyList={isTokenTabEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
+              isEmptyList={isEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
             />
           </Tabs.Tab>
           <Tabs.Tab name={'two'} label={i18n.title.network}>
@@ -258,7 +259,7 @@ const TokenGroupLayer = ({
               isRefresh={isRefresh}
               refresh={_onRefresh}
               refreshTabId={refreshTabId}
-              isEmptyList={isTokenTabEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
+              isEmptyList={isEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
             />
           </Tabs.Tab>
         </Tabs.Container>

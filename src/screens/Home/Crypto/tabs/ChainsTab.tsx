@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListRenderItem, RefreshControl, StyleProp, View } from 'react-native';
+import { ListRenderItem, RefreshControl, RefreshControlProps, StyleProp, View } from 'react-native';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
@@ -50,12 +50,27 @@ export const ChainsTab = ({ networkKeys, isRefresh, refresh, refreshTabId, rende
     );
   };
 
+  const renderRefreshControl = ():
+    | React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>
+    | undefined => {
+    return (
+      <RefreshControl
+        style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'two' ? 1 : 0 }}
+        tintColor={ColorMap.light}
+        refreshing={isRefresh}
+        onRefresh={() => refresh('two')}
+      />
+    );
+  };
+
   if (isEmptyList) {
     return (
       <Tabs.ScrollView
+        showsVerticalScrollIndicator={false}
         accessibilityTraits
         accessibilityComponentType
-        contentContainerStyle={flatListContentContainerStyle}>
+        contentContainerStyle={flatListContentContainerStyle}
+        refreshControl={renderRefreshControl()}>
         <View style={emptyListWrapperStyle}>
           <EmptyList icon={Coins} title={i18n.common.emptyChainListMessage} />
           {renderFooterComponent()}
@@ -74,14 +89,7 @@ export const ChainsTab = ({ networkKeys, isRefresh, refresh, refreshTabId, rende
       data={networkKeys}
       renderItem={renderItem}
       ListFooterComponent={renderFooterComponent}
-      refreshControl={
-        <RefreshControl
-          style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'two' ? 1 : 0 }}
-          tintColor={ColorMap.light}
-          refreshing={isRefresh}
-          onRefresh={() => refresh('two')}
-        />
-      }
+      refreshControl={renderRefreshControl()}
     />
   );
 };
