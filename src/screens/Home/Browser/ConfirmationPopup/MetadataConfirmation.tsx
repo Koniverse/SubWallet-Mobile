@@ -27,6 +27,7 @@ const metadataTextStyle: StyleProp<any> = {
   color: ColorMap.disabled,
   paddingTop: 16,
   textAlign: 'center',
+  paddingHorizontal: 16,
 };
 
 function getMetadataTextStyle(color: string): StyleProp<any> {

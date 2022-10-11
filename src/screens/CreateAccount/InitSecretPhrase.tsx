@@ -28,7 +28,7 @@ const bodyAreaStyle: StyleProp<any> = {
 };
 
 const footerAreaStyle: StyleProp<any> = {
-  marginTop: 8,
+  marginTop: 16,
   ...MarginBottomForSubmitButton,
 };
 
@@ -100,8 +100,12 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
               onPress={() => copyToClipboard(seed)}
             />
           </View>
-          <Warning title={i18n.warningTitle.doNotShareSecretPhrase} message={i18n.warningMessage.secretPhraseWarning} />
         </ScrollView>
+        <Warning
+          style={{ marginTop: 16 }}
+          title={i18n.warningTitle.doNotShareSecretPhrase}
+          message={i18n.warningMessage.secretPhraseWarning}
+        />
       </View>
       <View style={footerAreaStyle}>
         <SubmitButton title={i18n.common.continue} onPress={onPressSubmit} />
