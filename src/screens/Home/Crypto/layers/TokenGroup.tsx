@@ -129,7 +129,6 @@ function isEmptyList(
     return true;
   }
   const filteredList = list.filter(item => isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance));
-  console.log('filteredList', filteredList);
   return !filteredList.length;
 }
 
