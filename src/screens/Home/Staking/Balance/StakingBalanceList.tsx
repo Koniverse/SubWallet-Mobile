@@ -6,12 +6,15 @@ import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
 import React, { useCallback, useMemo } from 'react';
-import { ListRenderItemInfo, SafeAreaView, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, SafeAreaView, View } from 'react-native';
 import { HomeNavigationProps } from 'routes/home';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { ColorMap } from 'styles/color';
+import { restartCronAndSubscriptionServices } from '../../../../messaging';
+import { useRefresh } from 'hooks/useRefresh';
 
 const renderEmpty = () => {
   return <EmptyStaking />;
@@ -26,8 +29,8 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
 const StakingBalanceList = () => {
   const { data, loading, priceMap } = useFetchStaking();
   const isAllAccount = useIsAccountAll();
-
   const navigation = useNavigation<HomeNavigationProps>();
+  const [isRefresh, refresh] = useRefresh();
 
   const handleOnPress = useCallback(
     (stakingData: StakingDataType): (() => void) => {
@@ -92,6 +95,21 @@ const StakingBalanceList = () => {
               <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
             </View>
           ) : undefined
+        }
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark2 }}
+            tintColor={ColorMap.light}
+            refreshing={isRefresh}
+            onRefresh={() => {
+              refresh(
+                restartCronAndSubscriptionServices({
+                  cronServices: ['staking'],
+                  subscriptionServices: ['staking'],
+                }),
+              );
+            }}
+          />
         }
       />
 

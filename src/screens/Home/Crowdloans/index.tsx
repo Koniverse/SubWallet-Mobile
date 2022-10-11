@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem, getGroupKey } from 'screens/Home/Crowdloans/CrowdloanItem';
 import { CrowdloanItemType } from '../../../types';
 import { FunnelSimple, Rocket } from 'phosphor-react-native';
@@ -9,6 +9,13 @@ import { CrowdloanFilter } from 'screens/Home/Crowdloans/CrowdloanFilter';
 import { FilterOptsType } from 'types/ui-types';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
+import { ColorMap } from 'styles/color';
+import { useRefresh } from 'hooks/useRefresh';
+import { restartSubscriptionServices, startSubscriptionServices } from '../../../messaging';
+import { WebRunnerContext } from 'providers/contexts';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { useIsFocused } from '@react-navigation/native';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;
@@ -45,6 +52,12 @@ export const CrowdloansScreen = () => {
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [filterOpts, setFilterOpts] = useState<FilterOptsType>(defaultFilterOpts);
+  const [isRefresh, refresh] = useRefresh();
+  const { clearBackgroundServiceTimeout } = useContext(WebRunnerContext);
+  const isCrowdloanServiceActive = useSelector(
+    (state: RootState) => state.backgroundService.activeState.subscription.crowdloan,
+  );
+  const isFocused = useIsFocused();
 
   const doFilterOptions = useCallback(
     (itemList: CrowdloanItemType[], searchString: string) => {
@@ -60,6 +73,13 @@ export const CrowdloansScreen = () => {
     },
     [filterOpts],
   );
+
+  useEffect(() => {
+    if (isFocused && !isCrowdloanServiceActive) {
+      clearBackgroundServiceTimeout('crowdloan');
+      startSubscriptionServices(['crowdloan']).catch(e => console.log('Start crowdloan service error:', e));
+    }
+  }, [clearBackgroundServiceTimeout, isFocused, isCrowdloanServiceActive]);
 
   return (
     <FlatListScreen
@@ -77,6 +97,14 @@ export const CrowdloansScreen = () => {
           onChangeModalVisible={() => setModalVisible(false)}
           filterOpts={filterOpts}
           onChangeFilterOpts={setFilterOpts}
+        />
+      }
+      refreshControl={
+        <RefreshControl
+          style={{ backgroundColor: ColorMap.dark2 }}
+          tintColor={ColorMap.light}
+          refreshing={isRefresh}
+          onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
         />
       }
     />

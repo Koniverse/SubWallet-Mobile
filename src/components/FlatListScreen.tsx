@@ -1,6 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { ActivityIndicator, FlatList, ListRenderItemInfo, StyleProp, TextInput, View, ViewStyle } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItemInfo,
+  RefreshControlProps,
+  StyleProp,
+  TextInput,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
@@ -42,6 +51,7 @@ interface Props<T> {
   flatListStyle?: StyleProp<any>;
   leftButtonDisabled?: boolean;
   headerContent?: () => JSX.Element;
+  refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
 }
 
 const ColumnWrapperStyle: StyleProp<ViewStyle> = {
@@ -79,6 +89,7 @@ export function FlatListScreen<T>({
   flatListStyle,
   leftButtonDisabled,
   headerContent,
+  refreshControl,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -144,6 +155,7 @@ export function FlatListScreen<T>({
             renderItem={renderItem}
             onEndReachedThreshold={0.3}
             numColumns={numberColumns}
+            refreshControl={refreshControl}
             columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
@@ -154,7 +166,17 @@ export function FlatListScreen<T>({
         )}
       </>
     );
-  }, [isLoading, lazyList, loading, numberColumns, onLoadMore, renderItem, renderListEmptyComponent, flatListStyle]);
+  }, [
+    loading,
+    lazyList,
+    onLoadMore,
+    renderItem,
+    numberColumns,
+    refreshControl,
+    flatListStyle,
+    renderListEmptyComponent,
+    isLoading,
+  ]);
 
   const renderContent = () => (
     <View style={{ flex: 1 }}>

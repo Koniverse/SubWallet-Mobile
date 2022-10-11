@@ -1,4 +1,5 @@
 import {
+  ActiveCronAndSubscriptionMap,
   BalanceJson,
   ChainRegistry,
   CrowdloanJson,
@@ -14,12 +15,12 @@ import {
 import { store } from 'stores/index';
 import {
   AccountsSlice,
+  AuthUrlsSlice,
+  BrowserSlice,
+  BrowserSliceTab,
   NftCollectionSlice,
   NftSlice,
-  AuthUrlsSlice,
   SiteInfo,
-  BrowserSliceTab,
-  BrowserSlice,
 } from 'stores/types';
 
 export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void {
@@ -80,13 +81,19 @@ export function updateAuthUrls(authUrlMap: AuthUrlsSlice['details']): void {
   store.dispatch({ type: 'authUrls/update', payload: { details: authUrlMap || {} } });
 }
 
+// Background service
+
+export function updateBackgroundServiceActiveState(payload: ActiveCronAndSubscriptionMap): void {
+  store.dispatch({ type: 'backgroundService/updateActiveState', payload });
+}
+
 // App State
 
 export function toggleConfirmationDisplayState(): void {
   store.dispatch({ type: 'appState/toggleConfirmationDisplayState' });
 }
 
-// browser
+// Browser
 
 export function updateActiveTab(tabId: BrowserSlice['activeTab']): void {
   store.dispatch({ type: 'browser/updateActiveTab', payload: tabId });

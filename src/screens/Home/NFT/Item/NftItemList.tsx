@@ -1,7 +1,7 @@
 import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useMemo } from 'react';
-import { ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
 import NftItem from './NftItem';
 import i18n from 'utils/i18n/i18n';
 import { NFTCollectionProps, NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
@@ -10,6 +10,8 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { restartCronServices } from '../../../../messaging';
+import { useRefresh } from 'hooks/useRefresh';
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
@@ -43,6 +45,7 @@ const NftItemList = ({
     return nftList.filter(item => item.collectionId === (collection?.collectionId || '__'));
   }, [collection?.collectionId, nftList]);
   const navigation = useNavigation<NFTNavigationProps>();
+  const [isRefresh, refresh] = useRefresh();
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<_NftItem>) => {
@@ -77,6 +80,14 @@ const NftItemList = ({
         items={nftItems}
         numberColumns={2}
         searchMarginBottom={16}
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark2 }}
+            tintColor={ColorMap.light}
+            refreshing={isRefresh}
+            onRefresh={() => refresh(restartCronServices(['nft']))}
+          />
+        }
       />
     </View>
   );

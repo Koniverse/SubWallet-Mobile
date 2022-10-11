@@ -27,7 +27,7 @@ export default function useStoreCrowdloan(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribePrice updated');
+        console.log('--- subscribeCrowdloan updated');
 
         updateCrowdloan(payload);
         setStoreStatus('SYNCED');
