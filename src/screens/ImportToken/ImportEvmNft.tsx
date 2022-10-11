@@ -186,7 +186,7 @@ const ImportEvmNft = () => {
     <ContainerWithSubHeader
       showLeftBtn={true}
       onPressBack={onBack}
-      title={i18n.title.importEvmNft}
+      title={i18n.title.importNft}
       style={ContainerHeaderStyle}
       isShowPlaceHolder={false}>
       <View style={WrapperStyle}>
@@ -230,7 +230,7 @@ const ImportEvmNft = () => {
         />
 
         <SubmitButton
-          title={i18n.importEvmNft.addNft}
+          title={i18n.importEvmNft.importNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={handleAddToken}
           disabled={isDisableAddNFT}
