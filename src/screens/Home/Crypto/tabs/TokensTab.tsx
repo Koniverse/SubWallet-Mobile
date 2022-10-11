@@ -17,6 +17,7 @@ interface Props {
   isRefresh: boolean;
   refresh: (tabId: string) => void;
   refreshTabId: string;
+  isEmptyList: boolean;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
@@ -35,7 +36,14 @@ const emptyListWrapperStyle: StyleProp<any> = {
   paddingTop: 48,
 };
 
-export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, refresh, refreshTabId }: Props) => {
+export const TokensTab = ({
+  items: tokenBalanceItems,
+  renderItem,
+  isRefresh,
+  refresh,
+  refreshTabId,
+  isEmptyList,
+}: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const renderFooterComponent = () => {
     return (
@@ -49,7 +57,7 @@ export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, ref
     );
   };
 
-  if (!tokenBalanceItems.length) {
+  if (isEmptyList) {
     return (
       <Tabs.ScrollView
         accessibilityTraits

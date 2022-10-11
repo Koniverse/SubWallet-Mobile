@@ -19,6 +19,7 @@ import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
 import i18n from 'utils/i18n/i18n';
 import useTokenBalanceItems from 'hooks/screen/Home/Crypto/layers/TokenGroup/useTokenBalanceItems';
+import { ChainBalance } from 'components/ChainBalance';
 
 interface Prop {
   isShowZeroBalance?: boolean;
@@ -104,6 +105,33 @@ function getChainTabsNetworkKeys(
   return result;
 }
 
+const alwaysShowedNetworkKeys = ['kusama', 'polkadot'];
+
+function getEmptyBalanceInfo(nativeToken?: string) {
+  return {
+    symbol: nativeToken || 'UNIT',
+    displayedSymbol: (nativeToken && getTokenDisplayName(nativeToken)) || 'UNIT',
+    balanceValue: BN_ZERO,
+    convertedBalanceValue: BN_ZERO,
+    detailBalances: [],
+    childrenBalances: [],
+    isReady: false,
+  };
+}
+
+function isTokenTabEmptyList(
+  list: TokenBalanceItemType[],
+  accountType: AccountType,
+  tokenGroupMap: Record<string, string[]>,
+  isShowZeroBalance?: boolean,
+) {
+  if (!list.length) {
+    return false;
+  }
+  const filteredList = list.filter(item => isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance));
+  return !filteredList.length;
+}
+
 const TokenGroupLayer = ({
   accountType,
   navigation,
@@ -150,6 +178,24 @@ const TokenGroupLayer = ({
       setCurrentTgKey(item.id);
       setGroupDetail(true);
     }
+  };
+
+  const renderNetworkItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
+    const info = accountInfoByNetworkMap[networkKey];
+    const balanceInfo = networkBalanceMap[networkKey] || getEmptyBalanceInfo(info.nativeToken);
+
+    if (!isShowZeroBalance && !alwaysShowedNetworkKeys.includes(networkKey) && balanceInfo.balanceValue.eq(BN_ZERO)) {
+      return null;
+    }
+
+    return (
+      <ChainBalance
+        key={info.key}
+        accountInfo={info}
+        onPress={() => onPressChainItem(info, balanceInfo)}
+        balanceInfo={balanceInfo}
+      />
+    );
   };
 
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
@@ -202,18 +248,17 @@ const TokenGroupLayer = ({
               isRefresh={isRefresh}
               refresh={_onRefresh}
               refreshTabId={refreshTabId}
+              isEmptyList={isTokenTabEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
             />
           </Tabs.Tab>
           <Tabs.Tab name={'two'} label={i18n.title.network}>
             <ChainsTab
-              isShowZeroBalance={isShowZeroBalance}
-              onPressChainItem={onPressChainItem}
+              renderItem={renderNetworkItem}
               networkKeys={chainTabsNetworkKeys}
-              networkBalanceMap={networkBalanceMap}
-              accountInfoByNetworkMap={accountInfoByNetworkMap}
               isRefresh={isRefresh}
               refresh={_onRefresh}
               refreshTabId={refreshTabId}
+              isEmptyList={isTokenTabEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
             />
           </Tabs.Tab>
         </Tabs.Container>
