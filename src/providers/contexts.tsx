@@ -3,6 +3,7 @@ import WebView from 'react-native-webview';
 import { SWTheme, THEME_PRESET } from 'styles/themes';
 import { QrCallBackMap, QrValue } from 'types/QRScanner';
 import EventEmitter from 'eventemitter3';
+import { DelayBackgroundService } from 'types/background';
 
 const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
 
@@ -19,9 +20,15 @@ export interface WebviewElement {
   webState: WebRunnerState;
   isReady?: boolean;
   eventEmitter?: EventEmitter;
+  clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void;
+  setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void;
 }
 
-const WebRunnerContext = React.createContext<WebviewElement>({ webState: {} });
+const WebRunnerContext = React.createContext<WebviewElement>({
+  webState: {},
+  clearBackgroundServiceTimeout: () => {},
+  setBackgroundServiceTimeout: () => {},
+});
 
 const QrScannerContext = React.createContext<{
   value: QrValue;

@@ -18,6 +18,7 @@ import stakingReducer from './Staking';
 import stakingRewardReducer from './StakingReward';
 import stakeUnlockingReducer from './StakeUnlockingInfo';
 import evmTokenReducer from './EvmToken';
+import backgroundServiceReducer from './BackgroundService';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -45,6 +46,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   appState: appStateReducer,
+  backgroundService: backgroundServiceReducer,
   accounts: accountsReducer,
   evmToken: evmTokenReducer,
   authUrls: authUrlsReducer,

@@ -48,7 +48,7 @@ import {
   EvmNftTransactionRequest,
   EvmTokenJson,
   NetworkJson,
-  NftCollectionJson,
+  NftCollection,
   NftJson,
   NftTransactionResponse,
   NftTransferExtra,
@@ -107,6 +107,13 @@ import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 import { WebRunnerStatus } from 'providers/contexts';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from './errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
+import {
+  ActiveCronAndSubscriptionMap,
+  CronServiceType,
+  RequestInitCronAndSubscription,
+  SubscriptionServiceType,
+} from '@subwallet/extension-base/background/KoniTypes';
+import { RequestCronAndSubscriptionAction } from 'types/background';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -280,11 +287,6 @@ export function sendMessage<TMessageType extends MessageTypes>(
 
     postMessage({ id, message, request: request || {}, origin: undefined });
   });
-}
-
-export async function hotReload() {
-  // @ts-ignore
-  return sendMessage('mobile:hotReload', {});
 }
 
 export async function editAccount(address: string, name: string): Promise<boolean> {
@@ -745,7 +747,7 @@ export async function subscribeNft(
   return sendMessage('pri(nft.getSubscription)', request, callback);
 }
 
-export async function subscribeNftCollection(callback: (data: NftCollectionJson) => void): Promise<NftCollectionJson> {
+export async function subscribeNftCollection(callback: (data: NftCollection[]) => void): Promise<NftCollection[]> {
   return sendMessage('pri(nftCollection.getSubscription)', null, callback);
 }
 
@@ -1021,4 +1023,55 @@ export async function parseEVMTransactionInput(
 
 export async function subscribeAuthUrl(callback: (data: AuthUrls) => void): Promise<AuthUrls> {
   return sendMessage('pri(authorize.subscribe)', null, callback);
+}
+
+export async function initCronAndSubscription(
+  request: RequestInitCronAndSubscription,
+): Promise<ActiveCronAndSubscriptionMap> {
+  return sendMessage('mobile(cronAndSubscription.init)', request);
+}
+
+export async function subscribeActiveCronAndSubscriptionServiceMap(
+  callback: (data: ActiveCronAndSubscriptionMap) => void,
+): Promise<ActiveCronAndSubscriptionMap> {
+  return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback);
+}
+
+export async function startCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.start)', request);
+}
+
+export async function stopCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.stop)', request);
+}
+
+export async function restartCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
+  // @ts-ignore
+  return sendMessage('mobile(cronAndSubscription.restart)', request);
+}
+
+export async function startCronServices(request: CronServiceType[]): Promise<void> {
+  return sendMessage('mobile(cron.start)', request);
+}
+
+export async function stopCronServices(request: CronServiceType[]): Promise<void> {
+  return sendMessage('mobile(cron.stop)', request);
+}
+
+export async function restartCronServices(request: CronServiceType[]): Promise<void> {
+  return sendMessage('mobile(cron.restart)', request);
+}
+
+export async function startSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  return sendMessage('mobile(subscription.start)', request);
+}
+
+export async function stopSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  return sendMessage('mobile(subscription.stop)', request);
+}
+
+export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
+  return sendMessage('mobile(subscription.restart)', request);
 }
