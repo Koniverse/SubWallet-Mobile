@@ -6,10 +6,17 @@ import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 import StaticServer from 'react-native-static-server';
-import { initCronAndSubscription, listenMessage } from '../../messaging';
+import {
+  initCronAndSubscription,
+  listenMessage,
+  startCronAndSubscriptionServices,
+  startCronServices,
+  startSubscriptionServices,
+} from '../../messaging';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
+import { DelayBackgroundService } from 'types/background';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 3600000; //30*60*1000
@@ -42,6 +49,55 @@ const getJsInjectContent = (showLog?: boolean) => {
 
   return injectedJS;
 };
+
+function setupBackgroundService(
+  clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void,
+  setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void,
+) {
+  initCronAndSubscription({
+    subscription: {
+      activeServices: ['chainRegistry', 'balance'],
+    },
+    cron: {
+      intervalMap: {
+        recoverApiMap: 20000,
+        checkApiMapStatus: 5000,
+        refreshHistory: 60000,
+        refreshNft: 60000,
+        refreshPrice: 30000,
+        refreshStakeUnlockingInfo: 60000,
+        refreshStakingReward: 60000,
+      },
+      activeServices: ['price', 'history', 'recoverApi', 'checkApiStatus'],
+    },
+  }).catch(e => {
+    console.log('Init background services error', e);
+  });
+
+  clearBackgroundServiceTimeout('crowdloan');
+  clearBackgroundServiceTimeout('staking');
+  clearBackgroundServiceTimeout('nft');
+  setBackgroundServiceTimeout(
+    'crowdloan',
+    setTimeout(() => {
+      startSubscriptionServices(['crowdloan']).catch(e => console.log('Init crowdloan service error', e));
+    }, 2000),
+  );
+  setBackgroundServiceTimeout(
+    'staking',
+    setTimeout(() => {
+      startCronAndSubscriptionServices({ cronServices: ['staking'], subscriptionServices: ['staking'] }).catch(e =>
+        console.log('Init staking services error', e),
+      );
+    }, 4000),
+  );
+  setBackgroundServiceTimeout(
+    'nft',
+    setTimeout(() => {
+      startCronServices(['nft']).catch(e => console.log('Init nft service error', e));
+    }, 6000),
+  );
+}
 
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
@@ -150,7 +206,11 @@ class WebRunnerHandler {
     this.dispatch && this.dispatch({ type: 'rerender' });
   }
 
-  onRunnerMessage(eventData: NativeSyntheticEvent<WebViewMessage>) {
+  onRunnerMessage(
+    eventData: NativeSyntheticEvent<WebViewMessage>,
+    clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void,
+    setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void,
+  ) {
     // Save the lastTimeResponse to check it later
     this.lastTimeResponse = new Date().getTime();
     listenMessage(JSON.parse(eventData.nativeEvent.data), this.eventEmitter, (unHandleData: Message['data']) => {
@@ -168,25 +228,7 @@ class WebRunnerHandler {
           this.eventEmitter?.emit('update-status', webViewStatus);
           console.debug(`### Web Runner Status: ${webViewStatus}`);
           if (webViewStatus === 'crypto_ready') {
-            initCronAndSubscription({
-              subscription: {
-                activeServices: ['chainRegistry', 'balance', 'crowdloan', 'staking'],
-              },
-              cron: {
-                intervalMap: {
-                  recoverApiMap: 20000,
-                  checkApiMapStatus: 5000,
-                  refreshHistory: 60000,
-                  refreshNft: 60000,
-                  refreshPrice: 30000,
-                  refreshStakeUnlockingInfo: 60000,
-                  refreshStakingReward: 60000,
-                },
-                activeServices: ['price', 'nft', 'staking', 'history', 'recoverApi', 'checkApiStatus'],
-              },
-            }).catch(e => {
-              console.log('Init background services error', e);
-            });
+            setupBackgroundService(clearBackgroundServiceTimeout, setBackgroundServiceTimeout);
             this.startPing();
           } else {
             this.stopPing();
@@ -314,41 +356,51 @@ interface Props {
   webRunnerRef: React.RefObject<WebView<{}>>;
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
+  clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void;
+  setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void;
 }
 
-export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
-  const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
-    injectScript: getJsInjectContent(),
-    runnerRef: webRunnerRef,
-    stateRef: webRunnerStateRef,
-    eventEmitter: webRunnerEventEmitter,
-  });
+export const WebRunner = React.memo(
+  ({
+    webRunnerRef,
+    webRunnerStateRef,
+    webRunnerEventEmitter,
+    clearBackgroundServiceTimeout,
+    setBackgroundServiceTimeout,
+  }: Props) => {
+    const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
+      injectScript: getJsInjectContent(),
+      runnerRef: webRunnerRef,
+      stateRef: webRunnerStateRef,
+      eventEmitter: webRunnerEventEmitter,
+    });
 
-  webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
-  webRunnerHandler.active();
+    webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
+    webRunnerHandler.active();
 
-  const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
-    webRunnerHandler.onRunnerMessage(eventData);
-  };
+    const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+      webRunnerHandler.onRunnerMessage(eventData, clearBackgroundServiceTimeout, setBackgroundServiceTimeout);
+    };
 
-  return (
-    <View style={{ height: 0 }}>
-      {runnerGlobalState.uri && (
-        <WebView
-          ref={webRunnerRef}
-          source={{ uri: runnerGlobalState.uri }}
-          onMessage={onMessage}
-          originWhitelist={['*']}
-          injectedJavaScript={runnerGlobalState.injectScript}
-          onError={e => console.debug('### WebRunner error', e)}
-          onHttpError={e => console.debug('### WebRunner HttpError', e)}
-          javaScriptEnabled={true}
-          allowFileAccess={true}
-          allowUniversalAccessFromFileURLs={true}
-          allowFileAccessFromFileURLs={true}
-          domStorageEnabled={true}
-        />
-      )}
-    </View>
-  );
-});
+    return (
+      <View style={{ height: 0 }}>
+        {runnerGlobalState.uri && (
+          <WebView
+            ref={webRunnerRef}
+            source={{ uri: runnerGlobalState.uri }}
+            onMessage={onMessage}
+            originWhitelist={['*']}
+            injectedJavaScript={runnerGlobalState.injectScript}
+            onError={e => console.debug('### WebRunner error', e)}
+            onHttpError={e => console.debug('### WebRunner HttpError', e)}
+            javaScriptEnabled={true}
+            allowFileAccess={true}
+            allowUniversalAccessFromFileURLs={true}
+            allowFileAccessFromFileURLs={true}
+            domStorageEnabled={true}
+          />
+        )}
+      </View>
+    );
+  },
+);
