@@ -13,8 +13,6 @@ import useFreeBalance from 'hooks/screen/useFreeBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useCallback, useMemo, useState } from 'react';
 import {
-  Image,
-  ImageStyle,
   ScrollView,
   StyleProp,
   Text,
@@ -98,7 +96,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
 
   const senderFreeBalance = useFreeBalance(networkKey, selectedAccount, network.nativeToken);
 
-  const { icon, address, minBond } = validator;
+  const { minBond } = validator;
   const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
 
   const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
