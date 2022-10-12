@@ -4,7 +4,6 @@ import React, { useCallback } from 'react';
 import { RootNavigationProps } from 'routes/index';
 import { ClaimResultProps } from 'routes/staking/claimAction';
 import i18n from 'utils/i18n/i18n';
-import useGoHome from 'hooks/screen/useGoHome';
 
 const ClaimResult = ({
   route: {

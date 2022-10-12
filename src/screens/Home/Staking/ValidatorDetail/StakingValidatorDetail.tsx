@@ -10,13 +10,14 @@ import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import ValidatorName from 'components/Staking/ValidatorName';
 import { StakingValidatorDetailProps } from 'routes/staking/stakingScreen';
+import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import {
   ContainerHorizontalPadding,
-  FontBold,
   FontMedium,
   FontSemiBold,
   MarginBottomForSubmitButton,
@@ -24,11 +25,14 @@ import {
 } from 'styles/sharedStyles';
 import { parseBalanceString } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
+import { getStakingInputValueStyle } from 'utils/text';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
+  ...ContainerHorizontalPadding,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
+  paddingTop: 24,
 };
 
 const ScrollViewStyle: StyleProp<ViewStyle> = {
@@ -51,37 +55,6 @@ const TotalStakeTitleTextStyle: StyleProp<TextStyle> = {
   ...FontMedium,
   color: ColorMap.disabled,
   paddingBottom: 4,
-};
-
-export const getInputValueStyle = (inputValue: string) => {
-  const initStyle = {
-    ...sharedStyles.largeText,
-    ...FontBold,
-  };
-
-  if (inputValue.length > 17) {
-    return {
-      ...initStyle,
-      fontSize: 24,
-      lineHeight: 30,
-    };
-  } else if (inputValue.length > 12) {
-    return {
-      ...initStyle,
-      fontSize: 32,
-      lineHeight: 38,
-    };
-  } else if (inputValue.length > 9) {
-    return {
-      ...initStyle,
-      fontSize: 36,
-      lineHeight: 42,
-    };
-  }
-
-  return {
-    ...initStyle,
-  };
 };
 
 const HeaderWrapperStyle: StyleProp<ViewStyle> = {
@@ -120,10 +93,12 @@ const StakingValidatorDetail = ({
   },
   navigation: { goBack },
 }: StakingValidatorDetailProps) => {
-  const { bondedValidators, maxNominations, maxNominatorPerValidator } = networkValidatorsInfo;
+  const { bondedValidators, maxNominations } = networkValidatorsInfo;
 
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
+
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
   const network = useGetNetworkJson(networkKey);
 
@@ -134,14 +109,8 @@ const StakingValidatorDetail = ({
     [bondedValidators, validatorInfo.address],
   );
 
-  const isOversubscribed = useMemo(
-    (): boolean => validatorInfo.nominatorCount >= maxNominatorPerValidator,
-    [maxNominatorPerValidator, validatorInfo.nominatorCount],
-  );
-
   const isSufficientFund = useIsSufficientBalance(networkKey, validatorInfo.minBond);
 
-  const hasOwnStake = useMemo((): boolean => validatorInfo.ownStake > 0, [validatorInfo.ownStake]);
   const isMaxCommission = useMemo((): boolean => validatorInfo.commission === 100, [validatorInfo.commission]);
 
   const show = useCallback(
@@ -170,19 +139,19 @@ const StakingValidatorDetail = ({
 
   const handlePressStaking = useCallback((): void => {
     if (validatorInfo.hasScheduledRequest) {
-      show('Please withdraw the unstaking amount first');
+      show(i18n.warningMessage.withdrawUnStakingFirst);
 
       return;
     }
 
     if (!isSufficientFund && !isCurrentlyBonded) {
-      show(`Your free balance needs to be at least ${parseBalanceString(validatorInfo.minBond, token)}.`);
+      show(`${i18n.warningMessage.freeBalanceAtLeast} ${parseBalanceString(validatorInfo.minBond, token)}.`);
 
       return;
     }
 
     if (bondedValidators.length >= maxNominations && !bondedValidators.includes(validatorInfo.address)) {
-      show('Please choose among the nominating validators only');
+      show(i18n.warningMessage.chooseNominating);
 
       return;
     }
@@ -193,6 +162,7 @@ const StakingValidatorDetail = ({
         validator: validatorInfo,
         networkKey: networkKey,
         networkValidatorsInfo: networkValidatorsInfo,
+        selectedAccount: currentAccountAddress,
       },
     });
   }, [
@@ -204,6 +174,7 @@ const StakingValidatorDetail = ({
     navigation,
     networkKey,
     networkValidatorsInfo,
+    currentAccountAddress,
     show,
     token,
   ]);
@@ -211,13 +182,16 @@ const StakingValidatorDetail = ({
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
       <View style={WrapperStyle}>
-        <ScrollView style={ScrollViewStyle} contentContainerStyle={{ paddingTop: 24, ...ContainerHorizontalPadding }}>
+        <ScrollView style={ScrollViewStyle}>
           <View style={CenterWrapperStyle}>
             <Text style={TotalStakeTitleTextStyle}>Total Stake</Text>
           </View>
           <View style={CenterWrapperStyle}>
             <BalanceVal
-              balanceValTextStyle={[getInputValueStyle(validatorInfo.totalStake.toString()), { marginBottom: 32 }]}
+              balanceValTextStyle={[
+                getStakingInputValueStyle(validatorInfo.totalStake.toString()),
+                { marginBottom: 32 },
+              ]}
               // symbolTextStyle={BalanceSymbolTextStyle}
               symbol={token}
               withComma={true}
@@ -238,7 +212,6 @@ const StakingValidatorDetail = ({
             token={token}
             decimal={0}
             si={formatBalance.findSi('-')}
-            color={hasOwnStake ? ColorMap.warning : ColorMap.light}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.nominatorsCount}
@@ -246,7 +219,6 @@ const StakingValidatorDetail = ({
             token={''}
             decimal={0}
             si={formatBalance.findSi('-')}
-            color={isOversubscribed ? ColorMap.errorColor : ColorMap.light}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.minimumStake}
@@ -265,7 +237,7 @@ const StakingValidatorDetail = ({
             color={!isMaxCommission ? ColorMap.primary : ColorMap.danger}
           />
         </ScrollView>
-        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16, ...ContainerHorizontalPadding }}>
+        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16 }}>
           <SubmitButton
             title={i18n.stakingScreen.startStaking}
             backgroundColor={ColorMap.secondary}

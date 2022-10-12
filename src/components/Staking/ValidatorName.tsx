@@ -28,6 +28,8 @@ const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
 const ValidatorIconContainerStyle: StyleProp<ViewStyle> = {
   flexGrow: 1,
   flexShrink: 0,
+  flexDirection: 'row',
+  alignItems: 'center',
 };
 
 const IconStyle: StyleProp<ViewStyle> = {

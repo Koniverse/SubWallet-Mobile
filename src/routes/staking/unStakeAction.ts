@@ -8,7 +8,7 @@ export type UnStakeActionStackParamList = {
     unStakeParams: UnStakeParams;
     amount: number;
     feeString: string;
-    collator?: string;
+    validator?: string;
     balanceError: boolean;
     unstakeAll: boolean;
   };

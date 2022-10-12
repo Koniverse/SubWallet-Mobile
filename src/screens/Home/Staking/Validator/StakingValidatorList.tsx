@@ -2,9 +2,10 @@ import { useNavigation } from '@react-navigation/native';
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
+import useGetValidatorType from 'hooks/screen/Home/Staking/useGetValidatorType';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
@@ -17,7 +18,7 @@ import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import SortValidatorModal from 'screens/Home/Staking/Validator/SortValidatorModal';
 import StakingValidatorItem from 'screens/Home/Staking/Validator/StakingValidatorItem';
 import { RootState } from 'stores/index';
-import { ValidatorSortBy } from 'types/staking';
+import { ValidatorSortBy, ValidatorType } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
 import { getBondingOptions } from '../../../../messaging';
 import { StakingValidatorsProps } from 'routes/staking/stakingScreen';
@@ -35,8 +36,39 @@ const filterFunction = (items: ValidatorInfo[], searchString: string): Validator
   });
 };
 
-const renderListEmptyComponent = (): JSX.Element => {
-  return <EmptyStaking />;
+const renderListEmptyComponent = (
+  emptyMessage: string,
+  noAvailableMessage: string,
+): ((val?: string) => JSX.Element) => {
+  return (val?: string) => {
+    if (val) {
+      return <EmptyStaking message={noAvailableMessage} />;
+    } else {
+      return <EmptyStaking message={emptyMessage} />;
+    }
+  };
+};
+
+const getRenderEmptyFunction = (type: ValidatorType): ((val?: string) => JSX.Element) => {
+  switch (type) {
+    case 'Collator':
+      return renderListEmptyComponent(
+        i18n.stakingScreen.validatorList.collatorAppearHere,
+        i18n.stakingScreen.validatorList.noCollatorAvailable,
+      );
+    case 'DApp':
+      return renderListEmptyComponent(
+        i18n.stakingScreen.validatorList.dAppAppearHere,
+        i18n.stakingScreen.validatorList.noDAppAvailable,
+      );
+    case 'Validator':
+    case 'Unknown':
+    default:
+      return renderListEmptyComponent(
+        i18n.stakingScreen.validatorList.validatorAppearHere,
+        i18n.stakingScreen.validatorList.noValidatorAvailable,
+      );
+  }
 };
 
 const StakingValidatorList = ({
@@ -50,6 +82,35 @@ const StakingValidatorList = ({
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
   const network = useGetNetworkJson(networkKey);
+  const validatorType = useGetValidatorType(networkKey);
+
+  const headerTitle = useMemo((): string => {
+    switch (validatorType) {
+      case 'Validator':
+        return i18n.title.validators;
+      case 'Collator':
+        return i18n.title.collators;
+      case 'DApp':
+        return i18n.title.dApps;
+      case 'Unknown':
+      default:
+        return network.chain.replace(' Relay Chain', '');
+    }
+  }, [network.chain, validatorType]);
+
+  const searchPlaceHolder = useMemo((): string => {
+    switch (validatorType) {
+      case 'Validator':
+        return i18n.stakingScreen.validatorList.searchValidator;
+      case 'Collator':
+        return i18n.stakingScreen.validatorList.searchCollator;
+      case 'DApp':
+        return i18n.stakingScreen.validatorList.searchDApp;
+      case 'Unknown':
+      default:
+        return i18n.common.search;
+    }
+  }, [validatorType]);
 
   const [validatorListState, dispatchValidatorListState] = useReducer(validatorListReducer, {
     ...DEFAULT_VALIDATOR_LIST_STATE,
@@ -111,6 +172,14 @@ const StakingValidatorList = ({
     [network, networkValidatorsInfo, onPress],
   );
 
+  const handleEmptyList = useCallback(
+    (val?: string): JSX.Element => {
+      const func = getRenderEmptyFunction(validatorType);
+      return func(val);
+    },
+    [validatorType],
+  );
+
   useEffect(() => {
     let mount = true;
     dispatchValidatorListState({ type: ValidatorListActionName.CHANGE_LOADING, payload: { loading: true } });
@@ -150,7 +219,7 @@ const StakingValidatorList = ({
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={network.chain}
+      title={headerTitle}
       rightIcon={ArrowsDownUp}
       onPressRightIcon={openModal}>
       <>
@@ -159,11 +228,11 @@ const StakingValidatorList = ({
             items={validators}
             withSubHeader={false}
             autoFocus={false}
-            renderListEmptyComponent={renderListEmptyComponent}
+            renderListEmptyComponent={handleEmptyList}
             renderItem={renderItem}
             loading={loading}
             filterFunction={filterFunction}
-            placeholder={i18n.stakingScreen.validatorList.searchValidator}
+            placeholder={searchPlaceHolder}
             sortFunction={sortFunction}
           />
         </View>

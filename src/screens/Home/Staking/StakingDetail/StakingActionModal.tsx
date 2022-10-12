@@ -3,12 +3,11 @@ import { SubWalletModal } from 'components/SubWalletModal';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { StakingDataType } from 'hooks/types';
 import moment from 'moment';
-import { ArrowSquareDown, ClockAfternoon, IconProps, Intersect, Minus, Plus } from 'phosphor-react-native';
+import { Gift, IconProps, Intersect, Money, SelectionSlash } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
@@ -67,8 +66,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     staking: { chainId: networkKey, activeBalance, unlockingInfo },
   } = data;
   const toastRef = useRef<ToastContainer>(null);
-  const rootNavigation = useNavigation<RootNavigationProps>();
-  const homeNavigation = useNavigation<HomeNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const networkJson = useGetNetworkJson(networkKey);
@@ -87,8 +85,6 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     (): string => unlockingInfo?.validatorAddress || '',
     [unlockingInfo?.validatorAddress],
   );
-
-  const canWithdraw = useMemo((): boolean => redeemable > 0, [redeemable]);
 
   const showClaimButton = useMemo((): boolean => MANUAL_CLAIM_CHAINS.includes(networkKey), [networkKey]);
   const showCompoundButton = useMemo((): boolean => MANUAL_COMPOUND_CHAINS.includes(networkKey), [networkKey]);
@@ -111,19 +107,9 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     }
   }, [networkJson.nativeToken, nextWithdrawal, nextWithdrawalAmount, redeemable]);
 
-  const stakeAction = useCallback(() => {
-    closeModal();
-    homeNavigation.navigate('Staking', {
-      screen: 'StakingValidators',
-      params: {
-        networkKey,
-      },
-    });
-  }, [closeModal, homeNavigation, networkKey]);
-
   const unStakeAction = useCallback(() => {
     closeModal();
-    rootNavigation.navigate('UnStakeAction', {
+    navigation.navigate('UnStakeAction', {
       screen: 'UnStakeConfirm',
       params: {
         selectedAccount: currentAccountAddress,
@@ -131,12 +117,12 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         bondedAmount: parseFloat(activeBalance || '0'),
       },
     });
-  }, [activeBalance, closeModal, currentAccountAddress, networkKey, rootNavigation]);
+  }, [activeBalance, closeModal, currentAccountAddress, networkKey, navigation]);
 
   const withdrawAction = useCallback(() => {
     if (redeemable > 0) {
       closeModal();
-      rootNavigation.navigate('WithdrawStakeAction', {
+      navigation.navigate('WithdrawStakeAction', {
         screen: 'WithdrawAuth',
         params: {
           selectedAccount: currentAccountAddress,
@@ -158,21 +144,21 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     networkKey,
     nextWithdrawalAction,
     redeemable,
-    rootNavigation,
+    navigation,
     validatorAddress,
     withdrawNote,
   ]);
 
   const claimAction = useCallback(() => {
     closeModal();
-    rootNavigation.navigate('ClaimStakeAction', {
+    navigation.navigate('ClaimStakeAction', {
       screen: 'ClaimAuth',
       params: {
         networkKey: networkKey,
         selectedAccount: currentAccountAddress,
       },
     });
-  }, [closeModal, currentAccountAddress, networkKey, rootNavigation]);
+  }, [closeModal, currentAccountAddress, networkKey, navigation]);
 
   const compoundAction = useCallback(() => {
     if (toastRef.current) {
@@ -184,23 +170,16 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const items = useMemo((): SortItem[] => {
     const result: SortItem[] = [
       {
-        label: i18n.stakingScreen.stakingDetail.actions.stake,
-        key: 'stake',
-        icon: Plus,
-        onPress: stakeAction,
-      },
-      {
         label: i18n.stakingScreen.stakingDetail.actions.unStake,
         key: 'unStake',
-        icon: Minus,
+        icon: SelectionSlash,
         onPress: parseFloat(activeBalance || '0') > 0 ? unStakeAction : noop,
       },
       {
         label: i18n.stakingScreen.stakingDetail.actions.withdraw,
         key: 'withdraw',
-        icon: ClockAfternoon,
-        color: canWithdraw ? ColorMap.primary : undefined,
-        onPress: canWithdraw ? withdrawAction : noop,
+        icon: Money,
+        onPress: withdrawAction,
       },
     ];
 
@@ -208,7 +187,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
       result.push({
         label: i18n.stakingScreen.stakingDetail.actions.claim,
         key: 'claim',
-        icon: ArrowSquareDown,
+        icon: Gift,
         onPress: claimAction,
       });
     }
@@ -223,17 +202,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     }
 
     return result;
-  }, [
-    activeBalance,
-    canWithdraw,
-    claimAction,
-    compoundAction,
-    showClaimButton,
-    showCompoundButton,
-    stakeAction,
-    unStakeAction,
-    withdrawAction,
-  ]);
+  }, [activeBalance, claimAction, compoundAction, showClaimButton, showCompoundButton, unStakeAction, withdrawAction]);
 
   return (
     <SubWalletModal modalVisible={visible} onChangeModalVisible={closeModal}>

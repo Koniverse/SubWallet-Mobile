@@ -63,10 +63,6 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
     return [res[0], res[1]];
   }, [feeString]);
 
-  const totalString = useMemo((): string => {
-    return `${amount} ${selectedToken} + ${feeString}`;
-  }, [amount, feeString, selectedToken]);
-
   const handleOpen = useCallback(() => {
     setVisible(true);
   }, []);
@@ -197,7 +193,6 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
                 token={selectedToken}
                 si={formatBalance.findSi('-')}
                 label={i18n.withdrawStakeAction.withdrawAmount}
-                color={ColorMap.light}
               />
               <BalanceField
                 value={fee}
@@ -206,7 +201,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
                 si={formatBalance.findSi('-')}
                 label={i18n.withdrawStakeAction.withdrawFee}
               />
-              <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
+              <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />

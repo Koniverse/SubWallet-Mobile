@@ -44,7 +44,7 @@ const logoWrapperStyle: StyleProp<any> = {
   borderRadius: 28,
 };
 
-const CollatorSelectItemContent = ({ collator, isSelected }: Props) => {
+const ValidatorSelectItemContent = ({ collator, isSelected }: Props) => {
   const { owner, identity } = collator;
   return (
     <View>
@@ -62,4 +62,4 @@ const CollatorSelectItemContent = ({ collator, isSelected }: Props) => {
   );
 };
 
-export default React.memo(CollatorSelectItemContent);
+export default React.memo(ValidatorSelectItemContent);

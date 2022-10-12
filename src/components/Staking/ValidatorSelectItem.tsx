@@ -1,5 +1,5 @@
 import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
-import CollatorItemContent from 'components/Staking/CollatorSelectItemContent';
+import CollatorItemContent from 'components/Staking/ValidatorSelectItemContent';
 import React from 'react';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
@@ -9,7 +9,7 @@ interface Props extends TouchableOpacityProps {
   onSelect: () => void;
 }
 
-const CollatorSelectItem = ({ collator, isSelected, onSelect }: Props) => {
+const ValidatorSelectItem = ({ collator, isSelected, onSelect }: Props) => {
   return (
     <TouchableOpacity onPress={onSelect}>
       <CollatorItemContent collator={collator} isSelected={isSelected} />
@@ -17,4 +17,4 @@ const CollatorSelectItem = ({ collator, isSelected, onSelect }: Props) => {
   );
 };
 
-export default React.memo(CollatorSelectItem);
+export default React.memo(ValidatorSelectItem);

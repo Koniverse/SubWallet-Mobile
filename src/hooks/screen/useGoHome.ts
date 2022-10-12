@@ -1,11 +1,12 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigatorScreenParams, useNavigation } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { RootNavigationProps } from 'routes/index';
 import { HomeStackParamList } from 'routes/home';
 
-export default function useGoHome(tab: keyof HomeStackParamList = 'Crypto') {
+export default function useGoHome(params: NavigatorScreenParams<HomeStackParamList> = { screen: 'Crypto' }) {
   const navigation = useNavigation<RootNavigationProps>();
 
-  return () => {
-    navigation.replace('Home', { tab });
-  };
+  return useCallback(() => {
+    navigation.replace('Home', params);
+  }, [navigation, params]);
 }

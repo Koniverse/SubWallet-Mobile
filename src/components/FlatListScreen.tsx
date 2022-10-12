@@ -35,7 +35,7 @@ interface Props<T> {
   withSearchInput?: boolean;
   withSubHeader?: boolean;
   autoFocus: boolean;
-  renderListEmptyComponent: () => JSX.Element;
+  renderListEmptyComponent: (searchString?: string) => JSX.Element;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   onPressBack?: () => void;
   showLeftBtn?: boolean;
@@ -162,7 +162,7 @@ export function FlatListScreen<T>({
             contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
           />
         ) : (
-          renderListEmptyComponent()
+          renderListEmptyComponent(searchString)
         )}
       </>
     );
@@ -175,6 +175,7 @@ export function FlatListScreen<T>({
     refreshControl,
     flatListStyle,
     renderListEmptyComponent,
+    searchString,
     isLoading,
   ]);
 

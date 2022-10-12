@@ -11,11 +11,9 @@ import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import { StakeAuthProps } from 'routes/staking/stakeAction';
 import ValidatorBriefInfo from 'screens/Staking/Stake/ValidatorBriefInfo';
-import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
@@ -26,6 +24,7 @@ import useGoHome from 'hooks/screen/useGoHome';
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
   flex: 1,
+  paddingTop: 16,
 };
 
 const ActionContainerStyle: StyleProp<ViewStyle> = {
@@ -50,13 +49,13 @@ const StakeAuth = ({
   route: {
     params: { stakeParams, feeString, amount: rawAmount },
   },
+  navigation: { goBack },
 }: StakeAuthProps) => {
-  const { validator, networkKey, networkValidatorsInfo } = stakeParams;
+  const { validator, networkKey, networkValidatorsInfo, selectedAccount } = stakeParams;
   const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
 
   const navigation = useNavigation<RootNavigationProps>();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const network = useGetNetworkJson(networkKey);
 
   const [visible, setVisible] = useState(false);
@@ -88,11 +87,7 @@ const StakeAuth = ({
     setVisible(false);
   }, []);
 
-  const goBack = useCallback(() => {
-    navigation.navigate('StakeAction', { screen: 'StakeConfirm', params: stakeParams });
-  }, [navigation, stakeParams]);
-
-  const onCancel = useGoHome('Staking');
+  const onCancel = useGoHome({ screen: 'Staking' });
 
   const handleBondingResponse = useCallback((data: BasicTxResponse) => {
     if (data.passwordError) {
@@ -123,7 +118,7 @@ const StakeAuth = ({
       submitBonding(
         {
           networkKey: networkKey,
-          nominatorAddress: currentAccountAddress,
+          nominatorAddress: selectedAccount,
           amount,
           validatorInfo: validator,
           password,
@@ -136,7 +131,7 @@ const StakeAuth = ({
         setLoading(false);
       });
     },
-    [amount, bondedValidators, currentAccountAddress, handleBondingResponse, isBondedBefore, networkKey, validator],
+    [amount, bondedValidators, selectedAccount, handleBondingResponse, isBondedBefore, networkKey, validator],
   );
 
   useEffect(() => {
@@ -162,10 +157,10 @@ const StakeAuth = ({
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
-          <ValidatorBriefInfo validator={validator} rightIcon={true} />
+        <ScrollView style={{ ...ScrollViewStyle }}>
+          <ValidatorBriefInfo validator={validator} />
           <AddressField
-            address={currentAccountAddress}
+            address={selectedAccount}
             label={i18n.common.account}
             showRightIcon={false}
             networkPrefix={network.ss58Format}
@@ -176,7 +171,6 @@ const StakeAuth = ({
             token={selectedToken}
             si={formatBalance.findSi('-')}
             label={i18n.stakeAction.stakingAmount}
-            color={ColorMap.light}
           />
           <BalanceField
             value={fee}

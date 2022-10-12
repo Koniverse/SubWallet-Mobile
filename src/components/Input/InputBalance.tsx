@@ -124,7 +124,7 @@ const getDropdownTextStyle = (inputValue: string) => {
 
   return {
     ...baseStyle,
-    color: ColorMap.disabled,
+    color: ColorMap.light,
     paddingRight: 4,
   };
 };

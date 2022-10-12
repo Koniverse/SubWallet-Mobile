@@ -1,17 +1,15 @@
-import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
-import BigN from 'bignumber.js';
-import { BalanceVal } from 'components/BalanceVal';
-import ValidatorName from 'components/Staking/ValidatorName';
+import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import React from 'react';
 import { Image, ImageStyle, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { CaretRight } from 'phosphor-react-native';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { CaretDown } from 'phosphor-react-native';
+import { toShort } from 'utils/index';
 
 interface Props {
-  validator: ValidatorInfo;
-  onPress?: () => void;
+  validator: DelegationItem;
+  onPress: () => void;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -71,27 +69,17 @@ const RightPartStyle: StyleProp<ViewStyle> = {
   marginLeft: 8,
 };
 
-const ReturnContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-};
-
-const ReturnTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.primary,
-};
-
 const RightIconStyle: StyleProp<ViewStyle> = {
-  marginLeft: 8,
+  paddingLeft: 8,
 };
 
-const ValidatorBriefInfo = ({ validator, onPress }: Props) => {
-  const { icon, address, expectedReturn } = validator;
+const DelegationBriefInfo = ({ validator, onPress }: Props) => {
+  const { identity, owner } = validator;
+  // @ts-ignore
+  const icon = validator.icon;
 
   return (
-    <TouchableOpacity style={WrapperStyle} onPress={onPress} disabled={!onPress}>
+    <TouchableOpacity style={WrapperStyle} onPress={onPress}>
       <View style={LeftPartStyle}>
         {icon ? (
           <View style={AvatarContainerStyle}>
@@ -99,28 +87,28 @@ const ValidatorBriefInfo = ({ validator, onPress }: Props) => {
           </View>
         ) : (
           <View>
-            <SubWalletAvatar size={20} address={address} />
+            <SubWalletAvatar size={20} address={owner} />
           </View>
         )}
         <View style={ValidatorNameContainerStyle}>
-          <ValidatorName validatorInfo={validator} textStyle={ValidatorNameTextStyle} />
+          <Text style={ValidatorNameTextStyle}>{identity ? identity : toShort(owner)}</Text>
         </View>
       </View>
       <View style={RightPartStyle}>
-        <View style={ReturnContainerStyle}>
-          <Text style={ReturnTextStyle}>(</Text>
-          <BalanceVal
-            balanceValTextStyle={ReturnTextStyle}
-            symbol={'%'}
-            withComma={true}
-            value={new BigN(expectedReturn)}
-          />
-          <Text style={ReturnTextStyle}>)</Text>
-        </View>
-        {onPress && <CaretRight size={20} style={RightIconStyle} color={ColorMap.disabled} weight={'bold'} />}
+        {/*<View style={ReturnContainerStyle}>*/}
+        {/*  <Text style={ReturnTextStyle}>(</Text>*/}
+        {/*  <BalanceVal*/}
+        {/*    balanceValTextStyle={ReturnTextStyle}*/}
+        {/*    symbol={'%'}*/}
+        {/*    withComma={true}*/}
+        {/*    value={new BigN(expectedReturn)}*/}
+        {/*  />*/}
+        {/*  <Text style={ReturnTextStyle}>)</Text>*/}
+        {/*</View>*/}
+        <CaretDown size={20} style={RightIconStyle} color={ColorMap.disabled} weight={'bold'} />
       </View>
     </TouchableOpacity>
   );
 };
 
-export default React.memo(ValidatorBriefInfo);
+export default React.memo(DelegationBriefInfo);

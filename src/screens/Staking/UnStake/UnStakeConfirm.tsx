@@ -5,10 +5,10 @@ import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { BalanceToUsd } from 'components/BalanceToUsd';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { CollatorField } from 'components/Field/Collator';
 import FormatBalance from 'components/FormatBalance';
 import { InputBalance } from 'components/Input/InputBalance';
 import { SubmitButton } from 'components/SubmitButton';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -23,11 +23,10 @@ import {
 } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
 import { UnStakeConfirmProps } from 'routes/staking/unStakeAction';
 import { getBalanceFormat } from 'screens/Sending/utils';
-import CollatorSelectModal from 'screens/Staking/UnStake/CollatorSelectModal';
+import CollatorSelectModal from 'screens/Staking/UnStake/ValidatorSelectModal';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import {
@@ -42,16 +41,23 @@ import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { CHAIN_TYPE_MAP } from 'constants/stakingScreen';
 import { getStakeDelegationInfo, getUnbondingTxInfo } from '../../../messaging';
+import DelegationBriefInfo from './DelegationBriefInfo';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
   flex: 1,
+  paddingTop: 24,
 };
 
 const RowCenterStyle: StyleProp<ViewStyle> = {
   justifyContent: 'center',
   display: 'flex',
   flexDirection: 'row',
+};
+
+const IconContainerStyle: StyleProp<ViewStyle> = {
+  ...RowCenterStyle,
+  marginTop: 46,
 };
 
 const BalanceContainerStyle: StyleProp<ViewStyle> = {
@@ -82,13 +88,12 @@ const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[]
   return delegations.filter(item => parseFloat(item.amount) > 0);
 };
 
-const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProps) => {
+const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack } }: UnStakeConfirmProps) => {
   const { networkKey, selectedAccount, bondedAmount } = unStakeParams;
 
   const toast = useToast();
 
-  const homeNavigation = useNavigation<HomeNavigationProps>();
-  const rootNavigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
 
   const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
@@ -118,7 +123,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
   const [rawAmount, setRawAmount] = useState<number>(-1);
   const [loading, setLoading] = useState(false);
 
-  const selectedCollator = useMemo((): DelegationItem | undefined => {
+  const selectedValidatorItem = useMemo((): DelegationItem | undefined => {
     return delegations?.find(i => i.owner === selectedValidator);
   }, [delegations, selectedValidator]);
 
@@ -214,7 +219,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
             if (!item.hasScheduledRequest) {
               setIsValidValidator(true);
             } else {
-              toast.show('Please withdraw the unstaking amount first');
+              toast.show(i18n.warningMessage.withdrawUnStakingFirst);
               setIsValidValidator(false);
             }
 
@@ -225,10 +230,6 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
     },
     [delegations, toast],
   );
-
-  const goBack = useCallback(() => {
-    homeNavigation.navigate('Staking');
-  }, [homeNavigation]);
 
   const onContinue = useCallback(() => {
     setLoading(true);
@@ -243,21 +244,21 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
       unstakeAll: isAmountEqualAll,
     })
       .then(resp => {
-        rootNavigation.navigate('UnStakeAction', {
+        navigation.navigate('UnStakeAction', {
           screen: 'UnStakeAuth',
           params: {
             unStakeParams: unStakeParams,
             feeString: resp.fee,
             amount: rawAmount,
             balanceError: resp.balanceError,
-            collator: selectedValidator,
+            validator: selectedValidator,
             unstakeAll: isAmountEqualAll,
           },
         });
         setLoading(false);
       })
       .catch(console.error);
-  }, [maxUnBoned, networkKey, rawAmount, rootNavigation, selectedAccount, selectedValidator, unStakeParams]);
+  }, [maxUnBoned, networkKey, rawAmount, navigation, selectedAccount, selectedValidator, unStakeParams]);
 
   useEffect(() => {
     if (CHAIN_TYPE_MAP.astar.includes(networkKey) || CHAIN_TYPE_MAP.para.includes(networkKey)) {
@@ -298,13 +299,11 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
       <View style={ContainerStyle}>
         <ScrollView
           style={{ ...ScrollViewStyle }}
-          contentContainerStyle={{ flex: 1, paddingTop: 24, alignItems: isDataReady ? 'center' : undefined }}>
+          contentContainerStyle={{ flex: 1, justifyContent: !isDataReady ? 'center' : undefined }}>
           {isDataReady ? (
             <>
-              {delegations && selectedCollator && (
-                <TouchableOpacity onPress={openModal}>
-                  <CollatorField collator={selectedCollator} label={i18n.unStakeAction.collator} />
-                </TouchableOpacity>
+              {delegations && selectedValidatorItem && (
+                <DelegationBriefInfo validator={selectedValidatorItem} onPress={openModal} />
               )}
               {delegations && (
                 <CollatorSelectModal
@@ -313,8 +312,14 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
                   onChangeModalVisible={closeModal}
                   onChangeValue={onSelectCollator}
                   selectedItem={selectedValidator}
+                  networkKey={networkKey}
                 />
               )}
+              <View style={IconContainerStyle}>
+                <View>
+                  <SubWalletAvatar size={40} address={selectedAccount} />
+                </View>
+              </View>
               <InputBalance
                 placeholder={'0'}
                 si={si}
@@ -336,7 +341,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
         <View>
           <View style={BalanceContainerStyle}>
             <View style={TransferableContainerStyle}>
-              <Text style={TransferableTextStyle}>{i18n.common.maxUnBond}:&nbsp;</Text>
+              <Text style={TransferableTextStyle}>{i18n.common.activeStaking}:&nbsp;</Text>
               <FormatBalance format={balanceFormat} value={maxUnBoned} />
             </View>
 

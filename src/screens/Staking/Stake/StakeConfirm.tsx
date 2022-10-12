@@ -24,7 +24,6 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
 import { StakeConfirmProps } from 'routes/staking/stakeAction';
 import { getBalanceFormat } from 'screens/Sending/utils';
@@ -60,22 +59,6 @@ const IconContainerStyle: StyleProp<ViewStyle> = {
   marginTop: 46,
 };
 
-const AvatarContainerStyle: StyleProp<ViewStyle> = {
-  width: 40,
-  height: 40,
-  borderRadius: 40,
-  borderColor: ColorMap.secondary,
-  padding: 2,
-  borderWidth: 2,
-  backgroundColor: ColorMap.dark,
-};
-
-const AvatarImageStyle: StyleProp<ImageStyle> = {
-  width: 32,
-  height: 32,
-  borderRadius: 32,
-};
-
 const BalanceContainerStyle: StyleProp<ViewStyle> = {
   width: '100%',
   flexDirection: 'row',
@@ -100,13 +83,11 @@ const MaxTextStyle: StyleProp<TextStyle> = {
   ...FontMedium,
 };
 
-const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => {
-  const { validator, networkKey, networkValidatorsInfo } = stakeParams;
+const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }: StakeConfirmProps) => {
+  const { validator, networkKey, networkValidatorsInfo, selectedAccount } = stakeParams;
 
-  const homeNavigation = useNavigation<HomeNavigationProps>();
-  const rootNavigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
   const network = useGetNetworkJson(networkKey);
@@ -115,13 +96,14 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
-  const senderFreeBalance = useFreeBalance(networkKey, currentAccountAddress, network.nativeToken);
+  const senderFreeBalance = useFreeBalance(networkKey, selectedAccount, network.nativeToken);
 
   const { icon, address, minBond } = validator;
   const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
 
   const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
   const [rawAmount, setRawAmount] = useState<number>(-1);
+  const [balanceError, setBalanceError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const balanceFormat = useMemo((): BalanceFormatType => {
@@ -139,28 +121,33 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
   );
 
   const warningMessage = useMemo((): string => {
+    if (balanceError) {
+      return i18n.warningMessage.balanceTooLow;
+    }
+
     if (rawAmount <= 0) {
       if (!networkValidatorsInfo.bondedValidators.includes(validator.address)) {
-        return `The minimum stake is ${validator.minBond} ${selectedToken}`;
+        return `${i18n.warningMessage.stakeAtLeast} ${validator.minBond} ${selectedToken}`;
       } else {
-        return 'Amount must be greater than zero';
+        return i18n.warningMessage.amountGtZero;
       }
     }
 
     if (parseFloat(senderFreeBalance) <= rawAmount) {
-      return 'Your balance is not enough';
+      return i18n.warningMessage.notEnoughToStake;
     }
 
     if (reformatAmount.lt(minBond)) {
       if (networkValidatorsInfo.bondedValidators.includes(validator.address)) {
         return '';
       } else {
-        return `The minimum stake is ${validator.minBond} ${selectedToken}`;
+        return `${i18n.warningMessage.stakeAtLeast} ${validator.minBond} ${selectedToken}`;
       }
     }
 
     return '';
   }, [
+    balanceError,
     minBond,
     networkValidatorsInfo.bondedValidators,
     rawAmount,
@@ -195,30 +182,34 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
   const handlePressMax = useCallback(() => {
     getBondingTxInfo({
       networkKey: networkKey,
-      nominatorAddress: currentAccountAddress,
-      amount: rawAmount,
+      nominatorAddress: selectedAccount,
+      amount: reformatAmount.toNumber(),
       validatorInfo: validator,
       isBondedBefore,
       bondedValidators,
       lockPeriod: 0,
-    }).then(() => {
+    }).then(res => {
       if (inputBalanceRef && inputBalanceRef.current) {
         // @ts-ignore
-        inputBalanceRef.current.onChange(senderFreeBalance);
+        const fee = (res.rawFee as number) || 0;
+        const balance = parseFloat(senderFreeBalance);
+        // @ts-ignore
+        inputBalanceRef.current.onChange((balance - fee).toString());
       }
     });
   }, [
     bondedValidators,
-    currentAccountAddress,
+    selectedAccount,
     inputBalanceRef,
     isBondedBefore,
     networkKey,
-    rawAmount,
+    reformatAmount,
     senderFreeBalance,
     validator,
   ]);
 
   const onChangeAmount = useCallback((value?: string) => {
+    setBalanceError(false);
     if (value === undefined) {
       setRawAmount(0);
       return;
@@ -230,19 +221,11 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     }
   }, []);
 
-  const goBack = useCallback(() => {
-    homeNavigation.navigate('Staking');
-  }, [homeNavigation]);
-
-  const onCancel = useCallback(() => {
-    homeNavigation.navigate('Staking');
-  }, [homeNavigation]);
-
   const onContinue = useCallback(() => {
     setLoading(true);
     getBondingTxInfo({
       networkKey: networkKey,
-      nominatorAddress: currentAccountAddress,
+      nominatorAddress: selectedAccount,
       amount: reformatAmount.toNumber(),
       validatorInfo: validator,
       isBondedBefore,
@@ -251,7 +234,7 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
     })
       .then(res => {
         if (!res.balanceError) {
-          rootNavigation.navigate('StakeAction', {
+          navigation.navigate('StakeAction', {
             screen: 'StakeAuth',
             params: {
               stakeParams: stakeParams,
@@ -259,6 +242,8 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
               feeString: res.fee,
             },
           });
+        } else {
+          setBalanceError(true);
         }
       })
       .finally(() => {
@@ -266,12 +251,12 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
       });
   }, [
     bondedValidators,
-    currentAccountAddress,
+    selectedAccount,
     isBondedBefore,
     networkKey,
     rawAmount,
     reformatAmount,
-    rootNavigation,
+    navigation,
     stakeParams,
     validator,
   ]);
@@ -281,20 +266,14 @@ const StakeConfirm = ({ route: { params: stakeParams } }: StakeConfirmProps) => 
       onPressBack={goBack}
       title={i18n.title.stakeAction}
       rightButtonTitle={i18n.common.cancel}
-      onPressRightIcon={onCancel}>
+      onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
-          <ValidatorBriefInfo validator={validator} rightIcon={true} />
+          <ValidatorBriefInfo validator={validator} onPress={goBack} />
           <View style={IconContainerStyle}>
-            {icon ? (
-              <View style={AvatarContainerStyle}>
-                <Image source={{ uri: icon }} style={AvatarImageStyle} />
-              </View>
-            ) : (
-              <View>
-                <SubWalletAvatar size={40} address={address} />
-              </View>
-            )}
+            <View>
+              <SubWalletAvatar size={40} address={selectedAccount} />
+            </View>
           </View>
           <InputBalance
             placeholder={'0'}

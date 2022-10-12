@@ -34,7 +34,7 @@ export const CreateAccount = ({
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
-  const goHome = useGoHome('Crypto');
+  const goHome = useGoHome({ screen: 'Crypto' });
 
   useEffect((): void => {
     createSeedV2(undefined, undefined, [keyTypes])

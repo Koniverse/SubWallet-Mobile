@@ -7,8 +7,8 @@ import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
+import useGetValidatorType from 'hooks/screen/Home/Staking/useGetValidatorType';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import { DotsThree } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { HomeNavigationProps } from 'routes/home';
@@ -17,6 +17,7 @@ import { UnStakeAuthProps } from 'routes/staking/unStakeAction';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { toShort } from 'utils/index';
 import { submitUnbonding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -40,7 +41,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
 
 const UnStakeAuth = ({
   route: {
-    params: { unStakeParams, feeString, amount, collator, balanceError, unstakeAll },
+    params: { unStakeParams, feeString, amount, validator, balanceError, unstakeAll },
   },
 }: UnStakeAuthProps) => {
   const { networkKey, selectedAccount } = unStakeParams;
@@ -49,12 +50,26 @@ const UnStakeAuth = ({
   const rootNavigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
+  const validatorType = useGetValidatorType(networkKey);
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
+
+  const validatorLabel = useMemo((): string => {
+    switch (validatorType) {
+      case 'Collator':
+        return i18n.common.collator;
+      case 'DApp':
+        return i18n.common.dApp;
+      case 'Validator':
+      case 'Unknown':
+      default:
+        return i18n.common.validator;
+    }
+  }, [validatorType]);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
@@ -143,7 +158,7 @@ const UnStakeAuth = ({
           amount: amount / 10 ** (network.decimals || 0),
           password,
           unstakeAll: unstakeAll,
-          validatorAddress: collator,
+          validatorAddress: validator,
         },
         handleResponse,
       ).catch(e => {
@@ -151,7 +166,7 @@ const UnStakeAuth = ({
         setLoading(false);
       });
     },
-    [amount, collator, handleResponse, network.decimals, networkKey, selectedAccount, unstakeAll],
+    [amount, validator, handleResponse, network.decimals, networkKey, selectedAccount, unstakeAll],
   );
 
   return (
@@ -162,7 +177,7 @@ const UnStakeAuth = ({
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }}>
-          {!!collator && <AddressField address={collator} label={i18n.unStakeAction.collator} rightIcon={DotsThree} />}
+          {!!validator && <TextField text={toShort(validator)} label={validatorLabel} disabled={true} />}
           <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
           <BalanceField
             value={amount.toString()}
@@ -170,7 +185,6 @@ const UnStakeAuth = ({
             token={selectedToken}
             si={formatBalance.findSi('-')}
             label={i18n.unStakeAction.unStakingAmount}
-            color={ColorMap.light}
           />
           <BalanceField
             value={fee}

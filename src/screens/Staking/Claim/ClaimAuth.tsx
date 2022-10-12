@@ -70,7 +70,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
     setVisible(false);
   }, []);
 
-  const goBack = useGoHome('Staking');
+  const goBack = useGoHome({ screen: 'Staking' });
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {

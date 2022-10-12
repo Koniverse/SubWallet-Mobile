@@ -1,6 +1,7 @@
 import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
-import CollatorSelectItem from 'components/Staking/CollatorSelectItem';
-import React, { useCallback } from 'react';
+import CollatorSelectItem from 'components/Staking/ValidatorSelectItem';
+import useGetValidatorType from 'hooks/screen/Home/Staking/useGetValidatorType';
+import React, { useCallback, useMemo } from 'react';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListRenderItemInfo } from 'react-native';
@@ -15,6 +16,7 @@ interface Props {
   onChangeModalVisible: () => void;
   onChangeValue: (text: string) => void;
   selectedItem: string;
+  networkKey: string;
 }
 
 const filterFunction = (items: DelegationItem[], searchString: string) => {
@@ -25,13 +27,29 @@ const filterFunction = (items: DelegationItem[], searchString: string) => {
   );
 };
 
-const CollatorSelectModal = ({
+const ValidatorSelectModal = ({
   modalVisible,
   onChangeModalVisible,
   delegations,
   onChangeValue,
   selectedItem,
+  networkKey,
 }: Props) => {
+  const validatorType = useGetValidatorType(networkKey);
+
+  const headerTitle = useMemo((): string => {
+    switch (validatorType) {
+      case 'Collator':
+        return i18n.title.collators;
+      case 'DApp':
+        return i18n.title.dApps;
+      case 'Validator':
+      case 'Unknown':
+      default:
+        return i18n.title.validators;
+    }
+  }, [validatorType]);
+
   const onSelect = useCallback(
     (item: DelegationItem) => {
       return () => {
@@ -55,7 +73,7 @@ const CollatorSelectModal = ({
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <FlatListScreen
         style={FlatListScreenPaddingTop}
-        title={i18n.title.chainSelect}
+        title={headerTitle}
         autoFocus={true}
         items={delegations}
         renderListEmptyComponent={() => <EmptyList title={i18n.common.noEvmChainAvailable} icon={Aperture} />}
@@ -67,4 +85,4 @@ const CollatorSelectModal = ({
   );
 };
 
-export default React.memo(CollatorSelectModal);
+export default React.memo(ValidatorSelectModal);

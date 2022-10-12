@@ -7,7 +7,7 @@ interface Props {
   message?: string;
 }
 
-const EmptyStaking = ({ message = i18n.stakingScreen.stakingAnyChain }: Props) => {
+const EmptyStaking = ({ message = i18n.stakingScreen.balanceList.stakingAppearHere }: Props) => {
   return <EmptyList title={message} icon={Trophy} />;
 };
 

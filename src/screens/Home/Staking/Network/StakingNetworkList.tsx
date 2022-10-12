@@ -15,8 +15,12 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const renderEmpty = () => {
-  return <EmptyStaking />;
+const renderEmpty = (val?: string) => {
+  if (val) {
+    return <EmptyStaking message={i18n.stakingScreen.networkList.noChainAvailable} />;
+  } else {
+    return <EmptyStaking message={i18n.stakingScreen.networkList.chainAppearHere} />;
+  }
 };
 
 const filterFunction = (items: NetworkJson[], searchString: string) => {

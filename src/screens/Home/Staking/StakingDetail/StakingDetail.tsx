@@ -6,10 +6,9 @@ import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
-import { DotsThree } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { HomeNavigationProps } from 'routes/home';
+import { RootNavigationProps } from 'routes/index';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
@@ -19,7 +18,7 @@ import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
-import { getInputValueStyle } from 'screens/Home/Staking/ValidatorDetail/StakingValidatorDetail';
+import { getStakingInputValueStyle } from 'utils/text';
 import useGoHome from 'hooks/screen/useGoHome';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -76,9 +75,10 @@ const StakingDetail = ({
   route: {
     params: { networkKey },
   },
+  navigation: { goBack },
 }: StakingBalanceDetailProps) => {
-  const navigation = useNavigation<HomeNavigationProps>();
-  const goHome = useGoHome('Staking');
+  const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome({ screen: 'Staking' });
   const isFocused = useIsFocused();
   const isAllAccount = useIsAccountAll();
 
@@ -103,11 +103,17 @@ const StakingDetail = ({
     setVisible(false);
   }, []);
 
-  const handleGoBack = useCallback(() => {
-    navigation.navigate('Staking', {
-      screen: 'StakingBalances',
+  const handleStakeMore = useCallback(() => {
+    navigation.navigate('Home', {
+      screen: 'Staking',
+      params: {
+        screen: 'StakingValidators',
+        params: {
+          networkKey: networkKey,
+        },
+      },
     });
-  }, [navigation]);
+  }, [navigation, networkKey]);
 
   useEffect(() => {
     if (data === undefined) {
@@ -133,9 +139,9 @@ const StakingDetail = ({
 
   return (
     <ContainerWithSubHeader
-      onPressBack={handleGoBack}
+      onPressBack={goBack}
       title={i18n.title.stakingDetail}
-      rightIcon={!isAllAccount ? DotsThree : undefined}
+      rightButtonTitle={!isAllAccount ? i18n.stakingScreen.stakingDetail.actions.more : undefined}
       onPressRightIcon={!isAllAccount ? openModal : undefined}>
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
@@ -144,7 +150,7 @@ const StakingDetail = ({
           </View>
           <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
             <BalanceVal
-              balanceValTextStyle={getInputValueStyle(balanceValueForStyle)}
+              balanceValTextStyle={getStakingInputValueStyle(balanceValueForStyle)}
               // symbolTextStyle={BalanceSymbolTextStyle}
               symbol={staking.nativeToken}
               withComma={true}
@@ -202,8 +208,8 @@ const StakingDetail = ({
         {!isAllAccount && (
           <SubmitButton
             style={{ marginTop: 16, marginHorizontal: 16 }}
-            title={i18n.stakingScreen.stakingDetail.moreActions}
-            onPress={openModal}
+            title={i18n.stakingScreen.stakingDetail.actions.stake}
+            onPress={handleStakeMore}
           />
         )}
         <StakingActionModal closeModal={closeModal} visible={visible} data={data} />
