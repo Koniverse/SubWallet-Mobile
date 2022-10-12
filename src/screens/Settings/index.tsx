@@ -83,7 +83,7 @@ export const Settings = () => {
         },
         {
           icon: GlobeHemisphereWest,
-          title: i18n.title.languages,
+          title: i18n.title.language,
           hasRightArrow: true,
           onPress: onPressComingSoonFeature,
         },
