@@ -17,7 +17,7 @@ interface Props {
   isRefresh: boolean;
   refresh: (tabId: string) => void;
   refreshTabId: string;
-  isEmptyList: boolean;
+  isEmptyList?: boolean;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
