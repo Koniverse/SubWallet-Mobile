@@ -161,11 +161,15 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   }, [closeModal, currentAccountAddress, networkKey, navigation]);
 
   const compoundAction = useCallback(() => {
-    if (toastRef.current) {
-      toastRef.current.hideAll();
-      toastRef.current.show(i18n.common.comingSoon);
-    }
-  }, []);
+    closeModal();
+    navigation.navigate('CompoundStakeAction', {
+      screen: 'CompoundConfirm',
+      params: {
+        selectedAccount: currentAccountAddress,
+        networkKey: networkKey,
+      },
+    });
+  }, [closeModal, currentAccountAddress, navigation, networkKey]);
 
   const items = useMemo((): SortItem[] => {
     const result: SortItem[] = [

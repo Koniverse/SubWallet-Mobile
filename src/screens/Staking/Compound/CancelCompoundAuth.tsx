@@ -7,21 +7,18 @@ import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
-import { RootNavigationProps } from 'routes/index';
-import { ClaimAuthProps } from 'routes/staking/claimAction';
-import { ColorMap } from 'styles/color';
-import {
-  centerStyle,
-  ContainerHorizontalPadding,
-  MarginBottomForSubmitButton,
-  ScrollViewStyle,
-} from 'styles/sharedStyles';
-import i18n from 'utils/i18n/i18n';
-import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
+import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
 import useGoHome from 'hooks/screen/useGoHome';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
+import { CancelCompoundAuthProps } from 'routes/staking/compoundAction';
+import { ColorMap } from 'styles/color';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
+import { toShort } from 'utils/index';
+import { handleBasicTxResponse } from 'utils/transactionResponse';
+import { submitTuringCancelStakeCompounding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -43,18 +40,21 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
-  const { networkKey, selectedAccount } = claimParams;
+const CompoundAuth = ({
+  route: {
+    params: { compoundParams, feeString, taskId, validator, balanceError },
+  },
+  navigation: { goBack },
+}: CancelCompoundAuthProps) => {
+  const { networkKey, selectedAccount } = compoundParams;
 
   const navigation = useNavigation<RootNavigationProps>();
+
+  const validatorLabel = useGetValidatorLabel(networkKey);
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [feeString, setFeeString] = useState('');
-
-  const [isTxReady, setIsTxReady] = useState(false);
-  const [balanceError, setBalanceError] = useState(false);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
@@ -69,7 +69,10 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
     setVisible(false);
   }, []);
 
-  const goBack = useGoHome({ screen: 'Staking' });
+  const onCancel = useGoHome({
+    screen: 'Staking',
+    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey } },
+  });
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
@@ -78,15 +81,14 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         return;
       }
 
-      if (data.status !== undefined) {
+      if (data.status) {
         setLoading(false);
-        setVisible(false);
 
         if (data.status) {
-          navigation.navigate('ClaimStakeAction', {
-            screen: 'ClaimResult',
+          navigation.navigate('CompoundStakeAction', {
+            screen: 'CancelCompoundResult',
             params: {
-              claimParams: claimParams,
+              compoundParams: compoundParams,
               txParams: {
                 txError: '',
                 extrinsicHash: data.transactionHash as string,
@@ -95,10 +97,10 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
             },
           });
         } else {
-          navigation.navigate('ClaimStakeAction', {
-            screen: 'ClaimResult',
+          navigation.navigate('CompoundStakeAction', {
+            screen: 'CancelCompoundResult',
             params: {
-              claimParams: claimParams,
+              compoundParams: compoundParams,
               txParams: {
                 txError: 'Error submitting transaction',
                 extrinsicHash: data.transactionHash as string,
@@ -109,69 +111,49 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         }
       }
     },
-    [balanceError, navigation, claimParams],
+    [balanceError, compoundParams, navigation],
   );
 
   const onSubmit = useCallback(
     (password: string) => {
       setLoading(true);
-      submitStakeClaimReward(
+      submitTuringCancelStakeCompounding(
         {
           address: selectedAccount,
-          networkKey,
           password,
+          taskId,
+          networkKey,
         },
         handleResponse,
-      ).catch(e => {
-        console.log(e);
-        setLoading(false);
-      });
+      )
+        .then(handleResponse)
+        .catch(e => {
+          console.log(e);
+          setLoading(false);
+        });
     },
-    [handleResponse, networkKey, selectedAccount],
+    [handleResponse, networkKey, selectedAccount, taskId],
   );
-
-  useEffect(() => {
-    getStakeClaimRewardTxInfo({
-      address: selectedAccount,
-      networkKey,
-    })
-      .then(resp => {
-        setIsTxReady(true);
-        setBalanceError(resp.balanceError);
-        setFeeString(resp.fee);
-      })
-      .catch(console.error);
-
-    return () => {
-      setIsTxReady(false);
-      setBalanceError(false);
-      setFeeString('');
-    };
-  }, [networkKey, selectedAccount]);
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.claimStakeAction}
+      title={i18n.title.compoundStakeAction}
       rightButtonTitle={i18n.common.cancel}
-      onPressRightIcon={goBack}>
+      onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
-          {isTxReady ? (
-            <>
-              <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
-              <BalanceField
-                value={fee}
-                decimal={0}
-                token={feeToken}
-                si={formatBalance.findSi('-')}
-                label={i18n.claimStakeAction.claimFee}
-              />
-              <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
-            </>
-          ) : (
-            <ActivityIndicator animating={true} size={'large'} />
-          )}
+        <ScrollView style={{ ...ScrollViewStyle }}>
+          {!!validator && <TextField text={toShort(validator)} label={validatorLabel} disabled={true} />}
+          <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
+          <TextField text={toShort(taskId)} label={i18n.compoundStakeAction.taskId} disabled={true} />
+          <BalanceField
+            value={fee}
+            decimal={0}
+            token={feeToken}
+            si={formatBalance.findSi('-')}
+            label={i18n.compoundStakeAction.transactionFee}
+          />
+          <TextField text={feeString} label={i18n.unStakeAction.total} disabled={true} />
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -180,7 +162,12 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
             backgroundColor={ColorMap.dark2}
             onPress={goBack}
           />
-          <SubmitButton isBusy={!isTxReady} title={i18n.common.continue} style={ButtonStyle} onPress={handleOpen} />
+          <SubmitButton
+            // isBusy={loading}
+            title={i18n.common.continue}
+            style={ButtonStyle}
+            onPress={handleOpen}
+          />
         </View>
         <PasswordModal
           onConfirm={onSubmit}
@@ -195,4 +182,4 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
   );
 };
 
-export default React.memo(ClaimAuth);
+export default React.memo(CompoundAuth);

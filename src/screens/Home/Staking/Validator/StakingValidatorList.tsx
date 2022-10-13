@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
-import useGetValidatorType from 'hooks/screen/Home/Staking/useGetValidatorType';
+import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';

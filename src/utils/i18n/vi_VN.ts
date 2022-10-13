@@ -247,6 +247,7 @@ export const vi = {
     unStakeAction: 'Unstake',
     withdrawStakeAction: 'Withdraw',
     claimStakeAction: 'Claim Reward',
+    compoundStakeAction: 'Compound',
     network: 'Network',
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
@@ -297,7 +298,6 @@ export const vi = {
   },
   stakingScreen: {
     startStaking: 'Start Staking',
-    unStakeFunds: 'Unstake funds',
     balanceList: {
       stakingBalance: 'Staking balance',
       stakingAppearHere: 'Your staking accounts will be appear here',
@@ -401,6 +401,35 @@ export const vi = {
       subText: 'There was a problem with your request. You can try again.',
     },
   },
+  compoundStakeAction: {
+    taskId: 'Task ID',
+    compoundingThreshold: 'Compounding threshold',
+    optimalCompoundingTime: 'Optimal compounding time',
+    total: 'Total',
+    transactionFee: 'Transaction fee',
+    compoundingStartIn: 'Compounding starts in',
+    compoundingFee: 'Compounding fee',
+    compound: {
+      success: {
+        title: 'Request Executed Successfully',
+        subText: 'Your compounding request has been confirmed. It might take a minute to see changes in your wallet.',
+      },
+      fail: {
+        title: 'Compounding Request Failed',
+        subText: 'There was a problem with your request. You can try again.',
+      },
+    },
+    cancelCompound: {
+      success: {
+        title: 'Request Executed Successfully',
+        subText: 'Your compounding request has been cancelled. It might take a minute to see changes in your wallet.',
+      },
+      fail: {
+        title: 'Request Cancellation Failed',
+        subText: 'There was a problem with your request. You can try again.',
+      },
+    },
+  },
   settings: {
     notifications: 'Notifications',
     network: 'Network',
@@ -476,6 +505,10 @@ export const vi = {
     freeBalanceAtLeast: 'Your free balance needs to be at least',
     chooseNominating: 'Please choose among the nominating validators only',
     amountGtZero: 'Amount must be greater than zero',
+    thresholdLagerThan: 'The threshold must be larger than',
+    unStakeEverything: 'You can only unstake everything',
+    unStakeEverythingOrMaxOf: 'You can unstake everything or a maximum of',
+    unStakeMaxOf: 'You can unstake a maximum of',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
@@ -489,5 +522,6 @@ export const vi = {
     tokenAlreadyAdded: 'This token has already been added',
     invalidContractForSelectedChain: 'Invalid contract for the selected chain',
     noTokenAvailable: 'No Token Available',
+    unknownError: 'Encountered an error, please try again.',
   },
 };

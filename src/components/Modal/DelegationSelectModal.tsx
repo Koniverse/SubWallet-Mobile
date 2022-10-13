@@ -1,6 +1,6 @@
 import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
-import CollatorSelectItem from 'components/Staking/ValidatorSelectItem';
-import useGetValidatorType from 'hooks/screen/Home/Staking/useGetValidatorType';
+import DelegationSelectItem from 'components/Staking/DelegationSelectItem';
+import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 import React, { useCallback, useMemo } from 'react';
 import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -27,7 +27,7 @@ const filterFunction = (items: DelegationItem[], searchString: string) => {
   );
 };
 
-const ValidatorSelectModal = ({
+const DelegationSelectModal = ({
   modalVisible,
   onChangeModalVisible,
   delegations,
@@ -64,7 +64,7 @@ const ValidatorSelectModal = ({
     ({ item }: ListRenderItemInfo<DelegationItem>) => {
       const selected = item.owner === selectedItem;
 
-      return <CollatorSelectItem collator={item} isSelected={selected} onSelect={onSelect(item)} />;
+      return <DelegationSelectItem collator={item} isSelected={selected} onSelect={onSelect(item)} />;
     },
     [onSelect, selectedItem],
   );
@@ -85,4 +85,4 @@ const ValidatorSelectModal = ({
   );
 };
 
-export default React.memo(ValidatorSelectModal);
+export default React.memo(DelegationSelectModal);

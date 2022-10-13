@@ -11,7 +11,7 @@ export type WithdrawStakeActionStackParamList = {
 };
 
 export type NavigationProps = NativeStackScreenProps<WithdrawStakeActionStackParamList>;
-export type StakeActionNavigationProps = NavigationProps['navigation'];
+export type WithdrawActionNavigationProps = NavigationProps['navigation'];
 
 export type WithdrawAuthProps = NativeStackScreenProps<WithdrawStakeActionStackParamList, 'WithdrawAuth'>;
 export type WithdrawResultProps = NativeStackScreenProps<WithdrawStakeActionStackParamList, 'WithdrawResult'>;

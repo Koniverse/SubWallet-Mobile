@@ -13,12 +13,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { StakeAuthProps } from 'routes/staking/stakeAction';
-import ValidatorBriefInfo from 'screens/Staking/Stake/ValidatorBriefInfo';
+import ValidatorBriefInfo from 'components/Staking/ValidatorBriefInfo';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi } from 'utils/index';
+import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitBonding } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
 
@@ -33,6 +34,7 @@ const ActionContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   alignItems: 'center',
   marginHorizontal: -4,
+  paddingTop: 16,
   ...MarginBottomForSubmitButton,
 };
 
@@ -96,14 +98,8 @@ const StakeAuth = ({
   const onCancel = useGoHome({ screen: 'Staking' });
 
   const handleBondingResponse = useCallback((data: BasicTxResponse) => {
-    if (data.passwordError) {
-      setError(data.passwordError);
-      setLoading(false);
-    }
-
-    if (data.txError) {
-      setError('Encountered an error, please try again.');
-      setLoading(false);
+    const stop = handleBasicTxResponse(data, false, setError, setLoading);
+    if (stop) {
       return;
     }
 
@@ -165,12 +161,7 @@ const StakeAuth = ({
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }}>
           <ValidatorBriefInfo validator={validator} />
-          <AddressField
-            address={selectedAccount}
-            label={i18n.common.account}
-            showRightIcon={false}
-            networkPrefix={network.ss58Format}
-          />
+          <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
           <BalanceField
             value={rawAmount.toString()}
             decimal={network.decimals || 0}

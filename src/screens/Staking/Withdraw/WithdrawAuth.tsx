@@ -20,6 +20,7 @@ import {
   ScrollViewStyle,
 } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { getStakeWithdrawalTxInfo, submitStakeWithdrawal } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -33,6 +34,7 @@ const ActionContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   alignItems: 'center',
   marginHorizontal: -4,
+  paddingTop: 16,
   ...MarginBottomForSubmitButton,
 };
 
@@ -73,19 +75,8 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
-      if (balanceError) {
-        setError('Your balance is too low to cover fees');
-        setLoading(false);
-      }
-
-      if (data.passwordError) {
-        setError(data.passwordError);
-        setLoading(false);
-      }
-
-      if (data.txError) {
-        setError('Encountered an error, please try again.');
-        setLoading(false);
+      const stop = handleBasicTxResponse(data, balanceError, setError, setLoading);
+      if (stop) {
         return;
       }
 
@@ -181,12 +172,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
                   showRightIcon={false}
                 />
               )}
-              <AddressField
-                address={selectedAccount}
-                label={i18n.common.account}
-                showRightIcon={false}
-                networkPrefix={network.ss58Format}
-              />
+              <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
               <BalanceField
                 value={amount.toString()}
                 decimal={0}

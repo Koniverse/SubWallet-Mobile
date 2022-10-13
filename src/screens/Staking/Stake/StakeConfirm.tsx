@@ -12,21 +12,10 @@ import { Warning } from 'components/Warning';
 import useFreeBalance from 'hooks/screen/useFreeBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useCallback, useMemo, useState } from 'react';
-import {
-  ScrollView,
-  StyleProp,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { useSelector } from 'react-redux';
+import { ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { StakeConfirmProps } from 'routes/staking/stakeAction';
-import { getBalanceFormat } from 'screens/Sending/utils';
-import ValidatorBriefInfo from 'screens/Staking/Stake/ValidatorBriefInfo';
-import { RootState } from 'stores/index';
+import ValidatorBriefInfo from 'components/Staking/ValidatorBriefInfo';
 import { ColorMap } from 'styles/color';
 import {
   ContainerHorizontalPadding,
@@ -35,10 +24,9 @@ import {
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
-import { BalanceFormatType } from 'types/ui-types';
-import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getBondingTxInfo } from '../../../messaging';
+import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -86,8 +74,6 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
 
   const navigation = useNavigation<RootNavigationProps>();
 
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
-  const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
   const network = useGetNetworkJson(networkKey);
 
   const inputBalanceRef = createRef();
@@ -103,20 +89,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
   const [rawAmount, setRawAmount] = useState<number>(-1);
   const [balanceError, setBalanceError] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const balanceFormat = useMemo((): BalanceFormatType => {
-    return getBalanceFormat(networkKey, selectedToken, chainRegistry);
-  }, [chainRegistry, networkKey, selectedToken]);
-
-  const tokenPrice = useMemo(
-    (): number => tokenPriceMap[selectedToken.toLowerCase()] || 0,
-    [selectedToken, tokenPriceMap],
-  );
-
-  const reformatAmount = useMemo(
-    (): BigN => new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0])),
-    [balanceFormat, rawAmount],
-  );
+  const { reformatAmount, amountToUsd, balanceFormat } = useGetAmountInfo(rawAmount, networkKey);
 
   const warningMessage = useMemo((): string => {
     if (balanceError) {
@@ -135,7 +108,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       return i18n.warningMessage.notEnoughToStake;
     }
 
-    if (reformatAmount.lt(minBond)) {
+    if (reformatAmount < minBond) {
       if (networkValidatorsInfo.bondedValidators.includes(validator.address)) {
         return '';
       } else {
@@ -161,7 +134,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       if (networkValidatorsInfo.bondedValidators.includes(validator.address)) {
         return true;
       } else {
-        return reformatAmount.gte(minBond);
+        return reformatAmount >= minBond;
       }
     } else {
       return false;
@@ -175,13 +148,11 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     validator.address,
   ]);
 
-  const amountToUsd = useMemo(() => reformatAmount.multipliedBy(new BigN(tokenPrice)), [reformatAmount, tokenPrice]);
-
   const handlePressMax = useCallback(() => {
     getBondingTxInfo({
       networkKey: networkKey,
       nominatorAddress: selectedAccount,
-      amount: reformatAmount.toNumber(),
+      amount: reformatAmount,
       validatorInfo: validator,
       isBondedBefore,
       bondedValidators,
@@ -224,7 +195,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     getBondingTxInfo({
       networkKey: networkKey,
       nominatorAddress: selectedAccount,
-      amount: reformatAmount.toNumber(),
+      amount: reformatAmount,
       validatorInfo: validator,
       isBondedBefore,
       bondedValidators,
@@ -286,7 +257,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
             siSymbol={selectedToken}
           />
           <View style={RowCenterStyle}>
-            {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
+            {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
           </View>
           {!!warningMessage && <Warning title={i18n.warningTitle.warning} message={warningMessage} isDanger={false} />}
         </ScrollView>

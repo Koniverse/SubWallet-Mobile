@@ -10,6 +10,7 @@ import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
+import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -277,6 +278,7 @@ export const App = () => {
                         <Stack.Screen name="UnStakeAction" component={UnStakeActionScreen} />
                         <Stack.Screen name="ClaimStakeAction" component={ClaimActionScreen} />
                         <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
+                        <Stack.Screen name="CompoundStakeAction" component={CompoundActionScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{
