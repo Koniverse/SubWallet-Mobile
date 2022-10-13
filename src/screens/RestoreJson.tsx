@@ -23,6 +23,7 @@ import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { toShort } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -94,6 +95,7 @@ export const RestoreJson = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
   const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  useHandlerHardwareBackPress(isBusy);
   const _onRestore = (formState: FormState) => {
     const password = formState.data.password;
     const accountAddress = formState.data.accountAddress;

@@ -15,6 +15,7 @@ import i18n from 'utils/i18n/i18n';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { CaretRight } from 'phosphor-react-native';
 import { DetailModal } from 'screens/Home/Browser/ConfirmationPopup/Shared/DetailModal';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 interface Props {
   headerProps: ConfirmationHeaderType;
@@ -86,7 +87,7 @@ export const ConfirmationBase = ({
     onSubmitForm: () => {},
   });
   const [{ isBusy, busyKey }, setBusy] = useState<BusyType>({ busyKey: null, isBusy: false });
-
+  useHandlerHardwareBackPress(isBusy);
   const _onPressSubmitButton = () => {
     if (onPressSubmitButton) {
       setBusy({ busyKey: 'SUBMIT', isBusy: true });

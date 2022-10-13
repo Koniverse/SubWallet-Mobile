@@ -22,6 +22,7 @@ import i18n from 'utils/i18n/i18n';
 import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction } from '../../messaging';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 interface Props {
   setShowConfirm: (val: boolean) => void;
@@ -110,6 +111,7 @@ const AuthTransaction = (props: Props) => {
     signAddress: senderAddress,
     signPassword: '',
   }));
+  useHandlerHardwareBackPress(loading);
 
   const substrateParams = substrateTransferParams !== null ? substrateTransferParams.params : null;
   const substrateGas = substrateTransferParams !== null ? substrateTransferParams.estimatedFee : null;

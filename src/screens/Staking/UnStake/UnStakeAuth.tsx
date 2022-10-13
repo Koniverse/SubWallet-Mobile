@@ -18,6 +18,7 @@ import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { submitUnbonding } from '../../../messaging';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -53,7 +54,7 @@ const UnStakeAuth = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-
+  useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
