@@ -186,6 +186,7 @@ const ImportEvmNft = () => {
     <ContainerWithSubHeader
       showLeftBtn={true}
       onPressBack={onBack}
+      disabled={loading}
       title={i18n.title.importNft}
       style={ContainerHeaderStyle}
       isShowPlaceHolder={false}>
