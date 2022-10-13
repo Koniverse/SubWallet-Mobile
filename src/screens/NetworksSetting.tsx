@@ -116,7 +116,7 @@ export const NetworksSetting = ({}: Props) => {
   return (
     <FlatListScreen
       items={currentNetworkList}
-      title={i18n.title.networkSetting}
+      title={i18n.title.network}
       autoFocus={false}
       renderListEmptyComponent={renderListEmptyComponent}
       filterFunction={filterFunction}
