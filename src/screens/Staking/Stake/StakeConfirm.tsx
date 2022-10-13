@@ -238,6 +238,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
               stakeParams: stakeParams,
               amount: rawAmount,
               feeString: res.fee,
+              amountSi: si,
             },
           });
         } else {
@@ -257,6 +258,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     navigation,
     stakeParams,
     validator,
+    si,
   ]);
 
   return (

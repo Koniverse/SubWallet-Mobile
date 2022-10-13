@@ -18,6 +18,7 @@ import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
+import { getBalanceWithSi } from 'utils/index';
 import { submitBonding } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
 
@@ -47,7 +48,7 @@ type TransactionResult = {
 
 const StakeAuth = ({
   route: {
-    params: { stakeParams, feeString, amount: rawAmount },
+    params: { stakeParams, feeString, amount: rawAmount, amountSi },
   },
   navigation: { goBack },
 }: StakeAuthProps) => {
@@ -70,14 +71,19 @@ const StakeAuth = ({
     [network.decimals, rawAmount],
   );
 
+  const [amountValue, amountToken] = useMemo(
+    (): [string, string] => getBalanceWithSi(rawAmount.toString(), network.decimals || 0, amountSi, selectedToken),
+    [amountSi, network.decimals, rawAmount, selectedToken],
+  );
+
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];
   }, [feeString]);
 
   const totalString = useMemo((): string => {
-    return `${amount} ${selectedToken} + ${feeString}`;
-  }, [amount, feeString, selectedToken]);
+    return `${amountValue} ${amountToken} + ${feeString}`;
+  }, [amountValue, feeString, amountToken]);
 
   const handleOpen = useCallback(() => {
     setVisible(true);
@@ -166,10 +172,10 @@ const StakeAuth = ({
             networkPrefix={network.ss58Format}
           />
           <BalanceField
-            value={amount.toString()}
-            decimal={0}
+            value={rawAmount.toString()}
+            decimal={network.decimals || 0}
             token={selectedToken}
-            si={formatBalance.findSi('-')}
+            si={amountSi}
             label={i18n.stakeAction.stakingAmount}
           />
           <BalanceField

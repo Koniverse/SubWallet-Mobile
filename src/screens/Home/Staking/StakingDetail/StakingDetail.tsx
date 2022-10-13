@@ -6,6 +6,7 @@ import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
+import usePreventNavigatorGoBack from 'hooks/usePreventNavigatorGoBack';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RootNavigationProps } from 'routes/index';

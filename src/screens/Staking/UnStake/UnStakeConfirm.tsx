@@ -238,12 +238,13 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
 
     getUnbondingTxInfo({
       address: selectedAccount,
-      amount: rawAmount,
+      amount: reformatAmount.toNumber(),
       networkKey: networkKey,
       validatorAddress: selectedValidator,
       unstakeAll: isAmountEqualAll,
     })
       .then(resp => {
+        console.log(resp);
         navigation.navigate('UnStakeAction', {
           screen: 'UnStakeAuth',
           params: {
@@ -253,12 +254,23 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
             balanceError: resp.balanceError,
             validator: selectedValidator,
             unstakeAll: isAmountEqualAll,
+            amountSi: si,
           },
         });
         setLoading(false);
       })
       .catch(console.error);
-  }, [maxUnBoned, networkKey, rawAmount, navigation, selectedAccount, selectedValidator, unStakeParams]);
+  }, [
+    rawAmount,
+    maxUnBoned,
+    selectedAccount,
+    reformatAmount,
+    networkKey,
+    selectedValidator,
+    navigation,
+    unStakeParams,
+    si,
+  ]);
 
   useEffect(() => {
     if (CHAIN_TYPE_MAP.astar.includes(networkKey) || CHAIN_TYPE_MAP.para.includes(networkKey)) {

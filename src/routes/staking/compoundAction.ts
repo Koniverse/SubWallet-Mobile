@@ -10,10 +10,10 @@ export type CompoundStakeActionStackParamList = {
     feeString: string;
     collator?: string;
     balanceError: boolean;
-    CompoundAll: boolean;
+    compoundAll: boolean;
   };
   CompoundResult: {
-    CompoundParams: CompoundParams;
+    compoundParams: CompoundParams;
     txParams: TransactionResultParams;
   };
 };

@@ -1,6 +1,7 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
 import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
@@ -16,8 +17,9 @@ import { RootNavigationProps } from 'routes/index';
 import { UnStakeAuthProps } from 'routes/staking/unStakeAction';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
-import { toShort } from 'utils/index';
+import { getBalanceWithSi, toShort } from 'utils/index';
 import { submitUnbonding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -41,7 +43,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
 
 const UnStakeAuth = ({
   route: {
-    params: { unStakeParams, feeString, amount, validator, balanceError, unstakeAll },
+    params: { unStakeParams, feeString, amount: rawAmount, validator, balanceError, unstakeAll, amountSi },
   },
 }: UnStakeAuthProps) => {
   const { networkKey, selectedAccount } = unStakeParams;
@@ -57,6 +59,15 @@ const UnStakeAuth = ({
   const [error, setError] = useState<string>('');
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
+  const amount = useMemo(
+    (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
+    [network.decimals, rawAmount],
+  );
+
+  const [amountValue, amountToken] = useMemo(
+    (): [string, string] => getBalanceWithSi(rawAmount.toString(), network.decimals || 0, amountSi, selectedToken),
+    [amountSi, network.decimals, rawAmount, selectedToken],
+  );
 
   const validatorLabel = useMemo((): string => {
     switch (validatorType) {
@@ -77,8 +88,8 @@ const UnStakeAuth = ({
   }, [feeString]);
 
   const totalString = useMemo((): string => {
-    return `${amount / 10 ** (network.decimals || 0)} ${selectedToken} + ${feeString}`;
-  }, [amount, feeString, network.decimals, selectedToken]);
+    return `${amountValue} ${amountToken} + ${feeString}`;
+  }, [amountValue, amountToken, feeString]);
 
   const handleOpen = useCallback(() => {
     setVisible(true);
@@ -180,10 +191,10 @@ const UnStakeAuth = ({
           {!!validator && <TextField text={toShort(validator)} label={validatorLabel} disabled={true} />}
           <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
           <BalanceField
-            value={amount.toString()}
+            value={rawAmount.toString()}
             decimal={network.decimals || 0}
             token={selectedToken}
-            si={formatBalance.findSi('-')}
+            si={amountSi}
             label={i18n.unStakeAction.unStakingAmount}
           />
           <BalanceField

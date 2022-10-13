@@ -27,7 +27,7 @@ interface SortItem {
   icon: (iconProps: IconProps) => JSX.Element;
   key: string;
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   color?: string;
 }
 
@@ -63,7 +63,7 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const {
-    staking: { chainId: networkKey, activeBalance, unlockingInfo },
+    staking: { chainId: networkKey, activeBalance, unlockingInfo, unlockingBalance },
   } = data;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
@@ -180,6 +180,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         key: 'withdraw',
         icon: Money,
         onPress: withdrawAction,
+        color: nextWithdrawal > 0 && parseFloat(unlockingBalance || '0') > 0 ? ColorMap.primary : ColorMap.disabled,
       },
     ];
 
@@ -188,7 +189,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         label: i18n.stakingScreen.stakingDetail.actions.claim,
         key: 'claim',
         icon: Gift,
-        onPress: claimAction,
+        onPress: parseFloat(activeBalance || '0') > 0 ? claimAction : undefined,
       });
     }
 
@@ -202,7 +203,17 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     }
 
     return result;
-  }, [activeBalance, claimAction, compoundAction, showClaimButton, showCompoundButton, unStakeAction, withdrawAction]);
+  }, [
+    activeBalance,
+    claimAction,
+    compoundAction,
+    nextWithdrawal,
+    showClaimButton,
+    showCompoundButton,
+    unStakeAction,
+    unlockingBalance,
+    withdrawAction,
+  ]);
 
   return (
     <SubWalletModal modalVisible={visible} onChangeModalVisible={closeModal}>

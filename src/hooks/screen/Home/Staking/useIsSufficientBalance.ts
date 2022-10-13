@@ -8,11 +8,11 @@ const useIsSufficientBalance = (networkKey: string, minBond: number | undefined)
   const balanceMap = useSelector((state: RootState) => state.balance.details);
   const network = useGetNetworkJson(networkKey);
 
-  if (minBond === undefined) {
-    return false;
-  }
-
   return useMemo((): boolean => {
+    if (minBond === undefined) {
+      return false;
+    }
+
     let result = false;
 
     for (const [_networkKey, balanceObj] of Object.entries(balanceMap)) {

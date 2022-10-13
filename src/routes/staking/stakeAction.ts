@@ -1,3 +1,4 @@
+import { SiDef } from '@polkadot/util/types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StakeParams } from 'types/staking';
 import { TransactionResultParams } from 'types/tx';
@@ -8,6 +9,7 @@ export type StakeActionStackParamList = {
     stakeParams: StakeParams;
     amount: number;
     feeString: string;
+    amountSi: SiDef;
   };
   StakeResult: {
     stakeParams: StakeParams;
