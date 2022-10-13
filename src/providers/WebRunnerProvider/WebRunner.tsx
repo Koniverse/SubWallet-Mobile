@@ -17,6 +17,7 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
 import { DelayBackgroundService } from 'types/background';
+import VersionNumber from 'react-native-version-number';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 3600000; //30*60*1000
@@ -319,7 +320,8 @@ interface WebRunnerControlAction {
   payload?: Partial<WebRunnerGlobalState>;
 }
 
-const URI_PARAMS = '?platform=' + Platform.OS;
+const URI_PARAMS =
+  '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}`;
 const BASE_URI =
   Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
 
