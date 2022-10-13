@@ -78,7 +78,7 @@ export const CreateAccount = ({
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} title={getHeaderTitle(currentViewStep)}>
+    <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={getHeaderTitle(currentViewStep)}>
       <>
         {!!seed && (
           <>

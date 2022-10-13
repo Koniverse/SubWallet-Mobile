@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { CustomEvmToken, DeleteEvmTokenParams } from '@subwallet/extension-base/background/KoniTypes';
 import { EmptyList } from 'components/EmptyList';
-import { Coins } from 'phosphor-react-native';
+import { Coins, Trash } from 'phosphor-react-native';
 import { Alert, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -115,7 +115,9 @@ export const Tokens = () => {
     <>
       <FlatListScreen
         rightIconOption={{
-          title: isEditMode ? i18n.common.done : i18n.common.edit,
+          title: isEditMode ? i18n.common.done : '',
+          icon: isEditMode ? undefined : Trash,
+          disabled: isBusy,
           onPress: () => setEditMode(!isEditMode),
         }}
         title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
