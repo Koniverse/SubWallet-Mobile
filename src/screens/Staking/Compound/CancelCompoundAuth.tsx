@@ -9,6 +9,7 @@ import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
@@ -55,6 +56,8 @@ const CompoundAuth = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+
+  useHandlerHardwareBackPress(loading);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');

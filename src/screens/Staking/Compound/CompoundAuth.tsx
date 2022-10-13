@@ -10,6 +10,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
@@ -69,6 +70,8 @@ const CompoundAuth = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+
+  useHandlerHardwareBackPress(loading);
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
