@@ -21,6 +21,7 @@ import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 export const ImportEvmToken = ({
   route: {
@@ -32,6 +33,7 @@ export const ImportEvmToken = ({
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
+  useHandlerHardwareBackPress(isBusy);
   const tokenInfo = payload?.payload;
   const formConfig = {
     contractAddress: {
@@ -40,7 +42,7 @@ export const ImportEvmToken = ({
       value: tokenInfo?.smartContract || '',
     },
     chain: {
-      name: i18n.importEvmToken.chain,
+      name: i18n.common.network,
       value: tokenInfo?.chain || chainOptions[0].value || '',
     },
     symbol: {

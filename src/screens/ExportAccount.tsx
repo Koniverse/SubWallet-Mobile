@@ -23,6 +23,7 @@ import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -121,6 +122,7 @@ export const ExportAccount = ({
   const [isBusy, setIsBusy] = useState(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(2);
   const toast = useToast();
+  useHandlerHardwareBackPress(isBusy);
 
   useEffect(() => {
     if (currentViewStep === ViewStep.ENTER_PW) {
@@ -175,6 +177,7 @@ export const ExportAccount = ({
   return (
     <SubScreenContainer
       navigation={navigation}
+      disabled={isBusy}
       title={exportType === 'json' ? i18n.title.exportAccount : i18n.title.exportPrivateKey}>
       <View style={layoutContainerStyle}>
         <ScrollView style={bodyAreaStyle}>
@@ -205,6 +208,7 @@ export const ExportAccount = ({
             <>
               <PasswordField
                 ref={formState.refs.password}
+                isBusy={isBusy}
                 label={formState.labels.password}
                 defaultValue={formState.data.password}
                 onChangeText={onChangeValue('password')}

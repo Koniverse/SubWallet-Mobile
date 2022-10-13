@@ -22,6 +22,7 @@ import { getBalanceWithSi } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitBonding } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -66,7 +67,7 @@ const StakeAuth = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
-
+  useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
     (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),

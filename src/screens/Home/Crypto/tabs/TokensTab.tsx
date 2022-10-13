@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListRenderItem, RefreshControl, StyleProp, View } from 'react-native';
+import { ListRenderItem, RefreshControl, RefreshControlProps, StyleProp, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/ui-types';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
@@ -17,6 +17,7 @@ interface Props {
   isRefresh: boolean;
   refresh: (tabId: string) => void;
   refreshTabId: string;
+  isEmptyList?: boolean;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
@@ -35,7 +36,14 @@ const emptyListWrapperStyle: StyleProp<any> = {
   paddingTop: 48,
 };
 
-export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, refresh, refreshTabId }: Props) => {
+export const TokensTab = ({
+  items: tokenBalanceItems,
+  renderItem,
+  isRefresh,
+  refresh,
+  refreshTabId,
+  isEmptyList,
+}: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const renderFooterComponent = () => {
     return (
@@ -49,12 +57,27 @@ export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, ref
     );
   };
 
-  if (!tokenBalanceItems.length) {
+  const renderRefreshControl = ():
+    | React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>
+    | undefined => {
+    return (
+      <RefreshControl
+        style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'one' ? 1 : 0 }}
+        tintColor={ColorMap.light}
+        refreshing={isRefresh}
+        onRefresh={() => refresh('one')}
+      />
+    );
+  };
+
+  if (isEmptyList) {
     return (
       <Tabs.ScrollView
+        showsVerticalScrollIndicator={false}
         accessibilityTraits
         accessibilityComponentType
-        contentContainerStyle={flatListContentContainerStyle}>
+        contentContainerStyle={flatListContentContainerStyle}
+        refreshControl={renderRefreshControl()}>
         <View style={emptyListWrapperStyle}>
           <EmptyList icon={Coins} title={i18n.common.emptyTokenListMessage} />
           {renderFooterComponent()}
@@ -73,14 +96,7 @@ export const TokensTab = ({ items: tokenBalanceItems, renderItem, isRefresh, ref
       data={tokenBalanceItems}
       renderItem={renderItem}
       ListFooterComponent={renderFooterComponent}
-      refreshControl={
-        <RefreshControl
-          style={{ backgroundColor: ColorMap.dark2, opacity: refreshTabId === 'one' ? 1 : 0 }}
-          tintColor={ColorMap.light}
-          refreshing={isRefresh}
-          onRefresh={() => refresh('one')}
-        />
-      }
+      refreshControl={renderRefreshControl()}
     />
   );
 };

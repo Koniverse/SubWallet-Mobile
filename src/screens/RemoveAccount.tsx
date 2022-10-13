@@ -13,6 +13,7 @@ import { toShort } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -74,6 +75,7 @@ export const RemoveAccount = ({
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const [isBusy, setIsBusy] = useState(false);
+  useHandlerHardwareBackPress(isBusy);
   //todo: reformat address base on Current network
   const displayAddress = toShort(address, 10, 10);
 

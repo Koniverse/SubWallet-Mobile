@@ -19,18 +19,24 @@ const imageBackgroundStyle: StyleProp<any> = {
   justifyContent: 'flex-end',
   alignItems: 'center',
   paddingHorizontal: 16,
-  paddingBottom: Platform.OS === 'ios' ? 42 : 20,
+  paddingBottom: Platform.OS === 'ios' ? 56 : 20,
   position: 'relative',
 };
 
-const logoStyle: StyleProp<any> = { alignItems: 'center', justifyContent: 'center', flex: 1 };
+const logoStyle: StyleProp<any> = {
+  width: '100%',
+  flex: 1,
+  justifyContent: 'flex-end',
+  position: 'relative',
+  alignItems: 'center',
+};
 
 const firstScreenNotificationStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   color: ColorMap.light,
   textAlign: 'center',
   paddingHorizontal: 42,
-  paddingTop: 56,
+  paddingTop: 32,
   ...FontMedium,
 };
 
@@ -85,32 +91,32 @@ export const FirstScreen = () => {
       <ImageBackground source={Images.loadingScreen} resizeMode={'cover'} style={imageBackgroundStyle}>
         <SafeAreaView />
         <View style={logoStyle}>
-          {
+          <View style={{ position: 'absolute', top: '50%', marginTop: -115 }}>
             <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
               <SVGImages.SubWallet2 width={230} height={230} />
             </Suspense>
-          }
+          </View>
+
+          <SubmitButton
+            leftIcon={UserCirclePlus}
+            title={i18n.common.createNewWalletAccount}
+            style={{ marginBottom: 16, width: '100%', marginTop: 58 }}
+            onPress={() => {
+              setSelectedAction('CreateAccount');
+              setSelectTypeModalVisible(true);
+            }}
+          />
+
+          <SubmitButton
+            leftIcon={ArchiveTray}
+            title={i18n.common.importExistingWallet}
+            style={{ width: '100%' }}
+            backgroundColor={ColorMap.primary}
+            onPress={() => {
+              setSelectModalVisible(true);
+            }}
+          />
         </View>
-
-        <SubmitButton
-          leftIcon={UserCirclePlus}
-          title={i18n.common.createNewWalletAccount}
-          style={{ marginBottom: 16, width: '100%' }}
-          onPress={() => {
-            setSelectedAction('CreateAccount');
-            setSelectTypeModalVisible(true);
-          }}
-        />
-
-        <SubmitButton
-          leftIcon={ArchiveTray}
-          title={i18n.common.importExistingWallet}
-          style={{ width: '100%' }}
-          backgroundColor={ColorMap.primary}
-          onPress={() => {
-            setSelectModalVisible(true);
-          }}
-        />
         {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessage}</Text>
         <SelectImportAccountModal

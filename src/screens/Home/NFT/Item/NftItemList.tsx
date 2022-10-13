@@ -82,7 +82,7 @@ const NftItemList = ({
         searchMarginBottom={16}
         refreshControl={
           <RefreshControl
-            style={{ backgroundColor: ColorMap.dark2 }}
+            style={{ backgroundColor: ColorMap.dark1 }}
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => refresh(restartCronServices(['nft']))}

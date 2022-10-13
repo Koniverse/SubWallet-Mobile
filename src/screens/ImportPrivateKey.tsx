@@ -15,6 +15,7 @@ import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFo
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -30,6 +31,7 @@ export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const [isBusy, setIsBusy] = useState(false);
+  useHandlerHardwareBackPress(isBusy);
 
   const _onImport = (formState: FormState) => {
     const privateKey = formState.data.privateKey;

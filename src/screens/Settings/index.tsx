@@ -83,7 +83,7 @@ export const Settings = () => {
         },
         {
           icon: GlobeHemisphereWest,
-          title: i18n.title.languages,
+          title: i18n.title.language,
           hasRightArrow: true,
           onPress: onPressComingSoonFeature,
         },
@@ -177,7 +177,7 @@ export const Settings = () => {
   return (
     <SubScreenContainer title={i18n.title.settings} navigation={navigation}>
       <>
-        <ScrollView style={{ paddingHorizontal: 16, marginTop: 16, flex: 1, marginBottom: 16 }}>
+        <ScrollView style={{ paddingHorizontal: 16, paddingTop: 16, flex: 1, marginBottom: 16 }}>
           <ActionItem
             icon={ShieldCheck}
             showIcon={false}

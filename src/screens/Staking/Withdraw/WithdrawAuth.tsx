@@ -22,6 +22,7 @@ import {
 import i18n from 'utils/i18n/i18n';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { getStakeWithdrawalTxInfo, submitStakeWithdrawal } from '../../../messaging';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -57,7 +58,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
 
   const [isTxReady, setIsTxReady] = useState(false);
   const [balanceError, setBalanceError] = useState(false);
-
+  useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [fee, feeToken] = useMemo((): [string, string] => {

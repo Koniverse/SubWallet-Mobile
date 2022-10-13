@@ -19,6 +19,7 @@ import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -55,6 +56,7 @@ const ImportEvmNft = () => {
   const [isValidName, setIsValidName] = useState(true);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
+  useHandlerHardwareBackPress(loading);
   const onBack = useCallback(() => {
     navigation.navigate('Home');
   }, [navigation]);
@@ -186,7 +188,8 @@ const ImportEvmNft = () => {
     <ContainerWithSubHeader
       showLeftBtn={true}
       onPressBack={onBack}
-      title={i18n.title.importEvmNft}
+      disabled={loading}
+      title={i18n.title.importNft}
       style={ContainerHeaderStyle}
       isShowPlaceHolder={false}>
       <View style={WrapperStyle}>
@@ -230,7 +233,7 @@ const ImportEvmNft = () => {
         />
 
         <SubmitButton
-          title={i18n.importEvmNft.addNft}
+          title={i18n.importEvmNft.importNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={handleAddToken}
           disabled={isDisableAddNFT}

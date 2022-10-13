@@ -22,6 +22,7 @@ import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi, toShort } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitUnbonding } from '../../../messaging';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -59,7 +60,7 @@ const UnStakeAuth = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-
+  useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
     (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),

@@ -91,22 +91,6 @@ export const Extrinsic = ({
         <Text style={labelStyle}>{i18n.common.lifetime}</Text>
         <Text style={valueStyle}>{mortalityAsString(era, blockNumber)}</Text>
       </View>
-      <View style={itemWrapperStyle}>
-        <Text style={labelStyle}>{i18n.common.method}</Text>
-        <Text style={valueStyle}>{method}</Text>
-      </View>
-      <View style={itemWrapperStyle}>
-        <Text style={labelStyle}>{i18n.common.lifetime}</Text>
-        <Text style={valueStyle}>{mortalityAsString(era, blockNumber)}</Text>
-      </View>
-      <View style={itemWrapperStyle}>
-        <Text style={labelStyle}>{i18n.common.method}</Text>
-        <Text style={valueStyle}>{method}</Text>
-      </View>
-      <View style={itemWrapperStyle}>
-        <Text style={labelStyle}>{i18n.common.lifetime}</Text>
-        <Text style={valueStyle}>{mortalityAsString(era, blockNumber)}</Text>
-      </View>
     </ScrollView>
   );
 };

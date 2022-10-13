@@ -15,6 +15,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -66,6 +67,7 @@ export const ImportSecretPhrase = ({
   const [account, setAccount] = useState<AccountInfo | null>(null);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [isBusy, setBusy] = useState(false);
+  useHandlerHardwareBackPress(isBusy);
   const validateSeedAndGoToNextScreen = (currentFormState: FormState) => {
     const seed = currentFormState.data.seed.trim();
     if (!seed) {

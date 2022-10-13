@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { CustomEvmToken, DeleteEvmTokenParams } from '@subwallet/extension-base/background/KoniTypes';
 import { EmptyList } from 'components/EmptyList';
-import { Coins } from 'phosphor-react-native';
+import { Coins, Trash } from 'phosphor-react-native';
 import { Alert, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -15,6 +15,7 @@ import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/
 import { ColorMap } from 'styles/color';
 import { deleteEvmTokens } from '../../messaging';
 import { useToast } from 'react-native-toast-notifications';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const filterFunction = (items: CustomEvmToken[], searchString: string) => {
   return items.filter(
@@ -31,7 +32,7 @@ export const Tokens = () => {
   const [selectedTokens, setSelectedTokens] = useState<DeleteEvmTokenParams[]>([]);
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const [isBusy, setBusy] = useState<boolean>(false);
-
+  useHandlerHardwareBackPress(isBusy);
   const showToast = useCallback(
     (message: string) => {
       toast.hideAll();
@@ -115,7 +116,9 @@ export const Tokens = () => {
     <>
       <FlatListScreen
         rightIconOption={{
-          title: isEditMode ? i18n.common.done : i18n.common.edit,
+          title: isEditMode ? i18n.common.done : '',
+          icon: isEditMode ? undefined : Trash,
+          disabled: isBusy,
           onPress: () => setEditMode(!isEditMode),
         }}
         title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
