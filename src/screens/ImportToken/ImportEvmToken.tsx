@@ -40,7 +40,7 @@ export const ImportEvmToken = ({
       value: tokenInfo?.smartContract || '',
     },
     chain: {
-      name: i18n.importEvmToken.chain,
+      name: i18n.common.network,
       value: tokenInfo?.chain || chainOptions[0].value || '',
     },
     symbol: {
