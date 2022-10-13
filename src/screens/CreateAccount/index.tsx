@@ -9,6 +9,7 @@ import { CreateAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -35,7 +36,7 @@ export const CreateAccount = ({
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome('Crypto');
-
+  useHandlerHardwareBackPress(isBusy);
   useEffect((): void => {
     createSeedV2(undefined, undefined, [keyTypes])
       .then((response): void => {

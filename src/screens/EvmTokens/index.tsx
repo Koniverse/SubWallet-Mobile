@@ -15,6 +15,7 @@ import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/
 import { ColorMap } from 'styles/color';
 import { deleteEvmTokens } from '../../messaging';
 import { useToast } from 'react-native-toast-notifications';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const filterFunction = (items: CustomEvmToken[], searchString: string) => {
   return items.filter(
@@ -31,7 +32,7 @@ export const Tokens = () => {
   const [selectedTokens, setSelectedTokens] = useState<DeleteEvmTokenParams[]>([]);
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const [isBusy, setBusy] = useState<boolean>(false);
-
+  useHandlerHardwareBackPress(isBusy);
   const showToast = useCallback(
     (message: string) => {
       toast.hideAll();
