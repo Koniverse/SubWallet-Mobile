@@ -503,7 +503,7 @@ export const vi = {
     withdrawUnStakingFirst: 'Please withdraw the unstaking amount first',
     freeBalanceAtLeast: 'Your free balance needs to be at least',
     chooseNominating: 'Please choose among the nominating validators only',
-    amountGtZero: 'Amount must be greater than zero',
+    amountGtZero: 'Amount must be greater than 0',
     thresholdLagerThan: 'The threshold must be larger than',
     unStakeEverything: 'You can only unstake everything',
     unStakeEverythingOrMaxOf: 'You can unstake everything or a maximum of',

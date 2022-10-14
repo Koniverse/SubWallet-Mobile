@@ -28,7 +28,6 @@ import i18n from 'utils/i18n/i18n';
 import { getStakingInputValueStyle } from 'utils/text';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  ...ContainerHorizontalPadding,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
@@ -66,7 +65,7 @@ const HeaderWrapperStyle: StyleProp<ViewStyle> = {
 const HeaderContentStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'center',
-  width: '80%',
+  paddingHorizontal: 52,
 };
 
 const HeaderTextStyle: StyleProp<TextStyle> = {
@@ -93,7 +92,7 @@ const StakingValidatorDetail = ({
   },
   navigation: { goBack },
 }: StakingValidatorDetailProps) => {
-  const { bondedValidators, maxNominations } = networkValidatorsInfo;
+  const { bondedValidators, maxNominations, maxNominatorPerValidator } = networkValidatorsInfo;
 
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
@@ -116,7 +115,7 @@ const StakingValidatorDetail = ({
   const show = useCallback(
     (text: string) => {
       toast.hideAll();
-      toast.show(text);
+      toast.show(text, { textStyle: { textAlign: 'center' } });
     },
     [toast],
   );
@@ -182,7 +181,7 @@ const StakingValidatorDetail = ({
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
       <View style={WrapperStyle}>
-        <ScrollView style={ScrollViewStyle}>
+        <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
           <View style={CenterWrapperStyle}>
             <Text style={TotalStakeTitleTextStyle}>Total Stake</Text>
           </View>
@@ -219,6 +218,7 @@ const StakingValidatorDetail = ({
             token={''}
             decimal={0}
             si={formatBalance.findSi('-')}
+            color={validatorInfo.nominatorCount >= maxNominatorPerValidator ? ColorMap.danger : ColorMap.disabled}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.minimumStake}
@@ -237,7 +237,7 @@ const StakingValidatorDetail = ({
             color={!isMaxCommission ? ColorMap.primary : ColorMap.danger}
           />
         </ScrollView>
-        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16 }}>
+        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16, ...ContainerHorizontalPadding }}>
           <SubmitButton
             title={i18n.stakingScreen.startStaking}
             backgroundColor={ColorMap.secondary}

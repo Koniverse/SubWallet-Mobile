@@ -15,7 +15,6 @@ import i18n from 'utils/i18n/i18n';
 import { getStakingInputValueStyle } from 'utils/text';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  ...ContainerHorizontalPadding,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
@@ -64,10 +63,11 @@ const HeaderTextStyle: StyleProp<TextStyle> = {
 
 const StakeValidatorDetail = ({
   route: {
-    params: { validator: validatorInfo, networkKey },
+    params: { validator: validatorInfo, networkKey, networkValidatorsInfo },
   },
   navigation: { goBack },
 }: StakeValidatorDetailProps) => {
+  const { maxNominatorPerValidator } = networkValidatorsInfo;
   const network = useGetNetworkJson(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
@@ -95,7 +95,7 @@ const StakeValidatorDetail = ({
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
       <View style={WrapperStyle}>
-        <ScrollView style={ScrollViewStyle}>
+        <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
           <View style={CenterWrapperStyle}>
             <Text style={TotalStakeTitleTextStyle}>Total Stake</Text>
           </View>
@@ -132,6 +132,7 @@ const StakeValidatorDetail = ({
             token={''}
             decimal={0}
             si={formatBalance.findSi('-')}
+            color={validatorInfo.nominatorCount >= maxNominatorPerValidator ? ColorMap.danger : ColorMap.disabled}
           />
           <BalanceField
             label={i18n.stakingScreen.validatorDetail.minimumStake}

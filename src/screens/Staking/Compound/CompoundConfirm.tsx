@@ -53,7 +53,7 @@ const RowCenterStyle: StyleProp<ViewStyle> = {
 
 const IconContainerStyle: StyleProp<ViewStyle> = {
   ...RowCenterStyle,
-  marginBottom: 46,
+  marginBottom: 16,
 };
 
 const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[] => {

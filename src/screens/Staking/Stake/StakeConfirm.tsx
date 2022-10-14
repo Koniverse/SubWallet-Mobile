@@ -43,6 +43,7 @@ const RowCenterStyle: StyleProp<ViewStyle> = {
 const IconContainerStyle: StyleProp<ViewStyle> = {
   ...RowCenterStyle,
   marginTop: 46,
+  marginBottom: 16,
 };
 
 const BalanceContainerStyle: StyleProp<ViewStyle> = {

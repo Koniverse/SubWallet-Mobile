@@ -60,6 +60,7 @@ const RowCenterStyle: StyleProp<ViewStyle> = {
 const IconContainerStyle: StyleProp<ViewStyle> = {
   ...RowCenterStyle,
   marginTop: 46,
+  marginBottom: 16,
 };
 
 const BalanceContainerStyle: StyleProp<ViewStyle> = {
@@ -216,7 +217,6 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
       unstakeAll: isAmountEqualAll,
     })
       .then(resp => {
-        console.log(resp);
         navigation.navigate('UnStakeAction', {
           screen: 'UnStakeAuth',
           params: {
