@@ -6,23 +6,22 @@ import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import { StakingDataType } from 'hooks/types';
-import { Plus } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { HomeNavigationProps } from 'routes/home';
+import { RootNavigationProps } from 'routes/index';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
+import { getStakingInputValueStyle } from 'utils/text';
 import useGoHome from 'hooks/screen/useGoHome';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
-  ...ContainerHorizontalPadding,
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
@@ -34,7 +33,6 @@ const ScrollViewStyle: StyleProp<ViewStyle> = {
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
-  paddingTop: 24,
 };
 
 const CenterWrapperStyle: StyleProp<ViewStyle> = {
@@ -67,12 +65,6 @@ const BalanceConvertedContainerStyle: StyleProp<ViewStyle> = {
   marginBottom: 24,
 };
 
-const BalanceTextStyle: StyleProp<TextStyle> = {
-  ...FontBold,
-  fontSize: 40,
-  lineHeight: 56,
-};
-
 const BalanceConvertedTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
@@ -83,9 +75,10 @@ const StakingDetail = ({
   route: {
     params: { networkKey },
   },
+  navigation: { goBack },
 }: StakingBalanceDetailProps) => {
-  const navigation = useNavigation<HomeNavigationProps>();
-  const goHome = useGoHome('Staking');
+  const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome({ screen: 'Staking' });
   const isFocused = useIsFocused();
   const isAllAccount = useIsAccountAll();
 
@@ -110,17 +103,14 @@ const StakingDetail = ({
     setVisible(false);
   }, []);
 
-  const handleGoBack = useCallback(() => {
-    navigation.navigate('Staking', {
-      screen: 'StakingBalances',
-    });
-  }, [navigation]);
-
-  const handlePressStartStaking = useCallback(() => {
-    navigation.navigate('Staking', {
-      screen: 'StakingValidators',
+  const handleStakeMore = useCallback(() => {
+    navigation.navigate('Home', {
+      screen: 'Staking',
       params: {
-        networkKey: networkKey,
+        screen: 'StakingValidators',
+        params: {
+          networkKey: networkKey,
+        },
       },
     });
   }, [navigation, networkKey]);
@@ -145,20 +135,22 @@ const StakingDetail = ({
     return <></>;
   }
 
+  const balanceValueForStyle = staking.balance ? parseFloat(staking.balance).toFixed(2).toString() : '0';
+
   return (
     <ContainerWithSubHeader
-      onPressBack={handleGoBack}
-      title={i18n.title.staking}
-      rightIcon={!isAllAccount ? Plus : undefined}
-      onPressRightIcon={!isAllAccount ? handlePressStartStaking : undefined}>
+      onPressBack={goBack}
+      title={i18n.title.stakingDetail}
+      rightButtonTitle={!isAllAccount ? i18n.stakingScreen.stakingDetail.actions.more : undefined}
+      onPressRightIcon={!isAllAccount ? openModal : undefined}>
       <View style={WrapperStyle}>
-        <ScrollView style={ScrollViewStyle}>
-          <View style={CenterWrapperStyle}>
+        <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
+          <View style={[CenterWrapperStyle, { paddingTop: 24 }]}>
             <View style={ImageContentStyle}>{getNetworkLogo(staking.chainId, 32)}</View>
           </View>
           <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
             <BalanceVal
-              balanceValTextStyle={BalanceTextStyle}
+              balanceValTextStyle={getStakingInputValueStyle(balanceValueForStyle)}
               // symbolTextStyle={BalanceSymbolTextStyle}
               symbol={staking.nativeToken}
               withComma={true}
@@ -215,9 +207,9 @@ const StakingDetail = ({
         </ScrollView>
         {!isAllAccount && (
           <SubmitButton
-            style={{ marginTop: 16 }}
-            title={i18n.stakingScreen.stakingDetail.moreActions}
-            onPress={openModal}
+            style={{ marginTop: 16, marginHorizontal: 16 }}
+            title={i18n.stakingScreen.stakingDetail.actions.stake}
+            onPress={handleStakeMore}
           />
         )}
         <StakingActionModal closeModal={closeModal} visible={visible} data={data} />

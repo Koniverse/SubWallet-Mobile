@@ -20,6 +20,7 @@ import {
   ScrollViewStyle,
 } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { getStakeWithdrawalTxInfo, submitStakeWithdrawal } from '../../../messaging';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
@@ -34,6 +35,7 @@ const ActionContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   alignItems: 'center',
   marginHorizontal: -4,
+  paddingTop: 16,
   ...MarginBottomForSubmitButton,
 };
 
@@ -42,7 +44,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) => {
+const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack } }: WithdrawAuthProps) => {
   const { withdrawAmount: amount, networkKey, selectedAccount, nextWithdrawalAction, targetValidator } = withdrawParams;
 
   const navigation = useNavigation<RootNavigationProps>();
@@ -64,10 +66,6 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
     return [res[0], res[1]];
   }, [feeString]);
 
-  const totalString = useMemo((): string => {
-    return `${amount} ${selectedToken} + ${feeString}`;
-  }, [amount, feeString, selectedToken]);
-
   const handleOpen = useCallback(() => {
     setVisible(true);
   }, []);
@@ -76,25 +74,10 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
     setVisible(false);
   }, []);
 
-  const goBack = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
-
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
-      if (balanceError) {
-        setError('Your balance is too low to cover fees');
-        setLoading(false);
-      }
-
-      if (data.passwordError) {
-        setError(data.passwordError);
-        setLoading(false);
-      }
-
-      if (data.txError) {
-        setError('Encountered an error, please try again.');
-        setLoading(false);
+      const stop = handleBasicTxResponse(data, balanceError, setError, setLoading);
+      if (stop) {
         return;
       }
 
@@ -190,19 +173,13 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
                   showRightIcon={false}
                 />
               )}
-              <AddressField
-                address={selectedAccount}
-                label={i18n.common.account}
-                showRightIcon={false}
-                networkPrefix={network.ss58Format}
-              />
+              <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
               <BalanceField
                 value={amount.toString()}
                 decimal={0}
                 token={selectedToken}
                 si={formatBalance.findSi('-')}
                 label={i18n.withdrawStakeAction.withdrawAmount}
-                color={ColorMap.light}
               />
               <BalanceField
                 value={fee}
@@ -211,7 +188,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams } }: WithdrawAuthProps) 
                 si={formatBalance.findSi('-')}
                 label={i18n.withdrawStakeAction.withdrawFee}
               />
-              <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
+              <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />

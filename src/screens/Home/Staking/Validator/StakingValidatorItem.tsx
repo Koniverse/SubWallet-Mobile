@@ -108,15 +108,13 @@ const AvatarContainerStyle: StyleProp<ViewStyle> = {
   height: 24,
   borderRadius: 24,
   borderColor: ColorMap.secondary,
-  padding: 2,
-  borderWidth: 2,
   backgroundColor: ColorMap.dark,
 };
 
 const AvatarImageStyle: StyleProp<ImageStyle> = {
-  width: 16,
-  height: 16,
-  borderRadius: 16,
+  width: 24,
+  height: 24,
+  borderRadius: 24,
 };
 
 const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }: Props) => {
@@ -149,7 +147,7 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
             </View>
           ) : (
             <View>
-              <SubWalletAvatar size={16} address={address} />
+              <SubWalletAvatar size={24} address={address} />
             </View>
           )}
           <View style={ValidatorInfoContentStyle}>

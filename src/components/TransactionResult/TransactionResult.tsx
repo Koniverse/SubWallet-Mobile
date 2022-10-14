@@ -1,6 +1,6 @@
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Image, ImageStyle, Linking, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { SubmitButton } from 'components/SubmitButton';
@@ -14,7 +14,7 @@ import {
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
-import {ContainerWithSubHeader} from 'components/ContainerWithSubHeader';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
 interface Props {
   isTxSuccess: boolean;
@@ -24,6 +24,7 @@ interface Props {
   backToHome: () => void;
   handleResend?: () => void;
   resendText?: string;
+  moonNetworkEnable?: boolean;
   success: {
     title: string;
     subText: string;
@@ -105,10 +106,14 @@ const TransactionResult = ({
   extrinsicHash,
   success,
   fail,
+  moonNetworkEnable = false,
   resendText = i18n.common.resend,
 }: Props) => {
   const scanExplorerTxUrl = useScanExplorerTxUrl(networkKey, extrinsicHash);
   const isSupportScanExplorer = useSupportScanExplorer(networkKey);
+  const isSupportMoonNetwork = useMemo((): boolean => {
+    return !moonNetworkEnable ? !['moonbeam', 'moonriver', 'moonbase'].includes(networkKey) : true;
+  }, [moonNetworkEnable, networkKey]);
 
   const openUrl = useCallback(() => {
     Linking.openURL(scanExplorerTxUrl);
@@ -143,7 +148,7 @@ const TransactionResult = ({
                 style={ButtonStyle}
               />
               <SubmitButton
-                disabled={!isSupportScanExplorer || !scanExplorerTxUrl}
+                disabled={!isSupportScanExplorer || !scanExplorerTxUrl || !isSupportMoonNetwork}
                 title={i18n.common.viewTransaction}
                 onPress={openUrl}
                 style={MarginBottomForSubmitButton}

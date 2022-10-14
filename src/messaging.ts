@@ -34,6 +34,7 @@ import {
   BondingSubmitParams,
   ChainBondingBasics,
   ChainRegistry,
+  CheckExistingTuringCompoundParams,
   ConfirmationDefinitions,
   ConfirmationsQueue,
   ConfirmationType,
@@ -46,6 +47,7 @@ import {
   EvmNftSubmitTransaction,
   EvmNftTransaction,
   EvmNftTransactionRequest,
+  ExistingTuringCompoundTask,
   EvmTokenJson,
   NetworkJson,
   NftCollection,
@@ -96,9 +98,12 @@ import {
   ThemeTypes,
   TransactionHistoryItemType,
   TransferError,
+  TuringStakeCompoundParams,
+  TuringStakeCompoundResp,
   UnbondingSubmitParams,
   ValidateEvmTokenRequest,
   ValidateNetworkResponse,
+  TuringCancelStakeCompoundParams,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
@@ -1074,4 +1079,36 @@ export async function stopSubscriptionServices(request: SubscriptionServiceType[
 
 export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
   return sendMessage('mobile(subscription.restart)', request);
+}
+
+export async function getTuringStakeCompoundTxInfo(
+  request: TuringStakeCompoundParams,
+): Promise<TuringStakeCompoundResp> {
+  return sendMessage('pri(staking.turingCompound)', request);
+}
+
+export async function submitTuringStakeCompounding(
+  request: TuringStakeCompoundParams,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(staking.submitTuringCompound)', request, callback);
+}
+
+export async function checkTuringStakeCompounding(
+  request: CheckExistingTuringCompoundParams,
+): Promise<ExistingTuringCompoundTask> {
+  return sendMessage('pri(staking.checkTuringCompoundTask)', request);
+}
+
+export async function getTuringCancelStakeCompoundTxInfo(
+  params: TuringCancelStakeCompoundParams,
+): Promise<BasicTxInfo> {
+  return sendMessage('pri(staking.turingCancelCompound)', params);
+}
+
+export async function submitTuringCancelStakeCompounding(
+  params: TuringCancelStakeCompoundParams,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(staking.submitTuringCancelCompound)', params, callback);
 }

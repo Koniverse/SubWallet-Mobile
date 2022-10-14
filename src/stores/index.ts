@@ -41,6 +41,8 @@ const persistConfig = {
     'authUrls',
     'browser',
     'staking',
+    'stakeUnlockingInfo',
+    'stakingReward',
   ],
 };
 

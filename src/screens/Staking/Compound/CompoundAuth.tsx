@@ -11,18 +11,19 @@ import { SubmitButton } from 'components/SubmitButton';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import moment from 'moment';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
-import { UnStakeAuthProps } from 'routes/staking/unStakeAction';
+import { CompoundAuthProps } from 'routes/staking/compoundAction';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
-import { getBalanceWithSi, toShort } from 'utils/index';
+import { toShort } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { submitUnbonding } from '../../../messaging';
-import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { submitTuringStakeCompounding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -44,13 +45,24 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const UnStakeAuth = ({
+const CompoundAuth = ({
   route: {
-    params: { unStakeParams, feeString, amount: rawAmount, validator, balanceError, unstakeAll, amountSi },
+    params: {
+      compoundParams,
+      feeString,
+      compoundFee: compoundString,
+      validator,
+      balanceError,
+      si,
+      initTime,
+      optimalTime,
+      bondedAmount,
+      accountMinimum,
+    },
   },
   navigation: { goBack },
-}: UnStakeAuthProps) => {
-  const { networkKey, selectedAccount } = unStakeParams;
+}: CompoundAuthProps) => {
+  const { networkKey, selectedAccount } = compoundParams;
 
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -60,26 +72,20 @@ const UnStakeAuth = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  useHandlerHardwareBackPress(loading);
-  const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
-  const amount = useMemo(
-    (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
-    [network.decimals, rawAmount],
-  );
 
-  const [amountValue, amountToken] = useMemo(
-    (): [string, string] => getBalanceWithSi(rawAmount.toString(), network.decimals || 0, amountSi, selectedToken),
-    [amountSi, network.decimals, rawAmount, selectedToken],
-  );
+  useHandlerHardwareBackPress(loading);
+
+  const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];
   }, [feeString]);
 
-  const totalString = useMemo((): string => {
-    return `${amountValue} ${amountToken} + ${feeString}`;
-  }, [amountValue, amountToken, feeString]);
+  const [compoundFee, compoundFeeToken] = useMemo((): [string, string] => {
+    const res = compoundString.split(' ');
+    return [res[0], res[1]];
+  }, [compoundString]);
 
   const handleOpen = useCallback(() => {
     setVisible(true);
@@ -106,10 +112,10 @@ const UnStakeAuth = ({
         setVisible(false);
 
         if (data.status) {
-          navigation.navigate('UnStakeAction', {
-            screen: 'UnStakeResult',
+          navigation.navigate('CompoundStakeAction', {
+            screen: 'CompoundResult',
             params: {
-              unStakeParams: unStakeParams,
+              compoundParams: compoundParams,
               txParams: {
                 txError: '',
                 extrinsicHash: data.transactionHash as string,
@@ -118,10 +124,10 @@ const UnStakeAuth = ({
             },
           });
         } else {
-          navigation.navigate('UnStakeAction', {
-            screen: 'UnStakeResult',
+          navigation.navigate('CompoundStakeAction', {
+            screen: 'CompoundResult',
             params: {
-              unStakeParams: unStakeParams,
+              compoundParams: compoundParams,
               txParams: {
                 txError: 'Error submitting transaction',
                 extrinsicHash: data.transactionHash as string,
@@ -132,35 +138,38 @@ const UnStakeAuth = ({
         }
       }
     },
-    [balanceError, navigation, unStakeParams],
+    [balanceError, compoundParams, navigation],
   );
 
   const onSubmit = useCallback(
     (password: string) => {
       setLoading(true);
-      submitUnbonding(
+      const _minimum = new BigN(accountMinimum).div(BN_TEN.pow(network.decimals || 0)).toString();
+      submitTuringStakeCompounding(
         {
-          networkKey: networkKey,
           address: selectedAccount,
-          amount: amount,
+          accountMinimum: _minimum,
           password: password,
-          unstakeAll: unstakeAll,
-          validatorAddress: validator,
+          collatorAddress: validator,
+          networkKey: networkKey,
+          bondedAmount: bondedAmount,
         },
         handleResponse,
-      ).catch(e => {
-        console.log(e);
-        setError((e as Error).message);
-        setLoading(false);
-      });
+      )
+        .then(handleResponse)
+        .catch(e => {
+          console.log(e);
+          setError((e as Error).message);
+          setLoading(false);
+        });
     },
-    [amount, validator, handleResponse, networkKey, selectedAccount, unstakeAll],
+    [accountMinimum, bondedAmount, handleResponse, network.decimals, networkKey, selectedAccount, validator],
   );
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.unStakeAction}
+      title={i18n.title.compoundStakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
@@ -168,20 +177,37 @@ const UnStakeAuth = ({
           {!!validator && <TextField text={toShort(validator)} label={validatorLabel} disabled={true} />}
           <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
           <BalanceField
-            value={rawAmount.toString()}
+            value={accountMinimum}
             decimal={network.decimals || 0}
             token={selectedToken}
-            si={amountSi}
-            label={i18n.unStakeAction.unStakingAmount}
+            si={si}
+            label={i18n.compoundStakeAction.compoundingThreshold}
+          />
+          <TextField
+            text={`About ${moment.duration(initTime, 'days').humanize()}`}
+            label={i18n.compoundStakeAction.compoundingStartIn}
+            disabled={true}
+          />
+          <TextField
+            text={moment.duration(optimalTime, 'days').humanize()}
+            label={i18n.compoundStakeAction.optimalCompoundingTime}
+            disabled={true}
           />
           <BalanceField
             value={fee}
             decimal={0}
             token={feeToken}
             si={formatBalance.findSi('-')}
-            label={i18n.unStakeAction.unStakingFee}
+            label={i18n.compoundStakeAction.transactionFee}
           />
-          <TextField text={totalString} label={i18n.unStakeAction.total} disabled={true} />
+          <BalanceField
+            value={compoundFee}
+            decimal={0}
+            token={compoundFeeToken}
+            si={formatBalance.findSi('-')}
+            label={i18n.compoundStakeAction.compoundingFee}
+          />
+          <TextField text={`${compoundString} + ${feeString}`} label={i18n.unStakeAction.total} disabled={true} />
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -210,4 +236,4 @@ const UnStakeAuth = ({
   );
 };
 
-export default React.memo(UnStakeAuth);
+export default React.memo(CompoundAuth);

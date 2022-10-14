@@ -5,12 +5,13 @@ import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { BalanceToUsd } from 'components/BalanceToUsd';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { CollatorField } from 'components/Field/Collator';
 import FormatBalance from 'components/FormatBalance';
 import { InputBalance } from 'components/Input/InputBalance';
 import { SubmitButton } from 'components/SubmitButton';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { createRef, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -22,38 +23,44 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
-import { HomeNavigationProps } from 'routes/home';
+import {
+  ConfirmUnStakeActionName,
+  confirmUnStakeReducer,
+  DEFAULT_CONFIRM_UN_STAKE_STATE,
+} from 'reducers/staking/confirmUnStake';
 import { RootNavigationProps } from 'routes/index';
 import { UnStakeConfirmProps } from 'routes/staking/unStakeAction';
-import { getBalanceFormat } from 'screens/Sending/utils';
-import CollatorSelectModal from 'screens/Staking/UnStake/CollatorSelectModal';
-import { RootState } from 'stores/index';
+import DelegationSelectModal from 'components/Modal/DelegationSelectModal';
 import { ColorMap } from 'styles/color';
 import {
-  centerStyle,
   ContainerHorizontalPadding,
   FontMedium,
   MarginBottomForSubmitButton,
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
-import { BalanceFormatType } from 'types/ui-types';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { CHAIN_TYPE_MAP } from 'constants/stakingScreen';
 import { getStakeDelegationInfo, getUnbondingTxInfo } from '../../../messaging';
+import DelegationBriefInfo from 'components/Staking/DelegationBriefInfo';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
-  paddingTop: 16,
   flex: 1,
+  paddingTop: 24,
 };
 
 const RowCenterStyle: StyleProp<ViewStyle> = {
   justifyContent: 'center',
   display: 'flex',
   flexDirection: 'row',
+};
+
+const IconContainerStyle: StyleProp<ViewStyle> = {
+  ...RowCenterStyle,
+  marginTop: 46,
+  marginBottom: 16,
 };
 
 const BalanceContainerStyle: StyleProp<ViewStyle> = {
@@ -84,27 +91,25 @@ const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[]
   return delegations.filter(item => parseFloat(item.amount) > 0);
 };
 
-const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProps) => {
+const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack } }: UnStakeConfirmProps) => {
   const { networkKey, selectedAccount, bondedAmount } = unStakeParams;
 
   const toast = useToast();
 
-  const homeNavigation = useNavigation<HomeNavigationProps>();
-  const rootNavigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
 
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
-  const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
   const network = useGetNetworkJson(networkKey);
 
   const inputBalanceRef = createRef();
 
-  const [isDataReady, setIsDataReady] = useState(false);
-  const [isValidValidator, setIsValidValidator] = useState(true);
-  const [delegations, setDelegations] = useState<DelegationItem[] | undefined>(undefined);
-  const [selectedValidator, setSelectedValidator] = useState<string>('');
-  const [nominatedAmount, setNominatedAmount] = useState<string>('0');
-  const [minBond, setMinBond] = useState<string>('0');
   const [visible, setVisible] = useState(false);
+
+  const [confirmUnStakeState, dispatchConfirmUnStakeState] = useReducer(confirmUnStakeReducer, {
+    ...DEFAULT_CONFIRM_UN_STAKE_STATE,
+  });
+
+  const { delegations, selectedDelegation, nominatedAmount, minBond, isDataReady, isValidValidator } =
+    confirmUnStakeState;
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
@@ -120,25 +125,11 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
   const [rawAmount, setRawAmount] = useState<number>(-1);
   const [loading, setLoading] = useState(false);
 
-  const selectedCollator = useMemo((): DelegationItem | undefined => {
-    return delegations?.find(i => i.owner === selectedValidator);
-  }, [delegations, selectedValidator]);
+  const selectedValidator = useMemo((): DelegationItem | undefined => {
+    return delegations?.find(i => i.owner === selectedDelegation);
+  }, [delegations, selectedDelegation]);
 
-  const balanceFormat = useMemo((): BalanceFormatType => {
-    return getBalanceFormat(networkKey, selectedToken, chainRegistry);
-  }, [chainRegistry, networkKey, selectedToken]);
-
-  const tokenPrice = useMemo(
-    (): number => tokenPriceMap[selectedToken.toLowerCase()] || 0,
-    [selectedToken, tokenPriceMap],
-  );
-
-  const reformatAmount = useMemo(
-    (): BigN => new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0])),
-    [balanceFormat, rawAmount],
-  );
-
-  const amountToUsd = useMemo(() => reformatAmount.multipliedBy(new BigN(tokenPrice)), [reformatAmount, tokenPrice]);
+  const { reformatAmount, amountToUsd, balanceFormat } = useGetAmountInfo(rawAmount, networkKey);
 
   const isReadySubmit = useMemo((): boolean => {
     const _rawAmount = rawAmount / 10 ** (network.decimals as number);
@@ -152,11 +143,11 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
         if (_rawAmount > 0) {
           if (_nominatedAmount - _minBond <= 0) {
             toast.hideAll();
-            toast.show('You can only unstake everything');
+            toast.show(i18n.warningMessage.unStakeEverything);
           } else {
             toast.hideAll();
             toast.show(
-              `You can unstake everything or a maximum of ${(_nominatedAmount - _minBond).toFixed(2)} ${
+              `${i18n.warningMessage.unStakeEverythingOrMaxOf} ${(_nominatedAmount - _minBond).toFixed(2)} ${
                 network.nativeToken as string
               }`,
             );
@@ -170,7 +161,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
       } else {
         if (_rawAmount > bondedAmount) {
           toast.hideAll();
-          toast.show(`You can unstake a maximum of ${bondedAmount} ${network.nativeToken as string}`);
+          toast.show(`${i18n.warningMessage.unStakeMaxOf} ${bondedAmount} ${network.nativeToken as string}`);
         }
         return false;
       }
@@ -204,33 +195,14 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
     setVisible(false);
   }, []);
 
-  const onSelectCollator = useCallback(
-    (val: string) => {
-      if (delegations) {
-        for (const item of delegations) {
-          if (item.owner === val) {
-            setSelectedValidator(val);
-            setNominatedAmount(item.amount);
-            setMinBond(item.minBond);
-
-            if (!item.hasScheduledRequest) {
-              setIsValidValidator(true);
-            } else {
-              toast.show('Please withdraw the unstaking amount first');
-              setIsValidValidator(false);
-            }
-
-            break;
-          }
-        }
-      }
-    },
-    [delegations, toast],
-  );
-
-  const goBack = useCallback(() => {
-    homeNavigation.navigate('Staking');
-  }, [homeNavigation]);
+  const onSelectCollator = useCallback((val: string) => {
+    dispatchConfirmUnStakeState({
+      type: ConfirmUnStakeActionName.SELECT_DELEGATION,
+      payload: {
+        selectedDelegation: val,
+      },
+    });
+  }, []);
 
   const onContinue = useCallback(() => {
     setLoading(true);
@@ -239,84 +211,124 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
 
     getUnbondingTxInfo({
       address: selectedAccount,
-      amount: rawAmount,
+      amount: reformatAmount,
       networkKey: networkKey,
-      validatorAddress: selectedValidator,
+      validatorAddress: selectedDelegation,
       unstakeAll: isAmountEqualAll,
     })
       .then(resp => {
-        rootNavigation.navigate('UnStakeAction', {
+        navigation.navigate('UnStakeAction', {
           screen: 'UnStakeAuth',
           params: {
             unStakeParams: unStakeParams,
             feeString: resp.fee,
             amount: rawAmount,
             balanceError: resp.balanceError,
-            collator: selectedValidator,
+            validator: selectedDelegation,
             unstakeAll: isAmountEqualAll,
+            amountSi: si,
           },
         });
         setLoading(false);
       })
       .catch(console.error);
-  }, [maxUnBoned, networkKey, rawAmount, rootNavigation, selectedAccount, selectedValidator, unStakeParams]);
+  }, [
+    rawAmount,
+    maxUnBoned,
+    selectedAccount,
+    reformatAmount,
+    networkKey,
+    selectedDelegation,
+    navigation,
+    unStakeParams,
+    si,
+  ]);
 
   useEffect(() => {
-    if (CHAIN_TYPE_MAP.astar.includes(networkKey) || CHAIN_TYPE_MAP.para.includes(networkKey)) {
-      getStakeDelegationInfo({
-        address: selectedAccount,
-        networkKey: networkKey,
-      })
-        .then(result => {
-          const filteredDelegations = filterValidDelegations(result);
-
-          setSelectedValidator(filteredDelegations[0].owner);
-          setNominatedAmount(filteredDelegations[0].amount);
-          setMinBond(filteredDelegations[0].minBond);
-          setDelegations(filteredDelegations);
-
-          if (filteredDelegations[0].hasScheduledRequest) {
-            setIsValidValidator(false);
-          }
-          setIsDataReady(true);
+    let amount = true;
+    if (amount) {
+      if (CHAIN_TYPE_MAP.astar.includes(networkKey) || CHAIN_TYPE_MAP.para.includes(networkKey)) {
+        getStakeDelegationInfo({
+          address: selectedAccount,
+          networkKey: networkKey,
         })
-        .catch(console.error);
-    } else {
-      setIsDataReady(true);
+          .then(result => {
+            if (amount) {
+              const filteredDelegations = filterValidDelegations(result);
+              dispatchConfirmUnStakeState({
+                type: ConfirmUnStakeActionName.CHANGE_DELEGATIONS,
+                payload: {
+                  selectedDelegation: filteredDelegations[0].owner,
+                  isDataReady: true,
+                  minBond: filteredDelegations[0].minBond,
+                  delegations: filteredDelegations,
+                  nominatedAmount: filteredDelegations[0].amount,
+                  isValidValidator: !filteredDelegations[0].hasScheduledRequest,
+                },
+              });
+            }
+          })
+          .catch(console.error);
+      } else {
+        dispatchConfirmUnStakeState({
+          type: ConfirmUnStakeActionName.CHANGE_DELEGATIONS,
+          payload: {
+            isDataReady: true,
+          },
+        });
+      }
     }
 
     return () => {
-      setDelegations(undefined);
-      setIsDataReady(false);
+      amount = false;
+      dispatchConfirmUnStakeState({
+        type: ConfirmUnStakeActionName.REFRESH_DELEGATIONS,
+        payload: null,
+      });
     };
   }, [selectedAccount, networkKey]);
+
+  useEffect(() => {
+    if (!isValidValidator) {
+      toast.hideAll();
+      toast.show(i18n.warningMessage.withdrawUnStakingFirst);
+    }
+
+    return () => {};
+  }, [isValidValidator, toast]);
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
       title={i18n.title.unStakeAction}
       rightButtonTitle={i18n.common.cancel}
+      disabled={loading}
+      disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView
           style={{ ...ScrollViewStyle }}
-          contentContainerStyle={!isDataReady ? { ...centerStyle } : undefined}>
+          contentContainerStyle={{ flex: 1, justifyContent: !isDataReady ? 'center' : undefined }}>
           {isDataReady ? (
             <>
-              {delegations && selectedCollator && (
-                <TouchableOpacity onPress={openModal}>
-                  <CollatorField collator={selectedCollator} label={i18n.unStakeAction.collator} />
-                </TouchableOpacity>
+              {delegations && selectedValidator && (
+                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
               )}
               {delegations && (
-                <CollatorSelectModal
+                <DelegationSelectModal
                   delegations={delegations}
                   modalVisible={visible}
                   onChangeModalVisible={closeModal}
                   onChangeValue={onSelectCollator}
-                  selectedItem={selectedValidator}
+                  selectedItem={selectedDelegation}
+                  networkKey={networkKey}
                 />
               )}
+              <View style={IconContainerStyle}>
+                <View>
+                  <SubWalletAvatar size={40} address={selectedAccount} />
+                </View>
+              </View>
               <InputBalance
                 placeholder={'0'}
                 si={si}
@@ -326,9 +338,10 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
                 decimals={balanceFormat[0]}
                 ref={inputBalanceRef}
                 siSymbol={selectedToken}
+                disable={loading}
               />
               <View style={RowCenterStyle}>
-                {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
+                {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
               </View>
             </>
           ) : (
@@ -338,11 +351,11 @@ const UnStakeConfirm = ({ route: { params: unStakeParams } }: UnStakeConfirmProp
         <View>
           <View style={BalanceContainerStyle}>
             <View style={TransferableContainerStyle}>
-              <Text style={TransferableTextStyle}>{i18n.common.maxUnBond}:&nbsp;</Text>
+              <Text style={TransferableTextStyle}>{i18n.common.activeStaking}:&nbsp;</Text>
               <FormatBalance format={balanceFormat} value={maxUnBoned} />
             </View>
 
-            <TouchableOpacity onPress={handlePressMax}>
+            <TouchableOpacity onPress={handlePressMax} disabled={loading}>
               <Text style={MaxTextStyle}>{i18n.common.max}</Text>
             </TouchableOpacity>
           </View>

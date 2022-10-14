@@ -139,9 +139,9 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
 
   const goToBrowserHome = useCallback(() => {
     if (navigation.canGoBack()) {
-      navigation.navigate('Home', { tab: 'Browser' });
+      navigation.navigate('Home', { screen: 'Browser' });
     } else {
-      navigation.replace('Home', { tab: 'Browser' });
+      navigation.replace('Home', { screen: 'Browser' });
     }
   }, [navigation]);
 

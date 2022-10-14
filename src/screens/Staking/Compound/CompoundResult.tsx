@@ -2,19 +2,20 @@ import TransactionResult from 'components/TransactionResult/TransactionResult';
 import useGoHome from 'hooks/screen/useGoHome';
 import usePreventNavigatorGoBack from 'hooks/usePreventNavigatorGoBack';
 import React, { useCallback } from 'react';
-import { ClaimResultProps } from 'routes/staking/claimAction';
+import { CompoundResultProps } from 'routes/staking/compoundAction';
 import i18n from 'utils/i18n/i18n';
 
-const ClaimResult = ({
+const CompoundResult = ({
   route: {
     params: {
-      claimParams,
+      compoundParams,
       txParams: { txError, txSuccess, extrinsicHash },
     },
   },
-  navigation,
-}: ClaimResultProps) => {
+  navigation: navigation,
+}: CompoundResultProps) => {
   usePreventNavigatorGoBack();
+
   const goHome = useGoHome({
     screen: 'Staking',
     params: {
@@ -23,27 +24,27 @@ const ClaimResult = ({
   });
 
   const goBack = useCallback(() => {
-    navigation.navigate('ClaimAuth', claimParams);
-  }, [claimParams, navigation]);
+    navigation.navigate('CompoundConfirm', compoundParams);
+  }, [navigation, compoundParams]);
 
   return (
     <TransactionResult
       isTxSuccess={txSuccess}
       txError={txError}
-      networkKey={claimParams.networkKey}
+      networkKey={compoundParams.networkKey}
       extrinsicHash={extrinsicHash}
       backToHome={goHome}
       success={{
-        title: i18n.claimStakeAction.success.title,
-        subText: i18n.claimStakeAction.success.subText,
+        title: i18n.compoundStakeAction.compound.success.title,
+        subText: i18n.compoundStakeAction.compound.success.subText,
       }}
       fail={{
-        title: i18n.claimStakeAction.fail.title,
-        subText: i18n.claimStakeAction.fail.subText,
+        title: i18n.compoundStakeAction.compound.fail.title,
+        subText: i18n.compoundStakeAction.compound.fail.subText,
       }}
       handleResend={goBack}
     />
   );
 };
 
-export default React.memo(ClaimResult);
+export default React.memo(CompoundResult);

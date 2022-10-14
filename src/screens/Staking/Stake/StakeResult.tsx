@@ -1,10 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
 import TransactionResult from 'components/TransactionResult/TransactionResult';
+import useGoHome from 'hooks/screen/useGoHome';
+import usePreventNavigatorGoBack from 'hooks/usePreventNavigatorGoBack';
 import React, { useCallback } from 'react';
-import { RootNavigationProps } from 'routes/index';
 import { StakeResultProps } from 'routes/staking/stakeAction';
 import i18n from 'utils/i18n/i18n';
-import useGoHome from 'hooks/screen/useGoHome';
 
 const StakeResult = ({
   route: {
@@ -13,12 +12,20 @@ const StakeResult = ({
       txParams: { txError, txSuccess, extrinsicHash },
     },
   },
+  navigation: navigation,
 }: StakeResultProps) => {
-  const navigation = useNavigation<RootNavigationProps>();
-  const goHome = useGoHome('Staking');
-  const handleReStake = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
+  usePreventNavigatorGoBack();
+
+  const goHome = useGoHome({
+    screen: 'Staking',
+    params: {
+      screen: 'StakingBalances',
+    },
+  });
+
+  const goBack = useCallback(() => {
+    navigation.navigate('StakeConfirm', stakeParams);
+  }, [navigation, stakeParams]);
 
   return (
     <TransactionResult
@@ -35,7 +42,7 @@ const StakeResult = ({
         title: i18n.stakeAction.fail.title,
         subText: i18n.stakeAction.fail.subText,
       }}
-      handleResend={handleReStake}
+      handleResend={goBack}
     />
   );
 };

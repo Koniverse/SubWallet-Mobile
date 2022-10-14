@@ -8,9 +8,11 @@ export interface NetworkValidatorsInfo {
 }
 
 export type ValidatorSortBy = 'Default' | 'Commission' | 'Return';
+export type ValidatorType = 'Validator' | 'Collator' | 'DApp' | 'Unknown';
 
 export interface StakeParams {
   networkKey: string;
+  selectedAccount: string;
   validator: ValidatorInfo;
   networkValidatorsInfo: NetworkValidatorsInfo;
 }
@@ -30,6 +32,11 @@ export interface WithdrawParams {
 }
 
 export interface ClaimParams {
+  networkKey: string;
+  selectedAccount: string;
+}
+
+export interface CompoundParams {
   networkKey: string;
   selectedAccount: string;
 }
