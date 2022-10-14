@@ -294,6 +294,8 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
       onPressBack={goBack}
       title={i18n.title.compoundStakeAction}
       rightButtonTitle={i18n.common.cancel}
+      disabled={loading}
+      disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView
@@ -307,7 +309,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
                 </View>
               </View>
               {delegations && selectedValidator && (
-                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} />
+                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
               )}
               {delegations && (
                 <DelegationSelectModal
@@ -354,6 +356,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
                           decimals={balanceFormat[0]}
                           ref={inputBalanceRef}
                           siSymbol={selectedToken}
+                          disable={loading}
                         />
                         <View style={RowCenterStyle}>
                           {!!reformatAmount && (

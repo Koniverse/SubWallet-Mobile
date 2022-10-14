@@ -132,7 +132,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
           targetValidator: validatorAddress,
         },
       });
-    } else {
+    } else if (unlockingBalance && parseFloat(unlockingBalance) !== 0) {
       if (toastRef.current) {
         toastRef.current.hideAll();
         toastRef.current.show(withdrawNote);

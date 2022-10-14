@@ -245,10 +245,12 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       onPressBack={goBack}
       title={i18n.title.stakeAction}
       rightButtonTitle={i18n.common.cancel}
+      disabled={loading}
+      disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
-          <ValidatorBriefInfo validator={validator} onPress={handleOpenValidatorDetail} />
+          <ValidatorBriefInfo validator={validator} onPress={handleOpenValidatorDetail} disable={loading} />
           <View style={IconContainerStyle}>
             <View>
               <SubWalletAvatar size={40} address={selectedAccount} />
@@ -263,6 +265,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
             decimals={balanceFormat[0]}
             ref={inputBalanceRef}
             siSymbol={selectedToken}
+            disable={loading}
           />
           <View style={RowCenterStyle}>
             {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
@@ -276,7 +279,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
               <FormatBalance format={balanceFormat} value={senderFreeBalance} />
             </View>
 
-            <TouchableOpacity onPress={handlePressMax}>
+            <TouchableOpacity onPress={handlePressMax} disabled={loading}>
               <Text style={MaxTextStyle}>{i18n.common.max}</Text>
             </TouchableOpacity>
           </View>

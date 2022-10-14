@@ -302,6 +302,8 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
       onPressBack={goBack}
       title={i18n.title.unStakeAction}
       rightButtonTitle={i18n.common.cancel}
+      disabled={loading}
+      disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView
@@ -310,7 +312,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
           {isDataReady ? (
             <>
               {delegations && selectedValidator && (
-                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} />
+                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
               )}
               {delegations && (
                 <DelegationSelectModal
@@ -336,6 +338,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
                 decimals={balanceFormat[0]}
                 ref={inputBalanceRef}
                 siSymbol={selectedToken}
+                disable={loading}
               />
               <View style={RowCenterStyle}>
                 {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
@@ -352,7 +355,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
               <FormatBalance format={balanceFormat} value={maxUnBoned} />
             </View>
 
-            <TouchableOpacity onPress={handlePressMax}>
+            <TouchableOpacity onPress={handlePressMax} disabled={loading}>
               <Text style={MaxTextStyle}>{i18n.common.max}</Text>
             </TouchableOpacity>
           </View>

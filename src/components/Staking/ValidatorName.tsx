@@ -7,7 +7,6 @@ import { toShort } from 'utils/index';
 
 interface Props {
   validatorInfo: ValidatorInfo;
-  onlyVerifiedIcon?: boolean;
   isBonding?: boolean;
   textStyle: StyleProp<TextStyle>;
   iconSize?: number;
@@ -39,7 +38,6 @@ const IconStyle: StyleProp<ViewStyle> = {
 const ValidatorName = ({
   outerWrapperStyle,
   validatorInfo,
-  onlyVerifiedIcon = false,
   iconSize = 16,
   textStyle,
   iconColor = ColorMap.primary,
@@ -56,7 +54,7 @@ const ValidatorName = ({
       </View>
       <View style={ValidatorIconContainerStyle}>
         {isVerified && <CircleWavyCheck size={iconSize} color={iconColor} style={IconStyle} />}
-        {!onlyVerifiedIcon && isBonding && <Trophy size={iconSize} color={iconColor} style={IconStyle} />}
+        {isBonding && <Trophy size={iconSize} color={iconColor} style={IconStyle} />}
       </View>
     </View>
   );

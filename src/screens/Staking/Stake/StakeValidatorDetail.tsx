@@ -82,7 +82,6 @@ const StakeValidatorDetail = ({
         <View style={HeaderContentStyle}>
           <ValidatorName
             validatorInfo={validatorInfo}
-            onlyVerifiedIcon={true}
             textStyle={HeaderTextStyle}
             iconColor={ColorMap.primary}
             iconSize={20}

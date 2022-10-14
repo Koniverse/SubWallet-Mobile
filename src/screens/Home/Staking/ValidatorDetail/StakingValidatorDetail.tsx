@@ -129,7 +129,6 @@ const StakingValidatorDetail = ({
           <ValidatorName
             outerWrapperStyle={{ justifyContent: 'center' }}
             validatorInfo={validatorInfo}
-            onlyVerifiedIcon={true}
             textStyle={HeaderTextStyle}
             iconColor={ColorMap.primary}
             iconSize={20}

@@ -10,6 +10,7 @@ import { toShort } from 'utils/index';
 interface Props {
   validator: DelegationItem;
   onPress: () => void;
+  disable: boolean;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -73,13 +74,13 @@ const RightIconStyle: StyleProp<ViewStyle> = {
   paddingLeft: 8,
 };
 
-const DelegationBriefInfo = ({ validator, onPress }: Props) => {
+const DelegationBriefInfo = ({ validator, onPress, disable }: Props) => {
   const { identity, owner } = validator;
   // @ts-ignore
   const icon = validator.icon;
 
   return (
-    <TouchableOpacity style={WrapperStyle} onPress={onPress}>
+    <TouchableOpacity style={WrapperStyle} onPress={onPress} disabled={disable}>
       <View style={LeftPartStyle}>
         {icon ? (
           <View style={AvatarContainerStyle}>

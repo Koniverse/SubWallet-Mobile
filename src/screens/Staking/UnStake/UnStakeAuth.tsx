@@ -142,18 +142,19 @@ const UnStakeAuth = ({
         {
           networkKey: networkKey,
           address: selectedAccount,
-          amount: amount / 10 ** (network.decimals || 0),
-          password,
+          amount: amount,
+          password: password,
           unstakeAll: unstakeAll,
           validatorAddress: validator,
         },
         handleResponse,
       ).catch(e => {
         console.log(e);
+        setError((e as Error).message);
         setLoading(false);
       });
     },
-    [amount, validator, handleResponse, network.decimals, networkKey, selectedAccount, unstakeAll],
+    [amount, validator, handleResponse, networkKey, selectedAccount, unstakeAll],
   );
 
   return (

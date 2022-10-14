@@ -133,6 +133,7 @@ const CompoundAuth = ({
         .then(handleResponse)
         .catch(e => {
           console.log(e);
+          setError((e as Error).message);
           setLoading(false);
         });
     },

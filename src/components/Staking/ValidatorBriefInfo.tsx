@@ -12,6 +12,7 @@ import { CaretRight } from 'phosphor-react-native';
 interface Props {
   validator: ValidatorInfo;
   onPress?: () => void;
+  disable?: boolean;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -87,11 +88,11 @@ const RightIconStyle: StyleProp<ViewStyle> = {
   marginLeft: 8,
 };
 
-const ValidatorBriefInfo = ({ validator, onPress }: Props) => {
+const ValidatorBriefInfo = ({ validator, onPress, disable }: Props) => {
   const { icon, address, expectedReturn } = validator;
 
   return (
-    <TouchableOpacity style={WrapperStyle} onPress={onPress} disabled={!onPress}>
+    <TouchableOpacity style={WrapperStyle} onPress={onPress} disabled={!onPress || disable}>
       <View style={LeftPartStyle}>
         {icon ? (
           <View style={AvatarContainerStyle}>

@@ -125,6 +125,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         handleResponse,
       ).catch(e => {
         console.log(e);
+        setError((e as Error).message);
         setLoading(false);
       });
     },
@@ -155,6 +156,8 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
       onPressBack={goBack}
       title={i18n.title.claimStakeAction}
       rightButtonTitle={i18n.common.cancel}
+      disabled={loading}
+      disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
