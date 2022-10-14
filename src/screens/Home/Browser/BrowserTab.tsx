@@ -127,7 +127,7 @@ const InjectPageJsScript: InjectPageJsScriptType = {
       pageJsContent = await RNFS.readFileAssets('PageJs.bundle/page.js', 'ascii');
     }
 
-    this.content = pageJsContent + BridgeScript + DAppScript;
+    this.content = BridgeScript + pageJsContent + DAppScript;
 
     return this.content;
   },
