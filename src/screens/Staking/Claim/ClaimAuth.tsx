@@ -22,6 +22,7 @@ import {
 import i18n from 'utils/i18n/i18n';
 import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -56,7 +57,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
 
   const [isTxReady, setIsTxReady] = useState(false);
   const [balanceError, setBalanceError] = useState(false);
-
+  useHandlerHardwareBackPress(loading);
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];

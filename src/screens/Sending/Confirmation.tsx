@@ -18,6 +18,7 @@ import { SiDef } from '@polkadot/util/types';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 interface Props {
   requestPayload: RequestCheckTransfer;
@@ -59,6 +60,7 @@ export const Confirmation = ({
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
   const accountName = accounts.find(acc => acc.address === requestPayload.from)?.name;
+  useHandlerHardwareBackPress(isBusy);
   useEffect(() => {
     focus('password')();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,6 +68,11 @@ export const Confirmation = ({
 
   const _doTransfer = (formState: FormState): void => {
     const password = formState.data.password;
+    if (!password) {
+      onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
+      return;
+    }
+
     onChangeBusy(true);
 
     makeTransfer(

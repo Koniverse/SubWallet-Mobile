@@ -19,6 +19,7 @@ import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -55,6 +56,7 @@ const ImportEvmNft = () => {
   const [isValidName, setIsValidName] = useState(true);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
+  useHandlerHardwareBackPress(loading);
   const onBack = useCallback(() => {
     navigation.navigate('Home');
   }, [navigation]);
