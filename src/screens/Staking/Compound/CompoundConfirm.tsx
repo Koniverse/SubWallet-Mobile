@@ -28,6 +28,7 @@ import {
   MarginBottomForSubmitButton,
   ScrollViewStyle,
 } from 'styles/sharedStyles';
+import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import {
@@ -149,10 +150,11 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
 
   const handleCompound = useCallback(
     (selectedNetwork: string, address: string, minimum: string, validator: string, bondedAmount: string) => {
+      const _minimum = new BigN(minimum).div(BN_TEN.pow(network.decimals || 0)).toString();
       getTuringStakeCompoundTxInfo({
         networkKey: selectedNetwork,
         address: address,
-        accountMinimum: minimum,
+        accountMinimum: _minimum,
         collatorAddress: validator,
         bondedAmount,
       })
@@ -174,7 +176,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
         })
         .catch(console.error);
     },
-    [compoundParams, navigation, si],
+    [compoundParams, navigation, network.decimals, si],
   );
 
   const handleCancelCompound = useCallback(

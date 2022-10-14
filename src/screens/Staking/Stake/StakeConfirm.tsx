@@ -148,6 +148,13 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     validator.address,
   ]);
 
+  const handleOpenValidatorDetail = useCallback(() => {
+    navigation.navigate('StakeAction', {
+      screen: 'StakeValidatorDetail',
+      params: stakeParams,
+    });
+  }, [navigation, stakeParams]);
+
   const handlePressMax = useCallback(() => {
     getBondingTxInfo({
       networkKey: networkKey,
@@ -240,7 +247,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
-          <ValidatorBriefInfo validator={validator} onPress={goBack} />
+          <ValidatorBriefInfo validator={validator} onPress={handleOpenValidatorDetail} />
           <View style={IconContainerStyle}>
             <View>
               <SubWalletAvatar size={40} address={selectedAccount} />

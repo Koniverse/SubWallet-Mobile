@@ -86,6 +86,7 @@ const CompoundAuth = ({
 
       if (data.status) {
         setLoading(false);
+        setVisible(false);
 
         if (data.status) {
           navigation.navigate('CompoundStakeAction', {

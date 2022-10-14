@@ -15,6 +15,7 @@ export type StakeActionStackParamList = {
     stakeParams: StakeParams;
     txParams: TransactionResultParams;
   };
+  StakeValidatorDetail: StakeParams;
 };
 
 export type NavigationProps = NativeStackScreenProps<StakeActionStackParamList>;
@@ -23,3 +24,4 @@ export type StakeActionNavigationProps = NavigationProps['navigation'];
 export type StakeConfirmProps = NativeStackScreenProps<StakeActionStackParamList, 'StakeConfirm'>;
 export type StakeAuthProps = NativeStackScreenProps<StakeActionStackParamList, 'StakeAuth'>;
 export type StakeResultProps = NativeStackScreenProps<StakeActionStackParamList, 'StakeResult'>;
+export type StakeValidatorDetailProps = NativeStackScreenProps<StakeActionStackParamList, 'StakeValidatorDetail'>;

@@ -1,6 +1,7 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
 import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
@@ -18,6 +19,7 @@ import { RootNavigationProps } from 'routes/index';
 import { CompoundAuthProps } from 'routes/staking/compoundAction';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
@@ -107,6 +109,7 @@ const CompoundAuth = ({
 
       if (data.status) {
         setLoading(false);
+        setVisible(false);
 
         if (data.status) {
           navigation.navigate('CompoundStakeAction', {
@@ -141,10 +144,11 @@ const CompoundAuth = ({
   const onSubmit = useCallback(
     (password: string) => {
       setLoading(true);
+      const _minimum = new BigN(accountMinimum).div(BN_TEN.pow(network.decimals || 0)).toString();
       submitTuringStakeCompounding(
         {
           address: selectedAccount,
-          accountMinimum: accountMinimum,
+          accountMinimum: _minimum,
           password: password,
           collatorAddress: validator,
           networkKey: networkKey,
@@ -158,7 +162,7 @@ const CompoundAuth = ({
           setLoading(false);
         });
     },
-    [accountMinimum, bondedAmount, handleResponse, networkKey, selectedAccount, validator],
+    [accountMinimum, bondedAmount, handleResponse, network.decimals, networkKey, selectedAccount, validator],
   );
 
   return (
