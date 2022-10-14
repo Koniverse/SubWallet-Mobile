@@ -60,12 +60,14 @@ const HeaderWrapperStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'center',
   flex: 1,
+  paddingLeft: 40,
+  paddingRight: 40,
 };
 
 const HeaderContentStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'center',
-  paddingHorizontal: 52,
+  flex: 1,
 };
 
 const HeaderTextStyle: StyleProp<TextStyle> = {
@@ -125,6 +127,7 @@ const StakingValidatorDetail = ({
       <View style={HeaderWrapperStyle}>
         <View style={HeaderContentStyle}>
           <ValidatorName
+            outerWrapperStyle={{ justifyContent: 'center' }}
             validatorInfo={validatorInfo}
             onlyVerifiedIcon={true}
             textStyle={HeaderTextStyle}

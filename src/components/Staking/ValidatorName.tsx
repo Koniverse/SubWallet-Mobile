@@ -12,12 +12,14 @@ interface Props {
   textStyle: StyleProp<TextStyle>;
   iconSize?: number;
   iconColor?: string;
+  outerWrapperStyle?: StyleProp<any>;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
+  flex: 1,
 };
 
 const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
@@ -26,8 +28,6 @@ const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const ValidatorIconContainerStyle: StyleProp<ViewStyle> = {
-  flexGrow: 1,
-  flexShrink: 0,
   flexDirection: 'row',
   alignItems: 'center',
 };
@@ -37,6 +37,7 @@ const IconStyle: StyleProp<ViewStyle> = {
 };
 
 const ValidatorName = ({
+  outerWrapperStyle,
   validatorInfo,
   onlyVerifiedIcon = false,
   iconSize = 16,
@@ -47,7 +48,7 @@ const ValidatorName = ({
   const { identity, address, isVerified } = validatorInfo;
 
   return (
-    <View style={WrapperStyle}>
+    <View style={[WrapperStyle, outerWrapperStyle]}>
       <View style={ValidatorNameContainerStyle}>
         <Text style={textStyle} numberOfLines={1} ellipsizeMode={'middle'}>
           {identity ? identity : toShort(address)}
