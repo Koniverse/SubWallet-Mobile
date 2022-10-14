@@ -38,8 +38,6 @@ const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
 const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
   paddingLeft: 16,
   paddingRight: 8,
-  display: 'flex',
-  flexDirection: 'column',
   flex: 1,
 };
 
@@ -47,7 +45,6 @@ const NetworkNameStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mediumText,
   ...FontSemiBold,
   color: ColorMap.light,
-  paddingRight: 16,
 };
 
 const NetworkSubTextStyle: StyleProp<TextStyle> = {
@@ -57,11 +54,8 @@ const NetworkSubTextStyle: StyleProp<TextStyle> = {
 };
 
 const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'column',
   alignItems: 'flex-end',
   paddingLeft: 2,
-  flex: 2,
 };
 
 const BalanceTokenTextStyle: StyleProp<TextStyle> = {
