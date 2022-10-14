@@ -1,8 +1,9 @@
 import { Images } from 'assets/index';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { StyleProp, View, ActivityIndicator, ViewStyle, Image } from 'react-native';
+import { StyleProp, View, ActivityIndicator, ViewStyle, Image, Platform } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Video from 'react-native-video';
+import FastImage from 'react-native-fast-image';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
@@ -88,6 +89,8 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   );
   const { url, showImage, imageError, loading } = imageState;
 
+  console.log('imageState', imageState);
+
   const borderStyle = useMemo((): StyleProp<ViewStyle> => {
     if (borderRadius) {
       if (borderPlace) {
@@ -165,16 +168,27 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           onError={handleImageError}
         />
       ) : !imageError ? (
-        <Video
-          ref={videoRef}
-          resizeMode={'contain'}
-          source={{ uri: url }}
-          style={VideoStyle}
-          onError={handleVideoError}
-          onLoad={handleOnLoad}
-          repeat={true}
-          muted={true}
-        />
+        //TODO: find solution to make video work on Android device
+        Platform.OS === 'ios' ? (
+          <Video
+            ref={videoRef}
+            resizeMode={'contain'}
+            source={{ uri: url }}
+            style={VideoStyle}
+            onError={handleVideoError}
+            onLoad={handleOnLoad}
+            repeat={true}
+            muted={true}
+          />
+        ) : (
+          <FastImage
+            resizeMode={'contain'}
+            source={{ uri: url }}
+            style={VideoStyle}
+            onError={handleVideoError}
+            onLoad={handleOnLoad}
+          />
+        )
       ) : (
         <Image style={ImageStyle} source={Images.default} />
       )}
