@@ -110,6 +110,12 @@ const BridgeScript = `(function () {
   });
 })();`;
 
+const DAppScript = `(function () {
+    window.ethereum = window.SubWallet;
+    window.ethereum.isMetaMask = true;
+    window.injectedWeb3['polkadot-js'] = window.injectedWeb3['subwallet-js'];
+  })();`;
+
 const InjectPageJsScript: InjectPageJsScriptType = {
   content: null,
 
@@ -121,7 +127,7 @@ const InjectPageJsScript: InjectPageJsScriptType = {
       pageJsContent = await RNFS.readFileAssets('PageJs.bundle/page.js', 'ascii');
     }
 
-    this.content = BridgeScript + pageJsContent;
+    this.content = pageJsContent + BridgeScript + DAppScript;
 
     return this.content;
   },
