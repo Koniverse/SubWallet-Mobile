@@ -170,7 +170,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     getBondingTxInfo({
       networkKey: networkKey,
       nominatorAddress: selectedAccount,
-      amount: reformatAmount,
+      amount: 0,
       validatorInfo: validator,
       isBondedBefore,
       bondedValidators,
@@ -184,16 +184,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
         inputBalanceRef.current.onChange((balance - fee * 1.1).toString());
       }
     });
-  }, [
-    bondedValidators,
-    selectedAccount,
-    inputBalanceRef,
-    isBondedBefore,
-    networkKey,
-    reformatAmount,
-    senderFreeBalance,
-    validator,
-  ]);
+  }, [bondedValidators, selectedAccount, inputBalanceRef, isBondedBefore, networkKey, senderFreeBalance, validator]);
 
   const onChangeAmount = useCallback((value?: string) => {
     setBalanceError(false);
