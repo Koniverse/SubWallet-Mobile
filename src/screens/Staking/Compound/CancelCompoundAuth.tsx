@@ -143,7 +143,7 @@ const CompoundAuth = ({
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.compoundStakeAction}
+      title={i18n.title.cancelCompoundTask}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>

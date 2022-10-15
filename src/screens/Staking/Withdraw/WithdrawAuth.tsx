@@ -203,6 +203,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
           />
           <SubmitButton
             // isBusy={loading}
+            disabled={!isTxReady}
             title={i18n.common.continue}
             style={ButtonStyle}
             onPress={handleOpen}

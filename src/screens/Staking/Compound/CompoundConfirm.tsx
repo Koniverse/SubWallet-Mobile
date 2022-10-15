@@ -56,6 +56,10 @@ const IconContainerStyle: StyleProp<ViewStyle> = {
   marginBottom: 16,
 };
 
+const WarningStyle: StyleProp<ViewStyle> = {
+  marginBottom: 8,
+};
+
 const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[] => {
   return delegations.filter(item => parseFloat(item.amount) > 0);
 };
@@ -363,9 +367,6 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
                             <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />
                           )}
                         </View>
-                        {!!warningMessage && (
-                          <Warning title={i18n.warningTitle.warning} message={warningMessage} isDanger={false} />
-                        )}
                       </>
                     )}
                   </>
@@ -378,11 +379,14 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
             <ActivityIndicator animating={true} size={'large'} />
           )}
         </ScrollView>
+        {isCompoundReady && isDelegationReady && !!warningMessage && (
+          <Warning style={WarningStyle} message={warningMessage} isDanger />
+        )}
         <View>
           <SubmitButton
             disabled={isNextButtonDisabled || !isCompoundReady || !isDelegationReady}
             isBusy={loading}
-            title={i18n.common.continue}
+            title={hasCompoundRequest ? i18n.common.cancelTask : i18n.common.continue}
             style={{
               width: '100%',
               ...MarginBottomForSubmitButton,

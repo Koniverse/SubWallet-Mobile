@@ -71,6 +71,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const networkJson = useGetNetworkJson(networkKey);
 
+  const bondedAmount = useMemo((): number => parseFloat(activeBalance || '0'), [activeBalance]);
   const redeemable = useMemo((): number => unlockingInfo?.redeemable || 0, [unlockingInfo?.redeemable]);
   const nextWithdrawalAmount = useMemo(
     (): number => unlockingInfo?.nextWithdrawalAmount || 0,
@@ -139,12 +140,13 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
       }
     }
   }, [
+    redeemable,
+    unlockingBalance,
     closeModal,
+    navigation,
     currentAccountAddress,
     networkKey,
     nextWithdrawalAction,
-    redeemable,
-    navigation,
     validatorAddress,
     withdrawNote,
   ]);
@@ -161,15 +163,17 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   }, [closeModal, currentAccountAddress, networkKey, navigation]);
 
   const compoundAction = useCallback(() => {
-    closeModal();
-    navigation.navigate('CompoundStakeAction', {
-      screen: 'CompoundConfirm',
-      params: {
-        selectedAccount: currentAccountAddress,
-        networkKey: networkKey,
-      },
-    });
-  }, [closeModal, currentAccountAddress, navigation, networkKey]);
+    if (bondedAmount > 0) {
+      closeModal();
+      navigation.navigate('CompoundStakeAction', {
+        screen: 'CompoundConfirm',
+        params: {
+          selectedAccount: currentAccountAddress,
+          networkKey: networkKey,
+        },
+      });
+    }
+  }, [closeModal, currentAccountAddress, navigation, networkKey, bondedAmount]);
 
   const items = useMemo((): SortItem[] => {
     const result: SortItem[] = [
@@ -177,7 +181,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         label: i18n.stakingScreen.stakingDetail.actions.unStake,
         key: 'unStake',
         icon: SelectionSlash,
-        onPress: parseFloat(activeBalance || '0') > 0 ? unStakeAction : noop,
+        onPress: bondedAmount > 0 ? unStakeAction : noop,
       },
       {
         label: i18n.stakingScreen.stakingDetail.actions.withdraw,
@@ -193,7 +197,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         label: i18n.stakingScreen.stakingDetail.actions.claim,
         key: 'claim',
         icon: Gift,
-        onPress: parseFloat(activeBalance || '0') > 0 ? claimAction : undefined,
+        onPress: bondedAmount > 0 ? claimAction : undefined,
       });
     }
 
@@ -208,7 +212,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
 
     return result;
   }, [
-    activeBalance,
+    bondedAmount,
     claimAction,
     compoundAction,
     nextWithdrawal,
