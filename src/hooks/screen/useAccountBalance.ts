@@ -1,7 +1,7 @@
 import { AccountBalanceType } from 'hooks/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BalanceInfo } from '../../types';
+import { BalanceInfo } from 'types/index';
 import BigN from 'bignumber.js';
 import {
   APIItemState,

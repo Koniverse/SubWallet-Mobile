@@ -250,6 +250,7 @@ export const vi = {
     compoundStakeAction: 'Compound',
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
+    importByQr: 'Import By QR',
   },
   tabName: {
     crypto: 'Crypto',
@@ -508,6 +509,7 @@ export const vi = {
     unStakeEverything: 'You can only unstake everything',
     unStakeEverythingOrMaxOf: 'You can unstake everything or a maximum of',
     unStakeMaxOf: 'You can unstake a maximum of',
+    invalidPrefix: 'Invalid prefix received, expected',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
