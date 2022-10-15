@@ -5,7 +5,7 @@ import Text from '../../components/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
-import { ArchiveTray, Article, FileArrowUp, LockKey, UserCirclePlus } from 'phosphor-react-native';
+import { ArchiveTray, Article, FileArrowUp, LockKey, QrCode, UserCirclePlus } from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
@@ -70,6 +70,14 @@ export const FirstScreen = () => {
       title: i18n.title.importFromJson,
       onCLickButton: () => {
         navigation.navigate('RestoreJson');
+        setSelectModalVisible(false);
+      },
+    },
+    {
+      icon: QrCode,
+      title: i18n.title.importByQr,
+      onCLickButton: () => {
+        navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
         setSelectModalVisible(false);
       },
     },

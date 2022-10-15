@@ -62,6 +62,7 @@ const ImportAccountQrConfirm = ({
   );
 
   const [address, setAddress] = useState<string>(account.isAddress ? account.content : 'ALL');
+  const [isEthereum, setIsEthereum] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -128,6 +129,7 @@ const ImportAccountQrConfirm = ({
           isAllow: true,
           secretKey: account.content,
           publicKey: account.genesisHash,
+          isEthereum: isEthereum,
         })
           .then(({ errors: errs, success }) => {
             if (success) {
@@ -147,7 +149,7 @@ const ImportAccountQrConfirm = ({
         setIsBusy(false);
       }
     },
-    [account, onComplete],
+    [account, isEthereum, onComplete],
   );
 
   const onSubmitForm = useCallback(
@@ -185,14 +187,16 @@ const ImportAccountQrConfirm = ({
 
     if (account.isAddress) {
       setAddress(account.content);
+      setIsEthereum(account.isEthereum);
       setLoading(false);
     } else {
       setLoading(true);
       checkPublicAndPrivateKey(account.genesisHash, account.content)
-        .then(({ address: _address, isValid }) => {
+        .then(({ address: _address, isValid, isEthereum: _isEthereum }) => {
           if (amount) {
             if (isValid) {
               setAddress(_address);
+              setIsEthereum(_isEthereum);
             } else {
               setErrors(['Invalid public and private key']);
             }
