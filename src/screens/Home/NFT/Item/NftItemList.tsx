@@ -1,13 +1,14 @@
 import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
 import NftItem from './NftItem';
 import i18n from 'utils/i18n/i18n';
-import { NFTCollectionProps, NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTCollectionProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { restartCronServices } from '../../../../messaging';
@@ -36,28 +37,69 @@ const NftItemList = ({
     params: { collectionId },
   },
 }: NFTCollectionProps) => {
+  const navigation = useNavigation<RootNavigationProps>();
+  const isFocused = useIsFocused();
+
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
   const nftList = useSelector((state: RootState) => state.nft.nftList);
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+
+  const [accountAddress, setAccountAddress] = useState<string>(currentAccountAddress);
+
   const collection = useMemo(() => {
     return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
   }, [collectionId, nftCollectionList]);
+
   const nftItems = useMemo(() => {
     return nftList.filter(item => item.collectionId === (collection?.collectionId || '__'));
   }, [collection?.collectionId, nftList]);
-  const navigation = useNavigation<NFTNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<_NftItem>) => {
       const key = `${item.collectionId}-${item.id}`;
       const onPress = () => {
-        navigation.navigate('NftDetail', { collectionId, nftId: key });
+        navigation.navigate('Home', {
+          screen: 'NFT',
+          params: {
+            screen: 'NftDetail',
+            params: { collectionId, nftId: key },
+          },
+        });
       };
 
       return <NftItem key={key} nftItem={item} collectionImage={collection?.image} onPress={onPress} />;
     },
     [collection?.image, collectionId, navigation],
   );
+
+  useEffect(() => {
+    const goHome = () => {
+      setAccountAddress(currentAccountAddress);
+      navigation.navigate('Home', {
+        screen: 'NFT',
+        params: {
+          screen: 'CollectionList',
+        },
+      });
+    };
+
+    if (accountAddress === currentAccountAddress) {
+      return;
+    }
+
+    if (isFocused) {
+      goHome();
+    } else {
+      const listener = navigation.addListener('focus', () => {
+        goHome();
+      });
+
+      return () => {
+        navigation.removeListener('focus', listener);
+      };
+    }
+  }, [accountAddress, currentAccountAddress, isFocused, navigation]);
 
   return (
     <View style={NftItemListStyle}>

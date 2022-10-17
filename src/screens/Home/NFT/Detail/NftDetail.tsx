@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
@@ -9,10 +9,11 @@ import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -20,7 +21,7 @@ import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
-import { NFTDetailProps, NFTNavigationProps } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
 const ContainerHeaderStyle: StyleProp<any> = {
@@ -141,24 +142,31 @@ const NftDetail = ({
     params: { collectionId, nftId },
   },
 }: NFTDetailProps) => {
+  const navigation = useNavigation<RootNavigationProps>();
+  const isFocused = useIsFocused();
+
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
   const nftList = useSelector((state: RootState) => state.nft.nftList);
-  const navigation = useNavigation<NFTNavigationProps>();
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+
+  const isAccountAll = useIsAccountAll();
+
   const collection = useMemo(() => {
     return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
   }, [collectionId, nftCollectionList]);
+
   const data = useMemo(() => {
     return nftList.find(item => nftId === `${item.collectionId}-${item.id}`) || {};
   }, [nftId, nftList]);
   const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
   const { show, hideAll } = useToast();
 
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-
   const networkJson = useGetNetworkJson(data.chain as string) || {};
-  const isAccountAll = useIsAccountAll();
   const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
+
+  const [accountAddress, setAccountAddress] = useState<string>(currentAccountAddress);
 
   const canSend = useMemo((): boolean => {
     if (!currentAccount) {
@@ -220,6 +228,34 @@ const NftDetail = ({
       Linking.openURL(url);
     };
   }, []);
+
+  useEffect(() => {
+    const goHome = () => {
+      setAccountAddress(currentAccountAddress);
+      navigation.navigate('Home', {
+        screen: 'NFT',
+        params: {
+          screen: 'CollectionList',
+        },
+      });
+    };
+
+    if (accountAddress === currentAccountAddress) {
+      return;
+    }
+
+    if (isFocused) {
+      goHome();
+    } else {
+      const listener = navigation.addListener('focus', () => {
+        goHome();
+      });
+
+      return () => {
+        navigation.removeListener('focus', listener);
+      };
+    }
+  }, [accountAddress, currentAccountAddress, isFocused, navigation]);
 
   return (
     <ContainerWithSubHeader
