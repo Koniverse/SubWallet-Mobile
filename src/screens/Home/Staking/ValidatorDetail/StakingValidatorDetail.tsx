@@ -1,14 +1,16 @@
 import { formatBalance } from '@polkadot/util';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useIsSufficientBalance from 'hooks/screen/Home/Staking/useIsSufficientBalance';
+import useIsValidStakingNetwork from 'hooks/screen/Staking/useIsValidStakingNetwork';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import useGoHome from 'hooks/screen/useGoHome';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
@@ -98,10 +100,12 @@ const StakingValidatorDetail = ({
 
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
+  const isFocused = useIsFocused();
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
   const network = useGetNetworkJson(networkKey);
+  const isNetworkValid = useIsValidStakingNetwork(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
@@ -186,6 +190,31 @@ const StakingValidatorDetail = ({
     show,
     token,
   ]);
+
+  const goHome = useGoHome({
+    screen: 'Staking',
+    params: {
+      screen: 'StakingBalances',
+    },
+  });
+
+  useEffect(() => {
+    if (isNetworkValid) {
+      return;
+    }
+
+    if (isFocused) {
+      goHome();
+    } else {
+      const listener = navigation.addListener('focus', () => {
+        goHome();
+      });
+
+      return () => {
+        navigation.removeListener('focus', listener);
+      };
+    }
+  }, [goHome, isFocused, isNetworkValid, navigation]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
