@@ -89,8 +89,6 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
   );
   const { url, showImage, imageError, loading } = imageState;
 
-  console.log('imageState', imageState);
-
   const borderStyle = useMemo((): StyleProp<ViewStyle> => {
     if (borderRadius) {
       if (borderPlace) {
