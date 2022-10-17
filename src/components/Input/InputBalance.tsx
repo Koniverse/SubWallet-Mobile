@@ -17,6 +17,7 @@ export interface InputBalanceProps {
   siSymbol: string;
   maxValue?: string;
   placeholder?: string;
+  disable?: boolean;
   si: SiDef;
   onChangeSi: (si: SiDef) => void;
 }
@@ -124,13 +125,13 @@ const getDropdownTextStyle = (inputValue: string) => {
 
   return {
     ...baseStyle,
-    color: ColorMap.disabled,
+    color: ColorMap.light,
     paddingRight: 4,
   };
 };
 
 const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
-  const { onChange, decimals, siSymbol, placeholder, onChangeSi, si } = props;
+  const { onChange, decimals, siSymbol, placeholder, onChangeSi, si, disable } = props;
   const [inputValue, setInputValue] = useState<string>('');
   const [isShowTokenList, setShowTokenList] = useState<boolean>(false);
   const siOptions = useMemo(() => getSiOptions(siSymbol, decimals), [decimals, siSymbol]);
@@ -198,9 +199,13 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         maxLength={inputValue.includes('.') ? decimals + 2 : 10}
         placeholder={placeholder || ''}
         placeholderTextColor={ColorMap.disabled}
+        editable={!disable}
       />
 
-      <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => setShowTokenList(true)}>
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center' }}
+        onPress={() => setShowTokenList(true)}
+        disabled={disable}>
         <Text style={getDropdownTextStyle(inputValue)}>{si.text === 'Unit' ? siSymbol : si.text}</Text>
         <CaretDown size={20} weight={'bold'} color={ColorMap.disabled} />
       </TouchableOpacity>

@@ -48,7 +48,7 @@ const AvatarStyle: StyleProp<ViewStyle> = {
 };
 
 // todo: onPress infoIcon
-export const CollatorField = ({
+export const ValidatorField = ({
   collator,
   onPressRightIcon,
   showRightIcon = true,

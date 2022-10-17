@@ -35,7 +35,7 @@ const blockContentStyle: StyleProp<any> = {
 
 const unitStyle: StyleProp<any> = {
   ...textStyle,
-  color: ColorMap.light,
+  color: ColorMap.disabled,
   paddingBottom: 10,
   paddingRight: 16,
 };

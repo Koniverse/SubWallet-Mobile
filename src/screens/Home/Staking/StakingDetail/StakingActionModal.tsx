@@ -3,17 +3,19 @@ import { SubWalletModal } from 'components/SubWalletModal';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { StakingDataType } from 'hooks/types';
 import moment from 'moment';
-import { ArrowSquareDown, ClockAfternoon, IconProps, Intersect, Minus, Plus } from 'phosphor-react-native';
-import React, { useCallback, useMemo } from 'react';
+import { Gift, IconProps, Intersect, Money, SelectionSlash } from 'phosphor-react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
+import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { HomeNavigationProps } from 'routes/home';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
+import ToastContainer from 'react-native-toast-notifications';
+import { deviceHeight } from 'constants/index';
 
 interface Props {
   visible: boolean;
@@ -25,7 +27,7 @@ interface SortItem {
   icon: (iconProps: IconProps) => JSX.Element;
   key: string;
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
   color?: string;
 }
 
@@ -57,15 +59,14 @@ const MANUAL_CLAIM_CHAINS = ['astar', 'shibuya', 'shiden'];
 
 const MANUAL_COMPOUND_CHAINS = ['turing', 'turingStaging'];
 
+const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
+
 const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const {
-    staking: { chainId: networkKey, activeBalance, unlockingInfo },
+    staking: { chainId: networkKey, activeBalance, unlockingInfo, unlockingBalance },
   } = data;
-
-  const toast = useToast();
-
-  const rootNavigation = useNavigation<RootNavigationProps>();
-  const homeNavigation = useNavigation<HomeNavigationProps>();
+  const toastRef = useRef<ToastContainer>(null);
+  const navigation = useNavigation<RootNavigationProps>();
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const networkJson = useGetNetworkJson(networkKey);
@@ -85,8 +86,6 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     [unlockingInfo?.validatorAddress],
   );
 
-  const canWithdraw = useMemo((): boolean => redeemable > 0, [redeemable]);
-
   const showClaimButton = useMemo((): boolean => MANUAL_CLAIM_CHAINS.includes(networkKey), [networkKey]);
   const showCompoundButton = useMemo((): boolean => MANUAL_COMPOUND_CHAINS.includes(networkKey), [networkKey]);
 
@@ -98,7 +97,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     if (redeemable > 0) {
       return `${redeemable} ${networkJson.nativeToken as string} can be withdrawn now`;
     } else {
-      if (nextWithdrawal === 0) {
+      if (nextWithdrawal === 0 || nextWithdrawalAmount === 0) {
         return `${nextWithdrawalAmount} ${networkJson.nativeToken as string} can be withdrawn soon`;
       }
 
@@ -108,19 +107,9 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     }
   }, [networkJson.nativeToken, nextWithdrawal, nextWithdrawalAmount, redeemable]);
 
-  const stakeAction = useCallback(() => {
-    closeModal();
-    homeNavigation.navigate('Staking', {
-      screen: 'StakingValidators',
-      params: {
-        networkKey,
-      },
-    });
-  }, [closeModal, homeNavigation, networkKey]);
-
   const unStakeAction = useCallback(() => {
     closeModal();
-    rootNavigation.navigate('UnStakeAction', {
+    navigation.navigate('UnStakeAction', {
       screen: 'UnStakeConfirm',
       params: {
         selectedAccount: currentAccountAddress,
@@ -128,12 +117,12 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         bondedAmount: parseFloat(activeBalance || '0'),
       },
     });
-  }, [activeBalance, closeModal, currentAccountAddress, networkKey, rootNavigation]);
+  }, [activeBalance, closeModal, currentAccountAddress, networkKey, navigation]);
 
   const withdrawAction = useCallback(() => {
     if (redeemable > 0) {
       closeModal();
-      rootNavigation.navigate('WithdrawStakeAction', {
+      navigation.navigate('WithdrawStakeAction', {
         screen: 'WithdrawAuth',
         params: {
           selectedAccount: currentAccountAddress,
@@ -143,9 +132,11 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
           targetValidator: validatorAddress,
         },
       });
-    } else {
-      toast.hideAll();
-      toast.show(withdrawNote);
+    } else if (unlockingBalance && parseFloat(unlockingBalance) !== 0) {
+      if (toastRef.current) {
+        toastRef.current.hideAll();
+        toastRef.current.show(withdrawNote);
+      }
     }
   }, [
     closeModal,
@@ -153,48 +144,47 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     networkKey,
     nextWithdrawalAction,
     redeemable,
-    rootNavigation,
-    toast,
+    navigation,
     validatorAddress,
     withdrawNote,
   ]);
 
   const claimAction = useCallback(() => {
     closeModal();
-    rootNavigation.navigate('ClaimStakeAction', {
+    navigation.navigate('ClaimStakeAction', {
       screen: 'ClaimAuth',
       params: {
         networkKey: networkKey,
         selectedAccount: currentAccountAddress,
       },
     });
-  }, [closeModal, currentAccountAddress, networkKey, rootNavigation]);
+  }, [closeModal, currentAccountAddress, networkKey, navigation]);
 
   const compoundAction = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.common.comingSoon);
-  }, [toast]);
+    closeModal();
+    navigation.navigate('CompoundStakeAction', {
+      screen: 'CompoundConfirm',
+      params: {
+        selectedAccount: currentAccountAddress,
+        networkKey: networkKey,
+      },
+    });
+  }, [closeModal, currentAccountAddress, navigation, networkKey]);
 
   const items = useMemo((): SortItem[] => {
     const result: SortItem[] = [
       {
-        label: i18n.stakingScreen.stakingDetail.actions.stake,
-        key: 'stake',
-        icon: Plus,
-        onPress: stakeAction,
-      },
-      {
         label: i18n.stakingScreen.stakingDetail.actions.unStake,
         key: 'unStake',
-        icon: Minus,
-        onPress: unStakeAction,
+        icon: SelectionSlash,
+        onPress: parseFloat(activeBalance || '0') > 0 ? unStakeAction : noop,
       },
       {
         label: i18n.stakingScreen.stakingDetail.actions.withdraw,
         key: 'withdraw',
-        icon: ClockAfternoon,
-        color: canWithdraw ? ColorMap.primary : undefined,
+        icon: Money,
         onPress: withdrawAction,
+        color: nextWithdrawal > 0 && parseFloat(unlockingBalance || '0') > 0 ? ColorMap.primary : ColorMap.disabled,
       },
     ];
 
@@ -202,8 +192,8 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
       result.push({
         label: i18n.stakingScreen.stakingDetail.actions.claim,
         key: 'claim',
-        icon: ArrowSquareDown,
-        onPress: claimAction,
+        icon: Gift,
+        onPress: parseFloat(activeBalance || '0') > 0 ? claimAction : undefined,
       });
     }
 
@@ -218,13 +208,14 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
 
     return result;
   }, [
-    canWithdraw,
+    activeBalance,
     claimAction,
     compoundAction,
+    nextWithdrawal,
     showClaimButton,
     showCompoundButton,
-    stakeAction,
     unStakeAction,
+    unlockingBalance,
     withdrawAction,
   ]);
 
@@ -239,6 +230,13 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
           </TouchableOpacity>
         );
       })}
+      <Toast
+        duration={1500}
+        normalColor={ColorMap.notification}
+        ref={toastRef}
+        placement={'bottom'}
+        offsetBottom={OFFSET_BOTTOM}
+      />
     </SubWalletModal>
   );
 };

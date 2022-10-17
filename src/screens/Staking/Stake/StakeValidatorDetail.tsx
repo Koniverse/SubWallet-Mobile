@@ -1,29 +1,16 @@
 import { formatBalance } from '@polkadot/util';
-import { useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
-import { SubmitButton } from 'components/SubmitButton';
 import useIsSufficientBalance from 'hooks/screen/Home/Staking/useIsSufficientBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useMemo } from 'react';
-import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
-import { RootNavigationProps } from 'routes/index';
 import ValidatorName from 'components/Staking/ValidatorName';
-import { StakingValidatorDetailProps } from 'routes/staking/stakingScreen';
-import { RootState } from 'stores/index';
+import { StakeValidatorDetailProps } from 'routes/staking/stakeAction';
 import { ColorMap } from 'styles/color';
-import {
-  ContainerHorizontalPadding,
-  FontMedium,
-  FontSemiBold,
-  MarginBottomForSubmitButton,
-  sharedStyles,
-} from 'styles/sharedStyles';
-import { parseBalanceString } from 'utils/chainBalances';
+import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { getStakingInputValueStyle } from 'utils/text';
 
@@ -60,14 +47,12 @@ const HeaderWrapperStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'center',
   flex: 1,
-  paddingLeft: 40,
-  paddingRight: 40,
 };
 
 const HeaderContentStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'center',
-  flex: 1,
+  width: '80%',
 };
 
 const HeaderTextStyle: StyleProp<TextStyle> = {
@@ -76,58 +61,26 @@ const HeaderTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
-const checkCurrentlyBonded = (bondedValidators: string[], validatorAddress: string): boolean => {
-  let isBonded = false;
-
-  bondedValidators.forEach(bondedValidator => {
-    if (bondedValidator.toLowerCase() === validatorAddress.toLowerCase()) {
-      isBonded = true;
-    }
-  });
-
-  return isBonded;
-};
-
-const StakingValidatorDetail = ({
+const StakeValidatorDetail = ({
   route: {
-    params: { validatorInfo, networkValidatorsInfo, networkKey },
+    params: { validator: validatorInfo, networkKey, networkValidatorsInfo },
   },
   navigation: { goBack },
-}: StakingValidatorDetailProps) => {
-  const { bondedValidators, maxNominations, maxNominatorPerValidator } = networkValidatorsInfo;
-
-  const navigation = useNavigation<RootNavigationProps>();
-  const toast = useToast();
-
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
-
+}: StakeValidatorDetailProps) => {
+  const { maxNominatorPerValidator } = networkValidatorsInfo;
   const network = useGetNetworkJson(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
-  const isCurrentlyBonded = useMemo(
-    (): boolean => checkCurrentlyBonded(bondedValidators, validatorInfo.address),
-    [bondedValidators, validatorInfo.address],
-  );
-
   const isSufficientFund = useIsSufficientBalance(networkKey, validatorInfo.minBond);
 
   const isMaxCommission = useMemo((): boolean => validatorInfo.commission === 100, [validatorInfo.commission]);
-
-  const show = useCallback(
-    (text: string) => {
-      toast.hideAll();
-      toast.show(text, { textStyle: { textAlign: 'center' } });
-    },
-    [toast],
-  );
 
   const headerContent = useCallback((): JSX.Element => {
     return (
       <View style={HeaderWrapperStyle}>
         <View style={HeaderContentStyle}>
           <ValidatorName
-            outerWrapperStyle={{ justifyContent: 'center' }}
             validatorInfo={validatorInfo}
             textStyle={HeaderTextStyle}
             iconColor={ColorMap.primary}
@@ -137,48 +90,6 @@ const StakingValidatorDetail = ({
       </View>
     );
   }, [validatorInfo]);
-
-  const handlePressStaking = useCallback((): void => {
-    if (validatorInfo.hasScheduledRequest) {
-      show(i18n.warningMessage.withdrawUnStakingFirst);
-
-      return;
-    }
-
-    if (!isSufficientFund && !isCurrentlyBonded) {
-      show(`${i18n.warningMessage.freeBalanceAtLeast} ${parseBalanceString(validatorInfo.minBond, token)}.`);
-
-      return;
-    }
-
-    if (bondedValidators.length >= maxNominations && !bondedValidators.includes(validatorInfo.address)) {
-      show(i18n.warningMessage.chooseNominating);
-
-      return;
-    }
-
-    navigation.navigate('StakeAction', {
-      screen: 'StakeConfirm',
-      params: {
-        validator: validatorInfo,
-        networkKey: networkKey,
-        networkValidatorsInfo: networkValidatorsInfo,
-        selectedAccount: currentAccountAddress,
-      },
-    });
-  }, [
-    validatorInfo,
-    isSufficientFund,
-    isCurrentlyBonded,
-    bondedValidators,
-    maxNominations,
-    navigation,
-    networkKey,
-    networkValidatorsInfo,
-    currentAccountAddress,
-    show,
-    token,
-  ]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
@@ -239,16 +150,9 @@ const StakingValidatorDetail = ({
             color={!isMaxCommission ? ColorMap.primary : ColorMap.danger}
           />
         </ScrollView>
-        <View style={{ ...MarginBottomForSubmitButton, paddingTop: 16, ...ContainerHorizontalPadding }}>
-          <SubmitButton
-            title={i18n.stakingScreen.startStaking}
-            backgroundColor={ColorMap.secondary}
-            onPress={handlePressStaking}
-          />
-        </View>
       </View>
     </ContainerWithSubHeader>
   );
 };
 
-export default React.memo(StakingValidatorDetail);
+export default React.memo(StakeValidatorDetail);

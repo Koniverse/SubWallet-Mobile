@@ -1,9 +1,10 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { HomeScreenParams } from 'routes/home';
+import { HomeStackParamList } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { ClaimStakeActionStackParamList } from 'routes/staking/claimAction';
+import { CompoundStakeActionStackParamList } from 'routes/staking/compoundAction';
 import { StakeActionStackParamList } from 'routes/staking/stakeAction';
 import { UnStakeActionStackParamList } from 'routes/staking/unStakeAction';
 import { WithdrawStakeActionStackParamList } from 'routes/staking/withdrawAction';
@@ -12,7 +13,7 @@ import { TransferNftParams } from 'types/nft';
 export type RootStackParamList = {
   LockScreen: undefined;
   LoadingScreen: undefined;
-  Home: HomeScreenParams | undefined;
+  Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   CreateAccount: { keyTypes: KeypairType };
   QrScanner: undefined;
   AccountsScreen: undefined;
@@ -48,6 +49,7 @@ export type RootStackParamList = {
   UnStakeAction: NavigatorScreenParams<UnStakeActionStackParamList>;
   WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;
   ClaimStakeAction: NavigatorScreenParams<ClaimStakeActionStackParamList>;
+  CompoundStakeAction: NavigatorScreenParams<CompoundStakeActionStackParamList>;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

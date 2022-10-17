@@ -1,7 +1,7 @@
 import { SubWalletModal } from 'components/SubWalletModal';
-import { IconProps } from 'phosphor-react-native';
+import { CircleWavyCheck, IconProps } from 'phosphor-react-native';
 import React from 'react';
-import { StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Item } from 'react-native-picker-select';
 import { ChartPieSlice, Coins } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
@@ -13,6 +13,7 @@ interface Props {
   visible: boolean;
   closeModal: () => void;
   onPress: (value: ValidatorSortBy) => () => void;
+  sortBy: ValidatorSortBy;
 }
 
 interface SortItem extends Item {
@@ -46,10 +47,17 @@ const ItemContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
-  justifyContent: 'flex-start',
+  justifyContent: 'space-between',
   width: '100%',
   paddingHorizontal: 16,
   paddingVertical: 14,
+};
+
+const LeftPartStyle: StyleProp<ViewStyle> = {
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'row',
+  flex: 1,
 };
 
 const LabelTextStyle: StyleProp<TextStyle> = {
@@ -59,15 +67,27 @@ const LabelTextStyle: StyleProp<TextStyle> = {
   marginLeft: 16,
 };
 
-const SortValidatorModal = ({ closeModal, visible, onPress }: Props) => {
+const RightPart: StyleProp<ViewStyle> = {
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'row',
+};
+
+const SortValidatorModal = ({ closeModal, visible, onPress, sortBy }: Props) => {
   return (
     <SubWalletModal modalVisible={visible} onChangeModalVisible={closeModal}>
       <Text style={TitleTextStyle}>{i18n.common.sortBy}</Text>
-      {items.map(item => {
+      {items.map(({ value, label, key, icon: Icon }) => {
+        const selected = value === sortBy;
         return (
-          <TouchableOpacity style={ItemContainerStyle} key={item.key} activeOpacity={0.5} onPress={onPress(item.value)}>
-            <item.icon size={20} color={ColorMap.disabled} />
-            <Text style={LabelTextStyle}>{item.label}</Text>
+          <TouchableOpacity style={ItemContainerStyle} key={key} activeOpacity={0.5} onPress={onPress(value)}>
+            <View style={LeftPartStyle}>
+              <Icon size={20} color={ColorMap.disabled} />
+              <Text style={LabelTextStyle}>{label}</Text>
+            </View>
+            <View style={RightPart}>
+              {selected && <CircleWavyCheck color={ColorMap.primary} weight={'bold'} size={20} />}
+            </View>
           </TouchableOpacity>
         );
       })}

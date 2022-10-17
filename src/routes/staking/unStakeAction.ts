@@ -1,3 +1,4 @@
+import { SiDef } from '@polkadot/util/types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { UnStakeParams } from 'types/staking';
 import { TransactionResultParams } from 'types/tx';
@@ -8,9 +9,10 @@ export type UnStakeActionStackParamList = {
     unStakeParams: UnStakeParams;
     amount: number;
     feeString: string;
-    collator?: string;
+    validator?: string;
     balanceError: boolean;
     unstakeAll: boolean;
+    amountSi: SiDef;
   };
   UnStakeResult: {
     unStakeParams: UnStakeParams;

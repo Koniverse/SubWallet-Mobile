@@ -3,20 +3,22 @@ import { CircleWavyCheck, Trophy } from 'phosphor-react-native';
 import React from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
+import { toShort } from 'utils/index';
 
 interface Props {
   validatorInfo: ValidatorInfo;
-  onlyVerifiedIcon?: boolean;
   isBonding?: boolean;
   textStyle: StyleProp<TextStyle>;
   iconSize?: number;
   iconColor?: string;
+  outerWrapperStyle?: StyleProp<any>;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
+  flex: 1,
 };
 
 const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
@@ -25,8 +27,8 @@ const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
 };
 
 const ValidatorIconContainerStyle: StyleProp<ViewStyle> = {
-  flexGrow: 1,
-  flexShrink: 0,
+  flexDirection: 'row',
+  alignItems: 'center',
 };
 
 const IconStyle: StyleProp<ViewStyle> = {
@@ -34,8 +36,8 @@ const IconStyle: StyleProp<ViewStyle> = {
 };
 
 const ValidatorName = ({
+  outerWrapperStyle,
   validatorInfo,
-  onlyVerifiedIcon = false,
   iconSize = 16,
   textStyle,
   iconColor = ColorMap.primary,
@@ -44,15 +46,15 @@ const ValidatorName = ({
   const { identity, address, isVerified } = validatorInfo;
 
   return (
-    <View style={WrapperStyle}>
+    <View style={[WrapperStyle, outerWrapperStyle]}>
       <View style={ValidatorNameContainerStyle}>
         <Text style={textStyle} numberOfLines={1} ellipsizeMode={'middle'}>
-          {identity ? identity : address}
+          {identity ? identity : toShort(address)}
         </Text>
       </View>
       <View style={ValidatorIconContainerStyle}>
         {isVerified && <CircleWavyCheck size={iconSize} color={iconColor} style={IconStyle} />}
-        {!onlyVerifiedIcon && isBonding && <Trophy size={iconSize} color={iconColor} style={IconStyle} />}
+        {isBonding && <Trophy size={iconSize} color={iconColor} style={IconStyle} />}
       </View>
     </View>
   );

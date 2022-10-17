@@ -38,8 +38,6 @@ const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
 const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
   paddingLeft: 16,
   paddingRight: 8,
-  display: 'flex',
-  flexDirection: 'column',
   flex: 1,
 };
 
@@ -56,11 +54,8 @@ const NetworkSubTextStyle: StyleProp<TextStyle> = {
 };
 
 const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'column',
   alignItems: 'flex-end',
   paddingLeft: 2,
-  flex: 2,
 };
 
 const BalanceTokenTextStyle: StyleProp<TextStyle> = {
@@ -93,7 +88,7 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
   const networkKey = staking.chainId;
 
   const networkDisplayName = useMemo((): string => {
-    return staking.name.replace('Relay Chain', '');
+    return staking.name.replace(' Relay Chain', '');
   }, [staking.name]);
 
   const balanceValue = useMemo((): BigN => {

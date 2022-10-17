@@ -336,9 +336,9 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
 
   const goBack = () => {
     if (navigation.canGoBack()) {
-      navigation.navigate('Home', { tab: 'Browser' });
+      navigation.navigate('Home', { screen: 'Browser' });
     } else {
-      navigation.replace('Home', { tab: 'Browser' });
+      navigation.replace('Home', { screen: 'Browser' });
     }
   };
 

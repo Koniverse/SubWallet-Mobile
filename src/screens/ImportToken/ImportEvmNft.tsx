@@ -233,6 +233,7 @@ const ImportEvmNft = () => {
         />
 
         <SubmitButton
+          isBusy={loading}
           title={i18n.importEvmNft.importNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={handleAddToken}

@@ -16,13 +16,17 @@ import { ColorMap } from 'styles/color';
 import { restartCronAndSubscriptionServices } from '../../../../messaging';
 import { useRefresh } from 'hooks/useRefresh';
 
-const renderEmpty = () => {
-  return <EmptyStaking />;
+const renderEmpty = (val?: string) => {
+  if (val) {
+    return <EmptyStaking message={i18n.stakingScreen.balanceList.stakingAppearHere} />;
+  } else {
+    return <EmptyStaking />;
+  }
 };
 
 const filteredFunction = (items: StakingDataType[], searchString: string) => {
   return items.filter(({ staking }) => {
-    return staking.name.replace('Relay Chain', '').toLowerCase().includes(searchString.toLowerCase());
+    return staking.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase());
   });
 };
 

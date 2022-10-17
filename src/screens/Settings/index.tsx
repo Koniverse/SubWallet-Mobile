@@ -177,7 +177,9 @@ export const Settings = () => {
   return (
     <SubScreenContainer title={i18n.title.settings} navigation={navigation}>
       <>
-        <ScrollView style={{ paddingHorizontal: 16, paddingTop: 16, flex: 1, marginBottom: 16 }}>
+        <ScrollView
+          style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}
+          contentContainerStyle={{ paddingTop: 16 }}>
           <ActionItem
             icon={ShieldCheck}
             showIcon={false}

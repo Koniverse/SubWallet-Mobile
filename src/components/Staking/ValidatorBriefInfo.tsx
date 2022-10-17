@@ -4,14 +4,15 @@ import { BalanceVal } from 'components/BalanceVal';
 import ValidatorName from 'components/Staking/ValidatorName';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import React from 'react';
-import { Image, ImageStyle, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { Image, ImageStyle, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { CaretRight } from 'phosphor-react-native';
 
 interface Props {
   validator: ValidatorInfo;
-  rightIcon?: boolean;
+  onPress?: () => void;
+  disable?: boolean;
 }
 
 const WrapperStyle: StyleProp<ViewStyle> = {
@@ -39,27 +40,26 @@ const AvatarContainerStyle: StyleProp<ViewStyle> = {
   height: 20,
   borderRadius: 20,
   borderColor: ColorMap.secondary,
-  padding: 2,
-  borderWidth: 2,
   backgroundColor: ColorMap.dark,
 };
 
 const AvatarImageStyle: StyleProp<ImageStyle> = {
-  width: 12,
-  height: 12,
-  borderRadius: 12,
+  width: 20,
+  height: 20,
+  borderRadius: 20,
 };
 
 const ValidatorNameContainerStyle: StyleProp<ViewStyle> = {
   marginLeft: 16,
-  overflow: 'hidden',
+  width: '80%',
+  paddingRight: 16,
 };
 
 const ValidatorNameTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mediumText,
   ...FontSemiBold,
   color: ColorMap.light,
-  width: '80%',
+  width: '100%',
 };
 
 const RightPartStyle: StyleProp<ViewStyle> = {
@@ -88,11 +88,11 @@ const RightIconStyle: StyleProp<ViewStyle> = {
   marginLeft: 8,
 };
 
-const ValidatorBriefInfo = ({ validator, rightIcon = false }: Props) => {
+const ValidatorBriefInfo = ({ validator, onPress, disable }: Props) => {
   const { icon, address, expectedReturn } = validator;
 
   return (
-    <View style={WrapperStyle}>
+    <TouchableOpacity style={WrapperStyle} onPress={onPress} disabled={!onPress || disable}>
       <View style={LeftPartStyle}>
         {icon ? (
           <View style={AvatarContainerStyle}>
@@ -118,9 +118,9 @@ const ValidatorBriefInfo = ({ validator, rightIcon = false }: Props) => {
           />
           <Text style={ReturnTextStyle}>)</Text>
         </View>
-        {rightIcon && <CaretRight size={20} style={RightIconStyle} color={ColorMap.disabled} />}
+        {onPress && <CaretRight size={20} style={RightIconStyle} color={ColorMap.disabled} weight={'bold'} />}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
