@@ -87,6 +87,7 @@ const StakeValidatorDetail = ({
       <View style={HeaderWrapperStyle}>
         <View style={HeaderContentStyle}>
           <ValidatorName
+            outerWrapperStyle={{ justifyContent: 'center' }}
             validatorInfo={validatorInfo}
             textStyle={HeaderTextStyle}
             iconColor={ColorMap.primary}
