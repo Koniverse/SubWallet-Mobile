@@ -1,12 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   DEFAULT_VALIDATOR_LIST_STATE,
@@ -18,14 +17,11 @@ import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import SortValidatorModal from 'screens/Home/Staking/Validator/SortValidatorModal';
 import StakingValidatorItem from 'screens/Home/Staking/Validator/StakingValidatorItem';
 import { RootState } from 'stores/index';
+import { ColorMap } from 'styles/color';
 import { ValidatorSortBy, ValidatorType } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
 import { getBondingOptions } from '../../../../messaging';
 import { StakingValidatorsProps } from 'routes/staking/stakingScreen';
-
-const WrapperStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-};
 
 const filterFunction = (items: ValidatorInfo[], searchString: string): ValidatorInfo[] => {
   return items.filter(item => {
@@ -217,28 +213,26 @@ const StakingValidatorList = ({
   }, [currentAccountAddress, networkKey]);
 
   return (
-    <ContainerWithSubHeader
-      onPressBack={goBack}
-      title={headerTitle}
-      rightIcon={ArrowsDownUp}
-      onPressRightIcon={openModal}>
-      <>
-        <View style={WrapperStyle}>
-          <FlatListScreen
-            items={validators}
-            withSubHeader={false}
-            autoFocus={false}
-            renderListEmptyComponent={handleEmptyList}
-            renderItem={renderItem}
-            loading={loading}
-            filterFunction={filterFunction}
-            placeholder={searchPlaceHolder}
-            sortFunction={sortFunction}
-          />
-        </View>
-        <SortValidatorModal visible={visible} closeModal={closeModal} onPress={onChangeSortBy} sortBy={sortBy} />
-      </>
-    </ContainerWithSubHeader>
+    <>
+      <FlatListScreen
+        items={validators}
+        autoFocus={false}
+        renderListEmptyComponent={handleEmptyList}
+        renderItem={renderItem}
+        loading={loading}
+        filterFunction={filterFunction}
+        placeholder={searchPlaceHolder}
+        sortFunction={sortFunction}
+        onPressBack={goBack}
+        title={headerTitle}
+        rightIconOption={{
+          icon: ArrowsDownUp,
+          onPress: openModal,
+          color: sortBy !== 'Default' ? ColorMap.primary : undefined,
+        }}
+      />
+      <SortValidatorModal visible={visible} closeModal={closeModal} onPress={onChangeSortBy} sortBy={sortBy} />
+    </>
   );
 };
 

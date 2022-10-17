@@ -14,6 +14,7 @@ export interface SubHeaderProps {
   onPressBack: (event: GestureResponderEvent) => void;
   disabled?: boolean;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
+  rightIconColor?: string;
   onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
   disableRightButton?: boolean;
   headerContent?: () => JSX.Element;
@@ -59,6 +60,7 @@ export const SubHeader = ({
   disableRightButton,
   showLeftBtn = true,
   rightButtonTitle = '',
+  rightIconColor,
 }: SubHeaderProps) => {
   const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
 
@@ -94,7 +96,7 @@ export const SubHeader = ({
           onPress={onPressRightIcon}
           style={{ position: 'absolute', right: 16, top: 0 }}
           disabled={disableRightButton}
-          color={disableRightButton ? ColorMap.disabledTextColor : ColorMap.light}
+          color={disableRightButton ? ColorMap.disabledTextColor : rightIconColor || ColorMap.light}
           title={rightButtonTitle}
         />
       )}

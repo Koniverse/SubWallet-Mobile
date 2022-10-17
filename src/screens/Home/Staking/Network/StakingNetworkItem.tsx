@@ -25,11 +25,12 @@ const InfoContainerStyle: StyleProp<ViewStyle> = {
   paddingTop: 20,
   paddingBottom: 12,
 };
+
 const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   alignItems: 'center',
   overflow: 'hidden',
-  flex: 5,
+  flex: 1,
 };
 
 const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
@@ -37,7 +38,6 @@ const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
   paddingRight: 8,
   display: 'flex',
   flexDirection: 'column',
-  flex: 1,
 };
 
 const NetworkNameStyle: StyleProp<TextStyle> = {
@@ -59,7 +59,6 @@ const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
   alignItems: 'flex-end',
   justifyContent: 'center',
   paddingLeft: 2,
-  flex: 2,
 };
 
 const ReturnedTextStyle: StyleProp<TextStyle> = {

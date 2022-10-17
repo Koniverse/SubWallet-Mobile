@@ -94,7 +94,7 @@ const StakingValidatorDetail = ({
   },
   navigation: { goBack },
 }: StakingValidatorDetailProps) => {
-  const { bondedValidators, maxNominations, maxNominatorPerValidator } = networkValidatorsInfo;
+  const { bondedValidators, maxNominations, maxNominatorPerValidator, isBondedBefore } = networkValidatorsInfo;
 
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
@@ -104,6 +104,12 @@ const StakingValidatorDetail = ({
   const network = useGetNetworkJson(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
+
+  const isBonding = useMemo(() => {
+    return isBondedBefore
+      ? !!bondedValidators.find(val => val.toLowerCase() === validatorInfo.address.toLowerCase())
+      : false;
+  }, [validatorInfo.address, bondedValidators, isBondedBefore]);
 
   const isCurrentlyBonded = useMemo(
     (): boolean => checkCurrentlyBonded(bondedValidators, validatorInfo.address),
@@ -132,11 +138,12 @@ const StakingValidatorDetail = ({
             textStyle={HeaderTextStyle}
             iconColor={ColorMap.primary}
             iconSize={20}
+            isBonding={isBonding}
           />
         </View>
       </View>
     );
-  }, [validatorInfo]);
+  }, [validatorInfo, isBonding]);
 
   const handlePressStaking = useCallback((): void => {
     if (validatorInfo.hasScheduledRequest) {

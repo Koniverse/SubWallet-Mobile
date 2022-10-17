@@ -87,6 +87,8 @@ const MaxTextStyle: StyleProp<TextStyle> = {
   ...FontMedium,
 };
 
+const DEFAULT_AMOUNT = -1;
+
 const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[] => {
   return delegations.filter(item => parseFloat(item.amount) > 0);
 };
@@ -122,7 +124,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
   }, [bondedAmount, delegations, network.decimals, nominatedAmount]);
 
   const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
-  const [rawAmount, setRawAmount] = useState<number>(-1);
+  const [rawAmount, setRawAmount] = useState<number>(DEFAULT_AMOUNT);
   const [loading, setLoading] = useState(false);
 
   const selectedValidator = useMemo((): DelegationItem | undefined => {
@@ -181,7 +183,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
       return;
     }
     if (isNaN(parseFloat(value))) {
-      setRawAmount(-1);
+      setRawAmount(DEFAULT_AMOUNT - 1);
     } else {
       setRawAmount(parseFloat(value));
     }

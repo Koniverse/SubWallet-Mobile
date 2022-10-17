@@ -185,6 +185,7 @@ export const en = {
     validator: 'Validator',
     collator: 'Collator',
     dApp: 'DApp',
+    cancelTask: 'Cancel task',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -251,6 +252,8 @@ export const en = {
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
     importByQr: 'Import By QR',
+    createCompoundTask: 'Create task',
+    cancelCompoundTask: 'Cancel task',
   },
   tabName: {
     crypto: 'Crypto',
