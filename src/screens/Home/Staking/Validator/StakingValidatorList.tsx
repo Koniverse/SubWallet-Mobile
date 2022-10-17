@@ -1,7 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
+import useIsValidStakingNetwork from 'hooks/screen/Staking/useIsValidStakingNetwork';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
@@ -12,7 +13,7 @@ import {
   ValidatorListActionName,
   validatorListReducer,
 } from 'reducers/staking/validatorList';
-import { HomeNavigationProps } from 'routes/home';
+import { RootNavigationProps } from 'routes/index';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import SortValidatorModal from 'screens/Home/Staking/Validator/SortValidatorModal';
 import StakingValidatorItem from 'screens/Home/Staking/Validator/StakingValidatorItem';
@@ -73,12 +74,14 @@ const StakingValidatorList = ({
   },
   navigation: { goBack },
 }: StakingValidatorsProps) => {
-  const navigation = useNavigation<HomeNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
+  const isFocused = useIsFocused();
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
   const network = useGetNetworkJson(networkKey);
   const validatorType = useGetValidatorType(networkKey);
+  const isNetworkValid = useIsValidStakingNetwork(networkKey);
 
   const headerTitle = useMemo((): string => {
     switch (validatorType) {
@@ -140,12 +143,15 @@ const StakingValidatorList = ({
   const onPress = useCallback(
     (val: ValidatorInfo) => {
       return () => {
-        navigation.navigate('Staking', {
-          screen: 'StakingValidatorDetail',
+        navigation.navigate('Home', {
+          screen: 'Staking',
           params: {
-            networkKey: networkKey,
-            networkValidatorsInfo: networkValidatorsInfo,
-            validatorInfo: val,
+            screen: 'StakingValidatorDetail',
+            params: {
+              networkKey: networkKey,
+              networkValidatorsInfo: networkValidatorsInfo,
+              validatorInfo: val,
+            },
           },
         });
       };
@@ -175,6 +181,33 @@ const StakingValidatorList = ({
     },
     [validatorType],
   );
+
+  useEffect(() => {
+    const goHome = () => {
+      navigation.navigate('Home', {
+        screen: 'Staking',
+        params: {
+          screen: 'StakingNetworks',
+        },
+      });
+    };
+
+    if (isNetworkValid) {
+      return;
+    }
+
+    if (isFocused) {
+      goHome();
+    } else {
+      const listener = navigation.addListener('focus', () => {
+        goHome();
+      });
+
+      return () => {
+        navigation.removeListener('focus', listener);
+      };
+    }
+  }, [isFocused, isNetworkValid, navigation]);
 
   useEffect(() => {
     let mount = true;
