@@ -36,7 +36,6 @@ import {
   WebViewNavigationEvent,
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
-import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import * as RNFS from 'react-native-fs';
 import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
@@ -49,6 +48,7 @@ import { SiteInfo } from 'stores/types';
 import { Bar as ProgressBar } from 'react-native-progress';
 import { captureScreen } from 'react-native-view-shot';
 import { EmptyList } from 'components/EmptyList';
+import { BridgeScript, DAppScript, NovaScript } from 'screens/Home/Browser/BrowserScripts';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -100,22 +100,6 @@ type InjectPageJsScriptType = {
   get: () => Promise<string>;
 };
 
-const BridgeScript = `(function () {
-  window.addEventListener('message', ({ data, source }) => {
-    // only allow messages from our window, by the inject
-    if (source !== window || data.origin !== '${MESSAGE_ORIGIN_PAGE}') {
-      return;
-    }
-    window.ReactNativeWebView.postMessage(JSON.stringify({...data, origin: window.location.href}));
-  });
-})();`;
-
-const DAppScript = `(function () {
-    window.ethereum = window.SubWallet;
-    window.ethereum.isMetaMask = true;
-    window.injectedWeb3['polkadot-js'] = window.injectedWeb3['subwallet-js'];
-  })();`;
-
 const InjectPageJsScript: InjectPageJsScriptType = {
   content: null,
 
@@ -127,7 +111,7 @@ const InjectPageJsScript: InjectPageJsScriptType = {
       pageJsContent = await RNFS.readFileAssets('PageJs.bundle/page.js', 'ascii');
     }
 
-    this.content = BridgeScript + pageJsContent + DAppScript;
+    this.content = BridgeScript + pageJsContent + DAppScript + NovaScript;
 
     return this.content;
   },
