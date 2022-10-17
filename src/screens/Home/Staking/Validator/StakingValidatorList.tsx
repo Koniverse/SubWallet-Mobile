@@ -4,6 +4,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 import useIsValidStakingNetwork from 'hooks/screen/Staking/useIsValidStakingNetwork';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import useGoHome from 'hooks/screen/useGoHome';
 import { ArrowsDownUp } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { ListRenderItemInfo } from 'react-native';
@@ -182,16 +183,14 @@ const StakingValidatorList = ({
     [validatorType],
   );
 
-  useEffect(() => {
-    const goHome = () => {
-      navigation.navigate('Home', {
-        screen: 'Staking',
-        params: {
-          screen: 'StakingNetworks',
-        },
-      });
-    };
+  const goHome = useGoHome({
+    screen: 'Staking',
+    params: {
+      screen: 'StakingNetworks',
+    },
+  });
 
+  useEffect(() => {
     if (isNetworkValid) {
       return;
     }
@@ -207,7 +206,7 @@ const StakingValidatorList = ({
         navigation.removeListener('focus', listener);
       };
     }
-  }, [isFocused, isNetworkValid, navigation]);
+  }, [goHome, isFocused, isNetworkValid, navigation]);
 
   useEffect(() => {
     let mount = true;

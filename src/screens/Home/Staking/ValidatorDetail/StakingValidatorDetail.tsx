@@ -8,6 +8,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import useIsSufficientBalance from 'hooks/screen/Home/Staking/useIsSufficientBalance';
 import useIsValidStakingNetwork from 'hooks/screen/Staking/useIsValidStakingNetwork';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import useGoHome from 'hooks/screen/useGoHome';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
@@ -190,16 +191,14 @@ const StakingValidatorDetail = ({
     token,
   ]);
 
-  useEffect(() => {
-    const goHome = () => {
-      navigation.navigate('Home', {
-        screen: 'Staking',
-        params: {
-          screen: 'StakingBalances',
-        },
-      });
-    };
+  const goHome = useGoHome({
+    screen: 'Staking',
+    params: {
+      screen: 'StakingBalances',
+    },
+  });
 
+  useEffect(() => {
     if (isNetworkValid) {
       return;
     }
@@ -215,7 +214,7 @@ const StakingValidatorDetail = ({
         navigation.removeListener('focus', listener);
       };
     }
-  }, [isFocused, isNetworkValid, navigation]);
+  }, [goHome, isFocused, isNetworkValid, navigation]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>
