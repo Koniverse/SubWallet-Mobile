@@ -67,12 +67,18 @@ const StakeValidatorDetail = ({
   },
   navigation: { goBack },
 }: StakeValidatorDetailProps) => {
-  const { maxNominatorPerValidator } = networkValidatorsInfo;
+  const { maxNominatorPerValidator, bondedValidators, isBondedBefore } = networkValidatorsInfo;
   const network = useGetNetworkJson(networkKey);
 
   const token = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const isSufficientFund = useIsSufficientBalance(networkKey, validatorInfo.minBond);
+
+  const isBonding = useMemo(() => {
+    return isBondedBefore
+      ? !!bondedValidators.find(val => val.toLowerCase() === validatorInfo.address.toLowerCase())
+      : false;
+  }, [validatorInfo.address, bondedValidators, isBondedBefore]);
 
   const isMaxCommission = useMemo((): boolean => validatorInfo.commission === 100, [validatorInfo.commission]);
 
@@ -81,15 +87,17 @@ const StakeValidatorDetail = ({
       <View style={HeaderWrapperStyle}>
         <View style={HeaderContentStyle}>
           <ValidatorName
+            outerWrapperStyle={{ justifyContent: 'center' }}
             validatorInfo={validatorInfo}
             textStyle={HeaderTextStyle}
             iconColor={ColorMap.primary}
+            isBonding={isBonding}
             iconSize={20}
           />
         </View>
       </View>
     );
-  }, [validatorInfo]);
+  }, [validatorInfo, isBonding]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} headerContent={headerContent}>

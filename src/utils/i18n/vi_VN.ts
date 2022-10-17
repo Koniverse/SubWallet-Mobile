@@ -185,6 +185,7 @@ export const vi = {
     validator: 'Validator',
     collator: 'Collator',
     dApp: 'DApp',
+    cancelTask: 'Cancel task',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -250,6 +251,8 @@ export const vi = {
     compoundStakeAction: 'Compound',
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
+    createCompoundTask: 'Create task',
+    cancelCompoundTask: 'Cancel task',
   },
   tabName: {
     crypto: 'Crypto',

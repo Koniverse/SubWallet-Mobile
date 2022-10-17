@@ -1,19 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import { ChainBondingBasics, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetStakingNetworks from 'hooks/screen/Home/Staking/useGetStakingNetworks';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ListRenderItemInfo, StyleProp, View, ViewStyle } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import StakingNetworkItem from 'screens/Home/Staking/Network/StakingNetworkItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
 import { getChainBondingBasics } from '../../../../messaging';
 import { HomeNavigationProps } from 'routes/home';
-
-const WrapperStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-};
 
 const renderEmpty = (val?: string) => {
   if (val) {
@@ -64,15 +59,15 @@ const StakingNetworkList = () => {
     setLoading(true);
     if (needUpdate) {
       getChainBondingBasics(stakingNetworks, data => {
-        setChainBondingBasics(data);
-        setLoading(false);
+        if (needUpdate) {
+          setChainBondingBasics(data);
+          setLoading(false);
+        }
       })
         .then(data => {
           if (needUpdate) {
-            if (needUpdate) {
-              setChainBondingBasics(data);
-              setLoading(false);
-            }
+            setChainBondingBasics(data);
+            setLoading(false);
           }
         })
         .catch((e: Error) => {
@@ -95,20 +90,17 @@ const StakingNetworkList = () => {
   }, [navigation]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.stakingNetwork}>
-      <View style={WrapperStyle}>
-        <FlatListScreen
-          withSubHeader={false}
-          items={stakingNetworks}
-          autoFocus={false}
-          renderListEmptyComponent={renderEmpty}
-          renderItem={renderItem}
-          loading={loading}
-          filterFunction={filterFunction}
-          placeholder={'Search network...'}
-        />
-      </View>
-    </ContainerWithSubHeader>
+    <FlatListScreen
+      title={i18n.title.stakingNetwork}
+      onPressBack={goBack}
+      items={stakingNetworks}
+      autoFocus={false}
+      renderListEmptyComponent={renderEmpty}
+      renderItem={renderItem}
+      loading={loading}
+      filterFunction={filterFunction}
+      placeholder={'Search network...'}
+    />
   );
 };
 

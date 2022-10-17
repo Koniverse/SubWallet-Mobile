@@ -70,6 +70,12 @@ const MaxTextStyle: StyleProp<TextStyle> = {
   ...FontMedium,
 };
 
+const WarningStyle: StyleProp<ViewStyle> = {
+  marginBottom: 8,
+};
+
+const DEFAULT_AMOUNT = -1;
+
 const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }: StakeConfirmProps) => {
   const { validator, networkKey, networkValidatorsInfo, selectedAccount } = stakeParams;
 
@@ -87,12 +93,16 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
   const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
 
   const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
-  const [rawAmount, setRawAmount] = useState<number>(-1);
+  const [rawAmount, setRawAmount] = useState<number>(DEFAULT_AMOUNT);
   const [balanceError, setBalanceError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { reformatAmount, amountToUsd, balanceFormat } = useGetAmountInfo(rawAmount, networkKey);
 
   const warningMessage = useMemo((): string => {
+    if (rawAmount === DEFAULT_AMOUNT) {
+      return '';
+    }
+
     if (balanceError) {
       return i18n.warningMessage.balanceTooLow;
     }
@@ -160,7 +170,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     getBondingTxInfo({
       networkKey: networkKey,
       nominatorAddress: selectedAccount,
-      amount: reformatAmount,
+      amount: 0,
       validatorInfo: validator,
       isBondedBefore,
       bondedValidators,
@@ -171,19 +181,10 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
         const fee = (res.rawFee as number) || 0;
         const balance = parseFloat(senderFreeBalance);
         // @ts-ignore
-        inputBalanceRef.current.onChange((balance - fee).toString());
+        inputBalanceRef.current.onChange((balance - fee * 1.1).toString());
       }
     });
-  }, [
-    bondedValidators,
-    selectedAccount,
-    inputBalanceRef,
-    isBondedBefore,
-    networkKey,
-    reformatAmount,
-    senderFreeBalance,
-    validator,
-  ]);
+  }, [bondedValidators, selectedAccount, inputBalanceRef, isBondedBefore, networkKey, senderFreeBalance, validator]);
 
   const onChangeAmount = useCallback((value?: string) => {
     setBalanceError(false);
@@ -192,7 +193,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       return;
     }
     if (isNaN(parseFloat(value))) {
-      setRawAmount(-1);
+      setRawAmount(DEFAULT_AMOUNT - 1);
     } else {
       setRawAmount(parseFloat(value));
     }
@@ -270,8 +271,8 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
           <View style={RowCenterStyle}>
             {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
           </View>
-          {!!warningMessage && <Warning title={i18n.warningTitle.warning} message={warningMessage} isDanger={false} />}
         </ScrollView>
+        {!!warningMessage && <Warning style={WarningStyle} message={warningMessage} isDanger />}
         <View>
           <View style={BalanceContainerStyle}>
             <View style={TransferableContainerStyle}>

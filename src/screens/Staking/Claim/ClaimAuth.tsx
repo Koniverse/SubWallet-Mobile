@@ -184,7 +184,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
             backgroundColor={ColorMap.dark2}
             onPress={goBack}
           />
-          <SubmitButton isBusy={!isTxReady} title={i18n.common.continue} style={ButtonStyle} onPress={handleOpen} />
+          <SubmitButton disabled={!isTxReady} title={i18n.common.continue} style={ButtonStyle} onPress={handleOpen} />
         </View>
         <PasswordModal
           onConfirm={onSubmit}

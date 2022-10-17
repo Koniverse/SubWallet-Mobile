@@ -27,6 +27,7 @@ interface RightIconOpt {
   title?: string;
   disabled?: boolean;
   onPress: () => void;
+  color?: string;
 }
 
 interface Props<T> {
@@ -214,6 +215,7 @@ export function FlatListScreen<T>({
       onPressRightIcon={rightIconOption?.onPress}
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
+      rightIconColor={rightIconOption?.color}
       isShowPlaceHolder={false}>
       {renderContent()}
     </ContainerWithSubHeader>

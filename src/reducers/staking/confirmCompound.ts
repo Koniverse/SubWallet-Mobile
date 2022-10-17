@@ -47,7 +47,7 @@ const DEFAULT_DELEGATION_STATE: DelegationState = {
 const DEFAULT_COMPOUND_STATE: CompoundState = {
   accountMinimum: '0',
   isReadySubmit: false,
-  warningMessage: `${i18n.warningMessage.thresholdLagerThan} ${TURING_ED}`,
+  warningMessage: '',
 };
 
 export const DEFAULT_CONFIRM_COMPOUND_STATE: ConfirmCompoundState = {
