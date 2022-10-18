@@ -1,6 +1,6 @@
 import TransactionResult from 'components/TransactionResult/TransactionResult';
 import useGoHome from 'hooks/screen/useGoHome';
-import usePreventNavigatorGoBack from 'hooks/usePreventNavigatorGoBack';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback } from 'react';
 import { UnStakeResultProps } from 'routes/staking/unStakeAction';
 import i18n from 'utils/i18n/i18n';
@@ -14,7 +14,7 @@ const UnStakeResult = ({
   },
   navigation,
 }: UnStakeResultProps) => {
-  usePreventNavigatorGoBack();
+  useHandlerHardwareBackPress(true);
 
   const goHome = useGoHome({
     screen: 'Staking',
