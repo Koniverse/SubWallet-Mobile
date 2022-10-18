@@ -50,6 +50,8 @@ export type RootStackParamList = {
   WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;
   ClaimStakeAction: NavigatorScreenParams<ClaimStakeActionStackParamList>;
   CompoundStakeAction: NavigatorScreenParams<CompoundStakeActionStackParamList>;
+  NetworkConfig: undefined;
+  NetworkConfigDetail: { key: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -73,3 +75,4 @@ export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'Co
 export type ImportEvmTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportEvmToken'>;
 export type StakeActionProps = NativeStackScreenProps<RootStackParamList, 'StakeAction'>;
 export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeAction'>;
+export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;

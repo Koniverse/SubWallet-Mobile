@@ -206,6 +206,7 @@ export const en = {
     importSecretPhrase: 'Import Secret Phrase',
     importBySecretPhrase: 'Import By Secret Phrase',
     network: 'Network',
+    networks: 'Networks',
     removeAccount: 'Remove Account',
     importFromJson: 'Import By JSON File',
     selectToken: 'Select Token',
@@ -253,6 +254,7 @@ export const en = {
     chainSelect: 'Chain Select',
     createCompoundTask: 'Create task',
     cancelCompoundTask: 'Cancel task',
+    addProvider: 'Add Provider',
   },
   tabName: {
     crypto: 'Crypto',
@@ -525,5 +527,12 @@ export const en = {
     invalidContractForSelectedChain: 'Invalid contract for the selected chain',
     noTokenAvailable: 'No Token Available',
     unknownError: 'Encountered an error, please try again.',
+    networkHasBeenAlreadyAdded: 'This network has already been added',
+    providerHasExisted: 'This provider has existed',
+    providerIsNotTheSameNetwork: 'This provider is not the same network',
+    unableToConnectToTheProvider: 'Unable to connect to the provider',
+    providerRequirePrefix: 'Provider URL requires http/https or wss prefix',
+    successfullyAddANewCustomProvider: 'Successfully added a new custom provider',
+    errorConfigureNetwork: 'Error trying to configure network',
   },
 };

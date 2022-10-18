@@ -21,6 +21,7 @@ import BigN from 'bignumber.js';
 import { BalanceInfo } from '../types';
 import { BN_ZERO } from 'utils/chainBalances';
 import { IconProps } from 'phosphor-react-native';
+import { isValidURL } from 'utils/browser';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -577,4 +578,14 @@ export const getNetworkJsonByGenesisHash = (
   }
 
   return null;
+};
+
+export const isValidProvider = (provider: string) => {
+  if (isValidURL(provider)) {
+    return true;
+  } else if (provider.startsWith('wss://') || provider.startsWith('light://')) {
+    return true;
+  }
+
+  return false;
 };
