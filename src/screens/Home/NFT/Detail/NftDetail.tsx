@@ -6,6 +6,8 @@ import { TextField } from 'components/Field/Text';
 import ImagePreview from 'components/ImagePreview';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import useGoHome from 'hooks/screen/useGoHome';
+import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
@@ -13,6 +15,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -20,7 +23,7 @@ import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
-import { NFTDetailProps, NFTNavigationProps } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
 const ContainerHeaderStyle: StyleProp<any> = {
@@ -141,23 +144,31 @@ const NftDetail = ({
     params: { collectionId, nftId },
   },
 }: NFTDetailProps) => {
+  const navigation = useNavigation<RootNavigationProps>();
+
+  const toast = useToast();
+
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
   const nftList = useSelector((state: RootState) => state.nft.nftList);
-  const navigation = useNavigation<NFTNavigationProps>();
-  const collection = useMemo(() => {
-    return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
-  }, [collectionId, nftCollectionList]);
-  const data = useMemo(() => {
-    return nftList.find(item => nftId === `${item.collectionId}-${item.id}`) || {};
-  }, [nftId, nftList]);
-  const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
-  const { show, hideAll } = useToast();
-
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
-  const networkJson = useGetNetworkJson(data.chain as string) || {};
   const isAccountAll = useIsAccountAll();
+
+  const collection = useMemo(() => {
+    return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
+  }, [collectionId, nftCollectionList]);
+
+  const data = useMemo(() => {
+    return nftList.find(item => nftId === `${item.collectionId}-${item.id}`) || {};
+  }, [nftId, nftList]);
+
+  const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
+
+  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
+  useHandleGoHome({ goHome: goHome, networkKey: data.chain || chain || '', networkFocusRedirect: false });
+
+  const networkJson = useGetNetworkJson(data.chain as string) || {};
   const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
@@ -173,21 +184,26 @@ const NftDetail = ({
     }
   }, [currentAccount, isAccountAll, accounts, data.owner]);
 
+  const show = useCallback(
+    (message: string) => {
+      toast.hideAll();
+      toast.show(message);
+    },
+    [toast],
+  );
+
   const handleClickComingSoon = useCallback(() => {
-    hideAll();
     show(i18n.common.comingSoon);
-  }, [hideAll, show]);
+  }, [show]);
 
   const handleClickTransfer = useCallback(() => {
     if (!canSend || !data.chain) {
-      hideAll();
       show(i18n.common.anErrorHasOccurred);
 
       return;
     }
 
     if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(data.chain) <= -1 && !networkJson.isEthereum) {
-      hideAll();
       show(`Transferring is not supported for ${data.chain.toUpperCase()} network`);
 
       return;
@@ -208,7 +224,6 @@ const NftDetail = ({
     collectionImage,
     collectionRawId,
     currentAccount?.address,
-    hideAll,
     show,
   ]);
 
