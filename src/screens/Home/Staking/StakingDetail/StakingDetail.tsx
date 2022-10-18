@@ -1,13 +1,14 @@
 import { formatBalance } from '@polkadot/util';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
+import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import { StakingDataType } from 'hooks/types';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { RootNavigationProps } from 'routes/index';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
@@ -78,8 +79,9 @@ const StakingDetail = ({
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const goHome = useGoHome({ screen: 'Staking' });
-  const isFocused = useIsFocused();
+  const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
+  useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
+
   const isAllAccount = useIsAccountAll();
 
   const { data: stakingData, priceMap } = useFetchStaking();
@@ -114,22 +116,6 @@ const StakingDetail = ({
       },
     });
   }, [navigation, networkKey]);
-
-  useEffect(() => {
-    if (data === undefined) {
-      if (isFocused) {
-        goHome();
-      } else {
-        const listener = navigation.addListener('focus', () => {
-          goHome();
-        });
-
-        return () => {
-          navigation.removeListener('focus', listener);
-        };
-      }
-    }
-  }, [data, goHome, isFocused, navigation]);
 
   if (data === undefined) {
     return <></>;
