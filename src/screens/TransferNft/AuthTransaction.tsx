@@ -298,7 +298,6 @@ const AuthTransaction = (props: Props) => {
     if (loading) {
       return;
     }
-    Keyboard.dismiss();
 
     setLoading(true);
     Keyboard.dismiss();
