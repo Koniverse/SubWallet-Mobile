@@ -11,7 +11,7 @@ import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
 import { ChainsTab } from 'screens/Home/Crypto/tabs/ChainsTab';
 import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import BigN from 'bignumber.js';
-import { BalanceInfo } from '../../../../types';
+import { BalanceInfo } from 'types/index';
 import { ListRenderItemInfo } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';

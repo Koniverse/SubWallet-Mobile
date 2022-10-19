@@ -1,6 +1,6 @@
 import React from 'react';
 import { Linking, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { CrowdloanItemType } from '../../../types';
+import { CrowdloanItemType } from 'types/index';
 import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { BalanceVal } from 'components/BalanceVal';

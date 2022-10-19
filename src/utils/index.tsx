@@ -18,7 +18,7 @@ import { ColorMap } from 'styles/color';
 import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
-import { BalanceInfo } from '../types';
+import { BalanceInfo } from 'types/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import { IconProps } from 'phosphor-react-native';
 

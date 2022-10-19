@@ -1,4 +1,4 @@
-import { AccountInfoItem, BalanceInfo, BalanceSubInfo } from '../types';
+import { AccountInfoItem, BalanceInfo, BalanceSubInfo } from 'types/index';
 import { NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { getTokenBalanceKey, isEmptyArray } from 'utils/index';

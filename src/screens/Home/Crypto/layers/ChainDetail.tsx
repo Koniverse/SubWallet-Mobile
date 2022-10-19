@@ -8,7 +8,7 @@ import * as Tabs from 'react-native-collapsible-tab-view';
 import { isItemAllowedToShow, renderTabBar } from 'screens/Home/Crypto/layers/shared';
 import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
 import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
-import { BalanceInfo } from '../../../../types';
+import { BalanceInfo } from 'types/index';
 import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';

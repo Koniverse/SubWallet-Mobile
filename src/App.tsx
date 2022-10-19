@@ -70,6 +70,7 @@ import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
+import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -279,6 +280,7 @@ export const App = () => {
                         <Stack.Screen name="ClaimStakeAction" component={ClaimActionScreen} />
                         <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
                         <Stack.Screen name="CompoundStakeAction" component={CompoundActionScreen} />
+                        <Stack.Screen name="ImportAccountQr" component={ImportAccountQrScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

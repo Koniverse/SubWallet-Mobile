@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem, getGroupKey } from 'screens/Home/Crowdloans/CrowdloanItem';
-import { CrowdloanItemType } from '../../../types';
+import { CrowdloanItemType } from 'types/index';
 import { FunnelSimple, Rocket } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { CrowdloanFilter } from 'screens/Home/Crowdloans/CrowdloanFilter';

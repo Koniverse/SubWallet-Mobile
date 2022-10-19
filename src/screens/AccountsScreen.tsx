@@ -6,7 +6,7 @@ import { Account } from 'components/Account';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
-import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus } from 'phosphor-react-native';
+import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus, QrCode } from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
@@ -72,6 +72,14 @@ export const AccountsScreen = () => {
       title: i18n.title.importFromJson,
       onCLickButton: () => {
         navigation.navigate('RestoreJson');
+        setModalVisible(false);
+      },
+    },
+    {
+      icon: QrCode,
+      title: i18n.title.importByQr,
+      onCLickButton: () => {
+        navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
         setModalVisible(false);
       },
     },

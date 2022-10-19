@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO, getBalances } from 'utils/chainBalances';
 import { CrowdloanContributeValueType } from 'hooks/types';
-import { CrowdloanItemType } from '../../../../types';
+import { CrowdloanItemType } from 'types/index';
 import BigN from 'bignumber.js';
 import { useMemo } from 'react';
 
