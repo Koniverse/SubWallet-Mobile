@@ -1,6 +1,8 @@
 import React, { Suspense, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
+import { RESULTS } from 'react-native-permissions';
+import { requestCameraPermission } from 'utils/validators';
 import Text from '../../components/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
@@ -76,9 +78,13 @@ export const FirstScreen = () => {
     {
       icon: QrCode,
       title: i18n.title.importByQr,
-      onCLickButton: () => {
-        navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
-        setSelectModalVisible(false);
+      onCLickButton: async () => {
+        const result = await requestCameraPermission();
+
+        if (result === RESULTS.GRANTED) {
+          navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
+          setSelectModalVisible(false);
+        }
       },
     },
   ];
