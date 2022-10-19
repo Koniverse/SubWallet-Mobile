@@ -536,5 +536,6 @@ export const vi = {
     providerRequirePrefix: 'Provider URL requires http/https or wss prefix',
     successfullyAddANewCustomProvider: 'Successfully added a new custom provider',
     errorConfigureNetwork: 'Error trying to configure network',
+    noProviderAvailable: 'No Provider Available',
   },
 };

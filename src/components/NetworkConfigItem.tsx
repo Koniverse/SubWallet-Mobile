@@ -41,7 +41,9 @@ export const NetworkConfigItem = ({ item, onPressConfigDetailButton }: Props) =>
           <View style={{ paddingHorizontal: 16, flex: 1 }}>
             <Text style={textStyle}>{item.chain}</Text>
             <Text numberOfLines={1} style={subTextStyle}>
-              {item.customProviders ? item.customProviders[item.currentProvider] : item.providers[item.currentProvider]}
+              {item.currentProvider.startsWith('custom') && item.customProviders
+                ? item.customProviders[item.currentProvider]
+                : item.providers[item.currentProvider]}
             </Text>
           </View>
         </View>

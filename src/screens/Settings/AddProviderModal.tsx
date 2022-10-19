@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { SubWalletModal } from 'components/SubWalletModal';
-import { StyleProp, Text, View } from 'react-native';
+import { Keyboard, StyleProp, Text, View } from 'react-native';
 import InputText from 'components/Input/InputText';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { SubmitButton } from 'components/SubmitButton';
@@ -44,6 +44,7 @@ export const AddProviderModal = ({ loading, modalVisible, onCloseModal, createPr
 
   const onSubmit = (formState: FormState) => {
     const provider = formState.data.provider;
+    Keyboard.dismiss();
     createProvider(provider, onUpdateErrors).then(resp => {
       if (resp) {
         onChangeValue('provider')('');
@@ -57,7 +58,7 @@ export const AddProviderModal = ({ loading, modalVisible, onCloseModal, createPr
   });
 
   return (
-    <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onCloseModal}>
+    <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={!loading ? onCloseModal : undefined}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitle}>{i18n.title.addProvider}</Text>
         <InputText
