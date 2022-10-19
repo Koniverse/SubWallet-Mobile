@@ -6,7 +6,7 @@ import { RootState } from 'stores/index';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
-import { BalanceInfo } from '../../../types';
+import { BalanceInfo } from 'types/index';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { StyleProp, View } from 'react-native';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';

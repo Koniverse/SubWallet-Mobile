@@ -1,6 +1,7 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { ImportAccountQrStackParamList } from 'routes/account/import/importAccountQr';
 import { HomeStackParamList } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { ClaimStakeActionStackParamList } from 'routes/staking/claimAction';
@@ -52,6 +53,7 @@ export type RootStackParamList = {
   CompoundStakeAction: NavigatorScreenParams<CompoundStakeActionStackParamList>;
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
+  ImportAccountQr: NavigatorScreenParams<ImportAccountQrStackParamList>;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

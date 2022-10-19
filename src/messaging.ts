@@ -104,6 +104,11 @@ import {
   ValidateEvmTokenRequest,
   ValidateNetworkResponse,
   TuringCancelStakeCompoundParams,
+  RequestAccountCreateExternalV2,
+  ResponseCheckPublicAndSecretKey,
+  AccountExternalError,
+  RequestAccountCreateWithSecretKey,
+  ResponseAccountCreateWithSecretKey,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
@@ -1111,4 +1116,23 @@ export async function submitTuringCancelStakeCompounding(
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(staking.submitTuringCancelCompound)', params, callback);
+}
+
+export async function checkPublicAndPrivateKey(
+  publicKey: string,
+  secretKey: string,
+): Promise<ResponseCheckPublicAndSecretKey> {
+  return sendMessage('pri(accounts.checkPublicAndSecretKey)', { publicKey, secretKey });
+}
+
+export async function createAccountExternalV2(
+  request: RequestAccountCreateExternalV2,
+): Promise<AccountExternalError[]> {
+  return sendMessage('pri(accounts.create.externalV2)', request);
+}
+
+export async function createAccountWithSecret(
+  request: RequestAccountCreateWithSecretKey,
+): Promise<ResponseAccountCreateWithSecretKey> {
+  return sendMessage('pri(accounts.create.withSecret)', request);
 }

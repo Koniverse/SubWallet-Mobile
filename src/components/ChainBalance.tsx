@@ -5,7 +5,7 @@ import Text from 'components/Text';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
-import { BalanceInfo } from '../types';
+import { BalanceInfo } from 'types/index';
 import { BalanceVal } from 'components/BalanceVal';
 import { BN_ZERO } from 'utils/chainBalances';
 

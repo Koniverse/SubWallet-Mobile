@@ -1,5 +1,5 @@
 import BigN from 'bignumber.js';
-import { BalanceInfo } from '../types';
+import { BalanceInfo } from 'types/index';
 import { TokenBalanceItemType } from 'types/ui-types';
 import {
   CrowdloanParaState,
