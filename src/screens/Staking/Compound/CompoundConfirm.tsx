@@ -38,6 +38,7 @@ import {
   getTuringStakeCompoundTxInfo,
 } from '../../../messaging';
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -96,7 +97,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
   const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  useHandlerHardwareBackPress(loading);
   const { reformatAmount, amountToUsd, balanceFormat } = useGetAmountInfo(nominatedAmount, networkKey);
 
   const selectedValidator = useMemo((): DelegationItem | undefined => {
