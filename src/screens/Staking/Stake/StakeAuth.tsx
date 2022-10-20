@@ -140,7 +140,7 @@ const StakeAuth = ({
 
   useEffect(() => {
     if (transactionResult) {
-      navigation.replace('StakeAction', {
+      navigation.navigate('StakeAction', {
         screen: 'StakeResult',
         params: {
           stakeParams: stakeParams,

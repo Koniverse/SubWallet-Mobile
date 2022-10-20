@@ -277,13 +277,33 @@ export const App = () => {
                         <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                         <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
-                        <Stack.Screen name="StakeAction" component={StakeActionScreen} />
+                        <Stack.Screen
+                          name="StakeAction"
+                          component={StakeActionScreen}
+                          options={{ gestureEnabled: false }}
+                        />
                         <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                        <Stack.Screen name="UnStakeAction" component={UnStakeActionScreen} />
-                        <Stack.Screen name="ClaimStakeAction" component={ClaimActionScreen} />
-                        <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
-                        <Stack.Screen name="CompoundStakeAction" component={CompoundActionScreen} />
+                        <Stack.Screen
+                          name="UnStakeAction"
+                          component={UnStakeActionScreen}
+                          options={{ gestureEnabled: false }}
+                        />
+                        <Stack.Screen
+                          name="ClaimStakeAction"
+                          component={ClaimActionScreen}
+                          options={{ gestureEnabled: false }}
+                        />
+                        <Stack.Screen
+                          name="WithdrawStakeAction"
+                          component={WithdrawActionScreen}
+                          options={{ gestureEnabled: false }}
+                        />
+                        <Stack.Screen
+                          name="CompoundStakeAction"
+                          component={CompoundActionScreen}
+                          options={{ gestureEnabled: false }}
+                        />
                         <Stack.Screen name="ImportAccountQr" component={ImportAccountQrScreen} />
                       </Stack.Group>
                       <Stack.Group

@@ -10,7 +10,7 @@ const ClaimActionScreen = () => {
   return (
     <WithdrawActionStack.Navigator screenOptions={{ headerShown: false }}>
       <WithdrawActionStack.Screen name="ClaimAuth" component={ClaimAuth} />
-      <WithdrawActionStack.Screen name="ClaimResult" component={ClaimResult} />
+      <WithdrawActionStack.Screen name="ClaimResult" component={ClaimResult} options={{ gestureEnabled: false }} />
     </WithdrawActionStack.Navigator>
   );
 };

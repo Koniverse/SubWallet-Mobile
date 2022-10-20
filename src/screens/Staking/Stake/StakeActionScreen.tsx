@@ -13,7 +13,7 @@ const StakeActionScreen = () => {
     <StakeActionStack.Navigator screenOptions={{ headerShown: false }}>
       <StakeActionStack.Screen name="StakeConfirm" component={StakeConfirm} />
       <StakeActionStack.Screen name="StakeAuth" component={StakeAuth} />
-      <StakeActionStack.Screen name="StakeResult" component={StakeResult} />
+      <StakeActionStack.Screen name="StakeResult" component={StakeResult} options={{ gestureEnabled: false }} />
       <StakeActionStack.Screen name="StakeValidatorDetail" component={StakeValidatorDetail} />
     </StakeActionStack.Navigator>
   );
