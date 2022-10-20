@@ -41,11 +41,7 @@ const SUBSTRATE_PREFIX = 'substrate';
 const ETHEREUM_PREFIX = 'ethereum';
 const SECRET_PREFIX = 'secret';
 
-const ACCEPT_PREFIXES = [SECRET_PREFIX];
-
-const renderError = (prefix: string): string => {
-  return `${i18n.warningMessage.invalidPrefix} '${ACCEPT_PREFIXES.join(' or ')}', found '${prefix}'`;
-};
+// const ACCEPT_PREFIXES = [SECRET_PREFIX];
 
 const ImportAccountQrScan = () => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -71,7 +67,7 @@ const ImportAccountQrScan = () => {
         if (prefix === SUBSTRATE_PREFIX || prefix === SECRET_PREFIX) {
           [prefix, content, genesisHash, ...name] = arr;
           if (prefix === SUBSTRATE_PREFIX) {
-            setError(renderError(prefix));
+            setError(i18n.warningMessage.invalidQRCode);
             return;
           }
         } else if (prefix === ETHEREUM_PREFIX) {
@@ -79,10 +75,10 @@ const ImportAccountQrScan = () => {
           genesisHash = '';
           content = content.substring(0, 42);
           isEthereum = true;
-          setError(renderError(prefix));
+          setError(i18n.warningMessage.invalidQRCode);
           return;
         } else {
-          setError(renderError(prefix));
+          setError(i18n.warningMessage.invalidQRCode);
           return;
         }
 

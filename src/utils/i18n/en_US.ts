@@ -515,6 +515,8 @@ export const en = {
     unStakeEverythingOrMaxOf: 'You can unstake everything or a maximum of',
     unStakeMaxOf: 'You can unstake a maximum of',
     invalidPrefix: 'Invalid prefix received, expected',
+    invalidQRCode: 'Invalid QR code',
+    cannotExtractAddress: "Can't extract address from the QR code",
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

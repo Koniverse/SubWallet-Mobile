@@ -198,7 +198,7 @@ const ImportAccountQrConfirm = ({
               setAddress(_address);
               setIsEthereum(_isEthereum);
             } else {
-              setErrors(['Invalid public and private key']);
+              setErrors([i18n.warningMessage.cannotExtractAddress]);
             }
             setLoading(false);
           }
