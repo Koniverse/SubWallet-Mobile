@@ -3,6 +3,7 @@ import { FlatList, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
+import { RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
@@ -17,6 +18,7 @@ import { AccountActionType } from 'types/ui-types';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { requestCameraPermission } from 'utils/validators';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
 import { updateAccountsWaitingStatus } from 'stores/updater';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
@@ -78,9 +80,13 @@ export const AccountsScreen = () => {
     {
       icon: QrCode,
       title: i18n.title.importByQr,
-      onCLickButton: () => {
-        navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
-        setModalVisible(false);
+      onCLickButton: async () => {
+        const result = await requestCameraPermission();
+
+        if (result === RESULTS.GRANTED) {
+          navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
+          setModalVisible(false);
+        }
       },
     },
   ];
