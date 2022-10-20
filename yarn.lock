@@ -3566,7 +3566,35 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.31.0.tgz#489e3a496081dc3ee7ef5ef2eb513962d5d29351"
   integrity sha512-OSOmdjaq9foXfHBy9aLVMwGheygvsiZlv4dggnLOYOuhSmNCsSB/PaW4DBz+/tSdK1Fo9+ZiFW6cF24RA+m0sw==
 
-"@subwallet/extension-base@0.6.7-1wr", "@subwallet/extension-base@^0.6.7-1":
+"@subwallet/extension-base@0.6.7-2wr":
+  version "0.6.7-2wr"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.6.7-2wr.tgz#46797bbd7de729482be406dcc5f8d7d07abead68"
+  integrity sha512-F0jOU/3p/937hd/b/A5F1ZjRDKE8i4xIBKv+H+zryjQiP1sTWR+3/M5HpaG9JImoCJB/gzbPeRfZ5/+YHlCBPg==
+  dependencies:
+    "@babel/runtime" "^7.19.0"
+    "@ethereumjs/common" "^2.6.5"
+    "@polkadot/api" "^9.4.3"
+    "@polkadot/keyring" "^10.1.9"
+    "@polkadot/networks" "^10.1.9"
+    "@polkadot/phishing" "^0.18.9"
+    "@polkadot/rpc-provider" "^9.4.3"
+    "@polkadot/types" "^9.4.3"
+    "@polkadot/ui-keyring" "^2.9.10"
+    "@polkadot/ui-settings" "^2.9.10"
+    "@polkadot/util" "^10.1.9"
+    "@polkadot/util-crypto" "^10.1.9"
+    "@subwallet/extension-chains" "^0.6.7-1"
+    "@subwallet/extension-dapp" "^0.6.7-1"
+    "@subwallet/extension-inject" "^0.6.7-1"
+    ethereumjs-tx "^2.1.2"
+    eventemitter3 "^4.0.7"
+    rlp "^3.0.0"
+    rxjs "^7.5.7"
+    web3 "^1.8.0"
+    web3-core "^1.8.0"
+    web3-core-helpers "^1.8.0"
+
+"@subwallet/extension-base@^0.6.7-1":
   version "0.6.7-1wr"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.6.7-1wr.tgz#9018e6934bb1df58f8e7ce9378bd39fe1913fb8e"
   integrity sha512-Eax03Snr5PgYXoQQUB8TDKAXNmUGUbxUxEEfbaC0EH5/2hnYJ/t86xZtvHSHyX6M4JAb1XFo1CuSrUDvN6INSA==
@@ -3628,10 +3656,10 @@
     "@polkadot/x-global" "^10.1.9"
     web3-core "^1.8.0"
 
-"@subwallet/extension-koni-base@0.6.7-1wr":
-  version "0.6.7-1wr"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.6.7-1wr.tgz#c50d1cdb9eb9294f2535d1c768bad1e5a7caffd0"
-  integrity sha512-25eyU7LKMRIvPV3QymJ5Ogqo7xTXxAiUt6apP49TOqxeg7nuv2Rpp9AgV/jDwxniD9NEKcLKOZHgOP4n7z8fmQ==
+"@subwallet/extension-koni-base@0.6.7-2wr":
+  version "0.6.7-2wr"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.6.7-2wr.tgz#e79b15a2f9e582d0a64a7a842bad048c6d49355a"
+  integrity sha512-AuTkhzX1kqJoWFCZ6A4vbGNDVImjGdlmO9NmenXjZvWGPJsFeWdCLIIVKqDBvWIgagkC4YhPE8QQjtilVe7ecw==
   dependencies:
     "@acala-network/api" "^4.1.5"
     "@acala-network/type-definitions" "^4.1.5"
