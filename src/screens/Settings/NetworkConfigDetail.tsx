@@ -12,9 +12,10 @@ import { NETWORK_ERROR, NetworkJson } from '@subwallet/extension-base/background
 import { completeConfirmation, upsertNetworkMap, validateNetwork } from '../../messaging';
 import { useToast } from 'react-native-toast-notifications';
 import { useNavigation } from '@react-navigation/native';
-import { Plus } from 'phosphor-react-native';
+import { Plus, PushPinSlash } from 'phosphor-react-native';
 import { AddProviderModal } from 'screens/Settings/AddProviderModal';
 import { isValidProvider } from 'utils/index';
+import { EmptyList } from 'components/EmptyList';
 
 function filterFunction(items: Record<string, string>[], searchString: string) {
   return items.filter(item => item.text.toLowerCase().includes(searchString.toLowerCase()));
@@ -82,7 +83,7 @@ export const NetworkConfigDetail = ({
   };
 
   const renderEmptyList = () => {
-    return <></>;
+    return <EmptyList icon={PushPinSlash} title={i18n.errorMessage.noProviderAvailable} />;
   };
 
   const handleCreateProvider = async (
