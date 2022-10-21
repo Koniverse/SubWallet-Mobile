@@ -41,6 +41,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
 import { Warning } from 'components/Warning';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -103,7 +104,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
   const [extrinsicHash, setExtrinsicHash] = useState('');
   const [isTxSuccess, setIsTxSuccess] = useState(false);
   const [txError, setTxError] = useState('');
-
+  useHandlerHardwareBackPress(loading);
   const onPressQrButton = async () => {
     const result = await requestCameraPermission();
 

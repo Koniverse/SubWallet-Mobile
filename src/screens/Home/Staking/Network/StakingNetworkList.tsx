@@ -2,13 +2,15 @@ import { useNavigation } from '@react-navigation/native';
 import { ChainBondingBasics, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGetStakingNetworks from 'hooks/screen/Home/Staking/useGetStakingNetworks';
+import useGoHome from 'hooks/screen/useGoHome';
+import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ListRenderItemInfo } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
 import StakingNetworkItem from 'screens/Home/Staking/Network/StakingNetworkItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
 import { getChainBondingBasics } from '../../../../messaging';
-import { HomeNavigationProps } from 'routes/home';
 
 const renderEmpty = (val?: string) => {
   if (val) {
@@ -25,7 +27,10 @@ const filterFunction = (items: NetworkJson[], searchString: string) => {
 };
 
 const StakingNetworkList = () => {
-  const navigation = useNavigation<HomeNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
+
+  const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
+  useHandleGoHome({ goHome: goHome, networkFocusRedirect: true });
 
   const stakingNetworks = useGetStakingNetworks();
   const [chainBondingBasics, setChainBondingBasics] = useState<Record<string, ChainBondingBasics>>({});
@@ -34,10 +39,13 @@ const StakingNetworkList = () => {
   const handlePress = useCallback(
     (network: NetworkJson): (() => void) => {
       return () => {
-        navigation.navigate('Staking', {
-          screen: 'StakingValidators',
+        navigation.navigate('Home', {
+          screen: 'Staking',
           params: {
-            networkKey: network.key,
+            screen: 'StakingValidators',
+            params: {
+              networkKey: network.key,
+            },
           },
         });
       };
@@ -83,16 +91,10 @@ const StakingNetworkList = () => {
     };
   }, [stakingNetworks]);
 
-  const goBack = useCallback(() => {
-    navigation.navigate('Staking', {
-      screen: 'StakingBalances',
-    });
-  }, [navigation]);
-
   return (
     <FlatListScreen
       title={i18n.title.stakingNetwork}
-      onPressBack={goBack}
+      onPressBack={navigation.goBack}
       items={stakingNetworks}
       autoFocus={false}
       renderListEmptyComponent={renderEmpty}

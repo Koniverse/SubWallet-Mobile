@@ -70,6 +70,9 @@ import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
+import { NetworkConfig } from 'screens/Settings/NetworkConfig';
+import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
+import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -270,6 +273,8 @@ export const App = () => {
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
                         <Stack.Screen name="ExportAccount" component={ExportAccount} />
                         <Stack.Screen name="EvmTokens" component={Tokens} />
+                        <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
+                        <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                         <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
                         <Stack.Screen name="StakeAction" component={StakeActionScreen} />
@@ -279,6 +284,7 @@ export const App = () => {
                         <Stack.Screen name="ClaimStakeAction" component={ClaimActionScreen} />
                         <Stack.Screen name="WithdrawStakeAction" component={WithdrawActionScreen} />
                         <Stack.Screen name="CompoundStakeAction" component={CompoundActionScreen} />
+                        <Stack.Screen name="ImportAccountQr" component={ImportAccountQrScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

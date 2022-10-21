@@ -140,6 +140,8 @@ const handleSelectDelegationAction = (
       ...state,
       selectedDelegation: selected.owner,
       nominatedAmount: selected.amount,
+      accountMinimum: '0',
+      warningMessage: '',
     };
   } else {
     return { ...state };

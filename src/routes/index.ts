@@ -1,6 +1,7 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { ImportAccountQrStackParamList } from 'routes/account/import/importAccountQr';
 import { HomeStackParamList } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { ClaimStakeActionStackParamList } from 'routes/staking/claimAction';
@@ -50,6 +51,9 @@ export type RootStackParamList = {
   WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;
   ClaimStakeAction: NavigatorScreenParams<ClaimStakeActionStackParamList>;
   CompoundStakeAction: NavigatorScreenParams<CompoundStakeActionStackParamList>;
+  NetworkConfig: undefined;
+  NetworkConfigDetail: { key: string };
+  ImportAccountQr: NavigatorScreenParams<ImportAccountQrStackParamList>;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -73,3 +77,4 @@ export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'Co
 export type ImportEvmTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportEvmToken'>;
 export type StakeActionProps = NativeStackScreenProps<RootStackParamList, 'StakeAction'>;
 export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeAction'>;
+export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;

@@ -1,10 +1,13 @@
 import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
+import useGoHome from 'hooks/screen/useGoHome';
+import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import React, { useCallback, useMemo } from 'react';
 import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
 import NftItem from './NftItem';
 import i18n from 'utils/i18n/i18n';
-import { NFTCollectionProps, NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTCollectionProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
@@ -36,22 +39,34 @@ const NftItemList = ({
     params: { collectionId },
   },
 }: NFTCollectionProps) => {
+  const navigation = useNavigation<RootNavigationProps>();
+
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
   const nftList = useSelector((state: RootState) => state.nft.nftList);
+
   const collection = useMemo(() => {
     return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
   }, [collectionId, nftCollectionList]);
+
   const nftItems = useMemo(() => {
     return nftList.filter(item => item.collectionId === (collection?.collectionId || '__'));
   }, [collection?.collectionId, nftList]);
-  const navigation = useNavigation<NFTNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
+
+  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
+  useHandleGoHome({ goHome: goHome, networkKey: collection?.chain || '', networkFocusRedirect: false });
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<_NftItem>) => {
       const key = `${item.collectionId}-${item.id}`;
       const onPress = () => {
-        navigation.navigate('NftDetail', { collectionId, nftId: key });
+        navigation.navigate('Home', {
+          screen: 'NFT',
+          params: {
+            screen: 'NftDetail',
+            params: { collectionId, nftId: key },
+          },
+        });
       };
 
       return <NftItem key={key} nftItem={item} collectionImage={collection?.image} onPress={onPress} />;

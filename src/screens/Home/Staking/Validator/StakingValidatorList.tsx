@@ -1,10 +1,10 @@
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
-import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
-import useIsValidStakingNetwork from 'hooks/screen/Staking/useIsValidStakingNetwork';
-import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandleGoHome from 'hooks/screen/useHandleGoHome';
+import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
+import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { ListRenderItemInfo } from 'react-native';
@@ -76,13 +76,14 @@ const StakingValidatorList = ({
   navigation: { goBack },
 }: StakingValidatorsProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const isFocused = useIsFocused();
+
+  const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
+  useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
 
   const network = useGetNetworkJson(networkKey);
   const validatorType = useGetValidatorType(networkKey);
-  const isNetworkValid = useIsValidStakingNetwork(networkKey);
 
   const headerTitle = useMemo((): string => {
     switch (validatorType) {
@@ -182,31 +183,6 @@ const StakingValidatorList = ({
     },
     [validatorType],
   );
-
-  const goHome = useGoHome({
-    screen: 'Staking',
-    params: {
-      screen: 'StakingNetworks',
-    },
-  });
-
-  useEffect(() => {
-    if (isNetworkValid) {
-      return;
-    }
-
-    if (isFocused) {
-      goHome();
-    } else {
-      const listener = navigation.addListener('focus', () => {
-        goHome();
-      });
-
-      return () => {
-        navigation.removeListener('focus', listener);
-      };
-    }
-  }, [goHome, isFocused, isNetworkValid, navigation]);
 
   useEffect(() => {
     let mount = true;
