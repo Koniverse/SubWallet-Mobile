@@ -1,4 +1,5 @@
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export const NovaScript = `
 (function () {  
@@ -73,7 +74,91 @@ export const BridgeScript = `(function () {
 })();`;
 
 export const DAppScript = `(function () {
-    window.ethereum = window.SubWallet;
+  if (window.SubWallet) {
+    window.SubWallet.isMetaMask = true;
+  }
+
+  if (window.ethereum) {
     window.ethereum.isMetaMask = true;
-    window.injectedWeb3['polkadot-js'] = window.injectedWeb3['subwallet-js'];
-  })();`;
+  }
+
+  const hostName = window.location.hostname;
+
+  if (hostName === 'app.solarbeam.io') {
+    localStorage.setItem(
+      'walletConnected',
+      JSON.stringify({
+        isMetaMask: false,
+        isSubWallet: true,
+      }),
+    );
+
+    window.postMessage(
+      {
+        id: 'app.solarbeam.io-${getId()}',
+        message: 'evm(request)',
+        origin: '${MESSAGE_ORIGIN_PAGE}',
+        request: {
+          params: [
+            {
+              chainId: '0x505',
+            },
+          ],
+          method: 'wallet_switchEthereumChain',
+        },
+      },
+      '*',
+    );
+  } else if (hostName === 'app.solarflare.io') {
+    localStorage.setItem(
+      'walletConnected',
+      JSON.stringify({
+        isMetaMask: false,
+        isSubWallet: true,
+      }),
+    );
+  } else if (hostName === 'app.beamswap.io') {
+    const originSimpleUser = JSON.parse(localStorage.getItem('redux_localstorage_simple_user'));
+    if (originSimpleUser.connector !== 'SUBWALLET') {
+      originSimpleUser.connector = 'SUBWALLET';
+      localStorage.setItem('redux_localstorage_simple_user', JSON.stringify(originSimpleUser));
+    }
+  }
+
+  window.injectedWeb3['polkadot-js'] = window.injectedWeb3['subwallet-js'];
+
+  const autoTriggerEthereumHosts = [
+    'app.stellaswap.com',
+    'app.solarflare.io',
+    'marketplace.moonsama.com',
+    'app.arthswap.org',
+    'app.impossible.finance',
+    'dappradar.com',
+    'tofunft.com',
+    'cbridge.celer.network',
+    'www.xdao.app',
+    'moonwell.fi',
+    'portal.evolution.land',
+  ];
+
+  if (autoTriggerEthereumHosts.includes(hostName)) {
+    window.SubWallet?.enable().catch(e => console.log(e));
+  }
+
+  const autoTriggerSubstrateHosts = [
+    'bifrost.app',
+    'kodadot.xyz',
+    'www.dotmarketcap.com',
+    'polkadot.polkassembly.io',
+    'distribution.acala.network',
+    'dapp.robonomics.network',
+    'apps.litentry.com',
+    'app.basilisk.cloud',
+    'app.zeitgeist.pm',
+    'ace.web3go.xyz',
+  ];
+
+  if (autoTriggerSubstrateHosts.includes(hostName)) {
+    window.injectedWeb3['subwallet-js']?.enable().catch(e => console.log(e));
+  }
+})()`;

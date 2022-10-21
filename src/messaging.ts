@@ -17,7 +17,7 @@ import type {
   SigningRequest,
   SubscriptionMessageTypes,
 } from '@subwallet/extension-base/background/types';
-import { RequestCurrentAccountAddress } from '@subwallet/extension-base/background/types';
+import { RequestCurrentAccountAddress, RequestSignatures } from '@subwallet/extension-base/background/types';
 import type { Message } from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@polkadot/keyring/types';
 import type { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
@@ -130,6 +130,7 @@ type Handlers = Record<string, Handler>;
 type MessageType = 'PRI' | 'PUB' | 'EVM' | 'UNKNOWN';
 const handlers: Handlers = {};
 const handlerTypeMap: Record<string, MessageType> = {};
+const handlerMessageMap: Record<string, keyof RequestSignatures> = {};
 let webviewRef: RefObject<WebView | undefined>;
 let webviewEvents: EventEmitter;
 let status: WebRunnerStatus = 'init';
@@ -148,6 +149,7 @@ export async function clearWebRunnerHandler(id: string): Promise<boolean> {
 
   if (handlerTypeMapValue) {
     delete handlerTypeMap[id];
+    delete handlerMessageMap[id];
 
     if (['PRI', 'PUB', 'EVM'].includes(handlerTypeMapValue)) {
       return cancelSubscription(id);
@@ -194,6 +196,7 @@ export const setupWebview = (viewRef: RefObject<WebView | undefined>, eventEmitt
         handler.reject(new WebviewNotReadyError('Webview is not ready'));
         delete handlers[id];
         delete handlerTypeMap[id];
+        delete handlerMessageMap[id];
       });
     });
   }
@@ -232,6 +235,7 @@ export const listenMessage = (
   if (!handler.subscriber) {
     delete handlers[handlerId];
     delete handlerTypeMap[handlerId];
+    delete handlerMessageMap[handlerId];
   }
 
   if (data.subscription) {
@@ -246,6 +250,7 @@ export const listenMessage = (
 // @ts-ignore
 export const postMessage = ({ id, message, request, origin }) => {
   handlerTypeMap[id] = getMessageType(message);
+  handlerMessageMap[id] = message;
 
   const _post = () => {
     const injection = 'window.postMessage(' + JSON.stringify({ id, message, request, origin }) + ')';
@@ -267,6 +272,10 @@ export const postMessage = ({ id, message, request, origin }) => {
     });
   }
 };
+
+export function getMessageByHandleId(id: string): string | undefined {
+  return handlerMessageMap[id];
+}
 
 export function sendMessage<TMessageType extends MessageTypesWithNullRequest>(
   message: TMessageType,

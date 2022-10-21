@@ -7,7 +7,7 @@ import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/Button';
 import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { BrowserItem } from 'components/BrowserItem';
-import { dAppSites } from '../../../predefined/dAppSites';
+import { predefinedDApps } from '../../../predefined/dAppSites';
 import { GlobeHemisphereEast } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
@@ -17,7 +17,7 @@ import { getHostName, getValidURL } from 'utils/browser';
 import { createNewTab } from 'stores/updater';
 
 function doFilter(searchString: string) {
-  return dAppSites.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
+  return predefinedDApps.dapps.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
 }
 
 type SearchItemType = {
@@ -52,14 +52,14 @@ const searchResultStyle: StyleProp<any> = {
 export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
-  const [filteredList, setFilteredList] = useState<SearchItemType[]>(dAppSites);
+  const [filteredList, setFilteredList] = useState<SearchItemType[]>(predefinedDApps.dapps);
   const isOpenNewTab = params && params.isOpenNewTab;
 
   useEffect(() => {
     if (searchString) {
       setFilteredList([getFirstSearchItem(searchString), ...doFilter(searchString)]);
     } else {
-      setFilteredList(dAppSites);
+      setFilteredList(predefinedDApps.dapps);
     }
   }, [searchString]);
 

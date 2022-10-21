@@ -111,7 +111,7 @@ const InjectPageJsScript: InjectPageJsScriptType = {
       pageJsContent = await RNFS.readFileAssets('PageJs.bundle/page.js', 'ascii');
     }
 
-    this.content = BridgeScript + pageJsContent + DAppScript + NovaScript;
+    this.content = pageJsContent;
 
     return this.content;
   },
@@ -211,7 +211,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
     canGoBack: false,
     canGoForward: false,
   });
-  const [injectedPageJs, setInjectedPageJs] = useState<string | null>(null);
+  const [injectedScripts, setInjectedScripts] = useState<string | null>(null);
   const [isShowPhishingWarning, setIsShowPhishingWarning] = useState<boolean>(false);
   const webviewRef = useRef<WebView>(null);
   const browserSv = useRef<BrowserService | null>(null);
@@ -222,7 +222,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
 
-  const isWebviewReady = !!(initWebViewSource && injectedPageJs);
+  const isWebviewReady = !!(initWebViewSource && injectedScripts);
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -273,6 +273,10 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       // doesn't need 'request' check here
       if (id && message && origin) {
         browserSv.current?.onMessage({ id, message, request, origin });
+      }
+
+      if (id === '-2') {
+        console.log('### Browser Tab console', content);
       }
     } catch (e) {
       console.log('onWebviewMessage Error', e);
@@ -403,7 +407,9 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       const injectPageJsContent = await InjectPageJsScript.get();
 
       if (isSync) {
-        setInjectedPageJs(injectPageJsContent);
+        const injectScripts = getJsInjectContent(true) + BridgeScript + injectPageJsContent + NovaScript + DAppScript;
+
+        setInjectedScripts(injectScripts);
       }
     })();
 
@@ -504,8 +510,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
               ref={webviewRef}
               originWhitelist={['*']}
               source={{ uri: initWebViewSource }}
-              injectedJavaScriptBeforeContentLoaded={injectedPageJs}
-              injectedJavaScript={getJsInjectContent()}
+              injectedJavaScriptBeforeContentLoaded={injectedScripts}
               onLoadStart={onLoadStart}
               onLoad={onLoad}
               onLoadProgress={onLoadProgress}
