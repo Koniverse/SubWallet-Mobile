@@ -16,7 +16,11 @@ const CompoundActionScreen = () => {
       <UnStakeActionStack.Screen name="CompoundAuth" component={CompoundAuth} />
       <UnStakeActionStack.Screen name="CompoundResult" component={CompoundResult} />
       <UnStakeActionStack.Screen name="CancelCompoundAuth" component={CancelCompoundAuth} />
-      <UnStakeActionStack.Screen name="CancelCompoundResult" component={CancelCompoundResult} />
+      <UnStakeActionStack.Screen
+        name="CancelCompoundResult"
+        component={CancelCompoundResult}
+        options={{ gestureEnabled: false }}
+      />
     </UnStakeActionStack.Navigator>
   );
 };

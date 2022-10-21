@@ -10,7 +10,11 @@ const WithdrawActionScreen = () => {
   return (
     <WithdrawActionStack.Navigator screenOptions={{ headerShown: false }}>
       <WithdrawActionStack.Screen name="WithdrawAuth" component={WithdrawAuth} />
-      <WithdrawActionStack.Screen name="WithdrawResult" component={WithdrawResult} />
+      <WithdrawActionStack.Screen
+        name="WithdrawResult"
+        component={WithdrawResult}
+        options={{ gestureEnabled: false }}
+      />
     </WithdrawActionStack.Navigator>
   );
 };
