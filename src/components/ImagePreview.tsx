@@ -170,6 +170,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
         Platform.OS === 'ios' ? (
           <Video
             ref={videoRef}
+            paused={false}
             resizeMode={'contain'}
             source={{ uri: url }}
             style={VideoStyle}
@@ -177,6 +178,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
             onLoad={handleOnLoad}
             repeat={true}
             muted={true}
+            ignoreSilentSwitch="ignore"
           />
         ) : (
           <FastImage
