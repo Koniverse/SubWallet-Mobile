@@ -180,7 +180,7 @@ export const NetworkConfigDetail = ({
         filterFunction={filterFunction}
         afterListItem={
           <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
-            <SubmitButton title={i18n.common.done} onPress={onPressDoneButton} />
+            <SubmitButton isBusy={loading} title={i18n.common.done} onPress={onPressDoneButton} />
           </View>
         }
       />
