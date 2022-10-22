@@ -53,22 +53,15 @@ const getInputValueStyle = (inputValue: string) => {
 const transferValueWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
-  flex: 1,
   justifyContent: 'center',
-  flexWrap: 'wrap',
-  padding: 16,
+  padding: 12,
 };
 
 export const TransferValue = ({ value, decimals, si, token }: Props) => {
   const [balanceValue, balanceToken] = getBalanceWithSi(value, decimals, si, token);
   return (
     <View style={transferValueWrapperStyle}>
-      <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-        <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light, paddingRight: 2 }]}>-</Text>
-        <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light, paddingRight: 8 }]}>
-          {balanceValue}
-        </Text>
-      </View>
+      <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light, paddingRight: 8 }]}>{balanceValue}</Text>
       <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.disabled }]}>{balanceToken}</Text>
     </View>
   );

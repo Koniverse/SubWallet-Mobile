@@ -8,10 +8,12 @@ import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { CaretDown } from 'phosphor-react-native';
 
 interface Props extends FieldBaseProps {
   networkKey: string;
   disabled?: boolean;
+  showIcon?: boolean;
 }
 
 const getNetworkName = (networkKey: string, networkMap: Record<string, NetworkJson>) => {
@@ -28,7 +30,7 @@ const getTextStyle = (disabled: boolean): StyleProp<any> => {
     ...FontMedium,
     lineHeight: 25,
     paddingLeft: 16,
-    paddingRight: 40,
+    paddingRight: 8,
     paddingBottom: 10,
     color: disabled ? ColorMap.disabled : ColorMap.light,
   };
@@ -45,13 +47,17 @@ const logoWrapperStyle: StyleProp<any> = {
   bottom: 12,
 };
 
-export const NetworkField = ({ networkKey, disabled, ...fieldBase }: Props) => {
+export const NetworkField = ({ networkKey, disabled, showIcon, ...fieldBase }: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <Text style={getTextStyle(!!disabled)}>{getNetworkName(networkKey, networkMap)}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={getTextStyle(!!disabled)}>{getNetworkName(networkKey, networkMap)}</Text>
+          {!!showIcon && <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} style={{ marginTop: 4 }} />}
+        </View>
+
         <View style={logoWrapperStyle}>{getNetworkLogo(networkKey, 20)}</View>
       </View>
     </FieldBase>
