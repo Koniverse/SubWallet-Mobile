@@ -1,0 +1,19 @@
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { useMemo } from 'react';
+import { AccountJson } from '@subwallet/extension-base/background/types';
+
+export default function useGetAccountList(networkKey: string) {
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const { accounts } = useSelector((state: RootState) => state.accounts);
+  const accountListWithoutAll = accounts.filter(opt => opt.address !== 'ALL');
+
+  return useMemo((): AccountJson[] => {
+    if (networkMap[networkKey].isEthereum) {
+      return accountListWithoutAll.filter(acc => isEthereumAddress(acc.address));
+    } else {
+      return accountListWithoutAll.filter(acc => !isEthereumAddress(acc.address));
+    }
+  }, [accountListWithoutAll, networkKey, networkMap]);
+}
