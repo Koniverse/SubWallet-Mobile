@@ -8,6 +8,8 @@ export type DAppInfo = {
   url: string;
   icon: string;
   categories: string[];
+  isSupportSubstrateAccount?: boolean;
+  isSupportEthereumAccount?: boolean;
 };
 
 export type PredefinedDApps = {

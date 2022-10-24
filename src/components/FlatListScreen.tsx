@@ -1,26 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import {
-  ActivityIndicator,
-  FlatList,
-  ListRenderItemInfo,
-  RefreshControlProps,
-  StyleProp,
-  TextInput,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { ScrollViewStyle } from 'styles/sharedStyles';
+import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { useLazyList } from 'hooks/useLazyList';
-import { ActivityLoading } from 'components/ActivityLoading';
 import { defaultSortFunc } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
+import { LazyFlatList } from 'components/LazyFlatList';
+
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
@@ -55,19 +45,6 @@ interface Props<T> {
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
 }
 
-const ColumnWrapperStyle: StyleProp<ViewStyle> = {
-  justifyContent: 'space-between',
-};
-
-const ItemSeparatorStyle: StyleProp<ViewStyle> = {
-  height: 16,
-};
-
-const IndicatorStyle: StyleProp<any> = {
-  width: '100%',
-  height: '100%',
-};
-
 export function FlatListScreen<T>({
   items,
   title,
@@ -94,25 +71,7 @@ export function FlatListScreen<T>({
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
-  const filteredItems = useMemo(() => filterFunction(items, searchString), [filterFunction, items, searchString]);
-  const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
-  const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
   const searchRef = useRef<TextInput>(null);
-  const flatListRef = useRef<FlatList>(null);
-
-  useEffect(() => {
-    let unmount = false;
-    if (flatListRef.current) {
-      if (!unmount) {
-        setPageNumber(1);
-        flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
-      }
-    }
-
-    return () => {
-      unmount = true;
-    };
-  }, [setPageNumber, sortFunction]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -122,63 +81,10 @@ export function FlatListScreen<T>({
     }, HIDE_MODAL_DURATION);
   }, [autoFocus, searchRef]);
 
-  useEffect(() => {
-    // Reset page number on change search string => avoid render too many items
-    setPageNumber(1);
-  }, [searchString, setPageNumber]);
-
   const _onPressBack = () => {
     searchRef && searchRef.current && searchRef.current.blur();
     onPressBack ? onPressBack() : navigation.canGoBack() && navigation.goBack();
   };
-
-  const children = useMemo(() => {
-    const renderLoadingAnimation = () => {
-      return isLoading ? <ActivityLoading /> : null;
-    };
-
-    const renderSeparatorComponent = () => {
-      return numberColumns > 1 ? <View style={ItemSeparatorStyle} /> : null;
-    };
-
-    if (loading) {
-      return <ActivityIndicator style={IndicatorStyle} size={'large'} animating={true} />;
-    }
-    return (
-      <>
-        {lazyList.length ? (
-          <FlatList
-            ref={flatListRef}
-            style={{ ...ScrollViewStyle }}
-            keyboardShouldPersistTaps={'handled'}
-            data={lazyList}
-            onEndReached={onLoadMore}
-            renderItem={renderItem}
-            onEndReachedThreshold={0.3}
-            numColumns={numberColumns}
-            refreshControl={refreshControl}
-            columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
-            ListFooterComponent={renderLoadingAnimation}
-            ItemSeparatorComponent={renderSeparatorComponent}
-            contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
-          />
-        ) : (
-          renderListEmptyComponent(searchString)
-        )}
-      </>
-    );
-  }, [
-    loading,
-    lazyList,
-    onLoadMore,
-    renderItem,
-    numberColumns,
-    refreshControl,
-    flatListStyle,
-    renderListEmptyComponent,
-    searchString,
-    isLoading,
-  ]);
 
   const renderContent = () => (
     <View style={{ flex: 1 }}>
@@ -193,7 +99,18 @@ export function FlatListScreen<T>({
           searchRef={searchRef}
         />
       )}
-      {children}
+      <LazyFlatList
+        items={items}
+        searchString={searchString}
+        flatListStyle={flatListStyle}
+        renderItem={renderItem}
+        renderListEmptyComponent={renderListEmptyComponent}
+        refreshControl={refreshControl}
+        filterFunction={filterFunction}
+        sortFunction={sortFunction}
+        loading={loading}
+        numberColumns={numberColumns}
+      />
       {afterListItem}
     </View>
   );

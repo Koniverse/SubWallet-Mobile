@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ColorMap } from 'styles/color';
-import { ScreenContainer } from 'components/ScreenContainer';
-import { FlatList, ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
+import { ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
 import { Search } from 'components/Search';
 import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/Button';
@@ -15,6 +14,9 @@ import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { getHostName, getValidURL } from 'utils/browser';
 import { createNewTab } from 'stores/updater';
+import { LazyFlatList } from 'components/LazyFlatList';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { noop } from 'utils/function';
 
 function doFilter(searchString: string) {
   return predefinedDApps.dapps.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -85,7 +87,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   };
 
   return (
-    <ScreenContainer>
+    <ContainerWithSubHeader onPressBack={noop} showLeftBtn={false}>
       <>
         <View style={{ flexDirection: 'row', alignItems: 'center', ...ContainerHorizontalPadding }}>
           <Search
@@ -106,14 +108,17 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
         <View style={{ flex: 1 }}>
           <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
-          <FlatList
-            data={filteredList}
+          <LazyFlatList
+            items={filteredList}
+            searchString={searchString}
+            renderListEmptyComponent={() => {
+              return <></>;
+            }}
+            flatListStyle={{ paddingBottom: 12 }}
             renderItem={renderItem}
-            keyboardShouldPersistTaps="always"
-            contentContainerStyle={{ paddingBottom: 12 }}
           />
         </View>
       </>
-    </ScreenContainer>
+    </ContainerWithSubHeader>
   );
 };

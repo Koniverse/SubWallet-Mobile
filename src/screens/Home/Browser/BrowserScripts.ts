@@ -1,5 +1,7 @@
 import { MESSAGE_ORIGIN_PAGE } from '@subwallet/extension-base/defaults';
 import { getId } from '@subwallet/extension-base/utils/getId';
+import { predefinedDApps } from '../../../predefined/dAppSites';
+import { getHostName } from 'utils/browser';
 
 export const NovaScript = `
 (function () {  
@@ -73,6 +75,19 @@ export const BridgeScript = `(function () {
   });
 })();`;
 
+const autoTriggerSubstrateHosts: string[] = [];
+const autoTriggerEthereumHosts: string[] = [];
+
+predefinedDApps.dapps.forEach(s => {
+  if (s.isSupportSubstrateAccount) {
+    autoTriggerSubstrateHosts.push(getHostName(s.url));
+  }
+
+  if (s.isSupportEthereumAccount) {
+    autoTriggerEthereumHosts.push(getHostName(s.url));
+  }
+});
+
 export const DAppScript = `(function () {
   if (window.SubWallet) {
     window.SubWallet.isMetaMask = true;
@@ -127,38 +142,11 @@ export const DAppScript = `(function () {
 
   window.injectedWeb3['polkadot-js'] = window.injectedWeb3['subwallet-js'];
 
-  const autoTriggerEthereumHosts = [
-    'app.stellaswap.com',
-    'app.solarflare.io',
-    'marketplace.moonsama.com',
-    'app.arthswap.org',
-    'app.impossible.finance',
-    'dappradar.com',
-    'tofunft.com',
-    'cbridge.celer.network',
-    'www.xdao.app',
-    'moonwell.fi',
-    'portal.evolution.land',
-  ];
-
-  if (autoTriggerEthereumHosts.includes(hostName)) {
+  if (${JSON.stringify(autoTriggerEthereumHosts)}.includes(hostName)) {
     window.SubWallet?.enable().catch(e => console.log(e));
   }
 
-  const autoTriggerSubstrateHosts = [
-    'bifrost.app',
-    'kodadot.xyz',
-    'www.dotmarketcap.com',
-    'polkadot.polkassembly.io',
-    'distribution.acala.network',
-    'dapp.robonomics.network',
-    'apps.litentry.com',
-    'app.basilisk.cloud',
-    'app.zeitgeist.pm',
-    'ace.web3go.xyz',
-  ];
-
-  if (autoTriggerSubstrateHosts.includes(hostName)) {
+  if (${JSON.stringify(autoTriggerSubstrateHosts)}.includes(hostName)) {
     window.injectedWeb3['subwallet-js']?.enable().catch(e => console.log(e));
   }
 })()`;

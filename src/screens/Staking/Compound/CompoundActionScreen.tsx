@@ -14,7 +14,7 @@ const CompoundActionScreen = () => {
     <UnStakeActionStack.Navigator screenOptions={{ headerShown: false }}>
       <UnStakeActionStack.Screen name="CompoundConfirm" component={CompoundConfirm} />
       <UnStakeActionStack.Screen name="CompoundAuth" component={CompoundAuth} />
-      <UnStakeActionStack.Screen name="CompoundResult" component={CompoundResult} />
+      <UnStakeActionStack.Screen name="CompoundResult" component={CompoundResult} options={{ gestureEnabled: false }} />
       <UnStakeActionStack.Screen name="CancelCompoundAuth" component={CancelCompoundAuth} />
       <UnStakeActionStack.Screen
         name="CancelCompoundResult"

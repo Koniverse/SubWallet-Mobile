@@ -18,11 +18,14 @@ const itemArea: StyleProp<any> = {
   paddingVertical: 16,
   alignItems: 'center',
   paddingHorizontal: 16,
+  flex: 1,
 };
 
 const itemBodyArea: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
+  flex: 1,
+  paddingRight: 16,
 };
 
 const itemSeparator: StyleProp<any> = {
@@ -37,6 +40,7 @@ const itemTextStyle: StyleProp<any> = {
   color: ColorMap.light,
   ...sharedStyles.mediumText,
   ...FontSemiBold,
+  flex: 1,
 };
 
 const logoWrapperStyle: StyleProp<any> = {
@@ -57,7 +61,9 @@ export const NetworkAndTokenToggleItem = ({
         <View style={itemBodyArea}>
           <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 40)}</View>
 
-          <Text style={itemTextStyle}>{itemName}</Text>
+          <Text numberOfLines={1} style={itemTextStyle}>
+            {itemName}
+          </Text>
         </View>
 
         <Switch
