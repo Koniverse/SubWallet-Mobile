@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
-import { subscribeSettings } from '../../messaging';
+import { clearWebRunnerHandler, subscribeSettings } from '../../messaging';
 import { updateSettings } from 'stores/updater';
 import { ResponseSettingsType } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreSettings(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreSettings(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: settings');
@@ -27,7 +29,7 @@ export default function useStoreSettings(): StoreStatus {
         updateSettings(payload);
         setStoreStatus('SYNCED');
       };
-      subscribeSettings(null, _update)
+      subscribeSettings(null, _update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeSettings error:', e);
@@ -36,6 +38,7 @@ export default function useStoreSettings(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

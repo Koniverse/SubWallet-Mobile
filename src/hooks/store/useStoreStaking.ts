@@ -3,9 +3,10 @@ import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { StoreStatus } from 'stores/types';
 import { updateStaking } from 'stores/updater';
-import { subscribeStaking } from '../../messaging';
+import { clearWebRunnerHandler, subscribeStaking } from '../../messaging';
 import { useContext, useEffect, useState } from 'react';
 import { RootState } from 'stores/index';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreStaking(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreStaking(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: staking');
@@ -29,7 +31,7 @@ export default function useStoreStaking(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeStaking(null, _update)
+      subscribeStaking(null, _update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeStaking error:', e);
@@ -38,6 +40,7 @@ export default function useStoreStaking(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
-import { subscribeChainRegistry } from '../../messaging';
+import { clearWebRunnerHandler, subscribeChainRegistry } from '../../messaging';
 import { updateChainRegistry } from 'stores/updater';
 import { ChainRegistry } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreChainRegistry(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreChainRegistry(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: chainRegistry');
@@ -31,7 +33,7 @@ export default function useStoreChainRegistry(): StoreStatus {
         updateChainRegistry(payload);
         setStoreStatus('SYNCED');
       };
-      subscribeChainRegistry(_update)
+      subscribeChainRegistry(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeChainRegistry error:', e);
@@ -40,6 +42,7 @@ export default function useStoreChainRegistry(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady, storeStatus]);
 

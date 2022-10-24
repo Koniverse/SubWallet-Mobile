@@ -2,8 +2,9 @@ import { StoreStatus } from 'stores/types';
 import { useContext, useEffect, useState } from 'react';
 import { WebRunnerContext } from 'providers/contexts';
 import { updateBackgroundServiceActiveState } from 'stores/updater';
-import { subscribeActiveCronAndSubscriptionServiceMap } from '../../messaging';
+import { clearWebRunnerHandler, subscribeActiveCronAndSubscriptionServiceMap } from '../../messaging';
 import { ActiveCronAndSubscriptionMap } from '@subwallet/extension-base/background/KoniTypes';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreBackgroundService(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -11,6 +12,7 @@ export default function useStoreBackgroundService(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: activeBackgroundService');
@@ -26,7 +28,7 @@ export default function useStoreBackgroundService(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeActiveCronAndSubscriptionServiceMap(_update)
+      subscribeActiveCronAndSubscriptionServiceMap(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeActiveCronAndSubscriptionServiceMap error:', e);
@@ -34,6 +36,7 @@ export default function useStoreBackgroundService(): StoreStatus {
     }
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { updateNetworkMap } from 'stores/updater';
-import { subscribeNetworkMap } from '../../messaging';
+import { clearWebRunnerHandler, subscribeNetworkMap } from '../../messaging';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreNetworkMap(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreNetworkMap(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: networkMap');
@@ -29,7 +31,7 @@ export default function useStoreNetworkMap(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeNetworkMap(_update)
+      subscribeNetworkMap(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeNetworkMap error:', e);
@@ -38,6 +40,7 @@ export default function useStoreNetworkMap(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 
