@@ -4,7 +4,8 @@ import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAuthUrls } from 'stores/updater';
-import { subscribeAuthUrl } from '../../messaging';
+import { clearWebRunnerHandler, subscribeAuthUrl } from '../../messaging';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreAuthUrls(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -13,6 +14,7 @@ export default function useStoreAuthUrls(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: authUrls');
@@ -28,7 +30,7 @@ export default function useStoreAuthUrls(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeAuthUrl(_update)
+      subscribeAuthUrl(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeAuthUrl error:', e);
@@ -37,6 +39,7 @@ export default function useStoreAuthUrls(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { subscribePrice } from '../../messaging';
+import { clearWebRunnerHandler, subscribePrice } from '../../messaging';
 import { updatePrice } from 'stores/updater';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStorePrice(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -11,6 +12,7 @@ export default function useStorePrice(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: price');
@@ -26,7 +28,7 @@ export default function useStorePrice(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribePrice(null, _update)
+      subscribePrice(null, _update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribePrice error:', e);
@@ -35,6 +37,7 @@ export default function useStorePrice(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

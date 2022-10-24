@@ -9,6 +9,7 @@ import StaticServer from 'react-native-static-server';
 import {
   initCronAndSubscription,
   listenMessage,
+  resetHandlerMaps,
   startCronAndSubscriptionServices,
   startCronServices,
   startSubscriptionServices,
@@ -128,8 +129,9 @@ class WebRunnerHandler {
   }
 
   reload() {
-    this.webRef?.current?.reload();
     this.eventEmitter?.emit('update-status', 'reloading');
+    resetHandlerMaps();
+    this.webRef?.current?.reload();
   }
 
   pingCheck(timeCheck: number = 999, timeout = 6666, maxRetry = 3) {

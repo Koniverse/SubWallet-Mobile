@@ -141,21 +141,17 @@ let webviewEvents: EventEmitter;
 let status: WebRunnerStatus = 'init';
 
 export async function clearWebRunnerHandler(id: string): Promise<boolean> {
-  const handler = handlers[id];
   const handlerTypeMapValue = handlerTypeMap[id];
 
-  if (!handler && !handlerTypeMapValue) {
+  if (!handlerTypeMapValue) {
     return true;
   }
 
-  if (handler) {
-    delete handlers[id];
-  }
+  delete handlers[id];
+  delete handlerTypeMap[id];
+  delete handlerMessageMap[id];
 
   if (handlerTypeMapValue) {
-    delete handlerTypeMap[id];
-    delete handlerMessageMap[id];
-
     if (['PRI', 'PUB', 'EVM'].includes(handlerTypeMapValue)) {
       return cancelSubscription(id);
     }
@@ -174,6 +170,14 @@ export function getMessageType(message: string): MessageType {
   }
 
   return 'UNKNOWN';
+}
+
+export function resetHandlerMaps(): void {
+  Object.keys(handlerTypeMap).forEach(id => {
+    delete handlers[id];
+    delete handlerTypeMap[id];
+    delete handlerMessageMap[id];
+  });
 }
 
 export function getHandlerId(message: string, id?: string): string {
@@ -293,14 +297,16 @@ export function sendMessage<TMessageType extends MessageTypesWithSubscriptions>(
   message: TMessageType,
   request: RequestTypes[TMessageType],
   subscriber: (data: SubscriptionMessageTypes[TMessageType]) => void,
+  handlerId?: string,
 ): Promise<ResponseTypes[TMessageType]>;
 export function sendMessage<TMessageType extends MessageTypes>(
   message: TMessageType,
   request?: RequestTypes[TMessageType],
   subscriber?: (data: unknown) => void,
+  handlerId?: string,
 ): Promise<ResponseTypes[TMessageType]> {
   return new Promise((resolve, reject): void => {
-    const id = getId();
+    const id = handlerId ? handlerId : getId();
 
     handlers[id] = { reject, resolve, subscriber };
 
@@ -341,8 +347,9 @@ export async function saveTheme(theme: ThemeTypes, callback: (data: RequestSetti
 export async function subscribeSettings(
   data: RequestSubscribeBalancesVisibility,
   callback: (data: ResponseSettingsType) => void,
+  handlerId?: string,
 ): Promise<ResponseSettingsType> {
-  return sendMessage('pri(settings.subscribe)', data, callback);
+  return sendMessage('pri(settings.subscribe)', data, callback, handlerId);
 }
 
 export async function tieAccount(address: string, genesisHash: string | null): Promise<boolean> {
@@ -524,8 +531,9 @@ export async function subscribeAccounts(cb: (accounts: AccountJson[]) => void): 
 
 export async function subscribeAccountsWithCurrentAddress(
   cb: (data: AccountsWithCurrentAddress) => void,
+  handlerId?: string,
 ): Promise<boolean> {
-  return sendMessage('pri(accounts.subscribeWithCurrentAddress)', {}, cb);
+  return sendMessage('pri(accounts.subscribeWithCurrentAddress)', {}, cb, handlerId);
 }
 
 export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddress) => void): Promise<string> {
@@ -540,12 +548,18 @@ export async function triggerAccountsSubscription(): Promise<boolean> {
   return sendMessage('pri(accounts.triggerSubscription)');
 }
 
-export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
-  return sendMessage('pri(authorize.requests)', null, cb);
+export async function subscribeAuthorizeRequests(
+  cb: (accounts: AuthorizeRequest[]) => void,
+  handlerId?: string,
+): Promise<boolean> {
+  return sendMessage('pri(authorize.requests)', null, cb, handlerId);
 }
 
-export async function subscribeAuthorizeRequestsV2(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
-  return sendMessage('pri(authorize.requestsV2)', null, cb);
+export async function subscribeAuthorizeRequestsV2(
+  cb: (accounts: AuthorizeRequest[]) => void,
+  handlerId?: string,
+): Promise<boolean> {
+  return sendMessage('pri(authorize.requestsV2)', null, cb, handlerId);
 }
 
 export async function getAuthList(): Promise<ResponseAuthorizeList> {
@@ -600,12 +614,18 @@ export async function forgetAllSite(callback: (data: AuthUrls) => void): Promise
   return sendMessage('pri(authorize.forgetAllSite)', null, callback);
 }
 
-export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<boolean> {
-  return sendMessage('pri(metadata.requests)', null, cb);
+export async function subscribeMetadataRequests(
+  cb: (accounts: MetadataRequest[]) => void,
+  handlerId?: string,
+): Promise<boolean> {
+  return sendMessage('pri(metadata.requests)', null, cb, handlerId);
 }
 
-export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
-  return sendMessage('pri(signing.requests)', null, cb);
+export async function subscribeSigningRequests(
+  cb: (accounts: SigningRequest[]) => void,
+  handlerId?: string,
+): Promise<boolean> {
+  return sendMessage('pri(signing.requests)', null, cb, handlerId);
 }
 
 export async function validateSeed(suri: string, type?: KeypairType): Promise<{ address: string; suri: string }> {
@@ -707,8 +727,9 @@ export async function getPrice(): Promise<PriceJson> {
 export async function subscribePrice(
   request: RequestSubscribePrice,
   callback: (priceData: PriceJson) => void,
+  handlerId?: string,
 ): Promise<PriceJson> {
-  return sendMessage('pri(price.getSubscription)', request, callback);
+  return sendMessage('pri(price.getSubscription)', request, callback, handlerId);
 }
 
 export async function getBalance(): Promise<BalanceJson> {
@@ -718,8 +739,9 @@ export async function getBalance(): Promise<BalanceJson> {
 export async function subscribeBalance(
   request: RequestSubscribeBalance,
   callback: (balanceData: BalanceJson) => void,
+  handlerId?: string,
 ): Promise<BalanceJson> {
-  return sendMessage('pri(balance.getSubscription)', request, callback);
+  return sendMessage('pri(balance.getSubscription)', request, callback, handlerId);
 }
 
 export async function getCrowdloan(): Promise<CrowdloanJson> {
@@ -729,20 +751,23 @@ export async function getCrowdloan(): Promise<CrowdloanJson> {
 export async function subscribeCrowdloan(
   request: RequestSubscribeCrowdloan,
   callback: (crowdloanData: CrowdloanJson) => void,
+  handlerId?: string,
 ): Promise<CrowdloanJson> {
-  return sendMessage('pri(crowdloan.getSubscription)', request, callback);
+  return sendMessage('pri(crowdloan.getSubscription)', request, callback, handlerId);
 }
 
 export async function subscribeChainRegistry(
   callback: (map: Record<string, ChainRegistry>) => void,
+  handlerId?: string,
 ): Promise<Record<string, ChainRegistry>> {
-  return sendMessage('pri(chainRegistry.getSubscription)', null, callback);
+  return sendMessage('pri(chainRegistry.getSubscription)', null, callback, handlerId);
 }
 
 export async function subscribeHistory(
   callback: (historyMap: Record<string, TransactionHistoryItemType[]>) => void,
+  handlerId?: string,
 ): Promise<Record<string, TransactionHistoryItemType[]>> {
-  return sendMessage('pri(transaction.history.getSubscription)', null, callback);
+  return sendMessage('pri(transaction.history.getSubscription)', null, callback, handlerId);
 }
 
 export async function updateTransactionHistory(
@@ -762,12 +787,16 @@ export async function getNft(account: string): Promise<NftJson> {
 export async function subscribeNft(
   request: RequestSubscribeNft,
   callback: (nftData: NftJson) => void,
+  handlerId?: string,
 ): Promise<NftJson> {
-  return sendMessage('pri(nft.getSubscription)', request, callback);
+  return sendMessage('pri(nft.getSubscription)', request, callback, handlerId);
 }
 
-export async function subscribeNftCollection(callback: (data: NftCollection[]) => void): Promise<NftCollection[]> {
-  return sendMessage('pri(nftCollection.getSubscription)', null, callback);
+export async function subscribeNftCollection(
+  callback: (data: NftCollection[]) => void,
+  handlerId?: string,
+): Promise<NftCollection[]> {
+  return sendMessage('pri(nftCollection.getSubscription)', null, callback, handlerId);
 }
 
 export async function getStaking(account: string): Promise<StakingJson> {
@@ -778,8 +807,9 @@ export async function getStaking(account: string): Promise<StakingJson> {
 export async function subscribeStaking(
   request: RequestSubscribeStaking,
   callback: (stakingData: StakingJson) => void,
+  handlerId?: string,
 ): Promise<StakingJson> {
-  return sendMessage('pri(staking.getSubscription)', request, callback);
+  return sendMessage('pri(staking.getSubscription)', request, callback, handlerId);
 }
 
 export async function getStakingReward(): Promise<StakingRewardJson> {
@@ -789,8 +819,9 @@ export async function getStakingReward(): Promise<StakingRewardJson> {
 export async function subscribeStakingReward(
   request: RequestSubscribeStakingReward,
   callback: (stakingRewardData: StakingRewardJson) => void,
+  handlerId?: string,
 ): Promise<StakingRewardJson> {
-  return sendMessage('pri(stakingReward.getSubscription)', request, callback);
+  return sendMessage('pri(stakingReward.getSubscription)', request, callback, handlerId);
 }
 
 export async function nftForceUpdate(request: RequestNftForceUpdate): Promise<boolean> {
@@ -801,8 +832,11 @@ export async function getNftTransfer(): Promise<NftTransferExtra> {
   return sendMessage('pri(nftTransfer.getNftTransfer)', null);
 }
 
-export async function subscribeNftTransfer(callback: (data: NftTransferExtra) => void): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
+export async function subscribeNftTransfer(
+  callback: (data: NftTransferExtra) => void,
+  handlerId?: string,
+): Promise<NftTransferExtra> {
+  return sendMessage('pri(nftTransfer.getSubscription)', null, callback, handlerId);
 }
 
 export async function setNftTransfer(request: NftTransferExtra): Promise<boolean> {
@@ -846,8 +880,9 @@ export async function evmNftSubmitTransaction(
 
 export async function subscribeNetworkMap(
   callback: (data: Record<string, NetworkJson>) => void,
+  handlerId?: string,
 ): Promise<Record<string, NetworkJson>> {
-  return sendMessage('pri(networkMap.getSubscription)', null, callback);
+  return sendMessage('pri(networkMap.getSubscription)', null, callback, handlerId);
 }
 
 export async function upsertNetworkMap(data: NetworkJson): Promise<boolean> {
@@ -894,8 +929,11 @@ export async function resetDefaultNetwork(): Promise<boolean> {
   return sendMessage('pri(networkMap.resetDefault)', null);
 }
 
-export async function subscribeEvmToken(callback: (data: EvmTokenJson) => void): Promise<EvmTokenJson> {
-  return sendMessage('pri(evmTokenState.getSubscription)', null, callback);
+export async function subscribeEvmToken(
+  callback: (data: EvmTokenJson) => void,
+  handlerId?: string,
+): Promise<EvmTokenJson> {
+  return sendMessage('pri(evmTokenState.getSubscription)', null, callback, handlerId);
 }
 
 export async function getEvmTokenState(): Promise<EvmTokenJson> {
@@ -958,8 +996,9 @@ export async function recoverDotSamaApi(request: string): Promise<boolean> {
 
 export async function subscribeConfirmations(
   callback: (data: ConfirmationsQueue) => void,
+  handlerId?: string,
 ): Promise<ConfirmationsQueue> {
-  return sendMessage('pri(confirmations.subscribe)', null, callback);
+  return sendMessage('pri(confirmations.subscribe)', null, callback, handlerId);
 }
 
 export async function completeConfirmation<CT extends ConfirmationType>(
@@ -1004,8 +1043,9 @@ export async function submitUnbonding(
 
 export async function subscribeStakeUnlockingInfo(
   callback: (data: StakeUnlockingJson) => void,
+  handlerId?: string,
 ): Promise<StakeUnlockingJson> {
-  return sendMessage('pri(unbonding.subscribeUnlockingInfo)', null, callback);
+  return sendMessage('pri(unbonding.subscribeUnlockingInfo)', null, callback, handlerId);
 }
 
 export async function getStakeWithdrawalTxInfo(params: StakeWithdrawalParams): Promise<BasicTxInfo> {
@@ -1040,8 +1080,8 @@ export async function parseEVMTransactionInput(
   return sendMessage('pri(evm.transaction.parse.input)', request);
 }
 
-export async function subscribeAuthUrl(callback: (data: AuthUrls) => void): Promise<AuthUrls> {
-  return sendMessage('pri(authorize.subscribe)', null, callback);
+export async function subscribeAuthUrl(callback: (data: AuthUrls) => void, handlerId?: string): Promise<AuthUrls> {
+  return sendMessage('pri(authorize.subscribe)', null, callback, handlerId);
 }
 
 export async function initCronAndSubscription(
@@ -1052,8 +1092,9 @@ export async function initCronAndSubscription(
 
 export async function subscribeActiveCronAndSubscriptionServiceMap(
   callback: (data: ActiveCronAndSubscriptionMap) => void,
+  handlerId?: string,
 ): Promise<ActiveCronAndSubscriptionMap> {
-  return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback);
+  return sendMessage('mobile(cronAndSubscription.activeService.subscribe)', null, callback, handlerId);
 }
 
 export async function startCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
