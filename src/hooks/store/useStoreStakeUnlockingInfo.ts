@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
 import { updateStakeUnlockingInfo } from 'stores/updater';
-import { subscribeStakeUnlockingInfo } from '../../messaging';
+import { clearWebRunnerHandler, subscribeStakeUnlockingInfo } from '../../messaging';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreStakeUnlockingInfo() {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreStakeUnlockingInfo() {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: stakeUnlockingInfo');
@@ -29,7 +31,7 @@ export default function useStoreStakeUnlockingInfo() {
         setStoreStatus('SYNCED');
       };
 
-      subscribeStakeUnlockingInfo(_update)
+      subscribeStakeUnlockingInfo(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeStakeUnlockingInfo error:', e);
@@ -38,6 +40,7 @@ export default function useStoreStakeUnlockingInfo() {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

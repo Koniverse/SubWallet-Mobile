@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { CustomEvmToken, EvmTokenJson } from '@subwallet/extension-base/background/KoniTypes';
 import { updateEvmToken } from 'stores/updater';
-import { subscribeEvmToken } from '../../messaging';
+import { clearWebRunnerHandler, subscribeEvmToken } from '../../messaging';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreEvmToken(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -22,6 +23,7 @@ export default function useStoreEvmToken(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: evmToken');
@@ -36,7 +38,7 @@ export default function useStoreEvmToken(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeEvmToken(_update)
+      subscribeEvmToken(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeEvmToken error:', e);
@@ -45,6 +47,7 @@ export default function useStoreEvmToken(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

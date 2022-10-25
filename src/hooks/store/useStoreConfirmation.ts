@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import {
+  clearWebRunnerHandler,
   subscribeAuthorizeRequestsV2,
   subscribeConfirmations,
   subscribeMetadataRequests,
@@ -11,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateConfirmations } from 'stores/Confirmation';
 import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 function getStatus(isReady: boolean | undefined, isWaiting: boolean | undefined): StoreStatus {
   if (isReady) {
@@ -32,6 +34,10 @@ export default function useStoreConfirmation(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const subscribeAuthorizeRequestsV2Id = getId();
+    const subscribeMetadataRequestsId = getId();
+    const subscribeSigningRequestsId = getId();
+    const subscribeConfirmationsId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: Confirmation');
@@ -50,7 +56,7 @@ export default function useStoreConfirmation(): StoreStatus {
           }),
         );
         console.log('--- subscribeAuthorizeRequestsV2 updated');
-      }).catch(e => {
+      }, subscribeAuthorizeRequestsV2Id).catch(e => {
         console.log('--- subscribeAuthorizeRequestsV2 error:', e);
       });
 
@@ -68,7 +74,7 @@ export default function useStoreConfirmation(): StoreStatus {
           }),
         );
         console.log('--- subscribeMetadataRequests updated');
-      }).catch(e => {
+      }, subscribeMetadataRequestsId).catch(e => {
         console.log('--- subscribeMetadataRequests error:', e);
       });
 
@@ -86,7 +92,7 @@ export default function useStoreConfirmation(): StoreStatus {
           }),
         );
         console.log('--- subscribeSigningRequests updated');
-      }).catch(e => {
+      }, subscribeSigningRequestsId).catch(e => {
         console.log('--- subscribeSigningRequests error:', e);
       });
 
@@ -96,13 +102,17 @@ export default function useStoreConfirmation(): StoreStatus {
         }
         dispatch(updateConfirmations(data));
         console.log('--- subscribeConfirmations updated');
-      }).catch(e => {
+      }, subscribeConfirmationsId).catch(e => {
         console.log('--- subscribeConfirmations error:', e);
       });
     }
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(subscribeAuthorizeRequestsV2Id);
+      clearWebRunnerHandler(subscribeMetadataRequestsId);
+      clearWebRunnerHandler(subscribeSigningRequestsId);
+      clearWebRunnerHandler(subscribeConfirmationsId);
     };
   }, [dispatch, isWebRunnerReady]);
 

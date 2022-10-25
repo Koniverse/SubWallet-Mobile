@@ -3,9 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { WebRunnerContext } from 'providers/contexts';
 import { CrowdloanJson } from '@subwallet/extension-base/background/KoniTypes';
 import { updateCrowdloan } from 'stores/updater';
-import { subscribeCrowdloan } from '../../messaging';
+import { clearWebRunnerHandler, subscribeCrowdloan } from '../../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreCrowdloan(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreCrowdloan(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: crowdloan');
@@ -33,7 +35,7 @@ export default function useStoreCrowdloan(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeCrowdloan(null, _update)
+      subscribeCrowdloan(null, _update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeCrowdloan error:', e);
@@ -42,6 +44,7 @@ export default function useStoreCrowdloan(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady, storeStatus]);
 

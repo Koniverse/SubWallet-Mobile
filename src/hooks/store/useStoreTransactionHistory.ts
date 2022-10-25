@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { subscribeHistory } from '../../messaging';
+import { clearWebRunnerHandler, subscribeHistory } from '../../messaging';
 import { updateTransactionHistory } from 'stores/updater';
 import { TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreTransactionHistory(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -11,6 +12,7 @@ export default function useStoreTransactionHistory(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: transactionHistory');
@@ -26,7 +28,7 @@ export default function useStoreTransactionHistory(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeHistory(_update)
+      subscribeHistory(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeHistory error:', e);
@@ -34,6 +36,7 @@ export default function useStoreTransactionHistory(): StoreStatus {
     }
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

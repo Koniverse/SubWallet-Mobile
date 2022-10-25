@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { updateNftCollection } from 'stores/updater';
-import { subscribeNftCollection } from '../../messaging';
+import { clearWebRunnerHandler, subscribeNftCollection } from '../../messaging';
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreNftCollection(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -14,6 +15,7 @@ export default function useStoreNftCollection(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: nftCollection');
@@ -32,7 +34,7 @@ export default function useStoreNftCollection(): StoreStatus {
         setStoreStatus('SYNCED');
       };
 
-      subscribeNftCollection(_update)
+      subscribeNftCollection(_update, handlerId)
         .then(_update)
         .catch(e => {
           console.log('--- subscribeNftCollection error:', e);
@@ -41,6 +43,7 @@ export default function useStoreNftCollection(): StoreStatus {
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 

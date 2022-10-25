@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import {
+  clearWebRunnerHandler,
   saveCurrentAccountAddress,
   subscribeAccountsWithCurrentAddress,
   triggerAccountsSubscription,
@@ -11,6 +12,7 @@ import { StoreStatus } from 'stores/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 function getStatus(isReady: boolean | undefined, isWaiting: boolean | undefined): StoreStatus {
   if (isReady) {
@@ -31,6 +33,7 @@ export default function useStoreAccounts(): StoreStatus {
 
   useEffect(() => {
     let cancel = false;
+    const handlerId = getId();
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: accounts');
@@ -71,13 +74,14 @@ export default function useStoreAccounts(): StoreStatus {
         } else {
           updateAccountsSlice({ accounts: [], currentAccountAddress: ALL_ACCOUNT_KEY });
         }
-      }).catch(e => {
+      }, handlerId).catch(e => {
         console.log('--- subscribeAccountsWithCurrentAddress error:', e);
       });
     }
 
     return () => {
       cancel = true;
+      clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
 
