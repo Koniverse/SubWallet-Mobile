@@ -19,7 +19,7 @@ import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { requestCameraPermission } from 'utils/validators';
-import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
+import { updateCurrentAccountAddress } from '../messaging';
 import { updateAccountsWaitingStatus } from 'stores/updater';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { Divider } from 'components/Divider';
@@ -109,11 +109,7 @@ export const AccountsScreen = () => {
     (accAddress: string) => {
       if (currentAccountAddress !== accAddress) {
         updateAccountsWaitingStatus(true);
-        saveCurrentAccountAddress({ address: accAddress }, () => {
-          triggerAccountsSubscription().catch(e => {
-            console.error('There is a problem when trigger Accounts Subscription', e);
-          });
-        }).catch(console.error);
+        updateCurrentAccountAddress(accAddress).catch(console.error);
       }
 
       if (navigation.getState()?.routes.length >= 3) {

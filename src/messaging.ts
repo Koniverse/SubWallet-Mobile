@@ -329,6 +329,11 @@ export async function saveCurrentAccountAddress(
   return sendMessage('pri(currentAccount.saveAddress)', data, callback);
 }
 
+export async function updateCurrentAccountAddress(address: string): Promise<boolean> {
+  // @ts-ignore
+  return sendMessage('pri(accounts.updateCurrentAddress)', address);
+}
+
 export async function toggleBalancesVisibility(callback: (data: RequestSettingsType) => void): Promise<boolean> {
   return sendMessage('pri(settings.changeBalancesVisibility)', null, callback);
 }
