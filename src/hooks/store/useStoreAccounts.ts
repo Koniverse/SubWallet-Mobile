@@ -1,11 +1,9 @@
 import { useContext, useEffect } from 'react';
 import {
   clearWebRunnerHandler,
-  saveCurrentAccountAddress,
   subscribeAccountsWithCurrentAddress,
-  triggerAccountsSubscription,
+  updateCurrentAccountAddress,
 } from '../../messaging';
-import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { updateAccountsAndCurrentAccount, updateAccountsSlice, updateAccountsWaitingStatus } from 'stores/updater';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
@@ -53,18 +51,8 @@ export default function useStoreAccounts(): StoreStatus {
           if (!selectedAcc) {
             updateAccountsWaitingStatus(true);
             selectedAcc = accounts[0];
-            selectedAcc.genesisHash = currentGenesisHash;
 
-            const accountInfo = {
-              address: selectedAcc.address,
-              currentGenesisHash,
-            } as CurrentAccountInfo;
-
-            saveCurrentAccountAddress(accountInfo, () => {
-              triggerAccountsSubscription().catch(e => {
-                console.error('There is a problem when trigger Accounts Subscription', e);
-              });
-            }).catch(e => {
+            updateCurrentAccountAddress(selectedAcc.address).catch(e => {
               console.error('There is a problem when set Current Account', e);
             });
           } else {
