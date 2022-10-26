@@ -296,6 +296,15 @@ export const vi = {
     tokenName: 'Token Name',
     chain: 'Chain',
   },
+  sendAssetScreen: {
+    originChain: 'Origin Chain',
+    destinationChain: 'Destination Chain',
+    fromAccount: 'From Account',
+    toAccount: 'To Account',
+    originChainFee: 'Origin Chain Fee',
+    total: 'Total',
+    amountGtAvailableBalanceMessage: 'The amount you want to transfer is greater than your available balance.',
+  },
   transferNft: {
     send: 'Send',
     nft: 'NFT',

@@ -124,7 +124,7 @@ function getSupportedTokens(
   if (originChain === destinationChain) {
     return tokenList.filter(item => item.networkKey === originChain);
   } else {
-    return tokenList.filter(item => crossChainTokens.includes(item.symbol));
+    return tokenList.filter(item => crossChainTokens.includes(item.symbol) && item.networkKey === originChain);
   }
 }
 
@@ -142,10 +142,14 @@ export const SendFund = ({
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
   const [senderAddress, setSenderAddress] = useState<string>(currentAccountAddress);
   const showedNetworks = useShowedNetworks(senderAddress, accounts);
-  const originChainOptions = showedNetworks.map(key => ({
-    label: networkMap[key].chain,
-    value: key,
-  }));
+  const originChainOptions = useMemo(() => {
+    return showedNetworks
+      .filter(item => chainRegistry[item])
+      .map(key => ({
+        label: networkMap[key].chain,
+        value: key,
+      }));
+  }, [chainRegistry, networkMap, showedNetworks]);
   const firstOriginChain = selectedNetworkKey || originChainOptions[0].value;
   const [originToken, setOriginToken] = useState<string>(
     selectedToken || networkMap[firstOriginChain].nativeToken || 'Token',
@@ -192,7 +196,7 @@ export const SendFund = ({
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
   const inputAddressRef = createRef();
-  const amount = rawAmount ? Math.floor(Number(rawAmount)) : 0;
+  const amount = rawAmount !== undefined ? Math.floor(Number(rawAmount)) : 0;
 
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const checkOriginChainAndSenderIdType = !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
@@ -220,11 +224,15 @@ export const SendFund = ({
     setOriginToken(currentSupportedMainTokens[0].symbol);
   };
 
-  const _onChangeDestinationChain = useCallback((chain: string) => {
-    setDestinationChain(prev => {
-      return [chain, prev[1]];
-    });
-  }, []);
+  const _onChangeDestinationChain = useCallback(
+    (chain: string) => {
+      setDestinationChain(prev => {
+        return [chain, prev[1]];
+      });
+      setOriginToken(getSupportedTokens(originChain, tokenList, chain)[0].symbol);
+    },
+    [originChain, tokenList],
+  );
 
   const _doCheckTransfer = useCallback(
     (isConfirmTransferAll: boolean, thenCb: (rs: ResponseCheckTransfer) => void, catchCb: (rs: Error) => void) => {
@@ -296,7 +304,6 @@ export const SendFund = ({
           false,
           rs => {
             if (isSync) {
-              console.log('rs', rs);
               setFeeInfo([rs.estimatedFee && rs.estimatedFee !== '0' ? rs.estimatedFee : null, rs.feeSymbol]);
             }
           },
@@ -492,26 +499,26 @@ export const SendFund = ({
                   <ScrollView style={{ ...ScrollViewStyle }}>
                     <View style={{ flex: 1 }}>
                       <OriginChainSelectField
-                        label={'Origin Chain'}
+                        label={i18n.sendAssetScreen.originChain}
                         networkKey={originChain}
                         networkOptions={originChainOptions}
                         onChangeOriginChain={_onChangeOriginChain}
                       />
 
-                      <SendFromAddressField senderAddress={senderAddress} onChangeAddress={_onChangeSenderAddress} />
-
                       <DestinationChainSelectField
-                        label={'Destination Chain'}
+                        label={i18n.sendAssetScreen.destinationChain}
                         networkKey={selectedDestinationChain}
                         networkOptions={destinationChainOptions}
                         onChangeDestinationChain={_onChangeDestinationChain}
                       />
 
+                      <SendFromAddressField senderAddress={senderAddress} onChangeAddress={_onChangeSenderAddress} />
+
                       <InputAddress
                         ref={inputAddressRef}
                         onPressQrButton={onPressQrButton}
                         containerStyle={{ marginBottom: 8 }}
-                        label={i18n.common.sendToAddress}
+                        label={i18n.sendAssetScreen.toAccount}
                         value={currentReceiveAddress}
                         onChange={onChangeReceiverAddress}
                       />
@@ -535,7 +542,7 @@ export const SendFund = ({
                           isDanger
                           style={WarningStyle}
                           message={`${i18n.warningMessage.destinationAccountMustBe}${
-                            networkMap[originChain].isEthereum ? 'EVM' : 'substrate'
+                            networkMap[selectedDestinationChain].isEthereum ? 'EVM' : 'substrate'
                           }${i18n.common.type}`}
                         />
                       )}
@@ -593,7 +600,11 @@ export const SendFund = ({
                     </View>
                     <InputBalance
                       filteredNetworkKey={originChain}
-                      value={amount ? getBalanceWithSi(amount.toString(), balanceFormat[0], si, originToken)[0] : ''}
+                      value={
+                        rawAmount !== undefined
+                          ? getBalanceWithSi(amount.toString(), balanceFormat[0], si, originToken)[0]
+                          : ''
+                      }
                       icon={CaretDown}
                       placeholder={'0'}
                       si={si}
@@ -615,7 +626,7 @@ export const SendFund = ({
                     <Warning
                       isDanger
                       style={WarningStyle}
-                      message={'The amount you want to transfer is greater than your available balance.'}
+                      message={i18n.sendAssetScreen.amountGtAvailableBalanceMessage}
                     />
                   )}
 

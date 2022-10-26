@@ -100,8 +100,8 @@ export const Confirmation = ({
     requestPayload.token || 'Token',
   )[0];
 
-  const feeValue = getBalanceWithSi(fee || '0', balanceFormat[0], si, feeSymbol)[0];
-
+  const feeValue = getBalanceWithSi(fee || '0', feeDecimals, si, feeSymbol)[0];
+  console.log('feeValue', getBalanceWithSi(fee || '0', feeDecimals, si, feeSymbol));
   const handlerCallbackResponseResult = (rs: ResponseTransfer) => {
     if (!rs.isFinalized) {
       if (rs.step === TransferStep.SUCCESS.valueOf()) {
@@ -167,30 +167,33 @@ export const Confirmation = ({
             si={si}
             decimals={balanceFormat[0]}
           />
+          <NetworkField label={i18n.sendAssetScreen.originChain} networkKey={requestPayload.originNetworkKey} />
+          <NetworkField
+            label={i18n.sendAssetScreen.destinationChain}
+            networkKey={requestPayload.destinationNetworkKey}
+          />
           <AddressField
-            label={'Origin Account'}
+            label={i18n.sendAssetScreen.fromAccount}
             address={requestPayload.from}
             networkPrefix={originAccountPrefix}
             showRightIcon={false}
           />
-          <NetworkField label={'Origin Chain'} networkKey={requestPayload.originNetworkKey} />
           <AddressField
-            label={'Destination Account'}
+            label={i18n.sendAssetScreen.toAccount}
             address={requestPayload.to}
             networkPrefix={destinationAccountPrefix}
             showRightIcon={false}
           />
-          <NetworkField label={'Destination Chain'} networkKey={requestPayload.destinationNetworkKey} />
 
           <BalanceField
-            label={i18n.common.networkFee}
+            label={i18n.sendAssetScreen.originChainFee}
             value={fee || '0'}
             si={si}
             token={feeSymbol}
             decimal={feeDecimals}
           />
 
-          <CustomField label={'Total'}>
+          <CustomField label={i18n.sendAssetScreen.total}>
             <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 10 }}>
               <BalanceVal
                 value={assetValue}

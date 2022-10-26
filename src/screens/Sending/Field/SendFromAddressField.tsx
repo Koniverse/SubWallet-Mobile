@@ -8,6 +8,7 @@ import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   senderAddress: string;
@@ -38,7 +39,7 @@ export const SendFromAddressField = ({ senderAddress, networkKey, onChangeAddres
         <AddressField
           placeholder={isAllAccount && senderAddress === 'ALL' ? 'Please select an account' : undefined}
           address={senderAddress}
-          label={'Send from Address'}
+          label={i18n.sendAssetScreen.fromAccount}
           rightIcon={CaretRight}
           showRightIcon={isAllAccount}
         />
