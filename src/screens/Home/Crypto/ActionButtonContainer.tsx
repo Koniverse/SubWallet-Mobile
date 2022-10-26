@@ -169,8 +169,8 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
           icon={sendIcon}
           onPress={() =>
             navigation.navigate('SendFund', {
-              selectedNetworkKey: 'moonbeam',
-              selectedToken: 'GLMR',
+              selectedNetworkKey: selectionProvider?.selectedNetworkKey,
+              selectedToken: selectionProvider?.selectedToken,
             })
           }
         />

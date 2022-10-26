@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NetworkField } from 'components/Field/Network';
 import { TouchableOpacity } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { NetworkSelect } from 'screens/NetworkSelect';
+import { DestinationChainSelect } from 'screens/DestinationChainSelect';
 
 interface Props {
   networkKey: string;
@@ -11,7 +11,7 @@ interface Props {
   onChangeDestinationChain: (chain: string) => void;
 }
 
-export const NetworkSelectField = ({ networkKey, label, networkOptions, onChangeDestinationChain }: Props) => {
+export const DestinationChainSelectField = ({ networkKey, label, networkOptions, onChangeDestinationChain }: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const _onChangeNetwork = (chain: string) => {
@@ -25,7 +25,7 @@ export const NetworkSelectField = ({ networkKey, label, networkOptions, onChange
         <NetworkField showIcon networkKey={networkKey} label={label} />
       </TouchableOpacity>
 
-      <NetworkSelect
+      <DestinationChainSelect
         onPressBack={() => setModalVisible(false)}
         modalVisible={modalVisible}
         onChangeModalVisible={() => setModalVisible(false)}

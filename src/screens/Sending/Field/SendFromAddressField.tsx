@@ -11,8 +11,8 @@ import { RootState } from 'stores/index';
 
 interface Props {
   senderAddress: string;
-  networkKey: string;
   onChangeAddress: (address: string) => void;
+  networkKey?: string;
 }
 
 export const SendFromAddressField = ({ senderAddress, networkKey, onChangeAddress }: Props) => {
@@ -36,6 +36,7 @@ export const SendFromAddressField = ({ senderAddress, networkKey, onChangeAddres
     <>
       <TouchableOpacity onPress={onPressAddressField} activeOpacity={BUTTON_ACTIVE_OPACITY} disabled={!isAllAccount}>
         <AddressField
+          placeholder={isAllAccount && senderAddress === 'ALL' ? 'Please select an account' : undefined}
           address={senderAddress}
           label={'Send from Address'}
           rightIcon={CaretRight}

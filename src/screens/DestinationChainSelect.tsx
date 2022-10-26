@@ -31,7 +31,7 @@ const renderListEmptyComponent = () => {
   );
 };
 
-export const NetworkSelect = ({
+export const DestinationChainSelect = ({
   modalVisible,
   onChangeModalVisible,
   onPressBack,

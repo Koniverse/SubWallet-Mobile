@@ -62,7 +62,7 @@ export const TransferValue = ({ value, decimals, si, token }: Props) => {
   return (
     <View style={transferValueWrapperStyle}>
       <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light, paddingRight: 8 }]}>{balanceValue}</Text>
-      <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.disabled }]}>{balanceToken}</Text>
+      <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light }]}>{balanceToken}</Text>
     </View>
   );
 };

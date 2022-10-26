@@ -20,9 +20,11 @@ export interface InputBalanceProps {
   senderAddress: string;
   icon: (iconProps: IconProps) => JSX.Element;
   value: string;
-  onChangeToken: (item: TokenItemType) => void;
+  onChangeToken: (tokenValueStr: string) => void;
   selectedToken: string;
   selectedNetworkKey: string;
+  filteredNetworkKey?: string;
+  externalTokenOptions?: TokenItemType[];
 }
 
 const isValidInput = (input: string) => {
@@ -128,6 +130,8 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
     onChangeToken,
     selectedToken,
     selectedNetworkKey,
+    filteredNetworkKey,
+    externalTokenOptions,
   } = props;
   const [inputValue, setInputValue] = useState<string>(value);
   const [isShowTokenList, setShowTokenList] = useState<boolean>(false);
@@ -160,7 +164,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
   }));
 
   const _onChangeToken = (item: TokenItemType) => {
-    onChangeToken(item);
+    onChangeToken(item.symbol);
     setShowTokenList(false);
   };
 
@@ -187,6 +191,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
       </TouchableOpacity>
 
       <TokenSelect
+        filteredNetworkKey={filteredNetworkKey}
         selectedToken={selectedToken}
         selectedNetworkKey={selectedNetworkKey}
         onChangeToken={_onChangeToken}
@@ -194,6 +199,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         address={senderAddress}
         modalVisible={isShowTokenList}
         onChangeModalVisible={() => setShowTokenList(false)}
+        externalTokenOptions={externalTokenOptions}
       />
     </View>
   );

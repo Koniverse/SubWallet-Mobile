@@ -18,6 +18,7 @@ interface Props {
   filteredNetworkKey?: string;
   selectedNetworkKey?: string;
   selectedToken?: string;
+  externalTokenOptions?: TokenItemType[];
 }
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
@@ -49,8 +50,10 @@ export const TokenSelect = ({
   selectedToken,
   modalVisible,
   onChangeModalVisible,
+  externalTokenOptions,
 }: Props) => {
-  const tokenOptions = useTokenOptions(address, filteredNetworkKey);
+  const defaultTokenOptions = useTokenOptions(address, filteredNetworkKey);
+  const tokenOptions = externalTokenOptions ? externalTokenOptions : defaultTokenOptions;
 
   const renderItem = ({ item }: ListRenderItemInfo<TokenItemType>) => {
     const { symbol, networkKey, displayedSymbol, isMainToken, networkDisplayName } = item;
