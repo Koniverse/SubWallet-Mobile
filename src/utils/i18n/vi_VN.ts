@@ -186,6 +186,7 @@ export const vi = {
     collator: 'Collator',
     dApp: 'DApp',
     cancelTask: 'Cancel task',
+    type: ' type',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -486,6 +487,8 @@ export const vi = {
     recipientPhish: 'The recipient is associated with a known phishing site on',
     isNotSameAddressAndTokenType: 'Transfer is not supported for this type of account and token',
     recipientAddressMustBe: 'The recipient address must be ',
+    originAccountMustBe: 'Origin account must be ',
+    destinationAccountMustBe: 'Destination account must be ',
     invalidEVMPrivateKey: 'Invalid EVM private key',
     removeAccountWarning:
       'You are about to remove this account. This means that you will not able to access it via this application any more. If you wish to recover it, you will need to use the secret phrase.',
