@@ -53,7 +53,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
   const [feeString, setFeeString] = useState('');
 
   const [isTxReady, setIsTxReady] = useState(false);
@@ -80,7 +80,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setError, setLoading);
+      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
       if (stop) {
         return;
       }
@@ -218,8 +218,8 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
           visible={visible}
           closeModal={handleClose}
           isBusy={loading}
-          error={error}
-          setError={setError}
+          errorArr={errorArr}
+          setErrorArr={setErrorArr}
         />
       </View>
     </ContainerWithSubHeader>

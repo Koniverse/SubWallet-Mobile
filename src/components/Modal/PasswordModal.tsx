@@ -14,8 +14,8 @@ interface Props {
   closeModal: () => void;
   onConfirm: (password: string) => void;
   isBusy: boolean;
-  error: string;
-  setError: (val: string) => void;
+  errorArr: string[] | undefined;
+  setErrorArr: (val: string[] | undefined) => void;
 }
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -49,7 +49,7 @@ const formConfig: FormControlConfig = {
   },
 };
 
-const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, error, setError }: Props) => {
+const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr }: Props) => {
   const onSubmit = useCallback(
     (formState: FormState) => {
       const password = formState.data.password;
@@ -63,10 +63,10 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, error, setError
 
   const handleChangePassword = useCallback(
     (val: string) => {
-      setError('');
+      setErrorArr(undefined);
       onChangeValue('password')(val);
     },
-    [onChangeValue, setError],
+    [onChangeValue, setErrorArr],
   );
 
   const onPress = useCallback(() => {
@@ -74,7 +74,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, error, setError
     onConfirm(password);
   }, [formState.data.password, onConfirm]);
 
-  const errors = [...formState.errors.password, ...(error ? [error] : [])];
+  const errors = [...formState.errors.password, ...(errorArr && errorArr.length ? errorArr : [])];
 
   return (
     <SubWalletModal modalVisible={visible} onChangeModalVisible={!isBusy ? closeModal : undefined}>
