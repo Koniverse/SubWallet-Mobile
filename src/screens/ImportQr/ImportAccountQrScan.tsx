@@ -66,17 +66,11 @@ const ImportAccountQrScan = () => {
 
         if (prefix === SUBSTRATE_PREFIX || prefix === SECRET_PREFIX) {
           [prefix, content, genesisHash, ...name] = arr;
-          if (prefix === SUBSTRATE_PREFIX) {
-            setError(i18n.warningMessage.invalidQRCode);
-            return;
-          }
         } else if (prefix === ETHEREUM_PREFIX) {
           [prefix, content, ...name] = arr;
-          genesisHash = '';
+          genesisHash = content.split('@')[1] || '';
           content = content.substring(0, 42);
           isEthereum = true;
-          setError(i18n.warningMessage.invalidQRCode);
-          return;
         } else {
           setError(i18n.warningMessage.invalidQRCode);
           return;

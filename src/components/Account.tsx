@@ -11,7 +11,7 @@ import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
+import { CircleWavyCheck, CopySimple, Eye } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import i18n from 'utils/i18n/i18n';
@@ -54,6 +54,10 @@ const nameWrapper: StyleProp<any> = {
   paddingBottom: 6,
 };
 
+const InfoIconStyle: StyleProp<any> = {
+  marginRight: 5,
+};
+
 export const Account = ({
   name,
   address,
@@ -66,7 +70,8 @@ export const Account = ({
 }: AccountProps) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const [{ genesisHash: recodedGenesis }, setRecoded] = useState<Recoded>(defaultRecoded);
+  const [{ genesisHash: recodedGenesis, account }, setRecoded] = useState<Recoded>(defaultRecoded);
+  const isReadOnly = account?.isReadOnly;
   const getNetworkInfoByGenesisHash = useCallback(
     (hash?: string | null): NetworkJson | null => {
       if (!hash) {
@@ -129,7 +134,10 @@ export const Account = ({
         <Text style={accountNameStyle} numberOfLines={1}>
           {name}
         </Text>
-        {showSelectedIcon && isSelected && <CircleWavyCheck size={20} color={ColorMap.primary} weight={'bold'} />}
+        {isReadOnly && <Eye size={20} color={ColorMap.disabled} weight={'bold'} style={InfoIconStyle} />}
+        {showSelectedIcon && isSelected && (
+          <CircleWavyCheck size={20} color={ColorMap.primary} weight={'bold'} style={InfoIconStyle} />
+        )}
       </View>
     );
   };

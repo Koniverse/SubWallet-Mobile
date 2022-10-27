@@ -517,6 +517,7 @@ export const vi = {
     invalidPrefix: 'Invalid prefix received, expected',
     invalidQRCode: 'Invalid QR code',
     cannotExtractAddress: "Can't extract address from the QR code",
+    readOnly: 'You are using readonly account',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

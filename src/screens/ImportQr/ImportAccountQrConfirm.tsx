@@ -67,6 +67,7 @@ const ImportAccountQrConfirm = ({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
+  const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
 
   const formConfig = useMemo((): FormControlConfig => {
     return {
@@ -107,6 +108,7 @@ const ImportAccountQrConfirm = ({
           genesisHash: account.genesisHash,
           isEthereum: account.isEthereum,
           isAllowed: true,
+          isReadOnly: isReadOnly,
         })
           .then(errs => {
             if (errs.length) {
@@ -149,7 +151,7 @@ const ImportAccountQrConfirm = ({
         setIsBusy(false);
       }
     },
-    [account, isEthereum, onComplete],
+    [account, isEthereum, isReadOnly, onComplete],
   );
 
   const onSubmitForm = useCallback(
@@ -184,6 +186,7 @@ const ImportAccountQrConfirm = ({
   useEffect(() => {
     let amount = true;
     onChangeValue('accountName')(account?.name || defaultName);
+    setIsReadOnly(true);
 
     if (account.isAddress) {
       setAddress(account.content);
@@ -239,24 +242,28 @@ const ImportAccountQrConfirm = ({
                 errorMessages={formState.errors.accountName}
                 isDisabled={isBusy}
               />
-              <PasswordField
-                ref={formState.refs.password}
-                label={formState.labels.password}
-                defaultValue={formState.data.password}
-                onChangeText={_onChangePasswordValue}
-                errorMessages={formState.errors.password}
-                onSubmitField={onSubmitField('password')}
-                isBusy={isBusy}
-              />
-              <PasswordField
-                ref={formState.refs.repeatPassword}
-                label={formState.labels.repeatPassword}
-                defaultValue={formState.data.repeatPassword}
-                onChangeText={onChangeValue('repeatPassword')}
-                errorMessages={formState.errors.repeatPassword}
-                onSubmitField={onSubmitField('repeatPassword')}
-                isBusy={isBusy}
-              />
+              {!account.isAddress && (
+                <>
+                  <PasswordField
+                    ref={formState.refs.password}
+                    label={formState.labels.password}
+                    defaultValue={formState.data.password}
+                    onChangeText={_onChangePasswordValue}
+                    errorMessages={formState.errors.password}
+                    onSubmitField={onSubmitField('password')}
+                    isBusy={isBusy}
+                  />
+                  <PasswordField
+                    ref={formState.refs.repeatPassword}
+                    label={formState.labels.repeatPassword}
+                    defaultValue={formState.data.repeatPassword}
+                    onChangeText={onChangeValue('repeatPassword')}
+                    errorMessages={formState.errors.repeatPassword}
+                    onSubmitField={onSubmitField('repeatPassword')}
+                    isBusy={isBusy}
+                  />
+                </>
+              )}
             </>
           )}
         </ScrollView>

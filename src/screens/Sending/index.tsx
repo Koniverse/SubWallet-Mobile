@@ -1,4 +1,5 @@
-import React, { createRef, useCallback, useEffect, useState } from 'react';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendFundProps } from 'routes/index';
 import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
@@ -128,6 +129,16 @@ export const SendFund = ({
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const isNotSameAddressType = !!receiveAddress && senderAddressType !== receiveAddressType;
 
+  const senderAccount = useGetAccountByAddress(senderAddress);
+
+  const isReadOnly = useMemo((): boolean => {
+    if (!senderAccount) {
+      return false;
+    } else {
+      return !!senderAccount.isReadOnly;
+    }
+  }, [senderAccount]);
+
   const canMakeTransfer =
     !!rawAmount &&
     isSupportTransfer &&
@@ -137,6 +148,7 @@ export const SendFund = ({
     !isSameAddress &&
     !isNotSameAddressAndTokenType &&
     !isNotSameAddressType &&
+    !isReadOnly &&
     !amountGtAvailableBalance;
 
   const _doCheckTransfer = useCallback(
@@ -354,6 +366,10 @@ export const SendFund = ({
                         value={currentReceiveAddress}
                         onChange={onChangeReceiverAddress}
                       />
+
+                      {isReadOnly && (
+                        <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />
+                      )}
 
                       {isSameAddress && (
                         <Warning isDanger style={WarningStyle} message={i18n.warningMessage.isNotSameAddress} />
