@@ -1,4 +1,3 @@
-import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendFundProps } from 'routes/index';
@@ -151,17 +150,6 @@ export const SendFund = ({
     );
     setOriginToken(currentSupportedMainTokens[0].symbol);
   };
-
-  const senderAccount = useGetAccountByAddress(senderAddress);
-
-  const isReadOnly = useMemo((): boolean => {
-    if (!senderAccount) {
-      return false;
-    } else {
-      return !!senderAccount.isReadOnly;
-    }
-  }, [senderAccount]);
-
 
   const _onChangeDestinationChain = useCallback(
     (chain: string) => {
