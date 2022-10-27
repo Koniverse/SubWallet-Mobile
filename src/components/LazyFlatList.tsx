@@ -61,7 +61,6 @@ export function LazyFlatList<T>({
 
   useEffect(() => {
     let unmount = false;
-    console.log(123123);
     if (flatListRef.current) {
       if (!unmount) {
         setPageNumber(1);
