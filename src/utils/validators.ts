@@ -1,4 +1,4 @@
-import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { Alert, Linking, Platform } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 
@@ -12,7 +12,7 @@ const getCameraPermission = () => {
 };
 
 export const requestCameraPermission = async () => {
-  const result = await check(getCameraPermission());
+  const result = await request(getCameraPermission());
 
   switch (result) {
     case RESULTS.UNAVAILABLE:
@@ -20,7 +20,7 @@ export const requestCameraPermission = async () => {
       break;
     case RESULTS.DENIED:
       console.log('Images: The permission has not been requested / is denied but requestable');
-      return await request(getCameraPermission());
+      break;
     case RESULTS.GRANTED:
       console.log('Images: The permission is granted');
       return result;

@@ -59,6 +59,7 @@ import { ColorMap } from 'styles/color';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
+import { AutoLockState } from 'utils/autoLock';
 import { getValidURL } from 'utils/browser';
 import { Tokens } from 'screens/EvmTokens';
 import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
@@ -97,6 +98,7 @@ function checkRequiredStoresReady(
   return ![accountsStoreStatus, settingsStoreStatus, networkMapStoreStatus].includes('INIT');
 }
 
+AutoLockState.isPreventAutoLock = false;
 const autoLockParams: { pinCodeEnabled: boolean; faceIdEnabled: boolean; autoLockTime?: number; lock: () => void } = {
   pinCodeEnabled: false,
   faceIdEnabled: false,
@@ -113,6 +115,9 @@ AppState.addEventListener('change', (state: string) => {
 
   if (state === 'background') {
     timeout = setTimeout(() => {
+      if (AutoLockState.isPreventAutoLock) {
+        return;
+      }
       if (faceIdEnabled) {
         lockWhenActive = true;
       } else {
@@ -122,7 +127,9 @@ AppState.addEventListener('change', (state: string) => {
     }, autoLockTime);
   } else if (state === 'active') {
     if (lockWhenActive) {
-      lock();
+      if (!AutoLockState.isPreventAutoLock) {
+        lock();
+      }
       lockWhenActive = false;
     }
     timeout && clearTimeout(timeout);
