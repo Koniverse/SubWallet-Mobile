@@ -10,6 +10,8 @@ interface Props {
   itemKey: string;
   isSelected: boolean;
   defaultItemKey?: string;
+  showSeparator?: boolean;
+  iconSize?: number;
 }
 
 const itemArea: StyleProp<any> = {
@@ -44,20 +46,27 @@ const logoWrapperStyle: StyleProp<any> = {
   borderRadius: 28,
 };
 
-export const NetworkSelectItemContent = ({ itemKey, itemName, isSelected, defaultItemKey }: Props) => {
+export const NetworkSelectItemContent = ({
+  itemKey,
+  itemName,
+  isSelected,
+  defaultItemKey,
+  showSeparator = true,
+  iconSize = 28,
+}: Props) => {
   const CheckIcon = CircleWavyCheck;
   return (
     <View>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 28, defaultItemKey)}</View>
+          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, iconSize, defaultItemKey)}</View>
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 
         {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
       </View>
 
-      <View style={itemSeparator} />
+      {showSeparator && <View style={itemSeparator} />}
     </View>
   );
 };

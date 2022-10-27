@@ -59,7 +59,7 @@ const UnStakeAuth = ({
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
   useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
@@ -96,7 +96,7 @@ const UnStakeAuth = ({
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setError, setLoading);
+      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
       if (stop) {
         return;
       }
@@ -150,7 +150,7 @@ const UnStakeAuth = ({
         handleResponse,
       ).catch(e => {
         console.log(e);
-        setError((e as Error).message);
+        setErrorArr([(e as Error).message]);
         setLoading(false);
       });
     },
@@ -202,8 +202,8 @@ const UnStakeAuth = ({
           visible={visible}
           closeModal={handleClose}
           isBusy={loading}
-          error={error}
-          setError={setError}
+          errorArr={errorArr}
+          setErrorArr={setErrorArr}
         />
       </View>
     </ContainerWithSubHeader>
