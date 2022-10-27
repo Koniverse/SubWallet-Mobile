@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import DocumentPicker, { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
 import { StyleProp, TouchableOpacity } from 'react-native';
+import { AutoLockState } from 'utils/autoLock';
 import Text from '../components/Text';
 import { FileArrowUp } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
@@ -31,6 +32,7 @@ const inputFileLabel: StyleProp<any> = {
 export const InputFile = ({ onChangeResult, style }: Props) => {
   const onChangeFile = useCallback(async () => {
     try {
+      AutoLockState.isPreventAutoLock = true;
       const pickerResult = await DocumentPicker.pickSingle({
         presentationStyle: 'fullScreen',
         copyTo: 'cachesDirectory',
@@ -38,6 +40,8 @@ export const InputFile = ({ onChangeResult, style }: Props) => {
       onChangeResult([pickerResult]);
     } catch (e) {
       console.log('e', e);
+    } finally {
+      AutoLockState.isPreventAutoLock = false;
     }
   }, [onChangeResult]);
 

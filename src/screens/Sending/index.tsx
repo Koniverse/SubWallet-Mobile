@@ -2,18 +2,10 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendFundProps } from 'routes/index';
-import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { InputAddress } from 'components/Input/InputAddress';
-import Text from 'components/Text';
-import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
-import { getEthereumChains, getNetworkLogo } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ColorMap } from 'styles/color';
-import { SubmitButton } from 'components/SubmitButton';
 import useFreeBalance from 'hooks/screen/useFreeBalance';
-import FormatBalance from 'components/FormatBalance';
-import { BalanceFormatType } from 'types/ui-types';
+import { BalanceFormatType, TokenItemType } from 'types/ui-types';
 import {
   getAuthTransactionFeeInfo,
   getBalanceFormat,
@@ -21,11 +13,8 @@ import {
   getMaxTransferAndNoFees,
   isContainGasRequiredExceedsError,
 } from 'screens/Sending/utils';
-import BigN from 'bignumber.js';
-import { InputBalance } from 'components/Input/InputBalance';
-import { BN_TEN } from 'utils/chainBalances';
-import { BalanceToUsd } from 'components/BalanceToUsd';
 import {
+  checkCrossChainTransfer,
   checkTransfer,
   transferCheckReferenceCount,
   transferCheckSupporting,
@@ -35,99 +24,133 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Confirmation } from 'screens/Sending/Confirmation';
 import { TransferResultType } from 'types/tx';
 import { SendFundResult } from 'screens/Sending/SendFundResult';
-import { checkAddress } from '@polkadot/phishing';
-import { ResponseCheckTransfer } from '@subwallet/extension-base/background/KoniTypes';
-import { Warning } from 'components/Warning';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import {
+  DropdownTransformOptionType,
+  NetworkJson,
+  ResponseCheckCrossChainTransfer,
+  ResponseCheckTransfer,
+} from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
-import { RESULTS } from 'react-native-permissions';
-import { requestCameraPermission } from 'utils/validators';
-import { SiDef } from '@polkadot/util/types';
 import { formatBalance } from '@polkadot/util';
+import { SupportedCrossChainsMap } from '@subwallet/extension-koni-base/api/xcm/utils';
+import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
+import useShowedNetworks from 'hooks/screen/useShowedNetworks';
+import { ChainAndAccountSelectScreen } from 'screens/Sending/ChainAndAccountSelectScreen';
+import { TypeAmountScreen } from 'screens/Sending/TypeAmountScreen';
 
-const NetworkLogoWrapperStyle: StyleProp<any> = {
-  borderRadius: 20,
-  width: 40,
-  height: 40,
-  borderWidth: 2,
-  borderStyle: 'solid',
-  borderColor: ColorMap.secondary,
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginTop: 48,
-  marginBottom: 16,
-};
-
-const WarningStyle: StyleProp<any> = {
-  marginBottom: 8,
-};
-
-function getUseMaxButtonTextStyle(disabled: boolean) {
-  return {
-    color: disabled ? ColorMap.disabled : ColorMap.primary,
-    ...sharedStyles.mainText,
-    ...FontMedium,
-  };
-}
 const ViewStep = {
   SEND_FUND: 1,
-  CONFIRMATION: 2,
+  TYPE_AMOUNT: 2,
+  CHANGE_BALANCE: 3,
+  CONFIRMATION: 4,
 };
+
+function getDestinationChainOptions(originChain: string, networkMap: Record<string, NetworkJson>) {
+  const onChainOptions = [
+    {
+      label: networkMap[originChain].chain,
+      value: originChain,
+    },
+  ];
+  let crossChainOptions: { label: string; value: string }[] = [];
+  if (SupportedCrossChainsMap[originChain]) {
+    crossChainOptions = Object.keys(SupportedCrossChainsMap[originChain].relationMap).map(key => ({
+      label: networkMap[key].chain,
+      value: key,
+    }));
+  }
+
+  return onChainOptions.concat(crossChainOptions);
+}
+
+function getSupportedTokens(
+  originChain: string,
+  tokenList: TokenItemType[],
+  destinationChain: string,
+): TokenItemType[] {
+  const crossChainTokens =
+    SupportedCrossChainsMap[originChain] && SupportedCrossChainsMap[originChain].relationMap[destinationChain]
+      ? SupportedCrossChainsMap[originChain].relationMap[destinationChain].supportedToken
+      : [];
+
+  if (originChain === destinationChain) {
+    return tokenList.filter(item => item.networkKey === originChain);
+  } else {
+    return tokenList.filter(item => crossChainTokens.includes(item.symbol) && item.networkKey === originChain);
+  }
+}
 
 export const SendFund = ({
   route: {
-    params: { selectedAccount: senderAddress, selectedNetworkKey, selectedToken },
+    params: { selectedNetworkKey, selectedToken },
   },
 }: SendFundProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
-  const senderFreeBalance = useFreeBalance(selectedNetworkKey, senderAddress, selectedToken);
-  const balanceFormat: BalanceFormatType = getBalanceFormat(selectedNetworkKey, selectedToken, chainRegistry);
-  const tokenPrice = tokenPriceMap[selectedToken.toLowerCase()] || 0;
-  const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
-  const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
+  const [senderAddress, setSenderAddress] = useState<string>(currentAccountAddress);
+  const showedNetworks = useShowedNetworks(senderAddress, accounts);
+  const originChainOptions = useMemo(() => {
+    return showedNetworks
+      .filter(item => chainRegistry[item])
+      .map(key => ({
+        label: networkMap[key].chain,
+        value: key,
+      }));
+  }, [chainRegistry, networkMap, showedNetworks]);
+  const firstOriginChain = selectedNetworkKey || originChainOptions[0].value;
+  const [originToken, setOriginToken] = useState<string>(
+    selectedToken || networkMap[firstOriginChain].nativeToken || 'Token',
+  );
+  const tokenList = useTokenOptions(senderAddress);
+  const [originChain, setOriginChain] = useState<string>(firstOriginChain);
+  const senderFreeBalance = useFreeBalance(originChain, senderAddress, originToken);
+  const balanceFormat: BalanceFormatType = getBalanceFormat(originChain, originToken, chainRegistry);
   const [isGasRequiredExceedsError, setGasRequiredExceedsError] = useState<boolean>(false);
   const [backupAmount, setBackupAmount] = useState<string | undefined>(undefined);
-  const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const [isBusy, setBusy] = useState(false);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
-  const mainTokenInfo = getMainTokenInfo(selectedNetworkKey, chainRegistry);
-  const [si, setSi] = useState<SiDef>(formatBalance.findSi('-'));
+  const mainTokenInfo = getMainTokenInfo(originChain, chainRegistry);
+  const si = formatBalance.findSi('-');
   const feeDecimal: number | null = feeSymbol
-    ? feeSymbol === selectedToken
+    ? feeSymbol === originToken
       ? balanceFormat[0]
-      : getBalanceFormat(selectedNetworkKey, feeSymbol, chainRegistry)[0]
+      : getBalanceFormat(originChain, feeSymbol, chainRegistry)[0]
     : null;
   const [reference, setReference] = useState<boolean | null>(null);
   const [[isSupportTransfer, isSupportTransferAll], setTransferSupport] = useState<[boolean, boolean] | [null, null]>([
     null,
     null,
   ]);
-  const isSameAddress = !!receiveAddress && !!senderAddress && receiveAddress === senderAddress;
+  const defaultDestinationChainOptions = getDestinationChainOptions(originChain, networkMap);
+  const [[selectedDestinationChain, destinationChainOptions], setDestinationChain] = useState<
+    [string, DropdownTransformOptionType[]]
+  >([defaultDestinationChainOptions[0].value, defaultDestinationChainOptions]);
+  const originTokenList = useMemo(() => {
+    return getSupportedTokens(originChain, tokenList, selectedDestinationChain);
+  }, [originChain, selectedDestinationChain, tokenList]);
   const canToggleAll = !!isSupportTransferAll && !!senderFreeBalance && !reference && !!receiveAddress;
-  const amountGtAvailableBalance =
-    !!rawAmount && !!senderFreeBalance && new BigN(rawAmount).gt(new BigN(senderFreeBalance));
   const [currentViewStep, setCurrentStep] = useState(ViewStep.SEND_FUND);
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
-  const inputAddressRef = createRef();
-  const amount = Math.floor(Number(rawAmount));
-  const ethereumChains = getEthereumChains(networkMap);
-  const isNotSameAddressAndTokenType =
-    (isEthereumAddress(senderAddress) && !ethereumChains.includes(selectedNetworkKey)) ||
-    (!isEthereumAddress(senderAddress) && ethereumChains.includes(selectedNetworkKey));
+  const amount = rawAmount !== undefined ? Math.floor(Number(rawAmount)) : 0;
 
-  const receiveAddressType = isEthereumAddress(receiveAddress || '') ? 'Ethereum' : 'Substrate';
-  const senderAddressType = isEthereumAddress(senderAddress || '') ? 'Ethereum' : 'Substrate';
-  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
-  const isNotSameAddressType = !!receiveAddress && senderAddressType !== receiveAddressType;
+  const _onChangeOriginChain = (currentOriginChain: string) => {
+    const currentDestinationChainOptions = getDestinationChainOptions(currentOriginChain, networkMap);
+    setOriginChain(currentOriginChain);
+    setDestinationChain([currentDestinationChainOptions[0].value, currentDestinationChainOptions]);
+    const currentSupportedMainTokens = getSupportedTokens(
+      currentOriginChain,
+      tokenList,
+      currentDestinationChainOptions[0].value,
+    );
+    setOriginToken(currentSupportedMainTokens[0].symbol);
+  };
 
   const senderAccount = useGetAccountByAddress(senderAddress);
 
@@ -139,71 +162,116 @@ export const SendFund = ({
     }
   }, [senderAccount]);
 
-  const canMakeTransfer =
-    !!rawAmount &&
-    isSupportTransfer &&
-    !isGasRequiredExceedsError &&
-    !recipientPhish &&
-    !!receiveAddress &&
-    !isSameAddress &&
-    !isNotSameAddressAndTokenType &&
-    !isNotSameAddressType &&
-    !isReadOnly &&
-    !amountGtAvailableBalance;
+
+  const _onChangeDestinationChain = useCallback(
+    (chain: string) => {
+      setDestinationChain(prev => {
+        return [chain, prev[1]];
+      });
+      setOriginToken(getSupportedTokens(originChain, tokenList, chain)[0].symbol);
+    },
+    [originChain, tokenList],
+  );
 
   const _doCheckTransfer = useCallback(
     (isConfirmTransferAll: boolean, thenCb: (rs: ResponseCheckTransfer) => void, catchCb: (rs: Error) => void) => {
       if (receiveAddress) {
         checkTransfer({
-          networkKey: selectedNetworkKey,
+          networkKey: originChain,
           from: senderAddress,
           to: receiveAddress,
           transferAll: canToggleAll && isConfirmTransferAll,
-          token: selectedToken,
+          token: originToken,
           value: amount.toString(),
         })
           .then(thenCb)
           .catch(catchCb);
       }
     },
-    [amount, canToggleAll, senderAddress, selectedNetworkKey, receiveAddress, selectedToken],
+    [amount, canToggleAll, senderAddress, originChain, receiveAddress, originToken],
+  );
+
+  const _doCheckXcmTransfer = useCallback(
+    (
+      isConfirmTransferAll: boolean,
+      thenCb: (rs: ResponseCheckCrossChainTransfer) => void,
+      catchCb: (rs: Error) => void,
+    ) => {
+      if (receiveAddress) {
+        checkCrossChainTransfer({
+          originNetworkKey: originChain,
+          destinationNetworkKey: selectedDestinationChain,
+          from: senderAddress,
+          to: receiveAddress,
+          token: originToken,
+          value: amount.toString(),
+        })
+          .then(thenCb)
+          .catch(catchCb);
+      }
+    },
+    [amount, originChain, originToken, receiveAddress, selectedDestinationChain, senderAddress],
   );
 
   useEffect(() => {
     let isSync = true;
 
     if (receiveAddress && rawAmount) {
-      _doCheckTransfer(
-        false,
-        rs => {
-          if (isSync) {
-            setFeeInfo([rs.estimateFee && rs.estimateFee !== '0' ? rs.estimateFee : null, rs.feeSymbol]);
-            setGasRequiredExceedsError(false);
-          }
-        },
-        (e: Error) => {
-          if (isContainGasRequiredExceedsError(e.message) && isSync) {
-            setGasRequiredExceedsError(true);
-          } else {
+      if (originChain === selectedDestinationChain) {
+        _doCheckTransfer(
+          false,
+          rs => {
             if (isSync) {
+              setFeeInfo([rs.estimateFee && rs.estimateFee !== '0' ? rs.estimateFee : null, rs.feeSymbol]);
               setGasRequiredExceedsError(false);
             }
+          },
+          (e: Error) => {
+            if (isContainGasRequiredExceedsError(e.message) && isSync) {
+              setGasRequiredExceedsError(true);
+            } else {
+              if (isSync) {
+                setGasRequiredExceedsError(false);
+              }
 
+              console.log('There is problem when checkTransfer', e);
+            }
+          },
+        );
+      } else {
+        _doCheckXcmTransfer(
+          false,
+          rs => {
+            if (isSync) {
+              setFeeInfo([rs.estimatedFee && rs.estimatedFee !== '0' ? rs.estimatedFee : null, rs.feeSymbol]);
+            }
+          },
+          (e: Error) => {
             console.log('There is problem when checkTransfer', e);
-          }
-        },
-      );
+          },
+        );
+      }
     }
 
     return () => {
       isSync = false;
     };
-  }, [_doCheckTransfer, canToggleAll, senderAddress, rawAmount, receiveAddress, selectedToken]);
+  }, [
+    _doCheckTransfer,
+    canToggleAll,
+    senderAddress,
+    rawAmount,
+    receiveAddress,
+    originToken,
+    originChain,
+    selectedDestinationChain,
+    _doCheckXcmTransfer,
+  ]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferCheckReferenceCount({ address: senderAddress, networkKey: selectedNetworkKey })
+    transferCheckReferenceCount({ address: senderAddress, networkKey: originChain })
       .then(res => {
         if (isSync) {
           setReference(res);
@@ -215,12 +283,12 @@ export const SendFund = ({
       isSync = false;
       setReference(null);
     };
-  }, [senderAddress, selectedNetworkKey]);
+  }, [senderAddress, originChain]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferGetExistentialDeposit({ networkKey: selectedNetworkKey, token: selectedToken })
+    transferGetExistentialDeposit({ networkKey: originChain, token: originToken })
       .then(rs => {
         if (isSync) {
           setExistentialDeposit(rs);
@@ -232,12 +300,12 @@ export const SendFund = ({
       isSync = false;
       setExistentialDeposit('0');
     };
-  }, [selectedNetworkKey, selectedToken]);
+  }, [originChain, originToken]);
 
   useEffect(() => {
     let isSync = true;
 
-    transferCheckSupporting({ networkKey: selectedNetworkKey, token: selectedToken })
+    transferCheckSupporting({ networkKey: originChain, token: originToken })
       .then(res => {
         if (isSync) {
           setTransferSupport([res.supportTransfer, res.supportTransferAll]);
@@ -249,26 +317,7 @@ export const SendFund = ({
       isSync = false;
       setTransferSupport([null, null]);
     };
-  }, [selectedNetworkKey, selectedToken]);
-
-  useEffect(() => {
-    let isSync = true;
-
-    if (receiveAddress) {
-      checkAddress(receiveAddress)
-        .then(v => {
-          if (isSync) {
-            setRecipientPhish(v);
-          }
-        })
-        .catch(e => console.log('e', e));
-    }
-
-    return () => {
-      isSync = false;
-      setRecipientPhish(null);
-    };
-  }, [receiveAddress]);
+  }, [originChain, originToken]);
 
   useEffect(() => {
     if (currentViewStep === ViewStep.SEND_FUND && inputBalanceRef.current) {
@@ -277,13 +326,16 @@ export const SendFund = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentViewStep, backupAmount, inputBalanceRef.current]);
+
   const onChangeAmount = (val?: string) => {
     setRawAmount(val);
   };
 
   const onPressBack = () => {
-    if (currentViewStep === ViewStep.CONFIRMATION) {
+    if (currentViewStep === ViewStep.TYPE_AMOUNT) {
       setCurrentStep(ViewStep.SEND_FUND);
+    } else if (currentViewStep === ViewStep.CONFIRMATION) {
+      setCurrentStep(ViewStep.TYPE_AMOUNT);
       setBackupAmount(rawAmount);
     } else {
       navigation.goBack();
@@ -310,155 +362,115 @@ export const SendFund = ({
   };
 
   const onUpdateInputBalance = () => {
-    _doCheckTransfer(
-      true,
-      rs => {
-        const [curMaxTransfer] = getMaxTransferAndNoFees(
-          rs.estimateFee || null,
-          rs.feeSymbol,
-          selectedToken,
-          mainTokenInfo.symbol,
-          senderFreeBalance,
-          existentialDeposit,
-        );
-        if (inputBalanceRef && inputBalanceRef.current) {
-          // @ts-ignore
-          inputBalanceRef.current.onChange(curMaxTransfer.toString());
-        }
-      },
-      err => console.log('There is problem when checkTransfer', err),
-    );
-  };
-
-  const onUpdateInputAddress = (text: string) => {
-    if (inputAddressRef && inputAddressRef.current) {
-      // @ts-ignore
-      inputAddressRef.current.onChange(text);
+    if (originChain === selectedDestinationChain) {
+      _doCheckTransfer(
+        true,
+        rs => {
+          const [curMaxTransfer] = getMaxTransferAndNoFees(
+            rs.estimateFee || null,
+            rs.feeSymbol,
+            originToken,
+            mainTokenInfo.symbol,
+            senderFreeBalance,
+            existentialDeposit,
+          );
+          if (inputBalanceRef && inputBalanceRef.current) {
+            // @ts-ignore
+            inputBalanceRef.current.onChange(curMaxTransfer.toString());
+          }
+        },
+        err => console.log('There is problem when checkTransfer', err),
+      );
+    } else {
+      _doCheckXcmTransfer(
+        true,
+        rs => {
+          const [curMaxTransfer] = getMaxTransferAndNoFees(
+            rs.estimatedFee || null,
+            rs.feeSymbol,
+            originToken,
+            mainTokenInfo.symbol,
+            senderFreeBalance,
+            existentialDeposit,
+          );
+          if (inputBalanceRef && inputBalanceRef.current) {
+            // @ts-ignore
+            inputBalanceRef.current.onChange(curMaxTransfer.toString());
+          }
+        },
+        err => console.log('There is problem when checkTransfer', err),
+      );
     }
   };
 
-  const onPressQrButton = async () => {
-    const result = await requestCameraPermission();
+  const _onChangeSelectedToken = useCallback((tokenValueStr: string) => {
+    setOriginToken(tokenValueStr);
+  }, []);
 
-    if (result === RESULTS.GRANTED) {
-      setShowQrModalVisible(true);
-    }
+  const _onChangeSenderAddress = (address: string) => {
+    setSenderAddress(address);
   };
 
   return (
     <>
       {!isShowTxResult ? (
-        <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={i18n.title.sendFund}>
+        <ContainerWithSubHeader
+          onPressBack={onPressBack}
+          disabled={isBusy}
+          title={currentViewStep === ViewStep.SEND_FUND ? i18n.title.sendAsset : i18n.common.amount}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  Keyboard.dismiss();
-                }}>
-                <View style={{ ...sharedStyles.layoutContainer }}>
-                  <ScrollView style={{ ...ScrollViewStyle }}>
-                    <View style={{ alignItems: 'center', flex: 1 }}>
-                      <InputAddress
-                        ref={inputAddressRef}
-                        onPressQrButton={onPressQrButton}
-                        containerStyle={{ marginBottom: 8 }}
-                        label={i18n.common.sendToAddress}
-                        value={currentReceiveAddress}
-                        onChange={onChangeReceiverAddress}
-                      />
+              <ChainAndAccountSelectScreen
+                originChain={originChain}
+                originChainOptions={originChainOptions}
+                originToken={originToken}
+                onChangeOriginChain={_onChangeOriginChain}
+                destinationChain={selectedDestinationChain}
+                destinationChainOptions={destinationChainOptions}
+                onChangeDestinationChain={_onChangeDestinationChain}
+                senderAddress={senderAddress}
+                onChangeSenderAddress={_onChangeSenderAddress}
+                receiveAddress={receiveAddress}
+                currentReceiveAddress={currentReceiveAddress}
+                onChangeReceiverAddress={onChangeReceiverAddress}
+                onPressToNextStep={() => setCurrentStep(ViewStep.TYPE_AMOUNT)}
+                onChangeToken={_onChangeSelectedToken}
+                originTokenList={originTokenList}
+              />
+            )}
 
-                      {isReadOnly && (
-                        <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />
-                      )}
-
-                      {isSameAddress && (
-                        <Warning isDanger style={WarningStyle} message={i18n.warningMessage.isNotSameAddress} />
-                      )}
-
-                      {!!recipientPhish && (
-                        <Warning
-                          style={WarningStyle}
-                          isDanger
-                          message={`${i18n.warningMessage.recipientPhish} ${recipientPhish}`}
-                        />
-                      )}
-
-                      {isNotSameAddressType && (
-                        <Warning
-                          style={WarningStyle}
-                          isDanger
-                          message={i18n.warningMessage.recipientAddressMustBe + senderAddressType + ' type'}
-                        />
-                      )}
-
-                      <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(selectedNetworkKey, 34)}</View>
-                      <InputBalance
-                        placeholder={'0'}
-                        si={si}
-                        onChangeSi={setSi}
-                        maxValue={senderFreeBalance}
-                        onChange={onChangeAmount}
-                        decimals={balanceFormat[0]}
-                        ref={inputBalanceRef}
-                        siSymbol={selectedToken}
-                      />
-                      {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
-                    </View>
-                  </ScrollView>
-
-                  {!isSupportTransfer && (
-                    <Warning style={WarningStyle} isDanger message={i18n.warningMessage.notSupportTransferMessage} />
-                  )}
-
-                  <View>
-                    <View
-                      style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        paddingBottom: 24,
-                      }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ color: ColorMap.light, ...sharedStyles.mainText, ...FontMedium }}>
-                          {i18n.common.transferable}
-                        </Text>
-                        <FormatBalance format={balanceFormat} value={senderFreeBalance} />
-                      </View>
-
-                      <TouchableOpacity onPress={onUpdateInputBalance} disabled={!canToggleAll}>
-                        <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>{i18n.common.max}</Text>
-                      </TouchableOpacity>
-                    </View>
-
-                    <SubmitButton
-                      disabled={!canMakeTransfer}
-                      title={i18n.common.continue}
-                      style={{ width: '100%', ...MarginBottomForSubmitButton }}
-                      onPress={() => setCurrentStep(ViewStep.CONFIRMATION)}
-                    />
-                  </View>
-
-                  <QrScannerScreen
-                    networkKey={selectedNetworkKey}
-                    token={selectedToken}
-                    qrModalVisible={isShowQrModalVisible}
-                    onPressCancel={() => setShowQrModalVisible(false)}
-                    onChangeAddress={text => onUpdateInputAddress(text)}
-                    scanMessage={i18n.common.toSendFund}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
+            {currentViewStep === ViewStep.TYPE_AMOUNT && (
+              <TypeAmountScreen
+                amount={amount}
+                originToken={originToken}
+                originChain={originChain}
+                senderAddress={senderAddress}
+                si={si}
+                rawAmount={rawAmount}
+                originTokenList={originTokenList}
+                canToggleAll={canToggleAll}
+                balanceFormat={balanceFormat}
+                inputBalanceRef={inputBalanceRef}
+                onChangeAmount={onChangeAmount}
+                senderFreeBalance={senderFreeBalance}
+                onUpdateInputBalance={onUpdateInputBalance}
+                isSupportTransfer={isSupportTransfer}
+                onChangeSelectedToken={_onChangeSelectedToken}
+                isGasRequiredExceedsError={isGasRequiredExceedsError}
+                onPressToNextStep={() => setCurrentStep(ViewStep.CONFIRMATION)}
+              />
             )}
 
             {currentViewStep === ViewStep.CONFIRMATION && (
               <Confirmation
                 balanceFormat={balanceFormat}
                 requestPayload={{
-                  networkKey: selectedNetworkKey,
+                  originNetworkKey: originChain,
+                  destinationNetworkKey: selectedDestinationChain,
                   from: senderAddress,
                   to: currentReceiveAddress,
                   transferAll: false,
-                  token: selectedToken,
+                  token: originToken,
                   value: amount.toString(),
                 }}
                 onChangeResult={_onChangeResult}
@@ -467,7 +479,7 @@ export const SendFund = ({
                   feeDecimal,
                   feeSymbol,
                   mainTokenInfo,
-                  chainRegistry[selectedNetworkKey].tokenMap,
+                  chainRegistry[originChain].tokenMap,
                 )}
                 si={si}
                 isBusy={isBusy}
@@ -477,7 +489,7 @@ export const SendFund = ({
           </>
         </ContainerWithSubHeader>
       ) : (
-        <SendFundResult networkKey={selectedNetworkKey} txResult={txResult} onResend={_onResend} />
+        <SendFundResult networkKey={originChain} txResult={txResult} onResend={_onResend} />
       )}
     </>
   );

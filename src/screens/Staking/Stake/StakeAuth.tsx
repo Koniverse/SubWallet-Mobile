@@ -65,7 +65,7 @@ const StakeAuth = ({
   const [visible, setVisible] = useState(false);
   const [unmountModal, setUnmountModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
   const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
@@ -99,7 +99,7 @@ const StakeAuth = ({
   const onCancel = useGoHome({ screen: 'Staking' });
 
   const handleBondingResponse = useCallback((data: BasicTxResponse) => {
-    const stop = handleBasicTxResponse(data, false, setError, setLoading);
+    const stop = handleBasicTxResponse(data, false, setErrorArr, setLoading);
     if (stop) {
       return;
     }
@@ -131,7 +131,7 @@ const StakeAuth = ({
         handleBondingResponse,
       ).catch(e => {
         console.log(e);
-        setError((e as Error).message);
+        setErrorArr([(e as Error).message]);
         setLoading(false);
       });
     },
@@ -200,8 +200,8 @@ const StakeAuth = ({
             visible={visible}
             closeModal={handleClose}
             isBusy={loading}
-            error={error}
-            setError={setError}
+            errorArr={errorArr}
+            setErrorArr={setErrorArr}
           />
         )}
       </View>

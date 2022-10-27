@@ -1,27 +1,47 @@
-import React, { useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
+import React, { useState } from 'react';
+import { Keyboard, ScrollView, StyleProp, Text, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
-import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { NetworkJson, RequestCheckTransfer, TransferStep } from '@subwallet/extension-base/background/KoniTypes';
+import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import {
+  NetworkJson,
+  RequestCheckCrossChainTransfer,
+  RequestCheckTransfer,
+  ResponseTransfer,
+  TransferError,
+  TransferStep,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { AddressField } from 'components/Field/Address';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { TextField } from 'components/Field/Text';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
-import { PasswordField } from 'components/Field/Password';
-import { makeTransfer } from '../../messaging';
+import { makeCrossChainTransfer, makeTransfer } from '../../messaging';
 import { TransferResultType } from 'types/tx';
 import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
 import i18n from 'utils/i18n/i18n';
-import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import PasswordModal from 'components/Modal/PasswordModal';
+import { BalanceVal } from 'components/BalanceVal';
+import { ColorMap } from 'styles/color';
+import { getBalanceWithSi } from 'utils/index';
+import { CustomField } from 'components/Field/Custom';
+
+const balanceValTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium };
+
+interface TransferInfoType {
+  originNetworkKey: string;
+  destinationNetworkKey: string;
+  from: string;
+  to: string;
+  value?: string;
+  transferAll?: boolean;
+  token?: string;
+}
 
 interface Props {
-  requestPayload: RequestCheckTransfer;
+  requestPayload: TransferInfoType;
   feeInfo: [string | null, number, string]; // fee, fee decimal, fee symbol
   balanceFormat: BalanceFormatType;
   onChangeResult: (txResult: TransferResultType) => void;
@@ -38,15 +58,6 @@ function getNetworkPrefix(networkKey: string, networkMap: Record<string, Network
   return;
 }
 
-const formConfig = {
-  password: {
-    require: true,
-    name: i18n.common.password,
-    value: '',
-    validateFunc: validatePassword,
-  },
-};
-
 export const Confirmation = ({
   balanceFormat,
   requestPayload,
@@ -56,61 +67,95 @@ export const Confirmation = ({
   si,
   onChangeBusy,
 }: Props) => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const networkPrefix = getNetworkPrefix(requestPayload.networkKey, networkMap);
-  const accountName = accounts.find(acc => acc.address === requestPayload.from)?.name;
+  const originAccountPrefix = getNetworkPrefix(requestPayload.originNetworkKey, networkMap);
+  const destinationAccountPrefix = getNetworkPrefix(requestPayload.destinationNetworkKey, networkMap);
+  const onChainTransferRequestPayload: RequestCheckTransfer = {
+    networkKey: requestPayload.originNetworkKey,
+    from: requestPayload.from,
+    to: requestPayload.to,
+    value: requestPayload.value,
+    transferAll: requestPayload.transferAll,
+    token: requestPayload.token,
+  };
+
+  const crossChainTransferRequestPayload: RequestCheckCrossChainTransfer = {
+    originNetworkKey: requestPayload.originNetworkKey,
+    destinationNetworkKey: requestPayload.destinationNetworkKey,
+    from: requestPayload.from,
+    to: requestPayload.to,
+    value: requestPayload.value || '0',
+    transferAll: requestPayload.transferAll,
+    token: requestPayload.token || '0',
+  };
+
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   useHandlerHardwareBackPress(isBusy);
-  useEffect(() => {
-    focus('password')();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  const _doTransfer = (formState: FormState): void => {
-    const password = formState.data.password;
-    if (!password) {
-      onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
-      return;
+  const assetValue = getBalanceWithSi(
+    requestPayload.value || '0',
+    balanceFormat[0],
+    si,
+    requestPayload.token || 'Token',
+  )[0];
+
+  const feeValue = getBalanceWithSi(fee || '0', feeDecimals, si, feeSymbol)[0];
+  console.log('feeValue', getBalanceWithSi(fee || '0', feeDecimals, si, feeSymbol));
+  const handlerCallbackResponseResult = (rs: ResponseTransfer) => {
+    if (!rs.isFinalized) {
+      if (rs.step === TransferStep.SUCCESS.valueOf()) {
+        onChangeResult({
+          isShowTxResult: true,
+          isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
+          extrinsicHash: rs.extrinsicHash,
+        });
+      } else if (rs.step === TransferStep.ERROR.valueOf()) {
+        onChangeResult({
+          isShowTxResult: true,
+          isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
+          extrinsicHash: rs.extrinsicHash,
+          txError: rs.errors,
+        });
+      }
     }
+  };
 
+  const handlerResponseError = (errors: TransferError[]) => {
+    const errorMessages = errors.map(err => err.message);
+    setErrorArr(errorMessages);
+    if (errorMessages && errorMessages.length) {
+      onChangeBusy(false);
+    }
+  };
+
+  const _doTransfer = (password: string): void => {
+    Keyboard.dismiss();
     onChangeBusy(true);
 
     makeTransfer(
       {
-        ...requestPayload,
+        ...onChainTransferRequestPayload,
         password,
       },
-      rs => {
-        if (!rs.isFinalized) {
-          if (rs.step === TransferStep.SUCCESS.valueOf()) {
-            onChangeResult({
-              isShowTxResult: true,
-              isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
-              extrinsicHash: rs.extrinsicHash,
-            });
-          } else if (rs.step === TransferStep.ERROR.valueOf()) {
-            onChangeResult({
-              isShowTxResult: true,
-              isTxSuccess: rs.step === TransferStep.SUCCESS.valueOf(),
-              extrinsicHash: rs.extrinsicHash,
-              txError: rs.errors,
-            });
-          }
-        }
-      },
+      handlerCallbackResponseResult,
     )
-      .then(errors => {
-        const errorMessages = errors.map(err => err.message);
-        onUpdateErrors('password')(errorMessages);
-        if (errorMessages && errorMessages.length) {
-          onChangeBusy(false);
-        }
-      })
+      .then(handlerResponseError)
       .catch(e => console.log('There is problem when makeTransfer', e));
   };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
-    onSubmitForm: _doTransfer,
-  });
+
+  const _doXcmTransfer = (password: string): void => {
+    onChangeBusy(true);
+    makeCrossChainTransfer(
+      {
+        ...crossChainTransferRequestPayload,
+        password,
+      },
+      handlerCallbackResponseResult,
+    )
+      .then(handlerResponseError)
+      .catch(e => console.log('There is problem when makeTransfer', e));
+  };
 
   return (
     <>
@@ -122,39 +167,66 @@ export const Confirmation = ({
             si={si}
             decimals={balanceFormat[0]}
           />
-          <NetworkField label={i18n.common.network} networkKey={requestPayload.networkKey} />
-          <TextField label={i18n.common.account} text={accountName || ''} />
-          <AddressField
-            label={i18n.common.sendFromAddress}
-            address={requestPayload.from}
-            networkPrefix={networkPrefix}
+          <NetworkField label={i18n.sendAssetScreen.originChain} networkKey={requestPayload.originNetworkKey} />
+          <NetworkField
+            label={i18n.sendAssetScreen.destinationChain}
+            networkKey={requestPayload.destinationNetworkKey}
           />
-          <AddressField label={i18n.common.sendToAddress} address={requestPayload.to} />
+          <AddressField
+            label={i18n.sendAssetScreen.fromAccount}
+            address={requestPayload.from}
+            networkPrefix={originAccountPrefix}
+            showRightIcon={false}
+          />
+          <AddressField
+            label={i18n.sendAssetScreen.toAccount}
+            address={requestPayload.to}
+            networkPrefix={destinationAccountPrefix}
+            showRightIcon={false}
+          />
+
           <BalanceField
-            label={i18n.common.networkFee}
+            label={i18n.sendAssetScreen.originChainFee}
             value={fee || '0'}
             si={si}
             token={feeSymbol}
             decimal={feeDecimals}
           />
-          <PasswordField
-            ref={formState.refs.password}
-            label={formState.labels.password}
-            defaultValue={formState.data.password}
-            onChangeText={onChangeValue('password')}
-            isBusy={isBusy}
-            errorMessages={formState.errors.password}
-            onSubmitField={onSubmitField('password')}
-          />
+
+          <CustomField label={i18n.sendAssetScreen.total}>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 10 }}>
+              <BalanceVal
+                value={assetValue}
+                balanceValTextStyle={balanceValTextStyle}
+                symbol={requestPayload.token || 'Token'}
+              />
+              <Text style={balanceValTextStyle}> + </Text>
+              <BalanceVal value={feeValue} balanceValTextStyle={balanceValTextStyle} symbol={feeSymbol} />
+            </View>
+          </CustomField>
         </View>
+
+        <PasswordModal
+          isBusy={isBusy}
+          visible={modalVisible}
+          closeModal={() => setModalVisible(false)}
+          onConfirm={password => {
+            if (requestPayload.originNetworkKey === requestPayload.destinationNetworkKey) {
+              _doTransfer(password);
+            } else {
+              _doXcmTransfer(password);
+            }
+          }}
+          errorArr={errorArr}
+          setErrorArr={setErrorArr}
+        />
       </ScrollView>
 
       <SubmitButton
-        disabled={!formState.isValidated.password}
         isBusy={isBusy}
-        style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 8 }}
+        style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 16 }}
         title={i18n.common.send}
-        onPress={() => _doTransfer(formState)}
+        onPress={() => setModalVisible(true)}
       />
     </>
   );

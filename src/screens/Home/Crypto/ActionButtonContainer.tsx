@@ -1,25 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
-import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
 import { TokenSelect } from 'screens/TokenSelect';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
-import { AccountActionType, SelectionProviderProps, TokenItemType } from 'types/ui-types';
-import {
-  ArrowFatLineDown,
-  ArrowsClockwise,
-  Article,
-  FirstAidKit,
-  PaperPlaneTilt,
-  Shuffle,
-} from 'phosphor-react-native';
+import { SelectionProviderProps, TokenItemType } from 'types/ui-types';
+import { ArrowFatLineDown, ArrowsClockwise, PaperPlaneTilt } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { HIDE_MODAL_DURATION } from 'constants/index';
-import ToastContainer, { useToast } from 'react-native-toast-notifications';
+import { useToast } from 'react-native-toast-notifications';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -56,7 +48,6 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const _isAccountAll = isAccountAll(currentAccountAddress);
   const navigation = useNavigation<RootNavigationProps>();
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
-  const [sendFundTypeModal, setSendFundTypeModal] = useState<boolean>(false);
   const [selectAccountModal, setSelectAccountModal] = useState<boolean>(false);
   const [selectTokenModal, setSelectTokenModal] = useState<boolean>(false);
   const [{ selectedAccount, selectedNetworkKey, selectedNetworkPrefix }, setSelectedResult] =
@@ -104,63 +95,6 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     setSelectTokenModal(false);
   };
 
-  const onChangeSendAccount = (address: string) => {
-    if (selectionProvider && selectionProvider.selectedToken) {
-      const { selectedNetworkKey: _selectedNetworkKey, selectedToken: _selectedToken } = selectionProvider;
-      setSelectAccountModal(false);
-      navigation.navigate('SendFund', {
-        selectedAccount: address,
-        selectedNetworkKey: _selectedNetworkKey,
-        selectedToken: _selectedToken,
-      });
-    } else {
-      setSelectedResult({ selectedAccount: address });
-      setTokenSelectAction({
-        onChange: item => onChangeSendToken(item, address),
-        onBack: onPressTokenSelectBack,
-      });
-      setSelectAccountModal(false);
-      actionWithSetTimeout(() => setSelectTokenModal(true));
-    }
-  };
-
-  const onChangeSendToken = ({ networkKey, symbol }: TokenItemType, address: string) => {
-    setSelectTokenModal(false);
-    navigation.navigate('SendFund', {
-      selectedAccount: address || currentAccountAddress,
-      selectedNetworkKey: networkKey,
-      selectedToken: symbol,
-    });
-  };
-
-  const onClickButtonSingleChain = () => {
-    if (_isAccountAll) {
-      setSendFundTypeModal(false);
-      setAccountSelectAction({
-        onChange: onChangeSendAccount,
-        onBack: onPressAccountSelectBack,
-      });
-      actionWithSetTimeout(() => setSelectAccountModal(true));
-    } else {
-      setSendFundTypeModal(false);
-      if (selectionProvider && selectionProvider.selectedToken) {
-        const { selectedNetworkKey: _selectedNetworkKey, selectedToken: _selectedToken } = selectionProvider;
-        setSelectTokenModal(false);
-        navigation.navigate('SendFund', {
-          selectedAccount: currentAccountAddress,
-          selectedNetworkKey: _selectedNetworkKey,
-          selectedToken: _selectedToken,
-        });
-      } else {
-        setTokenSelectAction({
-          onChange: item => onChangeSendToken(item, currentAccountAddress),
-          onBack: onPressTokenSelectBack,
-        });
-        actionWithSetTimeout(() => setSelectTokenModal(true));
-      }
-    }
-  };
-
   const onChangeReceiveAccount = (address: string) => {
     if (selectionProvider) {
       const { selectedNetworkKey: _selectedNetworkKey } = selectionProvider;
@@ -191,39 +125,6 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     });
     setSelectTokenModal(false);
     actionWithSetTimeout(() => setReceiveModalVisible(true));
-  };
-
-  const toastRef = useRef<ToastContainer>(null);
-  const _onClickButton = () => {
-    if (toastRef.current) {
-      // @ts-ignore
-      toastRef.current.hideAll();
-      // @ts-ignore
-      toastRef.current.show(i18n.common.comingSoon);
-    }
-  };
-
-  const SEND_FUND_TYPE: AccountActionType[] = [
-    {
-      icon: Article,
-      title: i18n.common.singleChain,
-      onCLickButton: onClickButtonSingleChain,
-    },
-    {
-      icon: Shuffle,
-      title: i18n.common.crossChain,
-      onCLickButton: _onClickButton,
-    },
-    {
-      icon: FirstAidKit,
-      title: i18n.common.charityDonate,
-      onCLickButton: _onClickButton,
-    },
-  ];
-
-  const onPressSendFundBtn = () => {
-    setSelectedResult({});
-    setSendFundTypeModal(true);
   };
 
   const onPressReceiveButton = () => {
@@ -263,17 +164,18 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     <>
       <View style={[actionButtonWrapper, style]} pointerEvents="box-none">
         <ActionButton label={i18n.cryptoScreen.receive} icon={receiveIcon} onPress={onPressReceiveButton} />
-        <ActionButton label={i18n.cryptoScreen.send} icon={sendIcon} onPress={onPressSendFundBtn} />
+        <ActionButton
+          label={i18n.cryptoScreen.send}
+          icon={sendIcon}
+          onPress={() =>
+            navigation.navigate('SendFund', {
+              selectedNetworkKey: selectionProvider?.selectedNetworkKey,
+              selectedToken: selectionProvider?.selectedToken,
+            })
+          }
+        />
         <ActionButton label={i18n.cryptoScreen.swap} icon={swapIcon} onPress={onPressSwapBtn} />
       </View>
-
-      <SelectImportAccountModal
-        modalTitle={i18n.common.selectSendingMethod}
-        secretTypeList={SEND_FUND_TYPE}
-        modalVisible={sendFundTypeModal}
-        onChangeModalVisible={() => setSendFundTypeModal(false)}
-        toastRef={toastRef}
-      />
 
       <AccountSelect
         accountList={getAccountList()}

@@ -51,7 +51,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
 
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
   const [feeString, setFeeString] = useState('');
 
   const [isTxReady, setIsTxReady] = useState(false);
@@ -74,7 +74,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
 
   const handleResponse = useCallback(
     (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setError, setLoading);
+      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
       if (stop) {
         return;
       }
@@ -125,7 +125,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         handleResponse,
       ).catch(e => {
         console.log(e);
-        setError((e as Error).message);
+        setErrorArr([(e as Error).message]);
         setLoading(false);
       });
     },
@@ -191,8 +191,8 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
           visible={visible}
           closeModal={handleClose}
           isBusy={loading}
-          error={error}
-          setError={setError}
+          errorArr={errorArr}
+          setErrorArr={setErrorArr}
         />
       </View>
     </ContainerWithSubHeader>

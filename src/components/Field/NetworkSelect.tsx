@@ -14,6 +14,8 @@ interface Props extends FieldBaseProps {
   networkKey: string;
   disabled?: boolean;
   showIcon?: boolean;
+  outerStyle?: StyleProp<any>;
+  value?: string;
 }
 
 const getNetworkName = (networkKey: string, networkMap: Record<string, NetworkJson>) => {
@@ -28,10 +30,8 @@ const getTextStyle = (disabled: boolean): StyleProp<any> => {
   return {
     ...FontSize2,
     ...FontMedium,
-    lineHeight: 25,
-    paddingLeft: 16,
+    paddingLeft: 4,
     paddingRight: 8,
-    paddingBottom: 10,
     color: disabled ? ColorMap.disabled : ColorMap.light,
   };
 };
@@ -39,26 +39,25 @@ const getTextStyle = (disabled: boolean): StyleProp<any> => {
 const blockContentStyle: StyleProp<any> = {
   position: 'relative',
   height: 34,
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingBottom: 10,
+  justifyContent: 'space-between',
+  paddingHorizontal: 16,
 };
 
-const logoWrapperStyle: StyleProp<any> = {
-  position: 'absolute',
-  right: 16,
-  bottom: 12,
-};
-
-export const NetworkField = ({ networkKey, disabled, showIcon, ...fieldBase }: Props) => {
+export const NetworkSelectField = ({ networkKey, disabled, showIcon, outerStyle, value, ...fieldBase }: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return (
-    <FieldBase {...fieldBase}>
+    <FieldBase {...fieldBase} outerStyle={outerStyle}>
       <View style={blockContentStyle}>
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={getTextStyle(!!disabled)}>{getNetworkName(networkKey, networkMap)}</Text>
-          {!!showIcon && <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} style={{ marginTop: 4 }} />}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {getNetworkLogo(networkKey, 20)}
+          <Text style={getTextStyle(!!disabled)}>{value || getNetworkName(networkKey, networkMap)}</Text>
         </View>
 
-        <View style={logoWrapperStyle}>{getNetworkLogo(networkKey, 20)}</View>
+        {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}
       </View>
     </FieldBase>
   );
