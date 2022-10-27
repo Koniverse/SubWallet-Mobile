@@ -40,8 +40,8 @@ import { TypeAmountScreen } from 'screens/Sending/TypeAmountScreen';
 const ViewStep = {
   SEND_FUND: 1,
   TYPE_AMOUNT: 2,
-  CONFIRMATION: 3,
-  CHANGE_BALANCE: 4,
+  CHANGE_BALANCE: 3,
+  CONFIRMATION: 4,
 };
 
 function getDestinationChainOptions(originChain: string, networkMap: Record<string, NetworkJson>) {

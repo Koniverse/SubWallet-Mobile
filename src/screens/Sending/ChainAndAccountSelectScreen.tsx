@@ -223,7 +223,7 @@ export const ChainAndAccountSelectScreen = ({
         </View>
       </ScrollView>
 
-      <View>
+      <View style={{ marginTop: 16 }}>
         <SubmitButton
           disabled={!isValidTransferInfo}
           title={i18n.common.continue}

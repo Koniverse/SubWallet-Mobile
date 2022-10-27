@@ -69,6 +69,7 @@ const TransferableWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
   paddingBottom: 24,
+  paddingTop: 8,
 };
 
 function getUseMaxButtonTextStyle(disabled: boolean) {

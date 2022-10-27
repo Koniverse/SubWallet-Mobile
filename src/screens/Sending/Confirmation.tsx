@@ -224,7 +224,7 @@ export const Confirmation = ({
 
       <SubmitButton
         isBusy={isBusy}
-        style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 8 }}
+        style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 16 }}
         title={i18n.common.send}
         onPress={() => setModalVisible(true)}
       />
