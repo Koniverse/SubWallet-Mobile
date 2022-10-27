@@ -193,6 +193,7 @@ export const vi = {
     verifySecretPhrase: 'Verify Your Secret Phrase',
     nameYourWallet: 'Name Your Wallet',
     sendFund: 'Send fund',
+    sendAsset: 'Send Asset',
     security: 'Security',
     selectAccount: 'Select Account',
     selectAccountType: 'Select Account Type',

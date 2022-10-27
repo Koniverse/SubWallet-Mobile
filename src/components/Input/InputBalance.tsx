@@ -1,30 +1,18 @@
-import { TextInput, TouchableOpacity, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import Text from '../Text';
 import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import { FontBold, FontSize1, FontSize3, sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import { SiDef } from '@polkadot/util/types';
-import { TokenSelect } from 'screens/TokenSelect';
-import { IconProps } from 'phosphor-react-native';
-import { TokenItemType } from 'types/ui-types';
 
 export interface InputBalanceProps {
   onChange?: (val?: string) => void;
   decimals: number;
-  siSymbol: string;
   maxValue?: string;
   placeholder?: string;
   disable?: boolean;
   si: SiDef;
-  senderAddress: string;
-  icon: (iconProps: IconProps) => JSX.Element;
   value: string;
-  onChangeToken: (tokenValueStr: string) => void;
-  selectedToken: string;
-  selectedNetworkKey: string;
-  filteredNetworkKey?: string;
-  externalTokenOptions?: TokenItemType[];
 }
 
 const isValidInput = (input: string) => {
@@ -101,40 +89,12 @@ const getInputStyle = (inputValue: string, props: InputBalanceProps, siPower: nu
   return {
     ...baseStyle,
     color: isValid ? ColorMap.light : ColorMap.danger,
-    paddingRight: 10,
-    minWidth: 40,
-  };
-};
-
-const getDropdownTextStyle = (inputValue: string) => {
-  const baseStyle = getBaseTextStyle(inputValue);
-
-  return {
-    ...baseStyle,
-    color: ColorMap.light,
-    paddingRight: 4,
   };
 };
 
 const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
-  const {
-    onChange,
-    decimals,
-    siSymbol,
-    placeholder,
-    si,
-    disable,
-    senderAddress,
-    icon: Icon,
-    value,
-    onChangeToken,
-    selectedToken,
-    selectedNetworkKey,
-    filteredNetworkKey,
-    externalTokenOptions,
-  } = props;
+  const { onChange, decimals, placeholder, si, disable, value } = props;
   const [inputValue, setInputValue] = useState<string>(value);
-  const [isShowTokenList, setShowTokenList] = useState<boolean>(false);
 
   const onChangeWithSi = useCallback(
     (input: string, curSi: SiDef) => {
@@ -163,15 +123,11 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
     },
   }));
 
-  const _onChangeToken = (item: TokenItemType) => {
-    onChangeToken(item.symbol);
-    setShowTokenList(false);
-  };
-
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
       <TextInput
         autoCorrect={false}
+        autoFocus={true}
         style={getInputStyle(inputValue, props, si.power)}
         keyboardType={'decimal-pad'}
         defaultValue={inputValue}
@@ -180,26 +136,6 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         placeholder={placeholder || ''}
         placeholderTextColor={ColorMap.disabled}
         editable={!disable}
-      />
-
-      <TouchableOpacity
-        style={{ flexDirection: 'row', alignItems: 'center' }}
-        onPress={() => setShowTokenList(true)}
-        disabled={disable}>
-        <Text style={getDropdownTextStyle(inputValue)}>{siSymbol}</Text>
-        <Icon size={20} color={ColorMap.disabled} weight={'bold'} />
-      </TouchableOpacity>
-
-      <TokenSelect
-        filteredNetworkKey={filteredNetworkKey}
-        selectedToken={selectedToken}
-        selectedNetworkKey={selectedNetworkKey}
-        onChangeToken={_onChangeToken}
-        onPressBack={() => setShowTokenList(false)}
-        address={senderAddress}
-        modalVisible={isShowTokenList}
-        onChangeModalVisible={() => setShowTokenList(false)}
-        externalTokenOptions={externalTokenOptions}
       />
     </View>
   );

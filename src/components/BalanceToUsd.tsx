@@ -19,7 +19,7 @@ interface Props {
 
 export const BalanceToUsd = ({ amountToUsd, isShowBalance }: Props) => {
   return (
-    <View style={{ flexDirection: 'row', marginTop: 8 }}>
+    <View style={{ flexDirection: 'row', marginTop: 16 }}>
       <Text style={textStyle}>(</Text>
       {isShowBalance ? (
         <BalanceVal

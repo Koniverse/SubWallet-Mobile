@@ -5,6 +5,7 @@ import { Warning } from 'components/Warning';
 import { ListRenderItemInfo } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
+import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 
 interface Props {
   modalVisible: boolean;
@@ -50,12 +51,13 @@ export const OriginChainSelect = ({
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
       <FlatListScreen
-        onPressBack={onPressBack}
-        title={'Origin Chain'}
+        autoFocus={true}
         items={networkOptions}
+        style={FlatListScreenPaddingTop}
+        title={i18n.sendAssetScreen.originChain}
         filterFunction={filterFunction}
         renderItem={renderItem}
-        autoFocus={false}
+        onPressBack={onPressBack}
         renderListEmptyComponent={renderListEmptyComponent}
       />
     </SubWalletFullSizeModal>

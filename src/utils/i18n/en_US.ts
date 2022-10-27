@@ -193,6 +193,7 @@ export const en = {
     verifySecretPhrase: 'Verify Your Secret Phrase',
     nameYourWallet: 'Name Your Wallet',
     sendFund: 'Send Fund',
+    sendAsset: 'Send Asset',
     security: 'Security',
     selectAccount: 'Select Account',
     selectAccountType: 'Select account type',

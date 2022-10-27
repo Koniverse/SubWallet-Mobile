@@ -1,38 +1,19 @@
-import React, { useState } from 'react';
-import { NetworkField } from 'components/Field/Network';
-import { TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StyleProp, TouchableOpacity } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { OriginChainSelect } from 'screens/OriginChainSelect';
+import { NetworkSelectField } from 'components/Field/NetworkSelect';
 
 interface Props {
   networkKey: string;
   label: string;
-  networkOptions: { label: string; value: string }[];
-  onChangeOriginChain: (chain: string) => void;
+  onPressField: () => void;
+  outerStyle?: StyleProp<any>;
 }
 
-export const OriginChainSelectField = ({ networkKey, label, networkOptions, onChangeOriginChain }: Props) => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-
-  const _onChangeNetwork = (chain: string) => {
-    onChangeOriginChain(chain);
-    setModalVisible(false);
-  };
-
+export const OriginChainSelectField = ({ networkKey, label, onPressField, outerStyle }: Props) => {
   return (
-    <>
-      <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setModalVisible(true)}>
-        <NetworkField showIcon networkKey={networkKey} label={label} />
-      </TouchableOpacity>
-
-      <OriginChainSelect
-        onPressBack={() => setModalVisible(false)}
-        modalVisible={modalVisible}
-        onChangeModalVisible={() => setModalVisible(false)}
-        networkOptions={networkOptions}
-        selectedNetworkKey={networkKey}
-        onChangeNetwork={_onChangeNetwork}
-      />
-    </>
+    <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressField}>
+      <NetworkSelectField showIcon networkKey={networkKey} label={label} outerStyle={outerStyle} />
+    </TouchableOpacity>
   );
 };

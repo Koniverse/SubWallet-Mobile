@@ -1,23 +1,9 @@
 import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendFundProps } from 'routes/index';
-import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { InputAddress } from 'components/Input/InputAddress';
-import Text from 'components/Text';
-import {
-  ContainerHorizontalPadding,
-  FontMedium,
-  MarginBottomForSubmitButton,
-  ScrollViewStyle,
-  sharedStyles,
-} from 'styles/sharedStyles';
-import { getBalanceWithSi, getNetworkLogo } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ColorMap } from 'styles/color';
-import { SubmitButton } from 'components/SubmitButton';
 import useFreeBalance from 'hooks/screen/useFreeBalance';
-import FormatBalance from 'components/FormatBalance';
 import { BalanceFormatType, TokenItemType } from 'types/ui-types';
 import {
   getAuthTransactionFeeInfo,
@@ -26,10 +12,6 @@ import {
   getMaxTransferAndNoFees,
   isContainGasRequiredExceedsError,
 } from 'screens/Sending/utils';
-import BigN from 'bignumber.js';
-import { InputBalance } from 'components/Input/InputBalance';
-import { BN_TEN } from 'utils/chainBalances';
-import { BalanceToUsd } from 'components/BalanceToUsd';
 import {
   checkCrossChainTransfer,
   checkTransfer,
@@ -41,51 +23,20 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Confirmation } from 'screens/Sending/Confirmation';
 import { TransferResultType } from 'types/tx';
 import { SendFundResult } from 'screens/Sending/SendFundResult';
-import { checkAddress } from '@polkadot/phishing';
 import {
   DropdownTransformOptionType,
   NetworkJson,
   ResponseCheckCrossChainTransfer,
   ResponseCheckTransfer,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { Warning } from 'components/Warning';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
-import { RESULTS } from 'react-native-permissions';
-import { requestCameraPermission } from 'utils/validators';
 import { formatBalance } from '@polkadot/util';
-import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
 import { SupportedCrossChainsMap } from '@subwallet/extension-koni-base/api/xcm/utils';
-import { ArrowRight, CaretDown } from 'phosphor-react-native';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
-import { DestinationChainSelectField } from 'screens/Sending/Field/DestinationChainSelectField';
-import { OriginChainSelectField } from 'screens/Sending/Field/OriginChainSelectField';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
+import { ChainAndAccountSelectScreen } from 'screens/Sending/ChainAndAccountSelectScreen';
+import { TypeAmountScreen } from 'screens/Sending/TypeAmountScreen';
 
-const WarningStyle: StyleProp<any> = {
-  marginBottom: 8,
-};
-
-const NetworkLogoWrapperStyle: StyleProp<any> = {
-  borderRadius: 20,
-  width: 40,
-  height: 40,
-  borderWidth: 2,
-  borderStyle: 'solid',
-  borderColor: ColorMap.secondary,
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-function getUseMaxButtonTextStyle(disabled: boolean) {
-  return {
-    color: disabled ? ColorMap.disabled : ColorMap.primary,
-    ...sharedStyles.mainText,
-    ...FontMedium,
-  };
-}
 const ViewStep = {
   SEND_FUND: 1,
   TYPE_AMOUNT: 2,
@@ -135,7 +86,6 @@ export const SendFund = ({
 }: SendFundProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
@@ -158,12 +108,8 @@ export const SendFund = ({
   const [originChain, setOriginChain] = useState<string>(firstOriginChain);
   const senderFreeBalance = useFreeBalance(originChain, senderAddress, originToken);
   const balanceFormat: BalanceFormatType = getBalanceFormat(originChain, originToken, chainRegistry);
-  const tokenPrice = tokenPriceMap[originToken.toLowerCase()] || 0;
-  const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
-  const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
   const [isGasRequiredExceedsError, setGasRequiredExceedsError] = useState<boolean>(false);
   const [backupAmount, setBackupAmount] = useState<string | undefined>(undefined);
-  const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const [isBusy, setBusy] = useState(false);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
@@ -186,31 +132,12 @@ export const SendFund = ({
   const originTokenList = useMemo(() => {
     return getSupportedTokens(originChain, tokenList, selectedDestinationChain);
   }, [originChain, selectedDestinationChain, tokenList]);
-  const isSameAddress =
-    !!receiveAddress && !!senderAddress && receiveAddress === senderAddress && originChain === selectedDestinationChain;
   const canToggleAll = !!isSupportTransferAll && !!senderFreeBalance && !reference && !!receiveAddress;
-  const amountGtAvailableBalance =
-    !!rawAmount && !!senderFreeBalance && new BigN(rawAmount).gt(new BigN(senderFreeBalance));
   const [currentViewStep, setCurrentStep] = useState(ViewStep.SEND_FUND);
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
-  const inputAddressRef = createRef();
   const amount = rawAmount !== undefined ? Math.floor(Number(rawAmount)) : 0;
-
-  const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
-  const checkOriginChainAndSenderIdType = !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
-  const checkDestinationChainAndReceiverIdType =
-    !!receiveAddress && !!networkMap[selectedDestinationChain].isEthereum === isEthereumAddress(receiveAddress);
-  const isValidTransferInfo =
-    !isAccountAll(senderAddress) &&
-    checkOriginChainAndSenderIdType &&
-    checkDestinationChainAndReceiverIdType &&
-    !!receiveAddress &&
-    !isSameAddress &&
-    !recipientPhish;
-
-  const canMakeTransfer = !!rawAmount && isSupportTransfer && !isGasRequiredExceedsError && !amountGtAvailableBalance;
 
   const _onChangeOriginChain = (currentOriginChain: string) => {
     const currentDestinationChainOptions = getDestinationChainOptions(currentOriginChain, networkMap);
@@ -381,25 +308,6 @@ export const SendFund = ({
   }, [originChain, originToken]);
 
   useEffect(() => {
-    let isSync = true;
-
-    if (receiveAddress) {
-      checkAddress(receiveAddress)
-        .then(v => {
-          if (isSync) {
-            setRecipientPhish(v);
-          }
-        })
-        .catch(e => console.log('e', e));
-    }
-
-    return () => {
-      isSync = false;
-      setRecipientPhish(null);
-    };
-  }, [receiveAddress]);
-
-  useEffect(() => {
     if (currentViewStep === ViewStep.SEND_FUND && inputBalanceRef.current) {
       // @ts-ignore
       inputBalanceRef.current.onChange(backupAmount);
@@ -442,38 +350,44 @@ export const SendFund = ({
   };
 
   const onUpdateInputBalance = () => {
-    _doCheckTransfer(
-      true,
-      rs => {
-        const [curMaxTransfer] = getMaxTransferAndNoFees(
-          rs.estimateFee || null,
-          rs.feeSymbol,
-          originToken,
-          mainTokenInfo.symbol,
-          senderFreeBalance,
-          existentialDeposit,
-        );
-        if (inputBalanceRef && inputBalanceRef.current) {
-          // @ts-ignore
-          inputBalanceRef.current.onChange(curMaxTransfer.toString());
-        }
-      },
-      err => console.log('There is problem when checkTransfer', err),
-    );
-  };
-
-  const onUpdateInputAddress = (text: string) => {
-    if (inputAddressRef && inputAddressRef.current) {
-      // @ts-ignore
-      inputAddressRef.current.onChange(text);
-    }
-  };
-
-  const onPressQrButton = async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setShowQrModalVisible(true);
+    if (originChain === selectedDestinationChain) {
+      _doCheckTransfer(
+        true,
+        rs => {
+          const [curMaxTransfer] = getMaxTransferAndNoFees(
+            rs.estimateFee || null,
+            rs.feeSymbol,
+            originToken,
+            mainTokenInfo.symbol,
+            senderFreeBalance,
+            existentialDeposit,
+          );
+          if (inputBalanceRef && inputBalanceRef.current) {
+            // @ts-ignore
+            inputBalanceRef.current.onChange(curMaxTransfer.toString());
+          }
+        },
+        err => console.log('There is problem when checkTransfer', err),
+      );
+    } else {
+      _doCheckXcmTransfer(
+        true,
+        rs => {
+          const [curMaxTransfer] = getMaxTransferAndNoFees(
+            rs.estimatedFee || null,
+            rs.feeSymbol,
+            originToken,
+            mainTokenInfo.symbol,
+            senderFreeBalance,
+            existentialDeposit,
+          );
+          if (inputBalanceRef && inputBalanceRef.current) {
+            // @ts-ignore
+            inputBalanceRef.current.onChange(curMaxTransfer.toString());
+          }
+        },
+        err => console.log('There is problem when checkTransfer', err),
+      );
     }
   };
 
@@ -488,181 +402,51 @@ export const SendFund = ({
   return (
     <>
       {!isShowTxResult ? (
-        <ContainerWithSubHeader onPressBack={onPressBack} disabled={isBusy} title={i18n.title.sendFund}>
+        <ContainerWithSubHeader
+          onPressBack={onPressBack}
+          disabled={isBusy}
+          title={currentViewStep === ViewStep.SEND_FUND ? i18n.title.sendAsset : i18n.common.amount}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  Keyboard.dismiss();
-                }}>
-                <View style={{ ...sharedStyles.layoutContainer }}>
-                  <ScrollView style={{ ...ScrollViewStyle }}>
-                    <View style={{ flex: 1 }}>
-                      <OriginChainSelectField
-                        label={i18n.sendAssetScreen.originChain}
-                        networkKey={originChain}
-                        networkOptions={originChainOptions}
-                        onChangeOriginChain={_onChangeOriginChain}
-                      />
-
-                      <DestinationChainSelectField
-                        label={i18n.sendAssetScreen.destinationChain}
-                        networkKey={selectedDestinationChain}
-                        networkOptions={destinationChainOptions}
-                        onChangeDestinationChain={_onChangeDestinationChain}
-                      />
-
-                      <SendFromAddressField senderAddress={senderAddress} onChangeAddress={_onChangeSenderAddress} />
-
-                      <InputAddress
-                        ref={inputAddressRef}
-                        onPressQrButton={onPressQrButton}
-                        containerStyle={{ marginBottom: 8 }}
-                        label={i18n.sendAssetScreen.toAccount}
-                        value={currentReceiveAddress}
-                        onChange={onChangeReceiverAddress}
-                      />
-
-                      {isSameAddress && (
-                        <Warning isDanger style={WarningStyle} message={i18n.warningMessage.isNotSameAddress} />
-                      )}
-
-                      {!checkOriginChainAndSenderIdType && (
-                        <Warning
-                          isDanger
-                          style={WarningStyle}
-                          message={`${i18n.warningMessage.originAccountMustBe}${
-                            networkMap[originChain].isEthereum ? 'EVM' : 'substrate'
-                          }${i18n.common.type}`}
-                        />
-                      )}
-
-                      {!!receiveAddress && !checkDestinationChainAndReceiverIdType && (
-                        <Warning
-                          isDanger
-                          style={WarningStyle}
-                          message={`${i18n.warningMessage.destinationAccountMustBe}${
-                            networkMap[selectedDestinationChain].isEthereum ? 'EVM' : 'substrate'
-                          }${i18n.common.type}`}
-                        />
-                      )}
-
-                      {!!recipientPhish && (
-                        <Warning
-                          style={WarningStyle}
-                          isDanger
-                          message={`${i18n.warningMessage.recipientPhish} ${recipientPhish}`}
-                        />
-                      )}
-                    </View>
-                  </ScrollView>
-
-                  <View>
-                    <SubmitButton
-                      disabled={!isValidTransferInfo}
-                      title={i18n.common.continue}
-                      style={{ width: '100%', ...MarginBottomForSubmitButton }}
-                      onPress={() => setCurrentStep(ViewStep.TYPE_AMOUNT)}
-                    />
-                  </View>
-
-                  <QrScannerScreen
-                    networkKey={selectedDestinationChain}
-                    token={originToken}
-                    qrModalVisible={isShowQrModalVisible}
-                    onPressCancel={() => setShowQrModalVisible(false)}
-                    onChangeAddress={text => onUpdateInputAddress(text)}
-                    scanMessage={i18n.common.toSendFund}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
+              <ChainAndAccountSelectScreen
+                originChain={originChain}
+                originChainOptions={originChainOptions}
+                originToken={originToken}
+                onChangeOriginChain={_onChangeOriginChain}
+                destinationChain={selectedDestinationChain}
+                destinationChainOptions={destinationChainOptions}
+                onChangeDestinationChain={_onChangeDestinationChain}
+                senderAddress={senderAddress}
+                onChangeSenderAddress={_onChangeSenderAddress}
+                receiveAddress={receiveAddress}
+                currentReceiveAddress={currentReceiveAddress}
+                onChangeReceiverAddress={onChangeReceiverAddress}
+                onPressToNextStep={() => setCurrentStep(ViewStep.TYPE_AMOUNT)}
+                onChangeToken={_onChangeSelectedToken}
+                originTokenList={originTokenList}
+              />
             )}
 
             {currentViewStep === ViewStep.TYPE_AMOUNT && (
-              <>
-                <ScrollView style={{ ...ContainerHorizontalPadding }} contentContainerStyle={{ flex: 1 }}>
-                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingBottom: 28,
-                      }}>
-                      <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(originChain, 34)}</View>
-                      <ArrowRight
-                        weight={'bold'}
-                        size={16}
-                        color={ColorMap.disabled}
-                        style={{ marginHorizontal: 16 }}
-                      />
-                      <View style={NetworkLogoWrapperStyle}>{getNetworkLogo(selectedDestinationChain, 34)}</View>
-                    </View>
-                    <InputBalance
-                      filteredNetworkKey={originChain}
-                      value={
-                        rawAmount !== undefined
-                          ? getBalanceWithSi(amount.toString(), balanceFormat[0], si, originToken)[0]
-                          : ''
-                      }
-                      icon={CaretDown}
-                      placeholder={'0'}
-                      si={si}
-                      senderAddress={senderAddress}
-                      maxValue={senderFreeBalance}
-                      onChange={onChangeAmount}
-                      decimals={balanceFormat[0]}
-                      ref={inputBalanceRef}
-                      siSymbol={originToken}
-                      onChangeToken={_onChangeSelectedToken}
-                      selectedNetworkKey={originChain}
-                      selectedToken={originToken}
-                      externalTokenOptions={originTokenList}
-                    />
-                    {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
-                  </View>
-
-                  {amountGtAvailableBalance && (
-                    <Warning
-                      isDanger
-                      style={WarningStyle}
-                      message={i18n.sendAssetScreen.amountGtAvailableBalanceMessage}
-                    />
-                  )}
-
-                  {!isSupportTransfer && (
-                    <Warning style={WarningStyle} isDanger message={i18n.warningMessage.notSupportTransferMessage} />
-                  )}
-                </ScrollView>
-
-                <View style={{ paddingHorizontal: 16 }}>
-                  <View
-                    style={{
-                      width: '100%',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      paddingBottom: 24,
-                    }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ color: ColorMap.light, ...sharedStyles.mainText, ...FontMedium }}>
-                        {i18n.common.transferable}
-                      </Text>
-                      <FormatBalance format={balanceFormat} value={senderFreeBalance} />
-                    </View>
-
-                    <TouchableOpacity onPress={onUpdateInputBalance} disabled={!canToggleAll}>
-                      <Text style={getUseMaxButtonTextStyle(!canToggleAll)}>{i18n.common.max}</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <SubmitButton
-                    disabled={!canMakeTransfer}
-                    title={i18n.common.continue}
-                    style={{ width: '100%', ...MarginBottomForSubmitButton }}
-                    onPress={() => setCurrentStep(ViewStep.CONFIRMATION)}
-                  />
-                </View>
-              </>
+              <TypeAmountScreen
+                amount={amount}
+                originToken={originToken}
+                originChain={originChain}
+                senderAddress={senderAddress}
+                si={si}
+                rawAmount={rawAmount}
+                originTokenList={originTokenList}
+                canToggleAll={canToggleAll}
+                balanceFormat={balanceFormat}
+                inputBalanceRef={inputBalanceRef}
+                onChangeAmount={onChangeAmount}
+                senderFreeBalance={senderFreeBalance}
+                onUpdateInputBalance={onUpdateInputBalance}
+                isSupportTransfer={isSupportTransfer}
+                onChangeSelectedToken={_onChangeSelectedToken}
+                isGasRequiredExceedsError={isGasRequiredExceedsError}
+                onPressToNextStep={() => setCurrentStep(ViewStep.CONFIRMATION)}
+              />
             )}
 
             {currentViewStep === ViewStep.CONFIRMATION && (

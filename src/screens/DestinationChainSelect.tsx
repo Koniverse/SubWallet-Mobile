@@ -52,7 +52,7 @@ export const DestinationChainSelect = ({
 
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
-      <ContainerWithSubHeader onPressBack={onPressBack} title={'Network'}>
+      <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.sendAssetScreen.destinationChain}>
         <>
           <Search
             autoFocus={false}
@@ -63,7 +63,7 @@ export const DestinationChainSelect = ({
             style={{ marginBottom: 8, marginTop: 10, marginHorizontal: 16 }}
             searchRef={searchRef}
           />
-          <ScrollView style={{ ...ContainerHorizontalPadding }}>
+          <ScrollView style={{ ...ContainerHorizontalPadding }} keyboardShouldPersistTaps={'handled'}>
             {isOnChainNetworkOptionsExist && (
               <>
                 <Text style={GroupTitleTextStyle}>On Chain</Text>
