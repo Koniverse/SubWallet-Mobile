@@ -234,7 +234,7 @@ export const ChainAndAccountSelectScreen = ({
         qrModalVisible={isShowQrModalVisible}
         onPressCancel={() => setShowQrModalVisible(false)}
         onChangeAddress={text => onUpdateInputAddress(text)}
-        scanMessage={i18n.common.toSendFund}
+        scanMessage={i18n.common.toSendAsset}
       />
     </View>
   );

@@ -30,6 +30,7 @@ export const en = {
     goToSetting: 'Go to Setting',
     scan: 'Scan',
     toSendFund: 'to send fund',
+    toSendAsset: 'to send asset',
     emptyTransactionListMessage: 'Your transactions will appear here',
     emptyCrowdloanListMessage: 'Your crowdloan projects will appear here',
     emptyBrowserMessage: 'Type a URL or search the web',

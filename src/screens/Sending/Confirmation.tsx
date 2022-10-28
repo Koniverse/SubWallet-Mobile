@@ -205,22 +205,22 @@ export const Confirmation = ({
             </View>
           </CustomField>
         </View>
-
-        <PasswordModal
-          isBusy={isBusy}
-          visible={modalVisible}
-          closeModal={() => setModalVisible(false)}
-          onConfirm={password => {
-            if (requestPayload.originNetworkKey === requestPayload.destinationNetworkKey) {
-              _doTransfer(password);
-            } else {
-              _doXcmTransfer(password);
-            }
-          }}
-          errorArr={errorArr}
-          setErrorArr={setErrorArr}
-        />
       </ScrollView>
+
+      <PasswordModal
+        isBusy={isBusy}
+        visible={modalVisible}
+        closeModal={() => setModalVisible(false)}
+        onConfirm={password => {
+          if (requestPayload.originNetworkKey === requestPayload.destinationNetworkKey) {
+            _doTransfer(password);
+          } else {
+            _doXcmTransfer(password);
+          }
+        }}
+        errorArr={errorArr}
+        setErrorArr={setErrorArr}
+      />
 
       <SubmitButton
         isBusy={isBusy}

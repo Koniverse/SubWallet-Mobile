@@ -104,7 +104,7 @@ export const SendFund = ({
   const [originToken, setOriginToken] = useState<string>(
     selectedToken || networkMap[firstOriginChain].nativeToken || 'Token',
   );
-  const tokenList = useTokenOptions(senderAddress);
+  const tokenList = useTokenOptions(currentAccountAddress === 'ALL' ? currentAccountAddress : senderAddress);
   const [originChain, setOriginChain] = useState<string>(firstOriginChain);
   const senderFreeBalance = useFreeBalance(originChain, senderAddress, originToken);
   const balanceFormat: BalanceFormatType = getBalanceFormat(originChain, originToken, chainRegistry);
@@ -299,7 +299,7 @@ export const SendFund = ({
           setTransferSupport([res.supportTransfer, res.supportTransferAll]);
         }
       })
-      .catch(e => console.log(e));
+      .catch(e => console.log('e----------', e));
 
     return () => {
       isSync = false;
@@ -405,7 +405,7 @@ export const SendFund = ({
         <ContainerWithSubHeader
           onPressBack={onPressBack}
           disabled={isBusy}
-          title={currentViewStep === ViewStep.SEND_FUND ? i18n.title.sendAsset : i18n.common.amount}>
+          title={currentViewStep === ViewStep.TYPE_AMOUNT ? i18n.common.amount : i18n.title.sendAsset}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
               <ChainAndAccountSelectScreen
