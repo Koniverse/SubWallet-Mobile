@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Keyboard, ScrollView, StyleProp, Text, View } from 'react-native';
-import { NetworkField } from 'components/Field/Network';
 import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import {
   NetworkJson,
@@ -27,6 +26,7 @@ import { BalanceVal } from 'components/BalanceVal';
 import { ColorMap } from 'styles/color';
 import { getBalanceWithSi } from 'utils/index';
 import { CustomField } from 'components/Field/Custom';
+import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
 
 const balanceValTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium };
 
@@ -167,10 +167,10 @@ export const Confirmation = ({
             si={si}
             decimals={balanceFormat[0]}
           />
-          <NetworkField label={i18n.sendAssetScreen.originChain} networkKey={requestPayload.originNetworkKey} />
-          <NetworkField
-            label={i18n.sendAssetScreen.destinationChain}
-            networkKey={requestPayload.destinationNetworkKey}
+          <ChainSelectContainer
+            originChain={requestPayload.originNetworkKey}
+            destinationChain={requestPayload.destinationNetworkKey}
+            disabled={true}
           />
           <AddressField
             label={i18n.sendAssetScreen.fromAccount}

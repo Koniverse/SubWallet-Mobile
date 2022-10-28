@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
-import { FontBold, FontSize1, FontSize3, sharedStyles } from 'styles/sharedStyles';
+import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { getBalanceWithSi } from 'utils/index';
+import { getBalanceWithSi, toShort } from 'utils/index';
 import { SiDef } from '@polkadot/util/types';
 
 interface Props {
@@ -13,35 +13,35 @@ interface Props {
   si: SiDef;
 }
 
-const getInputValueStyle = (inputValue: string) => {
+export const getInputValueStyle = (inputValue: string) => {
   const initStyle = {
     ...sharedStyles.largeText,
     ...FontBold,
   };
 
-  if (inputValue.length > 17) {
+  if (inputValue.length > 23) {
     return {
       ...initStyle,
-      ...FontSize1,
-      lineHeight: 18,
+      fontSize: 20,
+      lineHeight: 28,
     };
-  } else if (inputValue.length > 12) {
-    return {
-      ...initStyle,
-      ...FontSize3,
-      lineHeight: 23,
-    };
-  } else if (inputValue.length > 9) {
+  } else if (inputValue.length > 17) {
     return {
       ...initStyle,
       fontSize: 24,
-      lineHeight: 30,
+      lineHeight: 32,
     };
-  } else if (inputValue.length > 6) {
+  } else if (inputValue.length > 14) {
     return {
       ...initStyle,
-      fontSize: 30,
+      fontSize: 28,
       lineHeight: 38,
+    };
+  } else if (inputValue.length > 11) {
+    return {
+      ...initStyle,
+      fontSize: 34,
+      lineHeight: 46,
     };
   }
 
@@ -61,8 +61,12 @@ export const TransferValue = ({ value, decimals, si, token }: Props) => {
   const [balanceValue, balanceToken] = getBalanceWithSi(value, decimals, si, token);
   return (
     <View style={transferValueWrapperStyle}>
-      <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light, paddingRight: 8 }]}>{balanceValue}</Text>
-      <Text style={[getInputValueStyle(balanceValue), { color: ColorMap.light }]}>{balanceToken}</Text>
+      <Text style={[getInputValueStyle(balanceValue + balanceToken), { color: ColorMap.light, paddingRight: 8 }]}>
+        {balanceValue}
+      </Text>
+      <Text style={[getInputValueStyle(balanceValue + balanceToken), { color: ColorMap.light }]}>
+        {toShort(balanceToken, 6, 0)}
+      </Text>
     </View>
   );
 };

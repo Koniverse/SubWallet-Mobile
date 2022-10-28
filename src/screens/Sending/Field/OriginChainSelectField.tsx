@@ -8,12 +8,13 @@ interface Props {
   label: string;
   onPressField: () => void;
   outerStyle?: StyleProp<any>;
+  disabled?: boolean;
 }
 
-export const OriginChainSelectField = ({ networkKey, label, onPressField, outerStyle }: Props) => {
+export const OriginChainSelectField = ({ networkKey, label, onPressField, outerStyle, disabled }: Props) => {
   return (
-    <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressField}>
-      <NetworkSelectField showIcon networkKey={networkKey} label={label} outerStyle={outerStyle} />
+    <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressField} disabled={disabled}>
+      <NetworkSelectField showIcon={!disabled} networkKey={networkKey} label={label} outerStyle={outerStyle} />
     </TouchableOpacity>
   );
 };

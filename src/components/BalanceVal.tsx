@@ -4,7 +4,7 @@ import { StyleProp, TextStyle, View } from 'react-native';
 import Text from '../components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { getRoundedDecimalNumber } from 'utils/index';
+import { getRoundedDecimalNumber, toShort } from 'utils/index';
 
 type BalanceViewProps = {
   value: string | BigN;
@@ -54,7 +54,7 @@ export const BalanceVal = ({
   const lastSymbol = postfix?.slice(-1);
   const isString = /^[KMB]/.test(lastSymbol);
   const postfixValue = postfix || '00';
-  const symbolView = prefix && <Text>{`${startWithSymbol ? '' : ' '}${symbol}`}</Text>;
+  const symbolView = prefix && <Text>{`${startWithSymbol ? '' : ' '}${toShort(symbol || '', 6, 0)}`}</Text>;
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (
