@@ -17,7 +17,10 @@ export default function useStoreEvmToken(): StoreStatus {
     const erc20TokenList = payload.erc20.filter(item => !item.isDeleted);
     const erc721TokenList = payload.erc721.filter(item => !item.isDeleted);
     const data = erc20TokenList.concat(erc721TokenList);
-    const obj: Record<string, CustomEvmToken> = data.reduce((acc, cur) => ({ ...acc, [cur.smartContract]: cur }), {});
+    const obj: Record<string, CustomEvmToken> = data.reduce(
+      (acc, cur) => Object.assign(acc, { [`${cur.smartContract}-${cur.chain}-${cur.type}`]: cur }),
+      {},
+    );
     return obj;
   };
 
