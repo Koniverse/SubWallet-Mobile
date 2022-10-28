@@ -29,7 +29,7 @@ const textStyle: StyleProp<any> = {
 export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Props) => {
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [isDisabled, setDisabled] = useState<boolean>(false);
-  const valueStr = value.toString() + Math.floor(value.toString().length / 3) + toShort(symbol, 6, 0) + 3;
+  const valueStr = value.toFixed(4) + toShort(symbol, 6, 0);
   const _toggleBalances = async () => {
     setDisabled(true);
     await toggleBalancesVisibility(v => {
