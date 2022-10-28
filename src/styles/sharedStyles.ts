@@ -69,7 +69,7 @@ const mediumText = {
 
 const largeText = {
   ...FontSize5,
-  lineHeight: 51,
+  lineHeight: 52,
   ...FontRegular,
 };
 

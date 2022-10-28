@@ -1,9 +1,7 @@
 import React, { createRef, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
-import { OriginChainSelectField } from 'screens/Sending/Field/OriginChainSelectField';
 import i18n from 'utils/i18n/i18n';
-import { DestinationChainSelectField } from 'screens/Sending/Field/DestinationChainSelectField';
 import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
@@ -18,12 +16,11 @@ import { RootState } from 'stores/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { checkAddress } from '@polkadot/phishing';
-import { ColorMap } from 'styles/color';
-import { ArrowDown } from 'phosphor-react-native';
 import { NetworkSelectField } from 'components/Field/NetworkSelect';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { TokenSelect } from 'screens/TokenSelect';
 import { TokenItemType } from 'types/ui-types';
+import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
 
 interface Props {
   senderAddress: string;
@@ -45,24 +42,6 @@ interface Props {
 
 const WarningStyle: StyleProp<any> = {
   marginBottom: 8,
-};
-
-const ArrowDownWrapperStyle: StyleProp<any> = {
-  position: 'absolute',
-  top: 0,
-  bottom: 4,
-  left: 21,
-  width: 34,
-  justifyContent: 'center',
-};
-
-const ArrowDownStyle: StyleProp<any> = {
-  width: 34,
-  height: 34,
-  borderRadius: 17,
-  backgroundColor: ColorMap.dark1,
-  justifyContent: 'center',
-  alignItems: 'center',
 };
 
 export const ChainAndAccountSelectScreen = ({
@@ -155,26 +134,13 @@ export const ChainAndAccountSelectScreen = ({
     <View style={{ ...sharedStyles.layoutContainer }}>
       <ScrollView style={{ ...ScrollViewStyle }}>
         <View style={{ flex: 1 }}>
-          <View style={{ position: 'relative', marginBottom: 12 }}>
-            <OriginChainSelectField
-              outerStyle={{ marginBottom: 4, paddingLeft: 58 }}
-              label={i18n.sendAssetScreen.originChain}
-              networkKey={originChain}
-              onPressField={() => setOriginChainModalVisible(true)}
-            />
-
-            <DestinationChainSelectField
-              outerStyle={{ marginBottom: 4, paddingLeft: 58 }}
-              label={i18n.sendAssetScreen.destinationChain}
-              networkKey={destinationChain}
-              onPressField={() => setDestinationChainModalVisible(true)}
-            />
-            <View style={ArrowDownWrapperStyle}>
-              <View style={ArrowDownStyle}>
-                <ArrowDown size={16} color={ColorMap.disabled} weight={'bold'} />
-              </View>
-            </View>
-          </View>
+          <ChainSelectContainer
+            disabled={false}
+            originChain={originChain}
+            destinationChain={destinationChain}
+            onPressOriginChainField={() => setOriginChainModalVisible(true)}
+            onPressDestinationChainField={() => setDestinationChainModalVisible(true)}
+          />
 
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setTokenListModalVisible(true)}>
             <NetworkSelectField showIcon networkKey={originChain} label={'Token'} value={originToken} />
