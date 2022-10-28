@@ -5,6 +5,7 @@ import { PasswordField } from 'components/Field/Password';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -67,6 +68,8 @@ const ImportAccountQrConfirm = ({
 
   const [loading, setLoading] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
+
+  useHandlerHardwareBackPress(isBusy);
 
   const formConfig = useMemo((): FormControlConfig => {
     return {
@@ -182,7 +185,6 @@ const ImportAccountQrConfirm = ({
   }, [formState, onSubmitForm]);
 
   useEffect(() => {
-    let amount = true;
     onChangeValue('accountName')(account?.name || defaultName);
 
     if (account.isAddress) {
@@ -193,32 +195,24 @@ const ImportAccountQrConfirm = ({
       setLoading(true);
       checkPublicAndPrivateKey(account.genesisHash, account.content)
         .then(({ address: _address, isValid, isEthereum: _isEthereum }) => {
-          if (amount) {
-            if (isValid) {
-              setAddress(_address);
-              setIsEthereum(_isEthereum);
-            } else {
-              setErrors([i18n.warningMessage.cannotExtractAddress]);
-            }
-            setLoading(false);
+          if (isValid) {
+            setAddress(_address);
+            setIsEthereum(_isEthereum);
+          } else {
+            setErrors([i18n.warningMessage.cannotExtractAddress]);
           }
+          setLoading(false);
         })
         .catch(e => {
-          if (amount) {
-            const error = (e as Error).message;
-            console.error(error);
-            setErrors([error]);
-            setLoading(false);
-          }
+          const error = (e as Error).message;
+          console.error(error);
+          setErrors([error]);
+          setLoading(false);
         });
     }
 
-    return () => {
-      amount = false;
-      setErrors([]);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, []);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.importByQr} disabled={isBusy}>
