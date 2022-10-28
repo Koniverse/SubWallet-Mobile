@@ -273,12 +273,14 @@ export const postMessage = ({ id, message, request, origin }) => {
   if (status === 'crypto_ready') {
     _post();
   } else {
-    const listenEvent = webviewEvents.on('update-status', stt => {
+    const eventHandle = (stt: string) => {
       if (stt === 'crypto_ready') {
         _post();
-        listenEvent.removeListener('update-status');
+        webviewEvents.off('update-status', eventHandle);
       }
-    });
+    };
+
+    webviewEvents.on('update-status', eventHandle);
   }
 };
 
@@ -1087,6 +1089,11 @@ export async function parseEVMTransactionInput(
 
 export async function subscribeAuthUrl(callback: (data: AuthUrls) => void, handlerId?: string): Promise<AuthUrls> {
   return sendMessage('pri(authorize.subscribe)', null, callback, handlerId);
+}
+
+export async function checkWebRunnerLives(): Promise<boolean> {
+  // @ts-ignore
+  return sendMessage('mobile(ping)', null);
 }
 
 export async function initCronAndSubscription(

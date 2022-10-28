@@ -19,9 +19,10 @@ import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
 import { DelayBackgroundService } from 'types/background';
 import VersionNumber from 'react-native-version-number';
+import { getId } from '@subwallet/extension-base/utils/getId';
 
 const WEB_SERVER_PORT = 9135;
-const LONG_TIMEOUT = 3600000; //30*60*1000
+const LONG_TIMEOUT = 900000; //15*60*1000
 
 const getJsInjectContent = (showLog?: boolean) => {
   let injectedJS = `
@@ -101,6 +102,20 @@ function setupBackgroundService(
   );
 }
 
+function isWebRunnerAlive(eventData: NativeSyntheticEvent<WebViewMessage>): boolean {
+  try {
+    const data = JSON.parse(eventData.nativeEvent.data);
+
+    return (
+      !!data.id &&
+      !['0', '-1', '-2'].includes(data.id) &&
+      (data.response !== undefined || data.subscription !== undefined)
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
   webRef?: React.RefObject<WebView<{}>>;
@@ -124,7 +139,12 @@ class WebRunnerHandler {
 
   ping() {
     this.webRef?.current?.injectJavaScript(
-      "window.ReactNativeWebView.postMessage(JSON.stringify({id: '0', 'response': {status: 'ping'} }))",
+      `window.postMessage(${JSON.stringify({
+        id: getId(),
+        message: 'mobile(ping)',
+        request: null,
+        origin: undefined,
+      })})`,
     );
   }
 
@@ -135,26 +155,32 @@ class WebRunnerHandler {
   }
 
   pingCheck(timeCheck: number = 999, timeout = 6666, maxRetry = 3) {
-    let retry = 0;
+    const flag = {
+      retry: 0,
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const check = () => {
       this.pingTimeout && clearTimeout(this.pingTimeout);
 
       this.pingTimeout = setTimeout(() => {
-        const offsetTime = (this.lastTimeResponse && new Date().getTime() - this.lastTimeResponse) || 0;
-        if (offsetTime > timeout) {
-          if (retry < maxRetry) {
+        const offsetTime = this.lastTimeResponse ? new Date().getTime() - this.lastTimeResponse : 0;
+        if (offsetTime > timeout || offsetTime === 0) {
+          if (flag.retry < maxRetry) {
             this.ping();
             check();
-            retry += 1;
+            flag.retry += 1;
           } else {
             this.reload();
             console.warn('Reload the web-runner!!!');
           }
+        } else {
+          flag.retry = 0;
         }
       }, timeCheck);
     };
+
+    check();
   }
 
   startPing(pingInterval: number = 9999, timeCheck: number = 999, pingTimeout: number = 6666) {
@@ -214,8 +240,11 @@ class WebRunnerHandler {
     clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void,
     setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void,
   ) {
-    // Save the lastTimeResponse to check it later
-    this.lastTimeResponse = new Date().getTime();
+    if (isWebRunnerAlive(eventData)) {
+      // Save the lastTimeResponse to check it later
+      this.lastTimeResponse = new Date().getTime();
+    }
+
     listenMessage(JSON.parse(eventData.nativeEvent.data), this.eventEmitter, (unHandleData: Message['data']) => {
       if (!this.runnerState) {
         this.runnerState = {};
@@ -279,6 +308,9 @@ class WebRunnerHandler {
       } else if (id === '-2') {
         console.debug('### Web Runner Console:', ...(response as any[]));
         return true;
+      } else if (response === 'mobile:ping') {
+        console.debug('### Web Runner Ping', this.lastTimeResponse);
+        return true;
       } else {
         return false;
       }
@@ -298,6 +330,12 @@ class WebRunnerHandler {
           this.ping();
           this.pingCheck(999, 6666, 0);
           this.startPing();
+        } else {
+          setTimeout(() => {
+            this.ping();
+            this.pingCheck(999, 6666, 0);
+            this.startPing();
+          }, 9999);
         }
       } else {
         this.lastActiveTime = now;
