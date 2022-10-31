@@ -21,6 +21,7 @@ import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { TokenSelect } from 'screens/TokenSelect';
 import { TokenItemType } from 'types/ui-types';
 import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
+import { getNetworkPrefix } from 'screens/Sending/Confirmation';
 
 interface Props {
   senderAddress: string;
@@ -63,6 +64,7 @@ export const ChainAndAccountSelectScreen = ({
 }: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const inputAddressRef = createRef();
+  const originAccountPrefix = getNetworkPrefix(originChain, networkMap);
   const [originChainModalVisible, setOriginChainModalVisible] = useState<boolean>(false);
   const [destinationChainModalVisible, setDestinationChainModalVisible] = useState<boolean>(false);
   const [tokenListModalVisible, setTokenListModalVisible] = useState<boolean>(false);
@@ -146,7 +148,11 @@ export const ChainAndAccountSelectScreen = ({
             <NetworkSelectField showIcon networkKey={originChain} label={'Token'} value={originToken} />
           </TouchableOpacity>
 
-          <SendFromAddressField senderAddress={senderAddress} onChangeAddress={onChangeSenderAddress} />
+          <SendFromAddressField
+            senderAddress={senderAddress}
+            onChangeAddress={onChangeSenderAddress}
+            networkPrefix={originAccountPrefix}
+          />
 
           <InputAddress
             ref={inputAddressRef}
@@ -234,7 +240,7 @@ export const ChainAndAccountSelectScreen = ({
         qrModalVisible={isShowQrModalVisible}
         onPressCancel={() => setShowQrModalVisible(false)}
         onChangeAddress={text => onUpdateInputAddress(text)}
-        scanMessage={i18n.common.toSendFund}
+        scanMessage={i18n.common.toSendAsset}
       />
     </View>
   );

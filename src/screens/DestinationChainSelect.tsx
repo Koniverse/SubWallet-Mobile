@@ -66,7 +66,7 @@ export const DestinationChainSelect = ({
           <ScrollView style={{ ...ContainerHorizontalPadding }} keyboardShouldPersistTaps={'handled'}>
             {isOnChainNetworkOptionsExist && (
               <>
-                <Text style={GroupTitleTextStyle}>On Chain</Text>
+                <Text style={GroupTitleTextStyle}>{i18n.sendAssetScreen.onChain}</Text>
                 {onChainNetworkOptions.map(item => {
                   return (
                     <NetworkSelectItem
@@ -85,7 +85,7 @@ export const DestinationChainSelect = ({
 
             {isCrossChainNetworkOptionsExist && (
               <>
-                <Text style={GroupTitleTextStyle}>Cross Chain</Text>
+                <Text style={GroupTitleTextStyle}>{i18n.sendAssetScreen.crossChain}</Text>
                 {crossChainNetworkOptions.map(item => {
                   return (
                     <NetworkSelectItem

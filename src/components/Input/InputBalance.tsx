@@ -1,6 +1,6 @@
 import { TextInput, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import { SiDef } from '@polkadot/util/types';
@@ -44,7 +44,7 @@ const getBaseTextStyle = (inputValue: string) => {
   };
 };
 
-const getOutputValuesFromString: (input: string, power: number) => [string, boolean] = (
+export const getOutputValuesFromString: (input: string, power: number) => [string, boolean] = (
   input: string,
   power: number,
 ) => {
@@ -84,20 +84,9 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
   const { onChange, decimals, placeholder, si, disable, value } = props;
   const [inputValue, setInputValue] = useState<string>(value);
 
-  const onChangeWithSi = useCallback(
-    (input: string, curSi: SiDef) => {
-      setInputValue(input.replace(',', '.'));
-
-      if (onChange) {
-        const [outputValue, isValid] = getOutputValuesFromString(input, decimals + curSi.power);
-        onChange(isValid ? outputValue : undefined);
-      }
-    },
-    [decimals, onChange],
-  );
-
   const _onChange = (input: string) => {
-    onChangeWithSi(input, si);
+    setInputValue(input.replace(',', '.'));
+    onChange && onChange(input);
   };
 
   useImperativeHandle(ref, () => ({

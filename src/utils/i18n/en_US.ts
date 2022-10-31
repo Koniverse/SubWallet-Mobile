@@ -30,6 +30,7 @@ export const en = {
     goToSetting: 'Go to Setting',
     scan: 'Scan',
     toSendFund: 'to send fund',
+    toSendAsset: 'to send asset',
     emptyTransactionListMessage: 'Your transactions will appear here',
     emptyCrowdloanListMessage: 'Your crowdloan projects will appear here',
     emptyBrowserMessage: 'Type a URL or search the web',
@@ -305,6 +306,8 @@ export const en = {
     originChainFee: 'Origin Chain Fee',
     total: 'Total',
     amountGtAvailableBalanceMessage: 'The amount you want to transfer is greater than your available balance.',
+    onChain: 'On-Chain',
+    crossChain: 'Cross-Chain',
   },
   transferNft: {
     send: 'Send',
