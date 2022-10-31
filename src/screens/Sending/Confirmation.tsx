@@ -27,6 +27,8 @@ import { ColorMap } from 'styles/color';
 import { getBalanceWithSi } from 'utils/index';
 import { CustomField } from 'components/Field/Custom';
 import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
+import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
+import { noop } from 'utils/function';
 
 const balanceValTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium };
 
@@ -50,7 +52,7 @@ interface Props {
   si: SiDef;
 }
 
-function getNetworkPrefix(networkKey: string, networkMap: Record<string, NetworkJson>): number | undefined {
+export function getNetworkPrefix(networkKey: string, networkMap: Record<string, NetworkJson>): number | undefined {
   if (networkMap[networkKey]) {
     return networkMap[networkKey].ss58Format;
   }
@@ -172,11 +174,11 @@ export const Confirmation = ({
             destinationChain={requestPayload.destinationNetworkKey}
             disabled={true}
           />
-          <AddressField
-            label={i18n.sendAssetScreen.fromAccount}
-            address={requestPayload.from}
+          <SendFromAddressField
+            senderAddress={requestPayload.from}
+            onChangeAddress={noop}
+            disabled={true}
             networkPrefix={originAccountPrefix}
-            showRightIcon={false}
           />
           <AddressField
             label={i18n.sendAssetScreen.toAccount}

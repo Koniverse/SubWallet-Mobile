@@ -36,6 +36,7 @@ import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainAndAccountSelectScreen } from 'screens/Sending/ChainAndAccountSelectScreen';
 import { TypeAmountScreen } from 'screens/Sending/TypeAmountScreen';
+import { getOutputValuesFromString } from 'components/Input/InputBalance';
 
 const ViewStep = {
   SEND_FUND: 1,
@@ -89,7 +90,10 @@ export const SendFund = ({
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
-  const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
+  const [{ rawAmount, rawAmountWithDecimals }, setRawAmount] = useState<{
+    rawAmount: string | undefined;
+    rawAmountWithDecimals: string | undefined;
+  }>({ rawAmount: undefined, rawAmountWithDecimals: undefined });
   const [senderAddress, setSenderAddress] = useState<string>(currentAccountAddress);
   const showedNetworks = useShowedNetworks(senderAddress, accounts);
   const originChainOptions = useMemo(() => {
@@ -137,7 +141,7 @@ export const SendFund = ({
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
-  const amount = rawAmount !== undefined ? Math.floor(Number(rawAmount)) : 0;
+  const amount = rawAmountWithDecimals !== undefined ? Math.floor(Number(rawAmountWithDecimals)) : 0;
 
   const _onChangeOriginChain = (currentOriginChain: string) => {
     const currentDestinationChainOptions = getDestinationChainOptions(currentOriginChain, networkMap);
@@ -204,7 +208,7 @@ export const SendFund = ({
   useEffect(() => {
     let isSync = true;
 
-    if (receiveAddress && rawAmount) {
+    if (receiveAddress && rawAmountWithDecimals) {
       if (originChain === selectedDestinationChain) {
         _doCheckTransfer(
           false,
@@ -248,7 +252,7 @@ export const SendFund = ({
     _doCheckTransfer,
     canToggleAll,
     senderAddress,
-    rawAmount,
+    rawAmountWithDecimals,
     receiveAddress,
     originToken,
     originChain,
@@ -316,15 +320,20 @@ export const SendFund = ({
   }, [currentViewStep, backupAmount, inputBalanceRef.current]);
 
   const onChangeAmount = (val?: string) => {
-    setRawAmount(val);
+    const [outputValue, isValid] = getOutputValuesFromString(val || '', balanceFormat[0]);
+    setRawAmount({ rawAmount: val, rawAmountWithDecimals: isValid ? outputValue : undefined });
   };
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.TYPE_AMOUNT) {
+      if (inputBalanceRef && inputBalanceRef.current) {
+        // @ts-ignore
+        setRawAmount({ rawAmount: undefined, rawAmountWithDecimals: undefined });
+      }
       setCurrentStep(ViewStep.SEND_FUND);
     } else if (currentViewStep === ViewStep.CONFIRMATION) {
       setCurrentStep(ViewStep.TYPE_AMOUNT);
-      setBackupAmount(rawAmount);
+      setBackupAmount(rawAmountWithDecimals);
     } else {
       navigation.goBack();
     }
@@ -391,9 +400,18 @@ export const SendFund = ({
     }
   };
 
-  const _onChangeSelectedToken = useCallback((tokenValueStr: string) => {
-    setOriginToken(tokenValueStr);
-  }, []);
+  const _onChangeSelectedToken = useCallback(
+    (tokenValueStr: string) => {
+      const currentBalanceFormat = getBalanceFormat(originChain, tokenValueStr, chainRegistry);
+      const [outputValue, isValid] = getOutputValuesFromString(rawAmount || '', currentBalanceFormat[0]);
+      setOriginToken(tokenValueStr);
+      setRawAmount(prevState => ({
+        ...prevState,
+        rawAmountWithDecimals: isValid ? outputValue : undefined,
+      }));
+    },
+    [chainRegistry, originChain, rawAmount],
+  );
 
   const _onChangeSenderAddress = (address: string) => {
     setSenderAddress(address);
@@ -430,11 +448,12 @@ export const SendFund = ({
             {currentViewStep === ViewStep.TYPE_AMOUNT && (
               <TypeAmountScreen
                 amount={amount}
+                showedNetworks={showedNetworks}
                 originToken={originToken}
                 originChain={originChain}
                 senderAddress={senderAddress}
                 si={si}
-                rawAmount={rawAmount}
+                rawAmount={rawAmountWithDecimals}
                 originTokenList={originTokenList}
                 canToggleAll={canToggleAll}
                 balanceFormat={balanceFormat}

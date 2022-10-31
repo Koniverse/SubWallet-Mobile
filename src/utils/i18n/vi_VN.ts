@@ -306,6 +306,8 @@ export const vi = {
     originChainFee: 'Origin Chain Fee',
     total: 'Total',
     amountGtAvailableBalanceMessage: 'The amount you want to transfer is greater than your available balance.',
+    onChain: 'On-Chain',
+    crossChain: 'Cross-Chain',
   },
   transferNft: {
     send: 'Send',

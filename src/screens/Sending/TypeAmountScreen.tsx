@@ -20,10 +20,10 @@ import { BalanceFormatType, TokenItemType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
 import { BN_TEN } from 'utils/chainBalances';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { CaretDown } from 'phosphor-react-native';
 import { TokenSelect } from 'screens/TokenSelect';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 
 interface Props {
   amount: number;
@@ -43,6 +43,7 @@ interface Props {
   onChangeSelectedToken: (tokenValueStr: string) => void;
   senderAddress: string;
   originTokenList: TokenItemType[];
+  showedNetworks: string[];
 }
 
 const WarningStyle: StyleProp<any> = {
@@ -82,6 +83,7 @@ function getUseMaxButtonTextStyle(disabled: boolean) {
 
 export const TypeAmountScreen = ({
   senderFreeBalance,
+  showedNetworks,
   amount,
   balanceFormat,
   rawAmount,
@@ -99,9 +101,10 @@ export const TypeAmountScreen = ({
   originTokenList,
   senderAddress,
 }: Props) => {
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
+  const tokenGroupMap = useTokenGroup(showedNetworks);
+  const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
   const [tokenListModalVisible, setTokenListModalVisible] = useState<boolean>(false);
-  const tokenPrice = tokenPriceMap[originToken.toLowerCase()] || 0;
+  const tokenPrice = tokenBalanceKeyPriceMap[`${originChain}|${originToken}`] || 0;
   const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
   const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
   const amountGtAvailableBalance =
