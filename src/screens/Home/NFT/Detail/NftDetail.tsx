@@ -253,7 +253,7 @@ const NftDetail = ({
           />
         </View>
         {canSend && <SubmitButton style={SendButtonStyle} onPress={handleClickTransfer} title={i18n.common.send} />}
-        {data.description && (
+        {!!data.description && (
           <View>
             <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
             <Text style={AttValueStyle}>{data?.description}</Text>
@@ -271,7 +271,7 @@ const NftDetail = ({
           showRightIcon={!!data.external_url}
           onPressRightIcon={handleClickInfoIcon(data.external_url)}
         />
-        {data.owner && (
+        {!!data.owner && (
           <AddressField
             address={data.owner}
             networkPrefix={networkJson.ss58Format}
@@ -281,13 +281,13 @@ const NftDetail = ({
         )}
         {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
         <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
-        {data.rarity && (
+        {!!data.rarity && (
           <View>
             <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
             <Text style={AttValueStyle}>{data?.rarity}</Text>
           </View>
         )}
-        {data.properties && (
+        {!!data.properties && (
           <View>
             <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
             <View style={PropContainerStyle}>
