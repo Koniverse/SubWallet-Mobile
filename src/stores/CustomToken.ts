@@ -4,7 +4,7 @@ import { CustomTokenSlice } from 'stores/types';
 
 const initialState: CustomTokenSlice = { details: {} as Record<string, CustomToken> };
 
-const evmTokenSlice = createSlice({
+const customTokenSlice = createSlice({
   initialState,
   name: 'customToken',
   reducers: {
@@ -22,5 +22,4 @@ const evmTokenSlice = createSlice({
   },
 });
 
-// export const { update: updateEvmToken } = evmTokenSlice.actions;
-export default evmTokenSlice.reducer;
+export default customTokenSlice.reducer;

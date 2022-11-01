@@ -29,13 +29,13 @@ export default function useStoreCustomToken(): StoreStatus {
     const handlerId = getId();
 
     if (isWebRunnerReady) {
-      console.log('--- Setup redux: evmToken');
+      console.log('--- Setup redux: customToken');
 
       const _update = (payload: CustomTokenJson) => {
         if (cancel) {
           return;
         }
-        console.log('--- subscribeEvmToken updated');
+        console.log('--- subscribeCustomToken updated');
         const formattedPayload = formatData(payload);
         updateCustomToken(formattedPayload);
         setStoreStatus('SYNCED');
@@ -44,7 +44,7 @@ export default function useStoreCustomToken(): StoreStatus {
       subscribeCustomToken(_update, handlerId)
         .then(_update)
         .catch(e => {
-          console.log('--- subscribeEvmToken error:', e);
+          console.log('--- subscribeCustomToken error:', e);
         });
     }
 

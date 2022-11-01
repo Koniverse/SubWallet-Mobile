@@ -27,8 +27,8 @@ export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void 
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
 }
 
-export function updateCustomToken(evmToken: Record<string, CustomToken>): void {
-  store.dispatch({ type: 'customToken/update', payload: { details: evmToken } });
+export function updateCustomToken(customToken: Record<string, CustomToken>): void {
+  store.dispatch({ type: 'customToken/update', payload: { details: customToken } });
 }
 
 export function updateChainRegistry(chainRegistryMap: Record<string, ChainRegistry>): void {
