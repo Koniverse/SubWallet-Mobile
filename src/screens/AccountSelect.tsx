@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListRenderItemInfo, StyleProp, TouchableOpacity, View } from 'react-native';
 import { Warning } from 'components/Warning';
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { Account } from 'components/Account';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ColorMap } from 'styles/color';

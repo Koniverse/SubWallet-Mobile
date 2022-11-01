@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { QrAccount } from 'types/account/import/qr';
+import { QrAccount } from 'types/account/qr';
 
 export type ImportAccountQrStackParamList = {
   ImportAccountQrScan: undefined;

@@ -10,7 +10,7 @@ import { upsertEvmToken, validateEvmToken } from '../../messaging';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
@@ -240,7 +240,7 @@ const ImportEvmNft = () => {
           disabled={isDisableAddNFT}
         />
 
-        <QrScannerScreen
+        <AddressScanner
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
           onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}

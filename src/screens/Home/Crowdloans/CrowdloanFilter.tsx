@@ -1,4 +1,4 @@
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';

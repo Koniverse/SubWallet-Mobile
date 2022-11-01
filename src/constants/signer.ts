@@ -1,0 +1,5 @@
+import { SIGN_MODE } from 'types/signer';
+
+export const MODE_CAN_SIGN: SIGN_MODE[] = [SIGN_MODE.PASSWORD];
+
+export const MANUAL_CANCEL_EXTERNAL_REQUEST = 'MANUAL_CANCEL_EXTERNAL_REQUEST';

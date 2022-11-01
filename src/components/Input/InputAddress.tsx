@@ -17,6 +17,8 @@ interface InputProps {
   onChange: (output: string | null, currentValue: string) => void;
   onPressQrButton: () => void;
   isValidValue?: boolean;
+  showAvatar?: boolean;
+  disable?: boolean;
 }
 
 const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
@@ -91,7 +93,16 @@ const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
 };
 
 const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
-  const { containerStyle, label, onChange, onPressQrButton, value, isValidValue = true } = inputAddressProps;
+  const {
+    containerStyle,
+    disable,
+    label,
+    onChange,
+    onPressQrButton,
+    value,
+    isValidValue = true,
+    showAvatar = true,
+  } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
   const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address)) && isValidValue;
@@ -124,13 +135,17 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
 
   return (
     <View style={getInputContainerStyle(containerStyle)}>
-      <TouchableOpacity activeOpacity={1} onPress={onPressContainer}>
+      <TouchableOpacity activeOpacity={1} onPress={onPressContainer} disabled={disable}>
         <Text style={inputLabelStyle}>{label}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
-          {isAddressValid ? (
-            <SubWalletAvatar address={address || ''} size={16} style={{ borderColor: 'transparent' }} />
-          ) : (
-            <View style={identiconPlaceholderStyle} />
+          {showAvatar && (
+            <>
+              {isAddressValid ? (
+                <SubWalletAvatar address={address || ''} size={16} style={{ borderColor: 'transparent' }} />
+              ) : (
+                <View style={identiconPlaceholderStyle} />
+              )}
+            </>
           )}
           {!isInputBlur ? (
             <TextInput
@@ -143,6 +158,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
               value={address}
               onBlur={onInputBlur}
               onChangeText={onChangeInputText}
+              editable={!disable}
             />
           ) : (
             <Text style={getFormattedTextInputStyle(isAddressValid)}>{toShort(address, 9, 9)}</Text>
@@ -150,7 +166,11 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={qrButtonStyle} onPress={onPressQrButton}>
+      <TouchableOpacity
+        activeOpacity={BUTTON_ACTIVE_OPACITY}
+        style={qrButtonStyle}
+        onPress={onPressQrButton}
+        disabled={disable}>
         <QrCode color={ColorMap.disabled} weight={'bold'} size={20} />
       </TouchableOpacity>
     </View>

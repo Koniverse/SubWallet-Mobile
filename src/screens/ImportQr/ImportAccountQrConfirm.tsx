@@ -2,17 +2,18 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { AddressField } from 'components/Field/Address';
 import { PasswordField } from 'components/Field/Password';
+import InputCheckBox from 'components/Input/InputCheckBox';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
-import { ImportAccountQrConfirmProps } from 'routes/account/import/importAccountQr';
+import { ImportAccountQrConfirmProps } from 'routes/account/importAccountQr';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 import { RootState } from 'stores/index';
 import { backToHome } from 'utils/navigation';
-import { createAccountExternalV2, checkPublicAndPrivateKey, createAccountWithSecret } from '../../messaging';
+import { checkPublicAndPrivateKey, createAccountWithSecret } from '../../messaging';
 import { ColorMap } from 'styles/color';
 import { centerStyle, ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -44,8 +45,8 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   marginHorizontal: 4,
 };
 
-function checkValidateForm(formValidated: Record<string, boolean>, needPassword: boolean) {
-  return formValidated.accountName && (needPassword ? formValidated.password && formValidated.repeatPassword : true);
+function checkValidateForm(formValidated: Record<string, boolean>) {
+  return formValidated.password && formValidated.repeatPassword;
 }
 
 const ImportAccountQrConfirm = ({
@@ -64,10 +65,10 @@ const ImportAccountQrConfirm = ({
   const [address, setAddress] = useState<string>(account.isAddress ? account.content : 'ALL');
   const [isEthereum, setIsEthereum] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [isAllow, setIsAllow] = useState<boolean>(true);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [isBusy, setIsBusy] = useState<boolean>(false);
-  const [isReadOnly, setIsReadOnly] = useState<boolean>(true);
 
   const formConfig = useMemo((): FormControlConfig => {
     return {
@@ -101,34 +102,11 @@ const ImportAccountQrConfirm = ({
     (name: string, password: string): void => {
       setIsBusy(true);
 
-      if (account.isAddress) {
-        createAccountExternalV2({
-          name: name,
-          address: account.content,
-          genesisHash: account.genesisHash,
-          isEthereum: account.isEthereum,
-          isAllowed: true,
-          isReadOnly: isReadOnly,
-        })
-          .then(errs => {
-            if (errs.length) {
-              setErrors(errs.map(e => e.message));
-            } else {
-              onComplete();
-            }
-          })
-          .catch((error: Error) => {
-            setErrors([error.message]);
-            console.error(error);
-          })
-          .finally(() => {
-            setIsBusy(false);
-          });
-      } else if (password) {
+      if (!account.isAddress && password) {
         createAccountWithSecret({
           name,
           password,
-          isAllow: true,
+          isAllow: isAllow,
           secretKey: account.content,
           publicKey: account.genesisHash,
           isEthereum: isEthereum,
@@ -151,18 +129,18 @@ const ImportAccountQrConfirm = ({
         setIsBusy(false);
       }
     },
-    [account, isEthereum, isReadOnly, onComplete],
+    [account, isAllow, isEthereum, onComplete],
   );
 
   const onSubmitForm = useCallback(
     (formState: FormState) => {
-      if (checkValidateForm(formState.isValidated, !account.isAddress)) {
+      if (checkValidateForm(formState.isValidated)) {
         handleCreateAccount(formState.data.accountName, formState.data.password);
       } else {
         Keyboard.dismiss();
       }
     },
-    [handleCreateAccount, account.isAddress],
+    [handleCreateAccount],
   );
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
@@ -183,16 +161,15 @@ const ImportAccountQrConfirm = ({
     onSubmitForm(formState);
   }, [formState, onSubmitForm]);
 
+  const toggleIsAllow = useCallback(() => {
+    setIsAllow(state => !state);
+  }, []);
+
   useEffect(() => {
     let amount = true;
     onChangeValue('accountName')(account?.name || defaultName);
-    setIsReadOnly(true);
 
-    if (account.isAddress) {
-      setAddress(account.content);
-      setIsEthereum(account.isEthereum);
-      setLoading(false);
-    } else {
+    if (!account.isAddress) {
       setLoading(true);
       checkPublicAndPrivateKey(account.genesisHash, account.content)
         .then(({ address: _address, isValid, isEthereum: _isEthereum }) => {
@@ -214,6 +191,8 @@ const ImportAccountQrConfirm = ({
             setLoading(false);
           }
         });
+    } else {
+      goBack();
     }
 
     return () => {
@@ -242,28 +221,30 @@ const ImportAccountQrConfirm = ({
                 errorMessages={formState.errors.accountName}
                 isDisabled={isBusy}
               />
-              {!account.isAddress && (
-                <>
-                  <PasswordField
-                    ref={formState.refs.password}
-                    label={formState.labels.password}
-                    defaultValue={formState.data.password}
-                    onChangeText={_onChangePasswordValue}
-                    errorMessages={formState.errors.password}
-                    onSubmitField={onSubmitField('password')}
-                    isBusy={isBusy}
-                  />
-                  <PasswordField
-                    ref={formState.refs.repeatPassword}
-                    label={formState.labels.repeatPassword}
-                    defaultValue={formState.data.repeatPassword}
-                    onChangeText={onChangeValue('repeatPassword')}
-                    errorMessages={formState.errors.repeatPassword}
-                    onSubmitField={onSubmitField('repeatPassword')}
-                    isBusy={isBusy}
-                  />
-                </>
-              )}
+              <PasswordField
+                ref={formState.refs.password}
+                label={formState.labels.password}
+                defaultValue={formState.data.password}
+                onChangeText={_onChangePasswordValue}
+                errorMessages={formState.errors.password}
+                onSubmitField={onSubmitField('password')}
+                isBusy={isBusy}
+              />
+              <PasswordField
+                ref={formState.refs.repeatPassword}
+                label={formState.labels.repeatPassword}
+                defaultValue={formState.data.repeatPassword}
+                onChangeText={onChangeValue('repeatPassword')}
+                errorMessages={formState.errors.repeatPassword}
+                onSubmitField={onSubmitField('repeatPassword')}
+                isBusy={isBusy}
+              />
+              <InputCheckBox
+                checked={isAllow}
+                onPress={toggleIsAllow}
+                disable={isBusy}
+                label={i18n.common.autoConnectDAppAfterCreating}
+              />
             </>
           )}
         </ScrollView>
@@ -279,7 +260,7 @@ const ImportAccountQrConfirm = ({
             onPress={goBack}
           />
           <SubmitButton
-            disabled={!checkValidateForm(formState.isValidated, !account.isAddress) || loading || errors.length > 0}
+            disabled={!checkValidateForm(formState.isValidated) || loading || errors.length > 0}
             isBusy={isBusy}
             style={ButtonStyle}
             title={i18n.common.finish}

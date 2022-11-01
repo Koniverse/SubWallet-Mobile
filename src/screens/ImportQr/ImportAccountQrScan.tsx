@@ -1,4 +1,3 @@
-import { decodeAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import Text from 'components/Text';
 import { Warning } from 'components/Warning';
@@ -15,6 +14,7 @@ import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
+import { importQrScan } from 'utils/scanner';
 
 const WrapperContainerStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -37,10 +37,6 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   marginHorizontal: 16,
 };
 
-const SUBSTRATE_PREFIX = 'substrate';
-const ETHEREUM_PREFIX = 'ethereum';
-const SECRET_PREFIX = 'secret';
-
 // const ACCEPT_PREFIXES = [SECRET_PREFIX];
 
 const ImportAccountQrScan = () => {
@@ -55,43 +51,17 @@ const ImportAccountQrScan = () => {
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
       try {
-        const data = event.data;
-        const arr: string[] = data.split(':');
+        const qrAccount = importQrScan(event.data);
 
-        let prefix = arr[0];
-        let content = '';
-        let genesisHash = '';
-        let name: string[] = [];
-        let isEthereum = false;
-
-        if (prefix === SUBSTRATE_PREFIX || prefix === SECRET_PREFIX) {
-          [prefix, content, genesisHash, ...name] = arr;
-        } else if (prefix === ETHEREUM_PREFIX) {
-          [prefix, content, ...name] = arr;
-          genesisHash = content.split('@')[1] || '';
-          content = content.substring(0, 42);
-          isEthereum = true;
-        } else {
+        if (!qrAccount) {
           setError(i18n.warningMessage.invalidQRCode);
           return;
-        }
-
-        const isAddress = prefix !== SECRET_PREFIX;
-
-        if (isAddress && !isEthereum) {
-          decodeAddress(content);
         }
 
         setError('');
         navigation.navigate('ImportAccountQr', {
           screen: 'ImportAccountQrConfirm',
-          params: {
-            content,
-            genesisHash,
-            isAddress,
-            isEthereum,
-            name: name.length ? name.join(':') : undefined,
-          },
+          params: qrAccount,
         });
       } catch (e) {
         setError((e as Error).message);

@@ -39,6 +39,7 @@ const headerTitle: StyleProp<any> = {
   flexDirection: 'row',
   flex: 1,
   justifyContent: 'center',
+  paddingHorizontal: 56,
 };
 
 const subHeaderTitle: StyleProp<any> = {
@@ -46,7 +47,7 @@ const subHeaderTitle: StyleProp<any> = {
   ...FontSize4,
   ...FontBold,
   color: ColorMap.light,
-  paddingHorizontal: 56,
+  flex: 1,
 };
 
 export const SubHeader = ({

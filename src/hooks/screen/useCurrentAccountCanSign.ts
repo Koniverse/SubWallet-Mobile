@@ -1,13 +1,13 @@
-import useGetCurrentAccountSignType from 'hooks/screen/useGetCurrentAccountSignType';
+import useGetCurrentAccountSignMode from 'hooks/screen/useGetCurrentAccountSignMode';
 import { accountCanSign } from 'utils/account';
 import { useMemo } from 'react';
 
 const useCurrentAccountCanSign = () => {
-  const accountSignType = useGetCurrentAccountSignType();
+  const accountSignMode = useGetCurrentAccountSignMode();
 
   return useMemo((): boolean => {
-    return accountCanSign(accountSignType);
-  }, [accountSignType]);
+    return accountCanSign(accountSignMode);
+  }, [accountSignMode]);
 };
 
 export default useCurrentAccountCanSign;

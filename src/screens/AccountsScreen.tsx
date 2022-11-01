@@ -1,3 +1,4 @@
+import SelectAttachAccountModal from 'components/Modal/SelectAttachAccountModal';
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
@@ -7,16 +8,25 @@ import { RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
-import { Article, DotsThree, FileArrowUp, LockKey, Plus, UserCirclePlus, QrCode } from 'phosphor-react-native';
+import {
+  Article,
+  DotsThree,
+  FileArrowUp,
+  LockKey,
+  Plus,
+  UserCirclePlus,
+  QrCode,
+  Download,
+} from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { SelectImportAccountModal } from 'screens/SelectImportAccountModal';
+import { SelectImportAccountModal } from 'components/Modal/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { SelectAccountTypeModal } from 'components/SelectAccountTypeModal';
+import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { requestCameraPermission } from 'utils/validators';
 import { updateCurrentAccountAddress } from '../messaging';
@@ -38,6 +48,8 @@ export const AccountsScreen = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
+  const [attachModalVisible, setAttachModalVisible] = useState<boolean>(false);
+
   const SECRET_TYPE: AccountActionType[] = [
     {
       icon: UserCirclePlus,
@@ -87,6 +99,16 @@ export const AccountsScreen = () => {
           navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
           setModalVisible(false);
         }
+      },
+    },
+    {
+      icon: Download,
+      title: i18n.title.attachAccount,
+      onCLickButton: async () => {
+        setModalVisible(false);
+        setTimeout(() => {
+          setAttachModalVisible(true);
+        }, HIDE_MODAL_DURATION);
       },
     },
   ];
@@ -169,6 +191,10 @@ export const AccountsScreen = () => {
     );
   };
 
+  const onHideAttachModal = useCallback(() => {
+    setAttachModalVisible(false);
+  }, []);
+
   return (
     <SubScreenContainer
       navigation={navigation}
@@ -198,6 +224,11 @@ export const AccountsScreen = () => {
           onChangeModalVisible={() => setSelectTypeModalVisible(false)}
           onSelectSubstrateAccount={onSelectSubstrateAccount}
           onSelectEvmAccount={onSelectEvmAccount}
+        />
+        <SelectAttachAccountModal
+          modalVisible={attachModalVisible}
+          setModalVisible={setAttachModalVisible}
+          onModalHide={onHideAttachModal}
         />
       </View>
     </SubScreenContainer>

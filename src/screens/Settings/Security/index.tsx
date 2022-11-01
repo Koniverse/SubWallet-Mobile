@@ -11,7 +11,7 @@ import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { SelectItem } from 'components/SelectItem';

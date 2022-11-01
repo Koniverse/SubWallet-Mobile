@@ -11,7 +11,7 @@ import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { BarCodeReadEvent } from 'react-native-camera';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
-import Modal from 'components/Modal';
+import ModalBase from 'components/Modal/Base/ModalBase';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 
 interface Props {
@@ -40,7 +40,7 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   marginHorizontal: 22,
 };
 
-export const QrScannerScreen = ({
+export const AddressScanner = ({
   onPressCancel,
   onChangeAddress,
   qrModalVisible,
@@ -58,7 +58,7 @@ export const QrScannerScreen = ({
   };
 
   return (
-    <Modal isVisible={qrModalVisible} style={{ flex: 1, width: '100%', margin: 0 }}>
+    <ModalBase isVisible={qrModalVisible} style={{ flex: 1, width: '100%', margin: 0 }}>
       <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
       <QRCodeScanner
@@ -113,6 +113,6 @@ export const QrScannerScreen = ({
           </View>
         }
       />
-    </Modal>
+    </ModalBase>
   );
 };

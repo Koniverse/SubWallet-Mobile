@@ -1,5 +1,5 @@
 import React from 'react';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { SelectItem } from 'components/SelectItem';
 import { SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';

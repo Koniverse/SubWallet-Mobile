@@ -10,7 +10,7 @@ import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { OriginChainSelect } from 'screens/OriginChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { DestinationChainSelect } from 'screens/DestinationChainSelect';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
@@ -277,7 +277,7 @@ export const ChainAndAccountSelectScreen = ({
         externalTokenOptions={originTokenList}
       />
 
-      <QrScannerScreen
+      <AddressScanner
         networkKey={destinationChain}
         token={originToken}
         qrModalVisible={isShowQrModalVisible}

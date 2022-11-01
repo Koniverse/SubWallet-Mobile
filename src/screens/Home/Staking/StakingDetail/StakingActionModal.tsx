@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { StakingDataType } from 'hooks/types';
 import moment from 'moment';

@@ -47,6 +47,8 @@ const BottomOverlayStyle: StyleProp<ViewStyle> = {
   height: bottomOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
+  display: 'flex',
+  flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
 };

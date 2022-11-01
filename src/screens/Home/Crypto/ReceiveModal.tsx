@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { Linking, Share, StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';

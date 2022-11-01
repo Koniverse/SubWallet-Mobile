@@ -1,12 +1,12 @@
 import React from 'react';
 import { SafeAreaView, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import Modal from 'components/Modal';
+import ModalBase from 'components/Modal/Base/ModalBase';
 interface Props {
   children: React.ReactNode;
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
-  modalStyle?: object;
+  modalStyle?: StyleProp<any>;
   onModalHide?: () => void;
   isFullHeight?: boolean;
 }
@@ -42,7 +42,7 @@ export const SubWalletModal = ({
   isFullHeight = false,
 }: Props) => {
   return (
-    <Modal
+    <ModalBase
       isVisible={modalVisible}
       onModalHide={onModalHide}
       swipeDirection={onChangeModalVisible ? 'down' : undefined}
@@ -65,6 +65,6 @@ export const SubWalletModal = ({
         </View>
         <SafeAreaView />
       </View>
-    </Modal>
+    </ModalBase>
   );
 };

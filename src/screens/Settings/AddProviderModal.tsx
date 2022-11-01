@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { Keyboard, StyleProp, Text, View } from 'react-native';
 import InputText from 'components/Input/InputText';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';

@@ -2,7 +2,7 @@ import React from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { Warning } from 'components/Warning';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { TokenItemType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';

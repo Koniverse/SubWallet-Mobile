@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { ImportAccountQrStackParamList } from 'routes/account/import/importAccountQr';
+import { ImportAccountQrStackParamList } from 'routes/account/importAccountQr';
 import ImportAccountQrConfirm from 'screens/ImportQr/ImportAccountQrConfirm';
 import ImportAccountQrScan from 'screens/ImportQr/ImportAccountQrScan';
 

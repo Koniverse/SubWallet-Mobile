@@ -13,9 +13,11 @@ interface Props extends FieldBaseProps {
   address: string;
   networkPrefix?: number;
   showRightIcon?: boolean;
+  showAvatar?: boolean;
   onPressRightIcon?: () => void;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   placeholder?: string;
+  disable?: boolean;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -50,6 +52,8 @@ export const AddressField = ({
   networkPrefix,
   onPressRightIcon,
   showRightIcon = true,
+  showAvatar = true,
+  disable = false,
   rightIcon: RightIcon,
   placeholder,
   ...fieldBase
@@ -59,10 +63,10 @@ export const AddressField = ({
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <SubWalletAvatar address={address} size={18} style={avatarStyle} />
+        {!!showAvatar && <SubWalletAvatar address={address} size={18} style={avatarStyle} />}
         {!!placeholder && <Text style={addressStyle}>{placeholder}</Text>}
         {!placeholder && (
-          <Text style={[addressStyle, { color: showRightIcon ? ColorMap.light : ColorMap.disabled }]}>
+          <Text style={[addressStyle, { color: showRightIcon ? ( disable ? ColorMap.disabled : ColorMap.light) : ColorMap.disabled }]}>
             {toShort(formattedAddress, 10, 10)}
           </Text>
         )}

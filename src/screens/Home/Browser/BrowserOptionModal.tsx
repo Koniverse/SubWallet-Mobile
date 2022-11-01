@@ -1,4 +1,4 @@
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { Linking, StyleProp, Text, View } from 'react-native';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';

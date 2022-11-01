@@ -4,4 +4,5 @@ export interface QrAccount {
   isAddress: boolean;
   name?: string;
   isEthereum: boolean;
+  isReadOnly: boolean;
 }

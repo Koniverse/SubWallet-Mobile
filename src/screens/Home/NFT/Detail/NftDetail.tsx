@@ -19,7 +19,7 @@ import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
-import { accountCanSign, findAccountByAddress, getAccountSignType } from 'utils/account';
+import { accountCanSign, findAccountByAddress, getAccountSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
@@ -172,8 +172,8 @@ const NftDetail = ({
   const canSend = useMemo((): boolean => {
     if (data.owner) {
       const ownerAccount = findAccountByAddress(accounts, data.owner);
-      const signType = getAccountSignType(ownerAccount);
-      return accountCanSign(signType);
+      const signMode = getAccountSignMode(ownerAccount);
+      return accountCanSign(signMode);
     } else {
       return false;
     }

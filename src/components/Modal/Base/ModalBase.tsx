@@ -7,7 +7,7 @@ export interface SWModalProps extends ModalProps {
   id?: string;
 }
 
-export default function Modal(props: SWModalProps) {
+export default function ModalBase(props: SWModalProps) {
   const { isLocked } = useAppLock();
   const [isForcedHidden, setForcedHidden] = useState<boolean>(false);
 

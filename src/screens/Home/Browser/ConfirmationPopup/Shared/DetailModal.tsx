@@ -1,5 +1,5 @@
 import React from 'react';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { SubmitButton } from 'components/SubmitButton';
 import i18n from 'utils/i18n/i18n';
 import { ConfirmationHeader } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationHeader';
