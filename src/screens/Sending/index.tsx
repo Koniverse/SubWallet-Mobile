@@ -95,7 +95,7 @@ export const SendFund = ({
     rawAmountWithDecimals: string | undefined;
   }>({ rawAmount: undefined, rawAmountWithDecimals: undefined });
   const [senderAddress, setSenderAddress] = useState<string>(currentAccountAddress);
-  const showedNetworks = useShowedNetworks(senderAddress, accounts);
+  const showedNetworks = useShowedNetworks(currentAccountAddress === 'ALL' ? 'ALL' : senderAddress, accounts);
   const originChainOptions = useMemo(() => {
     return showedNetworks
       .filter(item => chainRegistry[item])
@@ -152,7 +152,10 @@ export const SendFund = ({
       tokenList,
       currentDestinationChainOptions[0].value,
     );
-    setOriginToken(currentSupportedMainTokens[0].symbol);
+    console.log('currentSupportedMainTokens', currentSupportedMainTokens);
+    if (currentSupportedMainTokens && currentSupportedMainTokens.length) {
+      setOriginToken(currentSupportedMainTokens[0].symbol);
+    }
   };
 
   const _onChangeDestinationChain = useCallback(
@@ -296,20 +299,23 @@ export const SendFund = ({
 
   useEffect(() => {
     let isSync = true;
-
-    transferCheckSupporting({ networkKey: originChain, token: originToken })
-      .then(res => {
-        if (isSync) {
-          setTransferSupport([res.supportTransfer, res.supportTransferAll]);
-        }
-      })
-      .catch(e => console.log('e----------', e));
+    if (originChain === selectedDestinationChain) {
+      transferCheckSupporting({ networkKey: originChain, token: originToken })
+        .then(res => {
+          if (isSync) {
+            setTransferSupport([res.supportTransfer, res.supportTransferAll]);
+          }
+        })
+        .catch(e => console.log('e----------', e));
+    } else {
+      setTransferSupport([true, false]);
+    }
 
     return () => {
       isSync = false;
       setTransferSupport([null, null]);
     };
-  }, [originChain, originToken]);
+  }, [originChain, originToken, selectedDestinationChain]);
 
   useEffect(() => {
     if (currentViewStep === ViewStep.SEND_FUND && inputBalanceRef.current) {

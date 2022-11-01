@@ -72,7 +72,8 @@ export const ChainAndAccountSelectScreen = ({
   const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const isSameAddress =
     !!receiveAddress && !!senderAddress && receiveAddress === senderAddress && originChain === destinationChain;
-  const checkOriginChainAndSenderIdType = !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
+  const checkOriginChainAndSenderIdType =
+    isAccountAll(senderAddress) || !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
   const checkDestinationChainAndReceiverIdType =
     !!receiveAddress && !!networkMap[destinationChain].isEthereum === isEthereumAddress(receiveAddress);
   const isValidTransferInfo =
