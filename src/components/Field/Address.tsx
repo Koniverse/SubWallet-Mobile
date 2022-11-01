@@ -17,6 +17,7 @@ interface Props extends FieldBaseProps {
   onPressRightIcon?: () => void;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -54,6 +55,7 @@ export const AddressField = ({
   rightIcon: RightIcon,
   placeholder,
   name,
+  disabled,
   ...fieldBase
 }: Props) => {
   const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
@@ -85,6 +87,7 @@ export const AddressField = ({
             style={infoIconStyle}
             icon={RightIcon || Info}
             onPress={onPressRightIcon}
+            disabled={disabled}
           />
         )}
       </View>

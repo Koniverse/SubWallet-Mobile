@@ -120,7 +120,7 @@ export const TypeAmountScreen = ({
     <>
       <ScrollView style={ContainerHorizontalPadding} contentContainerStyle={{ flex: 1 }}>
         <TouchableOpacity style={SelectTokenButtonStyle} onPress={() => setTokenListModalVisible(true)}>
-          {getNetworkLogo(originChain, 20)}
+          {getNetworkLogo(originToken || originChain, 20, originChain)}
           <Text style={SelectTokenTextStyle}>{originToken}</Text>
           <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} />
         </TouchableOpacity>
