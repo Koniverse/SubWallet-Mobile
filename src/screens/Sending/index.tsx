@@ -152,7 +152,6 @@ export const SendFund = ({
       tokenList,
       currentDestinationChainOptions[0].value,
     );
-    console.log('currentSupportedMainTokens', currentSupportedMainTokens);
     if (currentSupportedMainTokens && currentSupportedMainTokens.length) {
       setOriginToken(currentSupportedMainTokens[0].symbol);
     }
