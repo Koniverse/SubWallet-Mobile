@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  CustomTokenType,
   EvmSendTransactionRequest,
   NetworkJson,
   ResponseParseEVMTransactionInput,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { parseEVMTransactionInput, validateEvmToken } from '../../../../../messaging';
+import { parseEVMTransactionInput, validateCustomToken } from '../../../../../messaging';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { XCM_ARGS, XCM_METHOD } from 'screens/Home/Browser/ConfirmationPopup/EvmSendTransactionConfirmation';
@@ -88,7 +89,7 @@ export default function useGetEvmTransactionInfos(payload: EvmSendTransactionReq
       let xcmToken: XCMTokenProps | null = null;
 
       for (const token of Object.values(chainRegistry.tokenMap)) {
-        if (token.erc20Address?.toLowerCase() === contract.toLowerCase()) {
+        if (token.contractAddress?.toLowerCase() === contract.toLowerCase()) {
           xcmToken = {
             symbol: token.symbol,
             decimals: token.decimals,
@@ -99,7 +100,7 @@ export default function useGetEvmTransactionInfos(payload: EvmSendTransactionReq
       }
 
       if (!xcmToken) {
-        validateEvmToken({ smartContract: contract, type: 'erc20', chain })
+        validateCustomToken({ smartContract: contract, type: CustomTokenType.erc20, chain })
           .then(token => {
             if (token.decimals && amount) {
               xcmToken = { symbol: token.symbol, decimals: token.decimals };

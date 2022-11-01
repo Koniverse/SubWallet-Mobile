@@ -4,7 +4,7 @@ import {
   ChainRegistry,
   ConfirmationsQueue,
   CrowdloanJson,
-  CustomEvmToken,
+  CustomToken,
   NetworkJson,
   NftCollectionJson,
   NftJson,
@@ -97,7 +97,7 @@ export type NetworkMapSlice = {
   details: Record<string, NetworkJson>;
 } & StoreSlice;
 
-export type EvmTokenSlice = { details: Record<string, CustomEvmToken> } & StoreSlice;
+export type CustomTokenSlice = { details: Record<string, CustomToken> } & StoreSlice;
 
 export type PriceSlice = Omit<PriceJson, 'ready'> & StoreSlice;
 

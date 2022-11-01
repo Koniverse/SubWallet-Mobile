@@ -1,23 +1,23 @@
 import React, { useCallback, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { CustomEvmToken, DeleteEvmTokenParams } from '@subwallet/extension-base/background/KoniTypes';
+import { CustomToken, DeleteCustomTokenParams } from '@subwallet/extension-base/background/KoniTypes';
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Trash } from 'phosphor-react-native';
 import { Alert, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
-import { EvmTokenItem } from 'components/EvmTokenItem';
+import { CustomTokenItem } from 'components/CustomTokenItem';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { SubmitButton } from 'components/SubmitButton';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { deleteEvmTokens } from '../../messaging';
+import { deleteCustomTokens } from '../../messaging';
 import { useToast } from 'react-native-toast-notifications';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
-const filterFunction = (items: CustomEvmToken[], searchString: string) => {
+const filterFunction = (items: CustomToken[], searchString: string) => {
   return items.filter(
     item =>
       item.name?.toLowerCase().includes(searchString.toLowerCase()) ||
@@ -28,8 +28,8 @@ const filterFunction = (items: CustomEvmToken[], searchString: string) => {
 export const Tokens = () => {
   const toast = useToast();
   const navigation = useNavigation<RootNavigationProps>();
-  const evmTokenMap = useSelector((state: RootState) => state.evmToken.details);
-  const [selectedTokens, setSelectedTokens] = useState<DeleteEvmTokenParams[]>([]);
+  const customTokenMap = useSelector((state: RootState) => state.customToken.details);
+  const [selectedTokens, setSelectedTokens] = useState<DeleteCustomTokenParams[]>([]);
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const [isBusy, setBusy] = useState<boolean>(false);
   useHandlerHardwareBackPress(isBusy);
@@ -42,14 +42,14 @@ export const Tokens = () => {
   );
 
   const handleSelected = useCallback(
-    (data: DeleteEvmTokenParams) => {
+    (data: DeleteCustomTokenParams) => {
       setSelectedTokens([...selectedTokens, data]);
     },
     [selectedTokens],
   );
 
   const handleUnselected = useCallback(
-    (data: DeleteEvmTokenParams) => {
+    (data: DeleteCustomTokenParams) => {
       const _selectedTokens = [];
 
       for (const token of selectedTokens) {
@@ -69,7 +69,7 @@ export const Tokens = () => {
 
   const handleDeleteTokens = useCallback(() => {
     setBusy(true);
-    deleteEvmTokens(selectedTokens)
+    deleteCustomTokens(selectedTokens)
       .then(resp => {
         if (resp) {
           setBusy(false);
@@ -100,9 +100,9 @@ export const Tokens = () => {
     ]);
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<CustomEvmToken>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<CustomToken>) => {
     return (
-      <EvmTokenItem
+      <CustomTokenItem
         item={item}
         isEditMode={isEditMode}
         onPress={() =>
@@ -124,7 +124,7 @@ export const Tokens = () => {
           onPress: () => setEditMode(!isEditMode),
         }}
         title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
-        items={Object.values(evmTokenMap)}
+        items={Object.values(customTokenMap)}
         autoFocus={false}
         filterFunction={filterFunction}
         renderItem={renderItem}
@@ -144,7 +144,7 @@ export const Tokens = () => {
             ) : (
               <SubmitButton
                 title={i18n.common.importToken}
-                onPress={() => navigation.navigate('ImportEvmToken', { payload: undefined })}
+                onPress={() => navigation.navigate('ImportToken', { payload: undefined })}
               />
             )}
           </View>

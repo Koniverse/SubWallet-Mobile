@@ -3,14 +3,14 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Item } from 'react-native-picker-select';
 
-export default function useGetActiveEvmChains(): Item[] {
+export default function useGetContractSupportedChains(): Item[] {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
   return useMemo((): Item[] => {
     const result: Item[] = [];
 
     for (const [key, network] of Object.entries(networkMap)) {
-      if (network.isEthereum && network.active) {
+      if (network.active && network.supportSmartContract && network.supportSmartContract.length > 0) {
         result.push({
           label: network.chain,
           value: key,
@@ -21,12 +21,13 @@ export default function useGetActiveEvmChains(): Item[] {
     if (result.length === 0) {
       return [
         {
-          label: 'Please enable at least 1 Ethereum compatible network',
+          //todo: i18n here
+          label: 'Please enable at least 1 network',
           value: '',
         },
       ];
     }
 
     return result;
-  }, [networkMap.details]);
+  }, [networkMap]);
 }

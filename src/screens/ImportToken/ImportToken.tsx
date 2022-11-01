@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
-import { ImportEvmTokenProps, RootNavigationProps } from 'routes/index';
+import { ImportTokenProps, RootNavigationProps } from 'routes/index';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -11,11 +11,11 @@ import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { NetworkField } from 'components/Field/Network';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
-import useGetActiveEvmChains from 'hooks/screen/ImportNft/useGetActiveEvmChains';
+import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { completeConfirmation, upsertEvmToken, validateEvmToken } from '../../messaging';
-import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
+import { completeConfirmation, upsertCustomToken, validateCustomToken } from '../../messaging';
+import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/validators';
@@ -23,13 +23,13 @@ import { RESULTS } from 'react-native-permissions';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
-export const ImportEvmToken = ({
+export const ImportToken = ({
   route: {
     params: { payload },
   },
-}: ImportEvmTokenProps) => {
+}: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const chainOptions = useGetActiveEvmChains();
+  const chainOptions = useGetContractSupportedChains();
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
@@ -64,7 +64,7 @@ export const ImportEvmToken = ({
       decimals: parseInt(decimals),
       type: 'erc20',
       isCustom: true,
-    } as CustomEvmToken;
+    } as CustomToken;
 
     if (symbol) {
       evmToken.symbol = symbol;
@@ -76,7 +76,7 @@ export const ImportEvmToken = ({
       completeConfirmation('addTokenRequest', { id: payload.id, isApproved: true }).catch(console.error);
     }
 
-    upsertEvmToken(evmToken)
+    upsertCustomToken(evmToken)
       .then(resp => {
         if (resp) {
           _goBack();
@@ -103,10 +103,10 @@ export const ImportEvmToken = ({
         onChangeValue('decimals')('');
         onUpdateErrors('contractAddress')([i18n.errorMessage.invalidEvmContractAddress]);
       } else {
-        validateEvmToken({
+        validateCustomToken({
           smartContract: currentContractAddress,
           chain: currentChain,
-          type: 'erc20',
+          type: CustomTokenType.erc20,
         })
           .then(resp => {
             if (resp.isExist) {

@@ -1,14 +1,14 @@
-import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
+import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EvmTokenSlice } from 'stores/types';
+import { CustomTokenSlice } from 'stores/types';
 
-const initialState: EvmTokenSlice = { details: {} as Record<string, CustomEvmToken> };
+const initialState: CustomTokenSlice = { details: {} as Record<string, CustomToken> };
 
 const evmTokenSlice = createSlice({
   initialState,
-  name: 'evmToken',
+  name: 'customToken',
   reducers: {
-    update(state, action: PayloadAction<EvmTokenSlice>) {
+    update(state, action: PayloadAction<CustomTokenSlice>) {
       const newState = {
         ...action.payload,
       };

@@ -17,8 +17,8 @@ import { useToast } from 'react-native-toast-notifications';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
-import { upsertEvmToken } from '../../messaging';
+import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
+import { upsertCustomToken } from '../../messaging';
 
 export const ConfigureToken = ({
   route: {
@@ -26,23 +26,23 @@ export const ConfigureToken = ({
   },
 }: ConfigureTokenProps) => {
   const toast = useToast();
-  const evmTokenMap = useSelector((state: RootState) => state.evmToken.details);
-  const evmTokenInfo: CustomEvmToken = evmTokenMap[contractAddress];
+  const customTokenMap = useSelector((state: RootState) => state.customToken.details);
+  const customTokenInfo: CustomToken = customTokenMap[contractAddress];
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setBusy] = useState<boolean>(false);
   const formConfig = {
     tokenName: {
       name: i18n.importEvmToken.tokenName,
-      value: evmTokenInfo.name || '',
+      value: customTokenInfo.name || '',
     },
   };
   const onSubmit = (formState: FormState) => {
     const newTokenInfo = {
-      ...evmTokenInfo,
+      ...customTokenInfo,
       name: formState.data.tokenName,
     };
     setBusy(true);
-    upsertEvmToken(newTokenInfo)
+    upsertCustomToken(newTokenInfo)
       .then(resp => {
         if (resp) {
           navigation.goBack();
@@ -75,12 +75,12 @@ export const ConfigureToken = ({
         <ScrollView style={{ width: '100%', flex: 1 }}>
           <AddressField
             label={i18n.importEvmToken.contractAddress}
-            address={evmTokenInfo.smartContract}
+            address={customTokenInfo.smartContract}
             rightIcon={CopySimple}
-            onPressRightIcon={() => copyToClipboard(evmTokenInfo.smartContract)}
+            onPressRightIcon={() => copyToClipboard(customTokenInfo.smartContract)}
           />
-          <NetworkField disabled={true} label={i18n.common.network} networkKey={evmTokenInfo.chain} />
-          {evmTokenInfo.type === 'erc721' && (
+          <NetworkField disabled={true} label={i18n.common.network} networkKey={customTokenInfo.chain} />
+          {customTokenInfo.type === 'erc721' && (
             <InputText
               ref={formState.refs.tokenName}
               label={formState.labels.tokenName}
@@ -90,19 +90,19 @@ export const ConfigureToken = ({
             />
           )}
 
-          {evmTokenInfo.type === 'erc20' && (
-            <TextField disabled={true} label={i18n.common.symbol} text={evmTokenInfo.symbol || ''} />
+          {customTokenInfo.type === 'erc20' && (
+            <TextField disabled={true} label={i18n.common.symbol} text={customTokenInfo.symbol || ''} />
           )}
 
-          {evmTokenInfo.type === 'erc20' && (
+          {customTokenInfo.type === 'erc20' && (
             <TextField
               disabled={true}
               label={i18n.common.decimals}
-              text={evmTokenInfo.decimals ? evmTokenInfo.decimals.toString() : ''}
+              text={customTokenInfo.decimals ? customTokenInfo.decimals.toString() : ''}
             />
           )}
 
-          <TextField disabled={true} label={i18n.common.tokenType} text={evmTokenInfo.type.toUpperCase()} />
+          <TextField disabled={true} label={i18n.common.tokenType} text={customTokenInfo.type.toUpperCase()} />
         </ScrollView>
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
           <SubmitButton

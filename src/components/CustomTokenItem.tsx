@@ -5,14 +5,14 @@ import { CaretRight, MinusCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { CustomEvmToken, DeleteEvmTokenParams } from '@subwallet/extension-base/background/KoniTypes';
+import { CustomToken, DeleteCustomTokenParams } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
-  item: CustomEvmToken;
+  item: CustomToken;
   isEditMode: boolean;
   onPress: () => void;
-  handleSelected: (val: DeleteEvmTokenParams) => void;
-  handleUnselected: (val: DeleteEvmTokenParams) => void;
+  handleSelected: (val: DeleteCustomTokenParams) => void;
+  handleUnselected: (val: DeleteCustomTokenParams) => void;
 }
 
 const itemWrapperStyle: StyleProp<any> = {
@@ -35,7 +35,7 @@ const itemTextStyle: StyleProp<any> = {
   width: '100%',
 };
 
-export const EvmTokenItem = ({ item, isEditMode, onPress, handleSelected, handleUnselected }: Props) => {
+export const CustomTokenItem = ({ item, isEditMode, onPress, handleSelected, handleUnselected }: Props) => {
   const [isSelected, setSelected] = useState<boolean>(false);
   useEffect(() => {
     if (!isEditMode && isSelected) {

@@ -2,14 +2,14 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
-import useGetActiveEvmChains from 'hooks/screen/ImportNft/useGetActiveEvmChains';
+import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { upsertEvmToken, validateEvmToken } from '../../messaging';
+import { upsertCustomToken, validateCustomToken } from '../../messaging';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { CustomEvmToken } from '@subwallet/extension-base/background/KoniTypes';
+import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
@@ -48,9 +48,9 @@ const formConfig = {
   },
 };
 
-const ImportEvmNft = () => {
+const ImportNft = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const chainOptions = useGetActiveEvmChains();
+  const chainOptions = useGetContractSupportedChains();
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
@@ -83,18 +83,18 @@ const ImportEvmNft = () => {
 
   const handleAddToken = useCallback(() => {
     setLoading(true);
-    const evmToken = {
+    const customToken = {
       smartContract: smartContract,
       chain,
       type: 'erc721',
       isCustom: true,
-    } as CustomEvmToken;
+    } as CustomToken;
 
     if (collectionName) {
-      evmToken.name = collectionName;
+      customToken.name = collectionName;
     }
 
-    upsertEvmToken(evmToken)
+    upsertCustomToken(customToken)
       .then(resp => {
         if (resp) {
           onUpdateErrors('smartContract')([i18n.common.addNftSuccess]);
@@ -120,10 +120,10 @@ const ImportEvmNft = () => {
         onUpdateErrors('smartContract')([i18n.errorMessage.invalidEvmContractAddress]);
       } else {
         setChecking(true);
-        validateEvmToken({
+        validateCustomToken({
           smartContract: smartContract,
           chain,
-          type: 'erc721',
+          type: CustomTokenType.erc721,
         })
           .then(resp => {
             if (unamount) {
@@ -253,4 +253,4 @@ const ImportEvmNft = () => {
   );
 };
 
-export default React.memo(ImportEvmNft);
+export default React.memo(ImportNft);

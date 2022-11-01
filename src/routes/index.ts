@@ -41,11 +41,11 @@ export type RootStackParamList = {
   DAppAccess: undefined;
   DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
-  ImportEvmNft: undefined;
+  ImportNft: undefined;
   TransferNft: TransferNftParams;
   EvmTokens: undefined;
   ConfigureToken: { contractAddress: string };
-  ImportEvmToken: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
+  ImportToken: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
   StakeAction: NavigatorScreenParams<StakeActionStackParamList>;
   UnStakeAction: NavigatorScreenParams<UnStakeActionStackParamList>;
   WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;
@@ -74,7 +74,7 @@ export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList,
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
-export type ImportEvmTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportEvmToken'>;
+export type ImportTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportToken'>;
 export type StakeActionProps = NativeStackScreenProps<RootStackParamList, 'StakeAction'>;
 export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeAction'>;
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;
