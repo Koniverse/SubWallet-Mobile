@@ -10,6 +10,8 @@ import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
 import { BrowserSliceTab, SiteInfo } from 'stores/types';
 import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
+import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationItem } from 'hooks/types';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -50,13 +52,35 @@ function getTabItemWrapperStyle(isTabActive: boolean): StyleProp<any> {
 function ConfirmationTrigger() {
   const navigation = useNavigation<RootNavigationProps>();
   const isLocked = useSelector((state: RootState) => state.appState.isLocked);
-  const { isEmptyRequests, isDisplayConfirmation } = useConfirmations();
+  const { isEmptyRequests, isDisplayConfirmation, confirmationItems } = useConfirmations();
 
   useEffect(() => {
+    const addTokenRequest = confirmationItems.find(item => item.type === 'addTokenRequest') as
+      | undefined
+      | ConfirmationItem;
+
+    const addNetworkRequest = confirmationItems.find(item => item.type === 'addNetworkRequest') as
+      | undefined
+      | ConfirmationItem;
+
+    if (addNetworkRequest) {
+      return;
+    }
+
+    if (addTokenRequest) {
+      const addTokenPayload = addTokenRequest.payload as ConfirmationsQueue['addTokenRequest'][0];
+      if (addTokenRequest.payload) {
+        navigation.navigate('ImportEvmToken', { payload: addTokenPayload });
+      } else if (addTokenPayload.payload.type === 'erc721') {
+        navigation.navigate('ImportEvmNft', { payload: addTokenPayload });
+      }
+
+      return;
+    }
     if (isDisplayConfirmation && !isLocked && !isEmptyRequests) {
       navigation.navigate('ConfirmationPopup');
     }
-  }, [isDisplayConfirmation, isEmptyRequests, navigation, isLocked]);
+  }, [isDisplayConfirmation, isEmptyRequests, navigation, isLocked, confirmationItems]);
 
   return <></>;
 }

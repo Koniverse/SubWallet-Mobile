@@ -221,7 +221,7 @@ export const ImportEvmToken = ({
             title={i18n.common.cancel}
             backgroundColor={ColorMap.dark2}
             style={{ flex: 1, marginRight: 8 }}
-            onPress={() => navigation.goBack()}
+            onPress={_goBack}
           />
           <SubmitButton
             disabled={addTokenButtonDisabled}
