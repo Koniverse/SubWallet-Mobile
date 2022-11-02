@@ -77,7 +77,7 @@ export const FirstScreen = () => {
     },
     {
       icon: QrCode,
-      title: i18n.title.importByQr,
+      title: i18n.title.importByQrCode,
       onCLickButton: async () => {
         const result = await requestCameraPermission();
 

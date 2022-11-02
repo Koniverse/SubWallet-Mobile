@@ -9,7 +9,6 @@ import {
 } from 'styles/sharedStyles';
 import { getBalanceWithSi, getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
-import { InputBalance } from 'components/Input/InputBalance';
 import { BalanceToUsd } from 'components/BalanceToUsd';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
@@ -24,6 +23,7 @@ import { CaretDown } from 'phosphor-react-native';
 import { TokenSelect } from 'screens/TokenSelect';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
+import { SendAssetInputBalance } from 'screens/Sending/Field/SendAssetInputBalance';
 
 interface Props {
   amount: number;
@@ -125,7 +125,7 @@ export const TypeAmountScreen = ({
           <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} />
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center', paddingTop: 56 }}>
-          <InputBalance
+          <SendAssetInputBalance
             value={
               rawAmount !== undefined ? getBalanceWithSi(amount.toString(), balanceFormat[0], si, originToken)[0] : ''
             }
