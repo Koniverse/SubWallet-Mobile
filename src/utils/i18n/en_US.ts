@@ -255,7 +255,7 @@ export const en = {
     compoundStakeAction: 'Compound',
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
-    importByQr: 'Import By QR',
+    importByQrCode: 'Import By QR Code',
     createCompoundTask: 'Create task',
     cancelCompoundTask: 'Cancel task',
     addProvider: 'Add Provider',
