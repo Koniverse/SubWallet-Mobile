@@ -122,7 +122,7 @@ const ImportAccountQrScan = () => {
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
-                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.importByQr}</Text>
+                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.importByQrCode}</Text>
                 <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={BackButtonStyle} onPress={handleGoBack}>
                   <ArrowLeft size={20} weight={'bold'} color={ColorMap.light} />
                 </TouchableOpacity>

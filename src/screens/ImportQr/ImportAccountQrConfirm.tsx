@@ -215,7 +215,7 @@ const ImportAccountQrConfirm = ({
   }, []);
 
   return (
-    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.importByQr} disabled={isBusy}>
+    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.importByQrCode} disabled={isBusy}>
       <View style={WrapperStyle}>
         <ScrollView style={[ScrollViewStyle]} contentContainerStyle={loading ? { ...centerStyle } : undefined}>
           {loading ? (
