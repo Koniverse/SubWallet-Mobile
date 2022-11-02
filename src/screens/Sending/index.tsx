@@ -36,7 +36,7 @@ import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainAndAccountSelectScreen } from 'screens/Sending/ChainAndAccountSelectScreen';
 import { TypeAmountScreen } from 'screens/Sending/TypeAmountScreen';
-import { getOutputValuesFromString } from 'components/Input/InputBalance';
+import { getOutputValuesFromString } from 'screens/Sending/Field/SendAssetInputBalance';
 
 const ViewStep = {
   SEND_FUND: 1,
