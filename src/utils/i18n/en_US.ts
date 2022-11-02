@@ -191,6 +191,7 @@ export const en = {
     attachAccount: 'Attach Account',
     autoConnectDAppAfterCreating: 'Auto connect Dapp after creating',
     scanFromHardwareWallet: 'Scan your address from Hardware Wallet',
+    scanFromWallet: 'Scan your address from wallet',
     scanAddress: 'Scan Address',
   },
   title: {
@@ -259,7 +260,7 @@ export const en = {
     compoundStakeAction: 'Compound',
     receiveAsset: 'Receive Asset',
     chainSelect: 'Chain Select',
-    importByQr: 'Import By QR',
+    importByQrCode: 'Import By QR Code',
     createCompoundTask: 'Create task',
     cancelCompoundTask: 'Cancel task',
     addProvider: 'Add Provider',

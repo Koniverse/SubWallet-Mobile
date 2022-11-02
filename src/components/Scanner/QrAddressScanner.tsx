@@ -2,6 +2,7 @@ import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import Text from 'components/Text';
 import { Warning } from 'components/Warning';
 import { DEVICE } from 'constants/index';
+import { SCAN_TYPE } from 'constants/qr';
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -13,12 +14,13 @@ import { QrAccount } from 'types/account/qr';
 import i18n from 'utils/i18n/i18n';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
-import { qrSignerScan } from 'utils/scanner';
+import { getFunctionScan } from 'utils/scanner';
 
 interface Props {
   visible: boolean;
   onHideModal: () => void;
   onSuccess: (data: QrAccount) => void;
+  type: SCAN_TYPE.QR_SIGNER | SCAN_TYPE.SECRET;
 }
 
 const WrapperContainerStyle: StyleProp<ViewStyle> = {
@@ -39,13 +41,14 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
+const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
   const [error, setError] = useState<string>('');
 
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
       try {
-        const qrAccount = qrSignerScan(event.data);
+        const funcRead = getFunctionScan(type);
+        const qrAccount = funcRead(event.data);
 
         if (!qrAccount) {
           setError(i18n.warningMessage.invalidQRCode);
@@ -54,11 +57,12 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
 
         setError('');
         onSuccess(qrAccount);
+        onHideModal();
       } catch (e) {
         setError((e as Error).message);
       }
     },
-    [onSuccess],
+    [onHideModal, onSuccess, type],
   );
 
   useEffect(() => {
@@ -104,7 +108,10 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
               <View style={ScannerStyles.BottomOverlayStyle}>
                 <View style={BottomSubContentStyle}>{!!error && <Warning message={error} isDanger />}</View>
                 <View style={BottomContentStyle}>
-                  <Text style={ScannerStyles.CenterTextStyle}>{i18n.common.scanFromHardwareWallet}</Text>
+                  <Text style={ScannerStyles.CenterTextStyle}>
+                    {type === SCAN_TYPE.QR_SIGNER && i18n.common.scanFromHardwareWallet}
+                    {type === SCAN_TYPE.SECRET && i18n.common.scanFromWallet}
+                  </Text>
                 </View>
                 <View style={BottomSubContentStyle} />
               </View>

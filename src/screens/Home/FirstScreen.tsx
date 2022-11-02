@@ -1,8 +1,12 @@
 import SelectAttachAccountModal from 'components/Modal/SelectAttachAccountModal';
+import QrAddressScanner from 'components/Scanner/QrAddressScanner';
+import { SCAN_TYPE } from 'constants/qr';
+import useModalScanner from 'hooks/scanner/useModalScanner';
 import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { RESULTS } from 'react-native-permissions';
+import { QrAccount } from 'types/account/qr';
 import { requestCameraPermission } from 'utils/validators';
 import Text from '../../components/Text';
 import { SubmitButton } from 'components/SubmitButton';
@@ -54,6 +58,16 @@ export const FirstScreen = () => {
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
   const [attachModalVisible, setAttachModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
+
+  const onSuccess = useCallback(
+    (qrAccount: QrAccount) => {
+      navigation.navigate('AttachAccount', { screen: 'ImportAccountQrConfirm', params: qrAccount });
+    },
+    [navigation],
+  );
+
+  const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
+
   const SECRET_TYPE = useMemo(
     (): AccountActionType[] => [
       {
@@ -85,18 +99,20 @@ export const FirstScreen = () => {
       },
       {
         icon: QrCode,
-        title: i18n.title.importByQr,
+        title: i18n.title.importByQrCode,
         onCLickButton: async () => {
           const result = await requestCameraPermission();
 
           if (result === RESULTS.GRANTED) {
-            navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
             setSelectModalVisible(false);
+            setTimeout(() => {
+              onOpenModal();
+            }, HIDE_MODAL_DURATION);
           }
         },
       },
     ],
-    [navigation],
+    [navigation, onOpenModal],
   );
 
   const onSelectSubstrateAccount = useCallback(() => {
@@ -176,6 +192,8 @@ export const FirstScreen = () => {
           setModalVisible={setAttachModalVisible}
           onModalHide={onHideAttachModal}
         />
+
+        <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />
         <SafeAreaView />
       </ImageBackground>
     </View>

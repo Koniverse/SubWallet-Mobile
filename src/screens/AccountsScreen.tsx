@@ -1,5 +1,8 @@
 import SelectAttachAccountModal from 'components/Modal/SelectAttachAccountModal';
-import React, { useCallback, useState } from 'react';
+import QrAddressScanner from 'components/Scanner/QrAddressScanner';
+import { SCAN_TYPE } from 'constants/qr';
+import useModalScanner from 'hooks/scanner/useModalScanner';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
@@ -22,6 +25,7 @@ import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
+import { QrAccount } from 'types/account/qr';
 import i18n from 'utils/i18n/i18n';
 import { SelectImportAccountModal } from 'components/Modal/SelectImportAccountModal';
 import { AccountActionType } from 'types/ui-types';
@@ -50,68 +54,82 @@ export const AccountsScreen = () => {
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
   const [attachModalVisible, setAttachModalVisible] = useState<boolean>(false);
 
-  const SECRET_TYPE: AccountActionType[] = [
-    {
-      icon: UserCirclePlus,
-      title: i18n.common.createWalletName,
-      onCLickButton: () => {
-        setSelectedAction('CreateAccount');
-        setModalVisible(false);
-        setTimeout(() => {
-          setSelectTypeModalVisible(true);
-        }, HIDE_MODAL_DURATION);
-      },
+  const onSuccess = useCallback(
+    (qrAccount: QrAccount) => {
+      navigation.navigate('AttachAccount', { screen: 'ImportAccountQrConfirm', params: qrAccount });
     },
-    {
-      icon: Article,
-      title: i18n.title.importBySecretPhrase,
-      onCLickButton: () => {
-        setSelectedAction('ImportSecretPhrase');
-        setModalVisible(false);
-        setTimeout(() => {
-          setSelectTypeModalVisible(true);
-        }, HIDE_MODAL_DURATION);
-      },
-    },
-    {
-      icon: LockKey,
-      title: i18n.title.importByPrivateKey,
-      onCLickButton: () => {
-        navigation.navigate('ImportPrivateKey');
-        setModalVisible(false);
-      },
-    },
-    {
-      icon: FileArrowUp,
-      title: i18n.title.importFromJson,
-      onCLickButton: () => {
-        navigation.navigate('RestoreJson');
-        setModalVisible(false);
-      },
-    },
-    {
-      icon: QrCode,
-      title: i18n.title.importByQr,
-      onCLickButton: async () => {
-        const result = await requestCameraPermission();
+    [navigation],
+  );
 
-        if (result === RESULTS.GRANTED) {
-          navigation.navigate('ImportAccountQr', { screen: 'ImportAccountQrScan' });
+  const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
+
+  const SECRET_TYPE = useMemo(
+    (): AccountActionType[] => [
+      {
+        icon: UserCirclePlus,
+        title: i18n.common.createWalletName,
+        onCLickButton: () => {
+          setSelectedAction('CreateAccount');
           setModalVisible(false);
-        }
+          setTimeout(() => {
+            setSelectTypeModalVisible(true);
+          }, HIDE_MODAL_DURATION);
+        },
       },
-    },
-    {
-      icon: Download,
-      title: i18n.title.attachAccount,
-      onCLickButton: async () => {
-        setModalVisible(false);
-        setTimeout(() => {
-          setAttachModalVisible(true);
-        }, HIDE_MODAL_DURATION);
+      {
+        icon: Article,
+        title: i18n.title.importBySecretPhrase,
+        onCLickButton: () => {
+          setSelectedAction('ImportSecretPhrase');
+          setModalVisible(false);
+          setTimeout(() => {
+            setSelectTypeModalVisible(true);
+          }, HIDE_MODAL_DURATION);
+        },
       },
-    },
-  ];
+      {
+        icon: LockKey,
+        title: i18n.title.importByPrivateKey,
+        onCLickButton: () => {
+          navigation.navigate('ImportPrivateKey');
+          setModalVisible(false);
+        },
+      },
+      {
+        icon: FileArrowUp,
+        title: i18n.title.importFromJson,
+        onCLickButton: () => {
+          navigation.navigate('RestoreJson');
+          setModalVisible(false);
+        },
+      },
+      {
+        icon: QrCode,
+        title: i18n.title.importByQrCode,
+        onCLickButton: async () => {
+          const result = await requestCameraPermission();
+
+          if (result === RESULTS.GRANTED) {
+            setModalVisible(false);
+            setTimeout(() => {
+              onOpenModal();
+            }, HIDE_MODAL_DURATION);
+          }
+        },
+      },
+      {
+        icon: Download,
+        title: i18n.title.attachAccount,
+        onCLickButton: async () => {
+          setModalVisible(false);
+          setTimeout(() => {
+            setAttachModalVisible(true);
+          }, HIDE_MODAL_DURATION);
+        },
+      },
+    ],
+    [navigation, onOpenModal],
+  );
 
   const onSelectSubstrateAccount = () => {
     setSelectTypeModalVisible(false);
@@ -230,6 +248,7 @@ export const AccountsScreen = () => {
           setModalVisible={setAttachModalVisible}
           onModalHide={onHideAttachModal}
         />
+        <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />
       </View>
     </SubScreenContainer>
   );

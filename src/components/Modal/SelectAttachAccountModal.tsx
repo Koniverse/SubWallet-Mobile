@@ -1,22 +1,24 @@
 import { useNavigation } from '@react-navigation/native';
-import QrAddressScanner from 'components/Scanner/QrAddressScanner';
-import { Eye, HardDrives, QrCode } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
+import QrAddressScanner from 'components/Scanner/QrAddressScanner';
+import { SecretTypeItem } from 'components/SecretTypeItem';
+import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
+import { SCAN_TYPE } from 'constants/qr';
+import useModalScanner from 'hooks/scanner/useModalScanner';
+import { Eye, HardDrives, QrCode } from 'phosphor-react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
+import Toast from 'react-native-toast-notifications';
+import ToastContainer from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'routes/index';
+import { ColorMap } from 'styles/color';
+import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { QrAccount } from 'types/account/qr';
+import { AccountActionType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
 import { requestCameraPermission } from 'utils/validators';
 import Text from '../Text';
-import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import { SecretTypeItem } from 'components/SecretTypeItem';
-import { AccountActionType } from 'types/ui-types';
-import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
-import Toast from 'react-native-toast-notifications';
-import ToastContainer from 'react-native-toast-notifications';
 
 interface Props {
   modalVisible: boolean;
@@ -36,7 +38,18 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
   const navigation = useNavigation<RootNavigationProps>();
 
   const toastRef = useRef<ToastContainer>(null);
-  const [isScanning, setIsScanning] = useState<boolean>(false);
+
+  const scanSuccess = useCallback(
+    (data: QrAccount) => {
+      navigation.navigate('AttachAccount', {
+        screen: 'AttachQrSignerConfirm',
+        params: data,
+      });
+    },
+    [navigation],
+  );
+
+  const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(scanSuccess);
 
   const show = useCallback((text: string) => {
     if (toastRef.current) {
@@ -68,7 +81,7 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
           if (result === RESULTS.GRANTED) {
             setModalVisible(false);
             setTimeout(() => {
-              setIsScanning(true);
+              onOpenModal();
             }, HIDE_MODAL_DURATION);
           }
         },
@@ -81,27 +94,12 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
         },
       },
     ],
-    [navigation, setModalVisible, show],
+    [navigation, onOpenModal, setModalVisible, show],
   );
 
   const onChangeModalVisible = useCallback(() => {
     setModalVisible(false);
   }, [setModalVisible]);
-
-  const scanSuccess = useCallback(
-    (data: QrAccount) => {
-      navigation.navigate('AttachAccount', {
-        screen: 'AttachQrSignerConfirm',
-        params: data,
-      });
-      setIsScanning(false);
-    },
-    [navigation],
-  );
-
-  const cancelScanning = useCallback(() => {
-    setIsScanning(false);
-  }, []);
 
   return (
     <>
@@ -121,7 +119,7 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
           offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
         />
       </SubWalletModal>
-      <QrAddressScanner visible={isScanning} onHideModal={cancelScanning} onSuccess={scanSuccess} />
+      <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.QR_SIGNER} />
     </>
   );
 };

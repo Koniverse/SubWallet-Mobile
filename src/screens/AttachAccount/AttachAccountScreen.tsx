@@ -3,6 +3,7 @@ import React from 'react';
 import { AttachAccountStackParamList } from 'routes/account/attachAccount';
 import AttachReadOnlyScreen from 'screens/AttachAccount/AttachReadOnlyScreen';
 import AttachQrSignerConfirm from './AttachQrSignerConfirm';
+import ImportAccountQrConfirm from './ImportAccountQrConfirm';
 
 const AttachAccountScreen = () => {
   const ImportAccountQrStack = createNativeStackNavigator<AttachAccountStackParamList>();
@@ -11,6 +12,7 @@ const AttachAccountScreen = () => {
     <ImportAccountQrStack.Navigator screenOptions={{ headerShown: false }}>
       <ImportAccountQrStack.Screen name={'AttachQrSignerConfirm'} component={AttachQrSignerConfirm} />
       <ImportAccountQrStack.Screen name={'AttachReadOnly'} component={AttachReadOnlyScreen} />
+      <ImportAccountQrStack.Screen name={'ImportAccountQrConfirm'} component={ImportAccountQrConfirm} />
     </ImportAccountQrStack.Navigator>
   );
 };

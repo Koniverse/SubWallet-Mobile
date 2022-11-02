@@ -54,7 +54,6 @@ export type RootStackParamList = {
   CompoundStakeAction: NavigatorScreenParams<CompoundStakeActionStackParamList>;
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
-  ImportAccountQr: NavigatorScreenParams<ImportAccountQrStackParamList>;
   AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
 };
 

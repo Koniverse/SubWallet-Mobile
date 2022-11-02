@@ -6,7 +6,7 @@ import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
@@ -74,11 +74,11 @@ const AttachReadOnlyScreen = () => {
       },
       accountName: {
         name: i18n.common.walletName,
-        value: defaultName,
+        value: '',
         require: true,
       },
     };
-  }, [defaultName]);
+  }, []);
 
   const goBack = useCallback(() => {
     navigation.goBack();
@@ -194,10 +194,14 @@ const AttachReadOnlyScreen = () => {
       setErrors([]);
       setAccount(qrAccount);
       update(qrAccount.content);
-      // onSuccess(qrAccount);
     },
     [formState.refs.address],
   );
+
+  useEffect(() => {
+    onChangeValue('accountName')(defaultName);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.readonlyAccount} disabled={isBusy}>

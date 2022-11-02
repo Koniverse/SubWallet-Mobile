@@ -74,7 +74,6 @@ import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
-import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -312,7 +311,6 @@ export const App = () => {
                           component={CompoundActionScreen}
                           options={{ gestureEnabled: false }}
                         />
-                        <Stack.Screen name="ImportAccountQr" component={ImportAccountQrScreen} />
                         <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
                       </Stack.Group>
                       <Stack.Group

@@ -11,7 +11,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { ImportAccountQrConfirmProps } from 'routes/account/importAccountQr';
+import { AttachQrSignerConfirmProps } from 'routes/account/attachAccount';
 import { RootState } from 'stores/index';
 import { backToHome } from 'utils/navigation';
 import { createAccountExternalV2 } from '../../messaging';
@@ -47,7 +47,7 @@ function checkValidateForm(formValidated: Record<string, boolean>) {
   return formValidated.accountName;
 }
 
-const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBack } }: ImportAccountQrConfirmProps) => {
+const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBack } }: AttachQrSignerConfirmProps) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
   const goHome = useGoHome();

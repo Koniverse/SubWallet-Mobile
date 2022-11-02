@@ -1,3 +1,4 @@
+import Clipboard from '@react-native-clipboard/clipboard';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { AddressField } from 'components/Field/Address';
@@ -6,15 +7,16 @@ import InputCheckBox from 'components/Input/InputCheckBox';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
+import { Copy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import { ImportAccountQrConfirmProps } from 'routes/account/importAccountQr';
+import { ImportAccountQrConfirmProps } from 'routes/account/attachAccount';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 import { RootState } from 'stores/index';
 import { backToHome } from 'utils/navigation';
 import { checkPublicAndPrivateKey, createAccountWithSecret } from '../../messaging';
-import { ColorMap } from 'styles/color';
 import { centerStyle, ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
@@ -36,13 +38,11 @@ const WarningStyle: StyleProp<ViewStyle> = {
 
 const ActionAreaStyle: StyleProp<ViewStyle> = {
   ...MarginBottomForSubmitButton,
-  marginHorizontal: -4,
   flexDirection: 'row',
 };
 
 const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
-  marginHorizontal: 4,
 };
 
 function checkValidateForm(formValidated: Record<string, boolean>) {
@@ -56,6 +56,7 @@ const ImportAccountQrConfirm = ({
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
   const goHome = useGoHome();
+  const toast = useToast();
 
   const defaultName = useMemo(
     (): string => `Account ${accounts.filter(acc => acc.address !== 'ALL').length + 1}`,
@@ -165,6 +166,19 @@ const ImportAccountQrConfirm = ({
     setIsAllow(state => !state);
   }, []);
 
+  const show = useCallback(
+    (text: string) => {
+      toast.hideAll();
+      toast.show(text);
+    },
+    [toast],
+  );
+
+  const copyToClipboard = useCallback(() => {
+    Clipboard.setString(account.content);
+    show(i18n.common.copiedToClipboard);
+  }, [account.content, show]);
+
   useEffect(() => {
     let amount = true;
     onChangeValue('accountName')(account?.name || defaultName);
@@ -203,14 +217,21 @@ const ImportAccountQrConfirm = ({
   }, [account]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.importByQr} disabled={isBusy}>
+    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.importByQrCode} disabled={isBusy}>
       <View style={WrapperStyle}>
         <ScrollView style={[ScrollViewStyle]} contentContainerStyle={loading ? { ...centerStyle } : undefined}>
           {loading ? (
             <ActivityIndicator size={'large'} animating={true} />
           ) : (
             <>
-              <AddressField address={address} label={i18n.common.account} showRightIcon={false} />
+              <AddressField
+                address={address}
+                label={i18n.common.accountAddress}
+                showAvatar={false}
+                rightIcon={Copy}
+                disable={true}
+                onPressRightIcon={copyToClipboard}
+              />
               <EditAccountInputText
                 ref={formState.refs.accountName}
                 label={formState.labels.accountName}
@@ -252,18 +273,10 @@ const ImportAccountQrConfirm = ({
           errors.map((message, index) => <Warning isDanger message={message} key={index} style={WarningStyle} />)}
         <View style={ActionAreaStyle}>
           <SubmitButton
-            disabled={isBusy}
-            disabledColor={ColorMap.buttonOverlayButtonColor}
-            title={i18n.common.cancel}
-            backgroundColor={ColorMap.dark2}
-            style={ButtonStyle}
-            onPress={goBack}
-          />
-          <SubmitButton
             disabled={!checkValidateForm(formState.isValidated) || loading || errors.length > 0}
             isBusy={isBusy}
             style={ButtonStyle}
-            title={i18n.common.finish}
+            title={i18n.common.importAccount}
             onPress={handleSubmit}
           />
         </View>
