@@ -4,7 +4,7 @@ import {
   ChainRegistry,
   ConfirmationsQueue,
   CrowdloanJson,
-  CustomToken, CustomTokenJson,
+  CustomTokenJson,
   NetworkJson,
   NftCollectionJson,
   NftJson,
@@ -13,7 +13,7 @@ import {
   StakeUnlockingJson,
   StakingJson,
   StakingRewardJson,
-  TransactionHistoryItemType
+  TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AccountJson,

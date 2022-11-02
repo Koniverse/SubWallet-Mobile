@@ -10,7 +10,7 @@ import {
   StakeUnlockingJson,
   StakingJson,
   StakingRewardJson,
-  TransactionHistoryItemType
+  TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
 import {
