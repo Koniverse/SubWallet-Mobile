@@ -28,5 +28,5 @@ export default function useGetActiveEvmChains(): Item[] {
     }
 
     return result;
-  }, [networkMap.details]);
+  }, [networkMap]);
 }

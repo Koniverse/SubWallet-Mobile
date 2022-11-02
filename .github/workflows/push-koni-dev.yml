@@ -1,0 +1,29 @@
+name: Koni Dev
+on:
+  pull_request: { }
+  push:
+    branches:
+      - koni-dev
+
+jobs:
+  master:
+    if: "! startsWith(github.event.head_commit.message, '[CI Skip]')"
+    strategy:
+      matrix:
+        step: ['autocheck']
+    name: ${{ matrix.step }}
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+    - name: ${{ matrix.step }}
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+        GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      run: |
+        yarn install --immutable | grep -v 'YN0013'
+        node ./scripts/autocheck.mjs
