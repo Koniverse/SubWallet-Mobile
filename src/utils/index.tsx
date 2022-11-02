@@ -4,6 +4,7 @@ import { AccountType, Recoded } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import {
   ChainRegistry,
+  ContractType,
   NETWORK_STATUS,
   NetWorkGroup,
   NetworkJson,
@@ -22,6 +23,7 @@ import { BalanceInfo } from 'types/index';
 import { BN_ZERO } from 'utils/chainBalances';
 import { IconProps } from 'phosphor-react-native';
 import { isValidURL } from 'utils/browser';
+import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
@@ -595,3 +597,19 @@ export const isValidProvider = (provider: string) => {
 
   return false;
 };
+
+export function isNftTransferSupported(networkKey: string, networkJson: NetworkJson) {
+  if (networkJson.isEthereum) {
+    return true;
+  }
+
+  if (
+    !networkJson.isEthereum &&
+    networkJson.supportSmartContract &&
+    networkJson.supportSmartContract.includes(ContractType.wasm)
+  ) {
+    return true;
+  }
+
+  return SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.includes(networkKey);
+}

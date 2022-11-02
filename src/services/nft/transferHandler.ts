@@ -1,8 +1,8 @@
 // Copyright 2019-2022 @subwallet/extension-koni authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { evmNftGetTransaction, substrateNftGetTransaction } from '../../messaging';
+import { CustomTokenType, NftItem } from '@subwallet/extension-base/background/KoniTypes';
+import { evmNftGetTransaction, substrateNftGetTransaction, wasmNftGetTransaction } from '../../messaging';
 import { SUPPORTED_TRANSFER_CHAIN_NAME, TransferResponse } from 'types/nft';
 
 async function substrateTransferHandler(
@@ -58,15 +58,46 @@ async function web3TransferHandler(
   } as TransferResponse;
 }
 
+async function psp34TransferHandler(
+  networkKey: string,
+  senderAddress: string,
+  recipientAddress: string,
+  params: Record<string, any>,
+) {
+  try {
+    const resp = await wasmNftGetTransaction({
+      networkKey,
+      senderAddress,
+      recipientAddress,
+      params,
+    });
+
+    if (resp.error) {
+      return null;
+    } else {
+      return {
+        estimatedFee: resp.estimatedFee,
+        balanceError: resp.balanceError,
+      } as TransferResponse;
+    }
+  } catch (e) {
+    console.error('error handling wasm transfer nft', e);
+
+    return null;
+  }
+}
+
 export default async function transferHandler(
   networkKey: string,
   senderAddress: string,
   recipientAddress: string,
   params: Record<string, any>,
-  networkJson: NetworkJson,
+  nftItem: NftItem,
 ): Promise<TransferResponse | null> {
-  if (networkJson.isEthereum && networkJson.isEthereum) {
+  if (nftItem.type === CustomTokenType.erc721) {
     return await web3TransferHandler(networkKey, senderAddress, recipientAddress, params);
+  } else if (nftItem.type === CustomTokenType.psp34) {
+    return await psp34TransferHandler(networkKey, senderAddress, recipientAddress, params);
   } else {
     switch (networkKey) {
       case SUPPORTED_TRANSFER_CHAIN_NAME.acala:
@@ -90,9 +121,9 @@ export default async function transferHandler(
           recipientAddress,
           params,
         );
-      case SUPPORTED_TRANSFER_CHAIN_NAME.uniqueNft:
+      case SUPPORTED_TRANSFER_CHAIN_NAME.unique_network:
         return await substrateTransferHandler(
-          SUPPORTED_TRANSFER_CHAIN_NAME.uniqueNft,
+          SUPPORTED_TRANSFER_CHAIN_NAME.unique_network,
           senderAddress,
           recipientAddress,
           params,

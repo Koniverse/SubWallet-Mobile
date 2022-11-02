@@ -70,9 +70,9 @@ function ConfirmationTrigger() {
     if (addTokenRequest) {
       const addTokenPayload = addTokenRequest.payload as ConfirmationsQueue['addTokenRequest'][0];
       if (addTokenRequest.payload) {
-        navigation.navigate('ImportEvmToken', { payload: addTokenPayload });
+        navigation.navigate('ImportToken', { payload: addTokenPayload });
       } else if (addTokenPayload.payload.type === 'erc721') {
-        navigation.navigate('ImportEvmNft', { payload: addTokenPayload });
+        navigation.navigate('ImportNft', { payload: addTokenPayload });
       }
 
       return;

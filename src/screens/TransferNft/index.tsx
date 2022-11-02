@@ -1,6 +1,6 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
-import { isValidAddress } from '@subwallet/extension-koni-base/utils';
+import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { NetworkField } from 'components/Field/Network';
 import ImagePreview from 'components/ImagePreview';
@@ -42,6 +42,7 @@ import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
 import { Warning } from 'components/Warning';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -71,7 +72,7 @@ const isValidRecipient = (address: string, isEthereum: boolean) => {
   if (isEthereum) {
     return isEthereumAddress(address);
   } else {
-    return isValidAddress(address);
+    return isValidSubstrateAddress(address);
   }
 };
 
@@ -157,25 +158,19 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     }
     setError(undefined);
     setLoading(true);
-    const params = paramsHandler(nftItem, networkKey, networkJson);
-    const transferMeta = await transferHandler(
-      networkKey,
-      senderAddress,
-      recipientAddress as string,
-      params,
-      networkJson,
-    );
+    const params = paramsHandler(nftItem, networkKey);
+    const transferMeta = await transferHandler(networkKey, senderAddress, recipientAddress as string, params, nftItem);
 
     if (transferMeta !== null) {
       // @ts-ignore
-      if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(networkKey) > -1) {
+      if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(networkKey) > -1 || nftItem.type === CustomTokenType.psp34) {
         setSubstrateTransferParams({
           params,
           estimatedFee: transferMeta.estimatedFee,
           balanceError: transferMeta.balanceError,
         } as SubstrateTransferParams);
         // @ts-ignore
-      } else if (networkJson.isEthereum && networkJson.isEthereum) {
+      } else if (nftItem.type === CustomTokenType.erc721) {
         setWeb3TransferParams({
           rawTx: transferMeta.web3RawTx,
           estimatedGas: transferMeta.estimatedGas,
@@ -189,7 +184,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
     }
 
     setLoading(false);
-  }, [addressError, networkJson, networkKey, nftItem, recipientAddress, senderAddress]);
+  }, [addressError, networkKey, nftItem, recipientAddress, senderAddress]);
 
   useEffect(() => {
     const isValidCurrentRecipient =
