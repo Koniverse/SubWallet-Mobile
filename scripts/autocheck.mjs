@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import cp from 'child_process';
 import {Webhook} from "discord-webhook-node";
-console.log(process.env.DISCORD_WEBHOOK);
+
 const discordHook = new Webhook(process.env.DISCORD_WEBHOOK || '');
 const commitMessage = process.env.COMMIT_MESSAGE || '';
+
+let success = true;
 
 export function execSync (cmd, noLog) {
   !noLog && console.log(`$ ${cmd}`);
@@ -13,17 +15,20 @@ export function execSync (cmd, noLog) {
   try {
     cp.execSync(cmd, { stdio: 'inherit' });
   } catch (error) {
-    discordHook.send(`Failed to run "${cmd}" for "${commitMessage}"`).finally(() => {
+    success = false;
+    discordHook.send(`:red_circle: :red_circle: :red_circle:  Failed to run "${cmd}" for "${commitMessage}"`).finally(() => {
       process.exit(-1);
     })
   }
 }
 
 function notifyStart() {
-  return discordHook.send(`Run autocheck for commit: "${commitMessage}"`);
+  return discordHook.send(`:computer: :computer: :computer: Run autocheck for commit: "${commitMessage}"`);
 }
 function notifyFinish() {
-  return discordHook.send(`Finish autocheck for commit: "${commitMessage}"`);
+  if (success) {
+    return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish autocheck for commit: "${commitMessage}"`);
+  }
 }
 
 function runCheck() {
