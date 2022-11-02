@@ -13,8 +13,8 @@ import {
   Globe,
   GlobeHemisphereWest,
   IconProps,
+  LockKeyOpen,
   ShieldCheck,
-  SignOut,
   TelegramLogo,
   TwitterLogo,
 } from 'phosphor-react-native';
@@ -156,8 +156,8 @@ export const Settings = () => {
       ],
       [
         {
-          icon: SignOut,
-          title: i18n.settings.logout,
+          icon: LockKeyOpen,
+          title: i18n.settings.lock,
           hasRightArrow: true,
           onPress: lock,
           disabled: !pinCodeEnabled,
