@@ -61,7 +61,6 @@ import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAp
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { AutoLockState } from 'utils/autoLock';
 import { getValidURL } from 'utils/browser';
-import { Tokens } from 'screens/Tokens';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
 import useStoreCustomToken from 'hooks/store/useStoreCustomToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
@@ -74,6 +73,7 @@ import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
+import { CustomTokenSetting } from 'screens/Tokens';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -279,7 +279,7 @@ export const App = () => {
                         <Stack.Screen name="Security" component={Security} />
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
                         <Stack.Screen name="ExportAccount" component={ExportAccount} />
-                        <Stack.Screen name="EvmTokens" component={Tokens} />
+                        <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                         <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                         <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />

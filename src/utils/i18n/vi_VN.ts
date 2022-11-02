@@ -246,7 +246,7 @@ export const vi = {
     collators: 'Select a collator',
     dApps: 'Select a dApp',
     configureToken: 'Configure Token',
-    importEvmToken: 'Import EVM Token',
+    importToken: 'Import Token',
     validatorDetail: 'Validator detail',
     stakeAction: 'Stake',
     unStakeAction: 'Unstake',
@@ -293,7 +293,7 @@ export const vi = {
     cancel: 'Cancel',
     importNft: 'Import NFT',
   },
-  importEvmToken: {
+  importToken: {
     contractAddress: 'Contract Address',
     tokenName: 'Token Name',
     chain: 'Chain',

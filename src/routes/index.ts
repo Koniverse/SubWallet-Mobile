@@ -41,11 +41,11 @@ export type RootStackParamList = {
   DAppAccess: undefined;
   DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
-  ImportNft: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
+  ImportNft: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
   TransferNft: TransferNftParams;
-  EvmTokens: undefined;
-  ConfigureToken: { contractAddress: string };
-  ImportToken: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
+  CustomTokenSetting: undefined;
+  ConfigureToken: { tokenDetail: string };
+  ImportToken: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
   StakeAction: NavigatorScreenParams<StakeActionStackParamList>;
   UnStakeAction: NavigatorScreenParams<UnStakeActionStackParamList>;
   WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;

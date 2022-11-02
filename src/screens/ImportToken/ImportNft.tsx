@@ -20,6 +20,9 @@ import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -30,27 +33,27 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   marginTop: 10,
 };
 
-const formConfig = {
-  smartContract: {
-    require: true,
-    name: i18n.importEvmNft.smartContract,
-    value: '',
-  },
-  chain: {
-    require: true,
-    name: i18n.common.network,
-    value: '',
-  },
-  collectionName: {
-    require: true,
-    name: i18n.importEvmNft.nftCollectionName,
-    value: '',
-  },
-};
-
 const ImportNft = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const chainOptions = useGetContractSupportedChains();
+  const formConfig = {
+    smartContract: {
+      require: true,
+      name: i18n.importEvmNft.smartContract,
+      value: '',
+    },
+    chain: {
+      require: true,
+      name: i18n.common.network,
+      value: chainOptions[0].value as string,
+    },
+    collectionName: {
+      require: true,
+      name: i18n.importEvmNft.nftCollectionName,
+      value: '',
+    },
+  };
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
@@ -116,14 +119,24 @@ const ImportNft = () => {
   useEffect(() => {
     let unamount = false;
     if (smartContract !== '') {
-      if (!isEthereumAddress(smartContract)) {
+      let tokenType: CustomTokenType | undefined; // set token type
+      const isValidContractCaller = isValidSubstrateAddress(currentAccountAddress);
+
+      if (isEthereumAddress(smartContract)) {
+        tokenType = CustomTokenType.erc721;
+      } else if (isValidSubstrateAddress(smartContract)) {
+        tokenType = CustomTokenType.psp34;
+      }
+
+      if (!tokenType) {
         onUpdateErrors('smartContract')([i18n.errorMessage.invalidEvmContractAddress]);
       } else {
         setChecking(true);
         validateCustomToken({
           smartContract: smartContract,
           chain,
-          type: CustomTokenType.erc721,
+          type: tokenType,
+          contractCaller: isValidContractCaller ? currentAccountAddress : undefined,
         })
           .then(resp => {
             if (unamount) {
@@ -132,8 +145,12 @@ const ImportNft = () => {
             if (resp.isExist) {
               onUpdateErrors('smartContract')([i18n.errorMessage.tokenAlreadyAdded]);
             } else {
-              onChangeValue('collectionName')(resp.name);
-              onUpdateErrors('smartContract')(undefined);
+              if (resp.contractError) {
+                onUpdateErrors('smartContract')([i18n.errorMessage.invalidContractForSelectedChain]);
+              } else {
+                onChangeValue('collectionName')(resp.name);
+                onUpdateErrors('smartContract')(undefined);
+              }
             }
           })
           .catch(() => {
@@ -154,7 +171,7 @@ const ImportNft = () => {
     return () => {
       unamount = true;
     };
-  }, [chain, onChangeValue, onUpdateErrors, smartContract]);
+  }, [chain, currentAccountAddress, onChangeValue, onUpdateErrors, smartContract]);
 
   useEffect(() => {
     if (collectionName.split(' ').join('') === '') {
@@ -163,10 +180,6 @@ const ImportNft = () => {
       setIsValidName(true);
     }
   }, [collectionName]);
-
-  useEffect(() => {
-    onChangeValue('chain')((chainOptions[0].value as string) || '');
-  }, [chainOptions, onChangeValue]);
 
   const isDisableAddNFT =
     !isValidName ||

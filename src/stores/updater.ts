@@ -3,14 +3,14 @@ import {
   BalanceJson,
   ChainRegistry,
   CrowdloanJson,
-  CustomToken,
+  CustomTokenJson,
   NetworkJson,
   PriceJson,
   ResponseSettingsType,
   StakeUnlockingJson,
   StakingJson,
   StakingRewardJson,
-  TransactionHistoryItemType,
+  TransactionHistoryItemType
 } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
 import {
@@ -27,8 +27,8 @@ export function updateNetworkMap(networkMap: Record<string, NetworkJson>): void 
   store.dispatch({ type: 'networkMap/update', payload: { details: networkMap } });
 }
 
-export function updateCustomToken(customToken: Record<string, CustomToken>): void {
-  store.dispatch({ type: 'customToken/update', payload: { details: customToken } });
+export function updateCustomToken(data: CustomTokenJson): void {
+  store.dispatch({ type: 'customToken/update', payload: { details: data } });
 }
 
 export function updateChainRegistry(chainRegistryMap: Record<string, ChainRegistry>): void {

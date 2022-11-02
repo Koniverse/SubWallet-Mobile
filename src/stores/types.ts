@@ -4,7 +4,7 @@ import {
   ChainRegistry,
   ConfirmationsQueue,
   CrowdloanJson,
-  CustomToken,
+  CustomToken, CustomTokenJson,
   NetworkJson,
   NftCollectionJson,
   NftJson,
@@ -13,7 +13,7 @@ import {
   StakeUnlockingJson,
   StakingJson,
   StakingRewardJson,
-  TransactionHistoryItemType,
+  TransactionHistoryItemType
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AccountJson,
@@ -97,7 +97,7 @@ export type NetworkMapSlice = {
   details: Record<string, NetworkJson>;
 } & StoreSlice;
 
-export type CustomTokenSlice = { details: Record<string, CustomToken> } & StoreSlice;
+export type CustomTokenSlice = { details: CustomTokenJson } & StoreSlice;
 
 export type PriceSlice = Omit<PriceJson, 'ready'> & StoreSlice;
 

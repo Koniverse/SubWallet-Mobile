@@ -22,6 +22,9 @@ import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 export const ImportToken = ({
   route: {
@@ -30,6 +33,7 @@ export const ImportToken = ({
 }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainOptions = useGetContractSupportedChains();
+  const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
@@ -38,7 +42,7 @@ export const ImportToken = ({
   const formConfig = {
     contractAddress: {
       require: true,
-      name: i18n.importEvmToken.contractAddress,
+      name: i18n.importToken.contractAddress,
       value: tokenInfo?.smartContract || '',
     },
     chain: {
@@ -58,7 +62,7 @@ export const ImportToken = ({
   const onSubmit = (formState: FormState) => {
     setBusy(true);
     const { contractAddress, chain, decimals, symbol } = formState.data;
-    const evmToken = {
+    const customToken = {
       smartContract: contractAddress,
       chain,
       decimals: parseInt(decimals),
@@ -67,7 +71,7 @@ export const ImportToken = ({
     } as CustomToken;
 
     if (symbol) {
-      evmToken.symbol = symbol;
+      customToken.symbol = symbol;
     }
 
     onUpdateErrors('contractAddress')(undefined);
@@ -76,7 +80,7 @@ export const ImportToken = ({
       completeConfirmation('addTokenRequest', { id: payload.id, isApproved: true }).catch(console.error);
     }
 
-    upsertCustomToken(evmToken)
+    upsertCustomToken(customToken)
       .then(resp => {
         if (resp) {
           _goBack();
@@ -98,7 +102,16 @@ export const ImportToken = ({
     const currentContractAddress = formState.data.contractAddress;
     const currentChain = formState.data.chain;
     if (currentContractAddress !== '') {
-      if (!isEthereumAddress(currentContractAddress)) {
+      let tokenType: CustomTokenType | undefined;
+      const isValidContractCaller = isValidSubstrateAddress(currentAccountAddress);
+
+      if (isEthereumAddress(currentContractAddress)) {
+        tokenType = CustomTokenType.erc20;
+      } else if (isValidSubstrateAddress(currentContractAddress)) {
+        tokenType = CustomTokenType.psp22;
+      }
+
+      if (!tokenType) {
         onChangeValue('symbol')('');
         onChangeValue('decimals')('');
         onUpdateErrors('contractAddress')([i18n.errorMessage.invalidEvmContractAddress]);
@@ -106,16 +119,22 @@ export const ImportToken = ({
         validateCustomToken({
           smartContract: currentContractAddress,
           chain: currentChain,
-          type: CustomTokenType.erc20,
+          type: tokenType,
+          contractCaller: isValidContractCaller ? currentContractAddress : undefined,
         })
           .then(resp => {
             if (resp.isExist) {
               onUpdateErrors('contractAddress')([i18n.errorMessage.tokenAlreadyAdded]);
             } else {
-              onUpdateErrors('contractAddress')(undefined);
-              onChangeValue('symbol')(resp.symbol);
-              if (resp.decimals) {
-                onChangeValue('decimals')(String(resp.decimals));
+              if (resp.contractError) {
+                onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
+              } else {
+                onUpdateErrors('contractAddress')(undefined);
+                if (resp.decimals) {
+                  onChangeValue('decimals')(String(resp.decimals));
+                } else {
+                  onChangeValue('symbol')(resp.symbol);
+                }
               }
             }
           })
@@ -126,7 +145,7 @@ export const ImportToken = ({
           });
       }
     }
-  }, [formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
+  }, [currentAccountAddress, formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
 
   const onUpdateContractAddress = (text: string) => {
     if (formState.refs.contractAddress && formState.refs.contractAddress.current) {
@@ -168,7 +187,7 @@ export const ImportToken = ({
     !formState.data.decimals;
 
   return (
-    <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importEvmToken} disabled={isBusy}>
+    <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
           <InputAddress

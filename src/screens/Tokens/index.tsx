@@ -4,8 +4,6 @@ import { CustomToken, DeleteCustomTokenParams } from '@subwallet/extension-base/
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Trash } from 'phosphor-react-native';
 import { Alert, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomTokenItem } from 'components/CustomTokenItem';
 import { useNavigation } from '@react-navigation/native';
@@ -16,6 +14,7 @@ import { ColorMap } from 'styles/color';
 import { deleteCustomTokens } from '../../messaging';
 import { useToast } from 'react-native-toast-notifications';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import useFetchCustomToken from 'hooks/screen/Setting/useFetchCustomToken';
 
 const filterFunction = (items: CustomToken[], searchString: string) => {
   return items.filter(
@@ -25,10 +24,10 @@ const filterFunction = (items: CustomToken[], searchString: string) => {
   );
 };
 
-export const Tokens = () => {
+export const CustomTokenSetting = () => {
   const toast = useToast();
+  const customTokens = useFetchCustomToken();
   const navigation = useNavigation<RootNavigationProps>();
-  const customTokenMap = useSelector((state: RootState) => state.customToken.details);
   const [selectedTokens, setSelectedTokens] = useState<DeleteCustomTokenParams[]>([]);
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const [isBusy, setBusy] = useState<boolean>(false);
@@ -40,6 +39,8 @@ export const Tokens = () => {
     },
     [toast],
   );
+
+  console.log('customTokens', customTokens);
 
   const handleSelected = useCallback(
     (data: DeleteCustomTokenParams) => {
@@ -106,7 +107,9 @@ export const Tokens = () => {
         item={item}
         isEditMode={isEditMode}
         onPress={() =>
-          navigation.navigate('ConfigureToken', { contractAddress: `${item.smartContract}-${item.chain}-${item.type}` })
+          navigation.navigate('ConfigureToken', {
+            tokenDetail: JSON.stringify(item),
+          })
         }
         handleSelected={handleSelected}
         handleUnselected={handleUnselected}
@@ -124,7 +127,7 @@ export const Tokens = () => {
           onPress: () => setEditMode(!isEditMode),
         }}
         title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
-        items={Object.values(customTokenMap)}
+        items={customTokens}
         autoFocus={false}
         filterFunction={filterFunction}
         renderItem={renderItem}
@@ -142,10 +145,7 @@ export const Tokens = () => {
                 onPress={onDeleteTokens}
               />
             ) : (
-              <SubmitButton
-                title={i18n.common.importToken}
-                onPress={() => navigation.navigate('ImportToken', { payload: undefined })}
-              />
+              <SubmitButton title={i18n.common.importToken} onPress={() => navigation.navigate('ImportToken')} />
             )}
           </View>
         }

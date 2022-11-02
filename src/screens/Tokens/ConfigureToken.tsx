@@ -4,8 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { ConfigureTokenProps, RootNavigationProps } from 'routes/index';
 import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
 import { ScrollView, View } from 'react-native';
@@ -19,20 +17,20 @@ import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
 import { upsertCustomToken } from '../../messaging';
+import { FUNGIBLE_TOKEN_STANDARDS } from '@subwallet/extension-koni-base/api/tokens';
 
 export const ConfigureToken = ({
   route: {
-    params: { contractAddress },
+    params: { tokenDetail },
   },
 }: ConfigureTokenProps) => {
   const toast = useToast();
-  const customTokenMap = useSelector((state: RootState) => state.customToken.details);
-  const customTokenInfo: CustomToken = customTokenMap[contractAddress];
+  const customTokenInfo = JSON.parse(tokenDetail) as CustomToken;
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setBusy] = useState<boolean>(false);
   const formConfig = {
     tokenName: {
-      name: i18n.importEvmToken.tokenName,
+      name: i18n.importToken.tokenName,
       value: customTokenInfo.name || '',
     },
   };
@@ -67,20 +65,17 @@ export const ConfigureToken = ({
   };
 
   return (
-    <ContainerWithSubHeader
-      onPressBack={() => navigation.goBack()}
-      title={i18n.title.configureEvmToken}
-      disabled={isBusy}>
+    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={i18n.title.configureToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
           <AddressField
-            label={i18n.importEvmToken.contractAddress}
+            label={i18n.importToken.contractAddress}
             address={customTokenInfo.smartContract}
             rightIcon={CopySimple}
             onPressRightIcon={() => copyToClipboard(customTokenInfo.smartContract)}
           />
           <NetworkField disabled={true} label={i18n.common.network} networkKey={customTokenInfo.chain} />
-          {customTokenInfo.type === 'erc721' && (
+          {!FUNGIBLE_TOKEN_STANDARDS.includes(customTokenInfo.type) && (
             <InputText
               ref={formState.refs.tokenName}
               label={formState.labels.tokenName}
@@ -90,11 +85,11 @@ export const ConfigureToken = ({
             />
           )}
 
-          {customTokenInfo.type === 'erc20' && (
+          {FUNGIBLE_TOKEN_STANDARDS.includes(customTokenInfo.type) && (
             <TextField disabled={true} label={i18n.common.symbol} text={customTokenInfo.symbol || ''} />
           )}
 
-          {customTokenInfo.type === 'erc20' && (
+          {FUNGIBLE_TOKEN_STANDARDS.includes(customTokenInfo.type) && (
             <TextField
               disabled={true}
               label={i18n.common.decimals}
