@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import cp from 'child_process';
 import {Webhook} from "discord-webhook-node";
-const discordHook = new Webhook(process.env.DISCORD_WEBHOOK | '');
-const commitMessage = process.env.COMMIT_MESSAGE | '';
+console.log(process.env.DISCORD_WEBHOOK);
+const discordHook = new Webhook(process.env.DISCORD_WEBHOOK || '');
+const commitMessage = process.env.COMMIT_MESSAGE || '';
 
 export function execSync (cmd, noLog) {
   !noLog && console.log(`$ ${cmd}`);
