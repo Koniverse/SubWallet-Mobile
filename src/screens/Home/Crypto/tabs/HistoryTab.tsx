@@ -6,10 +6,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
 import { ListDashes } from 'phosphor-react-native';
-import { CollapsibleFlatListStyle, emptyListTextStyle } from 'styles/sharedStyles';
+import { emptyListTextStyle } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import * as Tabs from 'react-native-collapsible-tab-view';
+import { itemWrapperAppendixStyle, itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 
 interface Props {
   networkKey: string;
@@ -33,6 +34,7 @@ const emptyListContainerStyle: StyleProp<any> = {
   paddingTop: 111,
   flex: 1,
   alignItems: 'center',
+  backgroundColor: ColorMap.dark1,
 };
 
 const contentContainerStyle: StyleProp<any> = {
@@ -131,16 +133,22 @@ const EmptyList = () => {
       {/*<Image source={Images.historyEmpty} />*/}
       <ListDashes size={80} color={'rgba(255, 255, 255, 0.3)'} weight={'thin'} />
       <Text style={emptyListTextStyle}>{i18n.common.emptyTransactionListMessage}</Text>
+      <View style={itemWrapperAppendixStyle} />
     </View>
   );
 };
 
 const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh, refreshTabId }: ContentProps) => {
-  const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
+  const renderItem = ({ item, index }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
 
-    return <TokenHistoryItem item={item} key={item.extrinsicHash} registry={registry} />;
+    return (
+      <View key={item.extrinsicHash} style={{ ...itemWrapperStyle, paddingTop: !index ? 8 : 0 }}>
+        <TokenHistoryItem item={item} registry={registry} />
+        <View style={itemWrapperAppendixStyle} />
+      </View>
+    );
   };
 
   return (
@@ -148,8 +156,7 @@ const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh, r
       <Tabs.FlatList
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled
-        contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
-        style={{ ...CollapsibleFlatListStyle }}
+        contentContainerStyle={{ backgroundColor: ColorMap.dark2 }}
         keyboardShouldPersistTaps={'handled'}
         data={items}
         renderItem={renderItem}

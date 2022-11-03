@@ -152,8 +152,10 @@ export const SendFund = ({
       tokenList,
       currentDestinationChainOptions[0].value,
     );
+
+    const firstNativeToken = currentSupportedMainTokens.find(item => item.isMainToken);
     if (currentSupportedMainTokens && currentSupportedMainTokens.length) {
-      setOriginToken(currentSupportedMainTokens[0].symbol);
+      setOriginToken(firstNativeToken ? firstNativeToken.symbol : currentSupportedMainTokens[0].symbol);
     }
   };
 

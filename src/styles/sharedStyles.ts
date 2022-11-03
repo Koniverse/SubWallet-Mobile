@@ -21,7 +21,6 @@ export const FontSize5 = { fontSize: 40 };
 export const ContainerHorizontalPadding = { paddingLeft: 16, paddingRight: 16 };
 export const MarginBottomForSubmitButton = { marginBottom: 18 };
 export const ScrollViewStyle = { marginLeft: -16, marginRight: -16, ...ContainerHorizontalPadding };
-export const CollapsibleFlatListStyle = { paddingTop: 8, backgroundColor: ColorMap.dark1 };
 export const centerStyle: StyleProp<any> = {
   justifyContent: 'center',
   flex: 1,
