@@ -24,6 +24,7 @@ jobs:
         GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        REF_NAME: ${{ github.ref_name }}
       run: |
         yarn install --immutable | grep -v 'YN0013'
         node ./scripts/autocheck.mjs
