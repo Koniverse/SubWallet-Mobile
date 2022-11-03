@@ -2,7 +2,6 @@ import React from 'react';
 import { ListRenderItem, RefreshControl, RefreshControlProps, StyleProp, View } from 'react-native';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
-import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { Coins, SlidersHorizontal } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
@@ -20,7 +19,7 @@ interface Props {
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark1,
+  backgroundColor: ColorMap.dark2,
   flexGrow: 1,
   justifyContent: 'center',
   position: 'relative',
@@ -83,8 +82,7 @@ export const ChainsTab = ({ networkKeys, isRefresh, refresh, refreshTabId, rende
     <Tabs.FlatList
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled
-      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
-      style={{ ...CollapsibleFlatListStyle }}
+      contentContainerStyle={{ backgroundColor: ColorMap.dark2 }}
       keyboardShouldPersistTaps={'handled'}
       data={networkKeys}
       renderItem={renderItem}

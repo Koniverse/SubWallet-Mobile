@@ -18,6 +18,7 @@ import { TokenSelect } from 'screens/TokenSelect';
 import ChainDetailLayer from 'screens/Home/Crypto/layers/ChainDetail';
 import TokenHistoryLayer from 'screens/Home/Crypto/layers/TokenHistory';
 import { getAccountType } from 'utils/index';
+import { ColorMap } from 'styles/color';
 
 interface SelectionInfo {
   selectedNetworkInfo?: AccountInfoByNetwork;
@@ -28,6 +29,7 @@ interface SelectionInfo {
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
   flex: 1,
+  backgroundColor: ColorMap.dark2,
 };
 
 const viewLayerStyle: StyleProp<any> = {
