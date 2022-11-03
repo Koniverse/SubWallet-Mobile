@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Item } from 'react-native-picker-select';
+import i18n from 'utils/i18n/i18n';
 
 export default function useGetContractSupportedChains(): Item[] {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
@@ -21,8 +22,7 @@ export default function useGetContractSupportedChains(): Item[] {
     if (result.length === 0) {
       return [
         {
-          //todo: i18n here
-          label: 'Please enable at least 1 network',
+          label: i18n.warningMessage.enableAtLeast1Network,
           value: '',
         },
       ];

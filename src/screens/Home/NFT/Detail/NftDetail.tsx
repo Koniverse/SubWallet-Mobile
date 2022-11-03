@@ -203,8 +203,7 @@ const NftDetail = ({
     }
 
     if (!isNftTransferSupported(data.chain, networkJson)) {
-      //todo: i18n here
-      show('Transfer is not supported for this network');
+      show(i18n.common.transferNotSupportedForNetwork);
 
       return;
     }
