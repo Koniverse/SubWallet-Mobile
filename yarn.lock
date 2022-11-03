@@ -3653,7 +3653,7 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.31.0.tgz#489e3a496081dc3ee7ef5ef2eb513962d5d29351"
   integrity sha512-OSOmdjaq9foXfHBy9aLVMwGheygvsiZlv4dggnLOYOuhSmNCsSB/PaW4DBz+/tSdK1Fo9+ZiFW6cF24RA+m0sw==
 
-"@subwallet/extension-base@0.6.8-1wr", "@subwallet/extension-base@^0.6.8-1":
+"@subwallet/extension-base@^0.6.8-1wr":
   version "0.6.8-1wr"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-0.6.8-1wr.tgz#5315bdd2accdfecca093a1d48519fca371391279"
   integrity sha512-fPCE9vuV9TNGqOQil047cDWasV/i7rYmbaYCQJtPbv+66H+osWvDcsVT9Wc2UK52HarCqM+FhJJiCqxCbtm9OA==
@@ -3715,7 +3715,7 @@
     "@polkadot/x-global" "^10.1.9"
     web3-core "^1.8.0"
 
-"@subwallet/extension-koni-base@0.6.8-1wr":
+"@subwallet/extension-koni-base@^0.6.8-1wr":
   version "0.6.8-1wr"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-base/-/extension-koni-base-0.6.8-1wr.tgz#d63f68c23cf2965014a4adaee8b8febbbe351896"
   integrity sha512-ENdcRE93UzkL59St7KKMrhCy6L+RAhKoUlSOUuAPeRrly5btOoJtetZxTbxMSGe9AwjO4BJ4aHg4x3IVR2WRHA==
@@ -3760,7 +3760,7 @@
     "@snowfork/snowbridge-types" "^0.2.7"
     "@sora-substrate/type-definitions" "^1.10.0-beta.16"
     "@subsocial/types" "^0.6.8"
-    "@subwallet/extension-base" "^0.6.8-1"
+    "@subwallet/extension-base" "^0.6.8-1wr"
     "@subwallet/extension-chains" "^0.6.8-1"
     "@subwallet/extension-dapp" "^0.6.8-1"
     "@subwallet/extension-inject" "^0.6.8-1"
