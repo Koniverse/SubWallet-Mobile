@@ -6,6 +6,7 @@ import {Webhook} from "discord-webhook-node";
 
 const discordHook = new Webhook(process.env.DISCORD_WEBHOOK || '');
 const commitMessage = process.env.COMMIT_MESSAGE || '';
+const refName = process.env.REF_NAME || '';
 
 let success = true;
 
@@ -16,18 +17,18 @@ export function execSync (cmd, noLog) {
     cp.execSync(cmd, { stdio: 'inherit' });
   } catch (error) {
     success = false;
-    discordHook.send(`:red_circle: :red_circle: :red_circle:  Failed to run "${cmd}" for "${commitMessage}"`).finally(() => {
+    discordHook.send(`:red_circle: :red_circle: :red_circle:  Failed to run "${cmd}" for "${refName}: ${commitMessage}"`).finally(() => {
       process.exit(-1);
     })
   }
 }
 
 function notifyStart() {
-  return discordHook.send(`:computer: :computer: :computer: Run autocheck for commit: "${commitMessage}"`);
+  return discordHook.send(`:computer: :computer: :computer: Run autocheck for commit: "${refName}: ${commitMessage}"`);
 }
 function notifyFinish() {
   if (success) {
-    return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish autocheck for commit: "${commitMessage}"`);
+    return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish autocheck for commit: "${refName}: ${commitMessage}"`);
   }
 }
 
