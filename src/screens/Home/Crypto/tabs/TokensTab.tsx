@@ -3,7 +3,6 @@ import { ListRenderItem, RefreshControl, RefreshControlProps, StyleProp, View } 
 import { TokenBalanceItemType } from 'types/ui-types';
 import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
-import { CollapsibleFlatListStyle } from 'styles/sharedStyles';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { Coins, SlidersHorizontal } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
@@ -21,7 +20,7 @@ interface Props {
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark1,
+  backgroundColor: ColorMap.dark2,
   flexGrow: 1,
   justifyContent: 'center',
   position: 'relative',
@@ -90,8 +89,7 @@ export const TokensTab = ({
     <Tabs.FlatList
       nestedScrollEnabled
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ backgroundColor: ColorMap.dark1 }}
-      style={{ ...CollapsibleFlatListStyle }}
+      contentContainerStyle={{ backgroundColor: ColorMap.dark2 }}
       keyboardShouldPersistTaps={'handled'}
       data={tokenBalanceItems}
       renderItem={renderItem}

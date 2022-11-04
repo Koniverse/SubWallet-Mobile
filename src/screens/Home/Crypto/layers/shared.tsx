@@ -4,6 +4,24 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import React from 'react';
 import { AccountType, TokenBalanceItemType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
+import { StyleProp } from 'react-native';
+import { DEVICE } from 'constants/index';
+
+export const itemWrapperStyle: StyleProp<any> = {
+  width: '100%',
+  backgroundColor: ColorMap.dark1,
+  position: 'relative',
+};
+
+export const itemWrapperAppendixStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark1,
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  height: DEVICE.height,
+  top: '100%',
+  marginTop: 8,
+};
 
 export const alwaysShowedKey = ['polkadot|DOT', 'kusama|KSM'];
 

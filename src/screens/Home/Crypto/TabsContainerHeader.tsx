@@ -16,6 +16,8 @@ const containerStyle: StyleProp<any> = {
   alignItems: 'center',
   backgroundColor: ColorMap.dark2,
   paddingTop: 21,
+  paddingBottom: 1,
+  marginBottom: -1,
 };
 
 const TabsContainerHeader = ({

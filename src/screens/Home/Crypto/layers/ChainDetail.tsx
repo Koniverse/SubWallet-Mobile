@@ -5,7 +5,12 @@ import { ColorMap } from 'styles/color';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import { getNetworkLogo, getTokenBalanceKey, getTotalConvertedBalanceValue, toShort } from 'utils/index';
 import * as Tabs from 'react-native-collapsible-tab-view';
-import { isItemAllowedToShow, renderTabBar } from 'screens/Home/Crypto/layers/shared';
+import {
+  isItemAllowedToShow,
+  itemWrapperAppendixStyle,
+  itemWrapperStyle,
+  renderTabBar,
+} from 'screens/Home/Crypto/layers/shared';
 import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
 import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import { BalanceInfo } from 'types/index';
@@ -134,17 +139,16 @@ const ChainDetailLayer = ({
   const [isRefresh, refresh] = useRefresh();
   const [refreshTabId, setRefreshTabId] = useState<string>('');
 
-  const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
+  const renderTokenTabItem = ({ item, index }: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
       return null;
     }
 
     return (
-      <TokenChainBalance
-        key={item.id}
-        onPress={() => handleChangeTokenItem(item.symbol, item.displayedSymbol)}
-        {...item}
-      />
+      <View key={item.id} style={{ ...itemWrapperStyle, paddingTop: !index ? 8 : 0 }}>
+        <TokenChainBalance onPress={() => handleChangeTokenItem(item.symbol, item.displayedSymbol)} {...item} />
+        <View style={itemWrapperAppendixStyle} />
+      </View>
     );
   };
 

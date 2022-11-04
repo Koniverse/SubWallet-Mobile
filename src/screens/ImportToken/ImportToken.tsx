@@ -209,17 +209,6 @@ export const ImportToken = ({
             <NetworkField networkKey={formState.data.chain} label={formState.labels.chain} />
           </TouchableOpacity>
 
-          <ChainSelect
-            items={chainOptions}
-            modalVisible={isShowChainModal}
-            onChangeModalVisible={() => setShowChainModal(false)}
-            onChangeValue={(text: string) => {
-              handleChangeValue('chain')(text);
-              setShowChainModal(false);
-            }}
-            selectedItem={formState.data.chain}
-          />
-
           <TextField label={i18n.common.symbol} text={formState.data.symbol} />
 
           <TextField disabled={true} label={i18n.common.decimals} text={formState.data.decimals} />
@@ -250,6 +239,16 @@ export const ImportToken = ({
             onPress={() => onSubmit(formState)}
           />
         </View>
+        <ChainSelect
+          items={chainOptions}
+          modalVisible={isShowChainModal}
+          onChangeModalVisible={() => setShowChainModal(false)}
+          onChangeValue={(text: string) => {
+            handleChangeValue('chain')(text);
+            setShowChainModal(false);
+          }}
+          selectedItem={formState.data.chain}
+        />
       </View>
     </ContainerWithSubHeader>
   );
