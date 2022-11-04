@@ -19,6 +19,7 @@ export interface WebviewElement {
   reload?: () => void;
   webState: WebRunnerState;
   isReady?: boolean;
+  isInternetReachable?: boolean;
   eventEmitter?: EventEmitter;
   clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void;
   setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void;

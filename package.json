@@ -27,6 +27,7 @@
     "@polkadot/wasm-crypto": "^6.1.5",
     "@react-native-async-storage/async-storage": "^1.17.6",
     "@react-native-clipboard/clipboard": "^1.10.0",
+    "@react-native-community/netinfo": "^9.3.6",
     "@react-native-masked-view/masked-view": "^0.2.6",
     "@react-native-picker/picker": "^2.4.1",
     "@react-navigation/bottom-tabs": "^6.3.1",

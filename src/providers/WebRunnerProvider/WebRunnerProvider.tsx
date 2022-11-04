@@ -5,6 +5,8 @@ import { resetHandlerMaps, setupWebview } from '../../messaging';
 import { WebRunner } from 'providers/WebRunnerProvider/WebRunner';
 import EventEmitter from 'eventemitter3';
 import { DelayBackgroundService } from 'types/background';
+import NetInfo from '@react-native-community/netinfo';
+import { AppState } from 'react-native';
 
 interface WebRunnerProviderProps {
   children?: React.ReactNode;
@@ -27,6 +29,7 @@ function setBackgroundServiceTimeout(service: DelayBackgroundService, timeout: N
 
 const eventEmitter = new EventEmitter();
 let lastIsReady = false;
+let lastIsInternetReachable = true;
 export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.ReactElement<WebRunnerProviderProps> => {
   const webRef = useRef<WebView>(null);
   const webStateRef = useRef<WebRunnerState>({
@@ -34,9 +37,17 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
     version: 'unknown',
   });
   const [isReady, setIsReady] = useState(lastIsReady);
+  const [isInternetReachable, setIsInternetReachable] = useState(lastIsInternetReachable);
 
   useEffect(() => {
     setupWebview(webRef, eventEmitter);
+  }, [webRef]);
+
+  const reload = useCallback(() => {
+    console.log('Reload web runner');
+    eventEmitter.emit('update-status', 'reloading');
+    resetHandlerMaps();
+    webRef?.current?.reload();
   }, [webRef]);
 
   useEffect(() => {
@@ -47,17 +58,26 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
         lastIsReady = _isReady;
       }
     });
+
+    const netUnsubscribe = NetInfo.addEventListener(netState => {
+      if (netState.isInternetReachable !== null) {
+        setIsInternetReachable(netState.isInternetReachable);
+
+        if (AppState.currentState === 'active') {
+          if (!lastIsInternetReachable && netState.isInternetReachable) {
+            reload();
+          }
+        }
+
+        lastIsInternetReachable = netState.isInternetReachable;
+      }
+    });
+
     return () => {
       listener.removeListener('update-status');
+      netUnsubscribe();
     };
-  }, []);
-
-  const reload = useCallback(() => {
-    console.log('Reload web runner');
-    eventEmitter.emit('update-status', 'reloading');
-    resetHandlerMaps();
-    webRef?.current?.reload();
-  }, [webRef]);
+  }, [reload]);
 
   return (
     <WebRunnerContext.Provider
@@ -67,6 +87,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
         isReady,
         eventEmitter,
         reload,
+        isInternetReachable,
         clearBackgroundServiceTimeout,
         setBackgroundServiceTimeout,
       }}>
