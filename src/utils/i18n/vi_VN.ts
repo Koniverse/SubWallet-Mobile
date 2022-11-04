@@ -271,6 +271,9 @@ export const vi = {
     scanAddress: 'Scan Address',
     qrSigner: 'Address QR  Signer',
     readonlyAccount: 'Address Readonly Account',
+    addAccount: 'Add Account',
+    createNewAccount: 'Create New Account',
+    importAccount: 'Import Account',
   },
   tabName: {
     crypto: 'Crypto',

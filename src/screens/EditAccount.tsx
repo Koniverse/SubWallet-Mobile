@@ -1,20 +1,24 @@
-import React, { useCallback } from 'react';
-import { SubScreenContainer } from 'components/SubScreenContainer';
-import { useNavigation } from '@react-navigation/native';
-import { EditAccountProps, RootNavigationProps } from 'routes/index';
-import { StyleProp, View } from 'react-native';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { EditAccountInputText } from 'components/EditAccountInputText';
-import { editAccount } from '../messaging';
-import { toShort } from 'utils/index';
-import { IconButton } from 'components/IconButton';
-import { CopySimple, FileText, Key, Trash } from 'phosphor-react-native';
-import { useToast } from 'react-native-toast-notifications';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useNavigation } from '@react-navigation/native';
 import { ActionItem } from 'components/ActionItem';
-import { ColorMap } from 'styles/color';
-import i18n from 'utils/i18n/i18n';
+import { EditAccountInputText } from 'components/EditAccountInputText';
+import { IconButton } from 'components/IconButton';
+import { SubScreenContainer } from 'components/SubScreenContainer';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
+import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
+import { CopySimple, FileText, Key, Trash } from 'phosphor-react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleProp, View } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
+import { EditAccountProps, RootNavigationProps } from 'routes/index';
+import { ColorMap } from 'styles/color';
+import { SIGN_MODE } from 'types/signer';
+import i18n from 'utils/i18n/i18n';
+import { toShort } from 'utils/index';
+import { editAccount } from '../messaging';
 
 const editAccountAddressItem: StyleProp<any> = {
   borderRadius: 5,
@@ -46,6 +50,12 @@ export const EditAccount = ({
     [currentAddress],
   );
 
+  const account = useGetAccountByAddress(currentAddress);
+  const SubIcon = useGetAvatarSubIcon(account, 32);
+  const signMode = useGetAccountSignModeByAddress(currentAddress);
+
+  const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
+
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
     onSubmitForm: _saveChange,
   });
@@ -73,7 +83,9 @@ export const EditAccount = ({
   return (
     <SubScreenContainer navigation={navigation} title={i18n.title.editAccount}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
-        <View style={{ paddingVertical: 24 }}>{<SubWalletAvatar address={currentAddress} size={76} />}</View>
+        <View style={{ paddingVertical: 24 }}>
+          <SubWalletAvatar address={currentAddress} size={76} SubIcon={SubIcon} hasBorder={false} />
+        </View>
 
         <EditAccountInputText
           ref={formState.refs.accountName}
@@ -101,20 +113,25 @@ export const EditAccount = ({
           />
         </View>
 
-        <ActionItem
-          style={{ width: '100%', marginBottom: 4 }}
-          title={i18n.settings.exportPrivateKey}
-          icon={Key}
-          hasRightArrow
-          onPress={onExportPrivateKey}
-        />
-        <ActionItem
-          style={{ width: '100%', marginBottom: 16 }}
-          title={i18n.title.exportJson}
-          icon={FileText}
-          hasRightArrow
-          onPress={onExportJson}
-        />
+        {canExport && (
+          <>
+            <ActionItem
+              style={{ width: '100%', marginBottom: 4 }}
+              title={i18n.settings.exportPrivateKey}
+              icon={Key}
+              hasRightArrow
+              onPress={onExportPrivateKey}
+            />
+            <ActionItem
+              style={{ width: '100%', marginBottom: 16 }}
+              title={i18n.title.exportJson}
+              icon={FileText}
+              hasRightArrow
+              onPress={onExportJson}
+            />
+          </>
+        )}
+
         <ActionItem
           style={{ width: '100%' }}
           title={i18n.title.removeAccount}
