@@ -19,10 +19,9 @@ import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
-import reformatAddress from 'utils/index';
+import reformatAddress, { isNftTransferSupported } from 'utils/index';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 
@@ -168,7 +167,7 @@ const NftDetail = ({
   const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
   useHandleGoHome({ goHome: goHome, networkKey: data.chain || chain || '', networkFocusRedirect: false });
 
-  const networkJson = useGetNetworkJson(data.chain as string) || {};
+  const networkJson = useGetNetworkJson(data.chain as string);
   const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
@@ -197,14 +196,14 @@ const NftDetail = ({
   }, [show]);
 
   const handleClickTransfer = useCallback(() => {
-    if (!canSend || !data.chain) {
+    if (!networkJson || !canSend || !data.chain) {
       show(i18n.common.anErrorHasOccurred);
 
       return;
     }
 
-    if (SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.indexOf(data.chain) <= -1 && !networkJson.isEthereum) {
-      show(`Transferring is not supported for ${data.chain.toUpperCase()} network`);
+    if (!isNftTransferSupported(data.chain, networkJson)) {
+      show(i18n.common.transferNotSupportedForNetwork);
 
       return;
     }
@@ -215,17 +214,7 @@ const NftDetail = ({
       collectionId: collectionRawId,
       senderAddress: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
     });
-  }, [
-    canSend,
-    data,
-    networkJson.isEthereum,
-    networkJson.ss58Format,
-    navigation,
-    collectionImage,
-    collectionRawId,
-    currentAccount?.address,
-    show,
-  ]);
+  }, [canSend, data, networkJson, navigation, collectionImage, collectionRawId, currentAccount?.address, show]);
 
   const handleClickInfoIcon = useCallback((url?: string) => {
     if (!url) {

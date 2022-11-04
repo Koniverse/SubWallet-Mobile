@@ -50,7 +50,7 @@ export const TokensTab = ({
         <LeftIconButton
           icon={SlidersHorizontal}
           title={i18n.common.manageTokenList}
-          onPress={() => navigation.navigate('EvmTokens')}
+          onPress={() => navigation.navigate('CustomTokenSetting')}
         />
       </View>
     );

@@ -188,6 +188,7 @@ export const vi = {
     dApp: 'DApp',
     cancelTask: 'Cancel task',
     type: ' type',
+    transferNotSupportedForNetwork: 'Transfer is not supported for this network.',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -246,7 +247,7 @@ export const vi = {
     collators: 'Select a collator',
     dApps: 'Select a dApp',
     configureToken: 'Configure Token',
-    importEvmToken: 'Import EVM Token',
+    importToken: 'Import Token',
     validatorDetail: 'Validator detail',
     stakeAction: 'Stake',
     unStakeAction: 'Unstake',
@@ -293,7 +294,7 @@ export const vi = {
     cancel: 'Cancel',
     importNft: 'Import NFT',
   },
-  importEvmToken: {
+  importToken: {
     contractAddress: 'Contract Address',
     tokenName: 'Token Name',
     chain: 'Chain',
@@ -533,6 +534,7 @@ export const vi = {
     invalidPrefix: 'Invalid prefix received, expected',
     invalidQRCode: 'Invalid QR code',
     cannotExtractAddress: "Can't extract address from the QR code",
+    enableAtLeast1Network: 'Please enable at least 1 network',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

@@ -8,7 +8,7 @@ import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { isValidAddress } from '@subwallet/extension-koni-base/utils';
+import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 
 interface InputProps {
   label: string;
@@ -86,7 +86,7 @@ const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
   if (isEthereum) {
     return isEthereumAddress(address);
   } else {
-    return isValidAddress(address);
+    return isValidSubstrateAddress(address);
   }
 };
 

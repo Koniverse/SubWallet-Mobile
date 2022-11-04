@@ -52,7 +52,7 @@ const NftCollectionList = () => {
         rightIconOption={{
           icon: Plus,
           onPress: () => {
-            navigation.navigate('ImportEvmNft');
+            navigation.navigate('ImportNft');
           },
         }}
         refreshControl={
