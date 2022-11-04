@@ -5,7 +5,7 @@ import { EditAccountInputText } from 'components/EditAccountInputText';
 import { IconButton } from 'components/IconButton';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
@@ -35,12 +35,15 @@ export const EditAccount = ({
     params: { address: currentAddress, name },
   },
 }: EditAccountProps) => {
-  const formConfig = {
-    accountName: {
-      name: i18n.common.accountName,
-      value: name,
-    },
-  };
+  const formConfig = useMemo(
+    (): FormControlConfig => ({
+      accountName: {
+        name: i18n.common.accountName,
+        value: name,
+      },
+    }),
+    [name],
+  );
   const navigation = useNavigation<RootNavigationProps>();
   const _saveChange = useCallback(
     (formState: FormState) => {
@@ -62,26 +65,37 @@ export const EditAccount = ({
 
   const toast = useToast();
 
-  const copyToClipboard = (text: string) => {
-    Clipboard.setString(text);
-    toast.hideAll();
-    toast.show(i18n.common.copiedToClipboard);
-  };
+  const copyToClipboard = useCallback(
+    (text: string) => {
+      Clipboard.setString(text);
+      toast.hideAll();
+      toast.show(i18n.common.copiedToClipboard);
+    },
+    [toast],
+  );
 
-  const onExportPrivateKey = () => {
+  const onExportPrivateKey = useCallback(() => {
     navigation.navigate('ExportAccount', { address: currentAddress, exportType: 'privateKey' });
-  };
+  }, [currentAddress, navigation]);
 
-  const onExportJson = () => {
+  const onExportJson = useCallback(() => {
     navigation.navigate('ExportAccount', { address: currentAddress, exportType: 'json' });
-  };
+  }, [currentAddress, navigation]);
 
-  const onRemoveAccount = () => {
+  const onRemoveAccount = useCallback(() => {
     navigation.navigate('RemoveAccount', { address: currentAddress });
-  };
+  }, [currentAddress, navigation]);
+
+  const onSave = useCallback(() => {
+    _saveChange(formState);
+  }, [_saveChange, formState]);
 
   return (
-    <SubScreenContainer navigation={navigation} title={i18n.title.editAccount}>
+    <SubScreenContainer
+      navigation={navigation}
+      title={i18n.title.editAccount}
+      rightButtonTitle={i18n.common.save}
+      onPressRightIcon={onSave}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
         <View style={{ paddingVertical: 24 }}>
           <SubWalletAvatar address={currentAddress} size={76} SubIcon={SubIcon} hasBorder={false} />
