@@ -6,7 +6,7 @@ import { HistoryTab } from 'screens/Home/Crypto/tabs/HistoryTab';
 import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { StyleProp, View } from 'react-native';
-import { getNetworkLogo, getTokenBalanceKey } from 'utils/index';
+import { getNetworkLogo, getTokenBalanceKey, toShort } from 'utils/index';
 import Text from 'components/Text';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
@@ -36,7 +36,7 @@ const tokenHistoryHeaderTitleStyle: StyleProp<any> = {
   ...FontSemiBold,
   color: ColorMap.light,
   paddingLeft: 4,
-  maxWidth: 150,
+  maxWidth: 120,
 };
 
 const renderTokenHistoryHeaderContent = (
@@ -60,7 +60,7 @@ const renderTokenHistoryHeaderContent = (
             color: ColorMap.light,
             paddingLeft: 4,
           }}>
-          {`(${selectedTokenDisplayName})`}
+          {`(${toShort(selectedTokenDisplayName, 5, 5)})`}
         </Text>
       </View>
     );

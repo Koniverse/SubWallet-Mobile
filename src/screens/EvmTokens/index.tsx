@@ -105,7 +105,9 @@ export const Tokens = () => {
       <EvmTokenItem
         item={item}
         isEditMode={isEditMode}
-        onPress={() => navigation.navigate('ConfigureToken', { contractAddress: item.smartContract })}
+        onPress={() =>
+          navigation.navigate('ConfigureToken', { contractAddress: `${item.smartContract}-${item.chain}-${item.type}` })
+        }
         handleSelected={handleSelected}
         handleUnselected={handleUnselected}
       />

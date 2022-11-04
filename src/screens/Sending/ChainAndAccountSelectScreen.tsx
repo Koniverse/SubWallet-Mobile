@@ -2,9 +2,7 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { createRef, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
-import { OriginChainSelectField } from 'screens/Sending/Field/OriginChainSelectField';
 import i18n from 'utils/i18n/i18n';
-import { DestinationChainSelectField } from 'screens/Sending/Field/DestinationChainSelectField';
 import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
@@ -19,12 +17,12 @@ import { RootState } from 'stores/index';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { checkAddress } from '@polkadot/phishing';
-import { ColorMap } from 'styles/color';
-import { ArrowDown } from 'phosphor-react-native';
 import { NetworkSelectField } from 'components/Field/NetworkSelect';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { TokenSelect } from 'screens/TokenSelect';
 import { TokenItemType } from 'types/ui-types';
+import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
+import { getNetworkPrefix } from 'screens/Sending/Confirmation';
 
 interface Props {
   senderAddress: string;
@@ -48,24 +46,6 @@ const WarningStyle: StyleProp<any> = {
   marginBottom: 8,
 };
 
-const ArrowDownWrapperStyle: StyleProp<any> = {
-  position: 'absolute',
-  top: 0,
-  bottom: 4,
-  left: 21,
-  width: 34,
-  justifyContent: 'center',
-};
-
-const ArrowDownStyle: StyleProp<any> = {
-  width: 34,
-  height: 34,
-  borderRadius: 17,
-  backgroundColor: ColorMap.dark1,
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
 export const ChainAndAccountSelectScreen = ({
   senderAddress,
   originChain,
@@ -85,6 +65,7 @@ export const ChainAndAccountSelectScreen = ({
 }: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const inputAddressRef = createRef();
+  const originAccountPrefix = getNetworkPrefix(originChain, networkMap);
   const [originChainModalVisible, setOriginChainModalVisible] = useState<boolean>(false);
   const [destinationChainModalVisible, setDestinationChainModalVisible] = useState<boolean>(false);
   const [tokenListModalVisible, setTokenListModalVisible] = useState<boolean>(false);
@@ -92,7 +73,8 @@ export const ChainAndAccountSelectScreen = ({
   const [recipientPhish, setRecipientPhish] = useState<string | null>(null);
   const isSameAddress =
     !!receiveAddress && !!senderAddress && receiveAddress === senderAddress && originChain === destinationChain;
-  const checkOriginChainAndSenderIdType = !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
+  const checkOriginChainAndSenderIdType =
+    isAccountAll(senderAddress) || !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
   const checkDestinationChainAndReceiverIdType =
     !!receiveAddress && !!networkMap[destinationChain].isEthereum === isEthereumAddress(receiveAddress);
 
@@ -168,32 +150,23 @@ export const ChainAndAccountSelectScreen = ({
     <View style={{ ...sharedStyles.layoutContainer }}>
       <ScrollView style={{ ...ScrollViewStyle }}>
         <View style={{ flex: 1 }}>
-          <View style={{ position: 'relative', marginBottom: 12 }}>
-            <OriginChainSelectField
-              outerStyle={{ marginBottom: 4, paddingLeft: 58 }}
-              label={i18n.sendAssetScreen.originChain}
-              networkKey={originChain}
-              onPressField={() => setOriginChainModalVisible(true)}
-            />
-
-            <DestinationChainSelectField
-              outerStyle={{ marginBottom: 4, paddingLeft: 58 }}
-              label={i18n.sendAssetScreen.destinationChain}
-              networkKey={destinationChain}
-              onPressField={() => setDestinationChainModalVisible(true)}
-            />
-            <View style={ArrowDownWrapperStyle}>
-              <View style={ArrowDownStyle}>
-                <ArrowDown size={16} color={ColorMap.disabled} weight={'bold'} />
-              </View>
-            </View>
-          </View>
+          <ChainSelectContainer
+            disabled={false}
+            originChain={originChain}
+            destinationChain={destinationChain}
+            onPressOriginChainField={() => setOriginChainModalVisible(true)}
+            onPressDestinationChainField={() => setDestinationChainModalVisible(true)}
+          />
 
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setTokenListModalVisible(true)}>
             <NetworkSelectField showIcon networkKey={originChain} label={'Token'} value={originToken} />
           </TouchableOpacity>
 
-          <SendFromAddressField senderAddress={senderAddress} onChangeAddress={onChangeSenderAddress} />
+          <SendFromAddressField
+            senderAddress={senderAddress}
+            onChangeAddress={onChangeSenderAddress}
+            networkPrefix={originAccountPrefix}
+          />
 
           <InputAddress
             ref={inputAddressRef}
@@ -283,7 +256,7 @@ export const ChainAndAccountSelectScreen = ({
         qrModalVisible={isShowQrModalVisible}
         onPressCancel={() => setShowQrModalVisible(false)}
         onChangeAddress={text => onUpdateInputAddress(text)}
-        scanMessage={i18n.common.toSendFund}
+        scanMessage={i18n.common.toSendAsset}
       />
     </View>
   );

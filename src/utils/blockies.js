@@ -3,8 +3,10 @@
 (function (global, factory) {
   exports && typeof exports === 'object' && typeof module !== 'undefined'
     ? factory(exports)
-    : typeof define === 'function' && define.amd
-    ? define(['exports'], factory)
+    : // eslint-disable-next-line no-undef
+    typeof define === 'function' && define.amd
+    ? // eslint-disable-next-line no-undef
+      define(['exports'], factory)
     : factory((global.blockies = {}));
 })(this, exports => {
   'use strict';

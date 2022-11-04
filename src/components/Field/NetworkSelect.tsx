@@ -53,7 +53,7 @@ export const NetworkSelectField = ({ networkKey, disabled, showIcon, outerStyle,
     <FieldBase {...fieldBase} outerStyle={outerStyle}>
       <View style={blockContentStyle}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {getNetworkLogo(networkKey, 20)}
+          {getNetworkLogo(value || networkKey, 20, networkKey)}
           <Text style={getTextStyle(!!disabled)}>{value || getNetworkName(networkKey, networkMap)}</Text>
         </View>
 

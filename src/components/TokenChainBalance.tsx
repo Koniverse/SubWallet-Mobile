@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-import { getNetworkLogo } from 'utils/index';
+import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
@@ -72,7 +72,7 @@ export const TokenChainBalance = ({
           {getNetworkLogo(logoKey, 40, networkKey)}
           <View style={chainBalanceMetaWrapper}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
-              <Text style={textStyle}>{displayedSymbol}</Text>
+              <Text style={textStyle}>{toShort(displayedSymbol, 5, 5)}</Text>
               {!!networkDisplayName && (
                 <>
                   <Text style={textStyle}> (</Text>

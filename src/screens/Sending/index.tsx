@@ -36,6 +36,7 @@ import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainAndAccountSelectScreen } from 'screens/Sending/ChainAndAccountSelectScreen';
 import { TypeAmountScreen } from 'screens/Sending/TypeAmountScreen';
+import { getOutputValuesFromString } from 'screens/Sending/Field/SendAssetInputBalance';
 
 const ViewStep = {
   SEND_FUND: 1,
@@ -89,9 +90,12 @@ export const SendFund = ({
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
-  const [rawAmount, setRawAmount] = useState<string | undefined>(undefined);
+  const [{ rawAmount, rawAmountWithDecimals }, setRawAmount] = useState<{
+    rawAmount: string | undefined;
+    rawAmountWithDecimals: string | undefined;
+  }>({ rawAmount: undefined, rawAmountWithDecimals: undefined });
   const [senderAddress, setSenderAddress] = useState<string>(currentAccountAddress);
-  const showedNetworks = useShowedNetworks(senderAddress, accounts);
+  const showedNetworks = useShowedNetworks(currentAccountAddress === 'ALL' ? 'ALL' : senderAddress, accounts);
   const originChainOptions = useMemo(() => {
     return showedNetworks
       .filter(item => chainRegistry[item])
@@ -104,7 +108,7 @@ export const SendFund = ({
   const [originToken, setOriginToken] = useState<string>(
     selectedToken || networkMap[firstOriginChain].nativeToken || 'Token',
   );
-  const tokenList = useTokenOptions(senderAddress);
+  const tokenList = useTokenOptions(currentAccountAddress === 'ALL' ? currentAccountAddress : senderAddress);
   const [originChain, setOriginChain] = useState<string>(firstOriginChain);
   const senderFreeBalance = useFreeBalance(originChain, senderAddress, originToken);
   const balanceFormat: BalanceFormatType = getBalanceFormat(originChain, originToken, chainRegistry);
@@ -137,7 +141,7 @@ export const SendFund = ({
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
-  const amount = rawAmount !== undefined ? Math.floor(Number(rawAmount)) : 0;
+  const amount = rawAmountWithDecimals !== undefined ? Math.floor(Number(rawAmountWithDecimals)) : 0;
 
   const _onChangeOriginChain = (currentOriginChain: string) => {
     const currentDestinationChainOptions = getDestinationChainOptions(currentOriginChain, networkMap);
@@ -148,7 +152,11 @@ export const SendFund = ({
       tokenList,
       currentDestinationChainOptions[0].value,
     );
-    setOriginToken(currentSupportedMainTokens[0].symbol);
+
+    const firstNativeToken = currentSupportedMainTokens.find(item => item.isMainToken);
+    if (currentSupportedMainTokens && currentSupportedMainTokens.length) {
+      setOriginToken(firstNativeToken ? firstNativeToken.symbol : currentSupportedMainTokens[0].symbol);
+    }
   };
 
   const _onChangeDestinationChain = useCallback(
@@ -204,7 +212,7 @@ export const SendFund = ({
   useEffect(() => {
     let isSync = true;
 
-    if (receiveAddress && rawAmount) {
+    if (receiveAddress && rawAmountWithDecimals) {
       if (originChain === selectedDestinationChain) {
         _doCheckTransfer(
           false,
@@ -248,7 +256,7 @@ export const SendFund = ({
     _doCheckTransfer,
     canToggleAll,
     senderAddress,
-    rawAmount,
+    rawAmountWithDecimals,
     receiveAddress,
     originToken,
     originChain,
@@ -292,20 +300,23 @@ export const SendFund = ({
 
   useEffect(() => {
     let isSync = true;
-
-    transferCheckSupporting({ networkKey: originChain, token: originToken })
-      .then(res => {
-        if (isSync) {
-          setTransferSupport([res.supportTransfer, res.supportTransferAll]);
-        }
-      })
-      .catch(e => console.log(e));
+    if (originChain === selectedDestinationChain) {
+      transferCheckSupporting({ networkKey: originChain, token: originToken })
+        .then(res => {
+          if (isSync) {
+            setTransferSupport([res.supportTransfer, res.supportTransferAll]);
+          }
+        })
+        .catch(e => console.log('e----------', e));
+    } else {
+      setTransferSupport([true, false]);
+    }
 
     return () => {
       isSync = false;
       setTransferSupport([null, null]);
     };
-  }, [originChain, originToken]);
+  }, [originChain, originToken, selectedDestinationChain]);
 
   useEffect(() => {
     if (currentViewStep === ViewStep.SEND_FUND && inputBalanceRef.current) {
@@ -316,15 +327,20 @@ export const SendFund = ({
   }, [currentViewStep, backupAmount, inputBalanceRef.current]);
 
   const onChangeAmount = (val?: string) => {
-    setRawAmount(val);
+    const [outputValue, isValid] = getOutputValuesFromString(val || '', balanceFormat[0]);
+    setRawAmount({ rawAmount: val, rawAmountWithDecimals: isValid ? outputValue : undefined });
   };
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.TYPE_AMOUNT) {
+      if (inputBalanceRef && inputBalanceRef.current) {
+        // @ts-ignore
+        setRawAmount({ rawAmount: undefined, rawAmountWithDecimals: undefined });
+      }
       setCurrentStep(ViewStep.SEND_FUND);
     } else if (currentViewStep === ViewStep.CONFIRMATION) {
       setCurrentStep(ViewStep.TYPE_AMOUNT);
-      setBackupAmount(rawAmount);
+      setBackupAmount(rawAmountWithDecimals);
     } else {
       navigation.goBack();
     }
@@ -391,9 +407,18 @@ export const SendFund = ({
     }
   };
 
-  const _onChangeSelectedToken = useCallback((tokenValueStr: string) => {
-    setOriginToken(tokenValueStr);
-  }, []);
+  const _onChangeSelectedToken = useCallback(
+    (tokenValueStr: string) => {
+      const currentBalanceFormat = getBalanceFormat(originChain, tokenValueStr, chainRegistry);
+      const [outputValue, isValid] = getOutputValuesFromString(rawAmount || '', currentBalanceFormat[0]);
+      setOriginToken(tokenValueStr);
+      setRawAmount(prevState => ({
+        ...prevState,
+        rawAmountWithDecimals: isValid ? outputValue : undefined,
+      }));
+    },
+    [chainRegistry, originChain, rawAmount],
+  );
 
   const _onChangeSenderAddress = (address: string) => {
     setSenderAddress(address);
@@ -405,7 +430,7 @@ export const SendFund = ({
         <ContainerWithSubHeader
           onPressBack={onPressBack}
           disabled={isBusy}
-          title={currentViewStep === ViewStep.SEND_FUND ? i18n.title.sendAsset : i18n.common.amount}>
+          title={currentViewStep === ViewStep.TYPE_AMOUNT ? i18n.common.amount : i18n.title.sendAsset}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
               <ChainAndAccountSelectScreen
@@ -430,11 +455,12 @@ export const SendFund = ({
             {currentViewStep === ViewStep.TYPE_AMOUNT && (
               <TypeAmountScreen
                 amount={amount}
+                showedNetworks={showedNetworks}
                 originToken={originToken}
                 originChain={originChain}
                 senderAddress={senderAddress}
                 si={si}
-                rawAmount={rawAmount}
+                rawAmount={rawAmountWithDecimals}
                 originTokenList={originTokenList}
                 canToggleAll={canToggleAll}
                 balanceFormat={balanceFormat}

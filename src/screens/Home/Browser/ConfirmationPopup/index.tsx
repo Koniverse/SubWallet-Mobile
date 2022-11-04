@@ -58,7 +58,10 @@ export const ConfirmationPopup = () => {
   } = useConfirmations();
   const navigation = useNavigation<RootNavigationProps>();
   const [confirmationIndex, setConfirmationIndex] = useState<number>(0);
-  const currentConfirmationItem = confirmationItems[confirmationIndex];
+  const filteredConfirmationItems = confirmationItems.filter(
+    item => item.type !== 'addTokenRequest' && item.type !== 'addNetworkRequest',
+  );
+  const currentConfirmationItem = filteredConfirmationItems[confirmationIndex];
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const isLocked = useSelector((state: RootState) => state.appState.isLocked);
   const isArrowLeftDisabled = !(confirmationIndex > 0);

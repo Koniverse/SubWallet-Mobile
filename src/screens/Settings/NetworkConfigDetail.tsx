@@ -168,8 +168,10 @@ export const NetworkConfigDetail = ({
     <>
       <FlatListScreen<Record<string, string>>
         onPressBack={() => navigation.goBack()}
+        leftButtonDisabled={loading}
         rightIconOption={{
           icon: Plus,
+          disabled: loading,
           onPress: () => setModalVisible(true),
         }}
         items={getAllProviders(networkInfo)}

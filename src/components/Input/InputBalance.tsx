@@ -1,18 +1,25 @@
-import { TextInput, View } from 'react-native';
+import { FlatList, StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import Text from '../Text';
+import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import { FontBold, FontSize1, FontSize3, sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import { SiDef } from '@polkadot/util/types';
+import { formatBalance } from '@polkadot/util';
+import { CaretDown } from 'phosphor-react-native';
+import { SubWalletModal } from 'components/SubWalletModal';
+import { ModalSelectItem } from 'components/ModalSelectItem';
+import i18n from 'utils/i18n/i18n';
 
 export interface InputBalanceProps {
   onChange?: (val?: string) => void;
   decimals: number;
+  siSymbol: string;
   maxValue?: string;
   placeholder?: string;
   disable?: boolean;
   si: SiDef;
-  value: string;
+  onChangeSi: (si: SiDef) => void;
 }
 
 const isValidInput = (input: string) => {
@@ -56,6 +63,18 @@ const getBaseTextStyle = (inputValue: string) => {
   };
 };
 
+const unitModalContentWrapper: StyleProp<any> = {
+  alignItems: 'center',
+  width: '100%',
+};
+
+const unitModalTitle: StyleProp<any> = {
+  ...sharedStyles.mediumText,
+  ...FontBold,
+  color: ColorMap.light,
+  paddingBottom: 16,
+};
+
 const getOutputValuesFromString: (input: string, power: number) => [string, boolean] = (
   input: string,
   power: number,
@@ -76,6 +95,13 @@ const getInputValuesFromString: (input: string, power: number) => string = (inpu
   return valueBigN.toFixed();
 };
 
+function getSiOptions(symbol: string, decimals?: number): { text: string; value: string }[] {
+  return formatBalance.getOptions(decimals).map(({ power, text, value }): { text: string; value: string } => ({
+    text: power === 0 ? symbol : text,
+    value,
+  }));
+}
+
 const getInputStyle = (inputValue: string, props: InputBalanceProps, siPower: number) => {
   const baseStyle = getBaseTextStyle(inputValue);
   const { maxValue, decimals } = props;
@@ -89,12 +115,26 @@ const getInputStyle = (inputValue: string, props: InputBalanceProps, siPower: nu
   return {
     ...baseStyle,
     color: isValid ? ColorMap.light : ColorMap.danger,
+    paddingRight: 10,
+    minWidth: 40,
+  };
+};
+
+const getDropdownTextStyle = (inputValue: string) => {
+  const baseStyle = getBaseTextStyle(inputValue);
+
+  return {
+    ...baseStyle,
+    color: ColorMap.light,
+    paddingRight: 4,
   };
 };
 
 const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
-  const { onChange, decimals, placeholder, si, disable, value } = props;
-  const [inputValue, setInputValue] = useState<string>(value);
+  const { onChange, decimals, siSymbol, placeholder, onChangeSi, si, disable } = props;
+  const [inputValue, setInputValue] = useState<string>('');
+  const [isShowTokenList, setShowTokenList] = useState<boolean>(false);
+  const siOptions = useMemo(() => getSiOptions(siSymbol, decimals), [decimals, siSymbol]);
 
   const onChangeWithSi = useCallback(
     (input: string, curSi: SiDef) => {
@@ -112,6 +152,17 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
     onChangeWithSi(input, si);
   };
 
+  const onSelectSiUnit = useCallback(
+    (siUnit: string): void => {
+      const curSi = formatBalance.findSi(siUnit);
+
+      onChangeSi(curSi);
+      onChangeWithSi(inputValue, curSi);
+      setShowTokenList(false);
+    },
+    [onChangeSi, onChangeWithSi, inputValue],
+  );
+
   useImperativeHandle(ref, () => ({
     onChange: (input?: string) => {
       if (!input) {
@@ -123,11 +174,24 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
     },
   }));
 
+  // @ts-ignore
+  const renderItem = ({ item }) => {
+    return (
+      <ModalSelectItem
+        key={item.value}
+        label={item.text}
+        isSelected={!!props.si && si.value === item.value}
+        onPress={() => {
+          onSelectSiUnit(item.value);
+        }}
+      />
+    );
+  };
+
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
       <TextInput
         autoCorrect={false}
-        autoFocus={true}
         style={getInputStyle(inputValue, props, si.power)}
         keyboardType={'decimal-pad'}
         defaultValue={inputValue}
@@ -137,6 +201,21 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         placeholderTextColor={ColorMap.disabled}
         editable={!disable}
       />
+
+      <TouchableOpacity
+        style={{ flexDirection: 'row', alignItems: 'center' }}
+        onPress={() => setShowTokenList(true)}
+        disabled={disable}>
+        <Text style={getDropdownTextStyle(inputValue)}>{si.text === 'Unit' ? siSymbol : si.text}</Text>
+        <CaretDown size={20} weight={'bold'} color={ColorMap.disabled} />
+      </TouchableOpacity>
+
+      <SubWalletModal modalVisible={isShowTokenList} onChangeModalVisible={() => setShowTokenList(false)}>
+        <View style={unitModalContentWrapper}>
+          <Text style={unitModalTitle}>{i18n.title.selectUnit}</Text>
+          <FlatList style={{ width: '100%', maxHeight: 500 }} data={siOptions} renderItem={renderItem} />
+        </View>
+      </SubWalletModal>
     </View>
   );
 };

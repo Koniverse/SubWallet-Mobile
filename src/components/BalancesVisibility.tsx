@@ -8,6 +8,8 @@ import { toggleBalancesVisibility } from '../messaging';
 import { sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import { ColorMap } from 'styles/color';
+import { getInputValueStyle } from 'components/TransferValue';
+import { toShort } from 'utils/index';
 
 type Props = {
   value: BigN;
@@ -27,7 +29,7 @@ const textStyle: StyleProp<any> = {
 export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Props) => {
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [isDisabled, setDisabled] = useState<boolean>(false);
-
+  const valueStr = value.toFixed(4) + toShort(symbol, 6, 0);
   const _toggleBalances = async () => {
     setDisabled(true);
     await toggleBalancesVisibility(v => {
@@ -39,7 +41,12 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Pr
   return (
     <TouchableOpacity onPress={() => _toggleBalances()} style={wrapperStyle} disabled={isDisabled}>
       {isShowBalance ? (
-        <BalanceVal value={value} startWithSymbol={startWithSymbol} symbol={symbol} />
+        <BalanceVal
+          value={value}
+          startWithSymbol={startWithSymbol}
+          symbol={symbol}
+          balanceValTextStyle={getInputValueStyle(valueStr)}
+        />
       ) : (
         <Text style={textStyle}>******</Text>
       )}

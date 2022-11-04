@@ -104,7 +104,11 @@ export const ImageLogosMap = {
   encointer: require('./76.Encointer.png'),
   btc: require('./64.BTC.png'),
   eth: require('./77.Ethereum.png'),
+  ethereum: require('./77.Ethereum.png'),
+  ethereum_goerli: require('./77.Ethereum.png'),
   bnb: require('./62.BNB.png'),
+  binance: require('./62.BNB.png'),
+  binance_test: require('./62.BNB.png'),
   usdt: require('./106.USDT.png'),
   usdc: require('./105.USDC.png'),
   busd: require('./65.BUSD.png'),
@@ -192,5 +196,6 @@ export const ImageLogosMap = {
   gear_testnet: require('./127.Gear.png'),
   bit: require('./128.BIT.png'),
   tanganika: require('./122.dataHighway.png'),
+  arctic_testnet: require('./131.Arctic.png'),
   default: require('./73.Default.png'),
 };

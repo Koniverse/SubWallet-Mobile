@@ -11,6 +11,7 @@ import { IconButton } from 'components/IconButton';
 
 interface Props extends FieldBaseProps {
   address: string;
+  name?: string;
   networkPrefix?: number;
   showRightIcon?: boolean;
   showAvatar?: boolean;
@@ -18,6 +19,7 @@ interface Props extends FieldBaseProps {
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   placeholder?: string;
   disable?: boolean;
+  disabled?: boolean;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -56,9 +58,13 @@ export const AddressField = ({
   disable = false,
   rightIcon: RightIcon,
   placeholder,
+  name,
+  disabled,
   ...fieldBase
 }: Props) => {
   const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
+  const textLength = name ? 6 : 10;
+  const textColor = showRightIcon ? ColorMap.light : ColorMap.disabled;
 
   return (
     <FieldBase {...fieldBase}>
@@ -66,9 +72,18 @@ export const AddressField = ({
         {!!showAvatar && <SubWalletAvatar address={address} size={18} style={avatarStyle} />}
         {!!placeholder && <Text style={addressStyle}>{placeholder}</Text>}
         {!placeholder && (
-          <Text style={[addressStyle, { color: showRightIcon ? ( disable ? ColorMap.disabled : ColorMap.light) : ColorMap.disabled }]}>
-            {toShort(formattedAddress, 10, 10)}
-          </Text>
+          <View style={{ flexDirection: 'row', flex: 1, paddingRight: 16 }}>
+            {name && (
+              <Text numberOfLines={1} style={[addressStyle, { color: textColor, maxWidth: 100 }]}>
+                {name}
+              </Text>
+            )}
+            {name && <Text style={[addressStyle, { color: textColor }]}> (</Text>}
+            <Text style={[addressStyle, { color: textColor }]}>
+              {toShort(formattedAddress, textLength, textLength)}
+            </Text>
+            {name && <Text style={[addressStyle, { color: textColor }]}>)</Text>}
+          </View>
         )}
         {showRightIcon && (
           <IconButton
@@ -76,6 +91,7 @@ export const AddressField = ({
             style={infoIconStyle}
             icon={RightIcon || Info}
             onPress={onPressRightIcon}
+            disabled={disabled}
           />
         )}
       </View>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AddressField } from 'components/Field/Address';
-import { CaretRight } from 'phosphor-react-native';
+import { CaretDown } from 'phosphor-react-native';
 import { AccountSelect } from 'screens/AccountSelect';
 import { TouchableOpacity } from 'react-native';
 import useGetAccountList from 'hooks/screen/useGetAccountList';
@@ -14,13 +14,22 @@ interface Props {
   senderAddress: string;
   onChangeAddress: (address: string) => void;
   networkKey?: string;
+  disabled?: boolean;
+  networkPrefix?: number;
 }
 
-export const SendFromAddressField = ({ senderAddress, networkKey, onChangeAddress }: Props) => {
-  const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
+export const SendFromAddressField = ({
+  senderAddress,
+  networkKey,
+  onChangeAddress,
+  disabled,
+  networkPrefix,
+}: Props) => {
+  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
   const isAllAccount = isAccountAll(currentAccountAddress);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const accountList = useGetAccountList(networkKey);
+  const selectedAccount = accounts.find(item => item.address === senderAddress);
 
   const onPressAddressField = () => {
     if (isAllAccount) {
@@ -35,13 +44,19 @@ export const SendFromAddressField = ({ senderAddress, networkKey, onChangeAddres
 
   return (
     <>
-      <TouchableOpacity onPress={onPressAddressField} activeOpacity={BUTTON_ACTIVE_OPACITY} disabled={!isAllAccount}>
+      <TouchableOpacity
+        onPress={onPressAddressField}
+        activeOpacity={BUTTON_ACTIVE_OPACITY}
+        disabled={disabled || !isAllAccount}>
         <AddressField
           placeholder={isAllAccount && senderAddress === 'ALL' ? 'Please select an account' : undefined}
           address={senderAddress}
+          name={selectedAccount ? selectedAccount.name : undefined}
+          networkPrefix={networkPrefix}
           label={i18n.sendAssetScreen.fromAccount}
-          rightIcon={CaretRight}
-          showRightIcon={isAllAccount}
+          rightIcon={CaretDown}
+          showRightIcon={!disabled && isAllAccount}
+          disabled={true}
         />
       </TouchableOpacity>
 

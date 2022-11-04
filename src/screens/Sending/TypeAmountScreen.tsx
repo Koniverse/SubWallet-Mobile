@@ -9,7 +9,6 @@ import {
 } from 'styles/sharedStyles';
 import { getBalanceWithSi, getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
-import { InputBalance } from 'components/Input/InputBalance';
 import { BalanceToUsd } from 'components/BalanceToUsd';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
@@ -20,10 +19,11 @@ import { BalanceFormatType, TokenItemType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
 import { BN_TEN } from 'utils/chainBalances';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { CaretDown } from 'phosphor-react-native';
 import { TokenSelect } from 'screens/TokenSelect';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
+import { SendAssetInputBalance } from 'screens/Sending/Field/SendAssetInputBalance';
 
 interface Props {
   amount: number;
@@ -43,6 +43,7 @@ interface Props {
   onChangeSelectedToken: (tokenValueStr: string) => void;
   senderAddress: string;
   originTokenList: TokenItemType[];
+  showedNetworks: string[];
 }
 
 const WarningStyle: StyleProp<any> = {
@@ -82,6 +83,7 @@ function getUseMaxButtonTextStyle(disabled: boolean) {
 
 export const TypeAmountScreen = ({
   senderFreeBalance,
+  showedNetworks,
   amount,
   balanceFormat,
   rawAmount,
@@ -99,9 +101,10 @@ export const TypeAmountScreen = ({
   originTokenList,
   senderAddress,
 }: Props) => {
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
+  const tokenGroupMap = useTokenGroup(showedNetworks);
+  const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
   const [tokenListModalVisible, setTokenListModalVisible] = useState<boolean>(false);
-  const tokenPrice = tokenPriceMap[originToken.toLowerCase()] || 0;
+  const tokenPrice = tokenBalanceKeyPriceMap[`${originChain}|${originToken}`] || 0;
   const reformatAmount = new BigN(rawAmount || '0').div(BN_TEN.pow(balanceFormat[0]));
   const amountToUsd = reformatAmount.multipliedBy(new BigN(tokenPrice));
   const amountGtAvailableBalance =
@@ -117,12 +120,12 @@ export const TypeAmountScreen = ({
     <>
       <ScrollView style={ContainerHorizontalPadding} contentContainerStyle={{ flex: 1 }}>
         <TouchableOpacity style={SelectTokenButtonStyle} onPress={() => setTokenListModalVisible(true)}>
-          {getNetworkLogo(originChain, 20)}
+          {getNetworkLogo(originToken || originChain, 20, originChain)}
           <Text style={SelectTokenTextStyle}>{originToken}</Text>
           <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} />
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center', paddingTop: 56 }}>
-          <InputBalance
+          <SendAssetInputBalance
             value={
               rawAmount !== undefined ? getBalanceWithSi(amount.toString(), balanceFormat[0], si, originToken)[0] : ''
             }

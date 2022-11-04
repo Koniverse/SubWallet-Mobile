@@ -42,7 +42,7 @@ export type RootStackParamList = {
   DAppAccess: undefined;
   DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
-  ImportEvmNft: undefined;
+  ImportEvmNft: { payload: ConfirmationsQueue['addTokenRequest'][0] | undefined };
   TransferNft: TransferNftParams;
   EvmTokens: undefined;
   ConfigureToken: { contractAddress: string };
