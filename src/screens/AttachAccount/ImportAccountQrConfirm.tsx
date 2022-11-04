@@ -223,7 +223,7 @@ const ImportAccountQrConfirm = ({
                 label={i18n.common.accountAddress}
                 showAvatar={false}
                 rightIcon={Copy}
-                disabled={true}
+                disableText={true}
                 onPressRightIcon={copyToClipboard}
               />
               <EditAccountInputText

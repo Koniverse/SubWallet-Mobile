@@ -56,7 +56,7 @@ export const SendFromAddressField = ({
           label={i18n.sendAssetScreen.fromAccount}
           rightIcon={CaretDown}
           showRightIcon={!disabled && isAllAccount}
-          disabled={true}
+          disableText={true}
         />
       </TouchableOpacity>
 
