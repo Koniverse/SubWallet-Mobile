@@ -20,7 +20,7 @@ import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
@@ -209,7 +209,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
           <TextField disabled={true} label={i18n.common.decimals} text={formState.data.decimals} />
 
-          <QrScannerScreen
+          <AddressScanner
             qrModalVisible={isShowQrModalVisible}
             onPressCancel={() => setShowQrModalVisible(false)}
             onChangeAddress={(text: string) => onUpdateContractAddress(text)}

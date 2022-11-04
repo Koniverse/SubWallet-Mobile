@@ -1,3 +1,4 @@
+import { Warning } from 'components/Warning';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
@@ -48,6 +49,10 @@ const valueStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
   ...FontMedium,
   color: ColorMap.disabled,
+};
+
+const WarningStyle: StyleProp<any> = {
+  marginVertical: 8,
 };
 
 const CONFIRMATION_TYPE = 'evmSignatureRequest';
@@ -176,12 +181,13 @@ export const EvmSignConfirmation = ({
   return (
     <ConfirmationBase
       headerProps={{ title: i18n.title.authorizeRequestTitle, url }}
-      isShowPassword={true}
+      isShowPassword={!account?.isReadOnly}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
+        isSubmitButtonDisabled: account?.isReadOnly,
       }}
       detailModalVisible={modalVisible}
       onPressViewDetail={() => setModalVisible(true)}
@@ -192,6 +198,7 @@ export const EvmSignConfirmation = ({
           {i18n.common.approveRequestMessage}
         </Text>
         <AccountInfoField name={account?.name || ''} address={account?.address || ''} />
+        {!!account?.isReadOnly && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />}
       </View>
     </ConfirmationBase>
   );

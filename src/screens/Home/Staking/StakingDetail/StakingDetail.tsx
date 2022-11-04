@@ -5,6 +5,7 @@ import { BalanceVal } from 'components/BalanceVal';
 import { BalanceField } from 'components/Field/Balance';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
+import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import { StakingDataType } from 'hooks/types';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
@@ -18,7 +19,6 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { getStakingInputValueStyle } from 'utils/text';
 import useGoHome from 'hooks/screen/useGoHome';
 
@@ -82,7 +82,7 @@ const StakingDetail = ({
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
-  const isAllAccount = useIsAccountAll();
+  const isCanSign = useCurrentAccountCanSign();
 
   const { data: stakingData, priceMap } = useFetchStaking();
 
@@ -127,8 +127,8 @@ const StakingDetail = ({
     <ContainerWithSubHeader
       onPressBack={goBack}
       title={i18n.title.stakingDetail}
-      rightButtonTitle={!isAllAccount ? i18n.stakingScreen.stakingDetail.actions.more : undefined}
-      onPressRightIcon={!isAllAccount ? openModal : undefined}>
+      rightButtonTitle={isCanSign ? i18n.stakingScreen.stakingDetail.actions.more : undefined}
+      onPressRightIcon={isCanSign ? openModal : undefined}>
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
           <View style={[CenterWrapperStyle, { paddingTop: 24 }]}>
@@ -191,7 +191,7 @@ const StakingDetail = ({
             si={formatBalance.findSi('-')}
           />
         </ScrollView>
-        {!isAllAccount && (
+        {isCanSign && (
           <SubmitButton
             style={{ marginTop: 16, marginHorizontal: 16 }}
             title={i18n.stakingScreen.stakingDetail.actions.stake}

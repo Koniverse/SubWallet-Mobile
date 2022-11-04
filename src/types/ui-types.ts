@@ -1,6 +1,6 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import React from 'react';
-import { IconProps } from 'phosphor-react-native';
+import { Icon, IconProps } from 'phosphor-react-native';
 import BigN from 'bignumber.js';
 
 export type AccountType = 'ALL' | 'ETHEREUM' | 'SUBSTRATE';
@@ -55,6 +55,12 @@ export type AccountActionType = {
   onCLickButton: () => void;
 };
 
+export type AccountActionGroup = {
+  title: string;
+  items: AccountActionType[];
+  key: string;
+};
+
 export interface TokenItemType {
   networkKey: string;
   networkDisplayName: string;
@@ -89,3 +95,8 @@ export interface UseViewStepType {
 export type FilterOptsType = Record<string, string>;
 
 export type SortFunctionInterface<T> = (a: T, b: T) => number;
+
+export interface AvatarSubIcon {
+  Icon: Icon;
+  size: number;
+}

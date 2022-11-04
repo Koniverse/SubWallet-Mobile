@@ -2,7 +2,7 @@ import { DelegationItem } from '@subwallet/extension-base/background/KoniTypes';
 import DelegationSelectItem from 'components/Staking/DelegationSelectItem';
 import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 import React, { useCallback, useMemo } from 'react';
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListRenderItemInfo } from 'react-native';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';

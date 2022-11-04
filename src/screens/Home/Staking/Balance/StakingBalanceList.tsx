@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
-import useIsAccountAll from 'hooks/screen/useIsAllAccount';
+import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
 import React, { useCallback, useMemo } from 'react';
@@ -32,7 +32,7 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
 
 const StakingBalanceList = () => {
   const { data, loading, priceMap } = useFetchStaking();
-  const isAllAccount = useIsAccountAll();
+  const isCanSign = useCurrentAccountCanSign();
   const navigation = useNavigation<HomeNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
 
@@ -71,7 +71,7 @@ const StakingBalanceList = () => {
   }, [navigation]);
 
   const rightIconOption = useMemo(() => {
-    if (isAllAccount) {
+    if (!isCanSign) {
       return undefined;
     }
 
@@ -79,7 +79,7 @@ const StakingBalanceList = () => {
       icon: Plus,
       onPress: handlePressStartStaking,
     };
-  }, [handlePressStartStaking, isAllAccount]);
+  }, [handlePressStartStaking, isCanSign]);
 
   return (
     <>
@@ -94,7 +94,7 @@ const StakingBalanceList = () => {
         loading={loading}
         rightIconOption={rightIconOption}
         afterListItem={
-          !isAllAccount ? (
+          isCanSign ? (
             <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
               <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
             </View>

@@ -1,6 +1,6 @@
 import { PasswordField } from 'components/Field/Password';
 import { SubmitButton } from 'components/SubmitButton';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback } from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';

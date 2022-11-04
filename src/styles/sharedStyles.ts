@@ -120,6 +120,10 @@ export const FlatListScreenPaddingTop: StyleProp<any> = {
   paddingTop: Platform.OS === 'android' ? 4 : STATUS_BAR_HEIGHT + 4,
 };
 
+const mb8: StyleProp<any> = {
+  marginBottom: 8,
+};
+
 export const sharedStyles = StyleSheet.create({
   smallText,
   mainText,
@@ -129,6 +133,7 @@ export const sharedStyles = StyleSheet.create({
   blockContent,
   layoutContainer,
   container,
+  mb8,
 
   inputAreaStyle: {
     ...textInput,

@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { HomeNavigationProps } from 'routes/home';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import AuthTransaction from 'screens/TransferNft/AuthTransaction';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
@@ -275,7 +275,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                 />
               </View>
 
-              <QrScannerScreen
+              <AddressScanner
                 qrModalVisible={isShowQrModalVisible}
                 onPressCancel={closeQrScan}
                 onChangeAddress={text => onUpdateInputAddress(text)}

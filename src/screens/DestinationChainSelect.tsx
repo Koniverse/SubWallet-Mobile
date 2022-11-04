@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';

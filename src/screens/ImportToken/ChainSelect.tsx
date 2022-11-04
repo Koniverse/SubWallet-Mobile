@@ -1,5 +1,5 @@
 import React from 'react';
-import { SubWalletFullSizeModal } from 'components/SubWalletFullSizeModal';
+import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { Item } from 'react-native-picker-select';
 import { ListRenderItemInfo } from 'react-native';

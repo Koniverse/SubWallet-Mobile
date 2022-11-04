@@ -6,6 +6,7 @@ import useStoreStakingReward from 'hooks/store/useStoreStakingReward';
 import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
@@ -72,7 +73,6 @@ import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
-import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
 import { CustomTokenSetting } from 'screens/Tokens';
 
 const viewContainerStyle: StyleProp<any> = {
@@ -311,7 +311,7 @@ export const App = () => {
                           component={CompoundActionScreen}
                           options={{ gestureEnabled: false }}
                         />
-                        <Stack.Screen name="ImportAccountQr" component={ImportAccountQrScreen} />
+                        <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
                       </Stack.Group>
                       <Stack.Group
                         screenOptions={{

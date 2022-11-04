@@ -1,3 +1,4 @@
+import { Warning } from 'components/Warning';
 import React, { useMemo, useState } from 'react';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHookType } from 'hooks/types';
@@ -8,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { Text, View } from 'react-native';
+import { StyleProp, Text, View } from 'react-native';
 import { Bytes } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Bytes';
 import { getNetworkJsonByGenesisHash } from 'utils/index';
 import { Extrinsic } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Extrinsic';
@@ -29,6 +30,10 @@ export interface SignData {
 }
 
 const CONFIRMATION_TYPE = 'signingRequest';
+
+const WarningStyle: StyleProp<any> = {
+  marginVertical: 8,
+};
 
 export const SubstrateSignConfirmation = ({
   payload: { request, id: confirmationId, url, account },
@@ -75,7 +80,7 @@ export const SubstrateSignConfirmation = ({
         title: i18n.title.authorizeRequestTitle,
         url,
       }}
-      isShowPassword
+      isShowPassword={!account.isReadOnly}
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}
@@ -85,6 +90,7 @@ export const SubstrateSignConfirmation = ({
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
+        isSubmitButtonDisabled: account.isReadOnly,
       }}>
       <View style={{ paddingHorizontal: 16 }}>
         <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
@@ -96,6 +102,7 @@ export const SubstrateSignConfirmation = ({
           networkKey={targetNetwork?.key}
           networkPrefix={targetNetwork?.ss58Format}
         />
+        {!!account.isReadOnly && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />}
       </View>
     </ConfirmationBase>
   );

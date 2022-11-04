@@ -1,5 +1,5 @@
 import React from 'react';
-import { GestureResponderEvent, StyleProp, View } from 'react-native';
+import { GestureResponderEvent, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import Text from '../components/Text';
 import { SpaceStyle } from 'styles/space';
 import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
@@ -35,18 +35,23 @@ function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): Sty
   };
 }
 
-const headerTitle: StyleProp<any> = {
+const headerTitleContainer: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   flex: 1,
   justifyContent: 'center',
+  paddingHorizontal: 56,
 };
 
-const subHeaderTitle: StyleProp<any> = {
+const headerTitleWrapperStyle: StyleProp<ViewStyle> = {
+  flex: 1,
+};
+
+const subHeaderTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mediumText,
   ...FontSize4,
   ...FontBold,
+  textAlign: 'center',
   color: ColorMap.light,
-  paddingHorizontal: 56,
 };
 
 export const SubHeader = ({
@@ -73,10 +78,12 @@ export const SubHeader = ({
       {headerContent ? (
         headerContent()
       ) : (
-        <View style={headerTitle}>
-          <Text numberOfLines={1} style={subHeaderTitle}>
-            {title}
-          </Text>
+        <View style={headerTitleContainer}>
+          <View style={headerTitleWrapperStyle}>
+            <Text numberOfLines={1} style={subHeaderTextStyle}>
+              {title}
+            </Text>
+          </View>
         </View>
       )}
 

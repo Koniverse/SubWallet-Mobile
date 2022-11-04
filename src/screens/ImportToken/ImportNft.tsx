@@ -10,7 +10,7 @@ import { upsertCustomToken, validateCustomToken } from '../../messaging';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
@@ -255,7 +255,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           disabled={isDisableAddNFT}
         />
 
-        <QrScannerScreen
+        <AddressScanner
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
           onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}

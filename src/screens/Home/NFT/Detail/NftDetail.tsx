@@ -8,7 +8,6 @@ import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
-import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
 import React, { useCallback, useMemo } from 'react';
@@ -19,6 +18,7 @@ import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { accountCanSign, findAccountByAddress, getAccountSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress, { isNftTransferSupported } from 'utils/index';
@@ -152,8 +152,6 @@ const NftDetail = ({
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
 
-  const isAccountAll = useIsAccountAll();
-
   const collection = useMemo(() => {
     return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
   }, [collectionId, nftCollectionList]);
@@ -171,17 +169,14 @@ const NftDetail = ({
   const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
-    if (!currentAccount) {
-      return false;
+    if (data.owner) {
+      const ownerAccount = findAccountByAddress(accounts, data.owner);
+      const signMode = getAccountSignMode(ownerAccount);
+      return accountCanSign(signMode);
     } else {
-      if (isAccountAll) {
-        const accountList = accounts.map(acc => acc.address);
-        return !!accountList.find(address => data.owner && reformatAddress(data.owner, 42, false) === address);
-      } else {
-        return !!data.owner && reformatAddress(data.owner, 42, false) === currentAccount.address;
-      }
+      return false;
     }
-  }, [currentAccount, isAccountAll, accounts, data.owner]);
+  }, [accounts, data.owner]);
 
   const show = useCallback(
     (message: string) => {

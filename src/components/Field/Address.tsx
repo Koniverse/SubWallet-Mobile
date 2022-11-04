@@ -14,10 +14,12 @@ interface Props extends FieldBaseProps {
   name?: string;
   networkPrefix?: number;
   showRightIcon?: boolean;
+  showAvatar?: boolean;
   onPressRightIcon?: () => void;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   placeholder?: string;
-  disabled?: boolean;
+  disableRightIcon?: boolean;
+  disableText?: boolean;
 }
 
 const addressStyle: StyleProp<any> = {
@@ -52,20 +54,22 @@ export const AddressField = ({
   networkPrefix,
   onPressRightIcon,
   showRightIcon = true,
+  showAvatar = true,
+  disableText = false,
   rightIcon: RightIcon,
   placeholder,
   name,
-  disabled,
+  disableRightIcon,
   ...fieldBase
 }: Props) => {
   const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
   const textLength = name ? 6 : 10;
-  const textColor = showRightIcon ? ColorMap.light : ColorMap.disabled;
+  const textColor = showRightIcon ? (disableText ? ColorMap.disabled : ColorMap.light) : ColorMap.disabled;
 
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <SubWalletAvatar address={address} size={18} style={avatarStyle} />
+        {!!showAvatar && <SubWalletAvatar address={address} size={18} style={avatarStyle} />}
         {!!placeholder && <Text style={addressStyle}>{placeholder}</Text>}
         {!placeholder && (
           <View style={{ flexDirection: 'row', flex: 1, paddingRight: 16 }}>
@@ -87,7 +91,7 @@ export const AddressField = ({
             style={infoIconStyle}
             icon={RightIcon || Info}
             onPress={onPressRightIcon}
-            disabled={disabled}
+            disabled={disableRightIcon}
           />
         )}
       </View>

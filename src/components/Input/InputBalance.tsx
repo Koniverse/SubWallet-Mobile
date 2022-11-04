@@ -7,7 +7,7 @@ import BigN from 'bignumber.js';
 import { SiDef } from '@polkadot/util/types';
 import { formatBalance } from '@polkadot/util';
 import { CaretDown } from 'phosphor-react-native';
-import { SubWalletModal } from 'components/SubWalletModal';
+import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { ModalSelectItem } from 'components/ModalSelectItem';
 import i18n from 'utils/i18n/i18n';
 

@@ -1,3 +1,4 @@
+import { Warning } from 'components/Warning';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   ConfirmationsQueue,
@@ -55,6 +56,10 @@ const itemWrapperStyle: StyleProp<any> = {
   paddingBottom: 10,
   borderRadius: 5,
   marginBottom: 8,
+};
+
+const WarningStyle: StyleProp<any> = {
+  marginVertical: 8,
 };
 
 const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: string) => void) => {
@@ -221,12 +226,13 @@ export const EvmSendTransactionConfirmation = ({
         title: i18n.title.sendTransaction,
         url: url,
       }}
-      isShowPassword={true}
+      isShowPassword={!senderAccount?.isReadOnly}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
+        isSubmitButtonDisabled: senderAccount?.isReadOnly,
       }}
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
@@ -244,6 +250,10 @@ export const EvmSendTransactionConfirmation = ({
         />
 
         {payload.to && renderReceiveAccount(payload.to, copyToClipboard)}
+
+        {!!senderAccount?.isReadOnly && (
+          <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />
+        )}
 
         {
           <Toast

@@ -1,4 +1,5 @@
-import React, { createRef, useEffect, useState } from 'react';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import React, { createRef, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -7,7 +8,7 @@ import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { OriginChainSelect } from 'screens/OriginChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
-import { QrScannerScreen } from 'screens/QrScannerScreen';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { DestinationChainSelect } from 'screens/DestinationChainSelect';
 import { requestCameraPermission } from 'utils/validators';
 import { RESULTS } from 'react-native-permissions';
@@ -76,13 +77,25 @@ export const ChainAndAccountSelectScreen = ({
     isAccountAll(senderAddress) || !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
   const checkDestinationChainAndReceiverIdType =
     !!receiveAddress && !!networkMap[destinationChain].isEthereum === isEthereumAddress(receiveAddress);
+
+  const senderAccount = useGetAccountByAddress(senderAddress);
+
+  const isReadOnly = useMemo((): boolean => {
+    if (!senderAccount) {
+      return false;
+    } else {
+      return !!senderAccount.isReadOnly;
+    }
+  }, [senderAccount]);
+
   const isValidTransferInfo =
     !isAccountAll(senderAddress) &&
     checkOriginChainAndSenderIdType &&
     checkDestinationChainAndReceiverIdType &&
     !!receiveAddress &&
     !isSameAddress &&
-    !recipientPhish;
+    !recipientPhish &&
+    !isReadOnly;
 
   useEffect(() => {
     let isSync = true;
@@ -166,6 +179,8 @@ export const ChainAndAccountSelectScreen = ({
 
           {isSameAddress && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.isNotSameAddress} />}
 
+          {isReadOnly && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />}
+
           {!checkOriginChainAndSenderIdType && (
             <Warning
               isDanger
@@ -235,7 +250,7 @@ export const ChainAndAccountSelectScreen = ({
         externalTokenOptions={originTokenList}
       />
 
-      <QrScannerScreen
+      <AddressScanner
         networkKey={destinationChain}
         token={originToken}
         qrModalVisible={isShowQrModalVisible}
