@@ -23,6 +23,7 @@ import { getId } from '@subwallet/extension-base/utils/getId';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 900000; //15*60*1000
+const ACCEPTABLE_RESPONSE_TIME = 30000;
 
 const getJsInjectContent = (showLog?: boolean) => {
   let injectedJS = `
@@ -125,6 +126,7 @@ class WebRunnerHandler {
   lastTimeResponse?: number;
   lastActiveTime?: number;
   pingTimeout?: NodeJS.Timeout;
+  outOfResponseTimeTimeout?: NodeJS.Timeout;
   pingInterval?: NodeJS.Timer;
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
@@ -198,6 +200,11 @@ class WebRunnerHandler {
   stopPing() {
     this.pingInterval && clearInterval(this.pingInterval);
     this.pingTimeout && clearTimeout(this.pingTimeout);
+    this.clearOutOfResponseTimeTimeout();
+  }
+
+  clearOutOfResponseTimeTimeout() {
+    this.outOfResponseTimeTimeout && clearTimeout(this.outOfResponseTimeTimeout);
   }
 
   async serverReady() {
@@ -243,6 +250,13 @@ class WebRunnerHandler {
     if (isWebRunnerAlive(eventData)) {
       // Save the lastTimeResponse to check it later
       this.lastTimeResponse = new Date().getTime();
+      this.clearOutOfResponseTimeTimeout();
+
+      if (AppState.currentState === 'active') {
+        this.outOfResponseTimeTimeout = setTimeout(() => {
+          this.eventEmitter?.emit('update-status', 'out_of_response_time');
+        }, ACCEPTABLE_RESPONSE_TIME);
+      }
     }
 
     listenMessage(JSON.parse(eventData.nativeEvent.data), this.eventEmitter, (unHandleData: Message['data']) => {
@@ -254,18 +268,16 @@ class WebRunnerHandler {
         const statusData = response as { status: WebRunnerStatus };
         const webViewStatus = statusData?.status;
 
-        // ping is used to check web-runner is alive, not put into web-runner state
-        if (webViewStatus !== 'ping') {
-          this.runnerState.status = webViewStatus;
-          this.eventEmitter?.emit('update-status', webViewStatus);
-          console.debug(`### Web Runner Status: ${webViewStatus}`);
-          if (webViewStatus === 'crypto_ready') {
-            setupBackgroundService(clearBackgroundServiceTimeout, setBackgroundServiceTimeout);
-            this.startPing();
-          } else {
-            this.stopPing();
-          }
+        this.runnerState.status = webViewStatus;
+        this.eventEmitter?.emit('update-status', webViewStatus);
+        console.debug(`### Web Runner Status: ${webViewStatus}`);
+        if (webViewStatus === 'crypto_ready') {
+          setupBackgroundService(clearBackgroundServiceTimeout, setBackgroundServiceTimeout);
+          this.startPing();
+        } else {
+          this.stopPing();
         }
+
         return true;
       } else if (id === '-1') {
         const info = response as { url: string; version: string; userAgent: string };
