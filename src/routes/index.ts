@@ -75,6 +75,7 @@ export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'Bro
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
 export type ImportTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportToken'>;
+export type ImportNftProps = NativeStackScreenProps<RootStackParamList, 'ImportNft'>;
 export type StakeActionProps = NativeStackScreenProps<RootStackParamList, 'StakeAction'>;
 export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeAction'>;
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;

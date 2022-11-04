@@ -7,7 +7,7 @@ import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from '../../messaging';
-import { RootNavigationProps } from 'routes/index';
+import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { QrScannerScreen } from 'screens/QrScannerScreen';
@@ -33,25 +33,27 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   marginTop: 10,
 };
 
-const ImportNft = () => {
+const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
   const chainOptions = useGetContractSupportedChains();
+  const payload = routeParams?.payload;
+  const nftInfo = payload?.payload;
   const formConfig = {
     smartContract: {
       require: true,
       name: i18n.importEvmNft.smartContract,
-      value: '',
+      value: nftInfo?.smartContract || '',
     },
     chain: {
       require: true,
       name: i18n.common.network,
-      value: chainOptions[0].value as string,
+      value: nftInfo?.chain || chainOptions[0]?.value || '',
     },
     collectionName: {
       require: true,
       name: i18n.importEvmNft.nftCollectionName,
-      value: '',
+      value: nftInfo?.name || '',
     },
   };
   const [loading, setLoading] = useState(false);

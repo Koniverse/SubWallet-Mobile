@@ -6,5 +6,5 @@ import { useSelector } from 'react-redux';
 export default function useGetNetworkJson(networkKey: string): NetworkJson {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
 
-  return useMemo((): NetworkJson => networkMap[networkKey], [networkKey, networkMap]);
+  return useMemo((): NetworkJson => networkMap[networkKey] || {}, [networkKey, networkMap]);
 }

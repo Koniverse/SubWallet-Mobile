@@ -26,11 +26,7 @@ import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
-export const ImportToken = ({
-  route: {
-    params: { payload },
-  },
-}: ImportTokenProps) => {
+export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainOptions = useGetContractSupportedChains();
   const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
@@ -38,6 +34,7 @@ export const ImportToken = ({
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   useHandlerHardwareBackPress(isBusy);
+  const payload = routeParams?.payload;
   const tokenInfo = payload?.payload;
   const formConfig = {
     contractAddress: {
@@ -47,7 +44,7 @@ export const ImportToken = ({
     },
     chain: {
       name: i18n.common.network,
-      value: tokenInfo?.chain || chainOptions[0].value || '',
+      value: tokenInfo?.chain || chainOptions[0]?.value || '',
     },
     symbol: {
       name: i18n.common.symbol,
@@ -130,10 +127,9 @@ export const ImportToken = ({
                 onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
               } else {
                 onUpdateErrors('contractAddress')(undefined);
+                onChangeValue('symbol')(resp.symbol);
                 if (resp.decimals) {
                   onChangeValue('decimals')(String(resp.decimals));
-                } else {
-                  onChangeValue('symbol')(resp.symbol);
                 }
               }
             }
