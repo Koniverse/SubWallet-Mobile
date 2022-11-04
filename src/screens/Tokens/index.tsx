@@ -40,8 +40,6 @@ export const CustomTokenSetting = () => {
     [toast],
   );
 
-  console.log('customTokens', customTokens);
-
   const handleSelected = useCallback(
     (data: DeleteCustomTokenParams) => {
       setSelectedTokens([...selectedTokens, data]);
