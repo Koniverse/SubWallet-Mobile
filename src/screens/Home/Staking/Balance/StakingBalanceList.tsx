@@ -3,7 +3,6 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
-import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
 import React, { useCallback, useMemo } from 'react';

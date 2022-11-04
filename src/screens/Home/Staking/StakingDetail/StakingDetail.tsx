@@ -19,7 +19,6 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import useIsAccountAll from 'hooks/screen/useIsAllAccount';
 import { getStakingInputValueStyle } from 'utils/text';
 import useGoHome from 'hooks/screen/useGoHome';
 

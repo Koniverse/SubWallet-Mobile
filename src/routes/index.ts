@@ -2,7 +2,6 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AttachAccountStackParamList } from 'routes/account/attachAccount';
-import { ImportAccountQrStackParamList } from 'routes/account/importAccountQr';
 import { HomeStackParamList } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { ClaimStakeActionStackParamList } from 'routes/staking/claimAction';

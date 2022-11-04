@@ -1,5 +1,4 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ImportAccountQrStackParamList } from 'routes/account/importAccountQr';
 import { QrAccount } from 'types/account/qr';
 
 export type AttachAccountStackParamList = {
@@ -12,7 +11,4 @@ export type NavigationProps = NativeStackScreenProps<AttachAccountStackParamList
 export type StakeActionNavigationProps = NavigationProps['navigation'];
 
 export type AttachQrSignerConfirmProps = NativeStackScreenProps<AttachAccountStackParamList, 'AttachQrSignerConfirm'>;
-export type ImportAccountQrConfirmProps = NativeStackScreenProps<
-  ImportAccountQrStackParamList,
-  'ImportAccountQrConfirm'
->;
+export type ImportAccountQrConfirmProps = NativeStackScreenProps<AttachAccountStackParamList, 'ImportAccountQrConfirm'>;

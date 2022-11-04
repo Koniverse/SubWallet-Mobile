@@ -18,7 +18,6 @@ interface Props extends FieldBaseProps {
   onPressRightIcon?: () => void;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   placeholder?: string;
-  disable?: boolean;
   disabled?: boolean;
 }
 
@@ -55,7 +54,6 @@ export const AddressField = ({
   onPressRightIcon,
   showRightIcon = true,
   showAvatar = true,
-  disable = false,
   rightIcon: RightIcon,
   placeholder,
   name,
