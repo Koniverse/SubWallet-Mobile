@@ -18,7 +18,6 @@ import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { accountCanSign, findAccountByAddress, getAccountSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';

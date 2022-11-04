@@ -73,7 +73,6 @@ import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
-import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
 import { CustomTokenSetting } from 'screens/Tokens';
 
 const viewContainerStyle: StyleProp<any> = {
