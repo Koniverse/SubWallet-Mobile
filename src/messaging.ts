@@ -218,7 +218,7 @@ export const listenMessage = (
   const handlerId = data.id;
 
   if (isDappHandle(handlerId)) {
-    if (data.response !== undefined || data.subscription !== undefined) {
+    if (data.response !== undefined || data.subscription !== undefined || data.error !== undefined) {
       eventEmitter?.emit(handlerId, JSON.stringify(data));
     }
     return;
