@@ -10,7 +10,7 @@ import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
-import ImportEvmNft from 'screens/ImportToken/ImportEvmNft';
+import ImportNft from 'screens/ImportToken/ImportNft';
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
 import { THEME_PRESET } from 'styles/themes';
@@ -62,10 +62,9 @@ import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAp
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { AutoLockState } from 'utils/autoLock';
 import { getValidURL } from 'utils/browser';
-import { Tokens } from 'screens/EvmTokens';
-import { ConfigureToken } from 'screens/EvmTokens/ConfigureToken';
-import useStoreEvmToken from 'hooks/store/useStoreEvmToken';
-import { ImportEvmToken } from 'screens/ImportToken/ImportEvmToken';
+import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
+import useStoreCustomToken from 'hooks/store/useStoreCustomToken';
+import { ImportToken } from 'screens/ImportToken/ImportToken';
 import TransferNft from 'screens/TransferNft';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
@@ -74,6 +73,8 @@ import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
+import ImportAccountQrScreen from 'screens/ImportQr/ImportAccountQrScreen';
+import { CustomTokenSetting } from 'screens/Tokens';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -198,7 +199,7 @@ export const App = () => {
   useStoreCrowdloan();
   useStoreAuthUrls();
   useStoreConfirmation();
-  useStoreEvmToken();
+  useStoreCustomToken();
 
   // Staking
   useStoreStaking();
@@ -279,17 +280,17 @@ export const App = () => {
                         <Stack.Screen name="Security" component={Security} />
                         <Stack.Screen name="PinCode" component={PinCodeScreen} />
                         <Stack.Screen name="ExportAccount" component={ExportAccount} />
-                        <Stack.Screen name="EvmTokens" component={Tokens} />
+                        <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                         <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                         <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                         <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
-                        <Stack.Screen name="ImportEvmToken" component={ImportEvmToken} />
+                        <Stack.Screen name="ImportToken" component={ImportToken} />
                         <Stack.Screen
                           name="StakeAction"
                           component={StakeActionScreen}
                           options={{ gestureEnabled: false }}
                         />
-                        <Stack.Screen name="ImportEvmNft" component={ImportEvmNft} />
+                        <Stack.Screen name="ImportNft" component={ImportNft} />
                         <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                         <Stack.Screen
                           name="UnStakeAction"

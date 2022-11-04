@@ -26,7 +26,9 @@ import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
+  AccountExternalError,
   AccountsWithCurrentAddress,
+  ActiveCronAndSubscriptionMap,
   BalanceJson,
   BasicTxInfo,
   BasicTxResponse,
@@ -38,30 +40,34 @@ import {
   ConfirmationDefinitions,
   ConfirmationsQueue,
   ConfirmationType,
+  CronServiceType,
   CrowdloanJson,
   CurrentAccountInfo,
-  CustomEvmToken,
+  CustomToken,
+  CustomTokenJson,
   DelegationItem,
-  DeleteEvmTokenParams,
+  DeleteCustomTokenParams,
   DisableNetworkResponse,
   EvmNftSubmitTransaction,
   EvmNftTransaction,
-  EvmNftTransactionRequest,
   ExistingTuringCompoundTask,
-  EvmTokenJson,
   NetworkJson,
   NftCollection,
   NftJson,
+  NftTransactionRequest,
   NftTransactionResponse,
   NftTransferExtra,
   OptionInputAddress,
   PriceJson,
+  RequestAccountCreateExternalV2,
+  RequestAccountCreateWithSecretKey,
   RequestAuthorizationBlock,
   RequestAuthorizationPerSite,
   RequestCheckCrossChainTransfer,
   RequestCheckTransfer,
   RequestCrossChainTransfer,
   RequestFreeBalance,
+  RequestInitCronAndSubscription,
   RequestNftForceUpdate,
   RequestParseEVMTransactionInput,
   RequestSettingsType,
@@ -77,7 +83,9 @@ import {
   RequestTransferCheckSupporting,
   RequestTransferExistentialDeposit,
   ResponseAccountCreateSuriV2,
+  ResponseAccountCreateWithSecretKey,
   ResponseCheckCrossChainTransfer,
+  ResponseCheckPublicAndSecretKey,
   ResponseCheckTransfer,
   ResponseParseEVMTransactionInput,
   ResponsePrivateKeyValidateV2,
@@ -91,24 +99,20 @@ import {
   StakeWithdrawalParams,
   StakingJson,
   StakingRewardJson,
+  SubscriptionServiceType,
   SubstrateNftSubmitTransaction,
   SubstrateNftTransaction,
-  SubstrateNftTransactionRequest,
   SupportTransferResponse,
   ThemeTypes,
   TransactionHistoryItemType,
   TransferError,
+  TuringCancelStakeCompoundParams,
   TuringStakeCompoundParams,
   TuringStakeCompoundResp,
   UnbondingSubmitParams,
-  ValidateEvmTokenRequest,
+  ValidateCustomTokenRequest,
+  ValidateCustomTokenResponse,
   ValidateNetworkResponse,
-  TuringCancelStakeCompoundParams,
-  RequestAccountCreateExternalV2,
-  ResponseCheckPublicAndSecretKey,
-  AccountExternalError,
-  RequestAccountCreateWithSecretKey,
-  ResponseAccountCreateWithSecretKey,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
@@ -117,12 +121,6 @@ import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 import { WebRunnerStatus } from 'providers/contexts';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from './errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
-import {
-  ActiveCronAndSubscriptionMap,
-  CronServiceType,
-  RequestInitCronAndSubscription,
-  SubscriptionServiceType,
-} from '@subwallet/extension-base/background/KoniTypes';
 import { RequestCronAndSubscriptionAction } from 'types/background';
 
 interface Handler {
@@ -332,7 +330,6 @@ export async function saveCurrentAccountAddress(
 }
 
 export async function updateCurrentAccountAddress(address: string): Promise<boolean> {
-  // @ts-ignore
   return sendMessage('pri(accounts.updateCurrentAddress)', address);
 }
 
@@ -874,7 +871,7 @@ export async function makeCrossChainTransfer(
   return sendMessage('pri(accounts.crossChainTransfer)', request, callback);
 }
 
-export async function evmNftGetTransaction(request: EvmNftTransactionRequest): Promise<EvmNftTransaction> {
+export async function evmNftGetTransaction(request: NftTransactionRequest): Promise<EvmNftTransaction> {
   return sendMessage('pri(evmNft.getTransaction)', request);
 }
 
@@ -936,27 +933,27 @@ export async function resetDefaultNetwork(): Promise<boolean> {
   return sendMessage('pri(networkMap.resetDefault)', null);
 }
 
-export async function subscribeEvmToken(
-  callback: (data: EvmTokenJson) => void,
+export async function subscribeCustomToken(
+  callback: (data: CustomTokenJson) => void,
   handlerId?: string,
-): Promise<EvmTokenJson> {
-  return sendMessage('pri(evmTokenState.getSubscription)', null, callback, handlerId);
+): Promise<CustomTokenJson> {
+  return sendMessage('pri(customTokenState.getSubscription)', null, callback, handlerId);
 }
 
-export async function getEvmTokenState(): Promise<EvmTokenJson> {
-  return sendMessage('pri(evmTokenState.getEvmTokenState)', null);
+export async function getCustomTokenState(): Promise<CustomTokenJson> {
+  return sendMessage('pri(customTokenState.getCustomTokenState)', null);
 }
 
-export async function upsertEvmToken(data: CustomEvmToken): Promise<boolean> {
-  return sendMessage('pri(evmTokenState.upsertEvmTokenState)', data);
+export async function upsertCustomToken(data: CustomToken): Promise<boolean> {
+  return sendMessage('pri(customTokenState.upsertCustomTokenState)', data);
 }
 
-export async function deleteEvmTokens(data: DeleteEvmTokenParams[]) {
-  return sendMessage('pri(evmTokenState.deleteMany)', data);
+export async function deleteCustomTokens(data: DeleteCustomTokenParams[]) {
+  return sendMessage('pri(customTokenState.deleteMany)', data);
 }
 
-export async function validateEvmToken(data: ValidateEvmTokenRequest) {
-  return sendMessage('pri(evmTokenState.validateEvmToken)', data);
+export async function validateCustomToken(data: ValidateCustomTokenRequest): Promise<ValidateCustomTokenResponse> {
+  return sendMessage('pri(customTokenState.validateCustomToken)', data);
 }
 
 export async function transferCheckReferenceCount(request: RequestTransferCheckReferenceCount): Promise<boolean> {
@@ -984,9 +981,7 @@ export async function subscribeFreeBalance(
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 
-export async function substrateNftGetTransaction(
-  request: SubstrateNftTransactionRequest,
-): Promise<SubstrateNftTransaction> {
+export async function substrateNftGetTransaction(request: NftTransactionRequest): Promise<SubstrateNftTransaction> {
   return sendMessage('pri(substrateNft.getTransaction)', request);
 }
 
@@ -1197,4 +1192,8 @@ export async function createAccountWithSecret(
   request: RequestAccountCreateWithSecretKey,
 ): Promise<ResponseAccountCreateWithSecretKey> {
   return sendMessage('pri(accounts.create.withSecret)', request);
+}
+
+export async function wasmNftGetTransaction(request: NftTransactionRequest): Promise<SubstrateNftTransaction> {
+  return sendMessage('pri(wasmNft.getTransaction)', request);
 }

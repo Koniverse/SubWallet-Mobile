@@ -188,6 +188,7 @@ export const en = {
     dApp: 'DApp',
     cancelTask: 'Cancel task',
     type: ' type',
+    transferNotSupportedForNetwork: 'Transfer is not supported for this network.',
     importAlreadyAccount: 'Import already account',
     attachAccount: 'Attach Account',
     autoConnectDAppAfterCreating: 'Auto connect Dapp after creating',
@@ -252,7 +253,7 @@ export const en = {
     collators: 'Select a collator',
     dApps: 'Select a dApp',
     configureToken: 'Configure Token',
-    importEvmToken: 'Import EVM Token',
+    importToken: 'Import Token',
     validatorDetail: 'Validator detail',
     stakeAction: 'Stake',
     unStakeAction: 'Unstake',
@@ -309,7 +310,7 @@ export const en = {
     cancel: 'Cancel',
     importNft: 'Import NFT',
   },
-  importEvmToken: {
+  importToken: {
     contractAddress: 'Contract Address',
     tokenName: 'Token Name',
     chain: 'Chain',
@@ -549,6 +550,7 @@ export const en = {
     invalidPrefix: 'Invalid prefix received, expected',
     invalidQRCode: 'Invalid QR code',
     cannotExtractAddress: "Can't extract address from the QR code",
+    enableAtLeast1Network: 'Please enable at least 1 network',
     readOnly: 'You are using readonly account',
   },
   errorMessage: {
