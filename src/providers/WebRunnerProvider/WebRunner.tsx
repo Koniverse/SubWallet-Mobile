@@ -372,8 +372,10 @@ interface WebRunnerControlAction {
   payload?: Partial<WebRunnerGlobalState>;
 }
 
+const now = new Date().getTime();
+
 const URI_PARAMS =
-  '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}`;
+  '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
 const BASE_URI =
   Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
 
