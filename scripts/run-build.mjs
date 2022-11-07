@@ -72,7 +72,7 @@ async function uploadBuild(filePath, uploadName) {
 }
 
 await notifyStart();
-await runBuildIOS()
+// await runBuildIOS()
 await runBuildAndroid()
 await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/apk/universal.apk'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.apk`)
 await notifyFinish();
