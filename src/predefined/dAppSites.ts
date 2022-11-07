@@ -2,6 +2,66 @@
 
 import { PredefinedDApps } from 'types/browser';
 
+export const DAppIconMap: Record<string, string> = {
+  'kintsugi.interlay.io': 'https://kintsugi.interlay.io/kintsugi/apple-touch-icon.png',
+};
+
+export const DAppTitleMap: Record<string, string> = {
+  'singular.app': 'Singular: Kusama-native NFTs #RMRK #NFT',
+  'singular.rmrk.app': 'Singular: Kusama-native NFTs #RMRK #NFT',
+  'kanaria.rmrk.app': 'KANARIA',
+  'bifrost.app': 'Bifrost',
+  'portal.astar.network': 'Astar Portal - Astar & Shiden Network',
+  'app.subsocial.network': 'Subsocial - Decentralized social network on Polkadot & IPFS',
+  'polkadot.js.org': 'Polkadot/Substrate Portal',
+  'kodadot.xyz': 'KodaDot - Kusama NFT Market Explorer',
+  'dotmarketcap.com': 'DotMarketCap',
+  'app.parallel.fi': 'Parallel Finance',
+  'polkadot.polkassembly.io': 'Polkassembly',
+  'ksmcrowdloan.bit.country': 'Crowdloan - Bit.Country Pioneer Network',
+  'crowdloan.parallel.fi': 'Parallel Finance',
+  'kintsugi.interlay.io': 'Kintsugi',
+  'distribution.acala.network': 'Acala Distribution Query',
+  'dapp.robonomics.network': 'Dapp Robonomics network',
+  'apps.moonbeam.network': 'Moonbeam Network Apps',
+  'app.solarflare.io': 'Solarflare',
+  'app.solarbeam.io': 'Solarbeam',
+  'app.beamswap.io': 'Beamswap',
+  'app.stellaswap.com': 'StellaSwap - Leading Moonbeam DEX & DeFi Gateway',
+  'app.impossible.finance': 'Impossible Finance',
+  'clover.huckleberry.finance': 'Huckleberry',
+  'moonriver.huckleberry.finance': 'moonriver.huckleberry.finance',
+  'singular-rmrk2-dev.vercel.app': 'Singular: Kusama-native NFTs #RMRK #NFT',
+  'centrifuge.io': 'Centrifuge: Real World DeFi',
+  'dappradar.com': 'DappRadar - The World’s Dapp Store',
+  'tofunft.com': 'tofuNFT.com',
+  'app.arthswap.org': 'ArthSwap',
+  'cbridge.celer.network': 'cBridge',
+  'www.xdao.app': 'XDAO – MultiChain DAO Ecosystem',
+  'crowdloan.interlay.io': 'Interlay',
+  'kusama.lido.fi': 'Lido',
+  'polkadot.lido.fi': 'Lido',
+  'moonwell.fi': 'Moonwell Apollo',
+  'apps.litentry.com': 'Litmus Network',
+  'apps.darwinia.network': 'Darwinia',
+  'polkawatch.app': 'Polkawatch',
+  'damnedpiratessociety.io': 'Damned Pirates Society',
+  'staking.polkadot.network': 'Polkadot Staking Dashboard',
+  'marketplace.moonsama.com': 'Moonsama',
+  'game.evrloot.com': 'Join the Adventure -- evrloot',
+  'www.dtmb.xyz': 'DOWNTOWN MOONBEAM',
+  'portal.evolution.land': 'Evolution Land',
+  'app.basilisk.cloud': 'Basilisk',
+  'moonbeam.curve.fi': 'Curve.fi',
+  'app.gmordie.com': 'GM - Say it back!',
+  'pioneer.bit.country': 'Bit Country - Metaverses made of 1 and 0 bits',
+  'app.zeitgeist.pm': 'The Zeitgeist Prediction Markets App',
+  'ace.web3go.xyz': 'ACE',
+  'mf-raffle-game.web.app': 'Moonfit - Raffle game',
+  'dev-event.moonfit.xyz': 'Moonfit - Raffle game',
+  'connect.subwallet.app': 'SubWallet Connect',
+};
+
 export const predefinedDApps: PredefinedDApps = {
   categories: [
     {
@@ -71,8 +131,8 @@ export const predefinedDApps: PredefinedDApps = {
       url: 'https://portal.astar.network/',
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/dapps/color/Astar.png',
       categories: ['defi', 'staking', 'evm'],
-      isSupportSubstrateAccount: true,
-      isSupportEthereumAccount: true,
+      // isSupportSubstrateAccount: true,
+      // isSupportEthereumAccount: true,
     },
     {
       name: 'Subsocial App',
