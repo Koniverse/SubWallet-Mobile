@@ -10,6 +10,12 @@ export const findAccountByAddress = (accounts: AccountJson[], address: string): 
       return null;
     }
 
+    if (address === ALL_ACCOUNT_KEY) {
+      const result = accounts.find(account => account.address === originAddress);
+
+      return result || null;
+    }
+
     const originAddress = isEthereumAddress(address) ? address : encodeAddress(decodeAddress(address));
     const result = accounts.find(account => account.address === originAddress);
 
@@ -45,4 +51,8 @@ export const getAccountSignMode = (account: AccountJson | null | undefined): SIG
 
 export const accountCanSign = (signMode: SIGN_MODE): boolean => {
   return MODE_CAN_SIGN.includes(signMode);
+};
+
+export const filterNotReadOnlyAccount = (accounts: AccountJson[]): AccountJson[] => {
+  return accounts.filter(acc => !acc.isReadOnly);
 };

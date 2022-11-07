@@ -1,3 +1,4 @@
+import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
 import React from 'react';
 import { ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
@@ -13,7 +14,9 @@ interface Props {
 
 export const AccountSettingButton = ({ navigation }: Props) => {
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
+  const SubIcon = useGetAvatarSubIcon(currentAccount, 20);
 
   return (
     <TouchableOpacity
@@ -21,7 +24,7 @@ export const AccountSettingButton = ({ navigation }: Props) => {
         navigation.navigate('Settings');
       }}>
       <View>
-        <SubWalletAvatar address={currentAccountAddress || ''} size={32} />
+        <SubWalletAvatar address={currentAccountAddress || ''} size={32} SubIcon={SubIcon} />
         {!!isAccountWaiting && (
           <View
             style={{

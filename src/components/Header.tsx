@@ -11,6 +11,7 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
+import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
 
 export interface HeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -49,6 +50,7 @@ const actionButtonStyle: StyleProp<any> = {
 export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
+  const SubIcon = useGetAvatarSubIcon(currentAccount, 20);
 
   const _onPressSearchButton = () => {
     onPressSearchButton && onPressSearchButton();
@@ -62,7 +64,7 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
             navigation.navigate('Settings');
           }}>
           <View>
-            <SubWalletAvatar address={currentAccount?.address || ''} size={32} />
+            <SubWalletAvatar address={currentAccount?.address || ''} size={32} SubIcon={SubIcon} />
             {isAccountWaiting && (
               <View
                 style={{

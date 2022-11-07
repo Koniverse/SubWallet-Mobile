@@ -4,17 +4,18 @@ import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SecretTypeItem } from 'components/SecretTypeItem';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { deviceHeight, EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { SCAN_TYPE } from 'constants/qr';
 import useModalScanner from 'hooks/scanner/useModalScanner';
 import { Article, Eye, FileArrowUp, HardDrives, LockKey, QrCode } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Image, ImageStyle, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
+import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
-import { FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { FontBold, FontMedium, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { QrAccount } from 'types/account/qr';
 import { AccountActionGroup } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
@@ -194,15 +195,16 @@ const AddAccountModal = ({ modalVisible, onHideModal: onHideMainModal }: Props) 
             icon: QrCode,
             title: i18n.title.attachQRSignerAccount,
             onCLickButton: async () => {
-              const result = await requestCameraPermission();
-
-              if (result === RESULTS.GRANTED) {
-                onHideMainModal();
-                setScanType(SCAN_TYPE.QR_SIGNER);
-                setTimeout(() => {
-                  onOpenModal();
-                }, HIDE_MODAL_DURATION);
-              }
+              // const result = await requestCameraPermission();
+              //
+              // if (result === RESULTS.GRANTED) {
+              //   onHideMainModal();
+              //   setScanType(SCAN_TYPE.QR_SIGNER);
+              //   setTimeout(() => {
+              //     onOpenModal();
+              //   }, HIDE_MODAL_DURATION);
+              // }
+              show(i18n.common.comingSoon);
             },
           },
           {
@@ -245,6 +247,13 @@ const AddAccountModal = ({ modalVisible, onHideModal: onHideMainModal }: Props) 
             );
           })}
         </View>
+        <Toast
+          duration={1500}
+          normalColor={ColorMap.notification}
+          ref={toastRef}
+          placement={'bottom'}
+          offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
+        />
       </SubWalletModal>
       <SelectAccountTypeModal
         modalVisible={selectTypeModalVisible}

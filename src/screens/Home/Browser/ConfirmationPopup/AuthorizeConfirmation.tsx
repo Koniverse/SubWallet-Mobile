@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text } from 'react-native';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { filterNotReadOnlyAccount } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { filterAndSortingAccountByAuthType } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
@@ -37,7 +38,7 @@ export const AuthorizeConfirmation = ({
   const { accountAuthType } = request;
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const accountList = useMemo(() => {
-    return filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true);
+    return filterNotReadOnlyAccount(filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true));
   }, [accountAuthType, accounts]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>(request.allowedAccounts || []);
   const [isSelectedAll, setIsSelectedAll] = useState(true);

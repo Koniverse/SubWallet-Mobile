@@ -1,9 +1,8 @@
 import { Warning } from 'components/Warning';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -62,10 +61,9 @@ export const EvmSignConfirmation = ({
   cancelRequest,
   approveRequest,
 }: Props) => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
   const [signMethod, setSignMethod] = useState<string>('');
   const [rawData, setRawData] = useState<string | object>('');
-  const account = accounts.find(acc => acc.address === payload.address);
+  const account = useGetAccountByAddress(payload.address);
   const [warning, setWarning] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
