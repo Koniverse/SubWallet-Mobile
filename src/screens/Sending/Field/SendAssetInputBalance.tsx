@@ -1,6 +1,6 @@
 import { TextInput, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import { SiDef } from '@polkadot/util/types';
@@ -84,6 +84,10 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
   const { onChange, decimals, placeholder, si, disable, value } = props;
   const [inputValue, setInputValue] = useState<string>(value);
 
+  const maxLengthText = useMemo(() => {
+    return inputValue.includes('.') ? decimals + 1 + inputValue.split('.')[0].length : 10;
+  }, [decimals, inputValue]);
+
   const _onChange = (input: string) => {
     setInputValue(input.replace(',', '.'));
     onChange && onChange(input);
@@ -109,7 +113,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         keyboardType={'decimal-pad'}
         defaultValue={inputValue}
         onChangeText={_onChange}
-        maxLength={inputValue.includes('.') ? decimals + 2 : 18}
+        maxLength={maxLengthText}
         placeholder={placeholder || ''}
         placeholderTextColor={ColorMap.disabled}
         editable={!disable}
