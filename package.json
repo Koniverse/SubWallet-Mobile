@@ -1,6 +1,7 @@
 {
   "name": "subwalletmobile",
   "version": "0.2.1",
+  "build": "95",
   "private": true,
   "license": "Apache-2.0",
   "bin": {
@@ -107,6 +108,7 @@
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
     "assert": "^2.0.0",
+    "axios": "^1.1.3",
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.2.5",
     "babel-plugin-module-resolver": "^4.1.0",
