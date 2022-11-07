@@ -4,6 +4,8 @@ import { ImageLogosMap } from 'assets/logo';
 const SubWalletLogo = React.lazy(() => import('./sub-wallet-logo.svg'));
 const SubWalletLogo2 = React.lazy(() => import('./logo-subwallet.svg'));
 const CheckBoxIcon = React.lazy(() => import('./checkbox.svg'));
+const SignalIcon = React.lazy(() => import('./signal.svg'));
+const SignalSplashIcon = React.lazy(() => import('./signal-splash.svg'));
 const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
 const NftIcon = React.lazy(() => import('./logo-nft.svg'));
 
@@ -17,6 +19,8 @@ export const SVGImages = {
   CheckBoxFilledIcon: CheckBoxFilledIcon,
   SubWallet2: SubWalletLogo2,
   NftIcon: NftIcon,
+  SignalIcon: SignalIcon,
+  SignalSplashIcon: SignalSplashIcon,
 };
 
 export const Images = {

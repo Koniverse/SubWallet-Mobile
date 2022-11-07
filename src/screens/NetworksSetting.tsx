@@ -8,6 +8,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Warning } from 'components/Warning';
 import { FlatListScreen } from 'components/FlatListScreen';
+import { Gear } from 'phosphor-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props {}
 
@@ -44,6 +47,7 @@ const processNetworkMap = (
 
 export const NetworksSetting = ({}: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const navigation = useNavigation<RootNavigationProps>();
   const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
   const [currentNetworkList, setCurrentNetworkList] = useState(processNetworkMap(networkMap));
 
@@ -115,6 +119,7 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <FlatListScreen
+      rightIconOption={{ icon: Gear, onPress: () => navigation.navigate('NetworkConfig') }}
       items={currentNetworkList}
       title={i18n.title.network}
       autoFocus={false}
