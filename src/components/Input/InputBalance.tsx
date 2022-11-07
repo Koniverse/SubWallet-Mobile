@@ -86,11 +86,12 @@ const getOutputValuesFromString: (input: string, power: number) => [string, bool
   let valueBigN = new BigN(input);
   valueBigN = valueBigN.times(new BigN(10).pow(power));
 
-  return [valueBigN.toFixed(), true];
+  return [valueBigN.toFixed().split('.')[0], true];
 };
 
 const getInputValuesFromString: (input: string, power: number) => string = (input: string, power: number) => {
-  let valueBigN = new BigN(isValidInput(input) ? input : '0');
+  const intValue = input.split('.')[0];
+  let valueBigN = new BigN(isValidInput(intValue) ? intValue : '0');
   valueBigN = valueBigN.div(new BigN(10).pow(power));
   return valueBigN.toFixed();
 };
@@ -136,12 +137,17 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
   const [isShowTokenList, setShowTokenList] = useState<boolean>(false);
   const siOptions = useMemo(() => getSiOptions(siSymbol, decimals), [decimals, siSymbol]);
 
+  const maxLengthText = useMemo(() => {
+    return inputValue.includes('.') ? decimals + 1 + inputValue.split('.')[0].length : 10;
+  }, [decimals, inputValue]);
+
   const onChangeWithSi = useCallback(
     (input: string, curSi: SiDef) => {
       setInputValue(input.replace(',', '.'));
 
       if (onChange) {
         const [outputValue, isValid] = getOutputValuesFromString(input, decimals + curSi.power);
+        console.log('outputValue', outputValue);
         onChange(isValid ? outputValue : undefined);
       }
     },
@@ -196,7 +202,7 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
         keyboardType={'decimal-pad'}
         defaultValue={inputValue}
         onChangeText={_onChange}
-        maxLength={inputValue.includes('.') ? decimals + 2 : 10}
+        maxLength={maxLengthText}
         placeholder={placeholder || ''}
         placeholderTextColor={ColorMap.disabled}
         editable={!disable}

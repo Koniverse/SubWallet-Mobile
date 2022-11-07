@@ -103,7 +103,6 @@ export const Confirmation = ({
   )[0];
 
   const feeValue = getBalanceWithSi(fee || '0', feeDecimals, si, feeSymbol)[0];
-  console.log('feeValue', getBalanceWithSi(fee || '0', feeDecimals, si, feeSymbol));
   const handlerCallbackResponseResult = (rs: ResponseTransfer) => {
     if (!rs.isFinalized) {
       if (rs.step === TransferStep.SUCCESS.valueOf()) {
