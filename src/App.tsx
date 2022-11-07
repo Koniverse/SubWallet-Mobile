@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import { CreateAccount } from 'screens/CreateAccount';
-import { AppState, StatusBar, StyleProp, View } from 'react-native';
+import { Alert, AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
@@ -74,6 +74,8 @@ import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
+import { NETWORK_STATUS } from '@subwallet/extension-base/background/KoniTypes';
+import i18n from 'utils/i18n/i18n';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -179,7 +181,6 @@ export const App = () => {
 
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
-
   // Fetching data from web-runner to redux
   const accountsStoreStatus = useStoreAccounts();
   const settingsStoreStatus = useStoreSettings();
@@ -204,6 +205,27 @@ export const App = () => {
   useStoreStaking();
   useStoreStakingReward();
   useStoreStakeUnlockingInfo();
+  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const disconnectedProviders = Object.values(networkMap).filter(
+    item => item.apiStatus && item.apiStatus !== NETWORK_STATUS.CONNECTED,
+  );
+
+  useEffect(() => {
+    if (disconnectedProviders && disconnectedProviders.length) {
+      const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
+      Alert.alert(
+        'Warning',
+        `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
+          i18n.common.providerErrorMessagePart2
+        }`,
+        [
+          { text: i18n.common.cancel, style: 'cancel' },
+          { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
+        ],
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigationRef]);
 
   // Enable lock screen on the start app
   useEffect(() => {

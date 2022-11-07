@@ -195,6 +195,9 @@ export const en = {
     scanFromHardwareWallet: 'Scan your address from Hardware Wallet',
     scanFromWallet: 'Scan your address from wallet',
     scanAddress: 'Scan Address',
+    providerErrorMessagePart1: 'Your current providers for ',
+    providerErrorMessagePart2: ' have been disconnected. Please change provider to continue',
+    goToNetworkConfig: 'Go to Network Config',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
