@@ -7,6 +7,7 @@ import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } fr
 import { Divider } from 'components/Divider';
 import { getHostName } from 'utils/browser';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { DAppIconMap, DAppTitleMap } from '../predefined/dAppSites';
 
 interface Props {
   item: AuthUrlInfo;
@@ -30,16 +31,33 @@ const itemContentWrapperStyle: StyleProp<any> = {
 const itemMainTextStyle: StyleProp<any> = { ...sharedStyles.mediumText, color: ColorMap.light, ...FontSemiBold };
 const itemSubTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium };
 
+function getImageSource(hostName: string): string {
+  if (DAppIconMap[hostName]) {
+    return DAppIconMap[hostName];
+  }
+
+  return `https://icons.duckduckgo.com/ip2/${hostName}.ico`;
+}
+
+function getSiteTitle(hostName: string, origin: string): string {
+  if (DAppTitleMap[hostName]) {
+    return DAppTitleMap[hostName];
+  }
+
+  return origin || hostName;
+}
+
 export const DAppAccessItem = ({ item, onPress }: Props) => {
   const hostName = getHostName(item.url);
+
   return (
     <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPress} style={{ ...ContainerHorizontalPadding }}>
       <View style={itemWrapperStyle}>
-        <Image source={{ uri: `https://icons.duckduckgo.com/ip2/${hostName}.ico`, width: 40, height: 40 }} />
+        <Image source={{ uri: getImageSource(hostName), width: 40, height: 40 }} />
         <View style={itemContentWrapperStyle}>
           <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
             <Text numberOfLines={1} style={itemMainTextStyle}>
-              {item.origin}
+              {getSiteTitle(hostName, item.origin)}
             </Text>
             <Text numberOfLines={1} style={itemSubTextStyle}>
               {item.url}
