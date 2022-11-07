@@ -552,6 +552,7 @@ export const vi = {
     cannotExtractAddress: "Can't extract address from the QR code",
     enableAtLeast1Network: 'Please enable at least 1 network',
     readOnly: 'You are using readonly account',
+    sendReadOnly: 'The account you are using is read-only, you cannot send assets with it.',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

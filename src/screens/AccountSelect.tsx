@@ -57,6 +57,8 @@ export const AccountSelect = ({
           showSelectedIcon={false}
           selectAccount={onChangeAddress}
           isDisabled={true}
+          showSubIcon={true}
+          isSelected={false}
         />
         <View style={itemSeparator} />
       </TouchableOpacity>

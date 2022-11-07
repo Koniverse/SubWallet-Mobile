@@ -11,6 +11,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { Account } from 'components/Account';
 import { Divider } from 'components/Divider';
 import { ColorMap } from 'styles/color';
+import { filterNotReadOnlyAccount } from 'utils/account';
 import {
   changeAuthorization,
   changeAuthorizationPerAccount,
@@ -56,7 +57,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [pendingMap, setPendingMap] = useState<Record<string, boolean>>({});
   const accountItems = useMemo(() => {
-    const accountListWithoutAll = accounts.filter(opt => opt.address !== 'ALL');
+    const accountListWithoutAll = filterNotReadOnlyAccount(accounts.filter(opt => opt.address !== 'ALL'));
 
     if (accountAuthType === 'substrate') {
       return accountListWithoutAll.filter(acc => !isEthereumAddress(acc.address));
@@ -161,6 +162,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
               showCopyBtn={false}
               showSelectedIcon={false}
               isDisabled={true}
+              showSubIcon={true}
             />
             <Switch
               disabled={pendingMap[item.address] !== undefined}

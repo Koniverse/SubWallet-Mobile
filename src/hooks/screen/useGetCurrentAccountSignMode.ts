@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 const useGetCurrentAccountSignMode = (): SIGN_MODE => {
-  const account = useSelector((state: RootState) => state.accounts.currentAccount);
+  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
 
   return useMemo((): SIGN_MODE => {
-    return getAccountSignMode(account);
-  }, [account]);
+    return getAccountSignMode(currentAccount);
+  }, [currentAccount]);
 };
 
 export default useGetCurrentAccountSignMode;

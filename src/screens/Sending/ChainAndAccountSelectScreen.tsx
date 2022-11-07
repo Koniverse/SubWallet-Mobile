@@ -179,7 +179,7 @@ export const ChainAndAccountSelectScreen = ({
 
           {isSameAddress && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.isNotSameAddress} />}
 
-          {isReadOnly && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />}
+          {isReadOnly && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.sendReadOnly} />}
 
           {!checkOriginChainAndSenderIdType && (
             <Warning
