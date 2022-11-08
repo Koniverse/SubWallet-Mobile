@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import { CreateAccount } from 'screens/CreateAccount';
-import { Alert, AppState, StatusBar, StyleProp, View } from 'react-native';
+import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
@@ -74,8 +74,6 @@ import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
-import { NETWORK_STATUS } from '@subwallet/extension-base/background/KoniTypes';
-import i18n from 'utils/i18n/i18n';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
