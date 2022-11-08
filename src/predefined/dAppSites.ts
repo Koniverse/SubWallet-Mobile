@@ -576,7 +576,14 @@ export const predefinedDApps: PredefinedDApps = {
       isSupportSubstrateAccount: true,
     },
     {
-      name: 'Raffle game',
+      name: 'Moonfit - Raffle game',
+      icon: 'https://dev-event.moonfit.xyz/logo-32x32.ico',
+      url: 'https://mf-raffle-game.web.app',
+      categories: ['evm'],
+      isSupportEthereumAccount: true,
+    },
+    {
+      name: 'Moonfit - Raffle game',
       icon: 'https://dev-event.moonfit.xyz/logo-32x32.ico',
       url: 'https://dev-event.moonfit.xyz',
       categories: ['test', 'evm'],
