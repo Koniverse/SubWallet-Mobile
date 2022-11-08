@@ -40,12 +40,11 @@ function runBuildAndroid() {
   return execSync('./scripts/build-android.sh')
 }
 
+function runUploadTestFlight() {
+  return execSync('./scripts/upload-testflight.sh')
+}
+
 async function uploadBuild(filePath, uploadName) {
-  const refName = process.env.REF_NAME
-  const commitMessage = process.env.COMMIT_MESSAGE
-
-  await discordHook.send('Finish build ' + refName + ': ' + commitMessage)
-
   try {
     const cloudConfig = JSON.parse(process.env.NEXTCLOUD_CONFIG)
     const {nextCloudUrl, nextCloudUsername, nextCloudPassword, folder, shareFolder} = cloudConfig;
@@ -82,13 +81,20 @@ if (process.argv.indexOf('--android') > -1) {
   await runBuildAndroid()
   await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/bundle/release/app-release.aab '), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.aab`)
   await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/apk/universal.apk'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.apk`)
-  await notify('Start build android')
+  await notify('Finish build android')
 }
 
-if (process.argv.indexOf('--ios')) {
+if (process.argv.indexOf('--ios') > -1) {
   console.log('Build ios')
   await notify('Start build iOS')
   await runBuildIOS()
+  await uploadBuild(path.resolve(process.cwd(), 'ios/dist/SubWallet.xcarchive'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.xcarchive`)
   await notify('Finish build iOS')
+
+  if (process.argv.indexOf('--test-flight') > -1) {
+    await notify('Start build upload to TestFlight')
+    await runUploadTestFlight()
+    await notify('Start build upload to TestFlight')
+  }
 }
 await notifyFinish();
