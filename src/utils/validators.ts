@@ -1,5 +1,6 @@
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { Alert, Linking, Platform } from 'react-native';
+import { AutoLockState } from 'utils/autoLock';
 import i18n from 'utils/i18n/i18n';
 
 export function isTooShortPassword(value: string | null, minLength: number): boolean {
@@ -12,7 +13,9 @@ const getCameraPermission = () => {
 };
 
 export const requestCameraPermission = async () => {
+  AutoLockState.isPreventAutoLock = true;
   const result = await request(getCameraPermission());
+  AutoLockState.isPreventAutoLock = false;
 
   switch (result) {
     case RESULTS.UNAVAILABLE:
