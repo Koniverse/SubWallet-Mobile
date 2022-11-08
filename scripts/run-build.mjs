@@ -22,6 +22,10 @@ function notifyStart() {
   return discordHook.send(`:computer: :computer: :computer: Run build for commit: "${refName}: ${commitMessage}"`);
 }
 
+function notify(message) {
+  return discordHook.send(message);
+}
+
 function notifyFinish() {
   if (success) {
     return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish build for commit: "${refName}: ${commitMessage}"`);
@@ -72,7 +76,19 @@ async function uploadBuild(filePath, uploadName) {
 }
 
 await notifyStart();
-// await runBuildIOS()
-await runBuildAndroid()
-await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/apk/universal.apk'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.apk`)
+if (process.argv.indexOf('--android') > -1) {
+  console.log('Build android')
+  await notify('Start build android')
+  await runBuildAndroid()
+  await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/bundle/release/app-release.aab '), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.aab`)
+  await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/apk/universal.apk'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.apk`)
+  await notify('Start build android')
+}
+
+if (process.argv.indexOf('--ios')) {
+  console.log('Build ios')
+  await notify('Start build iOS')
+  await runBuildIOS()
+  await notify('Finish build iOS')
+}
 await notifyFinish();
