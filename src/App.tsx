@@ -205,27 +205,27 @@ export const App = () => {
   useStoreStaking();
   useStoreStakingReward();
   useStoreStakeUnlockingInfo();
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const disconnectedProviders = Object.values(networkMap).filter(
-    item => item.apiStatus && item.apiStatus !== NETWORK_STATUS.CONNECTED,
-  );
+  // const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  // const disconnectedProviders = Object.values(networkMap).filter(
+  //   item => item.apiStatus && item.apiStatus !== NETWORK_STATUS.CONNECTED,
+  // );
 
-  useEffect(() => {
-    if (disconnectedProviders && disconnectedProviders.length) {
-      const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
-      Alert.alert(
-        'Warning',
-        `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
-          i18n.common.providerErrorMessagePart2
-        }`,
-        [
-          { text: i18n.common.cancel, style: 'cancel' },
-          { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
-        ],
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigationRef]);
+  // useEffect(() => {
+  //   if (disconnectedProviders && disconnectedProviders.length) {
+  //     const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
+  //     Alert.alert(
+  //       'Warning',
+  //       `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
+  //         i18n.common.providerErrorMessagePart2
+  //       }`,
+  //       [
+  //         { text: i18n.common.cancel, style: 'cancel' },
+  //         { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
+  //       ],
+  //     );
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [navigationRef]);
 
   // Enable lock screen on the start app
   useEffect(() => {
