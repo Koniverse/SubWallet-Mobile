@@ -1,15 +1,16 @@
-name: Build Master
+name: Build Review Version
 on:
-  push:
-    branches:
-      - master
+  branches:
+    - koni-dev
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  master:
-    if: "startsWith(github.event.head_commit.message, 'Release version')"
+  approved:
+    if: ${{ startsWith(github.event.review.body, 'Build review') && github.event.pull_request.base.ref === 'koni-dev' }}
     strategy:
       matrix:
-        step: ['build']
+        step: ['android', 'ios']
     name: ${{ matrix.step }}
     runs-on: mac-worker
     steps:
@@ -18,14 +19,15 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
     - name: ${{ matrix.step }}
+      if: ${{ contains(github.event.review.body, matrix.step) }}
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
         GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
         KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
         NEXTCLOUD_CONFIG: ${{ secrets.NEXTCLOUD_CONFIG }}
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
         REF_NAME: ${{ github.ref_name }}
       run: |
         yarn install --immutable | grep -v 'YN0013'
-        node ./scripts/run-build.mjs --android --ios --test-flight
+        node ./scripts/run-build.mjs --${{ matrix.step }}

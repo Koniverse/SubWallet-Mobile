@@ -1,17 +1,15 @@
-name: Build Dev
+name: Build Release Version
 on:
-  pull_request_review:
-    types: [submitted]
   push:
     branches:
-      - koni-dev
+      - master
 
 jobs:
-  approved:
-    if: github.event.review.state == 'approved'
+  master:
+    if: "startsWith(github.event.head_commit.message, 'Release version')"
     strategy:
       matrix:
-        step: ['build']
+        step: ['android', 'ios']
     name: ${{ matrix.step }}
     runs-on: mac-worker
     steps:
@@ -30,4 +28,4 @@ jobs:
         REF_NAME: ${{ github.ref_name }}
       run: |
         yarn install --immutable | grep -v 'YN0013'
-        node ./scripts/run-build.mjs --android --ios
+        node ./scripts/run-build.mjs --${{ matrix.step }} --release
