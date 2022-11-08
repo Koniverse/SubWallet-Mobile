@@ -6,6 +6,7 @@ import { ColorMap } from 'styles/color';
 import { BalanceVal } from 'components/BalanceVal';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
+import { Divider } from 'components/Divider';
 
 interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
 
@@ -43,12 +44,6 @@ const chainBalancePart2: StyleProp<any> = {
   alignItems: 'flex-end',
   paddingRight: 16,
   paddingLeft: 2,
-};
-const chainBalanceSeparator: StyleProp<any> = {
-  borderBottomWidth: 1,
-  borderBottomColor: ColorMap.dark2,
-  marginLeft: 72,
-  marginRight: 16,
 };
 
 export const TokenChainBalance = ({
@@ -109,7 +104,7 @@ export const TokenChainBalance = ({
         </View>
       </View>
 
-      <View style={chainBalanceSeparator} />
+      <Divider style={{ paddingLeft: 72, paddingRight: 16, paddingBottom: 1 }} color={ColorMap.dark2} />
     </TouchableOpacity>
   );
 };
