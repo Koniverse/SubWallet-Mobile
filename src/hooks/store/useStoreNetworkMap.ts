@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
 import { getId } from '@subwallet/extension-base/utils/getId';
+import { addLazy, removeLazy } from 'utils/lazyUpdate';
 
 export default function useStoreNetworkMap(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
@@ -25,10 +26,11 @@ export default function useStoreNetworkMap(): StoreStatus {
           return;
         }
 
-        console.log('--- subscribeNetworkMap updated');
-
-        updateNetworkMap(payload);
-        setStoreStatus('SYNCED');
+        addLazy('subscribeNetworkMap', () => {
+          console.log('--- subscribeNetworkMap updated');
+          updateNetworkMap(payload);
+          setStoreStatus('SYNCED');
+        });
       };
 
       subscribeNetworkMap(_update, handlerId)
@@ -40,6 +42,7 @@ export default function useStoreNetworkMap(): StoreStatus {
 
     return () => {
       cancel = true;
+      removeLazy('subscribeNetworkMap');
       clearWebRunnerHandler(handlerId);
     };
   }, [isWebRunnerReady]);
