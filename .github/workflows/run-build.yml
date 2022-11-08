@@ -1,5 +1,6 @@
 name: Build Dev
 on:
+  pull_request_review: {}
   pull_request: {}
   push:
     branches:
@@ -9,7 +10,7 @@ jobs:
   build-dev-android:
     strategy:
       matrix:
-        step: ['android', 'ios']
+        step: ['android', 'ios', 'testflight']
     name: ${{ matrix.step }}
     runs-on: mac-worker
     steps:
