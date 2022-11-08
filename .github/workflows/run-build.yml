@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-dev-android:
-    if: github.event.review.state == 'approved'
     strategy:
       matrix:
         step: ['android', 'ios']
