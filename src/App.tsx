@@ -211,19 +211,21 @@ export const App = () => {
   );
 
   useEffect(() => {
-    if (disconnectedProviders && disconnectedProviders.length) {
-      const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
-      Alert.alert(
-        'Warning',
-        `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
-          i18n.common.providerErrorMessagePart2
-        }`,
-        [
-          { text: i18n.common.cancel, style: 'cancel' },
-          { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
-        ],
-      );
-    }
+    setTimeout(() => {
+      if (disconnectedProviders && disconnectedProviders.length) {
+        const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
+        Alert.alert(
+          'Warning',
+          `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
+            i18n.common.providerErrorMessagePart2
+          }`,
+          [
+            { text: i18n.common.cancel, style: 'cancel' },
+            { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
+          ],
+        );
+      }
+    }, 2000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigationRef]);
 
