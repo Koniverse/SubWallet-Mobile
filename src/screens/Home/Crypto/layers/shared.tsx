@@ -20,7 +20,6 @@ export const itemWrapperAppendixStyle: StyleProp<any> = {
   right: 0,
   height: DEVICE.height,
   top: '100%',
-  marginTop: 8,
 };
 
 export const alwaysShowedKey = ['polkadot|DOT', 'kusama|KSM'];

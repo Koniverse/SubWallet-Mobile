@@ -12,6 +12,7 @@ import { getBalances } from 'utils/chainBalances';
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import i18n from 'utils/i18n/i18n';
+import { Divider } from 'components/Divider';
 
 interface Props extends TouchableOpacityProps {
   item: TransactionHistoryItemType;
@@ -52,13 +53,6 @@ const tokenHistoryMetaWrapper: StyleProp<any> = {
 const tokenHistoryPart2: StyleProp<any> = {
   alignItems: 'flex-end',
   paddingRight: 16,
-};
-
-const tokenHistorySeparator: StyleProp<any> = {
-  borderBottomWidth: 1,
-  borderBottomColor: ColorMap.dark2,
-  marginLeft: 72,
-  marginRight: 16,
 };
 
 const getIconStyle: (item: TransactionHistoryItemType) => StyleProp<any> = item => {
@@ -200,7 +194,7 @@ export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
         </View>
       </View>
 
-      <View style={tokenHistorySeparator} />
+      <Divider style={{ paddingLeft: 72, paddingRight: 16, paddingBottom: 1 }} color={ColorMap.dark2} />
     </TouchableOpacity>
   );
 };

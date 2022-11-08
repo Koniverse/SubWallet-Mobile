@@ -139,13 +139,13 @@ const ChainDetailLayer = ({
   const [isRefresh, refresh] = useRefresh();
   const [refreshTabId, setRefreshTabId] = useState<string>('');
 
-  const renderTokenTabItem = ({ item, index }: ListRenderItemInfo<TokenBalanceItemType>) => {
+  const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
       return null;
     }
 
     return (
-      <View key={item.id} style={{ ...itemWrapperStyle, paddingTop: !index ? 8 : 0 }}>
+      <View key={item.id} style={itemWrapperStyle}>
         <TokenChainBalance onPress={() => handleChangeTokenItem(item.symbol, item.displayedSymbol)} {...item} />
         <View style={itemWrapperAppendixStyle} />
       </View>

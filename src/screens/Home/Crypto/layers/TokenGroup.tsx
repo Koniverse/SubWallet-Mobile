@@ -186,7 +186,7 @@ const TokenGroupLayer = ({
     }
   };
 
-  const renderNetworkItem = ({ item: networkKey, index }: ListRenderItemInfo<string>) => {
+  const renderNetworkItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMap[networkKey] || getEmptyBalanceInfo(info.nativeToken);
 
@@ -195,7 +195,7 @@ const TokenGroupLayer = ({
     }
 
     return (
-      <View key={info.key} style={{ ...itemWrapperStyle, paddingTop: !index ? 8 : 0 }}>
+      <View key={info.key} style={itemWrapperStyle}>
         <ChainBalance
           accountInfo={info}
           onPress={() => onPressChainItem(info, balanceInfo)}
@@ -206,7 +206,7 @@ const TokenGroupLayer = ({
     );
   };
 
-  const renderTokenTabItem = ({ item, index }: ListRenderItemInfo<TokenBalanceItemType>) => {
+  const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];
 
     if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
@@ -214,7 +214,7 @@ const TokenGroupLayer = ({
     }
 
     return (
-      <View key={item.id} style={{ ...itemWrapperStyle, paddingTop: !index ? 8 : 0 }}>
+      <View key={item.id} style={itemWrapperStyle}>
         <TokenChainBalance onPress={() => onPressTokenItem(item, info)} {...item} />
         <View style={itemWrapperAppendixStyle} />
       </View>

@@ -139,12 +139,12 @@ const EmptyList = () => {
 };
 
 const ContentComponent = ({ items, registryMap, isLoading, isRefresh, refresh, refreshTabId }: ContentProps) => {
-  const renderItem = ({ item, index }: ListRenderItemInfo<TransactionHistoryItemType>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<TransactionHistoryItemType>) => {
     const { networkKey } = item;
     const registry = registryMap[networkKey];
 
     return (
-      <View key={item.extrinsicHash} style={{ ...itemWrapperStyle, paddingTop: !index ? 8 : 0 }}>
+      <View key={item.extrinsicHash} style={itemWrapperStyle}>
         <TokenHistoryItem item={item} registry={registry} />
         <View style={itemWrapperAppendixStyle} />
       </View>

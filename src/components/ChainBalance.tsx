@@ -8,6 +8,7 @@ import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from 'types/index';
 import { BalanceVal } from 'components/BalanceVal';
 import { BN_ZERO } from 'utils/chainBalances';
+import { Divider } from 'components/Divider';
 
 interface Props extends TouchableOpacityProps {
   accountInfo: AccountInfoByNetwork;
@@ -42,12 +43,6 @@ const chainBalanceMetaWrapper: StyleProp<any> = {
 const chainBalancePart2: StyleProp<any> = {
   alignItems: 'flex-end',
   paddingRight: 16,
-};
-const chainBalanceSeparator: StyleProp<any> = {
-  borderBottomWidth: 1,
-  borderBottomColor: ColorMap.dark2,
-  marginLeft: 72,
-  marginRight: 16,
 };
 
 export const ChainBalance = ({ accountInfo, onPress, balanceInfo }: Props) => {
@@ -106,7 +101,7 @@ export const ChainBalance = ({ accountInfo, onPress, balanceInfo }: Props) => {
         </View>
       </View>
 
-      <View style={chainBalanceSeparator} />
+      <Divider style={{ paddingLeft: 72, paddingRight: 16, paddingBottom: 1 }} color={ColorMap.dark2} />
     </TouchableOpacity>
   );
 };
