@@ -5,7 +5,7 @@ on:
 
 jobs:
   approved:
-    if: ${{ startsWith(github.event.review.body, 'Build review') && github.event.pull_request.base.ref === 'koni-dev' }}
+    if: ${{ startsWith(github.event.review.body, 'Build review') && github.event.pull_request.base.ref == 'koni-dev' }}
     strategy:
       matrix:
         step: ['android', 'ios']
