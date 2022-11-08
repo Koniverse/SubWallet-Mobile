@@ -1,7 +1,5 @@
 name: Build Review Version
 on:
-  branches:
-    - koni-dev
   pull_request_review:
     types: [submitted]
 
