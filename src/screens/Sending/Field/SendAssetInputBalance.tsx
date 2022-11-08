@@ -55,11 +55,12 @@ export const getOutputValuesFromString: (input: string, power: number) => [strin
   let valueBigN = new BigN(input);
   valueBigN = valueBigN.times(new BigN(10).pow(power));
 
-  return [valueBigN.toFixed(), true];
+  return [valueBigN.toFixed().split('.')[0], true];
 };
 
 const getInputValuesFromString: (input: string, power: number) => string = (input: string, power: number) => {
-  let valueBigN = new BigN(isValidInput(input) ? input : '0');
+  const intValue = input.split('.')[0];
+  let valueBigN = new BigN(isValidInput(intValue) ? intValue : '0');
   valueBigN = valueBigN.div(new BigN(10).pow(power));
   return valueBigN.toFixed();
 };

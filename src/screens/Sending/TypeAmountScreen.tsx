@@ -26,7 +26,7 @@ import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap'
 import { SendAssetInputBalance } from 'screens/Sending/Field/SendAssetInputBalance';
 
 interface Props {
-  amount: number;
+  amount: string;
   balanceFormat: BalanceFormatType;
   si: SiDef;
   originChain: string;
@@ -126,9 +126,7 @@ export const TypeAmountScreen = ({
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center', paddingTop: 56 }}>
           <SendAssetInputBalance
-            value={
-              rawAmount !== undefined ? getBalanceWithSi(amount.toString(), balanceFormat[0], si, originToken)[0] : ''
-            }
+            value={rawAmount !== undefined ? getBalanceWithSi(amount, balanceFormat[0], si, originToken)[0] : ''}
             placeholder={'0'}
             si={si}
             maxValue={senderFreeBalance}

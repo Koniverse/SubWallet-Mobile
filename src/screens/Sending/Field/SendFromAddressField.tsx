@@ -55,6 +55,7 @@ export const SendFromAddressField = ({
           networkPrefix={networkPrefix}
           label={i18n.sendAssetScreen.fromAccount}
           rightIcon={CaretDown}
+          disableRightIcon={true}
           showRightIcon={!disabled && isAllAccount}
           disableText={true}
         />

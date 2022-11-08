@@ -141,7 +141,7 @@ export const SendFund = ({
   const [txResult, setTxResult] = useState<TransferResultType>({ isShowTxResult: false, isTxSuccess: false });
   const { isShowTxResult } = txResult;
   const inputBalanceRef = createRef();
-  const amount = rawAmountWithDecimals !== undefined ? Math.floor(Number(rawAmountWithDecimals)) : 0;
+  const amount = rawAmountWithDecimals !== undefined ? rawAmountWithDecimals : '0';
 
   const _onChangeOriginChain = (currentOriginChain: string) => {
     const currentDestinationChainOptions = getDestinationChainOptions(currentOriginChain, networkMap);
@@ -178,7 +178,7 @@ export const SendFund = ({
           to: receiveAddress,
           transferAll: canToggleAll && isConfirmTransferAll,
           token: originToken,
-          value: amount.toString(),
+          value: amount,
         })
           .then(thenCb)
           .catch(catchCb);
@@ -200,7 +200,7 @@ export const SendFund = ({
           from: senderAddress,
           to: receiveAddress,
           token: originToken,
-          value: amount.toString(),
+          value: amount,
         })
           .then(thenCb)
           .catch(catchCb);
@@ -485,7 +485,7 @@ export const SendFund = ({
                   to: currentReceiveAddress,
                   transferAll: false,
                   token: originToken,
-                  value: amount.toString(),
+                  value: amount,
                 }}
                 onChangeResult={_onChangeResult}
                 feeInfo={getAuthTransactionFeeInfo(
