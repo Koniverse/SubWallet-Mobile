@@ -101,7 +101,6 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
       }
 
       const _inputValue = getInputValuesFromString(input, decimals + si.power);
-      console.log('_inputValue', _inputValue);
       _onChange(_inputValue);
     },
   }));
