@@ -1,7 +1,8 @@
 name: Build Dev
 on:
-  pull_request_review: {}
-  pull_request: {}
+  pull_request_review:
+    types: [submitted]
+    targets: koni-dev
   push:
     branches:
       - test-github-action
@@ -19,6 +20,7 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
     - name: ${{ matrix.step }}
+      if: "github.event.pusher"
       env:
         GH_PAT: ${{ secrets.GH_PAT }}
         GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
@@ -27,6 +29,6 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         REF_NAME: ${{ github.ref_name }}
-        GITHUB_EVENT: ${{ toJson(github.event) }}
+        GITHUB_EVENT: ${{ toJson(github) }}
       run: |
         echo $GITHUB_EVENT
