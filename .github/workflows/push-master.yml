@@ -1,4 +1,4 @@
-name: Build Master
+name: Build Release Version
 on:
   push:
     branches:
@@ -9,11 +9,11 @@ jobs:
     if: "startsWith(github.event.head_commit.message, 'Release version')"
     strategy:
       matrix:
-        step: ['build']
+        step: ['android', 'ios']
     name: ${{ matrix.step }}
     runs-on: mac-worker
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
         token: ${{ secrets.GH_PAT }}
@@ -28,4 +28,4 @@ jobs:
         REF_NAME: ${{ github.ref_name }}
       run: |
         yarn install --immutable | grep -v 'YN0013'
-        node ./scripts/run-build.mjs --android --ios --test-flight
+        node ./scripts/run-build.mjs --${{ matrix.step }} --release

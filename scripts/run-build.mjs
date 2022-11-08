@@ -19,7 +19,7 @@ const packageInfo = getPackageInfo();
 const timeLabel = getTimeLabel(7);
 
 function notifyStart() {
-  return discordHook.send(`:computer: :computer: :computer: Run build for commit: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`:computer: :computer: :computer: Run build for: "${refName}: ${commitMessage}"`);
 }
 
 function notify(message) {
@@ -28,7 +28,7 @@ function notify(message) {
 
 function notifyFinish() {
   if (success) {
-    return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish build for commit: "${refName}: ${commitMessage}"`);
+    return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish build for: "${refName}: ${commitMessage}"`);
   }
 }
 
@@ -79,9 +79,14 @@ if (process.argv.indexOf('--android') > -1) {
   console.log('Build android')
   await notify('Start build android')
   await runBuildAndroid()
-  await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/bundle/release/app-release.aab '), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.aab`)
   await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/apk/universal.apk'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.apk`)
   await notify('Finish build android')
+
+  if (process.argv.indexOf('--release') > -1) {
+    await notify('Start build upload android bundle')
+    await uploadBuild(path.resolve(process.cwd(), 'android/app/build/outputs/bundle/release/app-release.aab '), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.aab`)
+    await notify('Start build upload android bundle')
+  }
 }
 
 if (process.argv.indexOf('--ios') > -1) {
@@ -91,7 +96,7 @@ if (process.argv.indexOf('--ios') > -1) {
   await uploadBuild(path.resolve(process.cwd(), 'ios/dist/SubWallet.xcarchive'), `subwallet-mobile-v${packageInfo.version}-b${packageInfo.build}-${timeLabel}.xcarchive`)
   await notify('Finish build iOS')
 
-  if (process.argv.indexOf('--test-flight') > -1) {
+  if (process.argv.indexOf('--release') > -1) {
     await notify('Start build upload to TestFlight')
     await runUploadTestFlight()
     await notify('Start build upload to TestFlight')
