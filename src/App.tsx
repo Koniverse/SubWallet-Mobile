@@ -207,27 +207,8 @@ export const App = () => {
   useStoreStakeUnlockingInfo();
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const disconnectedProviders = Object.values(networkMap).filter(
-    item => item.apiStatus && item.apiStatus !== NETWORK_STATUS.CONNECTED,
+    item => item.apiStatus && item.apiStatus === NETWORK_STATUS.DISCONNECTED,
   );
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (disconnectedProviders && disconnectedProviders.length) {
-        const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
-        Alert.alert(
-          'Warning',
-          `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
-            i18n.common.providerErrorMessagePart2
-          }`,
-          [
-            { text: i18n.common.cancel, style: 'cancel' },
-            { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
-          ],
-        );
-      }
-    }, 2000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigationRef]);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -257,6 +238,25 @@ export const App = () => {
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
+
+  useEffect(() => {
+    if (isAppReady && !isLocked) {
+      if (disconnectedProviders && disconnectedProviders.length) {
+        const disconnectedProvidersStr = disconnectedProviders.map(item => item.chain);
+        Alert.alert(
+          i18n.warningTitle.warning,
+          `${i18n.common.providerErrorMessagePart1}${disconnectedProvidersStr.join(', ')}${
+            i18n.common.providerErrorMessagePart2
+          }`,
+          [
+            { text: i18n.common.cancel },
+            { text: i18n.common.goToNetworkConfig, onPress: () => navigationRef.navigate('NetworkConfig') },
+          ],
+        );
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAppReady, isLocked, navigationRef]);
 
   return useMemo(
     () => (

@@ -18,7 +18,7 @@ const textStyle: StyleProp<any> = {
   ...sharedStyles.mediumText,
   ...FontSemiBold,
   color: ColorMap.light,
-  paddingRight: 4,
+  paddingRight: 8,
 };
 
 const subTextStyle: StyleProp<any> = {
