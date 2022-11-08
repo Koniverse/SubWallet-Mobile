@@ -149,6 +149,12 @@ function formReducer(state: FormState, action: FormControlAction) {
       Object.values(state.refs)[state.index].current?.focus();
 
       return { ...state };
+    case 'blur':
+      console.log('blur');
+      state.index = Object.keys(state.refs).indexOf(fieldName);
+      Object.values(state.refs)[state.index].current?.blur();
+
+      return { ...state };
     default:
       throw new Error('Invalid form action');
   }
@@ -182,11 +188,21 @@ export default function useFormControl(formConfig: FormControlConfig, formContro
     },
     [formState.refs],
   );
+
+  const blur = useCallback(
+    (target: string | number) => {
+      const fieldName = typeof target === 'string' ? target : Object.keys(formState.refs)[target];
+      return () => dispatchForm({ type: 'blur', payload: { fieldName } });
+    },
+    [formState.refs],
+  );
+
   return {
     formState,
     onUpdateErrors,
     onChangeValue,
     onSubmitField,
     focus,
+    blur,
   };
 }

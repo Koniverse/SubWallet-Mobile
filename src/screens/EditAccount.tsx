@@ -59,7 +59,7 @@ export const EditAccount = ({
 
   const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
 
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, blur } = useFormControl(formConfig, {
     onSubmitForm: _saveChange,
   });
 
@@ -88,7 +88,8 @@ export const EditAccount = ({
 
   const onSave = useCallback(() => {
     _saveChange(formState);
-  }, [_saveChange, formState]);
+    blur('accountName')();
+  }, [_saveChange, blur, formState]);
 
   return (
     <SubScreenContainer
