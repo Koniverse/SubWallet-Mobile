@@ -4,6 +4,11 @@ import { PredefinedDApps } from 'types/browser';
 
 export const DAppIconMap: Record<string, string> = {
   'kintsugi.interlay.io': 'https://kintsugi.interlay.io/kintsugi/apple-touch-icon.png',
+  'kanaria.rmrk.app': 'https://rmrk-unrestricted.mypinata.cloud/ipfs/QmSkVkPiMsr1Ryu7122KHoAHqsCrgQCWthNniykLKqbA5H',
+  'distribution.acala.network': 'https://avatars.githubusercontent.com/u/54881907?s=200&v=4',
+  'www.xdao.app': 'https://moonbeam.network/wp-content/uploads/2022/03/xDAO.png',
+  'crowdloan.interlay.io': 'https://assets.coingecko.com/coins/images/26180/small/Interlay-Coinbase-2.png',
+  'ace.web3go.xyz': 'https://ace.web3go.xyz/favicon.ico',
 };
 
 export const DAppTitleMap: Record<string, string> = {
