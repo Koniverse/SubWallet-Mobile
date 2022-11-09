@@ -235,6 +235,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         );
       })}
       <Toast
+        textStyle={{ textAlign: 'center' }}
         duration={1500}
         normalColor={ColorMap.notification}
         ref={toastRef}

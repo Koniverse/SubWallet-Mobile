@@ -135,16 +135,14 @@ export const FirstScreen = () => {
       <ImageBackground source={Images.loadingScreen} resizeMode={'cover'} style={imageBackgroundStyle}>
         <SafeAreaView />
         <View style={logoStyle}>
-          <View style={{ position: 'absolute', top: '50%', marginTop: -115 }}>
-            <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
-              <SVGImages.SubWallet2 width={230} height={230} />
-            </Suspense>
-          </View>
+          <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
+            <SVGImages.SubWallet2 width={230} height={230} />
+          </Suspense>
 
           <SubmitButton
             leftIcon={UserCirclePlus}
             title={i18n.common.createNewWalletAccount}
-            style={{ ...buttonStyle, marginTop: 58 }}
+            style={{ ...buttonStyle, marginTop: 48 }}
             onPress={() => {
               setSelectedAction('CreateAccount');
               setSelectTypeModalVisible(true);

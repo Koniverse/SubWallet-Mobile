@@ -132,7 +132,10 @@ export const ReceiveModal = ({
     <SubWalletModal modalVisible={receiveModalVisible} onChangeModalVisible={onChangeVisible}>
       <View style={receiveModalContentWrapper}>
         <Text style={receiveModalTitle}>{i18n.title.receiveAsset}</Text>
-        <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />
+        <View style={{ borderWidth: 2, borderColor: ColorMap.light }}>
+          <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />
+        </View>
+
         <Text style={receiveModalGuide}>{i18n.common.receiveModalText}</Text>
 
         <View style={receiveModalAddressWrapper}>

@@ -316,16 +316,6 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
               {delegations && selectedValidator && (
                 <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
               )}
-              {delegations && (
-                <DelegationSelectModal
-                  delegations={delegations}
-                  modalVisible={visible}
-                  onChangeModalVisible={closeModal}
-                  onChangeValue={onSelectCollator}
-                  selectedItem={selectedDelegation}
-                  networkKey={networkKey}
-                />
-              )}
               <View style={IconContainerStyle}>
                 <View>
                   <SubWalletAvatar size={40} address={selectedAccount} />
@@ -372,6 +362,16 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
             onPress={onContinue}
           />
         </View>
+        {delegations && (
+          <DelegationSelectModal
+            delegations={delegations}
+            modalVisible={visible}
+            onChangeModalVisible={closeModal}
+            onChangeValue={onSelectCollator}
+            selectedItem={selectedDelegation}
+            networkKey={networkKey}
+          />
+        )}
       </View>
     </ContainerWithSubHeader>
   );

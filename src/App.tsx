@@ -262,6 +262,7 @@ export const App = () => {
             duration={1500}
             placement="top"
             normalColor={theme.colors.notification}
+            textStyle={{ textAlign: 'center' }}
             successColor={theme.colors.primary}
             warningColor={theme.colors.notification_warning}
             offsetTop={STATUS_BAR_HEIGHT + 40}
