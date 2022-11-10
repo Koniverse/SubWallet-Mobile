@@ -71,7 +71,6 @@ const StakeAuth = ({
   const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   useHandlerHardwareBackPress(loading);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
-  // const isNetConnected = false;
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
     (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
@@ -184,7 +183,7 @@ const StakeAuth = ({
           />
           <TextField text={totalString} label={i18n.stakeAction.total} disabled={true} />
 
-          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton

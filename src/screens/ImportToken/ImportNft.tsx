@@ -253,7 +253,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           value={collectionName}
         />
 
-        {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+        {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
 
         <SubmitButton
           isBusy={loading}

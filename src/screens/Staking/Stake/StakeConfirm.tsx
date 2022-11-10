@@ -284,7 +284,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
 
           {!!warningMessage && <Warning style={WarningStyle} message={warningMessage} isDanger />}
 
-          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View>
           <View style={BalanceContainerStyle}>

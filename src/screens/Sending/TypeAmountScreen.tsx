@@ -149,9 +149,7 @@ export const TypeAmountScreen = ({
           <Warning style={WarningStyle} isDanger message={i18n.warningMessage.notSupportTransferMessage} />
         )}
 
-        {!isNetConnected && (
-          <Warning style={WarningStyle} isDanger message={'No Internet connection. Please try again later'} />
-        )}
+        {!isNetConnected && <Warning style={WarningStyle} isDanger message={i18n.warningMessage.noInternetMessage} />}
       </ScrollView>
 
       <View style={ContainerHorizontalPadding}>

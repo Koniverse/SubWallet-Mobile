@@ -107,7 +107,7 @@ export const ConfigureToken = ({
           <TextField disabled={true} label={i18n.common.tokenType} text={customTokenInfo.type.toUpperCase()} />
 
           {!isNetConnected && (
-            <Warning style={{ marginBottom: 8 }} isDanger message={'No Internet connection. Please try again later'} />
+            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
           )}
         </ScrollView>
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>

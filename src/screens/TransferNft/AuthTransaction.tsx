@@ -374,7 +374,7 @@ const AuthTransaction = (props: Props) => {
 
           {!!error && <Warning message={error} isDanger />}
 
-          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
           <SubmitButton

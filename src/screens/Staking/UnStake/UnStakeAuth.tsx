@@ -54,7 +54,6 @@ const UnStakeAuth = ({
 }: UnStakeAuthProps) => {
   const { networkKey, selectedAccount } = unStakeParams;
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
-  // const isNetConnected = false;
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
@@ -185,7 +184,7 @@ const UnStakeAuth = ({
             label={i18n.unStakeAction.unStakingFee}
           />
           <TextField text={totalString} label={i18n.unStakeAction.total} disabled={true} />
-          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton

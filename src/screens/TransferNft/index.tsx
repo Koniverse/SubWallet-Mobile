@@ -264,7 +264,7 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                   isValidValue={!addressError}
                 />
                 <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
-                {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+                {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
                 {!!error && <Warning message={error} isDanger />}
               </ScrollView>
               <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>

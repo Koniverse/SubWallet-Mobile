@@ -556,6 +556,7 @@ export const vi = {
     enableAtLeast1Network: 'Please enable at least 1 network',
     readOnly: 'You are using readonly account',
     sendReadOnly: 'The account you are using is read-only, you cannot send assets with it.',
+    noInternetMessage: 'No Internet connection. Please try again later',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

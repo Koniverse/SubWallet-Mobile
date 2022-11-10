@@ -381,7 +381,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
           )}
 
           {isCompoundReady && isDelegationReady && !isNetConnected && (
-            <Warning isDanger message={'No Internet connection. Please try again later'} />
+            <Warning isDanger message={i18n.warningMessage.noInternetMessage} />
           )}
         </ScrollView>
 

@@ -95,7 +95,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
         />
 
         {!isNetConnected && (
-          <Warning style={{ marginBottom: 8 }} isDanger message={'No Internet connection. Please try again later'} />
+          <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
         )}
 
         <SubmitButton

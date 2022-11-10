@@ -162,7 +162,7 @@ const CompoundAuth = ({
           />
           <TextField text={feeString} label={i18n.unStakeAction.total} disabled={true} />
 
-          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton

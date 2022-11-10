@@ -211,9 +211,7 @@ export const ChainAndAccountSelectScreen = ({
             />
           )}
 
-          {!isNetConnected && (
-            <Warning style={WarningStyle} isDanger message={'No Internet connection. Please try again later'} />
-          )}
+          {!isNetConnected && <Warning style={WarningStyle} isDanger message={i18n.warningMessage.noInternetMessage} />}
         </View>
       </ScrollView>
 

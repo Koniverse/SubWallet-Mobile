@@ -196,7 +196,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
               />
               <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
 
-              {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
+              {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />
