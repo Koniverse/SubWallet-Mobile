@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Keyboard, ScrollView, StyleProp, Text, View } from 'react-native';
 import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import {
@@ -29,6 +29,8 @@ import { CustomField } from 'components/Field/Custom';
 import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
 import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
 import { noop } from 'utils/function';
+import { Warning } from 'components/Warning';
+import { WebRunnerContext } from 'providers/contexts';
 
 const balanceValTextStyle: StyleProp<any> = { ...sharedStyles.mainText, color: ColorMap.disabled, ...FontMedium };
 
@@ -80,6 +82,7 @@ export const Confirmation = ({
     transferAll: requestPayload.transferAll,
     token: requestPayload.token,
   };
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const crossChainTransferRequestPayload: RequestCheckCrossChainTransfer = {
     originNetworkKey: requestPayload.originNetworkKey,
@@ -134,6 +137,11 @@ export const Confirmation = ({
     Keyboard.dismiss();
     onChangeBusy(true);
 
+    if (!isNetConnected) {
+      onChangeBusy(false);
+      return;
+    }
+
     makeTransfer(
       {
         ...onChainTransferRequestPayload,
@@ -147,6 +155,10 @@ export const Confirmation = ({
 
   const _doXcmTransfer = (password: string): void => {
     onChangeBusy(true);
+    if (!isNetConnected) {
+      onChangeBusy(false);
+      return;
+    }
     makeCrossChainTransfer(
       {
         ...crossChainTransferRequestPayload,
@@ -156,6 +168,14 @@ export const Confirmation = ({
     )
       .then(handlerResponseError)
       .catch(e => console.log('There is problem when makeTransfer', e));
+  };
+
+  const onPressConfirmButton = (password: string) => {
+    if (requestPayload.originNetworkKey === requestPayload.destinationNetworkKey) {
+      _doTransfer(password);
+    } else {
+      _doXcmTransfer(password);
+    }
   };
 
   return (
@@ -205,6 +225,10 @@ export const Confirmation = ({
               <BalanceVal value={feeValue} balanceValTextStyle={balanceValTextStyle} symbol={feeSymbol} />
             </View>
           </CustomField>
+
+          {!isNetConnected && (
+            <Warning style={{ marginBottom: 8 }} isDanger message={'No Internet connection. Please try again later'} />
+          )}
         </View>
       </ScrollView>
 
@@ -212,18 +236,13 @@ export const Confirmation = ({
         isBusy={isBusy}
         visible={modalVisible}
         closeModal={() => setModalVisible(false)}
-        onConfirm={password => {
-          if (requestPayload.originNetworkKey === requestPayload.destinationNetworkKey) {
-            _doTransfer(password);
-          } else {
-            _doXcmTransfer(password);
-          }
-        }}
+        onConfirm={onPressConfirmButton}
         errorArr={errorArr}
         setErrorArr={setErrorArr}
       />
 
       <SubmitButton
+        disabled={!isNetConnected}
         isBusy={isBusy}
         style={{ ...MarginBottomForSubmitButton, marginHorizontal: 16, marginTop: 16 }}
         title={i18n.common.send}

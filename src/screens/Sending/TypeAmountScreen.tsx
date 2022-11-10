@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import {
   ContainerHorizontalPadding,
@@ -24,6 +24,7 @@ import { TokenSelect } from 'screens/TokenSelect';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 import { SendAssetInputBalance } from 'screens/Sending/Field/SendAssetInputBalance';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface Props {
   amount: string;
@@ -110,6 +111,7 @@ export const TypeAmountScreen = ({
   const amountGtAvailableBalance =
     !!rawAmount && !!senderFreeBalance && new BigN(rawAmount).gt(new BigN(senderFreeBalance));
   const canMakeTransfer = !!rawAmount && isSupportTransfer && !isGasRequiredExceedsError && !amountGtAvailableBalance;
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const _onChangeToken = (item: TokenItemType) => {
     onChangeSelectedToken(item.symbol);
@@ -118,23 +120,25 @@ export const TypeAmountScreen = ({
 
   return (
     <>
-      <ScrollView style={ContainerHorizontalPadding} contentContainerStyle={{ flex: 1 }}>
+      <ScrollView style={ContainerHorizontalPadding} contentContainerStyle={{ flexGrow: 1 }}>
         <TouchableOpacity style={SelectTokenButtonStyle} onPress={() => setTokenListModalVisible(true)}>
           {getNetworkLogo(originToken || originChain, 20, originChain)}
           <Text style={SelectTokenTextStyle}>{originToken}</Text>
           <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} />
         </TouchableOpacity>
         <View style={{ flex: 1, alignItems: 'center', paddingTop: 56 }}>
-          <SendAssetInputBalance
-            value={rawAmount !== undefined ? getBalanceWithSi(amount, balanceFormat[0], si, originToken)[0] : ''}
-            placeholder={'0'}
-            si={si}
-            maxValue={senderFreeBalance}
-            onChange={onChangeAmount}
-            decimals={balanceFormat[0]}
-            ref={inputBalanceRef}
-          />
-          {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
+          <View style={{ minHeight: 120, alignItems: 'center' }}>
+            <SendAssetInputBalance
+              value={rawAmount !== undefined ? getBalanceWithSi(amount, balanceFormat[0], si, originToken)[0] : ''}
+              placeholder={'0'}
+              si={si}
+              maxValue={senderFreeBalance}
+              onChange={onChangeAmount}
+              decimals={balanceFormat[0]}
+              ref={inputBalanceRef}
+            />
+            {reformatAmount && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={true} />}
+          </View>
         </View>
 
         {amountGtAvailableBalance && (
@@ -143,6 +147,10 @@ export const TypeAmountScreen = ({
 
         {!isSupportTransfer && (
           <Warning style={WarningStyle} isDanger message={i18n.warningMessage.notSupportTransferMessage} />
+        )}
+
+        {!isNetConnected && (
+          <Warning style={WarningStyle} isDanger message={'No Internet connection. Please try again later'} />
         )}
       </ScrollView>
 
@@ -161,7 +169,7 @@ export const TypeAmountScreen = ({
         </View>
 
         <SubmitButton
-          disabled={!canMakeTransfer}
+          disabled={!canMakeTransfer || !isNetConnected}
           title={i18n.common.continue}
           style={{ width: '100%', ...MarginBottomForSubmitButton }}
           onPress={onPressToNextStep}

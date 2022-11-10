@@ -1,5 +1,5 @@
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import React, { createRef, useEffect, useMemo, useState } from 'react';
+import React, { createRef, useContext, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View } from 'react-native';
 import { MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -23,6 +23,7 @@ import { TokenSelect } from 'screens/TokenSelect';
 import { TokenItemType } from 'types/ui-types';
 import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
 import { getNetworkPrefix } from 'screens/Sending/Confirmation';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface Props {
   senderAddress: string;
@@ -77,6 +78,7 @@ export const ChainAndAccountSelectScreen = ({
     isAccountAll(senderAddress) || !!networkMap[originChain].isEthereum === isEthereumAddress(senderAddress);
   const checkDestinationChainAndReceiverIdType =
     !!receiveAddress && !!networkMap[destinationChain].isEthereum === isEthereumAddress(receiveAddress);
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const senderAccount = useGetAccountByAddress(senderAddress);
 
@@ -208,12 +210,16 @@ export const ChainAndAccountSelectScreen = ({
               message={`${i18n.warningMessage.recipientPhish} ${recipientPhish}`}
             />
           )}
+
+          {!isNetConnected && (
+            <Warning style={WarningStyle} isDanger message={'No Internet connection. Please try again later'} />
+          )}
         </View>
       </ScrollView>
 
       <View style={{ marginTop: 16 }}>
         <SubmitButton
-          disabled={!isValidTransferInfo}
+          disabled={!isValidTransferInfo || !isNetConnected}
           title={i18n.common.continue}
           style={{ width: '100%', ...MarginBottomForSubmitButton }}
           onPress={onPressToNextStep}
