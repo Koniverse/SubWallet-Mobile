@@ -11,7 +11,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { createRef, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { createRef, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -44,6 +44,8 @@ import i18n from 'utils/i18n/i18n';
 import { CHAIN_TYPE_MAP } from 'constants/stakingScreen';
 import { getStakeDelegationInfo, getUnbondingTxInfo } from '../../../messaging';
 import DelegationBriefInfo from 'components/Staking/DelegationBriefInfo';
+import { WebRunnerContext } from 'providers/contexts';
+import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -68,6 +70,7 @@ const BalanceContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
   paddingBottom: 24,
+  paddingTop: 8,
 };
 
 const TransferableContainerStyle: StyleProp<ViewStyle> = {
@@ -95,7 +98,7 @@ const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[]
 
 const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack } }: UnStakeConfirmProps) => {
   const { networkKey, selectedAccount, bondedAmount } = unStakeParams;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const toast = useToast();
 
   const navigation = useNavigation<RootNavigationProps>();
@@ -211,6 +214,10 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
     const bnAmount = new BigN(rawAmount.toString());
     const isAmountEqualAll = bnAmount.eq(new BigN(maxUnBoned));
 
+    if (!isNetConnected) {
+      setLoading(false);
+      return;
+    }
     getUnbondingTxInfo({
       address: selectedAccount,
       amount: reformatAmount,
@@ -237,6 +244,7 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
   }, [
     rawAmount,
     maxUnBoned,
+    isNetConnected,
     selectedAccount,
     reformatAmount,
     networkKey,
@@ -310,31 +318,35 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
       <View style={ContainerStyle}>
         <ScrollView
           style={{ ...ScrollViewStyle }}
-          contentContainerStyle={{ flex: 1, justifyContent: !isDataReady ? 'center' : undefined }}>
+          contentContainerStyle={{ flexGrow: 1, justifyContent: !isDataReady ? 'center' : undefined }}>
           {isDataReady ? (
             <>
-              {delegations && selectedValidator && (
-                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
-              )}
-              <View style={IconContainerStyle}>
-                <View>
-                  <SubWalletAvatar size={40} address={selectedAccount} />
+              <View style={{ flex: 1, paddingBottom: 16 }}>
+                {delegations && selectedValidator && (
+                  <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
+                )}
+                <View style={IconContainerStyle}>
+                  <View>
+                    <SubWalletAvatar size={40} address={selectedAccount} />
+                  </View>
+                </View>
+                <InputBalance
+                  placeholder={'0'}
+                  si={si}
+                  onChangeSi={setSi}
+                  maxValue={maxUnBoned}
+                  onChange={onChangeAmount}
+                  decimals={balanceFormat[0]}
+                  ref={inputBalanceRef}
+                  siSymbol={selectedToken}
+                  disable={loading}
+                />
+                <View style={RowCenterStyle}>
+                  {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
                 </View>
               </View>
-              <InputBalance
-                placeholder={'0'}
-                si={si}
-                onChangeSi={setSi}
-                maxValue={maxUnBoned}
-                onChange={onChangeAmount}
-                decimals={balanceFormat[0]}
-                ref={inputBalanceRef}
-                siSymbol={selectedToken}
-                disable={loading}
-              />
-              <View style={RowCenterStyle}>
-                {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
-              </View>
+
+              {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />

@@ -8,7 +8,7 @@ import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { WithdrawAuthProps } from 'routes/staking/withdrawAction';
@@ -23,6 +23,8 @@ import i18n from 'utils/i18n/i18n';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { getStakeWithdrawalTxInfo, submitStakeWithdrawal } from '../../../messaging';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
+import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -46,7 +48,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
 
 const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack } }: WithdrawAuthProps) => {
   const { withdrawAmount: amount, networkKey, selectedAccount, nextWithdrawalAction, targetValidator } = withdrawParams;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
@@ -193,6 +195,8 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
                 label={i18n.withdrawStakeAction.withdrawFee}
               />
               <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
+
+              {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />
@@ -207,7 +211,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
           />
           <SubmitButton
             // isBusy={loading}
-            disabled={!isTxReady}
+            disabled={!isTxReady || !isNetConnected}
             title={i18n.common.continue}
             style={ButtonStyle}
             onPress={handleOpen}

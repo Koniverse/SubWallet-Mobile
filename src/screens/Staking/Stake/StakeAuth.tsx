@@ -9,7 +9,7 @@ import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { StakeAuthProps } from 'routes/staking/stakeAction';
@@ -23,6 +23,8 @@ import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitBonding } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
+import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -68,6 +70,8 @@ const StakeAuth = ({
   const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
   const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
   useHandlerHardwareBackPress(loading);
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  // const isNetConnected = false;
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
     (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
@@ -179,6 +183,8 @@ const StakeAuth = ({
             label={i18n.stakeAction.stakingFee}
           />
           <TextField text={totalString} label={i18n.stakeAction.total} disabled={true} />
+
+          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -189,6 +195,7 @@ const StakeAuth = ({
           />
           <SubmitButton
             // isBusy={loading}
+            disabled={!isNetConnected}
             title={i18n.common.continue}
             style={ButtonStyle}
             onPress={handleOpen}

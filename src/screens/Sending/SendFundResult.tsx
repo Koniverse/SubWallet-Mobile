@@ -60,7 +60,7 @@ const subtitleStyle: StyleProp<any> = {
 };
 
 function getButtonStyle(hash?: string) {
-  return { marginBottom: !hash ? 0 : 18 };
+  return { marginBottom: hash ? 0 : 18 };
 }
 
 export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSuccess, txError }, onResend }: Props) => {

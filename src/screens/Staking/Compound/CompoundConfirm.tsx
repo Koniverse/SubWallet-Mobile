@@ -13,7 +13,7 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { Warning } from 'components/Warning';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import moment from 'moment';
-import React, { createRef, useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { createRef, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import {
   ConfirmCompoundActionName,
@@ -39,6 +39,7 @@ import {
 } from '../../../messaging';
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -68,7 +69,7 @@ const filterValidDelegations = (delegations: DelegationItem[]): DelegationItem[]
 const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: CompoundConfirmProps) => {
   const { networkKey, selectedAccount } = compoundParams;
   const { goBack } = navigation;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const network = useGetNetworkJson(networkKey);
 
   const inputBalanceRef = createRef();
@@ -208,6 +209,12 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
 
   const onContinue = useCallback(() => {
     setLoading(true);
+
+    if (!isNetConnected) {
+      setLoading(false);
+      return;
+    }
+
     if (hasCompoundRequest) {
       handleCancelCompound(networkKey, selectedAccount, currentTaskId, selectedDelegation);
     } else {
@@ -219,6 +226,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
     handleCancelCompound,
     handleCompound,
     hasCompoundRequest,
+    isNetConnected,
     networkKey,
     nominatedAmount,
     selectedAccount,
@@ -316,19 +324,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
               {delegations && selectedValidator && (
                 <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
               )}
-              {delegations && (
-                <DelegationSelectModal
-                  delegations={delegations}
-                  modalVisible={visible}
-                  onChangeModalVisible={closeModal}
-                  onChangeValue={onSelectValidator}
-                  selectedItem={selectedDelegation}
-                  networkKey={networkKey}
-                />
-              )}
-              <ScrollView
-                style={{ ...ScrollViewStyle }}
-                contentContainerStyle={!isCompoundReady ? { ...centerStyle } : undefined}>
+              <View style={[ScrollViewStyle, !isCompoundReady ? { ...centerStyle } : undefined, { flex: 1 }]}>
                 {isCompoundReady ? (
                   <>
                     {hasCompoundRequest ? (
@@ -374,22 +370,40 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
                 ) : (
                   <ActivityIndicator animating={true} size={'large'} />
                 )}
-              </ScrollView>
+              </View>
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />
           )}
+
+          {isCompoundReady && isDelegationReady && !!warningMessage && (
+            <Warning style={WarningStyle} message={warningMessage} isDanger />
+          )}
+
+          {isCompoundReady && isDelegationReady && !isNetConnected && (
+            <Warning isDanger message={'No Internet connection. Please try again later'} />
+          )}
         </ScrollView>
-        {isCompoundReady && isDelegationReady && !!warningMessage && (
-          <Warning style={WarningStyle} message={warningMessage} isDanger />
+
+        {delegations && (
+          <DelegationSelectModal
+            delegations={delegations}
+            modalVisible={visible}
+            onChangeModalVisible={closeModal}
+            onChangeValue={onSelectValidator}
+            selectedItem={selectedDelegation}
+            networkKey={networkKey}
+          />
         )}
+
         <View>
           <SubmitButton
-            disabled={isNextButtonDisabled || !isCompoundReady || !isDelegationReady}
+            disabled={isNextButtonDisabled || !isCompoundReady || !isDelegationReady || !isNetConnected}
             isBusy={loading}
             title={hasCompoundRequest ? i18n.common.cancelTask : i18n.common.continue}
             style={{
               width: '100%',
+              marginTop: 16,
               ...MarginBottomForSubmitButton,
             }}
             onPress={onContinue}

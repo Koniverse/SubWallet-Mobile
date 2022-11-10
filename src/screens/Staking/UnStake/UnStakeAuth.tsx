@@ -11,7 +11,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { UnStakeAuthProps } from 'routes/staking/unStakeAction';
@@ -23,6 +23,8 @@ import { getBalanceWithSi, toShort } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitUnbonding } from '../../../messaging';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
+import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -51,7 +53,8 @@ const UnStakeAuth = ({
   navigation: { goBack },
 }: UnStakeAuthProps) => {
   const { networkKey, selectedAccount } = unStakeParams;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  // const isNetConnected = false;
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
@@ -182,6 +185,7 @@ const UnStakeAuth = ({
             label={i18n.unStakeAction.unStakingFee}
           />
           <TextField text={totalString} label={i18n.unStakeAction.total} disabled={true} />
+          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -192,6 +196,7 @@ const UnStakeAuth = ({
           />
           <SubmitButton
             // isBusy={loading}
+            disabled={!isNetConnected}
             title={i18n.common.continue}
             style={ButtonStyle}
             onPress={handleOpen}

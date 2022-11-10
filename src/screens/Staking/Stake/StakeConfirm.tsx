@@ -11,7 +11,7 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { Warning } from 'components/Warning';
 import useFreeBalance from 'hooks/screen/useFreeBalance';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { createRef, useCallback, useMemo, useState } from 'react';
+import React, { createRef, useCallback, useContext, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { StakeConfirmProps } from 'routes/staking/stakeAction';
@@ -27,6 +27,7 @@ import {
 import i18n from 'utils/i18n/i18n';
 import { getBondingTxInfo } from '../../../messaging';
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
+import { WebRunnerContext } from 'providers/contexts';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -50,6 +51,7 @@ const BalanceContainerStyle: StyleProp<ViewStyle> = {
   width: '100%',
   flexDirection: 'row',
   justifyContent: 'space-between',
+  paddingTop: 8,
   paddingBottom: 24,
 };
 
@@ -78,7 +80,7 @@ const DEFAULT_AMOUNT = -1;
 
 const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }: StakeConfirmProps) => {
   const { validator, networkKey, networkValidatorsInfo, selectedAccount } = stakeParams;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
@@ -201,6 +203,11 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
 
   const onContinue = useCallback(() => {
     setLoading(true);
+
+    if (!isNetConnected) {
+      setLoading(false);
+      return;
+    }
     getBondingTxInfo({
       networkKey: networkKey,
       nominatorAddress: selectedAccount,
@@ -229,15 +236,16 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
         setLoading(false);
       });
   }, [
-    bondedValidators,
-    selectedAccount,
-    isBondedBefore,
+    isNetConnected,
     networkKey,
-    rawAmount,
+    selectedAccount,
     reformatAmount,
+    validator,
+    isBondedBefore,
+    bondedValidators,
     navigation,
     stakeParams,
-    validator,
+    rawAmount,
     si,
   ]);
 
@@ -250,29 +258,34 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16 }}>
-          <ValidatorBriefInfo validator={validator} onPress={handleOpenValidatorDetail} disable={loading} />
-          <View style={IconContainerStyle}>
-            <View>
-              <SubWalletAvatar size={40} address={selectedAccount} />
+        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={{ paddingTop: 16, flexGrow: 1 }}>
+          <View style={{ flex: 1, paddingBottom: 16 }}>
+            <ValidatorBriefInfo validator={validator} onPress={handleOpenValidatorDetail} disable={loading} />
+            <View style={IconContainerStyle}>
+              <View>
+                <SubWalletAvatar size={40} address={selectedAccount} />
+              </View>
+            </View>
+            <InputBalance
+              placeholder={'0'}
+              si={si}
+              onChangeSi={setSi}
+              maxValue={senderFreeBalance}
+              onChange={onChangeAmount}
+              decimals={balanceFormat[0]}
+              ref={inputBalanceRef}
+              siSymbol={selectedToken}
+              disable={loading}
+            />
+            <View style={RowCenterStyle}>
+              {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
             </View>
           </View>
-          <InputBalance
-            placeholder={'0'}
-            si={si}
-            onChangeSi={setSi}
-            maxValue={senderFreeBalance}
-            onChange={onChangeAmount}
-            decimals={balanceFormat[0]}
-            ref={inputBalanceRef}
-            siSymbol={selectedToken}
-            disable={loading}
-          />
-          <View style={RowCenterStyle}>
-            {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
-          </View>
+
+          {!!warningMessage && <Warning style={WarningStyle} message={warningMessage} isDanger />}
+
+          {!isNetConnected && <Warning isDanger message={'No Internet connection. Please try again later'} />}
         </ScrollView>
-        {!!warningMessage && <Warning style={WarningStyle} message={warningMessage} isDanger />}
         <View>
           <View style={BalanceContainerStyle}>
             <View style={TransferableContainerStyle}>
@@ -285,7 +298,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
             </TouchableOpacity>
           </View>
           <SubmitButton
-            disabled={!canStake}
+            disabled={!canStake || !isNetConnected}
             isBusy={loading}
             title={i18n.common.continue}
             style={{
