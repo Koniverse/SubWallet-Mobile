@@ -10,6 +10,7 @@ import { RootNavigationProps } from 'routes/index';
 import { defaultSortFunc } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { LazyFlatList } from 'components/LazyFlatList';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 interface RightIconOpt {
@@ -43,6 +44,7 @@ interface Props<T> {
   leftButtonDisabled?: boolean;
   headerContent?: () => JSX.Element;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
+  isNetConnected?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -68,6 +70,7 @@ export function FlatListScreen<T>({
   leftButtonDisabled,
   headerContent,
   refreshControl,
+  isNetConnected = true,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -99,18 +102,22 @@ export function FlatListScreen<T>({
           searchRef={searchRef}
         />
       )}
-      <LazyFlatList
-        items={items}
-        searchString={searchString}
-        flatListStyle={flatListStyle}
-        renderItem={renderItem}
-        renderListEmptyComponent={renderListEmptyComponent}
-        refreshControl={refreshControl}
-        filterFunction={filterFunction}
-        sortFunction={sortFunction}
-        loading={loading}
-        numberColumns={numberColumns}
-      />
+      {isNetConnected ? (
+        <LazyFlatList
+          items={items}
+          searchString={searchString}
+          flatListStyle={flatListStyle}
+          renderItem={renderItem}
+          renderListEmptyComponent={renderListEmptyComponent}
+          refreshControl={refreshControl}
+          filterFunction={filterFunction}
+          sortFunction={sortFunction}
+          loading={loading}
+          numberColumns={numberColumns}
+        />
+      ) : (
+        <NoInternetScreen />
+      )}
       {afterListItem}
     </View>
   );

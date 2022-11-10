@@ -2,12 +2,14 @@ import { PasswordField } from 'components/Field/Password';
 import { SubmitButton } from 'components/SubmitButton';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { Warning } from 'components/Warning';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface Props {
   visible: boolean;
@@ -50,6 +52,7 @@ const formConfig: FormControlConfig = {
 };
 
 const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr }: Props) => {
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const onSubmit = useCallback(
     (formState: FormState) => {
       const password = formState.data.password;
@@ -90,12 +93,17 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           style={PasswordContainerStyle}
           isBusy={isBusy}
         />
+
+        {!isNetConnected && (
+          <Warning style={{ marginBottom: 8 }} isDanger message={'No Internet connection. Please try again later'} />
+        )}
+
         <SubmitButton
           title={i18n.common.confirm}
           style={ButtonStyle}
           isBusy={isBusy}
           onPress={onPress}
-          disabled={!formState.data.password || formState.errors.password.length > 0}
+          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected}
         />
       </View>
     </SubWalletModal>
