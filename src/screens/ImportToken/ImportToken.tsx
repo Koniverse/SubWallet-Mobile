@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportTokenProps, RootNavigationProps } from 'routes/index';
@@ -25,6 +25,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { WebRunnerContext } from 'providers/contexts';
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -36,6 +37,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   useHandlerHardwareBackPress(isBusy);
   const payload = routeParams?.payload;
   const tokenInfo = payload?.payload;
+  const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const formConfig = {
     contractAddress: {
       require: true,
@@ -75,6 +77,11 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
     if (payload) {
       completeConfirmation('addTokenRequest', { id: payload.id, isApproved: true }).catch(console.error);
+    }
+
+    if (!isNetConnected) {
+      setBusy(false);
+      return;
     }
 
     upsertCustomToken(customToken)
@@ -180,7 +187,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     !formState.data.contractAddress ||
     !!formState.errors.contractAddress.length ||
     !formState.data.symbol ||
-    !formState.data.decimals;
+    !formState.data.decimals ||
+    !isNetConnected;
 
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
@@ -197,7 +205,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onPressQrButton={onPressQrButton}
           />
 
-          {!!formState.errors.contractAddress.length && (
+          {isReady && !!formState.errors.contractAddress.length && (
             <Warning isDanger message={formState.errors.contractAddress[0]} style={{ marginBottom: 8 }} />
           )}
 
@@ -208,6 +216,14 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           <TextField label={i18n.common.symbol} text={formState.data.symbol} />
 
           <TextField disabled={true} label={i18n.common.decimals} text={formState.data.decimals} />
+
+          {!isNetConnected && (
+            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
+          )}
+
+          {!isReady && (
+            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
+          )}
 
           <AddressScanner
             qrModalVisible={isShowQrModalVisible}
