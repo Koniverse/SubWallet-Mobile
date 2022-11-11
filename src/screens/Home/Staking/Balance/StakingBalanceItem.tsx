@@ -141,7 +141,11 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
             <Text style={NetworkNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
               {networkDisplayName}
             </Text>
-            <View style={[BaseBannerStyle, staking.type === StakingType.NOMINATED ? NominatedBannerStyle : PoolBannerStyle]}>
+            <View
+              style={[
+                BaseBannerStyle,
+                staking.type === StakingType.NOMINATED ? NominatedBannerStyle : PoolBannerStyle,
+              ]}>
               {staking.type === StakingType.NOMINATED ? (
                 <User size={12} color={ColorMap.disabled} style={IconStyle} />
               ) : (

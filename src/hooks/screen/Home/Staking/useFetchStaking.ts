@@ -142,7 +142,7 @@ export default function useFetchStaking(): StakingType {
     }
 
     for (const stakingItem of readyStakingItems) {
-      const stakingDataType = { staking: stakingItem } as StakingDataType;
+      const stakingDataType: StakingDataType = { staking: stakingItem };
 
       for (const reward of stakingRewardList) {
         if (

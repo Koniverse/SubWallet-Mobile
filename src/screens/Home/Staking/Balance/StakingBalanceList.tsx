@@ -42,7 +42,8 @@ const StakingBalanceList = () => {
         navigation.navigate('Staking', {
           screen: 'StakingBalanceDetail',
           params: {
-            networkKey: stakingData.key,
+            networkKey: stakingData.staking.chain,
+            stakingType: stakingData.staking.type,
           },
         });
       };

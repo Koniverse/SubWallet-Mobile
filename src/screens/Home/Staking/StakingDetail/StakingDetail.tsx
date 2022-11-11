@@ -77,7 +77,7 @@ const BalanceConvertedTextStyle: StyleProp<TextStyle> = {
 
 const StakingDetail = ({
   route: {
-    params: { networkKey },
+    params: { networkKey, stakingType },
   },
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
@@ -91,10 +91,11 @@ const StakingDetail = ({
   const [visible, setVisible] = useState(false);
 
   const data = useMemo((): StakingDataType => {
-    return stakingData.find(item => item.key === networkKey) as StakingDataType;
-  }, [stakingData, networkKey]);
+    return stakingData.find(
+      item => item.staking.chain === networkKey && item.staking.type === stakingType,
+    ) as StakingDataType;
+  }, [stakingData, networkKey, stakingType]);
   const { staking, reward } = data || { staking: {}, reward: {} };
-  const { type: stakingType } = staking;
 
   const accountCanSign = useCurrentAccountCanSign();
   const isCanSign = useMemo(

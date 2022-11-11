@@ -55,7 +55,6 @@ export type ConfirmationHookType = {
 export type StakingDataType = {
   staking: StakingItem;
   reward?: StakingRewardItem;
-  key: string;
 };
 
 export type StakingType = {
