@@ -54,7 +54,7 @@ const StakingBalanceList = () => {
     ({ item: stakingData }: ListRenderItemInfo<StakingDataType>) => {
       return (
         <StakingBalanceItem
-          key={stakingData.staking.chainId}
+          key={stakingData.staking.chain}
           stakingData={stakingData}
           priceMap={priceMap}
           onPress={handleOnPress}

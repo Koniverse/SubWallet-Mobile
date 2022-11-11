@@ -35,6 +35,8 @@ export const ColorMap = {
   switchInactiveButtonColor: 'rgba(120,120,128,0.32)',
   modalSeparatorColor: 'rgba(255, 255, 255, 0.1)',
   subIconBackgroundColor: 'rgba(34, 34, 34, 0.75)',
+  nominatedBackground: 'rgba(153, 153, 153, 0.2)',
+  pooledBackground: 'rgba(66, 197, 154, 0.2)',
 };
 
 export const Background = StyleSheet.create({
