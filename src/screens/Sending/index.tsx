@@ -273,7 +273,7 @@ export const SendFund = ({
           setReference(res);
         }
       })
-      .catch(e => console.log(e));
+      .catch(e => console.log('e', e));
 
     return () => {
       isSync = false;
