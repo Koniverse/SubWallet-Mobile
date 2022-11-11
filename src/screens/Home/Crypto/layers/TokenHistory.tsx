@@ -14,7 +14,6 @@ import BigN from 'bignumber.js';
 import { BN_ZERO } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
 import i18n from 'utils/i18n/i18n';
-import { restartCronServices } from '../../../../messaging';
 
 interface Prop {
   onPressBack: () => void;
@@ -95,12 +94,11 @@ const TokenHistoryLayer = ({
   selectedTokenSymbol,
   selectedTokenDisplayName,
 }: Prop) => {
-  const [isRefresh, refresh] = useRefresh();
+  const [isRefresh] = useRefresh();
   const [refreshTabId, setRefreshTabId] = useState<string>('');
 
   const _onRefresh = (tabId: string) => {
     setRefreshTabId(tabId);
-    refresh(restartCronServices(['history']));
   };
   const renderTabContainerHeader = () => {
     const [balanceValue, amountToUsd] = getBalanceValue(tokenBalanceMap, selectedTokenSymbol, selectedNetworkInfo);
