@@ -1,4 +1,5 @@
 import { decodeAddress, encodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { isHex } from '@polkadot/util';
 import { ETHEREUM_PREFIX, SCAN_TYPE, SECRET_PREFIX, SUBSTRATE_PREFIX } from 'constants/qr';
 import { QrAccount } from 'types/account/qr';
 
@@ -65,7 +66,7 @@ export const readOnlyScan = (data: string): QrAccount | null => {
   if (isEthereumAddress(data)) {
     return {
       content: data,
-      genesisHash: '',
+      genesisHash: data,
       isAddress: true,
       isEthereum: true,
       name: undefined,
@@ -74,10 +75,14 @@ export const readOnlyScan = (data: string): QrAccount | null => {
   }
 
   try {
+    if (isHex(data)) {
+      return null;
+    }
+
     const address = encodeAddress(decodeAddress(data));
     return {
       content: address,
-      genesisHash: '',
+      genesisHash: data,
       isAddress: true,
       isEthereum: false,
       name: undefined,
