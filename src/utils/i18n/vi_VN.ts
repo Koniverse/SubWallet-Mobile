@@ -338,8 +338,9 @@ export const vi = {
   stakingScreen: {
     startStaking: 'Start Staking',
     balanceList: {
-      stakingBalance: 'Staking balance',
       stakingAppearHere: 'Your staking accounts will be appear here',
+      nominatedBalance: 'Nominated Balance',
+      pooledBalance: 'Pooled Balance',
     },
     stakingDetail: {
       activeStake: 'Active Stake',
@@ -348,6 +349,7 @@ export const vi = {
       latestReward: 'Latest Reward',
       totalSlash: 'Total Slash',
       unStakeFunds: 'Unstake funds',
+      stakingType: 'Staking Type',
       actions: {
         stake: 'Stake more',
         unStake: 'Unstake funds',

@@ -1,13 +1,15 @@
+import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
+import { BalanceVal } from 'components/BalanceVal';
 import { StakingDataType } from 'hooks/types';
+import { User, Users } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { ColorMap } from 'styles/color';
+import { FontMedium, FontSemiBold, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import { BalanceVal } from 'components/BalanceVal';
-import { getConvertedBalance } from 'utils/chainBalances';
 
 interface Props {
   stakingData: StakingDataType;
@@ -39,6 +41,8 @@ const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
   paddingLeft: 16,
   paddingRight: 8,
   flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
 };
 
 const NetworkNameStyle: StyleProp<TextStyle> = {
@@ -47,9 +51,38 @@ const NetworkNameStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
-const NetworkSubTextStyle: StyleProp<TextStyle> = {
+const BaseBannerStyle: StyleProp<ViewStyle> = {
+  paddingHorizontal: 4,
+  borderRadius: 4,
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  alignSelf: 'flex-start',
+};
+
+const NominatedBannerStyle: StyleProp<ViewStyle> = {
+  backgroundColor: ColorMap.nominatedBackground,
+};
+
+const PoolBannerStyle: StyleProp<ViewStyle> = {
+  backgroundColor: ColorMap.pooledBackground,
+};
+
+const IconStyle: StyleProp<ViewStyle> = {
+  marginRight: 4,
+};
+
+const BaseNetworkSubTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
+  ...FontSize0,
+};
+
+const PoolNetworkSubTextStyle: StyleProp<TextStyle> = {
+  color: ColorMap.primary,
+};
+
+const NominatedNetworkSubTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.disabled,
 };
 
@@ -76,7 +109,7 @@ const BalanceSymbolTextStyle: StyleProp<TextStyle> = {
   color: ColorMap.disabled,
 };
 
-const SeparatorStyle: StyleProp<any> = {
+const SeparatorStyle: StyleProp<ViewStyle> = {
   borderBottomWidth: 1,
   borderBottomColor: ColorMap.dark2,
   marginLeft: 56,
@@ -84,8 +117,6 @@ const SeparatorStyle: StyleProp<any> = {
 
 const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
   const { staking } = stakingData;
-
-  const networkKey = staking.chainId;
 
   const networkDisplayName = useMemo((): string => {
     return staking.name.replace(' Relay Chain', '');
@@ -98,19 +129,36 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
   const symbol = staking.nativeToken;
 
   const convertedBalanceValue = useMemo(() => {
-    return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chainId] || 0}`);
-  }, [priceMap, staking.balance, staking.chainId]);
+    return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chain] || 0}`);
+  }, [priceMap, staking.balance, staking.chain]);
 
   return (
     <TouchableOpacity style={WrapperStyle} activeOpacity={0.5} onPress={onPress(stakingData)}>
       <View style={InfoContainerStyle}>
         <View style={NetworkInfoWrapperStyle}>
-          {getNetworkLogo(networkKey, 40)}
+          {getNetworkLogo(staking.chain, 40)}
           <View style={NetworkInfoContentStyle}>
             <Text style={NetworkNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
               {networkDisplayName}
             </Text>
-            <Text style={NetworkSubTextStyle}>{i18n.stakingScreen.balanceList.stakingBalance}</Text>
+            <View
+              style={[
+                BaseBannerStyle,
+                staking.type === StakingType.NOMINATED ? NominatedBannerStyle : PoolBannerStyle,
+              ]}>
+              {staking.type === StakingType.NOMINATED ? (
+                <User size={12} color={ColorMap.disabled} style={IconStyle} />
+              ) : (
+                <Users size={12} color={ColorMap.primary} style={IconStyle} />
+              )}
+              <Text
+                style={[
+                  BaseNetworkSubTextStyle,
+                  staking.type === StakingType.NOMINATED ? NominatedNetworkSubTextStyle : PoolNetworkSubTextStyle,
+                ]}>
+                {i18n.stakingScreen.balanceList.nominatedBalance}
+              </Text>
+            </View>
           </View>
         </View>
 
