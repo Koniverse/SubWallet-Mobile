@@ -63,7 +63,7 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const {
-    staking: { chainId: networkKey, activeBalance, unlockingInfo, unlockingBalance },
+    staking: { chain: networkKey, activeBalance, unlockingInfo, unlockingBalance },
   } = data;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
