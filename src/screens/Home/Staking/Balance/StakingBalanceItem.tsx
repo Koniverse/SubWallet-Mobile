@@ -151,13 +151,15 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
               ) : (
                 <Users size={12} color={ColorMap.primary} style={IconStyle} />
               )}
-              <Text
-                style={[
-                  BaseNetworkSubTextStyle,
-                  staking.type === StakingType.NOMINATED ? NominatedNetworkSubTextStyle : PoolNetworkSubTextStyle,
-                ]}>
-                {i18n.stakingScreen.balanceList.nominatedBalance}
-              </Text>
+              {staking.type === StakingType.NOMINATED ? (
+                <Text style={[BaseNetworkSubTextStyle, NominatedNetworkSubTextStyle]}>
+                  {i18n.stakingScreen.balanceList.nominatedBalance}
+                </Text>
+              ) : (
+                <Text style={[BaseNetworkSubTextStyle, PoolNetworkSubTextStyle]}>
+                  {i18n.stakingScreen.balanceList.pooledBalance}
+                </Text>
+              )}
             </View>
           </View>
         </View>
