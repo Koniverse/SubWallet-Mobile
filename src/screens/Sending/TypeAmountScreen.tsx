@@ -111,7 +111,7 @@ export const TypeAmountScreen = ({
   const amountGtAvailableBalance =
     !!rawAmount && !!senderFreeBalance && new BigN(rawAmount).gt(new BigN(senderFreeBalance));
   const canMakeTransfer = !!rawAmount && isSupportTransfer && !isGasRequiredExceedsError && !amountGtAvailableBalance;
-  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const { isNetConnected, isReady } = useContext(WebRunnerContext);
 
   const _onChangeToken = (item: TokenItemType) => {
     onChangeSelectedToken(item.symbol);
@@ -145,9 +145,11 @@ export const TypeAmountScreen = ({
           <Warning isDanger style={WarningStyle} message={i18n.sendAssetScreen.amountGtAvailableBalanceMessage} />
         )}
 
-        {!isSupportTransfer && (
+        {isReady && !isSupportTransfer && (
           <Warning style={WarningStyle} isDanger message={i18n.warningMessage.notSupportTransferMessage} />
         )}
+
+        {!isReady && <Warning style={WarningStyle} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />}
 
         {!isNetConnected && <Warning style={WarningStyle} isDanger message={i18n.warningMessage.noInternetMessage} />}
       </ScrollView>
@@ -167,7 +169,7 @@ export const TypeAmountScreen = ({
         </View>
 
         <SubmitButton
-          disabled={!canMakeTransfer || !isNetConnected}
+          disabled={!canMakeTransfer || !isNetConnected || !isReady}
           title={i18n.common.continue}
           style={{ width: '100%', ...MarginBottomForSubmitButton }}
           onPress={onPressToNextStep}

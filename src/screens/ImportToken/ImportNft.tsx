@@ -63,7 +63,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   useHandlerHardwareBackPress(loading);
-  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
     navigation.navigate('Home');
   }, [navigation]);
@@ -225,7 +225,8 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           }}
         />
 
-        {!!formState.errors.smartContract.length &&
+        {isReady &&
+          !!formState.errors.smartContract.length &&
           formState.errors.smartContract.map(err => (
             <Warning key={err} style={{ marginBottom: 8 }} isDanger message={err} />
           ))}
@@ -253,14 +254,20 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           value={collectionName}
         />
 
-        {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
+        {!isNetConnected && (
+          <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
+        )}
+
+        {!isReady && (
+          <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
+        )}
 
         <SubmitButton
           isBusy={loading}
           title={i18n.importEvmNft.importNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={handleAddToken}
-          disabled={isDisableAddNFT || !isNetConnected}
+          disabled={isDisableAddNFT || !isNetConnected || !isReady}
         />
 
         <AddressScanner

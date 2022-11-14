@@ -37,7 +37,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   useHandlerHardwareBackPress(isBusy);
   const payload = routeParams?.payload;
   const tokenInfo = payload?.payload;
-  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const formConfig = {
     contractAddress: {
       require: true,
@@ -188,7 +188,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     !!formState.errors.contractAddress.length ||
     !formState.data.symbol ||
     !formState.data.decimals ||
-    !isNetConnected;
+    !isNetConnected ||
+    !isReady;
 
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
@@ -205,7 +206,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onPressQrButton={onPressQrButton}
           />
 
-          {!!formState.errors.contractAddress.length && (
+          {isReady && !!formState.errors.contractAddress.length && (
             <Warning isDanger message={formState.errors.contractAddress[0]} style={{ marginBottom: 8 }} />
           )}
 
@@ -219,6 +220,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
+          )}
+
+          {!isReady && (
+            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
           )}
 
           <AddressScanner
