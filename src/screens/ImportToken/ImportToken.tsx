@@ -188,7 +188,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     !!formState.errors.contractAddress.length ||
     !formState.data.symbol ||
     !formState.data.decimals ||
-    !isNetConnected;
+    !isNetConnected ||
+    !isReady;
 
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>

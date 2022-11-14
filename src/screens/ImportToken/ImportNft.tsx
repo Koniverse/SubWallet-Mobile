@@ -267,7 +267,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           title={i18n.importEvmNft.importNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={handleAddToken}
-          disabled={isDisableAddNFT}
+          disabled={isDisableAddNFT || !isNetConnected || !isReady}
         />
 
         <AddressScanner

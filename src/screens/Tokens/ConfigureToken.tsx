@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ConfigureTokenProps, RootNavigationProps } from 'routes/index';
@@ -18,6 +18,8 @@ import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
 import { upsertCustomToken } from '../../messaging';
 import { FUNGIBLE_TOKEN_STANDARDS } from '@subwallet/extension-koni-base/api/tokens';
+import { Warning } from 'components/Warning';
+import { WebRunnerContext } from 'providers/contexts';
 
 export const ConfigureToken = ({
   route: {
@@ -28,6 +30,7 @@ export const ConfigureToken = ({
   const customTokenInfo = JSON.parse(tokenDetail) as CustomToken;
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setBusy] = useState<boolean>(false);
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const formConfig = {
     tokenName: {
       name: i18n.importToken.tokenName,
@@ -40,6 +43,10 @@ export const ConfigureToken = ({
       name: formState.data.tokenName,
     };
     setBusy(true);
+    if (!isNetConnected) {
+      setBusy(false);
+      return;
+    }
     upsertCustomToken(newTokenInfo)
       .then(resp => {
         if (resp) {
@@ -98,6 +105,10 @@ export const ConfigureToken = ({
           )}
 
           <TextField disabled={true} label={i18n.common.tokenType} text={customTokenInfo.type.toUpperCase()} />
+
+          {!isNetConnected && (
+            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
+          )}
         </ScrollView>
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
           <SubmitButton
@@ -109,6 +120,7 @@ export const ConfigureToken = ({
             onPress={() => navigation.goBack()}
           />
           <SubmitButton
+            disabled={!isNetConnected}
             isBusy={isBusy}
             style={{ flex: 1, marginLeft: 8 }}
             title={i18n.common.save}

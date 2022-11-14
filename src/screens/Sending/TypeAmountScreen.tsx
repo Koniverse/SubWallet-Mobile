@@ -169,7 +169,7 @@ export const TypeAmountScreen = ({
         </View>
 
         <SubmitButton
-          disabled={!canMakeTransfer || !isNetConnected}
+          disabled={!canMakeTransfer || !isNetConnected || !isReady}
           title={i18n.common.continue}
           style={{ width: '100%', ...MarginBottomForSubmitButton }}
           onPress={onPressToNextStep}
