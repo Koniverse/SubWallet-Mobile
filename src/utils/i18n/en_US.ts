@@ -559,6 +559,8 @@ export const en = {
     readOnly: 'You are using readonly account',
     sendReadOnly: 'The account you are using is read-only, you cannot send assets with it.',
     validatorMaxLimit: 'The validator is not looking for more nominations',
+    noInternetMessage: 'No Internet connection. Please try again later',
+    webRunnerDeadMessage: "We've run into an issue. Please try again later or restart the application",
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
