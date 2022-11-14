@@ -273,7 +273,7 @@ export const SendFund = ({
           setReference(res);
         }
       })
-      .catch(e => console.log('e', e));
+      .catch(e => console.log('There is problem when checkReferenceCount', e));
 
     return () => {
       isSync = false;
@@ -307,7 +307,7 @@ export const SendFund = ({
             setTransferSupport([res.supportTransfer, res.supportTransferAll]);
           }
         })
-        .catch(e => console.log('e----------', e));
+        .catch(e => console.log('There is problem when checkTransferSupporting', e));
     } else {
       setTransferSupport([true, false]);
     }
