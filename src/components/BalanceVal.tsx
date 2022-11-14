@@ -6,23 +6,23 @@ import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { getRoundedDecimalNumber, toShort } from 'utils/index';
 
-type BalanceViewProps = {
+export type BalanceValProps = {
   value: string | BigN;
   symbol?: string;
   startWithSymbol?: boolean;
   withComma?: boolean;
   withSymbol?: boolean;
-  balanceValTextStyle?: object;
+  balanceValTextStyle?: StyleProp<any>;
   symbolTextStyle?: StyleProp<TextStyle>;
   startSymbolTextStyle?: StyleProp<TextStyle>;
   style?: StyleProp<any>;
 };
 
-const balanceValWrapper: StyleProp<any> = {
+const balanceValWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
 };
 
-const balanceValText: StyleProp<any> = {
+export const balanceValTextDefaultStyle: StyleProp<any> = {
   ...sharedStyles.largeText,
   ...FontBold,
   color: ColorMap.light,
@@ -48,7 +48,7 @@ export const BalanceVal = ({
   withComma = true,
   withSymbol = true,
   style,
-}: BalanceViewProps) => {
+}: BalanceValProps) => {
   let [prefix, postfix] = getDisplayedBalance(value).split('.');
 
   const lastSymbol = postfix?.slice(-1);
@@ -58,16 +58,18 @@ export const BalanceVal = ({
   const formatPrefix = new Intl.NumberFormat().format(Number(prefix));
 
   return (
-    <View style={[balanceValWrapper, style]}>
-      <Text style={[balanceValText, balanceValTextStyle, symbolTextStyle, startSymbolTextStyle]}>
+    <View style={[balanceValWrapperStyle, style]}>
+      <Text style={[balanceValTextDefaultStyle, balanceValTextStyle, symbolTextStyle, startSymbolTextStyle]}>
         {startWithSymbol && withSymbol && symbolView}
       </Text>
-      <Text style={[balanceValText, balanceValTextStyle]}>
+      <Text style={[balanceValTextDefaultStyle, balanceValTextStyle]}>
         {withComma ? formatPrefix.replace(/[. ]+/g, ',') : prefix}.
       </Text>
-      <Text style={[balanceValText, balanceValTextStyle]}>{isString ? postfixValue.slice(0, -1) : postfixValue}</Text>
-      <Text style={[balanceValText, balanceValTextStyle]}>{isString && lastSymbol}</Text>
-      <Text style={[balanceValText, balanceValTextStyle, symbolTextStyle]}>
+      <Text style={[balanceValTextDefaultStyle, balanceValTextStyle]}>
+        {isString ? postfixValue.slice(0, -1) : postfixValue}
+      </Text>
+      <Text style={[balanceValTextDefaultStyle, balanceValTextStyle]}>{isString && lastSymbol}</Text>
+      <Text style={[balanceValTextDefaultStyle, balanceValTextStyle, symbolTextStyle]}>
         {!startWithSymbol && withSymbol && symbolView}
       </Text>
     </View>
