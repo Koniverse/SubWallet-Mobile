@@ -7,6 +7,7 @@ import { BalanceVal } from 'components/BalanceVal';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
 import { Divider } from 'components/Divider';
+import { BalanceValDisplay } from 'components/BalanceValDisplay';
 
 interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
 
@@ -89,13 +90,13 @@ export const TokenChainBalance = ({
         </View>
 
         <View style={chainBalancePart2}>
-          <BalanceVal
+          <BalanceValDisplay
             balanceValTextStyle={textStyle}
             startWithSymbol
             symbol={''}
             value={!isReady ? BN_ZERO : balanceValue}
           />
-          <BalanceVal
+          <BalanceValDisplay
             balanceValTextStyle={subTextStyle}
             startWithSymbol
             symbol={'$'}
