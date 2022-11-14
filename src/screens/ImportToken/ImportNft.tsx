@@ -4,7 +4,7 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from '../../messaging';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
@@ -23,6 +23,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { WebRunnerContext } from 'providers/contexts';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -62,6 +63,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   useHandlerHardwareBackPress(loading);
+  const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
     navigation.navigate('Home');
   }, [navigation]);
@@ -99,6 +101,10 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       customToken.name = collectionName;
     }
 
+    if (!isNetConnected) {
+      setLoading(false);
+      return;
+    }
     upsertCustomToken(customToken)
       .then(resp => {
         if (resp) {
@@ -116,7 +122,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [chain, collectionName, onBack, onUpdateErrors, smartContract]);
+  }, [chain, collectionName, isNetConnected, onBack, onUpdateErrors, smartContract]);
 
   useEffect(() => {
     let unamount = false;
@@ -219,7 +225,8 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           }}
         />
 
-        {!!formState.errors.smartContract.length &&
+        {isReady &&
+          !!formState.errors.smartContract.length &&
           formState.errors.smartContract.map(err => (
             <Warning key={err} style={{ marginBottom: 8 }} isDanger message={err} />
           ))}
@@ -247,12 +254,20 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           value={collectionName}
         />
 
+        {!isNetConnected && (
+          <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
+        )}
+
+        {!isReady && (
+          <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
+        )}
+
         <SubmitButton
           isBusy={loading}
           title={i18n.importEvmNft.importNft}
           activeOpacity={BUTTON_ACTIVE_OPACITY}
           onPress={handleAddToken}
-          disabled={isDisableAddNFT}
+          disabled={isDisableAddNFT || !isNetConnected || !isReady}
         />
 
         <AddressScanner

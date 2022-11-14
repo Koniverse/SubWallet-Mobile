@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { StakingSlice } from 'stores/types';
 
-const initialState = {
+const initialState: StakingSlice = {
   ready: false,
-  details: {},
-} as StakingSlice;
+  details: [],
+};
 
 const stakingSlice = createSlice({
   initialState,
@@ -17,11 +17,7 @@ const stakingSlice = createSlice({
         state.ready = payload.ready;
       }
 
-      if (payload.reset) {
-        state.details = payload.details;
-      } else {
-        state.details = { ...state.details, ...payload.details };
-      }
+      state.details = payload.details;
     },
   },
 });

@@ -29,7 +29,7 @@ function setBackgroundServiceTimeout(service: DelayBackgroundService, timeout: N
 
 const eventEmitter = new EventEmitter();
 let lastIsReady = false;
-let lastIsInternetReachable = true;
+let lastIsNetConnected = true;
 export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.ReactElement<WebRunnerProviderProps> => {
   const webRef = useRef<WebView>(null);
   const webStateRef = useRef<WebRunnerState>({
@@ -37,7 +37,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
     version: 'unknown',
   });
   const [isReady, setIsReady] = useState(lastIsReady);
-  const [isInternetReachable, setIsInternetReachable] = useState(lastIsInternetReachable);
+  const [isNetConnected, setIsNetConnected] = useState(lastIsNetConnected);
 
   useEffect(() => {
     setupWebview(webRef, eventEmitter);
@@ -60,16 +60,16 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
     });
 
     const netUnsubscribe = NetInfo.addEventListener(netState => {
-      if (netState.isInternetReachable !== null) {
-        setIsInternetReachable(netState.isInternetReachable);
+      if (netState.isConnected !== null) {
+        setIsNetConnected(netState.isConnected);
 
         if (AppState.currentState === 'active') {
-          if (!lastIsInternetReachable && netState.isInternetReachable) {
+          if (!lastIsNetConnected && netState.isConnected) {
             reload();
           }
         }
 
-        lastIsInternetReachable = netState.isInternetReachable;
+        lastIsNetConnected = netState.isConnected;
       }
     });
 
@@ -87,7 +87,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
         isReady,
         eventEmitter,
         reload,
-        isInternetReachable,
+        isNetConnected,
         clearBackgroundServiceTimeout,
         setBackgroundServiceTimeout,
       }}>

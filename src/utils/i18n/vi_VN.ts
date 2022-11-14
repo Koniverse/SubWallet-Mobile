@@ -338,8 +338,9 @@ export const vi = {
   stakingScreen: {
     startStaking: 'Start Staking',
     balanceList: {
-      stakingBalance: 'Staking balance',
       stakingAppearHere: 'Your staking accounts will be appear here',
+      nominatedBalance: 'Nominated Balance',
+      pooledBalance: 'Pooled Balance',
     },
     stakingDetail: {
       activeStake: 'Active Stake',
@@ -348,6 +349,7 @@ export const vi = {
       latestReward: 'Latest Reward',
       totalSlash: 'Total Slash',
       unStakeFunds: 'Unstake funds',
+      stakingType: 'Staking Type',
       actions: {
         stake: 'Stake more',
         unStake: 'Unstake funds',
@@ -556,6 +558,9 @@ export const vi = {
     enableAtLeast1Network: 'Please enable at least 1 network',
     readOnly: 'You are using readonly account',
     sendReadOnly: 'The account you are using is read-only, you cannot send assets with it.',
+    validatorMaxLimit: 'The validator is not looking for more nominations',
+    noInternetMessage: 'No Internet connection. Please try again later',
+    webRunnerDeadMessage: "We've run into an issue. Please try again later or restart the application",
   },
   errorMessage: {
     wrongPassword: 'Wrong password',

@@ -45,6 +45,15 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
+const validateAddress = (value: string) => {
+  const qrAccount = readOnlyScan(value);
+  if (!qrAccount) {
+    return [i18n.warningMessage.invalidQRCode];
+  } else {
+    return [];
+  }
+};
+
 function checkValidateForm(formValidated: Record<string, boolean>) {
   return formValidated.accountName && formValidated.address;
 }
@@ -71,6 +80,7 @@ const AttachReadOnlyScreen = () => {
         name: i18n.common.accountAddress,
         value: '',
         require: true,
+        validateFunc: validateAddress,
       },
       accountName: {
         name: i18n.common.walletName,
@@ -211,6 +221,7 @@ const AttachReadOnlyScreen = () => {
             value={formState.data.address}
             ref={formState.refs.address}
             label={formState.labels.address}
+            isValidValue={formState.isValidated.address}
             onChange={onChangeAddress}
             onPressQrButton={onOpenScanner}
             containerStyle={sharedStyles.mb8}

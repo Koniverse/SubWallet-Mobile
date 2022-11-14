@@ -3,11 +3,13 @@ import { useNavigation } from '@react-navigation/native';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
 import { BalanceField } from 'components/Field/Balance';
+import { TextField } from 'components/Field/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import { StakingDataType } from 'hooks/types';
+import { User, Users } from 'phosphor-react-native';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { RootNavigationProps } from 'routes/index';
@@ -21,6 +23,7 @@ import { getNetworkLogo } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getStakingInputValueStyle } from 'utils/text';
 import useGoHome from 'hooks/screen/useGoHome';
+import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -74,28 +77,35 @@ const BalanceConvertedTextStyle: StyleProp<TextStyle> = {
 
 const StakingDetail = ({
   route: {
-    params: { networkKey },
+    params: { networkKey, stakingType },
   },
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
-  useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
-  const isCanSign = useCurrentAccountCanSign();
+  useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
   const { data: stakingData, priceMap } = useFetchStaking();
 
   const [visible, setVisible] = useState(false);
 
   const data = useMemo((): StakingDataType => {
-    return stakingData.find(item => item.key === networkKey) as StakingDataType;
-  }, [stakingData, networkKey]);
+    return stakingData.find(
+      item => item.staking.chain === networkKey && item.staking.type === stakingType,
+    ) as StakingDataType;
+  }, [stakingData, networkKey, stakingType]);
   const { staking, reward } = data || { staking: {}, reward: {} };
 
+  const accountCanSign = useCurrentAccountCanSign();
+  const isCanSign = useMemo(
+    (): boolean => accountCanSign && stakingType === 'nominated',
+    [accountCanSign, stakingType],
+  );
+
   const convertedBalanceValue = useMemo(() => {
-    return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chainId] || 0}`);
-  }, [priceMap, staking.balance, staking.chainId]);
+    return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chain] || 0}`);
+  }, [priceMap, staking.balance, staking.chain]);
 
   const openModal = useCallback(() => {
     setVisible(true);
@@ -132,7 +142,7 @@ const StakingDetail = ({
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
           <View style={[CenterWrapperStyle, { paddingTop: 24 }]}>
-            <View style={ImageContentStyle}>{getNetworkLogo(staking.chainId, 32)}</View>
+            <View style={ImageContentStyle}>{getNetworkLogo(staking.chain, 32)}</View>
           </View>
           <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
             <BalanceVal
@@ -155,6 +165,13 @@ const StakingDetail = ({
             />
             <Text style={BalanceConvertedTextStyle}>)</Text>
           </View>
+          <TextField
+            label={i18n.stakingScreen.stakingDetail.stakingType}
+            text={stakingType === StakingType.NOMINATED ? 'Nominated' : 'Pooled'}
+            textColor={stakingType === StakingType.NOMINATED ? ColorMap.disabled : ColorMap.primary}
+            iconColor={stakingType === StakingType.NOMINATED ? ColorMap.disabled : ColorMap.primary}
+            icon={stakingType === StakingType.NOMINATED ? User : Users}
+          />
           <BalanceField
             label={i18n.stakingScreen.stakingDetail.activeStake}
             value={staking.activeBalance || '0'}

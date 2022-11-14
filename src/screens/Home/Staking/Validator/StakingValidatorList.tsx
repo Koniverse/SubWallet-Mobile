@@ -6,7 +6,7 @@ import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { ArrowsDownUp } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
@@ -24,6 +24,7 @@ import { ValidatorSortBy, ValidatorType } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
 import { getBondingOptions } from '../../../../messaging';
 import { StakingValidatorsProps } from 'routes/staking/stakingScreen';
+import { WebRunnerContext } from 'providers/contexts';
 
 const filterFunction = (items: ValidatorInfo[], searchString: string): ValidatorInfo[] => {
   return items.filter(item => {
@@ -76,7 +77,7 @@ const StakingValidatorList = ({
   navigation: { goBack },
 }: StakingValidatorsProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
@@ -238,6 +239,7 @@ const StakingValidatorList = ({
           onPress: openModal,
           color: sortBy !== 'Default' ? ColorMap.primary : undefined,
         }}
+        isNetConnected={isNetConnected}
       />
       <SortValidatorModal visible={visible} closeModal={closeModal} onPress={onChangeSortBy} sortBy={sortBy} />
     </>

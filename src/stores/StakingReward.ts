@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { StakingRewardSlice } from 'stores/types';
 
-const initialState = {
+const initialState: StakingRewardSlice = {
   details: [],
   ready: false,
-} as StakingRewardSlice;
+};
 
 const stakingRewardSlice = createSlice({
   initialState,

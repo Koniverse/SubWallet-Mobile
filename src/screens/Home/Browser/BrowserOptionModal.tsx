@@ -57,7 +57,10 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
       icon: getLeftSelectItemIcon(ArrowsOutSimple),
       label: i18n.common.openInBrowser,
       onPress: () => {
-        Linking.openURL(siteInfo.url);
+        if (siteInfo.url) {
+          Linking.canOpenURL(siteInfo.url).then(() => Linking.openURL(siteInfo.url));
+        }
+
         onClose();
       },
     },

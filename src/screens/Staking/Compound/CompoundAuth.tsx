@@ -13,7 +13,7 @@ import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import moment from 'moment';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { CompoundAuthProps } from 'routes/staking/compoundAction';
@@ -24,6 +24,8 @@ import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitTuringStakeCompounding } from '../../../messaging';
+import { WebRunnerContext } from 'providers/contexts';
+import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -63,7 +65,7 @@ const CompoundAuth = ({
   navigation: { goBack },
 }: CompoundAuthProps) => {
   const { networkKey, selectedAccount } = compoundParams;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
@@ -208,6 +210,8 @@ const CompoundAuth = ({
             label={i18n.compoundStakeAction.compoundingFee}
           />
           <TextField text={`${compoundString} + ${feeString}`} label={i18n.unStakeAction.total} disabled={true} />
+
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -218,6 +222,7 @@ const CompoundAuth = ({
           />
           <SubmitButton
             // isBusy={loading}
+            disabled={!isNetConnected}
             title={i18n.common.continue}
             style={ButtonStyle}
             onPress={handleOpen}

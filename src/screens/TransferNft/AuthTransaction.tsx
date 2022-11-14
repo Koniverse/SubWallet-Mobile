@@ -7,7 +7,7 @@ import { NetworkField } from 'components/Field/Network';
 import { PasswordField } from 'components/Field/Password';
 import ImagePreview from 'components/ImagePreview';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
@@ -23,6 +23,7 @@ import { evmNftSubmitTransaction, nftForceUpdate, substrateNftSubmitTransaction 
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface Props {
   setShowConfirm: (val: boolean) => void;
@@ -112,7 +113,7 @@ const AuthTransaction = (props: Props) => {
     signPassword: '',
   }));
   useHandlerHardwareBackPress(loading);
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const substrateParams = substrateTransferParams !== null ? substrateTransferParams.params : null;
   const substrateGas = substrateTransferParams !== null ? substrateTransferParams.estimatedFee : null;
   const substrateBalanceError = substrateTransferParams !== null ? substrateTransferParams.balanceError : false;
@@ -301,6 +302,12 @@ const AuthTransaction = (props: Props) => {
 
     setLoading(true);
     Keyboard.dismiss();
+
+    if (!isNetConnected) {
+      setLoading(false);
+      return;
+    }
+
     setTimeout(async () => {
       if (substrateParams !== null) {
         await onSendSubstrate();
@@ -308,7 +315,7 @@ const AuthTransaction = (props: Props) => {
         await onSendEvm();
       }
     }, 10);
-  }, [loading, setLoading, substrateParams, web3Tx, onSendSubstrate, onSendEvm]);
+  }, [loading, setLoading, isNetConnected, substrateParams, web3Tx, onSendSubstrate, onSendEvm]);
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, { onSubmitForm: handleSignAndSubmit });
 
@@ -366,6 +373,8 @@ const AuthTransaction = (props: Props) => {
           />
 
           {!!error && <Warning message={error} isDanger />}
+
+          {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
           <SubmitButton
@@ -373,7 +382,7 @@ const AuthTransaction = (props: Props) => {
             title={i18n.common.confirm}
             onPress={handleSignAndSubmit}
             isBusy={loading}
-            disabled={!formState.data.password || errorMessages.length > 0}
+            disabled={!formState.data.password || errorMessages.length > 0 || !isNetConnected}
           />
         </View>
       </>
