@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { StakeUnlockingSlice } from 'stores/types';
 
-const initialState = {
-  details: {},
-} as StakeUnlockingSlice;
+const initialState: StakeUnlockingSlice = {
+  timestamp: 0,
+  details: [],
+};
 
 const stakeUnlockingSlice = createSlice({
   initialState,

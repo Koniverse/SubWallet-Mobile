@@ -1,5 +1,5 @@
 import { IconButton } from 'components/IconButton';
-import { Info } from 'phosphor-react-native';
+import { IconProps, Info } from 'phosphor-react-native';
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
@@ -12,16 +12,19 @@ interface Props extends FieldBaseProps {
   showRightIcon?: boolean;
   onPressRightIcon?: () => void;
   disabled?: boolean;
+  textColor?: string;
+  iconColor?: string;
+  icon?: (props: IconProps) => JSX.Element;
 }
 
-const getTextStyle = (isDisabled: boolean): StyleProp<any> => {
+const getTextStyle = (isDisabled: boolean, color?: string): StyleProp<any> => {
   return {
     ...FontSize2,
     ...FontMedium,
     lineHeight: 25,
     paddingHorizontal: 16,
     paddingBottom: 10,
-    color: isDisabled ? ColorMap.disabled : ColorMap.light,
+    color: color ? color : isDisabled ? ColorMap.disabled : ColorMap.light,
   };
 };
 
@@ -38,13 +41,27 @@ const infoIconStyle: StyleProp<any> = {
   bottom: 3,
 };
 
-export const TextField = ({ text, showRightIcon, onPressRightIcon, disabled, ...fieldBase }: Props) => {
+export const TextField = ({
+  text,
+  showRightIcon,
+  onPressRightIcon,
+  icon,
+  disabled,
+  textColor,
+  iconColor,
+  ...fieldBase
+}: Props) => {
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
-        <Text style={getTextStyle(!!disabled)}>{text}</Text>
-        {showRightIcon && (
-          <IconButton color={ColorMap.disabled} style={infoIconStyle} icon={Info} onPress={onPressRightIcon} />
+        <Text style={getTextStyle(!!disabled, textColor)}>{text}</Text>
+        {(showRightIcon || icon) && (
+          <IconButton
+            color={iconColor ? iconColor : ColorMap.disabled}
+            style={infoIconStyle}
+            icon={icon || Info}
+            onPress={onPressRightIcon}
+          />
         )}
       </View>
     </FieldBase>

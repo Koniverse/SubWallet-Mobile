@@ -169,6 +169,12 @@ const StakingValidatorDetail = ({
       return;
     }
 
+    if (validatorInfo.nominatorCount >= maxNominatorPerValidator || validatorInfo.commission >= 100) {
+      show(i18n.warningMessage.validatorMaxLimit);
+
+      return;
+    }
+
     navigation.navigate('StakeAction', {
       screen: 'StakeConfirm',
       params: {
@@ -184,6 +190,7 @@ const StakingValidatorDetail = ({
     isCurrentlyBonded,
     bondedValidators,
     maxNominations,
+    maxNominatorPerValidator,
     navigation,
     networkKey,
     networkValidatorsInfo,

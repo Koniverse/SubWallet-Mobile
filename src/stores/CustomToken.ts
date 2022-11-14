@@ -1,14 +1,14 @@
-import { CustomTokenJson } from '@subwallet/extension-base/background/KoniTypes';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { CustomTokenSlice } from 'stores/types';
 
 const initialState: CustomTokenSlice = {
   details: {
-    erc721: [],
-    erc20: [],
-    psp22: [],
-    psp34: [],
-  } as CustomTokenJson,
+    [CustomTokenType.erc721]: [],
+    [CustomTokenType.erc20]: [],
+    [CustomTokenType.psp22]: [],
+    [CustomTokenType.psp34]: [],
+  },
 };
 
 const customTokenSlice = createSlice({

@@ -1105,17 +1105,14 @@ export async function subscribeActiveCronAndSubscriptionServiceMap(
 }
 
 export async function startCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(cronAndSubscription.start)', request);
 }
 
 export async function stopCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(cronAndSubscription.stop)', request);
 }
 
 export async function restartCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
-  // @ts-ignore
   return sendMessage('mobile(cronAndSubscription.restart)', request);
 }
 
