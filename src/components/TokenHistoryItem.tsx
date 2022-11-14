@@ -7,12 +7,12 @@ import { ArrowDown, ArrowUp } from 'phosphor-react-native';
 import { toShort } from 'utils/index';
 import { ChainRegistry, TransactionHistoryItemType } from '@subwallet/extension-base/background/KoniTypes';
 import { customFormatDate } from 'utils/customFormatDate';
-import { BalanceVal } from 'components/BalanceVal';
 import { getBalances } from 'utils/chainBalances';
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import i18n from 'utils/i18n/i18n';
 import { Divider } from 'components/Divider';
+import { BalanceValDisplay } from 'components/BalanceValDisplay';
 
 interface Props extends TouchableOpacityProps {
   item: TransactionHistoryItemType;
@@ -120,7 +120,6 @@ function getDecimalsAndSymbolInfo(item: TransactionHistoryItemType, registry: Ch
   return result;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
   const HistorySendIcon = ArrowUp;
   const HistoryReceiveIcon = ArrowDown;
@@ -172,7 +171,7 @@ export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
           <View style={part2Line1Style}>
             <Text style={textStyle}>{item.action === 'received' ? '+' : '-'}</Text>
 
-            <BalanceVal
+            <BalanceValDisplay
               style={balanceValStyle}
               symbol={changeSymbol}
               value={changeValue.balanceValue}
@@ -183,7 +182,7 @@ export const TokenHistoryItem = ({ item, registry, ...wrapperProp }: Props) => {
           {!!item.fee && (
             <View style={part2Line2Style}>
               <Text style={subTextStyle}>{i18n.common.fee}</Text>
-              <BalanceVal
+              <BalanceValDisplay
                 style={balanceValStyle}
                 symbol={feeSymbol}
                 value={feeValue.balanceValue}
