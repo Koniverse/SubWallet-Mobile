@@ -4,11 +4,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
 import { SettingsSlice } from 'stores/types';
 
-const initialState = {
+const initialState: SettingsSlice = {
   isShowBalance: false,
   accountAllLogo: '',
   theme: 'dark',
-} as SettingsSlice;
+};
 
 const settingsSlice = createSlice({
   initialState,

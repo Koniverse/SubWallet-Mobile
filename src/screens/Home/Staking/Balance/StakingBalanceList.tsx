@@ -42,7 +42,8 @@ const StakingBalanceList = () => {
         navigation.navigate('Staking', {
           screen: 'StakingBalanceDetail',
           params: {
-            networkKey: stakingData.key,
+            networkKey: stakingData.staking.chain,
+            stakingType: stakingData.staking.type,
           },
         });
       };
@@ -54,7 +55,7 @@ const StakingBalanceList = () => {
     ({ item: stakingData }: ListRenderItemInfo<StakingDataType>) => {
       return (
         <StakingBalanceItem
-          key={stakingData.staking.chainId}
+          key={stakingData.staking.chain}
           stakingData={stakingData}
           priceMap={priceMap}
           onPress={handleOnPress}

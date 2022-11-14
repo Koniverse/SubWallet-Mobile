@@ -1,11 +1,12 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType, ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { NetworkValidatorsInfo } from 'types/staking';
 
 export type StakingScreenStackParamList = {
   StakingBalances: undefined;
   StakingBalanceDetail: {
     networkKey: string;
+    stakingType: StakingType;
   };
   StakingNetworks: undefined;
   StakingValidators: {
