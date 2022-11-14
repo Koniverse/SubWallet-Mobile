@@ -2,12 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SecretTypeItem } from 'components/SecretTypeItem';
-import { deviceHeight } from 'constants/index';
+import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
 import { SCAN_TYPE } from 'constants/qr';
 import useModalScanner from 'hooks/scanner/useModalScanner';
 import { Eye, HardDrives, QrCode } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, View } from 'react-native';
+import { RESULTS } from 'react-native-permissions';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'routes/index';
@@ -16,6 +17,7 @@ import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { QrAccount } from 'types/account/qr';
 import { AccountActionType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
+import { requestCameraPermission } from 'utils/validators';
 import Text from '../Text';
 
 interface Props {
@@ -47,7 +49,7 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
     [navigation],
   );
 
-  const { onScan, isScanning, onHideModal } = useModalScanner(scanSuccess);
+  const { onScan, isScanning, onHideModal, onOpenModal } = useModalScanner(scanSuccess);
 
   const show = useCallback((text: string) => {
     if (toastRef.current) {
@@ -74,15 +76,14 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
         icon: QrCode,
         title: i18n.title.attachQRSignerAccount,
         onCLickButton: async () => {
-          // const result = await requestCameraPermission();
-          //
-          // if (result === RESULTS.GRANTED) {
-          //   setModalVisible(false);
-          //   setTimeout(() => {
-          //     onOpenModal();
-          //   }, HIDE_MODAL_DURATION);
-          // }
-          show(i18n.common.comingSoon);
+          const result = await requestCameraPermission();
+
+          if (result === RESULTS.GRANTED) {
+            setModalVisible(false);
+            setTimeout(() => {
+              onOpenModal();
+            }, HIDE_MODAL_DURATION);
+          }
         },
       },
       {
@@ -93,7 +94,7 @@ const SelectAttachAccountModal = ({ modalVisible, setModalVisible, onModalHide }
         },
       },
     ],
-    [navigation, setModalVisible, show],
+    [navigation, onOpenModal, setModalVisible, show],
   );
 
   const onChangeModalVisible = useCallback(() => {

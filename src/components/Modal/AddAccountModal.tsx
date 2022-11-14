@@ -195,16 +195,15 @@ const AddAccountModal = ({ modalVisible, onHideModal: onHideMainModal }: Props) 
             icon: QrCode,
             title: i18n.title.attachQRSignerAccount,
             onCLickButton: async () => {
-              // const result = await requestCameraPermission();
-              //
-              // if (result === RESULTS.GRANTED) {
-              //   onHideMainModal();
-              //   setScanType(SCAN_TYPE.QR_SIGNER);
-              //   setTimeout(() => {
-              //     onOpenModal();
-              //   }, HIDE_MODAL_DURATION);
-              // }
-              show(i18n.common.comingSoon);
+              const result = await requestCameraPermission();
+
+              if (result === RESULTS.GRANTED) {
+                onHideMainModal();
+                setScanType(SCAN_TYPE.QR_SIGNER);
+                setTimeout(() => {
+                  onOpenModal();
+                }, HIDE_MODAL_DURATION);
+              }
             },
           },
           {
