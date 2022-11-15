@@ -135,9 +135,11 @@ export const FirstScreen = () => {
       <ImageBackground source={Images.loadingScreen} resizeMode={'cover'} style={imageBackgroundStyle}>
         <SafeAreaView />
         <View style={logoStyle}>
-          <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
-            <SVGImages.SubWallet2 width={230} height={230} />
-          </Suspense>
+          <View style={{ flex: 1, justifyContent: 'center', marginBottom: 16, paddingTop: 40 }}>
+            <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
+              <SVGImages.SubWallet2 width={230} height={230} />
+            </Suspense>
+          </View>
 
           <SubmitButton
             leftIcon={UserCirclePlus}
