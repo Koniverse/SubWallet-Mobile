@@ -46,6 +46,7 @@ import { getStakeDelegationInfo, getUnbondingTxInfo } from '../../../messaging';
 import DelegationBriefInfo from 'components/Staking/DelegationBriefInfo';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -316,53 +317,59 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
       disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
-        <ScrollView
-          style={{ ...ScrollViewStyle }}
-          contentContainerStyle={{ flexGrow: 1, justifyContent: !isDataReady ? 'center' : undefined }}>
-          {isDataReady ? (
-            <>
-              <View style={{ flex: 1, paddingBottom: 16 }}>
-                {delegations && selectedValidator && (
-                  <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
-                )}
-                <View style={IconContainerStyle}>
-                  <View>
-                    <SubWalletAvatar size={40} address={selectedAccount} />
+        {isNetConnected ? (
+          <ScrollView
+            style={{ ...ScrollViewStyle }}
+            contentContainerStyle={{ flexGrow: 1, justifyContent: !isDataReady ? 'center' : undefined }}>
+            {isDataReady ? (
+              <>
+                <View style={{ flex: 1, paddingBottom: 16 }}>
+                  {delegations && selectedValidator && (
+                    <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
+                  )}
+                  <View style={IconContainerStyle}>
+                    <View>
+                      <SubWalletAvatar size={40} address={selectedAccount} />
+                    </View>
+                  </View>
+                  <InputBalance
+                    placeholder={'0'}
+                    si={si}
+                    onChangeSi={setSi}
+                    maxValue={maxUnBoned}
+                    onChange={onChangeAmount}
+                    decimals={balanceFormat[0]}
+                    ref={inputBalanceRef}
+                    siSymbol={selectedToken}
+                    disable={loading}
+                  />
+                  <View style={RowCenterStyle}>
+                    {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
                   </View>
                 </View>
-                <InputBalance
-                  placeholder={'0'}
-                  si={si}
-                  onChangeSi={setSi}
-                  maxValue={maxUnBoned}
-                  onChange={onChangeAmount}
-                  decimals={balanceFormat[0]}
-                  ref={inputBalanceRef}
-                  siSymbol={selectedToken}
-                  disable={loading}
-                />
-                <View style={RowCenterStyle}>
-                  {!!reformatAmount && <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />}
-                </View>
+
+                {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
+              </>
+            ) : (
+              <ActivityIndicator animating={true} size={'large'} />
+            )}
+          </ScrollView>
+        ) : (
+          <NoInternetScreen />
+        )}
+        <View>
+          {isNetConnected && (
+            <View style={BalanceContainerStyle}>
+              <View style={TransferableContainerStyle}>
+                <Text style={TransferableTextStyle}>{i18n.common.activeStaking}:&nbsp;</Text>
+                <FormatBalance format={balanceFormat} value={maxUnBoned} />
               </View>
 
-              {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
-            </>
-          ) : (
-            <ActivityIndicator animating={true} size={'large'} />
-          )}
-        </ScrollView>
-        <View>
-          <View style={BalanceContainerStyle}>
-            <View style={TransferableContainerStyle}>
-              <Text style={TransferableTextStyle}>{i18n.common.activeStaking}:&nbsp;</Text>
-              <FormatBalance format={balanceFormat} value={maxUnBoned} />
+              <TouchableOpacity onPress={handlePressMax} disabled={loading}>
+                <Text style={MaxTextStyle}>{i18n.common.max}</Text>
+              </TouchableOpacity>
             </View>
-
-            <TouchableOpacity onPress={handlePressMax} disabled={loading}>
-              <Text style={MaxTextStyle}>{i18n.common.max}</Text>
-            </TouchableOpacity>
-          </View>
+          )}
           <SubmitButton
             disabled={!isReadySubmit || (delegations && !isValidValidator)}
             isBusy={loading}
