@@ -198,6 +198,10 @@ export const vi = {
     providerErrorMessagePart1: 'Your current providers for ',
     providerErrorMessagePart2: ' have been disconnected. Please change provider to continue',
     goToNetworkConfig: 'Go to Network Config',
+    submitting: 'Submitting...',
+    sending: 'Sending...',
+    scanForApprove: 'Scan QR for approve signer account send transaction',
+    scanQr: 'Scan QR',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -279,6 +283,7 @@ export const vi = {
     addAccount: 'Add Account',
     createNewAccount: 'Create New Account',
     importAccount: 'Import Account',
+    scanApproveRequest: 'Scan Approve Request',
   },
   tabName: {
     crypto: 'Crypto',
@@ -561,11 +566,14 @@ export const vi = {
     validatorMaxLimit: 'The validator is not looking for more nominations',
     noInternetMessage: 'No Internet connection. Please try again later',
     webRunnerDeadMessage: "We've run into an issue. Please try again later or restart the application",
+    unSupportSigning: 'This feature is not available for the chosen account',
+    networkUnSupportQrSigner: 'This network does not support this feature with QR-signer account',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
     invalidMnemonicSeed: 'Invalid mnemonic seed',
     invalidAddress: 'Invalid address',
+    invalidSignature: 'Invalid signature',
     transferNFTBalanceError: 'Your balance is too low to cover fees',
     transferNFTTxError: 'Encountered an error, please try again.',
     transferNFTError: 'Some error occurred. Please try again later.',

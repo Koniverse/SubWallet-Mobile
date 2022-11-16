@@ -15,7 +15,6 @@ import { TransferResultType } from 'types/tx';
 import { ColorMap } from 'styles/color';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { TransferError } from '@subwallet/extension-base/background/KoniTypes';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import i18n from 'utils/i18n/i18n';
@@ -67,10 +66,10 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
   const navigation = useNavigation<RootNavigationProps>();
   const isSupportScanExplorer = useSupportScanExplorer(networkKey);
   const isScanExplorerTxUrl = useScanExplorerTxUrl(networkKey, extrinsicHash);
-  const renderErrorMessage = (error: Array<TransferError>) => {
-    return error.map(err => (
-      <Text key={err.code} style={{ ...sharedStyles.mainText, color: ColorMap.danger, textAlign: 'center' }}>
-        {err.message}
+  const renderErrorMessage = (error: Array<string>) => {
+    return error.map((err, index) => (
+      <Text key={index} style={{ ...sharedStyles.mainText, color: ColorMap.danger, textAlign: 'center' }}>
+        {err}
       </Text>
     ));
   };
@@ -82,7 +81,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
 
     return (
       <SubmitButton
-        style={{ ...MarginBottomForSubmitButton }}
+        style={{ ...MarginBottomForSubmitButton, marginTop: 16 }}
         disabled={!isSupportScanExplorer || !isScanExplorerTxUrl}
         title={i18n.common.viewInExplorer}
         onPress={() => Linking.openURL(isScanExplorerTxUrl)}

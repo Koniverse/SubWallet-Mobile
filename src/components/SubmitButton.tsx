@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { ActivityIndicator, StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
@@ -14,6 +14,7 @@ interface ButtonProps extends TouchableOpacityProps {
   wrapperStyle?: StyleProp<any>;
   hasRightArrow?: boolean;
   isBusy?: boolean;
+  loadingLeftIcon?: boolean;
   leftIcon?: (iconProps: IconProps) => JSX.Element;
   disabledColor?: string;
 }
@@ -69,11 +70,16 @@ const loadingStyle: StyleProp<any> = {
   justifyContent: 'center',
 };
 
+const LoadingLeftIconStyle: StyleProp<any> = {
+  marginRight: 10,
+};
+
 export const SubmitButton = (buttonProps: ButtonProps) => {
   const {
     leftIcon: LeftIcon,
     title,
     backgroundColor,
+    loadingLeftIcon,
     color,
     style,
     hasRightArrow,
@@ -88,6 +94,9 @@ export const SubmitButton = (buttonProps: ButtonProps) => {
       {...buttonProps}
       disabled={disabled || isBusy}
       style={getWrapperStyle(backgroundColor, style)}>
+      {loadingLeftIcon && (
+        <ActivityIndicator animating={true} size={'small'} color={ColorMap.light} style={LoadingLeftIconStyle} />
+      )}
       {!!LeftIcon && <LeftIcon size={20} weight={'bold'} color={ColorMap.light} />}
       <Text style={getTextStyle(color, !!LeftIcon)}>{title}</Text>
       {hasRightArrow && (

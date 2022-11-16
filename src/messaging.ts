@@ -63,14 +63,23 @@ import {
   RequestAccountCreateWithSecretKey,
   RequestAuthorizationBlock,
   RequestAuthorizationPerSite,
+  RequestCancelCompoundStakeExternal,
   RequestCheckCrossChainTransfer,
   RequestCheckTransfer,
+  RequestClaimRewardExternal,
+  RequestCreateCompoundStakeExternal,
   RequestCrossChainTransfer,
+  RequestCrossChainTransferExternal,
   RequestFreeBalance,
   RequestInitCronAndSubscription,
   RequestNftForceUpdate,
+  RequestNftTransferExternalEVM,
+  RequestNftTransferExternalSubstrate,
   RequestParseEVMTransactionInput,
+  RequestRejectExternalRequest,
+  RequestResolveExternalRequest,
   RequestSettingsType,
+  RequestStakeExternal,
   RequestSubscribeBalance,
   RequestSubscribeBalancesVisibility,
   RequestSubscribeCrowdloan,
@@ -82,6 +91,9 @@ import {
   RequestTransferCheckReferenceCount,
   RequestTransferCheckSupporting,
   RequestTransferExistentialDeposit,
+  RequestTransferExternal,
+  RequestUnStakeExternal,
+  RequestWithdrawStakeExternal,
   ResponseAccountCreateSuriV2,
   ResponseAccountCreateWithSecretKey,
   ResponseCheckCrossChainTransfer,
@@ -89,6 +101,8 @@ import {
   ResponseCheckTransfer,
   ResponseParseEVMTransactionInput,
   ResponsePrivateKeyValidateV2,
+  ResponseRejectExternalRequest,
+  ResponseResolveExternalRequest,
   ResponseSeedCreateV2,
   ResponseSeedValidateV2,
   ResponseSettingsType,
@@ -1193,4 +1207,90 @@ export async function createAccountWithSecret(
 
 export async function wasmNftGetTransaction(request: NftTransactionRequest): Promise<SubstrateNftTransaction> {
   return sendMessage('pri(wasmNft.getTransaction)', request);
+}
+
+// External request
+
+export async function rejectExternalRequest(
+  request: RequestRejectExternalRequest,
+): Promise<ResponseRejectExternalRequest> {
+  return sendMessage('pri(account.external.reject)', request);
+}
+
+export async function resolveExternalRequest(
+  request: RequestResolveExternalRequest,
+): Promise<ResponseResolveExternalRequest> {
+  return sendMessage('pri(account.external.resolve)', request);
+}
+
+// External with Qr
+
+export async function makeTransferQr(
+  request: RequestTransferExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(accounts.transfer.qr.create)', request, callback);
+}
+
+export async function makeCrossChainTransferQr(
+  request: RequestCrossChainTransferExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(accounts.cross.transfer.qr.create)', request, callback);
+}
+
+export async function makeTransferNftQrSubstrate(
+  request: RequestNftTransferExternalSubstrate,
+  callback: (data: NftTransactionResponse) => void,
+): Promise<NftTransactionResponse> {
+  return sendMessage('pri(nft.transfer.qr.create.substrate)', request, callback);
+}
+
+export async function makeTransferNftQrEvm(
+  request: RequestNftTransferExternalEVM,
+  callback: (data: NftTransactionResponse) => void,
+): Promise<NftTransactionResponse> {
+  return sendMessage('pri(nft.transfer.qr.create.evm)', request, callback);
+}
+
+export async function makeBondingQr(
+  request: RequestStakeExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(stake.qr.create)', request, callback);
+}
+
+export async function makeUnBondingQr(
+  request: RequestUnStakeExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(unStake.qr.create)', request, callback);
+}
+
+export async function stakeWithdrawQr(
+  request: RequestWithdrawStakeExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(withdrawStake.qr.create)', request, callback);
+}
+
+export async function claimRewardQr(
+  request: RequestClaimRewardExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(claimReward.qr.create)', request, callback);
+}
+
+export async function createCompoundQr(
+  request: RequestCreateCompoundStakeExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(createCompound.qr.create)', request, callback);
+}
+
+export async function cancelCompoundQr(
+  request: RequestCancelCompoundStakeExternal,
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
+  return sendMessage('pri(cancelCompound.qr.create)', request, callback);
 }

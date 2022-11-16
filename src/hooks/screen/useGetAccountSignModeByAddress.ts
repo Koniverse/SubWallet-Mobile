@@ -6,7 +6,7 @@ import { SIGN_MODE } from 'types/signer';
 import { getAccountSignMode } from 'utils/account';
 import { useMemo } from 'react';
 
-const useGetAccountSignModeByAddress = (address: string): SIGN_MODE => {
+const useGetAccountSignModeByAddress = (address?: string): SIGN_MODE => {
   const account = useGetAccountByAddress(address);
 
   return useMemo((): SIGN_MODE => {

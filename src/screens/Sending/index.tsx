@@ -1,4 +1,5 @@
-import React, { createRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { SigningContext } from 'providers/SigningContext';
+import React, { createRef, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendFundProps } from 'routes/index';
 import { useSelector } from 'react-redux';
@@ -86,9 +87,15 @@ export const SendFund = ({
   },
 }: SendFundProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
+
+  const {
+    signingState: { isCreating, isSubmitting },
+  } = useContext(SigningContext);
+
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
   const [{ rawAmount, rawAmountWithDecimals }, setRawAmount] = useState<{
     rawAmount: string | undefined;
@@ -114,7 +121,6 @@ export const SendFund = ({
   const balanceFormat: BalanceFormatType = getBalanceFormat(originChain, originToken, chainRegistry);
   const [isGasRequiredExceedsError, setGasRequiredExceedsError] = useState<boolean>(false);
   const [backupAmount, setBackupAmount] = useState<string | undefined>(undefined);
-  const [isBusy, setBusy] = useState(false);
   const [existentialDeposit, setExistentialDeposit] = useState<string>('0');
   const [[fee, feeSymbol], setFeeInfo] = useState<[string | null, string | null | undefined]>([null, null]);
   const mainTokenInfo = getMainTokenInfo(originChain, chainRegistry);
@@ -362,7 +368,6 @@ export const SendFund = ({
     });
     setReceiveAddress([null, '']);
     setCurrentStep(ViewStep.SEND_FUND);
-    setBusy(false);
   };
 
   const onUpdateInputBalance = () => {
@@ -429,7 +434,7 @@ export const SendFund = ({
       {!isShowTxResult ? (
         <ContainerWithSubHeader
           onPressBack={onPressBack}
-          disabled={isBusy}
+          disabled={isCreating || isSubmitting}
           title={currentViewStep === ViewStep.TYPE_AMOUNT ? i18n.common.amount : i18n.title.sendAsset}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (
@@ -496,8 +501,6 @@ export const SendFund = ({
                   chainRegistry[originChain].tokenMap,
                 )}
                 si={si}
-                isBusy={isBusy}
-                onChangeBusy={setBusy}
               />
             )}
           </>
