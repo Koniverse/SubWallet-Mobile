@@ -24,7 +24,7 @@ import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { getStakeWithdrawalTxInfo, submitStakeWithdrawal } from '../../../messaging';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
-import { Warning } from 'components/Warning';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -48,7 +48,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
 
 const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack } }: WithdrawAuthProps) => {
   const { withdrawAmount: amount, networkKey, selectedAccount, nextWithdrawalAction, targetValidator } = withdrawParams;
-  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const { isNetConnected } = useContext(WebRunnerContext);
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
@@ -169,39 +169,43 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
-          {isTxReady ? (
-            <>
-              {!!targetValidator && (
-                <AddressField
-                  address={targetValidator}
-                  label={i18n.withdrawStakeAction.validator}
-                  showRightIcon={false}
+        {isNetConnected ? (
+          <ScrollView
+            style={{ ...ScrollViewStyle }}
+            contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
+            {isTxReady ? (
+              <>
+                {!!targetValidator && (
+                  <AddressField
+                    address={targetValidator}
+                    label={i18n.withdrawStakeAction.validator}
+                    showRightIcon={false}
+                  />
+                )}
+                <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
+                <BalanceField
+                  value={amount.toString()}
+                  decimal={0}
+                  token={selectedToken}
+                  si={formatBalance.findSi('-')}
+                  label={i18n.withdrawStakeAction.withdrawAmount}
                 />
-              )}
-              <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
-              <BalanceField
-                value={amount.toString()}
-                decimal={0}
-                token={selectedToken}
-                si={formatBalance.findSi('-')}
-                label={i18n.withdrawStakeAction.withdrawAmount}
-              />
-              <BalanceField
-                value={fee}
-                decimal={0}
-                token={feeToken}
-                si={formatBalance.findSi('-')}
-                label={i18n.withdrawStakeAction.withdrawFee}
-              />
-              <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
-
-              {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
-            </>
-          ) : (
-            <ActivityIndicator animating={true} size={'large'} />
-          )}
-        </ScrollView>
+                <BalanceField
+                  value={fee}
+                  decimal={0}
+                  token={feeToken}
+                  si={formatBalance.findSi('-')}
+                  label={i18n.withdrawStakeAction.withdrawFee}
+                />
+                <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
+              </>
+            ) : (
+              <ActivityIndicator animating={true} size={'large'} />
+            )}
+          </ScrollView>
+        ) : (
+          <NoInternetScreen />
+        )}
         <View style={ActionContainerStyle}>
           <SubmitButton
             title={i18n.common.cancel}
@@ -219,7 +223,7 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
         </View>
         <PasswordModal
           onConfirm={onSubmit}
-          visible={visible}
+          visible={visible && !!isNetConnected}
           closeModal={handleClose}
           isBusy={loading}
           errorArr={errorArr}

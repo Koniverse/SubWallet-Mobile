@@ -25,6 +25,7 @@ import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -162,25 +163,31 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
       disableRightButton={loading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
-          {isTxReady ? (
-            <>
-              <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
-              <BalanceField
-                value={fee}
-                decimal={0}
-                token={feeToken}
-                si={formatBalance.findSi('-')}
-                label={i18n.claimStakeAction.claimFee}
-              />
-              <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
+        {isNetConnected ? (
+          <ScrollView
+            style={{ ...ScrollViewStyle }}
+            contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
+            {isTxReady ? (
+              <>
+                <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
+                <BalanceField
+                  value={fee}
+                  decimal={0}
+                  token={feeToken}
+                  si={formatBalance.findSi('-')}
+                  label={i18n.claimStakeAction.claimFee}
+                />
+                <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
 
-              {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
-            </>
-          ) : (
-            <ActivityIndicator animating={true} size={'large'} />
-          )}
-        </ScrollView>
+                {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
+              </>
+            ) : (
+              <ActivityIndicator animating={true} size={'large'} />
+            )}
+          </ScrollView>
+        ) : (
+          <NoInternetScreen />
+        )}
         <View style={ActionContainerStyle}>
           <SubmitButton
             title={i18n.common.cancel}
@@ -197,7 +204,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         </View>
         <PasswordModal
           onConfirm={onSubmit}
-          visible={visible}
+          visible={visible && !!isNetConnected}
           closeModal={handleClose}
           isBusy={loading}
           errorArr={errorArr}
