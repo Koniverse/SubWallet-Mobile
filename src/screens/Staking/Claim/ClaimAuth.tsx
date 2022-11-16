@@ -7,7 +7,7 @@ import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { ClaimAuthProps } from 'routes/staking/claimAction';
@@ -23,6 +23,8 @@ import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
+import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -46,7 +48,7 @@ const ButtonStyle: StyleProp<ViewStyle> = {
 
 const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
   const { networkKey, selectedAccount } = claimParams;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<RootNavigationProps>();
 
   const [visible, setVisible] = useState(false);
@@ -172,6 +174,8 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
                 label={i18n.claimStakeAction.claimFee}
               />
               <TextField text={feeString} label={i18n.withdrawStakeAction.total} disabled={true} />
+
+              {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
             </>
           ) : (
             <ActivityIndicator animating={true} size={'large'} />
@@ -184,7 +188,12 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
             backgroundColor={ColorMap.dark2}
             onPress={goBack}
           />
-          <SubmitButton disabled={!isTxReady} title={i18n.common.continue} style={ButtonStyle} onPress={handleOpen} />
+          <SubmitButton
+            disabled={!isTxReady || !isNetConnected}
+            title={i18n.common.continue}
+            style={ButtonStyle}
+            onPress={handleOpen}
+          />
         </View>
         <PasswordModal
           onConfirm={onSubmit}

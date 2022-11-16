@@ -49,6 +49,7 @@ import { Bar as ProgressBar } from 'react-native-progress';
 import { captureScreen } from 'react-native-view-shot';
 import { EmptyList } from 'components/EmptyList';
 import { BridgeScript, DAppScript, NovaScript } from 'screens/Home/Browser/BrowserScripts';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -221,7 +222,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   const hostname = siteUrl.current ? getHostName(siteUrl.current) : null;
   const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
   const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
 
   const clearCurrentBrowserSv = () => {
@@ -505,25 +506,28 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
           </View>
         </View>
         <View style={{ flex: 1, position: 'relative', backgroundColor: ColorMap.dark1 }}>
-          {isWebviewReady ? (
-            <WebView
-              ref={webviewRef}
-              originWhitelist={['*']}
-              source={{ uri: initWebViewSource }}
-              injectedJavaScriptBeforeContentLoaded={injectedScripts}
-              onLoadStart={onLoadStart}
-              onLoad={onLoad}
-              onLoadProgress={onLoadProgress}
-              onMessage={onWebviewMessage}
-              javaScriptEnabled={true}
-              allowFileAccess={true}
-              allowFileAccessFromFileURLs={true}
-              allowsInlineMediaPlayback={true}
-              allowUniversalAccessFromFileURLs={true}
-              domStorageEnabled={true}
-            />
+          {isNetConnected ? (
+            isWebviewReady ? (
+              <WebView
+                ref={webviewRef}
+                originWhitelist={['*']}
+                source={{ uri: initWebViewSource }}
+                injectedJavaScriptBeforeContentLoaded={injectedScripts}
+                onLoadStart={onLoadStart}
+                onLoad={onLoad}
+                onLoadProgress={onLoadProgress}
+                onMessage={onWebviewMessage}
+                javaScriptEnabled={true}
+                allowFileAccess={true}
+                allowUniversalAccessFromFileURLs={true}
+                allowFileAccessFromFileURLs={true}
+                domStorageEnabled={true}
+              />
+            ) : (
+              <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
+            )
           ) : (
-            <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
+            <NoInternetScreen />
           )}
 
           {isShowPhishingWarning && <PhishingBlockerLayer />}

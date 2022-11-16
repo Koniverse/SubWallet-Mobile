@@ -6,7 +6,7 @@ import { NetworkField } from 'components/Field/Network';
 import ImagePreview from 'components/ImagePreview';
 import { InputAddress } from 'components/Input/InputAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { createRef, useCallback, useEffect, useState } from 'react';
+import React, { createRef, useCallback, useContext, useEffect, useState } from 'react';
 import {
   Keyboard,
   ScrollView,
@@ -43,6 +43,7 @@ import { RESULTS } from 'react-native-permissions';
 import { Warning } from 'components/Warning';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
+import { WebRunnerContext } from 'providers/contexts';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -78,6 +79,7 @@ const isValidRecipient = (address: string, isEthereum: boolean) => {
 
 const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps) => {
   // const { show } = useToast();
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<HomeNavigationProps>();
 
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
@@ -262,13 +264,13 @@ const TransferNft = ({ route: { params: transferNftParams } }: TransferNftProps)
                   isValidValue={!addressError}
                 />
                 <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
-
+                {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
                 {!!error && <Warning message={error} isDanger />}
               </ScrollView>
               <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
                 <SubmitButton
                   isBusy={loading}
-                  disabled={!recipientAddress || addressError}
+                  disabled={!recipientAddress || addressError || !isNetConnected}
                   style={{ width: '100%', ...MarginBottomForSubmitButton }}
                   title={i18n.transferNft.send}
                   onPress={handleSend}

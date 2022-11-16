@@ -6,9 +6,9 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { AccountInfoByNetwork } from 'types/ui-types';
 import { BalanceInfo } from 'types/index';
-import { BalanceVal } from 'components/BalanceVal';
 import { BN_ZERO } from 'utils/chainBalances';
 import { Divider } from 'components/Divider';
+import { BalanceValDisplay } from 'components/BalanceValDisplay';
 
 interface Props extends TouchableOpacityProps {
   accountInfo: AccountInfoByNetwork;
@@ -48,12 +48,18 @@ const chainBalancePart2: StyleProp<any> = {
 export const ChainBalance = ({ accountInfo, onPress, balanceInfo }: Props) => {
   const renderTokenValue = (curBalanceInfo: BalanceInfo) => {
     if (!curBalanceInfo) {
-      return <BalanceVal balanceValTextStyle={textStyle} symbol={accountInfo.nativeToken || 'UNIT'} value={BN_ZERO} />;
+      return (
+        <BalanceValDisplay balanceValTextStyle={textStyle} symbol={accountInfo.nativeToken || 'UNIT'} value={BN_ZERO} />
+      );
     }
 
     if (!hasAnyChildTokenBalance(curBalanceInfo)) {
       return (
-        <BalanceVal balanceValTextStyle={textStyle} symbol={curBalanceInfo.symbol} value={balanceInfo.balanceValue} />
+        <BalanceValDisplay
+          balanceValTextStyle={textStyle}
+          symbol={curBalanceInfo.symbol}
+          value={balanceInfo.balanceValue}
+        />
       );
     }
 
@@ -92,7 +98,7 @@ export const ChainBalance = ({ accountInfo, onPress, balanceInfo }: Props) => {
 
         <View style={chainBalancePart2}>
           {renderTokenValue(balanceInfo)}
-          <BalanceVal
+          <BalanceValDisplay
             balanceValTextStyle={subTextStyle}
             startWithSymbol
             symbol={'$'}
