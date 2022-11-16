@@ -19,5 +19,5 @@ export interface TransferResultType {
 export interface TransactionResultParams {
   txError: string;
   txSuccess: boolean;
-  extrinsicHash: string;
+  extrinsicHash?: string;
 }

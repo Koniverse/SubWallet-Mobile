@@ -48,7 +48,6 @@ import {
   DelegationItem,
   DeleteCustomTokenParams,
   DisableNetworkResponse,
-  EvmNftSubmitTransaction,
   EvmNftTransaction,
   ExistingTuringCompoundTask,
   NetworkJson,
@@ -75,9 +74,9 @@ import {
   RequestNftForceUpdate,
   RequestNftTransferExternalEVM,
   RequestNftTransferExternalSubstrate,
-  RequestParseEVMTransactionInput,
   RequestRejectExternalRequest,
   RequestResolveExternalRequest,
+  RequestParseEVMContractInput,
   RequestSettingsType,
   RequestStakeExternal,
   RequestSubscribeBalance,
@@ -99,14 +98,13 @@ import {
   ResponseCheckCrossChainTransfer,
   ResponseCheckPublicAndSecretKey,
   ResponseCheckTransfer,
-  ResponseParseEVMTransactionInput,
+  ResponseParseEVMContractInput,
   ResponsePrivateKeyValidateV2,
   ResponseRejectExternalRequest,
   ResponseResolveExternalRequest,
   ResponseSeedCreateV2,
   ResponseSeedValidateV2,
   ResponseSettingsType,
-  ResponseTransfer,
   StakeClaimRewardParams,
   StakeDelegationRequest,
   StakeUnlockingJson,
@@ -119,7 +117,6 @@ import {
   SupportTransferResponse,
   ThemeTypes,
   TransactionHistoryItemType,
-  TransferError,
   TuringCancelStakeCompoundParams,
   TuringStakeCompoundParams,
   TuringStakeCompoundResp,
@@ -127,6 +124,14 @@ import {
   ValidateCustomTokenRequest,
   ValidateCustomTokenResponse,
   ValidateNetworkResponse,
+  RequestEvmNftSubmitTransaction,
+  RequestBondingSubmit,
+  RequestSubstrateNftSubmitTransaction,
+  RequestUnbondingSubmit,
+  RequestStakeWithdrawal,
+  RequestStakeClaimReward,
+  RequestTuringStakeCompound,
+  RequestTuringCancelStakeCompound,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
@@ -873,15 +878,15 @@ export async function checkCrossChainTransfer(
 
 export async function makeTransfer(
   request: RequestTransfer,
-  callback: (data: ResponseTransfer) => void,
-): Promise<Array<TransferError>> {
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
   return sendMessage('pri(accounts.transfer)', request, callback);
 }
 
 export async function makeCrossChainTransfer(
   request: RequestCrossChainTransfer,
-  callback: (data: ResponseTransfer) => void,
-): Promise<Array<TransferError>> {
+  callback: (data: BasicTxResponse) => void,
+): Promise<BasicTxResponse> {
   return sendMessage('pri(accounts.crossChainTransfer)', request, callback);
 }
 
@@ -890,7 +895,7 @@ export async function evmNftGetTransaction(request: NftTransactionRequest): Prom
 }
 
 export async function evmNftSubmitTransaction(
-  request: EvmNftSubmitTransaction,
+  request: RequestEvmNftSubmitTransaction,
   callback: (data: NftTransactionResponse) => void,
 ): Promise<NftTransactionResponse> {
   return sendMessage('pri(evmNft.submitTransaction)', request, callback);
@@ -1000,7 +1005,7 @@ export async function substrateNftGetTransaction(request: NftTransactionRequest)
 }
 
 export async function substrateNftSubmitTransaction(
-  request: SubstrateNftSubmitTransaction,
+  request: RequestSubstrateNftSubmitTransaction,
   callback: (data: NftTransactionResponse) => void,
 ): Promise<NftTransactionResponse> {
   return sendMessage('pri(substrateNft.submitTransaction)', request, callback);
@@ -1036,7 +1041,7 @@ export async function getChainBondingBasics(
 }
 
 export async function submitBonding(
-  bondingSubmitParams: BondingSubmitParams,
+  bondingSubmitParams: RequestBondingSubmit,
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(bonding.submitTransaction)', bondingSubmitParams, callback);
@@ -1051,7 +1056,7 @@ export async function getUnbondingTxInfo(unbondingSubmitParams: UnbondingSubmitP
 }
 
 export async function submitUnbonding(
-  unbondingSubmitParams: UnbondingSubmitParams,
+  unbondingSubmitParams: RequestUnbondingSubmit,
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(unbonding.submitTransaction)', unbondingSubmitParams, callback);
@@ -1069,7 +1074,7 @@ export async function getStakeWithdrawalTxInfo(params: StakeWithdrawalParams): P
 }
 
 export async function submitStakeWithdrawal(
-  params: StakeWithdrawalParams,
+  params: RequestStakeWithdrawal,
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(unbonding.submitWithdrawal)', params, callback);
@@ -1080,7 +1085,7 @@ export async function getStakeClaimRewardTxInfo(params: StakeClaimRewardParams):
 }
 
 export async function submitStakeClaimReward(
-  params: StakeClaimRewardParams,
+  params: RequestStakeClaimReward,
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(staking.submitClaimReward)', params, callback);
@@ -1091,8 +1096,8 @@ export async function getStakeDelegationInfo(params: StakeDelegationRequest): Pr
 }
 
 export async function parseEVMTransactionInput(
-  request: RequestParseEVMTransactionInput,
-): Promise<ResponseParseEVMTransactionInput> {
+  request: RequestParseEVMContractInput,
+): Promise<ResponseParseEVMContractInput> {
   return sendMessage('pri(evm.transaction.parse.input)', request);
 }
 
@@ -1161,7 +1166,7 @@ export async function getTuringStakeCompoundTxInfo(
 }
 
 export async function submitTuringStakeCompounding(
-  request: TuringStakeCompoundParams,
+  request: RequestTuringStakeCompound,
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(staking.submitTuringCompound)', request, callback);
@@ -1180,7 +1185,7 @@ export async function getTuringCancelStakeCompoundTxInfo(
 }
 
 export async function submitTuringCancelStakeCompounding(
-  params: TuringCancelStakeCompoundParams,
+  params: RequestTuringCancelStakeCompound,
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(staking.submitTuringCancelCompound)', params, callback);

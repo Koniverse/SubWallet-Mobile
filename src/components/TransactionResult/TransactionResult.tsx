@@ -20,7 +20,7 @@ interface Props {
   isTxSuccess: boolean;
   txError: string;
   networkKey: string;
-  extrinsicHash: string;
+  extrinsicHash?: string;
   backToHome: () => void;
   handleResend?: () => void;
   resendText?: string;
