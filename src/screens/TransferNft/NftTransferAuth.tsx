@@ -180,37 +180,37 @@ const AuthTransaction = ({
           />
           {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
-        <View style={{ ...ContainerHorizontalPadding }}>
-          {substrateParams && (
-            <SigningRequest
-              account={senderAccount}
-              network={network}
-              balanceError={!!substrateTransferParams?.balanceError}
-              baseProps={{}}
-              handleSignPassword={substrateNftSubmitTransaction}
-              message={'There is problem when transferNft'}
-              onAfterSuccess={onAfterSuccess}
-              onFail={onFail}
-              onSuccess={onSuccess}
-              params={substrateParams}
-            />
-          )}
-          {evmParams && (
-            <SigningRequest
-              account={senderAccount}
-              network={network}
-              balanceError={!!web3TransferParams?.balanceError}
-              baseProps={{}}
-              handleSignPassword={evmNftSubmitTransaction}
-              handleSignQr={makeTransferNftQrEvm}
-              message={'There is problem when transferNft'}
-              onAfterSuccess={onAfterSuccess}
-              onFail={onFail}
-              onSuccess={onSuccess}
-              params={evmParams}
-            />
-          )}
-        </View>
+        {substrateParams && (
+          <SigningRequest
+            account={senderAccount}
+            network={network}
+            balanceError={!!substrateTransferParams?.balanceError}
+            baseProps={{}}
+            handleSignPassword={substrateNftSubmitTransaction}
+            message={'There is problem when transferNft'}
+            onAfterSuccess={onAfterSuccess}
+            onFail={onFail}
+            onSuccess={onSuccess}
+            params={substrateParams}
+            style={ContainerHorizontalPadding}
+          />
+        )}
+        {evmParams && (
+          <SigningRequest
+            account={senderAccount}
+            network={network}
+            balanceError={!!web3TransferParams?.balanceError}
+            baseProps={{}}
+            handleSignPassword={evmNftSubmitTransaction}
+            handleSignQr={makeTransferNftQrEvm}
+            message={'There is problem when transferNft'}
+            onAfterSuccess={onAfterSuccess}
+            onFail={onFail}
+            onSuccess={onSuccess}
+            params={evmParams}
+            style={ContainerHorizontalPadding}
+          />
+        )}
       </>
     </ContainerWithSubHeader>
   );

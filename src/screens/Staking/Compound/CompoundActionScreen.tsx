@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { CompoundStakeActionStackParamList } from 'routes/staking/compoundAction';
-import CompoundAuth from 'screens/Staking/Compound/CompoundAuth';
+import CreateCompoundAuth from 'screens/Staking/Compound/CreateCompoundAuth';
 import CompoundConfirm from 'screens/Staking/Compound/CompoundConfirm';
-import CancelCompoundAuth from './CancelCompoundAuth';
-import CancelCompoundResult from './CancelCompoundResult';
-import CompoundResult from './CompoundResult';
+import CancelCompoundAuth from 'screens/Staking/Compound/CancelCompoundAuth';
+import CancelCompoundResult from 'screens/Staking/Compound/CancelCompoundResult';
+import CreateCompoundResult from 'screens/Staking/Compound/CreateCompoundResult';
 
 const CompoundActionScreen = () => {
   const UnStakeActionStack = createNativeStackNavigator<CompoundStakeActionStackParamList>();
@@ -13,8 +13,12 @@ const CompoundActionScreen = () => {
   return (
     <UnStakeActionStack.Navigator screenOptions={{ headerShown: false }}>
       <UnStakeActionStack.Screen name="CompoundConfirm" component={CompoundConfirm} />
-      <UnStakeActionStack.Screen name="CompoundAuth" component={CompoundAuth} />
-      <UnStakeActionStack.Screen name="CompoundResult" component={CompoundResult} options={{ gestureEnabled: false }} />
+      <UnStakeActionStack.Screen name="CreateCompoundAuth" component={CreateCompoundAuth} />
+      <UnStakeActionStack.Screen
+        name="CreateCompoundResult"
+        component={CreateCompoundResult}
+        options={{ gestureEnabled: false }}
+      />
       <UnStakeActionStack.Screen name="CancelCompoundAuth" component={CancelCompoundAuth} />
       <UnStakeActionStack.Screen
         name="CancelCompoundResult"

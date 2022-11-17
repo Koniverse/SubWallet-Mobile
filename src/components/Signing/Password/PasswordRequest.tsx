@@ -1,4 +1,5 @@
 import { Warning } from 'components/Warning';
+import { WebRunnerContext } from 'providers/contexts';
 import { SigningContext } from 'providers/SigningContext';
 import { PasswordField } from 'components/Field/Password';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
@@ -46,14 +47,18 @@ const ErrorStyle: StyleProp<ViewStyle> = {
 const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
   return {
     ...MarginBottomForSubmitButton,
+    display: 'flex',
+    flexDirection: 'row',
     marginHorizontal: canCancel ? -4 : 0,
     marginTop: 16,
   };
 };
 
-const getButtonStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
+const getButtonStyle = (canCancel: boolean, style?: StyleProp<ViewStyle>): StyleProp<ViewStyle> => {
   return {
     marginHorizontal: canCancel ? 4 : 0,
+    flex: 1,
+    ...(style as Object),
   };
 };
 
@@ -73,6 +78,8 @@ const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, subm
     setPasswordError,
     signingState: { errors: signingErrors, isCreating, passwordError, isVisible, isSubmitting },
   } = useContext(SigningContext);
+
+  const { isNetConnected } = useContext(WebRunnerContext);
 
   const onSubmit = useCallback(
     (formState: FormState) => {
@@ -122,6 +129,7 @@ const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, subm
       <View style={getWrapperStyle(!!onCancel)}>
         {onCancel && (
           <SubmitButton
+            backgroundColor={ColorMap.dark2}
             style={getButtonStyle(!!onCancel)}
             disabled={isCreating}
             title={cancelText ? cancelText : i18n.common.cancel}
@@ -164,7 +172,9 @@ const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, subm
             style={ButtonStyle}
             isBusy={isCreating}
             onPress={onPress}
-            disabled={!formState.data.password || formState.errors.password.length > 0 || passwordError}
+            disabled={
+              !formState.data.password || formState.errors.password.length > 0 || passwordError || !isNetConnected
+            }
           />
         </View>
       </SubWalletModal>

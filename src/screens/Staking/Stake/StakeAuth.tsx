@@ -150,23 +150,21 @@ const StakeAuth = ({
 
           {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
-        <View>
-          <SigningRequest
-            account={account}
-            balanceError={false}
-            baseProps={{
-              onCancel: goBack,
-              buttonText: i18n.common.continue,
-            }}
-            handleSignPassword={submitBonding}
-            handleSignQr={makeBondingQr}
-            message={'There is problem when bonding'}
-            network={network}
-            onFail={onFail}
-            onSuccess={onSuccess}
-            params={bondingParams}
-          />
-        </View>
+        <SigningRequest
+          account={account}
+          balanceError={false}
+          baseProps={{
+            onCancel: goBack,
+            buttonText: i18n.common.continue,
+          }}
+          handleSignPassword={submitBonding}
+          handleSignQr={makeBondingQr}
+          message={'There is problem when bonding'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={bondingParams}
+        />
       </View>
     </ContainerWithSubHeader>
   );

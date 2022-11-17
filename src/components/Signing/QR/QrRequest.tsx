@@ -8,6 +8,7 @@ import SignatureScanner from 'components/Scanner/SignatureScanner';
 import DisplayPayload from 'components/Signing/QR/DisplayPayload';
 import { SubmitButton } from 'components/SubmitButton';
 import { useRejectExternalRequest } from 'hooks/screen/useRejectExternalRequest';
+import { WebRunnerContext } from 'providers/contexts';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
 import { QrSignerContext } from 'providers/QrSignerContext';
 import { SigningContext } from 'providers/SigningContext';
@@ -70,20 +71,25 @@ const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
   };
 };
 
-const getButtonStyle = (canCancel: boolean, style?: StyleProp<any>): StyleProp<ViewStyle> => {
+const getButtonStyle = (canCancel: boolean, style?: StyleProp<ViewStyle>): StyleProp<ViewStyle> => {
   return {
     marginHorizontal: canCancel ? 4 : 0,
     flex: 1,
-    ...style,
+    ...(style as Object),
   };
 };
 
-const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, buttonText, submitText } }: Props) => {
+const QrRequest = ({
+  handlerStart,
+  network,
+  baseProps: { onCancel, cancelText, buttonText, submitText, extraLoading },
+}: Props) => {
   const isSupport = useMemo((): boolean => !IGNORE_QR_SIGNER.includes(network.key), [network]);
 
   const { clearError, signingState, setIsVisible } = useContext(SigningContext);
   const { qrState } = useContext(QrSignerContext);
   const { createResolveExternalRequestData } = useContext(ExternalRequestContext);
+  const { isNetConnected } = useContext(WebRunnerContext);
 
   const { handlerReject } = useRejectExternalRequest();
 
@@ -154,7 +160,8 @@ const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, b
       <View style={getWrapperStyle(!!onCancel)}>
         {onCancel && (
           <SubmitButton
-            style={getButtonStyle(!!onCancel, CancelStyle)}
+            backgroundColor={ColorMap.dark2}
+            style={getButtonStyle(!!onCancel)}
             disabled={isLoading}
             title={cancelText ? cancelText : i18n.common.cancel}
             onPress={onCancel}
@@ -171,7 +178,7 @@ const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, b
         ) : (
           <SubmitButton
             style={getButtonStyle(!!onCancel)}
-            disabled={!isSupport}
+            disabled={!isSupport || !isNetConnected || extraLoading}
             isBusy={isCreating}
             title={buttonText ? buttonText : i18n.common.approve}
             onPress={handlerStart}

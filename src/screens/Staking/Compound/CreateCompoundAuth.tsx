@@ -1,6 +1,6 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { StakingType, UnbondingSubmitParams } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType, TuringStakeCompoundParams } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
@@ -13,17 +13,18 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import moment from 'moment';
 import { WebRunnerContext } from 'providers/contexts';
 import { SigningContext } from 'providers/SigningContext';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
-import { UnStakeAuthProps } from 'routes/staking/unStakeAction';
+import { CreateCompoundAuthProps } from 'routes/staking/compoundAction';
 import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
-import { getBalanceWithSi, toShort } from 'utils/index';
-import { makeUnBondingQr, submitUnbonding } from '../../../messaging';
+import { toShort } from 'utils/index';
+import { createCompoundQr, submitTuringStakeCompounding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -31,18 +32,29 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const UnStakeAuth = ({
+const CreateCompoundAuth = ({
   route: {
-    params: { unStakeParams, feeString, amount: rawAmount, validator, balanceError, unstakeAll, amountSi },
+    params: {
+      compoundParams,
+      feeString,
+      compoundFee: compoundString,
+      validator,
+      balanceError,
+      si,
+      initTime,
+      optimalTime,
+      bondedAmount,
+      accountMinimum,
+    },
   },
   navigation: { goBack },
-}: UnStakeAuthProps) => {
-  const { networkKey, selectedAccount } = unStakeParams;
+}: CreateCompoundAuthProps) => {
+  const { networkKey, selectedAccount } = compoundParams;
 
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const {
     signingState: { isLoading },
   } = useContext(SigningContext);
-  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -50,67 +62,47 @@ const UnStakeAuth = ({
   const network = useGetNetworkJson(networkKey);
   const validatorLabel = useGetValidatorLabel(networkKey);
 
+  const _minimum = useMemo(
+    (): string => new BigN(accountMinimum).div(BN_TEN.pow(network.decimals || 0)).toString(),
+    [accountMinimum, network.decimals],
+  );
+
+  const submitParams = useMemo(
+    (): TuringStakeCompoundParams => ({
+      address: selectedAccount,
+      accountMinimum: _minimum,
+      collatorAddress: validator,
+      networkKey: networkKey,
+      bondedAmount: bondedAmount,
+    }),
+    [_minimum, bondedAmount, networkKey, selectedAccount, validator],
+  );
+
   useHandlerHardwareBackPress(isLoading);
 
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
-  const amount = useMemo(
-    (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
-    [network.decimals, rawAmount],
-  );
-
-  const unBondingParams = useMemo(
-    (): UnbondingSubmitParams => ({
-      networkKey: networkKey,
-      address: selectedAccount,
-      amount: amount,
-      unstakeAll: unstakeAll,
-      validatorAddress: validator,
-    }),
-    [amount, networkKey, selectedAccount, unstakeAll, validator],
-  );
-
-  const [amountValue, amountToken] = useMemo(
-    (): [string, string] => getBalanceWithSi(rawAmount.toString(), network.decimals || 0, amountSi, selectedToken),
-    [amountSi, network.decimals, rawAmount, selectedToken],
-  );
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];
   }, [feeString]);
 
-  const totalString = useMemo((): string => {
-    return `${amountValue} ${amountToken} + ${feeString}`;
-  }, [amountValue, amountToken, feeString]);
+  const [compoundFee, compoundFeeToken] = useMemo((): [string, string] => {
+    const res = compoundString.split(' ');
+    return [res[0], res[1]];
+  }, [compoundString]);
 
   const onCancel = useGoHome({
     screen: 'Staking',
     params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey, stakingType: StakingType.NOMINATED } },
   });
 
-  const onFail = useCallback(
-    (errors: string[], extrinsicHash?: string) => {
-      navigation.navigate('UnStakeAction', {
-        screen: 'UnStakeResult',
-        params: {
-          unStakeParams: unStakeParams,
-          txParams: {
-            txError: errors[0],
-            extrinsicHash: extrinsicHash,
-            txSuccess: false,
-          },
-        },
-      });
-    },
-    [navigation, unStakeParams],
-  );
-
   const onSuccess = useCallback(
     (extrinsicHash: string) => {
-      navigation.navigate('UnStakeAction', {
-        screen: 'UnStakeResult',
+      navigation.navigate('CompoundStakeAction', {
+        screen: 'CreateCompoundResult',
         params: {
-          unStakeParams: unStakeParams,
+          compoundParams: compoundParams,
           txParams: {
             txError: '',
             extrinsicHash: extrinsicHash,
@@ -119,56 +111,91 @@ const UnStakeAuth = ({
         },
       });
     },
-    [navigation, unStakeParams],
+    [compoundParams, navigation],
+  );
+
+  const onFail = useCallback(
+    (errors: string[], extrinsicHash?: string) => {
+      navigation.navigate('CompoundStakeAction', {
+        screen: 'CreateCompoundResult',
+        params: {
+          compoundParams: compoundParams,
+          txParams: {
+            txError: errors[0],
+            extrinsicHash: extrinsicHash,
+            txSuccess: false,
+          },
+        },
+      });
+    },
+    [compoundParams, navigation],
   );
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
       disabled={isLoading}
-      title={i18n.title.unStakeAction}
-      rightButtonTitle={i18n.common.cancel}
       disableRightButton={isLoading}
+      title={i18n.title.createCompoundTask}
+      rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }}>
           {!!validator && <TextField text={toShort(validator)} label={validatorLabel} disabled={true} />}
           <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
           <BalanceField
-            value={rawAmount.toString()}
+            value={accountMinimum}
             decimal={network.decimals || 0}
             token={selectedToken}
-            si={amountSi}
-            label={i18n.unStakeAction.unStakingAmount}
+            si={si}
+            label={i18n.compoundStakeAction.compoundingThreshold}
+          />
+          <TextField
+            text={`About ${moment.duration(initTime, 'days').humanize()}`}
+            label={i18n.compoundStakeAction.compoundingStartIn}
+            disabled={true}
+          />
+          <TextField
+            text={moment.duration(optimalTime, 'days').humanize()}
+            label={i18n.compoundStakeAction.optimalCompoundingTime}
+            disabled={true}
           />
           <BalanceField
             value={fee}
             decimal={0}
             token={feeToken}
             si={formatBalance.findSi('-')}
-            label={i18n.unStakeAction.unStakingFee}
+            label={i18n.compoundStakeAction.transactionFee}
           />
-          <TextField text={totalString} label={i18n.unStakeAction.total} disabled={true} />
+          <BalanceField
+            value={compoundFee}
+            decimal={0}
+            token={compoundFeeToken}
+            si={formatBalance.findSi('-')}
+            label={i18n.compoundStakeAction.compoundingFee}
+          />
+          <TextField text={`${compoundString} + ${feeString}`} label={i18n.unStakeAction.total} disabled={true} />
+
           {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
         <SigningRequest
           account={account}
+          handleSignPassword={submitTuringStakeCompounding}
+          handleSignQr={createCompoundQr}
           balanceError={balanceError}
-          baseProps={{
-            onCancel: goBack,
-            buttonText: i18n.common.continue,
-          }}
-          handleSignPassword={submitUnbonding}
-          handleSignQr={makeUnBondingQr}
-          message={'There is problem when bonding'}
+          message={'There is problem when createCompoundRequest'}
           network={network}
           onFail={onFail}
           onSuccess={onSuccess}
-          params={unBondingParams}
+          params={submitParams}
+          baseProps={{
+            buttonText: i18n.common.continue,
+            onCancel: goBack,
+          }}
         />
       </View>
     </ContainerWithSubHeader>
   );
 };
 
-export default React.memo(UnStakeAuth);
+export default React.memo(CreateCompoundAuth);

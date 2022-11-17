@@ -1,17 +1,20 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
+import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { BalanceVal } from 'components/BalanceVal';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
+import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import { StakingDataType } from 'hooks/types';
 import { User, Users } from 'phosphor-react-native';
-import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
@@ -20,10 +23,7 @@ import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sha
 import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { getStakingInputValueStyle } from 'utils/text';
-import useGoHome from 'hooks/screen/useGoHome';
-import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -97,11 +97,7 @@ const StakingDetail = ({
   }, [stakingData, networkKey, stakingType]);
   const { staking, reward } = data || { staking: {}, reward: {} };
 
-  const accountCanSign = useCurrentAccountCanSign();
-  const isCanSign = useMemo(
-    (): boolean => accountCanSign && stakingType === 'nominated',
-    [accountCanSign, stakingType],
-  );
+  const isCanSign = useCurrentAccountCanSign();
 
   const convertedBalanceValue = useMemo(() => {
     return getConvertedBalance(new BigN(staking.balance || 0), `${priceMap[staking.chain] || 0}`);
@@ -208,7 +204,7 @@ const StakingDetail = ({
             si={formatBalance.findSi('-')}
           />
         </ScrollView>
-        {isCanSign && (
+        {isCanSign && stakingType !== StakingType.POOLED && (
           <SubmitButton
             style={{ marginTop: 16, marginHorizontal: 16 }}
             title={i18n.stakingScreen.stakingDetail.actions.stake}

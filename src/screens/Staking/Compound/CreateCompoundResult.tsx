@@ -5,7 +5,7 @@ import React, { useCallback } from 'react';
 import { CompoundResultProps } from 'routes/staking/compoundAction';
 import i18n from 'utils/i18n/i18n';
 
-const CompoundResult = ({
+const CreateCompoundResult = ({
   route: {
     params: {
       compoundParams,
@@ -47,4 +47,4 @@ const CompoundResult = ({
   );
 };
 
-export default React.memo(CompoundResult);
+export default React.memo(CreateCompoundResult);

@@ -189,41 +189,41 @@ export const Confirmation = ({
           )}
         </View>
       </ScrollView>
-      <View style={{ ...ContainerHorizontalPadding }}>
-        {requestPayload.originNetworkKey === requestPayload.destinationNetworkKey ? (
-          <SigningRequest
-            account={sender}
-            baseProps={{
-              buttonText: i18n.common.send,
-              submitText: i18n.common.sending,
-            }}
-            detailError={true}
-            handleSignPassword={makeTransfer}
-            handleSignQr={makeTransferQr}
-            message={'There is problem when makeTransfer'}
-            network={network}
-            onFail={onFail}
-            onSuccess={onSuccess}
-            params={onChainTransferRequestPayload}
-          />
-        ) : (
-          <SigningRequest
-            account={sender}
-            baseProps={{
-              buttonText: i18n.common.send,
-              submitText: i18n.common.sending,
-            }}
-            detailError={true}
-            handleSignPassword={makeCrossChainTransfer}
-            handleSignQr={makeCrossChainTransferQr}
-            message={'There is problem when xcmTransfer'}
-            network={network}
-            onFail={onFail}
-            onSuccess={onSuccess}
-            params={crossChainTransferRequestPayload}
-          />
-        )}
-      </View>
+      {requestPayload.originNetworkKey === requestPayload.destinationNetworkKey ? (
+        <SigningRequest
+          account={sender}
+          baseProps={{
+            buttonText: i18n.common.send,
+            submitText: i18n.common.sending,
+          }}
+          detailError={true}
+          handleSignPassword={makeTransfer}
+          handleSignQr={makeTransferQr}
+          message={'There is problem when makeTransfer'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={onChainTransferRequestPayload}
+          style={ContainerHorizontalPadding}
+        />
+      ) : (
+        <SigningRequest
+          account={sender}
+          baseProps={{
+            buttonText: i18n.common.send,
+            submitText: i18n.common.sending,
+          }}
+          detailError={true}
+          handleSignPassword={makeCrossChainTransfer}
+          handleSignQr={makeCrossChainTransferQr}
+          message={'There is problem when xcmTransfer'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={crossChainTransferRequestPayload}
+          style={ContainerHorizontalPadding}
+        />
+      )}
     </>
   );
 };

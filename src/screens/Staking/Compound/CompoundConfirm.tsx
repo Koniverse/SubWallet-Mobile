@@ -167,7 +167,7 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
         .then(result => {
           setLoading(false);
 
-          navigation.navigate('CompoundAuth', {
+          navigation.navigate('CreateCompoundAuth', {
             compoundParams: compoundParams,
             validator: validator,
             bondedAmount: bondedAmount,

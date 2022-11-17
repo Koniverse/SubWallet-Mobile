@@ -1,27 +1,21 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import { StakeWithdrawalParams } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
-import PasswordModal from 'components/Modal/PasswordModal';
-import { SubmitButton } from 'components/SubmitButton';
+import SigningRequest from 'components/Signing/SigningRequest';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import { SigningContext } from 'providers/SigningContext';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { WithdrawAuthProps } from 'routes/staking/withdrawAction';
-import { ColorMap } from 'styles/color';
-import {
-  centerStyle,
-  ContainerHorizontalPadding,
-  MarginBottomForSubmitButton,
-  ScrollViewStyle,
-} from 'styles/sharedStyles';
+import { centerStyle, ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { getStakeWithdrawalTxInfo, submitStakeWithdrawal } from '../../../messaging';
+import { getStakeWithdrawalTxInfo, stakeWithdrawQr, submitStakeWithdrawal } from '../../../messaging';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
@@ -32,35 +26,34 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const ActionContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginHorizontal: -4,
-  paddingTop: 16,
-  ...MarginBottomForSubmitButton,
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  marginHorizontal: 4,
-  flex: 1,
-};
-
 const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack } }: WithdrawAuthProps) => {
   const { withdrawAmount: amount, networkKey, selectedAccount, nextWithdrawalAction, targetValidator } = withdrawParams;
+
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const {
+    signingState: { isLoading },
+  } = useContext(SigningContext);
+
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
+  const account = useGetAccountByAddress(selectedAccount);
 
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
+  const submitParams = useMemo(
+    (): StakeWithdrawalParams => ({
+      address: selectedAccount,
+      networkKey: networkKey,
+      action: nextWithdrawalAction,
+      validatorAddress: targetValidator,
+    }),
+    [networkKey, nextWithdrawalAction, selectedAccount, targetValidator],
+  );
+
+  useHandlerHardwareBackPress(isLoading);
+
   const [feeString, setFeeString] = useState('');
-
   const [isTxReady, setIsTxReady] = useState(false);
   const [balanceError, setBalanceError] = useState(false);
-  useHandlerHardwareBackPress(loading);
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
@@ -72,73 +65,38 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
     return `${amount} ${selectedToken} + ${feeString}`;
   }, [amount, feeString, selectedToken]);
 
-  const handleOpen = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
-
-  const handleResponse = useCallback(
-    (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
-      if (stop) {
-        return;
-      }
-
-      if (data.status !== undefined) {
-        setLoading(false);
-        setVisible(false);
-
-        if (data.status) {
-          navigation.navigate('WithdrawStakeAction', {
-            screen: 'WithdrawResult',
-            params: {
-              withdrawParams: withdrawParams,
-              txParams: {
-                txError: '',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: true,
-              },
-            },
-          });
-        } else {
-          navigation.navigate('WithdrawStakeAction', {
-            screen: 'WithdrawResult',
-            params: {
-              withdrawParams: withdrawParams,
-              txParams: {
-                txError: 'Error submitting transaction',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: false,
-              },
-            },
-          });
-        }
-      }
-    },
-    [balanceError, navigation, withdrawParams],
-  );
-
-  const onSubmit = useCallback(
-    (password: string) => {
-      setLoading(true);
-      submitStakeWithdrawal(
-        {
-          address: selectedAccount,
-          networkKey,
-          password,
-          action: nextWithdrawalAction,
-          validatorAddress: targetValidator,
+  const onSuccess = useCallback(
+    (extrinsicHash: string) => {
+      navigation.navigate('WithdrawStakeAction', {
+        screen: 'WithdrawResult',
+        params: {
+          withdrawParams: withdrawParams,
+          txParams: {
+            txError: '',
+            extrinsicHash: extrinsicHash as string,
+            txSuccess: true,
+          },
         },
-        handleResponse,
-      ).catch(e => {
-        console.log(e);
-        setLoading(false);
       });
     },
-    [handleResponse, networkKey, nextWithdrawalAction, selectedAccount, targetValidator],
+    [withdrawParams, navigation],
+  );
+
+  const onFail = useCallback(
+    (errors: string[], extrinsicHash?: string) => {
+      navigation.navigate('WithdrawStakeAction', {
+        screen: 'WithdrawResult',
+        params: {
+          withdrawParams: withdrawParams,
+          txParams: {
+            txError: errors[0],
+            extrinsicHash: extrinsicHash,
+            txSuccess: false,
+          },
+        },
+      });
+    },
+    [withdrawParams, navigation],
   );
 
   useEffect(() => {
@@ -165,6 +123,8 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
+      disabled={isLoading}
+      disableRightButton={isLoading}
       title={i18n.title.withdrawStakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={goBack}>
@@ -202,28 +162,21 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
             <ActivityIndicator animating={true} size={'large'} />
           )}
         </ScrollView>
-        <View style={ActionContainerStyle}>
-          <SubmitButton
-            title={i18n.common.cancel}
-            style={ButtonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={goBack}
-          />
-          <SubmitButton
-            // isBusy={loading}
-            disabled={!isTxReady || !isNetConnected}
-            title={i18n.common.continue}
-            style={ButtonStyle}
-            onPress={handleOpen}
-          />
-        </View>
-        <PasswordModal
-          onConfirm={onSubmit}
-          visible={visible}
-          closeModal={handleClose}
-          isBusy={loading}
-          errorArr={errorArr}
-          setErrorArr={setErrorArr}
+        <SigningRequest
+          account={account}
+          handleSignPassword={submitStakeWithdrawal}
+          handleSignQr={stakeWithdrawQr}
+          balanceError={balanceError}
+          message={'There is problem when withdrawStake'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={submitParams}
+          baseProps={{
+            buttonText: i18n.common.continue,
+            onCancel: goBack,
+            extraLoading: !isTxReady,
+          }}
         />
       </View>
     </ContainerWithSubHeader>

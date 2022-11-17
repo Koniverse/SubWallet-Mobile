@@ -1,27 +1,27 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType, TuringCancelStakeCompoundParams } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
-import PasswordModal from 'components/Modal/PasswordModal';
-import { SubmitButton } from 'components/SubmitButton';
+import SigningRequest from 'components/Signing/SigningRequest';
+import { Warning } from 'components/Warning';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { WebRunnerContext } from 'providers/contexts';
+import { SigningContext } from 'providers/SigningContext';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { CancelCompoundAuthProps } from 'routes/staking/compoundAction';
-import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { submitTuringCancelStakeCompounding } from '../../../messaging';
-import { WebRunnerContext } from 'providers/contexts';
-import { Warning } from 'components/Warning';
+import { cancelCompoundQr, submitTuringCancelStakeCompounding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -29,122 +29,85 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const ActionContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginHorizontal: -4,
-  paddingTop: 16,
-  ...MarginBottomForSubmitButton,
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  marginHorizontal: 4,
-  flex: 1,
-};
-
-const CompoundAuth = ({
+const CancelCompoundAuth = ({
   route: {
     params: { compoundParams, feeString, taskId, validator, balanceError },
   },
   navigation: { goBack },
 }: CancelCompoundAuthProps) => {
   const { networkKey, selectedAccount } = compoundParams;
+
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const {
+    signingState: { isLoading },
+  } = useContext(SigningContext);
+
   const navigation = useNavigation<RootNavigationProps>();
 
   const validatorLabel = useGetValidatorLabel(networkKey);
+  const network = useGetNetworkJson(networkKey);
+  const account = useGetAccountByAddress(selectedAccount);
 
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
+  const submitParams = useMemo(
+    (): TuringCancelStakeCompoundParams => ({
+      address: selectedAccount,
+      taskId: taskId,
+      networkKey: networkKey,
+    }),
+    [networkKey, selectedAccount, taskId],
+  );
 
-  useHandlerHardwareBackPress(loading);
+  useHandlerHardwareBackPress(isLoading);
 
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];
   }, [feeString]);
 
-  const handleOpen = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
-
   const onCancel = useGoHome({
     screen: 'Staking',
-    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey } },
+    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey, stakingType: StakingType.NOMINATED } },
   });
 
-  const handleResponse = useCallback(
-    (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
-      if (stop) {
-        return;
-      }
-
-      if (data.status) {
-        setLoading(false);
-        setVisible(false);
-
-        if (data.status) {
-          navigation.navigate('CompoundStakeAction', {
-            screen: 'CancelCompoundResult',
-            params: {
-              compoundParams: compoundParams,
-              txParams: {
-                txError: '',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: true,
-              },
-            },
-          });
-        } else {
-          navigation.navigate('CompoundStakeAction', {
-            screen: 'CancelCompoundResult',
-            params: {
-              compoundParams: compoundParams,
-              txParams: {
-                txError: 'Error submitting transaction',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: false,
-              },
-            },
-          });
-        }
-      }
+  const onFail = useCallback(
+    (errors: string[], extrinsicHash?: string) => {
+      navigation.navigate('CompoundStakeAction', {
+        screen: 'CancelCompoundResult',
+        params: {
+          compoundParams: compoundParams,
+          txParams: {
+            txError: errors[0],
+            extrinsicHash: extrinsicHash,
+            txSuccess: false,
+          },
+        },
+      });
     },
-    [balanceError, compoundParams, navigation],
+    [compoundParams, navigation],
   );
 
-  const onSubmit = useCallback(
-    (password: string) => {
-      setLoading(true);
-      submitTuringCancelStakeCompounding(
-        {
-          address: selectedAccount,
-          password,
-          taskId,
-          networkKey,
+  const onSuccess = useCallback(
+    (extrinsicHash: string) => {
+      navigation.navigate('CompoundStakeAction', {
+        screen: 'CancelCompoundResult',
+        params: {
+          compoundParams: compoundParams,
+          txParams: {
+            txError: '',
+            extrinsicHash: extrinsicHash,
+            txSuccess: true,
+          },
         },
-        handleResponse,
-      )
-        .then(handleResponse)
-        .catch(e => {
-          console.log(e);
-          setErrorArr([(e as Error).message]);
-          setLoading(false);
-        });
+      });
     },
-    [handleResponse, networkKey, selectedAccount, taskId],
+    [compoundParams, navigation],
   );
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
+      disabled={isLoading}
+      disableRightButton={isLoading}
       title={i18n.title.cancelCompoundTask}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
@@ -164,32 +127,24 @@ const CompoundAuth = ({
 
           {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
-        <View style={ActionContainerStyle}>
-          <SubmitButton
-            title={i18n.common.cancel}
-            style={ButtonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={goBack}
-          />
-          <SubmitButton
-            // isBusy={loading}
-            disabled={!isNetConnected}
-            title={i18n.common.continue}
-            style={ButtonStyle}
-            onPress={handleOpen}
-          />
-        </View>
-        <PasswordModal
-          onConfirm={onSubmit}
-          visible={visible}
-          closeModal={handleClose}
-          isBusy={loading}
-          errorArr={errorArr}
-          setErrorArr={setErrorArr}
+        <SigningRequest
+          account={account}
+          handleSignPassword={submitTuringCancelStakeCompounding}
+          handleSignQr={cancelCompoundQr}
+          balanceError={balanceError}
+          message={'There is problem when cancelCompoundRequest'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={submitParams}
+          baseProps={{
+            buttonText: i18n.common.continue,
+            onCancel: goBack,
+          }}
         />
       </View>
     </ContainerWithSubHeader>
   );
 };
 
-export default React.memo(CompoundAuth);
+export default React.memo(CancelCompoundAuth);

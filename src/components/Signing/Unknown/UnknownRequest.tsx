@@ -19,7 +19,7 @@ const ErrorStyle: StyleProp<ViewStyle> = {
 const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
   return {
     ...MarginBottomForSubmitButton,
-    marginHorizontal: canCancel ? 16 - 4 : 16,
+    marginHorizontal: canCancel ? -4 : 0,
     marginTop: 16,
   };
 };

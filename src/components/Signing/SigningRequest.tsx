@@ -10,7 +10,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import PasswordRequest from 'components/Signing/Password/PasswordRequest';
 import QrRequest from 'components/Signing/QR/QrRequest';
 import UnknownRequest from 'components/Signing/Unknown/UnknownRequest';
-import { Keyboard } from 'react-native';
+import { Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 import { BaseSignProps, SIGN_MODE } from 'types/signer';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
 import { QrContextState, QrSignerContext, QrStep } from 'providers/QrSignerContext';
@@ -32,6 +32,7 @@ interface Props<T extends BaseRequestSign, V extends BasicTxResponse> extends Ba
   onAfterSuccess?: (res: V) => void;
   onFail: (errors: string[], extrinsicHash?: string) => void;
   onSuccess: (extrinsicHash: string) => void;
+  style?: StyleProp<ViewStyle>;
   params: T;
 }
 
@@ -48,6 +49,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   onAfterSuccess,
   onFail,
   onSuccess,
+  style,
   params,
 }: Props<T, V>) => {
   const { cleanSigningState, onErrors, setIsCreating, setPasswordError, setIsVisible, setIsSubmitting } =
@@ -333,7 +335,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
     };
   }, [cleanSigningState]);
 
-  return renderContent();
+  return <View style={style}>{renderContent()}</View>;
 };
 
 export default SigningRequest;

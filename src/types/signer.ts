@@ -13,6 +13,7 @@ export interface BaseSignProps {
     cancelText?: string;
     onCancel?: () => Promise<void> | void;
     submitText?: string;
+    extraLoading?: boolean;
   };
 }
 
