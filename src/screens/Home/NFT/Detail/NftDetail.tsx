@@ -204,10 +204,13 @@ const NftDetail = ({
     }
 
     navigation.navigate('TransferNft', {
-      nftItem: data,
-      collectionImage: collectionImage,
-      collectionId: collectionRawId,
-      senderAddress: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
+      screen: 'NftTransferConfirm',
+      params: {
+        nftItem: data,
+        collectionImage: collectionImage,
+        collectionId: collectionRawId,
+        senderAddress: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
+      },
     });
   }, [canSend, data, networkJson, navigation, collectionImage, collectionRawId, currentAccount?.address, show]);
 

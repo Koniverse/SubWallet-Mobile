@@ -4,7 +4,7 @@ import {
   ConfirmationsQueue,
   EVMTransactionArg,
   NetworkJson,
-  ResponseParseEVMTransactionInput,
+  ResponseParseEVMContractInput,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -134,7 +134,7 @@ export const EvmSendTransactionConfirmation = ({
   );
 
   const handleRenderInputInfo = useCallback(
-    (response: ResponseParseEVMTransactionInput) => {
+    (response: ResponseParseEVMContractInput) => {
       const info = response.result;
       if (typeof info === 'string') {
         return (

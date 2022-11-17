@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 interface SigningState {
   errors: string[];
   isCreating: boolean; // create transaction
+  isLoading: boolean; // create or submit transaction
   isSubmitting: boolean; // submit transaction
   isVisible: boolean; // visible modal info
   passwordError: boolean; // password error
@@ -11,6 +12,7 @@ interface SigningState {
 const DEFAULT_SIGNING_STATE: SigningState = {
   errors: [],
   isCreating: false,
+  isLoading: false,
   isSubmitting: false,
   isVisible: false,
   passwordError: false,
@@ -44,6 +46,7 @@ export const SigningContextProvider = ({ children }: SigningContextProviderProps
     (): SigningState => ({
       errors: errors,
       isCreating: isCreating,
+      isLoading: isCreating || isSubmitting,
       isSubmitting: isSubmitting,
       isVisible: isVisible,
       passwordError: passwordError,

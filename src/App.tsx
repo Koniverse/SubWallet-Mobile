@@ -16,6 +16,7 @@ import { ThemeContext } from 'providers/contexts';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
+import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
@@ -68,7 +69,6 @@ import { getValidURL } from 'utils/browser';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
 import useStoreCustomToken from 'hooks/store/useStoreCustomToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
-import TransferNft from 'screens/TransferNft';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import { ExportAccount } from 'screens/ExportAccount';
@@ -286,7 +286,7 @@ export const App = () => {
                               <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                               <Stack.Screen name="Settings" component={Settings} />
                               <Stack.Screen name="SendFund" component={SendFund} />
-                              <Stack.Screen name="TransferNft" component={TransferNft} />
+                              <Stack.Screen name="TransferNft" component={TransferNftScreen} />
                               <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                               <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                               <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />

@@ -21,14 +21,14 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import { noop } from 'utils/function';
 
 interface Props<T extends BaseRequestSign, V extends BasicTxResponse> extends BaseSignProps {
-  account?: AccountJson | null;
+  account: AccountJson | null;
   balanceError?: boolean;
   detailError?: boolean;
   // handleSignLedger?: (params: ExternalRequestSign<T>, callback: HandleTxResponse<V>) => Promise<V>;
-  handleSignPassword?: (params: PasswordRequestSign<T>, callback: HandleTxResponse<V>) => Promise<V>;
+  handleSignPassword: (params: PasswordRequestSign<T>, callback: HandleTxResponse<V>) => Promise<V>;
   handleSignQr?: (params: ExternalRequestSign<T>, callback: HandleTxResponse<V>) => Promise<V>;
   message: string;
-  network?: NetworkJson | null;
+  network: NetworkJson | null;
   onAfterSuccess?: (res: V) => void;
   onFail: (errors: string[], extrinsicHash?: string) => void;
   onSuccess: (extrinsicHash: string) => void;
@@ -219,11 +219,10 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
 
   const onSendPassword = useCallback(
     async (password: string) => {
-      handleSignPassword && setIsSubmitting(true);
-      handleSignPassword &&
-        (await handleSignPassword({ ...params, password: password }, handleCallbackResponseResult)
-          .then(handleResponseError)
-          .catch(catchError));
+      setIsSubmitting(true);
+      await handleSignPassword({ ...params, password: password }, handleCallbackResponseResult)
+        .then(handleResponseError)
+        .catch(catchError);
     },
     [setIsSubmitting, handleSignPassword, params, handleCallbackResponseResult, handleResponseError, catchError],
   );
@@ -300,52 +299,31 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
         }
         break;
       case SIGN_MODE.LEDGER:
+        //   if (handleSignLedger) {
+        //     return (
+        //       <Wrapper>
+        //         <ExternalContainer>
+        //           <LedgerRequest
+        //             account={account}
+        //             genesisHash={network?.genesisHash || ''}
+        //             handlerSignLedger={onSubmitLedger}>
+        //             {children}
+        //           </LedgerRequest>
+        //         </ExternalContainer>
+        //       </Wrapper>
+        //     );
+        //   } else {
+        //     break;
+        //   }
         break;
       case SIGN_MODE.UNKNOWN:
         break;
-      // case SIGN_MODE.QR:
-      //   if (handleSignQr) {
-      //     return (
-      //       <Wrapper>
-      //         <ExternalContainer>
-      //           <QrRequest genesisHash={network?.genesisHash || ''} handlerStart={onSubmitQr}>
-      //             {children}
-      //           </QrRequest>
-      //         </ExternalContainer>
-      //       </Wrapper>
-      //     );
-      //   } else {
-      //     break;
-      //   }
-
-      // case SIGN_MODE.LEDGER:
-      //   if (handleSignLedger) {
-      //     return (
-      //       <Wrapper>
-      //         <ExternalContainer>
-      //           <LedgerRequest
-      //             account={account}
-      //             genesisHash={network?.genesisHash || ''}
-      //             handlerSignLedger={onSubmitLedger}>
-      //             {children}
-      //           </LedgerRequest>
-      //         </ExternalContainer>
-      //       </Wrapper>
-      //     );
-      //   } else {
-      //     break;
-      //   }
-
       case SIGN_MODE.PASSWORD:
-        if (handleSignPassword) {
-          return <PasswordRequest handlerStart={onSubmitPassword} baseProps={baseProps} />;
-        } else {
-          break;
-        }
+        return <PasswordRequest handlerStart={onSubmitPassword} baseProps={baseProps} />;
     }
 
     return <UnknownRequest baseProps={baseProps} />;
-  }, [baseProps, handleSignPassword, handleSignQr, network, onSubmitPassword, onSubmitQr, signMode]);
+  }, [baseProps, handleSignQr, network, onSubmitPassword, onSubmitQr, signMode]);
 
   useEffect(() => {
     cleanSigningState();

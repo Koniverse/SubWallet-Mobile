@@ -3,7 +3,7 @@ import {
   CustomTokenType,
   EvmSendTransactionRequest,
   NetworkJson,
-  ResponseParseEVMTransactionInput,
+  ResponseParseEVMContractInput,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { parseEVMTransactionInput, validateCustomToken } from '../../../../../messaging';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ interface XCMTokenProps {
 
 export default function useGetEvmTransactionInfos(payload: EvmSendTransactionRequest, network?: NetworkJson) {
   const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
-  const [inputInfo, setInputInfo] = useState<ResponseParseEVMTransactionInput | null>(null);
+  const [inputInfo, setInputInfo] = useState<ResponseParseEVMContractInput | null>(null);
   const [XCMToken, setXCMToken] = useState<XCMTokenProps | null>(null);
   const isXCMTransaction = useMemo((): boolean => {
     if (!inputInfo) {

@@ -1,26 +1,25 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import { BondingSubmitParams } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
-import PasswordModal from 'components/Modal/PasswordModal';
-import { SubmitButton } from 'components/SubmitButton';
+import SigningRequest from 'components/Signing/SigningRequest';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { SigningContext } from 'providers/SigningContext';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { StakeAuthProps } from 'routes/staking/stakeAction';
 import ValidatorBriefInfo from 'components/Staking/ValidatorBriefInfo';
-import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi } from 'utils/index';
-import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { submitBonding } from '../../../messaging';
+import { submitBonding, makeBondingQr } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
@@ -32,25 +31,6 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   paddingTop: 16,
 };
 
-const ActionContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginHorizontal: -4,
-  paddingTop: 16,
-  ...MarginBottomForSubmitButton,
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  marginHorizontal: 4,
-  flex: 1,
-};
-
-type TransactionResult = {
-  hash: string;
-  isSuccess: boolean;
-};
-
 const StakeAuth = ({
   route: {
     params: { stakeParams, feeString, amount: rawAmount, amountSi },
@@ -60,21 +40,34 @@ const StakeAuth = ({
   const { validator, networkKey, networkValidatorsInfo, selectedAccount } = stakeParams;
   const { isBondedBefore, bondedValidators } = networkValidatorsInfo;
 
+  const {
+    signingState: { isLoading },
+  } = useContext(SigningContext);
+
   const navigation = useNavigation<RootNavigationProps>();
 
+  const account = useGetAccountByAddress(selectedAccount);
   const network = useGetNetworkJson(networkKey);
 
-  const [visible, setVisible] = useState(false);
-  const [unmountModal, setUnmountModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
-  const [transactionResult, setTransactionResult] = useState<TransactionResult | null>(null);
-  useHandlerHardwareBackPress(loading);
+  useHandlerHardwareBackPress(isLoading);
+
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
     (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
     [network.decimals, rawAmount],
+  );
+
+  const bondingParams = useMemo(
+    (): BondingSubmitParams => ({
+      networkKey: networkKey,
+      nominatorAddress: selectedAccount,
+      amount: amount,
+      validatorInfo: validator,
+      isBondedBefore: isBondedBefore,
+      bondedValidators: bondedValidators,
+    }),
+    [amount, bondedValidators, isBondedBefore, networkKey, selectedAccount, validator],
   );
 
   const [amountValue, amountToken] = useMemo(
@@ -91,75 +84,47 @@ const StakeAuth = ({
     return `${amountValue} ${amountToken} + ${feeString}`;
   }, [amountValue, feeString, amountToken]);
 
-  const handleOpen = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
-
   const onCancel = useGoHome({ screen: 'Staking' });
 
-  const handleBondingResponse = useCallback((data: BasicTxResponse) => {
-    const stop = handleBasicTxResponse(data, false, setErrorArr, setLoading);
-    if (stop) {
-      return;
-    }
-
-    if (data.status !== undefined) {
-      setLoading(false);
-      setUnmountModal(true);
-
-      setTransactionResult({
-        hash: data.transactionHash as string,
-        isSuccess: data.status,
-      });
-    }
-  }, []);
-
-  const onSubmit = useCallback(
-    (password: string) => {
-      setLoading(true);
-      submitBonding(
-        {
-          networkKey: networkKey,
-          nominatorAddress: selectedAccount,
-          amount,
-          validatorInfo: validator,
-          password,
-          isBondedBefore,
-          bondedValidators,
-        },
-        handleBondingResponse,
-      ).catch(e => {
-        console.log(e);
-        setErrorArr([(e as Error).message]);
-        setLoading(false);
-      });
-    },
-    [amount, bondedValidators, selectedAccount, handleBondingResponse, isBondedBefore, networkKey, validator],
-  );
-
-  useEffect(() => {
-    if (transactionResult) {
+  const onFail = useCallback(
+    (errors: string[], extrinsicHash?: string) => {
       navigation.navigate('StakeAction', {
         screen: 'StakeResult',
         params: {
           stakeParams: stakeParams,
           txParams: {
-            txError: transactionResult.isSuccess ? '' : 'Error submitting transaction',
-            extrinsicHash: transactionResult.hash,
-            txSuccess: transactionResult.isSuccess,
+            txError: errors[0],
+            extrinsicHash: extrinsicHash,
+            txSuccess: false,
           },
         },
       });
-    }
-  }, [transactionResult, navigation, stakeParams]);
+    },
+    [navigation, stakeParams],
+  );
+
+  const onSuccess = useCallback(
+    (hash: string) => {
+      navigation.navigate('StakeAction', {
+        screen: 'StakeResult',
+        params: {
+          stakeParams: stakeParams,
+          txParams: {
+            txError: '',
+            extrinsicHash: hash,
+            txSuccess: true,
+          },
+        },
+      });
+    },
+    [navigation, stakeParams],
+  );
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
+      disabled={isLoading}
+      disableRightButton={isLoading}
       title={i18n.title.stakeAction}
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={onCancel}>
@@ -185,31 +150,23 @@ const StakeAuth = ({
 
           {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
-        <View style={ActionContainerStyle}>
-          <SubmitButton
-            title={i18n.common.cancel}
-            style={ButtonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={goBack}
-          />
-          <SubmitButton
-            // isBusy={loading}
-            disabled={!isNetConnected}
-            title={i18n.common.continue}
-            style={ButtonStyle}
-            onPress={handleOpen}
+        <View>
+          <SigningRequest
+            account={account}
+            balanceError={false}
+            baseProps={{
+              onCancel: goBack,
+              buttonText: i18n.common.continue,
+            }}
+            handleSignPassword={submitBonding}
+            handleSignQr={makeBondingQr}
+            message={'There is problem when bonding'}
+            network={network}
+            onFail={onFail}
+            onSuccess={onSuccess}
+            params={bondingParams}
           />
         </View>
-        {!unmountModal && (
-          <PasswordModal
-            onConfirm={onSubmit}
-            visible={visible}
-            closeModal={handleClose}
-            isBusy={loading}
-            errorArr={errorArr}
-            setErrorArr={setErrorArr}
-          />
-        )}
       </View>
     </ContainerWithSubHeader>
   );

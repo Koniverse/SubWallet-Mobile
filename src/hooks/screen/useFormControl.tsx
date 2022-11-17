@@ -23,7 +23,7 @@ export interface FormState {
   data: Record<FormItemKey, string>;
   errors: Record<FormItemKey, string[]>;
   validateFieldsOn: Record<FormItemKey, string[]>;
-  onSubmitForm?: (formState: FormState) => void;
+  onSubmitForm?: (formState: FormState) => void | Promise<void>;
 }
 
 interface FormControlAction {
@@ -136,9 +136,20 @@ function formReducer(state: FormState, action: FormControlAction) {
         state.isValidated[fieldName] = checkFieldValidation(state, fieldName, state.data[fieldName], validateFunc);
       }
       if (state.index === refList.length) {
-        const _onSubmitForm = state.onSubmitForm;
-        Keyboard.dismiss();
-        _onSubmitForm && _onSubmitForm(state);
+        let valid = true;
+        for (const [key, val] of Object.entries(state.isValidated)) {
+          if (!val) {
+            valid = false;
+            const index = Object.keys(state.refs).indexOf(key);
+            refList[index].current?.focus();
+            break;
+          }
+        }
+        if (valid) {
+          const _onSubmitForm = state.onSubmitForm;
+          Keyboard.dismiss();
+          _onSubmitForm && _onSubmitForm(state);
+        }
       } else {
         refList[state.index].current?.focus();
       }

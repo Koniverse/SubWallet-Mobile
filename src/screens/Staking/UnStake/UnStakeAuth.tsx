@@ -1,6 +1,6 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import { BasicTxResponse, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
@@ -8,9 +8,12 @@ import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { SubmitButton } from 'components/SubmitButton';
+import { Warning } from 'components/Warning';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
@@ -22,9 +25,6 @@ import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi, toShort } from 'utils/index';
 import { handleBasicTxResponse } from 'utils/transactionResponse';
 import { submitUnbonding } from '../../../messaging';
-import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { WebRunnerContext } from 'providers/contexts';
-import { Warning } from 'components/Warning';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -93,7 +93,7 @@ const UnStakeAuth = ({
 
   const onCancel = useGoHome({
     screen: 'Staking',
-    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey } },
+    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey, stakingType: StakingType.NOMINATED } },
   });
 
   const handleResponse = useCallback(
@@ -114,7 +114,7 @@ const UnStakeAuth = ({
               unStakeParams: unStakeParams,
               txParams: {
                 txError: '',
-                extrinsicHash: data.transactionHash as string,
+                extrinsicHash: data.extrinsicHash,
                 txSuccess: true,
               },
             },
@@ -126,7 +126,7 @@ const UnStakeAuth = ({
               unStakeParams: unStakeParams,
               txParams: {
                 txError: 'Error submitting transaction',
-                extrinsicHash: data.transactionHash as string,
+                extrinsicHash: data.extrinsicHash,
                 txSuccess: false,
               },
             },

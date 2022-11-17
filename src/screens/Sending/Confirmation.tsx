@@ -4,7 +4,7 @@ import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { SigningContext } from 'providers/SigningContext';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import {
   NetworkJson,
   RequestCheckCrossChainTransfer,
@@ -189,39 +189,41 @@ export const Confirmation = ({
           )}
         </View>
       </ScrollView>
-      {requestPayload.originNetworkKey === requestPayload.destinationNetworkKey ? (
-        <SigningRequest
-          account={sender}
-          baseProps={{
-            buttonText: i18n.common.send,
-            submitText: i18n.common.sending,
-          }}
-          detailError={true}
-          handleSignPassword={makeTransfer}
-          handleSignQr={makeTransferQr}
-          message={'There is problem when makeTransfer'}
-          network={network}
-          onFail={onFail}
-          onSuccess={onSuccess}
-          params={onChainTransferRequestPayload}
-        />
-      ) : (
-        <SigningRequest
-          account={sender}
-          baseProps={{
-            buttonText: i18n.common.send,
-            submitText: i18n.common.sending,
-          }}
-          detailError={true}
-          handleSignPassword={makeCrossChainTransfer}
-          handleSignQr={makeCrossChainTransferQr}
-          message={'There is problem when xcmTransfer'}
-          network={network}
-          onFail={onFail}
-          onSuccess={onSuccess}
-          params={crossChainTransferRequestPayload}
-        />
-      )}
+      <View style={{ ...ContainerHorizontalPadding }}>
+        {requestPayload.originNetworkKey === requestPayload.destinationNetworkKey ? (
+          <SigningRequest
+            account={sender}
+            baseProps={{
+              buttonText: i18n.common.send,
+              submitText: i18n.common.sending,
+            }}
+            detailError={true}
+            handleSignPassword={makeTransfer}
+            handleSignQr={makeTransferQr}
+            message={'There is problem when makeTransfer'}
+            network={network}
+            onFail={onFail}
+            onSuccess={onSuccess}
+            params={onChainTransferRequestPayload}
+          />
+        ) : (
+          <SigningRequest
+            account={sender}
+            baseProps={{
+              buttonText: i18n.common.send,
+              submitText: i18n.common.sending,
+            }}
+            detailError={true}
+            handleSignPassword={makeCrossChainTransfer}
+            handleSignQr={makeCrossChainTransferQr}
+            message={'There is problem when xcmTransfer'}
+            network={network}
+            onFail={onFail}
+            onSuccess={onSuccess}
+            params={crossChainTransferRequestPayload}
+          />
+        )}
+      </View>
     </>
   );
 };

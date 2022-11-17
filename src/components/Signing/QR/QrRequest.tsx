@@ -12,8 +12,10 @@ import { ExternalRequestContext } from 'providers/ExternalRequestContext';
 import { QrSignerContext } from 'providers/QrSignerContext';
 import { SigningContext } from 'providers/SigningContext';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { RESULTS } from 'react-native-permissions';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import { requestCameraPermission } from 'utils/validators';
 import { resolveExternalRequest } from '../../../messaging';
 import { BaseSignProps, SigData } from 'types/signer';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
@@ -63,7 +65,7 @@ const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
     ...MarginBottomForSubmitButton,
     display: 'flex',
     flexDirection: 'row',
-    marginHorizontal: canCancel ? 16 - 4 : 16,
+    marginHorizontal: canCancel ? -4 : 0,
     marginTop: 16,
   };
 };
@@ -89,7 +91,7 @@ const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, b
   const [isCanceling, setIsCanceling] = useState<boolean>(false);
   const [isResolving, setIsResolving] = useState(false);
 
-  const { errors, isCreating, isVisible, isSubmitting } = signingState;
+  const { errors, isCreating, isVisible, isSubmitting, isLoading } = signingState;
   const { isEthereum, isQrHashed, qrAddress, qrId, qrPayload } = qrState;
 
   const cancelRequest = useCallback(async () => {
@@ -103,9 +105,13 @@ const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, b
     setIsCanceling(false);
   }, [handlerReject, qrId, setIsVisible]);
 
-  const openScanner = useCallback(() => {
-    clearError();
-    setIsScanning(true);
+  const openScanner = useCallback(async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      clearError();
+      setIsScanning(true);
+    }
   }, [clearError]);
 
   const closeScanner = useCallback(() => {
@@ -149,7 +155,7 @@ const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, b
         {onCancel && (
           <SubmitButton
             style={getButtonStyle(!!onCancel, CancelStyle)}
-            disabled={isCreating}
+            disabled={isLoading}
             title={cancelText ? cancelText : i18n.common.cancel}
             onPress={onCancel}
           />
@@ -178,7 +184,7 @@ const QrRequest = ({ handlerStart, network, baseProps: { onCancel, cancelText, b
           <View>
             <DisplayPayload
               isEthereum={isEthereum}
-              size={300}
+              size={250}
               payload={hexToU8a(qrPayload)}
               address={qrAddress}
               genesisHash={network.genesisHash}

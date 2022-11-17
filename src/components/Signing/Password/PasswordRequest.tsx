@@ -43,19 +43,10 @@ const ErrorStyle: StyleProp<ViewStyle> = {
   marginTop: 16,
 };
 
-const formConfig: FormControlConfig = {
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-};
-
 const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
   return {
     ...MarginBottomForSubmitButton,
-    marginHorizontal: canCancel ? 16 - 4 : 16,
+    marginHorizontal: canCancel ? -4 : 0,
     marginTop: 16,
   };
 };
@@ -64,6 +55,15 @@ const getButtonStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
   return {
     marginHorizontal: canCancel ? 4 : 0,
   };
+};
+
+const formConfig: FormControlConfig = {
+  password: {
+    name: i18n.common.walletPassword,
+    value: '',
+    validateFunc: validatePassword,
+    require: true,
+  },
 };
 
 const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, submitText, buttonText } }: Props) => {

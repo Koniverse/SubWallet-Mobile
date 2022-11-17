@@ -4,7 +4,7 @@ import { StakeActionStackParamList } from 'routes/staking/stakeAction';
 import StakeAuth from 'screens/Staking/Stake/StakeAuth';
 import StakeConfirm from 'screens/Staking/Stake/StakeConfirm';
 import StakeResult from 'screens/Staking/Stake/StakeResult';
-import StakeValidatorDetail from './StakeValidatorDetail';
+import StakeValidatorDetail from 'screens/Staking/Stake/StakeValidatorDetail';
 
 const StakeActionScreen = () => {
   const StakeActionStack = createNativeStackNavigator<StakeActionStackParamList>();
