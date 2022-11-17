@@ -62,7 +62,7 @@ export const EditAccountInputText = forwardRef((inputProps: Props, ref: React.Re
           onSubmitEditing={onSubmitField}
           style={[inputStyle, outerInputStyle]}
           editable={!isDisabled}
-          textContentType={'none'}
+          textContentType="oneTimeCode"
           selectTextOnFocus={!isDisabled}
         />
       </View>
