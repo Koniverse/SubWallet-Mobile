@@ -80,7 +80,7 @@ export const SubstrateSignConfirmation = ({
         title: i18n.title.authorizeRequestTitle,
         url,
       }}
-      isShowPassword={!account.isReadOnly}
+      isNeedSignature={!account.isReadOnly}
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}

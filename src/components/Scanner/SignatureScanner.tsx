@@ -17,6 +17,7 @@ import { BarCodeReadEvent } from 'react-native-camera';
 
 interface Props {
   visible: boolean;
+  subTitle?: string;
   onHideModal: () => void;
   onSuccess: (result: SigData) => void | Promise<void>;
 }
@@ -39,7 +40,7 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
+const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) => {
   const [error, setError] = useState<string>('');
 
   const handleRead = useCallback(
@@ -92,7 +93,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
                   <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanAddress}</Text>
                 </View>
                 <View style={ScannerStyles.WalletNameStyle}>
-                  <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanAddress}</Text>
+                  {subTitle && <Text style={ScannerStyles.HeaderTitleTextStyle}>{subTitle}</Text>}
                 </View>
               </View>
               <View style={ScannerStyles.CenterOverlayStyle}>

@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { AccountJson } from '@subwallet/extension-base/background/types';
 import { IGNORE_QR_SIGNER } from '@subwallet/extension-koni-base/constants';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
-import DisplayPayload from 'components/Signing/QR/DisplayPayload';
+import DisplayPayload from 'components/Scanner/DisplayPayload';
 import { SubmitButton } from 'components/SubmitButton';
 import { useRejectExternalRequest } from 'hooks/screen/useRejectExternalRequest';
 import { WebRunnerContext } from 'providers/contexts';
@@ -28,6 +29,7 @@ import { Warning } from 'components/Warning';
 
 interface Props extends BaseSignProps {
   network: NetworkJson;
+  account: AccountJson;
   handlerStart: () => void;
 }
 
@@ -80,6 +82,7 @@ const getButtonStyle = (canCancel: boolean, style?: StyleProp<ViewStyle>): Style
 };
 
 const QrRequest = ({
+  account,
   handlerStart,
   network,
   baseProps: { onCancel, cancelText, buttonText, submitText, extraLoading },
@@ -187,7 +190,7 @@ const QrRequest = ({
       </View>
       <SubWalletModal modalVisible={isVisible} onModalHide={cancelRequest}>
         <View style={ContainerStyle}>
-          <Text style={TitleTextStyle}>{i18n.common.enterYourPassword}</Text>
+          <Text style={TitleTextStyle}>{account.name || account.address}</Text>
           <View>
             <DisplayPayload
               isEthereum={isEthereum}
@@ -216,7 +219,7 @@ const QrRequest = ({
           </View>
         </View>
       </SubWalletModal>
-      <SignatureScanner visible={isScanning} onSuccess={handlerScanSignature} onHideModal={closeScanner} />
+      <SignatureScanner subTitle={account.name} visible={isScanning} onSuccess={handlerScanSignature} onHideModal={closeScanner} />
     </>
   );
 };

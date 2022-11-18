@@ -1,3 +1,4 @@
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import {
   ConfirmationHeader,
   ConfirmationHeaderType,
@@ -25,7 +26,8 @@ interface Props {
     onPressBlockButton?: () => Promise<void>;
   } & Omit<ConfirmationFooterType, 'onPressSubmitButton' | 'onPressCancelButton' | 'onPressBlockButton'>;
   children?: JSX.Element;
-  isShowPassword?: boolean;
+  address?: string;
+  isNeedSignature?: boolean;
   isUseScrollView?: boolean;
   onPressViewDetail?: () => void;
   detailModalVisible?: boolean;
@@ -61,6 +63,7 @@ interface BusyType {
 }
 
 export const ConfirmationBase = ({
+  address,
   headerProps,
   footerProps: {
     onPressSubmitButton,
@@ -80,13 +83,16 @@ export const ConfirmationBase = ({
   onChangeDetailModalVisible,
   detailModalContent,
   isShowViewDetailButton = true,
-  isShowPassword,
+  isNeedSignature,
   isUseScrollView = true,
 }: Props) => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
   const [{ isBusy, busyKey }, setBusy] = useState<BusyType>({ busyKey: null, isBusy: false });
+  const account = useGetAccountByAddress(address);
+  console.log(account);
+
   useHandlerHardwareBackPress(isBusy);
   const _onPressSubmitButton = () => {
     if (onPressSubmitButton) {
@@ -128,7 +134,7 @@ export const ConfirmationBase = ({
         <ConfirmationHeader {...headerProps} />
         {children}
 
-        {isShowPassword && (
+        {isNeedSignature && (
           <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16, marginBottom: -4 }}>
             <PasswordField
               label={formState.labels.password}
@@ -167,7 +173,7 @@ export const ConfirmationBase = ({
         isCancelButtonBusy={isCancelButtonBusy || (isBusy && busyKey === 'CANCEL')}
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
-        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isShowPassword && !formState.data.password)}
+        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isNeedSignature && !formState.data.password)}
       />
 
       <DetailModal

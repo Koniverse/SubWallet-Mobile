@@ -2,7 +2,7 @@ import { Warning } from 'components/Warning';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
-import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationDefinitions, ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -14,6 +14,7 @@ interface Props {
   payload: ConfirmationsQueue['evmSignatureRequest'][0];
   cancelRequest: ConfirmationHookType['cancelRequest'];
   approveRequest: ConfirmationHookType['approveRequest'];
+  requestType: keyof Pick<ConfirmationDefinitions, 'evmSignatureRequest' | 'evmSignatureRequestExternal'>;
 }
 
 interface SignTypedDataObjectV1 {
@@ -60,6 +61,7 @@ export const EvmSignConfirmation = ({
   payload: { payload, url, id: confirmationId },
   cancelRequest,
   approveRequest,
+  requestType,
 }: Props) => {
   const [signMethod, setSignMethod] = useState<string>('');
   const [rawData, setRawData] = useState<string | object>('');
@@ -150,9 +152,9 @@ export const EvmSignConfirmation = ({
     }
   }, [handlerRenderV1, payload.type, rawData, renderData]);
 
-  const onPressCancelButton = () => {
-    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
-  };
+  const onPressCancelButton = useCallback(() => {
+    return cancelRequest(requestType, confirmationId);
+  }, [cancelRequest, confirmationId, requestType]);
 
   const onPressSubmitButton = (password: string) => {
     return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
@@ -179,7 +181,7 @@ export const EvmSignConfirmation = ({
   return (
     <ConfirmationBase
       headerProps={{ title: i18n.title.authorizeRequestTitle, url }}
-      isShowPassword={!account?.isReadOnly}
+      isNeedSignature={true}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
         submitButtonTitle: i18n.common.approve,

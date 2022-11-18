@@ -169,7 +169,10 @@ const StakingValidatorDetail = ({
       return;
     }
 
-    if (validatorInfo.nominatorCount >= maxNominatorPerValidator || validatorInfo.commission >= 100) {
+    if (
+      !bondedValidators.includes(validatorInfo.address) &&
+      (validatorInfo.nominatorCount >= maxNominatorPerValidator || validatorInfo.commission >= 100)
+    ) {
       show(i18n.warningMessage.validatorMaxLimit);
 
       return;

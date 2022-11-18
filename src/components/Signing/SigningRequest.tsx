@@ -294,38 +294,40 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   // );
 
   const renderContent = useCallback(() => {
-    switch (signMode) {
-      case SIGN_MODE.QR:
-        if (handleSignQr && network) {
-          return <QrRequest network={network} handlerStart={onSubmitQr} baseProps={baseProps} />;
-        }
-        break;
-      case SIGN_MODE.LEDGER:
-        //   if (handleSignLedger) {
-        //     return (
-        //       <Wrapper>
-        //         <ExternalContainer>
-        //           <LedgerRequest
-        //             account={account}
-        //             genesisHash={network?.genesisHash || ''}
-        //             handlerSignLedger={onSubmitLedger}>
-        //             {children}
-        //           </LedgerRequest>
-        //         </ExternalContainer>
-        //       </Wrapper>
-        //     );
-        //   } else {
-        //     break;
-        //   }
-        break;
-      case SIGN_MODE.UNKNOWN:
-        break;
-      case SIGN_MODE.PASSWORD:
-        return <PasswordRequest handlerStart={onSubmitPassword} baseProps={baseProps} />;
+    if (network && account) {
+      switch (signMode) {
+        case SIGN_MODE.QR:
+          if (handleSignQr) {
+            return <QrRequest account={account} network={network} handlerStart={onSubmitQr} baseProps={baseProps} />;
+          }
+          break;
+        case SIGN_MODE.LEDGER:
+          //   if (handleSignLedger) {
+          //     return (
+          //       <Wrapper>
+          //         <ExternalContainer>
+          //           <LedgerRequest
+          //             account={account}
+          //             genesisHash={network?.genesisHash || ''}
+          //             handlerSignLedger={onSubmitLedger}>
+          //             {children}
+          //           </LedgerRequest>
+          //         </ExternalContainer>
+          //       </Wrapper>
+          //     );
+          //   } else {
+          //     break;
+          //   }
+          break;
+        case SIGN_MODE.UNKNOWN:
+          break;
+        case SIGN_MODE.PASSWORD:
+          return <PasswordRequest handlerStart={onSubmitPassword} baseProps={baseProps} />;
+      }
     }
 
     return <UnknownRequest baseProps={baseProps} />;
-  }, [baseProps, handleSignQr, network, onSubmitPassword, onSubmitQr, signMode]);
+  }, [account, baseProps, handleSignQr, network, onSubmitPassword, onSubmitQr, signMode]);
 
   useEffect(() => {
     cleanSigningState();

@@ -226,7 +226,7 @@ export const EvmSendTransactionConfirmation = ({
         title: i18n.title.sendTransaction,
         url: url,
       }}
-      isShowPassword={!senderAccount?.isReadOnly}
+      isNeedSignature={!senderAccount?.isReadOnly}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
         submitButtonTitle: i18n.common.approve,

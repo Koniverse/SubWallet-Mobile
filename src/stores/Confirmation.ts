@@ -20,7 +20,9 @@ const confirmationSlice = createSlice({
           state.details.metadataRequest &&
           state.details.signingRequest &&
           state.details.evmSignatureRequest &&
-          state.details.evmSendTransactionRequest
+          state.details.evmSignatureRequestExternal &&
+          state.details.evmSendTransactionRequest &&
+          state.details.evmSendTransactionRequestExternal
         ) {
           state.isReady = true;
         }
