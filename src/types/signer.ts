@@ -17,6 +17,15 @@ export interface BaseSignProps {
   };
 }
 
+export interface HashPayloadProps {
+  address: string;
+  genesisHash: string;
+  hashPayload: Uint8Array;
+  isMessage: boolean;
+  isEthereum: boolean;
+  isHash: boolean;
+}
+
 export interface SigData {
   signature: `0x${string}`;
 }

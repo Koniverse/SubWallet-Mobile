@@ -71,7 +71,7 @@ const formConfig: FormControlConfig = {
   },
 };
 
-const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, submitText, buttonText } }: Props) => {
+const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, submitText, buttonText, extraLoading } }: Props) => {
   const {
     onErrors,
     setIsVisible,
@@ -130,6 +130,7 @@ const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, subm
         {onCancel && (
           <SubmitButton
             backgroundColor={ColorMap.dark2}
+            disabledColor={ColorMap.buttonOverlayButtonColor}
             style={getButtonStyle(!!onCancel)}
             disabled={isCreating}
             title={cancelText ? cancelText : i18n.common.cancel}
@@ -147,6 +148,7 @@ const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, subm
         ) : (
           <SubmitButton
             style={getButtonStyle(!!onCancel)}
+            disabled={extraLoading}
             isBusy={isCreating}
             title={buttonText ? buttonText : i18n.common.approve}
             onPress={openModal}

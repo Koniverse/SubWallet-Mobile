@@ -132,6 +132,7 @@ export const ConfirmationPopup = () => {
           network={networkMap[evmSendTransactionRequest.networkKey || '']}
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
+          requestType={currentConfirmationItem.type}
         />
       );
     }

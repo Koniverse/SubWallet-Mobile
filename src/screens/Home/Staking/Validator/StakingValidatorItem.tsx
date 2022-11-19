@@ -134,8 +134,8 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
   }, [maxNominatorPerValidator, nominatorCount]);
 
   const isBonding = useMemo(() => {
-    return isBondedBefore ? !!bondedValidators.find(val => val.toLowerCase() === address.toLowerCase()) : false;
-  }, [address, bondedValidators, isBondedBefore]);
+    return !!bondedValidators.find(val => val.toLowerCase() === address.toLowerCase());
+  }, [address, bondedValidators]);
 
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress(data)}>

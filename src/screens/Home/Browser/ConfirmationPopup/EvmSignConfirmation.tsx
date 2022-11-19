@@ -1,17 +1,23 @@
-import { Warning } from 'components/Warning';
+import { hexToU8a } from '@polkadot/util';
+import {
+  ConfirmationDefinitions,
+  ConfirmationsQueue,
+  EvmSignatureRequestExternal,
+} from '@subwallet/extension-base/background/KoniTypes';
+import { AccountInfoField } from 'components/Field/AccountInfo';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
+import { ConfirmationHookType } from 'hooks/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
-import { ConfirmationDefinitions, ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { SIGN_MODE } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
-import { ConfirmationHookType } from 'hooks/types';
-import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
-import { AccountInfoField } from 'components/Field/AccountInfo';
 
 interface Props {
-  payload: ConfirmationsQueue['evmSignatureRequest'][0];
+  payload: ConfirmationsQueue['evmSignatureRequest'][0] | ConfirmationsQueue['evmSignatureRequestExternal'][0];
   cancelRequest: ConfirmationHookType['cancelRequest'];
   approveRequest: ConfirmationHookType['approveRequest'];
   requestType: keyof Pick<ConfirmationDefinitions, 'evmSignatureRequest' | 'evmSignatureRequestExternal'>;
@@ -51,14 +57,8 @@ const valueStyle: StyleProp<any> = {
   color: ColorMap.disabled,
 };
 
-const WarningStyle: StyleProp<any> = {
-  marginVertical: 8,
-};
-
-const CONFIRMATION_TYPE = 'evmSignatureRequest';
-
 export const EvmSignConfirmation = ({
-  payload: { payload, url, id: confirmationId },
+  payload: { payload, url, id: confirmationId, address },
   cancelRequest,
   approveRequest,
   requestType,
@@ -68,6 +68,13 @@ export const EvmSignConfirmation = ({
   const account = useGetAccountByAddress(payload.address);
   const [warning, setWarning] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const signMode = useGetAccountSignModeByAddress(address);
+
+  const hashPayload = useMemo(
+    (): string | undefined => (payload as EvmSignatureRequestExternal).hashPayload,
+    [payload],
+  );
 
   useEffect(() => {
     if (payload.type === 'eth_sign') {
@@ -156,9 +163,19 @@ export const EvmSignConfirmation = ({
     return cancelRequest(requestType, confirmationId);
   }, [cancelRequest, confirmationId, requestType]);
 
-  const onPressSubmitButton = (password: string) => {
-    return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
-  };
+  const onPressSubmitButton = useCallback(
+    (password: string) => {
+      return approveRequest(requestType, confirmationId, { password });
+    },
+    [approveRequest, confirmationId, requestType],
+  );
+
+  const onScanSignature = useCallback(
+    (signature: `0x${string}`) => {
+      return approveRequest(requestType, confirmationId, { signature });
+    },
+    [approveRequest, confirmationId, requestType],
+  );
 
   const detailModalContent = useMemo(() => {
     return (
@@ -181,10 +198,24 @@ export const EvmSignConfirmation = ({
   return (
     <ConfirmationBase
       headerProps={{ title: i18n.title.authorizeRequestTitle, url }}
+      address={address}
+      externalInfo={
+        hashPayload
+          ? {
+              hashPayload: hexToU8a(hashPayload),
+              address: address || '',
+              isHash: false,
+              genesisHash: '',
+              isEthereum: true,
+              isMessage: true,
+            }
+          : undefined
+      }
       isNeedSignature={true}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
         submitButtonTitle: i18n.common.approve,
+        onScanSignature: onScanSignature,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
         isSubmitButtonDisabled: account?.isReadOnly,
@@ -194,11 +225,17 @@ export const EvmSignConfirmation = ({
       onChangeDetailModalVisible={() => setModalVisible(false)}
       detailModalContent={detailModalContent}>
       <View style={{ width: '100%', paddingHorizontal: 16 }}>
-        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
-          {i18n.common.approveRequestMessage}
+        <Text
+          style={{
+            ...sharedStyles.mainText,
+            ...FontMedium,
+            color: ColorMap.disabled,
+            paddingVertical: 16,
+            textAlign: 'center',
+          }}>
+          {signMode === SIGN_MODE.QR ? i18n.common.useHardWalletToScan : i18n.common.approveRequestMessage}
         </Text>
         <AccountInfoField name={account?.name || ''} address={account?.address || ''} />
-        {!!account?.isReadOnly && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />}
       </View>
     </ConfirmationBase>
   );

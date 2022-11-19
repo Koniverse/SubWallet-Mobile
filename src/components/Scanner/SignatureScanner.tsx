@@ -11,6 +11,7 @@ import { ColorMap } from 'styles/color';
 import { ScannerStyles } from 'styles/scanner';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { SigData } from 'types/signer';
+import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
@@ -29,7 +30,7 @@ const WrapperContainerStyle: StyleProp<ViewStyle> = {
 
 const BottomSubContentStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'center',
   marginHorizontal: 16,
   flex: 1,
 };
@@ -37,7 +38,7 @@ const BottomSubContentStyle: StyleProp<ViewStyle> = {
 const BottomContentStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
   justifyContent: 'center',
-  flex: 1,
+  backgroundColor: convertHexColorToRGBA(ColorMap.dark1, 0.5),
 };
 
 const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) => {
@@ -56,7 +57,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) 
           });
           onHideModal();
         } else {
-          const message = i18n.errorMessage.invalidSignature;
+          const message = i18n.errorMessage.scanAgain;
 
           setError(message);
         }
@@ -90,10 +91,10 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) 
             <View style={ScannerStyles.RectangleContainerStyle}>
               <View style={ScannerStyles.TopOverlayStyle}>
                 <View style={ScannerStyles.HeaderStyle}>
-                  <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanAddress}</Text>
+                  <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.approveRequest}</Text>
                 </View>
-                <View style={ScannerStyles.WalletNameStyle}>
-                  {subTitle && <Text style={ScannerStyles.HeaderTitleTextStyle}>{subTitle}</Text>}
+                <View style={ScannerStyles.HeaderSubTitleStyle}>
+                  {subTitle && <Text style={ScannerStyles.HeaderSubTitleTextStyle}>{i18n.common.scanForApprove}</Text>}
                 </View>
               </View>
               <View style={ScannerStyles.CenterOverlayStyle}>
@@ -111,11 +112,9 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) 
                 <View style={ScannerStyles.LeftAndRightOverlayStyle} />
               </View>
               <View style={ScannerStyles.BottomOverlayStyle}>
-                <View style={BottomContentStyle}>
-                  <Text style={ScannerStyles.CenterTextStyle}>{i18n.common.scanForApprove}</Text>
+                <View style={BottomSubContentStyle}>
+                  {!!error && <Warning style={BottomContentStyle} message={error} isDanger />}
                 </View>
-                <View style={BottomSubContentStyle}>{!!error && <Warning message={error} isDanger />}</View>
-                <View style={BottomSubContentStyle} />
               </View>
             </View>
           }

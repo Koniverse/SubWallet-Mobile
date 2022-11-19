@@ -92,19 +92,19 @@ const HeaderTitleTextStyle: StyleProp<TextStyle> = {
   ...FontSemiBold,
 };
 
-const WalletNameStyle: StyleProp<ViewStyle> = {
+const HeaderSubTitleStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   width: '100%',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 24,
   position: 'absolute',
-  bottom: 24,
+  bottom: 60,
 };
 
-const WalletNameTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
+const HeaderSubTitleTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
   color: ColorMap.light,
+  textAlign: 'center',
   ...FontMedium,
 };
 
@@ -133,6 +133,6 @@ export const ScannerStyles = StyleSheet.create({
   HeaderStyle,
   HeaderTitleTextStyle,
   LogoContainerStyle,
-  WalletNameStyle,
-  WalletNameTextStyle,
+  HeaderSubTitleStyle,
+  HeaderSubTitleTextStyle,
 });

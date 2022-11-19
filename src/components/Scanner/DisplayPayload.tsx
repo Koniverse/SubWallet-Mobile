@@ -5,15 +5,9 @@ import { createSignPayload } from '@polkadot/react-qr/util';
 import { numberToU8a, u8aConcat, u8aToU8a } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { StyleProp, ViewStyle } from 'react-native';
+import { HashPayloadProps } from 'types/signer';
 
-interface Props {
-  address: string;
-  className?: string;
-  isHash: boolean;
-  genesisHash: string;
-  payload: Uint8Array;
-  isEthereum: boolean;
-  isMessage?: boolean;
+interface Props extends HashPayloadProps {
   size?: string | number;
   style?: StyleProp<ViewStyle>;
 }
@@ -35,7 +29,7 @@ const CMD = {
 };
 
 const DisplayPayload = (props: Props) => {
-  const { address, genesisHash, isEthereum, isHash, isMessage, payload, size, style } = props;
+  const { address, genesisHash, isEthereum, isHash, isMessage, hashPayload, size, style } = props;
 
   const cmd = useMemo(() => {
     if (isEthereum) {
@@ -55,14 +49,14 @@ const DisplayPayload = (props: Props) => {
 
   const data = useMemo(() => {
     if (isEthereum) {
-      return u8aConcat(ETHEREUM_ID, numberToU8a(cmd), decodeAddress(address), u8aToU8a(payload));
+      return u8aConcat(ETHEREUM_ID, numberToU8a(cmd), decodeAddress(address), u8aToU8a(hashPayload));
     } else {
       // EVM genesisHash have _evm or _anyString at end
       const genesis = genesisHash.split('_')[0];
 
-      return createSignPayload(address, cmd, payload, genesis);
+      return createSignPayload(address, cmd, hashPayload, genesis);
     }
-  }, [address, cmd, payload, genesisHash, isEthereum]);
+  }, [address, cmd, hashPayload, genesisHash, isEthereum]);
 
   if (!data) {
     return null;

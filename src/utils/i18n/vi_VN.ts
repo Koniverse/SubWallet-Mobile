@@ -200,8 +200,10 @@ export const vi = {
     goToNetworkConfig: 'Go to Network Config',
     submitting: 'Submitting...',
     sending: 'Sending...',
-    scanForApprove: 'Scan QR for approve signer account send transaction',
+    scanForApprove: "Use your device's camera to scan the QR code\ndisplayed on your hardware wallet",
     scanQr: 'Scan QR',
+    back: 'Back',
+    useHardWalletToScan: "Use your hardware wallet's camera\nto scan this QR code",
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -284,6 +286,7 @@ export const vi = {
     createNewAccount: 'Create New Account',
     importAccount: 'Import Account',
     scanApproveRequest: 'Scan Approve Request',
+    approveRequest: 'Approve Request',
   },
   tabName: {
     crypto: 'Crypto',
@@ -573,7 +576,7 @@ export const vi = {
     wrongPassword: 'Wrong password',
     invalidMnemonicSeed: 'Invalid mnemonic seed',
     invalidAddress: 'Invalid address',
-    invalidSignature: 'Invalid signature',
+    scanAgain: "Sorry, we've run into a problem.\nPlease scan again",
     transferNFTBalanceError: 'Your balance is too low to cover fees',
     transferNFTTxError: 'Encountered an error, please try again.',
     transferNFTError: 'Some error occurred. Please try again later.',

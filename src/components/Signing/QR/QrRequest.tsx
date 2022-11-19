@@ -16,7 +16,7 @@ import { SigningContext } from 'providers/SigningContext';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { requestCameraPermission } from 'utils/validators';
 import { resolveExternalRequest } from '../../../messaging';
 import { BaseSignProps, SigData } from 'types/signer';
@@ -42,6 +42,14 @@ const TitleTextStyle: StyleProp<TextStyle> = {
   ...FontSemiBold,
   textAlign: 'center',
   color: ColorMap.light,
+  marginBottom: 24,
+};
+
+const SubTitleTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  textAlign: 'center',
+  color: ColorMap.disabled,
   marginBottom: 24,
 };
 
@@ -164,6 +172,7 @@ const QrRequest = ({
         {onCancel && (
           <SubmitButton
             backgroundColor={ColorMap.dark2}
+            disabledColor={ColorMap.buttonOverlayButtonColor}
             style={getButtonStyle(!!onCancel)}
             disabled={isLoading}
             title={cancelText ? cancelText : i18n.common.cancel}
@@ -190,12 +199,13 @@ const QrRequest = ({
       </View>
       <SubWalletModal modalVisible={isVisible} onModalHide={cancelRequest}>
         <View style={ContainerStyle}>
-          <Text style={TitleTextStyle}>{account.name || account.address}</Text>
+          <Text style={TitleTextStyle}>{i18n.title.authorizeTransaction}</Text>
+          <Text style={SubTitleTextStyle}>{i18n.common.useHardWalletToScan}</Text>
           <View>
             <DisplayPayload
               isEthereum={isEthereum}
               size={250}
-              payload={hexToU8a(qrPayload)}
+              hashPayload={hexToU8a(qrPayload)}
               address={qrAddress}
               genesisHash={network.genesisHash}
               isHash={isQrHashed}

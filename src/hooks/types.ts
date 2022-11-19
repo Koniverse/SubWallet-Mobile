@@ -42,7 +42,7 @@ export type ConfirmationHookType = {
   approveRequest: (
     type: ConfirmationType,
     id: string,
-    payload?: { password?: string; data?: unknown },
+    payload?: { password?: string; data?: unknown; signature?: `0x${string}` },
   ) => Promise<void>;
   rejectRequest: (type: ConfirmationType, id: string) => Promise<void>;
   isEmptyRequests: boolean;

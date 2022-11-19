@@ -5,6 +5,7 @@ import {
   approveAuthRequestV2,
   approveMetaRequest,
   approveSignPassword,
+  approveSignSignature,
   cancelAuthRequestV2,
   cancelSignRequest,
   completeConfirmation,
@@ -21,10 +22,12 @@ const ConfirmationsQueueItems = [
   'addTokenRequest',
   'switchNetworkRequest',
   'evmSignatureRequest',
-  'evmSignatureRequestQr',
+  'evmSignatureRequestExternal',
   'evmSendTransactionRequest',
-  'evmSendTransactionRequestQr',
+  'evmSendTransactionRequestExternal',
 ];
+
+const ExternalConfirmationsQueueItems = ['evmSignatureRequestExternal', 'evmSendTransactionRequestExternal'];
 
 function getConfirmationItems(confirmationRequestMap: ConfirmationSlice['details']): ConfirmationItem[] {
   const items: ConfirmationItem[] = [];
@@ -82,6 +85,7 @@ export default function useConfirmations(): ConfirmationHookType {
   const approveRequest = useCallback<ConfirmationHookType['approveRequest']>((type, id, payload) => {
     return new Promise<void>((resolve, reject) => {
       const password = (payload && payload.password) || '';
+      const signature = (payload && payload.signature) || '0x';
       if (type === 'authorizeRequest') {
         if (payload && payload.data) {
           approveAuthRequestV2(id, payload.data as string[])
@@ -93,15 +97,25 @@ export default function useConfirmations(): ConfirmationHookType {
           .then(() => resolve)
           .catch(reject);
       } else if (type === 'signingRequest') {
-        approveSignPassword(id, false, password)
-          .then(() => resolve)
-          .catch(reject);
+        if (password) {
+          approveSignPassword(id, false, password)
+            .then(() => resolve)
+            .catch(reject);
+        }
+
+        if (signature.length > 2) {
+          approveSignSignature(id, signature)
+            .then(() => resolve)
+            .catch(reject);
+        }
       } else if (ConfirmationsQueueItems.includes(type)) {
+        const isExternal = ExternalConfirmationsQueueItems.includes(type);
         completeConfirmation(type as keyof ConfirmationDefinitions, {
           id,
           isApproved: true,
           payload: true,
-          password,
+          password: !isExternal ? password : '',
+          signature: isExternal ? signature : '0x',
         })
           .then(() => resolve)
           .catch(reject);
