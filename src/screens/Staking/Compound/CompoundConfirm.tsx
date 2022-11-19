@@ -40,6 +40,7 @@ import {
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -314,74 +315,74 @@ const CompoundConfirm = ({ route: { params: compoundParams }, navigation }: Comp
         <ScrollView
           style={{ ...ScrollViewStyle }}
           contentContainerStyle={!isDelegationReady ? { ...centerStyle } : { flex: 1 }}>
-          {isDelegationReady ? (
-            <>
-              <View style={IconContainerStyle}>
-                <View>
-                  <SubWalletAvatar size={40} address={selectedAccount} />
+          {isNetConnected ? (
+            isDelegationReady ? (
+              <>
+                <View style={IconContainerStyle}>
+                  <View>
+                    <SubWalletAvatar size={40} address={selectedAccount} />
+                  </View>
                 </View>
-              </View>
-              {delegations && selectedValidator && (
-                <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
-              )}
-              <View style={[ScrollViewStyle, !isCompoundReady ? { ...centerStyle } : undefined, { flex: 1 }]}>
-                {isCompoundReady ? (
-                  <>
-                    {hasCompoundRequest ? (
-                      <>
-                        <TextField
-                          text={toShort(currentTaskId)}
-                          label={i18n.compoundStakeAction.taskId}
-                          disabled={true}
-                        />
-                        <BalanceField
-                          value={currentAccountMinimum.toString()}
-                          si={formatBalance.findSi('-')}
-                          decimal={0}
-                          token={network.nativeToken || 'Token'}
-                          label={i18n.compoundStakeAction.compoundingThreshold}
-                        />
-                        <TextField
-                          text={moment.duration(currentFrequency, 'seconds').humanize()}
-                          label={i18n.compoundStakeAction.optimalCompoundingTime}
-                          disabled={true}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <InputBalance
-                          placeholder={'0'}
-                          si={si}
-                          onChangeSi={setSi}
-                          onChange={onChangeAmount}
-                          decimals={balanceFormat[0]}
-                          ref={inputBalanceRef}
-                          siSymbol={selectedToken}
-                          disable={loading}
-                        />
-                        <View style={RowCenterStyle}>
-                          {!!reformatAmount && (
-                            <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />
-                          )}
-                        </View>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <ActivityIndicator animating={true} size={'large'} />
+                {delegations && selectedValidator && (
+                  <DelegationBriefInfo validator={selectedValidator} onPress={openModal} disable={loading} />
                 )}
-              </View>
-            </>
+                <View style={[ScrollViewStyle, !isCompoundReady ? { ...centerStyle } : undefined, { flex: 1 }]}>
+                  {isCompoundReady ? (
+                    <>
+                      {hasCompoundRequest ? (
+                        <>
+                          <TextField
+                            text={toShort(currentTaskId)}
+                            label={i18n.compoundStakeAction.taskId}
+                            disabled={true}
+                          />
+                          <BalanceField
+                            value={currentAccountMinimum.toString()}
+                            si={formatBalance.findSi('-')}
+                            decimal={0}
+                            token={network.nativeToken || 'Token'}
+                            label={i18n.compoundStakeAction.compoundingThreshold}
+                          />
+                          <TextField
+                            text={moment.duration(currentFrequency, 'seconds').humanize()}
+                            label={i18n.compoundStakeAction.optimalCompoundingTime}
+                            disabled={true}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <InputBalance
+                            placeholder={'0'}
+                            si={si}
+                            onChangeSi={setSi}
+                            onChange={onChangeAmount}
+                            decimals={balanceFormat[0]}
+                            ref={inputBalanceRef}
+                            siSymbol={selectedToken}
+                            disable={loading}
+                          />
+                          <View style={RowCenterStyle}>
+                            {!!reformatAmount && (
+                              <BalanceToUsd amountToUsd={new BigN(amountToUsd)} isShowBalance={true} />
+                            )}
+                          </View>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <ActivityIndicator animating={true} size={'large'} />
+                  )}
+                </View>
+              </>
+            ) : (
+              <ActivityIndicator animating={true} size={'large'} />
+            )
           ) : (
-            <ActivityIndicator animating={true} size={'large'} />
+            <NoInternetScreen />
           )}
 
           {isCompoundReady && isDelegationReady && !!warningMessage && (
             <Warning style={WarningStyle} message={warningMessage} isDanger />
-          )}
-
-          {isCompoundReady && isDelegationReady && !isNetConnected && (
-            <Warning isDanger message={i18n.warningMessage.noInternetMessage} />
           )}
         </ScrollView>
 

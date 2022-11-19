@@ -65,6 +65,8 @@ export const DAppTitleMap: Record<string, string> = {
   'mf-raffle-game.web.app': 'Moonfit - Raffle game',
   'dev-event.moonfit.xyz': 'Moonfit - Raffle game',
   'connect.subwallet.app': 'SubWallet Connect',
+  'www.dotinsights.xyz': 'dotinsights | Polkadot & Kusama Ecosystem Map',
+  'dotinsights.subwallet.app': 'dotinsights | Polkadot & Kusama Ecosystem Map',
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -101,8 +103,26 @@ export const predefinedDApps: PredefinedDApps = {
       name: 'Test',
       id: 'test',
     },
+    {
+      name: 'Data',
+      id: 'data',
+    },
   ],
   dapps: [
+    {
+      name: 'dotinsights | Polkadot & Kusama Ecosystem Map',
+      url: 'https://www.dotinsights.xyz',
+      icon: 'https://dotinsights.subwallet.app/assets/images/favicon/favicon-180x180.png',
+      categories: ['data', 'utilities'],
+      isSupportSubstrateAccount: true,
+    },
+    {
+      name: 'dotinsights | Polkadot & Kusama Ecosystem Map',
+      url: 'https://dotinsights.subwallet.app/',
+      icon: 'https://dotinsights.subwallet.app/assets/images/favicon/favicon-180x180.png',
+      categories: ['data', 'utilities'],
+      isSupportSubstrateAccount: true,
+    },
     {
       name: 'Singular 2.0',
       url: 'https://singular.app/',

@@ -248,11 +248,12 @@ class WebRunnerHandler {
     setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void,
   ) {
     if (isWebRunnerAlive(eventData)) {
-      // Save the lastTimeResponse to check it later
-      this.lastTimeResponse = new Date().getTime();
       this.clearOutOfResponseTimeTimeout();
 
       if (AppState.currentState === 'active') {
+        // Save the lastTimeResponse to check it later
+        this.lastTimeResponse = new Date().getTime();
+
         this.outOfResponseTimeTimeout = setTimeout(() => {
           this.eventEmitter?.emit('update-status', 'out_of_response_time');
         }, ACCEPTABLE_RESPONSE_TIME);

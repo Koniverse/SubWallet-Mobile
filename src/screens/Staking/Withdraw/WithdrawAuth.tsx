@@ -18,7 +18,7 @@ import i18n from 'utils/i18n/i18n';
 import { getStakeWithdrawalTxInfo, stakeWithdrawQr, submitStakeWithdrawal } from '../../../messaging';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
-import { Warning } from 'components/Warning';
+import { NoInternetScreen } from 'components/NoInternetScreen';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -29,7 +29,7 @@ const ContainerStyle: StyleProp<ViewStyle> = {
 const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack } }: WithdrawAuthProps) => {
   const { withdrawAmount: amount, networkKey, selectedAccount, nextWithdrawalAction, targetValidator } = withdrawParams;
 
-  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const { isNetConnected } = useContext(WebRunnerContext);
   const {
     signingState: { isLoading },
   } = useContext(SigningContext);
@@ -129,39 +129,43 @@ const WithdrawAuth = ({ route: { params: withdrawParams }, navigation: { goBack 
       rightButtonTitle={i18n.common.cancel}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ ...ScrollViewStyle }} contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
-          {isTxReady ? (
-            <>
-              {!!targetValidator && (
-                <AddressField
-                  address={targetValidator}
-                  label={i18n.withdrawStakeAction.validator}
-                  showRightIcon={false}
+        {isNetConnected ? (
+          <ScrollView
+            style={{ ...ScrollViewStyle }}
+            contentContainerStyle={!isTxReady ? { ...centerStyle } : undefined}>
+            {isTxReady ? (
+              <>
+                {!!targetValidator && (
+                  <AddressField
+                    address={targetValidator}
+                    label={i18n.withdrawStakeAction.validator}
+                    showRightIcon={false}
+                  />
+                )}
+                <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
+                <BalanceField
+                  value={amount.toString()}
+                  decimal={0}
+                  token={selectedToken}
+                  si={formatBalance.findSi('-')}
+                  label={i18n.withdrawStakeAction.withdrawAmount}
                 />
-              )}
-              <AddressField address={selectedAccount} label={i18n.common.account} showRightIcon={false} />
-              <BalanceField
-                value={amount.toString()}
-                decimal={0}
-                token={selectedToken}
-                si={formatBalance.findSi('-')}
-                label={i18n.withdrawStakeAction.withdrawAmount}
-              />
-              <BalanceField
-                value={fee}
-                decimal={0}
-                token={feeToken}
-                si={formatBalance.findSi('-')}
-                label={i18n.withdrawStakeAction.withdrawFee}
-              />
-              <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
-
-              {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
-            </>
-          ) : (
-            <ActivityIndicator animating={true} size={'large'} />
-          )}
-        </ScrollView>
+                <BalanceField
+                  value={fee}
+                  decimal={0}
+                  token={feeToken}
+                  si={formatBalance.findSi('-')}
+                  label={i18n.withdrawStakeAction.withdrawFee}
+                />
+                <TextField text={totalString} label={i18n.withdrawStakeAction.total} disabled={true} />
+              </>
+            ) : (
+              <ActivityIndicator animating={true} size={'large'} />
+            )}
+          </ScrollView>
+        ) : (
+          <NoInternetScreen />
+        )}
         <SigningRequest
           account={account}
           handleSignPassword={submitStakeWithdrawal}
