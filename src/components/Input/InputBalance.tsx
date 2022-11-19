@@ -147,7 +147,6 @@ const Component = (props: InputBalanceProps, ref: ForwardedRef<any>) => {
 
       if (onChange) {
         const [outputValue, isValid] = getOutputValuesFromString(input, decimals + curSi.power);
-        console.log('outputValue', outputValue);
         onChange(isValid ? outputValue : undefined);
       }
     },

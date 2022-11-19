@@ -208,6 +208,7 @@ const StakingValidatorDetail = ({
           </View>
           <View style={CenterWrapperStyle}>
             <BalanceVal
+              isUseResizeStyle={true}
               balanceValTextStyle={[
                 getStakingInputValueStyle(validatorInfo.totalStake.toString()),
                 { marginBottom: 32 },
