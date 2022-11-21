@@ -60,16 +60,18 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
     });
 
     const netUnsubscribe = NetInfo.addEventListener(netState => {
-      if (netState.isConnected !== null) {
-        setIsNetConnected(netState.isConnected);
+      const isConnected = netState.isInternetReachable;
+
+      if (isConnected !== null) {
+        setIsNetConnected(isConnected);
 
         if (AppState.currentState === 'active') {
-          if (!lastIsNetConnected && netState.isConnected) {
+          if (!lastIsNetConnected && isConnected) {
             reload();
           }
         }
 
-        lastIsNetConnected = netState.isConnected;
+        lastIsNetConnected = isConnected;
       }
     });
 
