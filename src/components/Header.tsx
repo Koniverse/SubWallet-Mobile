@@ -6,12 +6,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { SpaceStyle } from 'styles/space';
-import { toShort } from 'utils/index';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
+import { List, MagnifyingGlass, QrCode } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
 import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
+import { IconButton } from 'components/IconButton';
 
 export interface HeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -22,7 +22,7 @@ const headerWrapper: StyleProp<any> = {
   backgroundColor: ColorMap.dark2,
   flexDirection: 'row',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   height: 40,
   position: 'relative',
   zIndex: 10,
@@ -32,19 +32,8 @@ const accountName: StyleProp<any> = {
   ...sharedStyles.mediumText,
   color: ColorMap.light,
   ...FontSemiBold,
-  paddingLeft: 16,
-  maxWidth: 100,
-};
-const accountAddress: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  color: ColorMap.disabled,
-  paddingLeft: 4,
-};
-const actionButtonStyle: StyleProp<any> = {
-  width: 40,
-  height: 40,
-  justifyContent: 'center',
-  alignItems: 'center',
+  paddingLeft: 8,
+  maxWidth: 120,
 };
 
 export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
@@ -58,49 +47,52 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity
+      <View style={{ position: 'absolute', left: 16 }}>
+        <IconButton
+          icon={List}
           onPress={() => {
             navigation.navigate('Settings');
+          }}
+        />
+      </View>
+
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('AccountsScreen');
           }}>
-          <View>
-            <SubWalletAvatar address={currentAccount?.address || ''} size={32} SubIcon={SubIcon} />
+          <View style={{ flexDirection: 'row' }}>
+            <SubWalletAvatar address={currentAccount?.address || ''} size={16} SubIcon={SubIcon} />
             {isAccountWaiting && (
               <View
                 style={{
                   position: 'absolute',
                   backgroundColor: ColorMap.disabledOverlay,
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
                   justifyContent: 'center',
                 }}>
-                <ActivityIndicator size={18} />
+                <ActivityIndicator size={4} />
               </View>
             )}
+            <Text style={accountName} numberOfLines={1}>
+              {currentAccount ? currentAccount.name : ''}
+            </Text>
           </View>
         </TouchableOpacity>
-        <Text style={accountName} numberOfLines={1}>
-          {currentAccount ? currentAccount.name : ''}
-        </Text>
-
-        {!!currentAccount?.address && (
-          <Text style={accountAddress}>{`(${toShort(currentAccount?.address, 4, 4)})`}</Text>
-        )}
       </View>
 
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          style={actionButtonStyle}
+      <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
+        <IconButton
+          icon={QrCode}
           onPress={() => {
-            navigation.navigate('NetworksSetting');
-          }}>
-          <SlidersHorizontal size={20} color={ColorMap.light} weight={'bold'} />
-        </TouchableOpacity>
+            //TODO: go to Sign screen
+            // navigation.navigate('NetworksSetting');
+          }}
+        />
 
-        <TouchableOpacity style={actionButtonStyle} onPress={_onPressSearchButton}>
-          <MagnifyingGlass size={20} color={ColorMap.light} weight={'bold'} />
-        </TouchableOpacity>
+        <IconButton icon={MagnifyingGlass} onPress={_onPressSearchButton} />
       </View>
     </View>
   );
