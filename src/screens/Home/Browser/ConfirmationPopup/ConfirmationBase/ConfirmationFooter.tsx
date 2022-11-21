@@ -77,6 +77,7 @@ export const ConfirmationFooter = ({
   const onSuccess = useCallback(
     (sig: SigData) => {
       onScanSignature && onScanSignature(sig.signature);
+      setIsScanning(false);
     },
     [onScanSignature],
   );

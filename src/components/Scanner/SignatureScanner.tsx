@@ -59,7 +59,6 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
           onSuccess({
             signature: signature,
           });
-          onHideModal();
         } else {
           const message = i18n.errorMessage.scanAgain;
 
@@ -69,7 +68,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
         setError((e as Error).message);
       }
     },
-    [onHideModal, onSuccess],
+    [onSuccess],
   );
 
   useEffect(() => {
@@ -79,7 +78,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
   }, [visible]);
 
   return (
-    <SubWalletModal modalVisible={visible} onModalHide={onHideModal} onChangeModalVisible={onHideModal}>
+    <SubWalletModal modalVisible={visible} onChangeModalVisible={onHideModal}>
       <View style={WrapperContainerStyle}>
         <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />

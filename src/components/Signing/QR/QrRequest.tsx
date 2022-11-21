@@ -155,6 +155,7 @@ const QrRequest = ({
         const resolveData = createResolveExternalRequestData(data);
 
         setIsResolving(true);
+        setIsScanning(false);
         await handlerResolve(resolveData);
         setIsResolving(false);
       }
