@@ -93,7 +93,7 @@ export const SendFund = ({
   const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
 
   const {
-    signingState: { isCreating, isSubmitting },
+    signingState: { isLoading },
   } = useContext(SigningContext);
 
   const [[receiveAddress, currentReceiveAddress], setReceiveAddress] = useState<[string | null, string]>([null, '']);
@@ -434,7 +434,7 @@ export const SendFund = ({
       {!isShowTxResult ? (
         <ContainerWithSubHeader
           onPressBack={onPressBack}
-          disabled={isCreating || isSubmitting}
+          disabled={isLoading}
           title={currentViewStep === ViewStep.TYPE_AMOUNT ? i18n.common.amount : i18n.title.sendAsset}>
           <>
             {currentViewStep === ViewStep.SEND_FUND && (

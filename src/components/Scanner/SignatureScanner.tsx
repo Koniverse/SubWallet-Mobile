@@ -18,7 +18,6 @@ import { BarCodeReadEvent } from 'react-native-camera';
 
 interface Props {
   visible: boolean;
-  subTitle?: string;
   onHideModal: () => void;
   onSuccess: (result: SigData) => void | Promise<void>;
 }
@@ -41,7 +40,12 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   backgroundColor: convertHexColorToRGBA(ColorMap.dark1, 0.5),
 };
 
-const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) => {
+const LeftAndRightOverLay: StyleProp<ViewStyle> = {
+  marginTop: -0.5,
+  height: (ScannerStyles.LeftAndRightOverlayStyle.height as number) + 0.1,
+};
+
+const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
   const [error, setError] = useState<string>('');
 
   const handleRead = useCallback(
@@ -94,13 +98,13 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) 
                   <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.approveRequest}</Text>
                 </View>
                 <View style={ScannerStyles.HeaderSubTitleStyle}>
-                  {subTitle && <Text style={ScannerStyles.HeaderSubTitleTextStyle}>{i18n.common.scanForApprove}</Text>}
+                  <Text style={ScannerStyles.HeaderSubTitleTextStyle}>{i18n.common.scanForApprove}</Text>
                 </View>
               </View>
               <View style={ScannerStyles.CenterOverlayStyle}>
-                <View style={ScannerStyles.LeftAndRightOverlayStyle} />
+                <View style={[ScannerStyles.LeftAndRightOverlayStyle, LeftAndRightOverLay]} />
 
-                <View style={[ScannerStyles.RectangleStyle]}>
+                <View style={ScannerStyles.RectangleStyle}>
                   <BarcodeFinder
                     width={rectDimensions}
                     height={rectDimensions}
@@ -109,7 +113,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, subTitle }: Props) 
                   />
                 </View>
 
-                <View style={ScannerStyles.LeftAndRightOverlayStyle} />
+                <View style={[ScannerStyles.LeftAndRightOverlayStyle, LeftAndRightOverLay]} />
               </View>
               <View style={ScannerStyles.BottomOverlayStyle}>
                 <View style={BottomSubContentStyle}>

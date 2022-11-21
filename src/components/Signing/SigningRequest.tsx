@@ -10,6 +10,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import PasswordRequest from 'components/Signing/Password/PasswordRequest';
 import QrRequest from 'components/Signing/QR/QrRequest';
 import UnknownRequest from 'components/Signing/Unknown/UnknownRequest';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import { Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 import { BaseSignProps, SIGN_MODE } from 'types/signer';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
@@ -52,8 +53,16 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   style,
   params,
 }: Props<T, V>) => {
-  const { cleanSigningState, onErrors, setIsCreating, setPasswordError, setIsVisible, setIsSubmitting } =
-    useContext(SigningContext);
+  const {
+    cleanSigningState,
+    onErrors,
+    setIsCreating,
+    setPasswordError,
+    setIsVisible,
+    setIsSubmitting,
+    setIsScanning,
+    clearLoading,
+  } = useContext(SigningContext);
   const { cleanQrState, updateQrState } = useContext(QrSignerContext);
   const { cleanExternalState, updateExternalState } = useContext(ExternalRequestContext);
 
@@ -66,8 +75,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   const handleCallbackResponseResult = useCallback(
     (data: V) => {
       if (data.passwordError) {
-        setIsCreating(false);
-        setIsSubmitting(false);
+        clearLoading();
         setPasswordError(!!data.passwordError);
         onErrors([data.passwordError]);
         setIsVisible(true);
@@ -79,8 +87,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       }
 
       if (balanceError && !data.passwordError) {
-        setIsCreating(false);
-        setIsSubmitting(false);
+        clearLoading();
         onErrors(['Your balance is too low to cover fees']);
         onFail(['Your balance is too low to cover fees']);
         cleanQrState();
@@ -90,8 +97,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       }
 
       if (data.txError && data.status === undefined) {
-        setIsCreating(false);
-        setIsSubmitting(false);
+        clearLoading();
         onErrors(['Encountered an error, please try again.']);
         onFail(['Encountered an error, please try again.'], data.extrinsicHash);
         cleanQrState();
@@ -101,8 +107,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       }
 
       if (data.status !== undefined) {
-        setIsCreating(false);
-        setIsSubmitting(false);
+        clearLoading();
 
         if (data.status) {
           onSuccess(data.extrinsicHash as string);
@@ -120,17 +125,16 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
     },
     [
       balanceError,
-      cleanExternalState,
-      cleanQrState,
-      detailError,
-      onAfterSuccess,
+      clearLoading,
+      setPasswordError,
       onErrors,
+      setIsVisible,
+      cleanQrState,
+      cleanExternalState,
       onFail,
       onSuccess,
-      setIsCreating,
-      setPasswordError,
-      setIsSubmitting,
-      setIsVisible,
+      onAfterSuccess,
+      detailError,
     ],
   );
 
@@ -140,20 +144,18 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
     (response: V) => {
       if (response.passwordError) {
         onErrors(['Invalid password']);
-        setIsCreating(false);
-        setIsSubmitting(false);
+        clearLoading();
       } else {
         const errorMessage = response.errors?.map(err => err.message);
 
         onErrors(errorMessage || []);
 
         if (errorMessage && errorMessage.length) {
-          setIsCreating(false);
-          setIsSubmitting(false);
+          clearLoading();
         }
       }
     },
-    [onErrors, setIsCreating, setIsSubmitting],
+    [clearLoading, onErrors],
   );
 
   const catchError = useCallback(
@@ -178,8 +180,9 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
         updateQrState(state);
         setTimeout(() => {
           setIsCreating(false);
+          setIsScanning(true);
           setIsVisible(true);
-        }, 100);
+        }, HIDE_MODAL_DURATION);
       }
 
       if (data.externalState) {
@@ -189,13 +192,22 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       if (data.isBusy) {
         // Submit transaction
         updateQrState({ step: QrStep.SENDING_TX });
+        setIsScanning(false);
         setIsSubmitting(true);
         setIsVisible(false);
       }
 
       handleCallbackResponseResult(data);
     },
-    [handleCallbackResponseResult, setIsCreating, setIsSubmitting, setIsVisible, updateExternalState, updateQrState],
+    [
+      handleCallbackResponseResult,
+      setIsCreating,
+      setIsScanning,
+      setIsSubmitting,
+      setIsVisible,
+      updateExternalState,
+      updateQrState,
+    ],
   );
 
   // Ledger
@@ -294,11 +306,11 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   // );
 
   const renderContent = useCallback(() => {
-    if (network && account) {
+    if (network) {
       switch (signMode) {
         case SIGN_MODE.QR:
           if (handleSignQr) {
-            return <QrRequest account={account} network={network} handlerStart={onSubmitQr} baseProps={baseProps} />;
+            return <QrRequest network={network} handlerStart={onSubmitQr} baseProps={baseProps} />;
           }
           break;
         case SIGN_MODE.LEDGER:
@@ -327,7 +339,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
     }
 
     return <UnknownRequest baseProps={baseProps} />;
-  }, [account, baseProps, handleSignQr, network, onSubmitPassword, onSubmitQr, signMode]);
+  }, [baseProps, handleSignQr, network, onSubmitPassword, onSubmitQr, signMode]);
 
   useEffect(() => {
     cleanSigningState();

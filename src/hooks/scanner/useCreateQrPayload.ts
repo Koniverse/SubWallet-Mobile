@@ -4,8 +4,8 @@ import { createFrames, createImgSize } from '@polkadot/react-qr/util';
 import { objectSpread } from '@polkadot/util';
 import { xxhashAsHex } from '@polkadot/util-crypto';
 
-const FRAME_DELAY = 2500;
-const TIMER_INC = 500;
+const FRAME_DELAY = 100;
+const TIMER_INC = 50;
 
 const getDataUrl = (value: Uint8Array): string => {
   const qr = qrcode(0, 'M'); // HACK See our qrcode stringToBytes override as used internally. This
@@ -69,7 +69,6 @@ const useCreateQrPayload = (
     timerRef.current.timerId = setTimeout(nextFrame, FRAME_DELAY);
 
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       timerRef.current.timerId &&
         clearTimeout(
           typeof timerRef.current.timerId === 'number'
@@ -78,8 +77,6 @@ const useCreateQrPayload = (
               timerRef.current.timerId[Symbol.toPrimitive](),
         );
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

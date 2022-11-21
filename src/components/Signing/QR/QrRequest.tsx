@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountJson } from '@subwallet/extension-base/background/types';
 import { IGNORE_QR_SIGNER } from '@subwallet/extension-koni-base/constants';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import DisplayPayload from 'components/Scanner/DisplayPayload';
 import { SubmitButton } from 'components/SubmitButton';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import { useRejectExternalRequest } from 'hooks/screen/useRejectExternalRequest';
 import { WebRunnerContext } from 'providers/contexts';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
@@ -29,7 +29,6 @@ import { Warning } from 'components/Warning';
 
 interface Props extends BaseSignProps {
   network: NetworkJson;
-  account: AccountJson;
   handlerStart: () => void;
 }
 
@@ -90,7 +89,6 @@ const getButtonStyle = (canCancel: boolean, style?: StyleProp<ViewStyle>): Style
 };
 
 const QrRequest = ({
-  account,
   handlerStart,
   network,
   baseProps: { onCancel, cancelText, buttonText, submitText, extraLoading },
@@ -106,9 +104,9 @@ const QrRequest = ({
 
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [isCanceling, setIsCanceling] = useState<boolean>(false);
-  const [isResolving, setIsResolving] = useState(false);
+  const [isResolving, setIsResolving] = useState<boolean>(false);
 
-  const { errors, isCreating, isVisible, isSubmitting, isLoading } = signingState;
+  const { errors, isVisible, isSubmitting, isLoading } = signingState;
   const { isEthereum, isQrHashed, qrAddress, qrId, qrPayload } = qrState;
 
   const cancelRequest = useCallback(async () => {
@@ -127,14 +125,20 @@ const QrRequest = ({
 
     if (result === RESULTS.GRANTED) {
       clearError();
-      setIsScanning(true);
+      setIsVisible(false);
+      setTimeout(() => {
+        setIsScanning(true);
+      }, HIDE_MODAL_DURATION);
     }
-  }, [clearError]);
+  }, [clearError, setIsVisible]);
 
   const closeScanner = useCallback(() => {
     setIsScanning(false);
+    setTimeout(() => {
+      setIsVisible(true);
+    }, HIDE_MODAL_DURATION);
     clearError();
-  }, [clearError]);
+  }, [clearError, setIsVisible]);
 
   const handlerResolve = useCallback(
     async (result: SignerResult) => {
@@ -191,13 +195,13 @@ const QrRequest = ({
           <SubmitButton
             style={getButtonStyle(!!onCancel)}
             disabled={!isSupport || !isNetConnected || extraLoading}
-            isBusy={isCreating}
+            isBusy={isLoading}
             title={buttonText ? buttonText : i18n.common.approve}
             onPress={handlerStart}
           />
         )}
       </View>
-      <SubWalletModal modalVisible={isVisible} onModalHide={cancelRequest}>
+      <SubWalletModal modalVisible={isVisible}>
         <View style={ContainerStyle}>
           <Text style={TitleTextStyle}>{i18n.title.authorizeTransaction}</Text>
           <Text style={SubTitleTextStyle}>{i18n.common.useHardWalletToScan}</Text>
@@ -229,7 +233,7 @@ const QrRequest = ({
           </View>
         </View>
       </SubWalletModal>
-      <SignatureScanner subTitle={account.name} visible={isScanning} onSuccess={handlerScanSignature} onHideModal={closeScanner} />
+      <SignatureScanner visible={isScanning} onSuccess={handlerScanSignature} onHideModal={closeScanner} />
     </>
   );
 };
