@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { QrAccount } from 'types/account/qr';
+import { QrAccount } from 'types/qr/attach';
 
 interface ResultProps {
   isScanning: boolean;

@@ -6,11 +6,10 @@ import i18n from 'utils/i18n/i18n';
 import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
-import { OriginChainSelect } from 'screens/OriginChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { DestinationChainSelect } from 'screens/DestinationChainSelect';
-import { requestCameraPermission } from 'utils/validators';
+import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -24,6 +23,7 @@ import { TokenItemType } from 'types/ui-types';
 import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer';
 import { getNetworkPrefix } from 'screens/Sending/Confirmation';
 import { WebRunnerContext } from 'providers/contexts';
+import SelectNetworkModal from 'components/Modal/SelectNetworkModal';
 
 interface Props {
   senderAddress: string;
@@ -224,13 +224,14 @@ export const ChainAndAccountSelectScreen = ({
         />
       </View>
 
-      <OriginChainSelect
+      <SelectNetworkModal
         onPressBack={() => setOriginChainModalVisible(false)}
         modalVisible={originChainModalVisible}
         onChangeModalVisible={() => setOriginChainModalVisible(false)}
         networkOptions={originChainOptions}
         selectedNetworkKey={originChain}
         onChangeNetwork={_onChangeOriginChain}
+        title={i18n.sendAssetScreen.originChain}
       />
 
       <DestinationChainSelect

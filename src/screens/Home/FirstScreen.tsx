@@ -1,13 +1,13 @@
 import SelectAttachAccountModal from 'components/Modal/SelectAttachAccountModal';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SCAN_TYPE } from 'constants/qr';
-import useModalScanner from 'hooks/scanner/useModalScanner';
+import useModalScanner from 'hooks/qr/useModalScanner';
 import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { RESULTS } from 'react-native-permissions';
-import { QrAccount } from 'types/account/qr';
-import { requestCameraPermission } from 'utils/validators';
+import { QrAccount } from 'types/qr/attach';
+import { requestCameraPermission } from 'utils/permission/camera';
 import Text from '../../components/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';

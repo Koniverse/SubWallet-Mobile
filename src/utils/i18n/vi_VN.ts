@@ -204,6 +204,9 @@ export const vi = {
     scanQr: 'Scan QR',
     back: 'Back',
     useHardWalletToScan: "Use your hardware wallet's camera\nto scan this QR code",
+    useNormalWalletScan: "Use your hardware wallet's camera\nto scan this QR code",
+    scanQrPayload: 'Use your camera to scan the QR code',
+    startOver: 'Start Over',
   },
   title: {
     yourSecretPhrase: 'Your Secret Phrase',
@@ -287,6 +290,8 @@ export const vi = {
     importAccount: 'Import Account',
     scanApproveRequest: 'Scan Approve Request',
     approveRequest: 'Approve Request',
+    signTransaction: 'Sign Transaction',
+    exportQrSigner: 'Export QR signer',
   },
   tabName: {
     crypto: 'Crypto',
@@ -594,5 +599,12 @@ export const vi = {
     successfullyAddANewCustomProvider: 'Successfully added a new custom provider',
     errorConfigureNetwork: 'Error trying to configure network',
     noProviderAvailable: 'No Provider Available',
+    qrCodeNotSupport:
+      'QR code not supported, please make sure you are scanning a transaction from a supported software.',
+    noNetwork: 'SubWallet does not currently recognize a chain with genesis hash, please add the network first',
+    noRawData: 'There is no raw data from the request',
+    noSenderFound: 'There is no related account in the app',
+    externalAccount: 'There is external account',
+    framesToBig: 'Frames number is too big, the QR seems not to be a recognized extrinsic raw data',
   },
 };

@@ -1,4 +1,4 @@
-import useCreateQrPayload from 'hooks/scanner/useCreateQrPayload';
+import useCreateQrPayload from 'hooks/qr/useCreateQrPayload';
 import React, { useMemo } from 'react';
 import { Image, ImageStyle, StyleProp, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
@@ -16,35 +16,38 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
 };
 
-const getImageStyle = (_size: string | number): StyleProp<ImageStyle> => {
+const getImageStyle = (_size: string | number, hide: boolean): StyleProp<ImageStyle> => {
   const size = typeof _size === 'string' ? parseFloat(_size) : _size;
   return {
     width: size - 4,
     height: size - 4,
+    display: hide ? 'none' : undefined,
   };
 };
 
 const QrPayload = ({ skipEncoding, value, style, size = 250 }: Props) => {
-  const { image, containerStyle: _containerStyle } = useCreateQrPayload(value, size, skipEncoding);
+  const { images, index } = useCreateQrPayload(value, skipEncoding);
 
   const containerStyle = useMemo(
     (): StyleProp<ViewStyle> => ({
-      width: parseFloat(_containerStyle.width.split('px')[0]),
-      height: parseFloat(_containerStyle.height.split('px')[0]),
+      width: size,
+      height: size,
       borderWidth: 2,
       borderColor: ColorMap.light,
     }),
-    [_containerStyle],
+    [size],
   );
 
-  if (!image) {
+  if (!images.length) {
     return null;
   }
 
   return (
     <View style={ContainerStyle}>
       <View style={[style, containerStyle]}>
-        <Image source={{ uri: image }} style={getImageStyle(size)} />
+        {images.map((image, _index) => {
+          return <Image key={_index} source={{ uri: image }} style={getImageStyle(size, index !== _index)} />;
+        })}
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import { PasswordField } from 'components/Field/Password';
-import DisplayPayload from 'components/Scanner/DisplayPayload';
+import DisplayPayload from 'components/Payload/DisplayPayload';
 import useFormControl from 'hooks/screen/useFormControl';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';

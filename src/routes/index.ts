@@ -5,12 +5,12 @@ import { AttachAccountStackParamList } from 'routes/account/attachAccount';
 import { HomeStackParamList } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
+import { SigningActionStackParamList } from 'routes/signing';
 import { ClaimStakeActionStackParamList } from 'routes/staking/claimAction';
 import { CompoundStakeActionStackParamList } from 'routes/staking/compoundAction';
 import { StakeActionStackParamList } from 'routes/staking/stakeAction';
 import { UnStakeActionStackParamList } from 'routes/staking/unStakeAction';
 import { WithdrawStakeActionStackParamList } from 'routes/staking/withdrawAction';
-import { TransferNftParams } from 'types/nft';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -55,6 +55,7 @@ export type RootStackParamList = {
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
   AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
+  SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

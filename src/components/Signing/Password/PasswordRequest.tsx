@@ -71,7 +71,10 @@ const formConfig: FormControlConfig = {
   },
 };
 
-const PasswordRequest = ({ handlerStart, baseProps: { cancelText, onCancel, submitText, buttonText, extraLoading } }: Props) => {
+const PasswordRequest = ({
+  handlerStart,
+  baseProps: { cancelText, onCancel, submitText, buttonText, extraLoading },
+}: Props) => {
   const {
     onErrors,
     setIsVisible,

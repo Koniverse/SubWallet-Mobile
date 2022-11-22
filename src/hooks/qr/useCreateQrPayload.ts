@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { qrcode } from '@polkadot/react-qr/qrcode';
-import { createFrames, createImgSize } from '@polkadot/react-qr/util';
 import { objectSpread } from '@polkadot/util';
 import { xxhashAsHex } from '@polkadot/util-crypto';
+import { createFrames } from 'utils/qr';
 
 const FRAME_DELAY = 100;
-const TIMER_INC = 50;
+const TIMER_INC = 10;
 
 const getDataUrl = (value: Uint8Array): string => {
   const qr = qrcode(0, 'M'); // HACK See our qrcode stringToBytes override as used internally. This
@@ -17,20 +17,18 @@ const getDataUrl = (value: Uint8Array): string => {
   return qr.createDataURL(16, 0);
 };
 
-const useCreateQrPayload = (
-  value: Uint8Array,
-  size?: string | number,
-  skipEncoding?: boolean,
-): { image: null | string; containerStyle: Record<string, string> } => {
-  const [{ image }, setFrameState] = useState<{
-    frameIdx: number;
-    frames: Uint8Array[];
-    image: null | string;
-    valueHash: null | string;
-  }>({
-    frameIdx: 0,
+interface FrameState {
+  index: number;
+  frames: Uint8Array[];
+  images: string[];
+  valueHash: null | string;
+}
+
+const useCreateQrPayload = (value: Uint8Array, skipEncoding?: boolean): { images: string[]; index: number } => {
+  const [{ images, index }, setFrameState] = useState<FrameState>({
+    index: 0,
     frames: [],
-    image: null,
+    images: [],
     valueHash: null,
   });
 
@@ -38,8 +36,6 @@ const useCreateQrPayload = (
     timerDelay: FRAME_DELAY,
     timerId: null,
   });
-
-  const containerStyle = useMemo(() => createImgSize(size), [size]); // run on initial load to setup the global timer and provide and unsubscribe
 
   useEffect(() => {
     const nextFrame = () =>
@@ -49,7 +45,7 @@ const useCreateQrPayload = (
           return state;
         }
 
-        let frameIdx = state.frameIdx + 1; // when we overflow, skip to the first and slightly increase the delay between frames
+        let frameIdx = state.index + 1; // when we overflow, skip to the first and slightly increase the delay between frames
 
         if (frameIdx === state.frames.length) {
           frameIdx = 0;
@@ -61,8 +57,7 @@ const useCreateQrPayload = (
         // be slightly more responsive on initial load
 
         return objectSpread({}, state, {
-          frameIdx,
-          image: getDataUrl(state.frames[frameIdx]),
+          index: frameIdx,
         });
       });
 
@@ -88,11 +83,12 @@ const useCreateQrPayload = (
       }
 
       const frames = skipEncoding ? [value] : createFrames(value); // encode on demand
+      const _images = frames.map(frame => getDataUrl(frame));
 
       return {
-        frameIdx: 0,
+        index: 0,
         frames,
-        image: getDataUrl(frames[0]),
+        images: _images,
         valueHash,
       };
     });
@@ -100,10 +96,10 @@ const useCreateQrPayload = (
 
   return useMemo(() => {
     return {
-      image: image,
-      containerStyle: containerStyle,
+      images: images,
+      index: index,
     };
-  }, [containerStyle, image]);
+  }, [images, index]);
 };
 
 export default useCreateQrPayload;

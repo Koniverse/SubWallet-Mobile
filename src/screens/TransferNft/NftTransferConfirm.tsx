@@ -39,7 +39,7 @@ import paramsHandler from 'services/nft/paramsHandler';
 import transferHandler from 'services/nft/transferHandler';
 import { ColorMap } from 'styles/color';
 import { SubstrateTransferParams, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN, Web3TransferParams } from 'types/nft';
-import { requestCameraPermission } from 'utils/validators';
+import { requestCameraPermission } from 'utils/permission/camera';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',

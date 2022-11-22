@@ -10,11 +10,11 @@ import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { ColorMap } from 'styles/color';
 import { ScannerStyles } from 'styles/scanner';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
-import { QrAccount } from 'types/account/qr';
+import { QrAccount } from 'types/qr/attach';
 import i18n from 'utils/i18n/i18n';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
-import { getFunctionScan } from 'utils/scanner';
+import { getFunctionScan } from 'utils/scanner/attach';
 
 interface Props {
   visible: boolean;

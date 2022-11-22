@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ActivityIndicator, StyleProp, TouchableOpacity, View } from 'react-native';
 import Text from '../components/Text';
 import { RootStackParamList } from 'routes/index';
@@ -10,7 +10,6 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { List, MagnifyingGlass, QrCode } from 'phosphor-react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
-import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
 import { IconButton } from 'components/IconButton';
 
 export interface HeaderProps {
@@ -39,11 +38,16 @@ const accountName: StyleProp<any> = {
 export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
   const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
   const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
-  const SubIcon = useGetAvatarSubIcon(currentAccount, 20);
 
   const _onPressSearchButton = () => {
     onPressSearchButton && onPressSearchButton();
   };
+
+  const onPressQrButton = useCallback(() => {
+    navigation.navigate('SigningAction', {
+      screen: 'SigningScanPayload',
+    });
+  }, [navigation]);
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
@@ -62,7 +66,7 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
             navigation.navigate('AccountsScreen');
           }}>
           <View style={{ flexDirection: 'row' }}>
-            <SubWalletAvatar address={currentAccount?.address || ''} size={16} SubIcon={SubIcon} />
+            <SubWalletAvatar address={currentAccount?.address || ''} size={16} />
             {isAccountWaiting && (
               <View
                 style={{
@@ -84,13 +88,7 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
       </View>
 
       <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
-        <IconButton
-          icon={QrCode}
-          onPress={() => {
-            //TODO: go to Sign screen
-            // navigation.navigate('NetworksSetting');
-          }}
-        />
+        <IconButton icon={QrCode} onPress={onPressQrButton} />
 
         <IconButton icon={MagnifyingGlass} onPress={_onPressSearchButton} />
       </View>

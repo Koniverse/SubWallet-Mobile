@@ -4,7 +4,7 @@ import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SecretTypeItem } from 'components/SecretTypeItem';
 import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
 import { SCAN_TYPE } from 'constants/qr';
-import useModalScanner from 'hooks/scanner/useModalScanner';
+import useModalScanner from 'hooks/qr/useModalScanner';
 import { Eye, HardDrives, QrCode } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, View } from 'react-native';
@@ -14,10 +14,10 @@ import ToastContainer from 'react-native-toast-notifications';
 import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
 import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { QrAccount } from 'types/account/qr';
+import { QrAccount } from 'types/qr/attach';
 import { AccountActionType } from 'types/ui-types';
 import i18n from 'utils/i18n/i18n';
-import { requestCameraPermission } from 'utils/validators';
+import { requestCameraPermission } from 'utils/permission/camera';
 import Text from '../Text';
 
 interface Props {

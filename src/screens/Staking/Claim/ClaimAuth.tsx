@@ -161,6 +161,7 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
           onFail={onFail}
           onSuccess={onSuccess}
           params={submitParams}
+          detailError={true}
           baseProps={{
             buttonText: i18n.common.continue,
             onCancel: goBack,

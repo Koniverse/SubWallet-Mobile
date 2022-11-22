@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { QrAccount } from 'types/account/qr';
+import { QrAccount } from 'types/qr/attach';
 
 export type AttachAccountStackParamList = {
   AttachReadOnly: undefined;

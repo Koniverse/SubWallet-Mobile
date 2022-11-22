@@ -1,7 +1,7 @@
 import { decodeAddress, encodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isHex } from '@polkadot/util';
 import { ETHEREUM_PREFIX, SCAN_TYPE, SECRET_PREFIX, SUBSTRATE_PREFIX } from 'constants/qr';
-import { QrAccount } from 'types/account/qr';
+import { QrAccount } from 'types/qr/attach';
 
 export const qrSignerScan = (data: string): QrAccount | null => {
   const arr: string[] = data.split(':');

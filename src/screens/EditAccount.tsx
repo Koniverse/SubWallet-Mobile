@@ -3,15 +3,19 @@ import { useNavigation } from '@react-navigation/native';
 import { ActionItem } from 'components/ActionItem';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { IconButton } from 'components/IconButton';
+import ExportQrSignerModal from 'components/Modal/ExportQrSignerModal';
+import SelectNetworkModal from 'components/Modal/SelectNetworkModal';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
+import useGetActiveNetwork from 'hooks/screen/useGetActiveChains';
 import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
-import { CopySimple, FileText, Key, Trash } from 'phosphor-react-native';
-import React, { useCallback, useMemo } from 'react';
-import { StyleProp, View } from 'react-native';
+import { CopySimple, FileText, Key, QrCode, Trash } from 'phosphor-react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
@@ -28,6 +32,18 @@ const editAccountAddressItem: StyleProp<any> = {
   paddingRight: 16,
   alignItems: 'flex-end',
   marginBottom: 16,
+};
+
+const ExportButtonStyle: StyleProp<ViewStyle> = {
+  width: '100%',
+  marginBottom: 8,
+};
+
+const getExportButtonStyle = (isLast?: boolean): StyleProp<ViewStyle> => {
+  return {
+    ...ExportButtonStyle,
+    marginBottom: isLast ? 48 : ExportButtonStyle.marginBottom,
+  };
 };
 
 export const EditAccount = ({
@@ -52,6 +68,21 @@ export const EditAccount = ({
     },
     [currentAddress],
   );
+
+  const networks = useGetActiveNetwork();
+
+  const networkOptions = useMemo(
+    () =>
+      networks.map(network => ({
+        label: network.chain.replace(' Relay Chain', ''),
+        value: network.key,
+      })),
+    [networks],
+  );
+
+  const [networkModalVisible, setNetworkModalVisible] = useState(false);
+  const [selectedNetwork, setSelectedNetwork] = useState('');
+  const [exportQrSignerVisible, setExportQrSignerVisible] = useState(false);
 
   const account = useGetAccountByAddress(currentAddress);
   const SubIcon = useGetAvatarSubIcon(account, 32);
@@ -90,6 +121,28 @@ export const EditAccount = ({
     _saveChange(formState);
     blur('accountName')();
   }, [_saveChange, blur, formState]);
+
+  const onOpenNetworkModal = useCallback(() => {
+    setNetworkModalVisible(true);
+  }, []);
+
+  const onCloseNetworkModal = useCallback(() => {
+    setNetworkModalVisible(false);
+  }, []);
+
+  const onSelectNetwork = useCallback((networkKey: string) => {
+    Keyboard.dismiss();
+    setSelectedNetwork(networkKey);
+    setNetworkModalVisible(false);
+
+    setTimeout(() => {
+      setExportQrSignerVisible(true);
+    }, HIDE_MODAL_DURATION);
+  }, []);
+
+  const closeExportQrSignerModal = useCallback(() => {
+    setExportQrSignerVisible(false);
+  }, []);
 
   return (
     <SubScreenContainer
@@ -131,18 +184,25 @@ export const EditAccount = ({
         {canExport && (
           <>
             <ActionItem
-              style={{ width: '100%', marginBottom: 4 }}
+              style={getExportButtonStyle()}
               title={i18n.settings.exportPrivateKey}
               icon={Key}
               hasRightArrow
               onPress={onExportPrivateKey}
             />
             <ActionItem
-              style={{ width: '100%', marginBottom: 16 }}
+              style={getExportButtonStyle()}
               title={i18n.title.exportJson}
               icon={FileText}
               hasRightArrow
               onPress={onExportJson}
+            />
+            <ActionItem
+              style={getExportButtonStyle(true)}
+              title={i18n.title.exportQrSigner}
+              icon={QrCode}
+              hasRightArrow
+              onPress={onOpenNetworkModal}
             />
           </>
         )}
@@ -153,6 +213,21 @@ export const EditAccount = ({
           icon={Trash}
           color={ColorMap.danger}
           onPress={onRemoveAccount}
+        />
+        <SelectNetworkModal
+          modalVisible={networkModalVisible}
+          onChangeModalVisible={onCloseNetworkModal}
+          title={i18n.title.network}
+          onPressBack={onCloseNetworkModal}
+          networkOptions={networkOptions}
+          selectedNetworkKey={selectedNetwork}
+          onChangeNetwork={onSelectNetwork}
+        />
+        <ExportQrSignerModal
+          address={currentAddress}
+          networkKey={selectedNetwork}
+          onHideModal={closeExportQrSignerModal}
+          modalVisible={exportQrSignerVisible}
         />
       </View>
     </SubScreenContainer>

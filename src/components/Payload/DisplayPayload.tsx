@@ -1,4 +1,4 @@
-import QrPayload from 'components/Scanner/QrPayload';
+import QrPayload from 'components/Payload/QrPayload';
 import React, { useMemo } from 'react';
 
 import { createSignPayload } from '@polkadot/react-qr/util';

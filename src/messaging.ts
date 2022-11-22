@@ -112,7 +112,6 @@ import {
   StakingJson,
   StakingRewardJson,
   SubscriptionServiceType,
-  SubstrateNftSubmitTransaction,
   SubstrateNftTransaction,
   SupportTransferResponse,
   ThemeTypes,
@@ -132,6 +131,12 @@ import {
   RequestStakeClaimReward,
   RequestTuringStakeCompound,
   RequestTuringCancelStakeCompound,
+  ResponseQRIsLocked,
+  RequestQrSignSubstrate,
+  ResponseQrSignSubstrate,
+  RequestQrSignEVM,
+  ResponseQrSignEVM,
+  ResponseQrParseRLP,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
@@ -1298,4 +1303,22 @@ export async function cancelCompoundQr(
   callback: (data: BasicTxResponse) => void,
 ): Promise<BasicTxResponse> {
   return sendMessage('pri(cancelCompound.qr.create)', request, callback);
+}
+
+// Sign Qr
+
+export async function qrIsLocked(address: string): Promise<ResponseQRIsLocked> {
+  return sendMessage('pri(qr.isLocked)', { address });
+}
+
+export async function qrSignSubstrate(request: RequestQrSignSubstrate): Promise<ResponseQrSignSubstrate> {
+  return sendMessage('pri(qr.sign.substrate)', request);
+}
+
+export async function qrSignEvm(request: RequestQrSignEVM): Promise<ResponseQrSignEVM> {
+  return sendMessage('pri(qr.sign.evm)', request);
+}
+
+export async function parseEVMTransaction(data: string): Promise<ResponseQrParseRLP> {
+  return sendMessage('pri(qr.transaction.parse.evm)', { data });
 }
