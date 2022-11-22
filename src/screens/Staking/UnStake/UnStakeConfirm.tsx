@@ -254,6 +254,15 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
     unStakeParams,
     si,
   ]);
+  useEffect(() => {
+    if (isNetConnected && rawAmount !== DEFAULT_AMOUNT) {
+      if (inputBalanceRef && inputBalanceRef.current) {
+        // @ts-ignore
+        inputBalanceRef.current.onChange(rawAmount.toString());
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputBalanceRef, isNetConnected]);
 
   useEffect(() => {
     let amount = true;
@@ -370,16 +379,18 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
               </TouchableOpacity>
             </View>
           )}
-          <SubmitButton
-            disabled={!isReadySubmit || (delegations && !isValidValidator)}
-            isBusy={loading}
-            title={i18n.common.continue}
-            style={{
-              width: '100%',
-              ...MarginBottomForSubmitButton,
-            }}
-            onPress={onContinue}
-          />
+          {isNetConnected && (
+            <SubmitButton
+              disabled={!isReadySubmit || (delegations && !isValidValidator) || !isNetConnected}
+              isBusy={loading}
+              title={i18n.common.continue}
+              style={{
+                width: '100%',
+                ...MarginBottomForSubmitButton,
+              }}
+              onPress={onContinue}
+            />
+          )}
         </View>
         {delegations && (
           <DelegationSelectModal
