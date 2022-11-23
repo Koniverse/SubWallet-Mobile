@@ -85,7 +85,7 @@ const ImportAccountQrConfirm = ({
         name: i18n.common.walletPassword,
         value: '',
         validateFunc: validatePassword,
-        require: !account.isAddress,
+        require: true,
       },
       repeatPassword: {
         name: i18n.common.repeatWalletPassword,
@@ -183,32 +183,41 @@ const ImportAccountQrConfirm = ({
   }, [account.content, show]);
 
   useEffect(() => {
+    let amount = true;
     onChangeValue('accountName')(account?.name || defaultName);
 
     if (!account.isAddress) {
       setLoading(true);
       checkPublicAndPrivateKey(account.genesisHash, account.content)
         .then(({ address: _address, isValid, isEthereum: _isEthereum }) => {
-          if (isValid) {
-            setAddress(_address);
-            setIsEthereum(_isEthereum);
-          } else {
-            setErrors([i18n.warningMessage.cannotExtractAddress]);
+          if (amount) {
+            if (isValid) {
+              setAddress(_address);
+              setIsEthereum(_isEthereum);
+            } else {
+              setErrors([i18n.warningMessage.cannotExtractAddress]);
+            }
+            setLoading(false);
           }
-          setLoading(false);
         })
         .catch(e => {
-          const error = (e as Error).message;
-          console.error(error);
-          setErrors([error]);
-          setLoading(false);
+          if (amount) {
+            const error = (e as Error).message;
+            console.error(error);
+            setErrors([error]);
+            setLoading(false);
+          }
         });
     } else {
       goBack();
     }
 
+    return () => {
+      amount = false;
+      setErrors([]);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [account]);
 
   return (
     <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.importByQrCode} disabled={isBusy}>
@@ -279,4 +288,4 @@ const ImportAccountQrConfirm = ({
   );
 };
 
-export default React.memo(ImportAccountQrConfirm);
+export default ImportAccountQrConfirm;
