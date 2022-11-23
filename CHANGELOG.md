@@ -1,3 +1,6 @@
+## 0.2.2 (107)
+- Fix bug crash app on build 106
+
 ## 0.2.2 (106)
 - Disable the connect button on the connect popup (#250)
 - Update the first screens UI (#254)
