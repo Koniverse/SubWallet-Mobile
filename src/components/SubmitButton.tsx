@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Text from '../components/Text';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import Loading from 'components/Loading';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { CaretRight, IconProps } from 'phosphor-react-native';
@@ -36,7 +36,7 @@ function getWrapperStyle(backgroundColor: string = ColorMap.secondary, style: St
 function getTextStyle(color: string = ColorMap.light, isShowLeftIcon: boolean) {
   return {
     ...sharedStyles.mediumText,
-    ...FontBold,
+    ...FontMedium,
     color,
     paddingLeft: isShowLeftIcon ? 10 : 0,
   };

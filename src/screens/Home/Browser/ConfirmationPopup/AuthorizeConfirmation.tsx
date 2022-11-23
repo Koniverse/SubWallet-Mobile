@@ -4,7 +4,7 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { filterNotReadOnlyAccount } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
-import { filterAndSortingAccountByAuthType } from '@subwallet/extension-koni-base/utils';
+import { filterAndSortingAccountByAuthType, isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
@@ -13,6 +13,7 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { Warning } from 'components/Warning';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   payload: AuthorizeRequest;
@@ -42,6 +43,10 @@ export const AuthorizeConfirmation = ({
   }, [accountAuthType, accounts]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>(request.allowedAccounts || []);
   const [isSelectedAll, setIsSelectedAll] = useState(true);
+  const selectedAccountByType =
+    accountAuthType === 'evm'
+      ? selectedAccounts.filter(item => isEthereumAddress(item))
+      : selectedAccounts.filter(item => isValidSubstrateAddress(item));
 
   useEffect(() => {
     const notInSelected = accountList.find(acc => !selectedAccounts.includes(acc.address));
@@ -90,7 +95,7 @@ export const AuthorizeConfirmation = ({
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
         onPressBlockButton: onPressBlockButton,
-        isSubmitButtonDisabled: !(selectedAccounts && selectedAccounts.length),
+        isSubmitButtonDisabled: !(selectedAccountByType && selectedAccountByType.length),
       }}
       isShowViewDetailButton={false}>
       <>

@@ -1,8 +1,7 @@
-import SelectAttachAccountModal from 'components/Modal/SelectAttachAccountModal';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SCAN_TYPE } from 'constants/qr';
 import useModalScanner from 'hooks/scanner/useModalScanner';
-import React, { Suspense, useCallback, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import { Images, SVGImages } from 'assets/index';
 import { RESULTS } from 'react-native-permissions';
@@ -12,14 +11,23 @@ import Text from '../../components/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
-import { ArchiveTray, Article, Download, FileArrowUp, LockKey, QrCode, UserCirclePlus } from 'phosphor-react-native';
+import {
+  ArchiveTray,
+  Article,
+  Eye,
+  FileArrowUp,
+  HardDrives,
+  LockKey,
+  QrCode,
+  UserCirclePlus,
+} from 'phosphor-react-native';
 import { SelectImportAccountModal } from 'components/Modal/SelectImportAccountModal';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { AccountActionType } from 'types/ui-types';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
+import ToastContainer from 'react-native-toast-notifications';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -39,10 +47,10 @@ const logoStyle: StyleProp<any> = {
 };
 
 const firstScreenNotificationStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
+  ...sharedStyles.smallText,
   color: ColorMap.light,
   textAlign: 'center',
-  paddingHorizontal: 42,
+  paddingHorizontal: 16,
   paddingTop: 0,
   ...FontMedium,
 };
@@ -56,7 +64,6 @@ export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
-  const [attachModalVisible, setAttachModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
 
   const onSuccess = useCallback(
@@ -67,52 +74,94 @@ export const FirstScreen = () => {
   );
 
   const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
-
+  const toastRef = useRef<ToastContainer>(null);
+  const show = useCallback((text: string) => {
+    if (toastRef.current) {
+      // @ts-ignore
+      toastRef.current.hideAll();
+      // @ts-ignore
+      toastRef.current.show(text);
+    }
+  }, []);
   const SECRET_TYPE = useMemo(
-    (): AccountActionType[] => [
+    () => [
       {
-        icon: Article,
-        title: i18n.title.importBySecretPhrase,
-        onCLickButton: () => {
-          setSelectedAction('ImportSecretPhrase');
-          setSelectModalVisible(false);
-          setTimeout(() => {
-            setSelectTypeModalVisible(true);
-          }, HIDE_MODAL_DURATION);
-        },
-      },
-      {
-        icon: LockKey,
-        title: i18n.title.importByPrivateKey,
-        onCLickButton: () => {
-          navigation.navigate('ImportPrivateKey');
-          setSelectModalVisible(false);
-        },
-      },
-      {
-        icon: FileArrowUp,
-        title: i18n.title.importFromJson,
-        onCLickButton: () => {
-          navigation.navigate('RestoreJson');
-          setSelectModalVisible(false);
-        },
-      },
-      {
-        icon: QrCode,
-        title: i18n.title.importByQrCode,
-        onCLickButton: async () => {
-          const result = await requestCameraPermission();
+        title: 'Import Account',
+        data: [
+          {
+            icon: Article,
+            title: i18n.title.importBySecretPhrase,
+            onCLickButton: () => {
+              setSelectedAction('ImportSecretPhrase');
+              setSelectModalVisible(false);
+              setTimeout(() => {
+                setSelectTypeModalVisible(true);
+              }, HIDE_MODAL_DURATION);
+            },
+          },
+          {
+            icon: LockKey,
+            title: i18n.title.importByPrivateKey,
+            onCLickButton: () => {
+              navigation.navigate('ImportPrivateKey');
+              setSelectModalVisible(false);
+            },
+          },
+          {
+            icon: FileArrowUp,
+            title: i18n.title.importFromJson,
+            onCLickButton: () => {
+              navigation.navigate('RestoreJson');
+              setSelectModalVisible(false);
+            },
+          },
+          {
+            icon: QrCode,
+            title: i18n.title.importByQrCode,
+            onCLickButton: async () => {
+              const result = await requestCameraPermission();
 
-          if (result === RESULTS.GRANTED) {
-            setSelectModalVisible(false);
-            setTimeout(() => {
-              onOpenModal();
-            }, HIDE_MODAL_DURATION);
-          }
-        },
+              if (result === RESULTS.GRANTED) {
+                setSelectModalVisible(false);
+                setTimeout(() => {
+                  onOpenModal();
+                }, HIDE_MODAL_DURATION);
+              }
+            },
+          },
+        ],
+      },
+      {
+        title: 'Attach Account',
+        data: [
+          {
+            icon: Eye,
+            title: i18n.title.attachReadonlyAccount,
+            onCLickButton: () => {
+              navigation.navigate('AttachAccount', {
+                screen: 'AttachReadOnly',
+              });
+              setSelectModalVisible(false);
+            },
+          },
+          {
+            icon: QrCode,
+            title: i18n.title.attachQRSignerAccount,
+            onCLickButton: async () => {
+              show(i18n.common.comingSoon);
+            },
+          },
+          {
+            icon: HardDrives,
+            title: i18n.title.connectLedgerDevice,
+            onCLickButton: () => {
+              show(i18n.common.comingSoon);
+            },
+          },
+        ],
       },
     ],
-    [navigation, onOpenModal],
+    [navigation, onOpenModal, show],
   );
 
   const onSelectSubstrateAccount = useCallback(() => {
@@ -124,10 +173,6 @@ export const FirstScreen = () => {
     setSelectTypeModalVisible(false);
     !!selectedAction && navigation.navigate(selectedAction, { keyTypes: EVM_ACCOUNT_TYPE });
   }, [navigation, selectedAction]);
-
-  const onHideAttachModal = useCallback(() => {
-    setAttachModalVisible(false);
-  }, []);
 
   return (
     <View style={{ width: '100%', flex: 1 }}>
@@ -160,23 +205,16 @@ export const FirstScreen = () => {
               setSelectModalVisible(true);
             }}
           />
-
-          <SubmitButton
-            leftIcon={Download}
-            title={i18n.common.attachAccount}
-            style={buttonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={() => {
-              setAttachModalVisible(true);
-            }}
-          />
         </View>
         {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
-        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessage}</Text>
+        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
+        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart2}</Text>
+
         <SelectImportAccountModal
           modalTitle={i18n.common.selectYourImport}
           secretTypeList={SECRET_TYPE}
           modalVisible={importSelectModalVisible}
+          toastRef={toastRef}
           onChangeModalVisible={() => setSelectModalVisible(false)}
         />
 
@@ -185,12 +223,6 @@ export const FirstScreen = () => {
           onChangeModalVisible={() => setSelectTypeModalVisible(false)}
           onSelectSubstrateAccount={onSelectSubstrateAccount}
           onSelectEvmAccount={onSelectEvmAccount}
-        />
-
-        <SelectAttachAccountModal
-          modalVisible={attachModalVisible}
-          setModalVisible={setAttachModalVisible}
-          onModalHide={onHideAttachModal}
         />
 
         <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />
