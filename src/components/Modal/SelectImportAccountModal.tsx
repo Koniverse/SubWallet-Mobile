@@ -1,8 +1,8 @@
 import React from 'react';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, SectionList, SectionListData, StyleProp, View } from 'react-native';
 import Text from '../Text';
-import { FontBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontBold, FontMedium, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';
 import { AccountActionType } from 'types/ui-types';
@@ -14,7 +14,7 @@ interface Props {
   modalTitle: string;
   modalVisible: boolean;
   onChangeModalVisible: () => void;
-  secretTypeList: AccountActionType[];
+  secretTypeList: { title: string; data: AccountActionType[] }[];
   onModalHide?: () => void;
   toastRef?: React.RefObject<ToastContainer>;
 }
@@ -35,13 +35,30 @@ export const SelectImportAccountModal = ({
   modalTitle,
   toastRef,
 }: Props) => {
+  const renderSectionHeader = (info: {
+    section: SectionListData<AccountActionType, { title: string; data: AccountActionType[] }>;
+  }) => {
+    return (
+      <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, marginBottom: 4 }}>
+        {info.section.title}
+      </Text>
+    );
+  };
+
+  const renderItem = ({ item }: ListRenderItemInfo<AccountActionType>) => {
+    return <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />;
+  };
+
   return (
     <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitleStyle}>{modalTitle}</Text>
-        {secretTypeList.map(item => (
-          <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
-        ))}
+        <SectionList
+          scrollEnabled={false}
+          sections={secretTypeList}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+        />
       </View>
 
       {
