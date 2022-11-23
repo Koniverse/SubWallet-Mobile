@@ -6,6 +6,9 @@ import { getBalanceFormat } from 'screens/Sending/utils';
 import { RootState } from 'stores/index';
 import { BalanceFormatType } from 'types/ui-types';
 import { BN_TEN } from 'utils/chainBalances';
+import useShowedNetworks from 'hooks/screen/useShowedNetworks';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 
 export interface AmountInfo {
   balanceFormat: BalanceFormatType;
@@ -14,18 +17,21 @@ export interface AmountInfo {
 }
 
 const useGetAmountInfo = (rawAmount: number | string, networkKey: string): AmountInfo => {
-  const tokenPriceMap = useSelector((state: RootState) => state.price.tokenPriceMap);
+  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
   const network = useGetNetworkJson(networkKey);
-
+  const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
+  const tokenGroupMap = useTokenGroup(showedNetworks);
+  const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
+  const isTestnet = network.groups.includes('TEST_NET');
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const balanceFormat = useMemo((): BalanceFormatType => {
     return getBalanceFormat(networkKey, selectedToken, chainRegistry);
   }, [chainRegistry, networkKey, selectedToken]);
 
   const tokenPrice = useMemo(
-    (): number => tokenPriceMap[selectedToken.toLowerCase()] || 0,
-    [selectedToken, tokenPriceMap],
+    () => tokenBalanceKeyPriceMap[`${networkKey}|${network.nativeToken}${isTestnet ? '|test' : ''}`] || 0,
+    [isTestnet, network.nativeToken, networkKey, tokenBalanceKeyPriceMap],
   );
 
   const reformatAmount = useMemo(
