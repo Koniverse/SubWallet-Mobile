@@ -47,7 +47,7 @@ const logoStyle: StyleProp<any> = {
 };
 
 const firstScreenNotificationStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
+  ...sharedStyles.smallText,
   color: ColorMap.light,
   textAlign: 'center',
   paddingHorizontal: 16,
