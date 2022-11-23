@@ -1,4 +1,3 @@
-import SelectAttachAccountModal from 'components/Modal/SelectAttachAccountModal';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SCAN_TYPE } from 'constants/qr';
 import useModalScanner from 'hooks/scanner/useModalScanner';
@@ -65,7 +64,6 @@ export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
-  const [attachModalVisible, setAttachModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
 
   const onSuccess = useCallback(
@@ -176,10 +174,6 @@ export const FirstScreen = () => {
     !!selectedAction && navigation.navigate(selectedAction, { keyTypes: EVM_ACCOUNT_TYPE });
   }, [navigation, selectedAction]);
 
-  const onHideAttachModal = useCallback(() => {
-    setAttachModalVisible(false);
-  }, []);
-
   return (
     <View style={{ width: '100%', flex: 1 }}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
@@ -213,8 +207,8 @@ export const FirstScreen = () => {
           />
         </View>
         {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
-        <Text style={firstScreenNotificationStyle}>{'By continuing, you agree to'}</Text>
-        <Text style={firstScreenNotificationStyle}>{'our Terms & Conditions and Privacy Policy'}</Text>
+        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
+        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart2}</Text>
 
         <SelectImportAccountModal
           modalTitle={i18n.common.selectYourImport}
@@ -229,12 +223,6 @@ export const FirstScreen = () => {
           onChangeModalVisible={() => setSelectTypeModalVisible(false)}
           onSelectSubstrateAccount={onSelectSubstrateAccount}
           onSelectEvmAccount={onSelectEvmAccount}
-        />
-
-        <SelectAttachAccountModal
-          modalVisible={attachModalVisible}
-          setModalVisible={setAttachModalVisible}
-          onModalHide={onHideAttachModal}
         />
 
         <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />

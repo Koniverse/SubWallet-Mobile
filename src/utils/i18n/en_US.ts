@@ -40,7 +40,8 @@ export const en = {
     continue: 'Continue',
     verifySecretPhraseMessage:
       'Fill in the words in the correct order to prove that you have saved your secret phrase.',
-    firstScreenMessage: 'By continuing, you agree to our Terms & Conditions and Privacy Policy',
+    firstScreenMessagePart1: 'By continuing, you agree to',
+    firstScreenMessagePart2: 'our Terms & Conditions and Privacy Policy',
     network: 'Network',
     account: 'Account',
     sendFromAddress: 'Send from Address',
