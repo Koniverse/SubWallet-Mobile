@@ -188,7 +188,7 @@ export const vi = {
     dApp: 'DApp',
     cancelTask: 'Cancel task',
     type: ' type',
-    importAlreadyAccount: 'Import already account',
+    importAlreadyAccount: 'Import an existing account',
     attachAccount: 'Attach Account',
     autoConnectDAppAfterCreating: 'Auto connect Dapp after creating',
     scanFromHardwareWallet: 'Scan your address from Hardware Wallet',

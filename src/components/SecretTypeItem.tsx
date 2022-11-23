@@ -3,7 +3,7 @@ import { TouchableOpacity, TouchableOpacityProps, StyleProp } from 'react-native
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { IconProps } from 'phosphor-react-native';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 
 interface SecretTypeItemType extends TouchableOpacityProps {
   icon: (iconProps: IconProps) => JSX.Element;
@@ -23,7 +23,7 @@ const secretTypeItemContainer: StyleProp<any> = {
 const secretTypeItemText: StyleProp<any> = {
   color: ColorMap.light,
   ...sharedStyles.mediumText,
-  ...FontSemiBold,
+  ...FontMedium,
   paddingLeft: 16,
 };
 

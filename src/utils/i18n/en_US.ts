@@ -189,7 +189,7 @@ export const en = {
     cancelTask: 'Cancel task',
     type: ' type',
     transferNotSupportedForNetwork: 'Transfer is not supported for this network.',
-    importAlreadyAccount: 'Import already account',
+    importAlreadyAccount: 'Import an existing account',
     attachAccount: 'Attach Account',
     autoConnectDAppAfterCreating: 'Auto connect Dapp after creating',
     scanFromHardwareWallet: 'Scan your address from Hardware Wallet',
