@@ -131,12 +131,15 @@ import {
   RequestStakeClaimReward,
   RequestTuringStakeCompound,
   RequestTuringCancelStakeCompound,
-  ResponseQRIsLocked,
   RequestQrSignSubstrate,
   ResponseQrSignSubstrate,
   RequestQrSignEVM,
   ResponseQrSignEVM,
   ResponseQrParseRLP,
+  RequestAccountIsLocked,
+  ResponseAccountIsLocked,
+  RequestParseTransactionSubstrate,
+  ResponseParseTransactionSubstrate,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
@@ -1307,8 +1310,18 @@ export async function cancelCompoundQr(
 
 // Sign Qr
 
-export async function qrIsLocked(address: string): Promise<ResponseQRIsLocked> {
-  return sendMessage('pri(qr.isLocked)', { address });
+export async function qrIsLocked(request: RequestAccountIsLocked): Promise<ResponseAccountIsLocked> {
+  return sendMessage('pri(account.isLocked)', request);
+}
+
+export async function parseSubstrateTransaction(
+  request: RequestParseTransactionSubstrate,
+): Promise<ResponseParseTransactionSubstrate> {
+  return sendMessage('pri(qr.transaction.parse.substrate)', request);
+}
+
+export async function parseEVMTransaction(data: string): Promise<ResponseQrParseRLP> {
+  return sendMessage('pri(qr.transaction.parse.evm)', { data });
 }
 
 export async function qrSignSubstrate(request: RequestQrSignSubstrate): Promise<ResponseQrSignSubstrate> {
@@ -1317,8 +1330,4 @@ export async function qrSignSubstrate(request: RequestQrSignSubstrate): Promise<
 
 export async function qrSignEvm(request: RequestQrSignEVM): Promise<ResponseQrSignEVM> {
   return sendMessage('pri(qr.sign.evm)', request);
-}
-
-export async function parseEVMTransaction(data: string): Promise<ResponseQrParseRLP> {
-  return sendMessage('pri(qr.transaction.parse.evm)', { data });
 }

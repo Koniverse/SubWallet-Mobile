@@ -5,7 +5,7 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { createTransactionFromRLP, Transaction } from '@subwallet/extension-koni-base/utils/eth';
 import { SCANNER_QR_STEP } from 'constants/qr';
-import { parseEVMTransaction, qrSignEvm, qrSignSubstrate } from '../messaging';
+import { parseEVMTransaction, parseSubstrateTransaction, qrSignEvm, qrSignSubstrate } from '../messaging';
 import { RootState } from 'stores/index';
 import {
   CompletedParsedData,
@@ -20,7 +20,7 @@ import {
 } from 'types/qr/scanner';
 import { findAccountByAddress } from 'utils/account';
 import { getNetworkJsonByInfo } from 'utils/network';
-import { constructDataFromBytes, encodeNumber, parseSubstratePayload } from 'utils/scanner/decoders';
+import { constructDataFromBytes, encodeNumber } from 'utils/scanner/decoders';
 import { isEthereumCompletedParsedData, isSubstrateMessageParsedData } from 'utils/scanner/sign';
 import BigN from 'bignumber.js';
 import React, { useCallback, useReducer } from 'react';
@@ -457,7 +457,7 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
             if (genesisHash && rawPayload) {
               const _rawPayload = isString(rawPayload) ? rawPayload : u8aToHex(rawPayload);
 
-              return parseSubstratePayload(_rawPayload);
+              return await parseSubstrateTransaction({ data: _rawPayload, networkKey: senderNetwork.key });
             } else {
               return null;
             }

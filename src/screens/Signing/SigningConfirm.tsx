@@ -1,4 +1,3 @@
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
@@ -6,20 +5,17 @@ import { PasswordField } from 'components/Field/Password';
 import { TextField } from 'components/Field/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { SCANNER_QR_STEP } from 'constants/qr';
+import useGetAccountAndNetworkScanned from 'hooks/screen/Signing/useGetAccountAndNetworkScanned';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
-import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { ScannerContext } from 'providers/ScannerContext';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
-import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { getNetworkJsonByInfo } from 'utils/network';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -60,18 +56,13 @@ const SigningConfirm = () => {
 
   useHandlerHardwareBackPress(true);
 
-  const { cleanup, state: scannerState, signDataLegacy } = useContext(ScannerContext);
+  const {
+    cleanup,
+    state: { step },
+    signDataLegacy,
+  } = useContext(ScannerContext);
 
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
-
-  const { senderAddress, step, isEthereumStructure, genesisHash, evmChainId } = scannerState;
-
-  const account = useGetAccountByAddress(senderAddress || '');
-
-  const network = useMemo(() => {
-    const info: undefined | number | string = isEthereumStructure ? evmChainId : genesisHash;
-    return getNetworkJsonByInfo(networkMap, isEthereumAddress(account?.address || ''), isEthereumStructure, info);
-  }, [account?.address, evmChainId, genesisHash, isEthereumStructure, networkMap]);
+  const { account, network } = useGetAccountAndNetworkScanned();
 
   const [error, setError] = useState('');
   const [isBusy, setIsBusy] = useState(false);

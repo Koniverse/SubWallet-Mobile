@@ -3,7 +3,6 @@ import { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
-import { reformatAddress } from '@subwallet/extension-koni-base/utils';
 import { AccountInfoField } from 'components/Field/AccountInfo';
 import { Warning } from 'components/Warning';
 import useGetSignData from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetSignData';

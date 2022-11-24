@@ -1,3 +1,4 @@
+import { isEthereumAddress } from '@polkadot/util-crypto';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { ActionItem } from 'components/ActionItem';
@@ -69,15 +70,19 @@ export const EditAccount = ({
     [currentAddress],
   );
 
+  const isEthereum = useMemo((): boolean => isEthereumAddress(currentAddress), [currentAddress]);
+
   const networks = useGetActiveNetwork();
 
   const networkOptions = useMemo(
     () =>
-      networks.map(network => ({
-        label: network.chain.replace(' Relay Chain', ''),
-        value: network.key,
-      })),
-    [networks],
+      networks
+        .filter(network => !!network.isEthereum === isEthereum)
+        .map(network => ({
+          label: network.chain.replace(' Relay Chain', ''),
+          value: network.key,
+        })),
+    [networks, isEthereum],
   );
 
   const [networkModalVisible, setNetworkModalVisible] = useState(false);

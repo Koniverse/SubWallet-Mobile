@@ -3,11 +3,6 @@ import { Alert, Linking, Platform } from 'react-native';
 import { AutoLockState } from 'utils/autoLock';
 import i18n from 'utils/i18n/i18n';
 
-export function isTooShortPassword(value: string | null, minLength: number): boolean {
-  const valueLength = value ? value.split('').length : 0;
-  return valueLength < minLength;
-}
-
 const getCameraPermission = () => {
   return Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
 };

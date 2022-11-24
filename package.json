@@ -37,7 +37,6 @@
     "@react-navigation/native-stack": "^6.6.2",
     "@reduxjs/toolkit": "^1.8.1",
     "@subwallet/extension-base": "^0.7.2-0wr",
-    "@subwallet/extension-chains": "^0.7.2-0",
     "@subwallet/extension-koni-base": "^0.7.2-0wr",
     "boring-avatars": "^1.6.3",
     "eventemitter3": "^4.0.7",
