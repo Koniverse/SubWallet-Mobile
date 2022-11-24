@@ -86,7 +86,7 @@ export const FirstScreen = () => {
   const SECRET_TYPE = useMemo(
     () => [
       {
-        title: 'Import Account',
+        title: i18n.common.importAccount,
         data: [
           {
             icon: Article,
@@ -132,7 +132,7 @@ export const FirstScreen = () => {
         ],
       },
       {
-        title: 'Attach Account',
+        title: i18n.common.attachAccount,
         data: [
           {
             icon: Eye,

@@ -35,12 +35,12 @@ export const SelectAccountTypeModal = ({
   const ACCOUNT_TYPE: AccountActionType[] = [
     {
       icon: () => <Image source={ImageLogosMap.polkadot} style={{ width: 20, height: 20, borderRadius: 10 }} />,
-      title: 'Substrate Account',
+      title: i18n.common.substrateAccount,
       onCLickButton: onSelectSubstrateAccount,
     },
     {
       icon: () => <Image source={ImageLogosMap.eth} style={{ width: 20, height: 20, borderRadius: 10 }} />,
-      title: 'EVM Account',
+      title: i18n.common.evmAccount,
       onCLickButton: onSelectEvmAccount,
     },
   ];

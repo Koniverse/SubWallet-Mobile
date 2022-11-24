@@ -114,7 +114,7 @@ const AddAccountModal = ({ modalVisible, onHideModal: onHideMainModal }: Props) 
         items: [
           {
             icon: () => <Image source={ImageLogosMap.polkadot} style={LogoAccountTypeStyle} />,
-            title: 'Substrate Account',
+            title: i18n.common.substrateAccount,
             onCLickButton: () => {
               onHideMainModal();
               navigation.navigate('CreateAccount', { keyTypes: SUBSTRATE_ACCOUNT_TYPE });
@@ -122,7 +122,7 @@ const AddAccountModal = ({ modalVisible, onHideModal: onHideMainModal }: Props) 
           },
           {
             icon: () => <Image source={ImageLogosMap.eth} style={LogoAccountTypeStyle} />,
-            title: 'EVM Account',
+            title: i18n.common.evmAccount,
             onCLickButton: () => {
               onHideMainModal();
               navigation.navigate('CreateAccount', { keyTypes: EVM_ACCOUNT_TYPE });
