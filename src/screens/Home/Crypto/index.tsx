@@ -50,6 +50,7 @@ export const CryptoScreen = () => {
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
   const tokenGroupMap = useTokenGroup(showedNetworks);
   const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
+
   const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance(
     showedNetworks,
     tokenBalanceKeyPriceMap,
