@@ -1,4 +1,4 @@
-import { ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType, ValidatorInfo } from '@subwallet/extension-base/background/KoniTypes';
 
 export interface NetworkValidatorsInfo {
   maxNominatorPerValidator: number;
@@ -34,6 +34,7 @@ export interface WithdrawParams {
 export interface ClaimParams {
   networkKey: string;
   selectedAccount: string;
+  stakingType: StakingType;
 }
 
 export interface CompoundParams {

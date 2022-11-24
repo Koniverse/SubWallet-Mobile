@@ -1,16 +1,12 @@
-import QrAddressScanner from 'components/Scanner/QrAddressScanner';
-import { SCAN_TYPE } from 'constants/qr';
-import useModalScanner from 'hooks/scanner/useModalScanner';
-import React, { Suspense, useCallback, useMemo, useRef, useState } from 'react';
-import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Images, SVGImages } from 'assets/index';
-import { RESULTS } from 'react-native-permissions';
-import { QrAccount } from 'types/account/qr';
-import { requestCameraPermission } from 'utils/validators';
-import Text from '../../components/Text';
+import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
+import { SelectImportAccountModal } from 'components/Modal/SelectImportAccountModal';
+import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SubmitButton } from 'components/SubmitButton';
-import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { SCAN_TYPE } from 'constants/qr';
+import useModalScanner from 'hooks/qr/useModalScanner';
 import {
   ArchiveTray,
   Article,
@@ -21,13 +17,17 @@ import {
   QrCode,
   UserCirclePlus,
 } from 'phosphor-react-native';
-import { SelectImportAccountModal } from 'components/Modal/SelectImportAccountModal';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps, RootStackParamList } from 'routes/index';
-import i18n from 'utils/i18n/i18n';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
-import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
+import React, { Suspense, useCallback, useMemo, useRef, useState } from 'react';
+import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
+import { RESULTS } from 'react-native-permissions';
 import ToastContainer from 'react-native-toast-notifications';
+import { RootNavigationProps, RootStackParamList } from 'routes/index';
+import { ColorMap } from 'styles/color';
+import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { QrAccount } from 'types/qr/attach';
+import i18n from 'utils/i18n/i18n';
+import { requestCameraPermission } from 'utils/permission/camera';
+import Text from 'components/Text';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -65,12 +65,28 @@ export const FirstScreen = () => {
   const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
   const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
+  const [scanType, setScanType] = useState<SCAN_TYPE.QR_SIGNER | SCAN_TYPE.SECRET>(SCAN_TYPE.SECRET);
 
   const onSuccess = useCallback(
-    (qrAccount: QrAccount) => {
-      navigation.navigate('AttachAccount', { screen: 'ImportAccountQrConfirm', params: qrAccount });
+    (data: QrAccount) => {
+      switch (scanType) {
+        case SCAN_TYPE.QR_SIGNER:
+          navigation.navigate('AttachAccount', {
+            screen: 'AttachQrSignerConfirm',
+            params: data,
+          });
+          break;
+        case SCAN_TYPE.SECRET:
+          navigation.navigate('AttachAccount', {
+            screen: 'ImportAccountQrConfirm',
+            params: data,
+          });
+          break;
+        default:
+          break;
+      }
     },
-    [navigation],
+    [navigation, scanType],
   );
 
   const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
@@ -122,6 +138,7 @@ export const FirstScreen = () => {
               const result = await requestCameraPermission();
 
               if (result === RESULTS.GRANTED) {
+                setScanType(SCAN_TYPE.SECRET);
                 setSelectModalVisible(false);
                 setTimeout(() => {
                   onOpenModal();
@@ -148,7 +165,15 @@ export const FirstScreen = () => {
             icon: QrCode,
             title: i18n.title.attachQRSignerAccount,
             onCLickButton: async () => {
-              show(i18n.common.comingSoon);
+              const result = await requestCameraPermission();
+
+              if (result === RESULTS.GRANTED) {
+                setScanType(SCAN_TYPE.QR_SIGNER);
+                setSelectModalVisible(false);
+                setTimeout(() => {
+                  onOpenModal();
+                }, HIDE_MODAL_DURATION);
+              }
             },
           },
           {
@@ -225,7 +250,7 @@ export const FirstScreen = () => {
           onSelectEvmAccount={onSelectEvmAccount}
         />
 
-        <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />
+        <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={scanType} />
         <SafeAreaView />
       </ImageBackground>
     </View>

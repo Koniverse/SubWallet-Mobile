@@ -1,48 +1,33 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType, UnbondingSubmitParams } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
-import PasswordModal from 'components/Modal/PasswordModal';
-import { SubmitButton } from 'components/SubmitButton';
+import SigningRequest from 'components/Signing/SigningRequest';
+import { Warning } from 'components/Warning';
 import useGetValidatorLabel from 'hooks/screen/Staking/useGetValidatorLabel';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { WebRunnerContext } from 'providers/contexts';
+import { SigningContext } from 'providers/SigningContext';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { UnStakeAuthProps } from 'routes/staking/unStakeAction';
-import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton, ScrollViewStyle } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi, toShort } from 'utils/index';
-import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { submitUnbonding } from '../../../messaging';
-import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { WebRunnerContext } from 'providers/contexts';
-import { Warning } from 'components/Warning';
+import { makeUnBondingQr, submitUnbonding } from '../../../messaging';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
   paddingTop: 16,
-  flex: 1,
-};
-
-const ActionContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginHorizontal: -4,
-  paddingTop: 16,
-  ...MarginBottomForSubmitButton,
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  marginHorizontal: 4,
   flex: 1,
 };
 
@@ -53,20 +38,35 @@ const UnStakeAuth = ({
   navigation: { goBack },
 }: UnStakeAuthProps) => {
   const { networkKey, selectedAccount } = unStakeParams;
+
+  const {
+    signingState: { isLoading },
+  } = useContext(SigningContext);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+
   const navigation = useNavigation<RootNavigationProps>();
 
+  const account = useGetAccountByAddress(selectedAccount);
   const network = useGetNetworkJson(networkKey);
   const validatorLabel = useGetValidatorLabel(networkKey);
 
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
-  useHandlerHardwareBackPress(loading);
+  useHandlerHardwareBackPress(isLoading);
+
   const selectedToken = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
   const amount = useMemo(
     (): number => new BigN(rawAmount).div(BN_TEN.pow(network.decimals || 0)).toNumber(),
     [network.decimals, rawAmount],
+  );
+
+  const unBondingParams = useMemo(
+    (): UnbondingSubmitParams => ({
+      networkKey: networkKey,
+      address: selectedAccount,
+      amount: amount,
+      unstakeAll: unstakeAll,
+      validatorAddress: validator,
+    }),
+    [amount, networkKey, selectedAccount, unstakeAll, validator],
   );
 
   const [amountValue, amountToken] = useMemo(
@@ -83,87 +83,52 @@ const UnStakeAuth = ({
     return `${amountValue} ${amountToken} + ${feeString}`;
   }, [amountValue, amountToken, feeString]);
 
-  const handleOpen = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
-
   const onCancel = useGoHome({
     screen: 'Staking',
-    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey } },
+    params: { screen: 'StakingBalanceDetail', params: { networkKey: networkKey, stakingType: StakingType.NOMINATED } },
   });
 
-  const handleResponse = useCallback(
-    (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
-      if (stop) {
-        return;
-      }
-
-      if (data.status) {
-        setLoading(false);
-        setVisible(false);
-
-        if (data.status) {
-          navigation.navigate('UnStakeAction', {
-            screen: 'UnStakeResult',
-            params: {
-              unStakeParams: unStakeParams,
-              txParams: {
-                txError: '',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: true,
-              },
-            },
-          });
-        } else {
-          navigation.navigate('UnStakeAction', {
-            screen: 'UnStakeResult',
-            params: {
-              unStakeParams: unStakeParams,
-              txParams: {
-                txError: 'Error submitting transaction',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: false,
-              },
-            },
-          });
-        }
-      }
-    },
-    [balanceError, navigation, unStakeParams],
-  );
-
-  const onSubmit = useCallback(
-    (password: string) => {
-      setLoading(true);
-      submitUnbonding(
-        {
-          networkKey: networkKey,
-          address: selectedAccount,
-          amount: amount,
-          password: password,
-          unstakeAll: unstakeAll,
-          validatorAddress: validator,
+  const onFail = useCallback(
+    (errors: string[], extrinsicHash?: string) => {
+      navigation.navigate('UnStakeAction', {
+        screen: 'UnStakeResult',
+        params: {
+          unStakeParams: unStakeParams,
+          txParams: {
+            txError: errors[0],
+            extrinsicHash: extrinsicHash,
+            txSuccess: false,
+          },
         },
-        handleResponse,
-      ).catch(e => {
-        console.log(e);
-        setErrorArr([(e as Error).message]);
-        setLoading(false);
       });
     },
-    [amount, validator, handleResponse, networkKey, selectedAccount, unstakeAll],
+    [navigation, unStakeParams],
+  );
+
+  const onSuccess = useCallback(
+    (extrinsicHash: string) => {
+      navigation.navigate('UnStakeAction', {
+        screen: 'UnStakeResult',
+        params: {
+          unStakeParams: unStakeParams,
+          txParams: {
+            txError: '',
+            extrinsicHash: extrinsicHash,
+            txSuccess: true,
+          },
+        },
+      });
+    },
+    [navigation, unStakeParams],
   );
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
+      disabled={isLoading}
       title={i18n.title.unStakeAction}
       rightButtonTitle={i18n.common.cancel}
+      disableRightButton={isLoading}
       onPressRightIcon={onCancel}>
       <View style={ContainerStyle}>
         <ScrollView style={{ ...ScrollViewStyle }}>
@@ -186,28 +151,20 @@ const UnStakeAuth = ({
           <TextField text={totalString} label={i18n.unStakeAction.total} disabled={true} />
           {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
         </ScrollView>
-        <View style={ActionContainerStyle}>
-          <SubmitButton
-            title={i18n.common.cancel}
-            style={ButtonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={goBack}
-          />
-          <SubmitButton
-            // isBusy={loading}
-            disabled={!isNetConnected}
-            title={i18n.common.continue}
-            style={ButtonStyle}
-            onPress={handleOpen}
-          />
-        </View>
-        <PasswordModal
-          onConfirm={onSubmit}
-          visible={visible}
-          closeModal={handleClose}
-          isBusy={loading}
-          errorArr={errorArr}
-          setErrorArr={setErrorArr}
+        <SigningRequest
+          account={account}
+          balanceError={balanceError}
+          baseProps={{
+            onCancel: goBack,
+            buttonText: i18n.common.continue,
+          }}
+          handleSignPassword={submitUnbonding}
+          handleSignQr={makeUnBondingQr}
+          message={'There is problem when bonding'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={unBondingParams}
         />
       </View>
     </ContainerWithSubHeader>

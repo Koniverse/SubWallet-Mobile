@@ -7,7 +7,7 @@ interface Props {
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
   modalStyle?: StyleProp<any>;
-  onModalHide?: () => void;
+  onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
 }
 
@@ -44,7 +44,7 @@ export const SubWalletModal = ({
   return (
     <ModalBase
       isVisible={modalVisible}
-      onModalHide={onModalHide}
+      onModalHide={onModalHide} // Auto trigger when close modal
       swipeDirection={onChangeModalVisible ? 'down' : undefined}
       style={{ margin: 0 }}
       backdropColor={ColorMap.dark1}

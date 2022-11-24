@@ -9,7 +9,7 @@ import {
 } from 'constants/scanner';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   margin: 0,
@@ -92,6 +92,22 @@ const HeaderTitleTextStyle: StyleProp<TextStyle> = {
   ...FontSemiBold,
 };
 
+const HeaderSubTitleStyle: StyleProp<ViewStyle> = {
+  flexDirection: 'row',
+  width: '100%',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'absolute',
+  bottom: 60,
+};
+
+const HeaderSubTitleTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  color: ColorMap.light,
+  textAlign: 'center',
+  ...FontMedium,
+};
+
 const LogoContainerStyle: StyleProp<ViewStyle> = {
   width: 40,
   height: 40,
@@ -117,4 +133,6 @@ export const ScannerStyles = StyleSheet.create({
   HeaderStyle,
   HeaderTitleTextStyle,
   LogoContainerStyle,
+  HeaderSubTitleStyle,
+  HeaderSubTitleTextStyle,
 });

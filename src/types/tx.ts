@@ -1,5 +1,3 @@
-import { TransferError } from '@subwallet/extension-base/background/KoniTypes';
-
 export type TxParticipant = {
   address: string;
   networkKey: string;
@@ -14,12 +12,12 @@ export interface Tx {
 export interface TransferResultType {
   isShowTxResult: boolean;
   isTxSuccess: boolean;
-  txError?: Array<TransferError>;
+  txError?: Array<string>;
   extrinsicHash?: string;
 }
 
 export interface TransactionResultParams {
   txError: string;
   txSuccess: boolean;
-  extrinsicHash: string;
+  extrinsicHash?: string;
 }

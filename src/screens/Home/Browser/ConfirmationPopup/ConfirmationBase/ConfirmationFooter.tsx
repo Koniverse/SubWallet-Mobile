@@ -1,15 +1,20 @@
-import React from 'react';
+import SignatureScanner from 'components/Scanner/SignatureScanner';
+import React, { useCallback, useState } from 'react';
 import { SafeAreaView, StyleProp, View } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import { ShieldSlash } from 'phosphor-react-native';
+import { SigData } from 'types/signer';
+import i18n from 'utils/i18n/i18n';
+import { Warning } from 'components/Warning';
 
 export interface ConfirmationFooterType {
   cancelButtonTitle: string;
   submitButtonTitle: string;
   onPressCancelButton?: () => void;
   onPressSubmitButton?: () => void;
+  onScanSignature?: (signature: `0x${string}`) => void;
   isShowBlockButton?: boolean;
   onPressBlockButton?: () => void;
   isBlockButtonDisabled?: boolean;
@@ -18,6 +23,8 @@ export interface ConfirmationFooterType {
   isBlockButtonBusy?: boolean;
   isCancelButtonBusy?: boolean;
   isSubmitButtonBusy?: boolean;
+  isScanQrButton?: boolean;
+  blockApprove?: boolean;
 }
 
 const cancelButtonStyle: StyleProp<any> = {
@@ -36,11 +43,16 @@ const blockButtonStyle: StyleProp<any> = {
   marginLeft: 8,
 };
 
+const WarningStyle: StyleProp<any> = {
+  marginVertical: 8,
+};
+
 export const ConfirmationFooter = ({
   cancelButtonTitle,
   submitButtonTitle,
   onPressCancelButton,
   onPressSubmitButton,
+  onScanSignature,
   isShowBlockButton = false,
   onPressBlockButton,
   isSubmitButtonDisabled,
@@ -49,9 +61,30 @@ export const ConfirmationFooter = ({
   isBlockButtonBusy,
   isCancelButtonBusy,
   isSubmitButtonBusy,
+  isScanQrButton,
+  blockApprove,
 }: ConfirmationFooterType) => {
+  const [isScanning, setIsScanning] = useState(false);
+
+  const openScanning = useCallback(() => {
+    setIsScanning(true);
+  }, []);
+
+  const hideScanning = useCallback(() => {
+    setIsScanning(false);
+  }, []);
+
+  const onSuccess = useCallback(
+    (sig: SigData) => {
+      onScanSignature && onScanSignature(sig.signature);
+      setIsScanning(false);
+    },
+    [onScanSignature],
+  );
+
   return (
     <>
+      {blockApprove && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.unSupportSigning} />}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16, marginHorizontal: 8 }}>
         {/* todo: add busy prop + style to IconButton */}
         {isShowBlockButton && (
@@ -63,21 +96,24 @@ export const ConfirmationFooter = ({
           />
         )}
         <SubmitButton
-          title={cancelButtonTitle}
-          backgroundColor={ColorMap.dark2}
+          title={!blockApprove ? cancelButtonTitle : i18n.common.back}
+          backgroundColor={blockApprove ? ColorMap.secondary : ColorMap.dark2}
           style={cancelButtonStyle}
           onPress={onPressCancelButton}
           disabled={isCancelButtonDisabled}
           disabledColor={ColorMap.buttonOverlayButtonColor}
           isBusy={isCancelButtonBusy}
         />
-        <SubmitButton
-          style={{ flex: 1, marginRight: 8, marginLeft: 8 }}
-          title={submitButtonTitle}
-          onPress={onPressSubmitButton}
-          disabled={isSubmitButtonDisabled}
-          isBusy={isSubmitButtonBusy}
-        />
+        {!blockApprove && (
+          <SubmitButton
+            style={{ flex: 1, marginRight: 8, marginLeft: 8 }}
+            title={!isScanQrButton ? submitButtonTitle : i18n.common.scanQr}
+            onPress={!isScanQrButton ? onPressSubmitButton : openScanning}
+            disabled={!isScanQrButton ? isSubmitButtonDisabled : false}
+            isBusy={isSubmitButtonBusy}
+          />
+        )}
+        <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />
       </View>
       <SafeAreaView />
     </>

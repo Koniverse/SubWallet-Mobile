@@ -99,7 +99,7 @@ export const Settings = () => {
           icon: GitFork,
           title: i18n.settings.network,
           hasRightArrow: true,
-          onPress: () => navigation.navigate('NetworkConfig'),
+          onPress: () => navigation.navigate('NetworksSetting'),
         },
         {
           icon: Coin,

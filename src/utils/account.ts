@@ -4,20 +4,20 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import { MODE_CAN_SIGN } from 'constants/signer';
 import { SIGN_MODE } from 'types/signer';
 
-export const findAccountByAddress = (accounts: AccountJson[], address: string): AccountJson | null => {
+export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
     if (!address) {
       return null;
     }
 
     if (address === ALL_ACCOUNT_KEY) {
-      const result = accounts.find(account => account.address === originAddress);
+      const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
 
       return result || null;
     }
 
     const originAddress = isEthereumAddress(address) ? address : encodeAddress(decodeAddress(address));
-    const result = accounts.find(account => account.address === originAddress);
+    const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
 
     return result || null;
   } catch (e) {

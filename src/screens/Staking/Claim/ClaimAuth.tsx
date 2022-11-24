@@ -1,26 +1,21 @@
 import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
-import { BasicTxResponse } from '@subwallet/extension-base/background/KoniTypes';
+import { StakeClaimRewardParams } from '@subwallet/extension-base/background/KoniTypes';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
-import PasswordModal from 'components/Modal/PasswordModal';
-import { SubmitButton } from 'components/SubmitButton';
+import SigningRequest from 'components/Signing/SigningRequest';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
+import { SigningContext } from 'providers/SigningContext';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { ClaimAuthProps } from 'routes/staking/claimAction';
-import { ColorMap } from 'styles/color';
-import {
-  centerStyle,
-  ContainerHorizontalPadding,
-  MarginBottomForSubmitButton,
-  ScrollViewStyle,
-} from 'styles/sharedStyles';
+import { centerStyle, ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { handleBasicTxResponse } from 'utils/transactionResponse';
-import { getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
+import { claimRewardQr, getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
@@ -33,112 +28,80 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const ActionContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginHorizontal: -4,
-  paddingTop: 16,
-  ...MarginBottomForSubmitButton,
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  marginHorizontal: 4,
-  flex: 1,
-};
-
 const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
-  const { networkKey, selectedAccount } = claimParams;
+  const { networkKey, selectedAccount, stakingType } = claimParams;
+
+  const {
+    signingState: { isLoading },
+  } = useContext(SigningContext);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<RootNavigationProps>();
 
-  const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
+  const network = useGetNetworkJson(networkKey);
+  const account = useGetAccountByAddress(selectedAccount);
+
+  const submitParams = useMemo(
+    (): StakeClaimRewardParams => ({
+      address: selectedAccount,
+      networkKey: networkKey,
+      stakingType: stakingType,
+    }),
+    [networkKey, selectedAccount, stakingType],
+  );
+
   const [feeString, setFeeString] = useState('');
 
   const [isTxReady, setIsTxReady] = useState(false);
   const [balanceError, setBalanceError] = useState(false);
-  useHandlerHardwareBackPress(loading);
+
+  useHandlerHardwareBackPress(isLoading);
+
   const [fee, feeToken] = useMemo((): [string, string] => {
     const res = feeString.split(' ');
     return [res[0], res[1]];
   }, [feeString]);
 
-  const handleOpen = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setVisible(false);
-  }, []);
-
   const goBack = useGoHome({ screen: 'Staking' });
 
-  const handleResponse = useCallback(
-    (data: BasicTxResponse) => {
-      const stop = handleBasicTxResponse(data, balanceError, setErrorArr, setLoading);
-      if (stop) {
-        return;
-      }
-
-      if (data.status !== undefined) {
-        setLoading(false);
-        setVisible(false);
-
-        if (data.status) {
-          navigation.navigate('ClaimStakeAction', {
-            screen: 'ClaimResult',
-            params: {
-              claimParams: claimParams,
-              txParams: {
-                txError: '',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: true,
-              },
-            },
-          });
-        } else {
-          navigation.navigate('ClaimStakeAction', {
-            screen: 'ClaimResult',
-            params: {
-              claimParams: claimParams,
-              txParams: {
-                txError: 'Error submitting transaction',
-                extrinsicHash: data.transactionHash as string,
-                txSuccess: false,
-              },
-            },
-          });
-        }
-      }
-    },
-    [balanceError, navigation, claimParams],
-  );
-
-  const onSubmit = useCallback(
-    (password: string) => {
-      setLoading(true);
-      submitStakeClaimReward(
-        {
-          address: selectedAccount,
-          networkKey,
-          password,
+  const onFail = useCallback(
+    (errors: string[], extrinsicHash?: string) => {
+      navigation.navigate('ClaimStakeAction', {
+        screen: 'ClaimResult',
+        params: {
+          claimParams: claimParams,
+          txParams: {
+            txError: errors[0],
+            extrinsicHash: extrinsicHash,
+            txSuccess: false,
+          },
         },
-        handleResponse,
-      ).catch(e => {
-        console.log(e);
-        setErrorArr([(e as Error).message]);
-        setLoading(false);
       });
     },
-    [handleResponse, networkKey, selectedAccount],
+    [claimParams, navigation],
+  );
+
+  const onSuccess = useCallback(
+    (extrinsicHash: string) => {
+      navigation.navigate('ClaimStakeAction', {
+        screen: 'ClaimResult',
+        params: {
+          claimParams: claimParams,
+          txParams: {
+            txError: '',
+            extrinsicHash: extrinsicHash,
+            txSuccess: true,
+          },
+        },
+      });
+    },
+    [claimParams, navigation],
   );
 
   useEffect(() => {
     getStakeClaimRewardTxInfo({
       address: selectedAccount,
-      networkKey,
+      networkKey: networkKey,
+      stakingType: stakingType,
     })
       .then(resp => {
         setIsTxReady(true);
@@ -152,15 +115,15 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
       setBalanceError(false);
       setFeeString('');
     };
-  }, [networkKey, selectedAccount]);
+  }, [networkKey, selectedAccount, stakingType]);
 
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
       title={i18n.title.claimStakeAction}
       rightButtonTitle={i18n.common.cancel}
-      disabled={loading}
-      disableRightButton={loading}
+      disabled={isLoading}
+      disableRightButton={isLoading}
       onPressRightIcon={goBack}>
       <View style={ContainerStyle}>
         {isNetConnected ? (
@@ -188,27 +151,22 @@ const ClaimAuth = ({ route: { params: claimParams } }: ClaimAuthProps) => {
         ) : (
           <NoInternetScreen />
         )}
-        <View style={ActionContainerStyle}>
-          <SubmitButton
-            title={i18n.common.cancel}
-            style={ButtonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={goBack}
-          />
-          <SubmitButton
-            disabled={!isTxReady || !isNetConnected}
-            title={i18n.common.continue}
-            style={ButtonStyle}
-            onPress={handleOpen}
-          />
-        </View>
-        <PasswordModal
-          onConfirm={onSubmit}
-          visible={visible && !!isNetConnected}
-          closeModal={handleClose}
-          isBusy={loading}
-          errorArr={errorArr}
-          setErrorArr={setErrorArr}
+        <SigningRequest
+          account={account}
+          handleSignPassword={submitStakeClaimReward}
+          handleSignQr={claimRewardQr}
+          balanceError={balanceError}
+          message={'There is problem when claimReward'}
+          network={network}
+          onFail={onFail}
+          onSuccess={onSuccess}
+          params={submitParams}
+          detailError={true}
+          baseProps={{
+            buttonText: i18n.common.continue,
+            onCancel: goBack,
+            extraLoading: !isTxReady,
+          }}
         />
       </View>
     </ContainerWithSubHeader>

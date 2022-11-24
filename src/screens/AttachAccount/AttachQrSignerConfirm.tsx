@@ -123,13 +123,12 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
   const onSubmitForm = useCallback(
     (formState: FormState) => {
       if (checkValidateForm(formState.isValidated)) {
-        show(i18n.common.comingSoon);
-        false && handleCreateAccount(formState.data.accountName);
+        handleCreateAccount(formState.data.accountName);
       } else {
         Keyboard.dismiss();
       }
     },
-    [handleCreateAccount, show],
+    [handleCreateAccount],
   );
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {

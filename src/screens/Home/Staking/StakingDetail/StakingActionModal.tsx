@@ -1,5 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
+import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
+import { deviceHeight } from 'constants/index';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { StakingDataType } from 'hooks/types';
 import moment from 'moment';
@@ -7,6 +9,7 @@ import { Gift, IconProps, Intersect, Money, SelectionSlash } from 'phosphor-reac
 import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 import Toast from 'react-native-toast-notifications';
+import ToastContainer from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
@@ -14,8 +17,6 @@ import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
-import ToastContainer from 'react-native-toast-notifications';
-import { deviceHeight } from 'constants/index';
 
 interface Props {
   visible: boolean;
@@ -63,10 +64,12 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const {
-    staking: { chain: networkKey, activeBalance, unlockingInfo, unlockingBalance },
+    staking: { chain: networkKey, activeBalance, unlockingInfo, unlockingBalance, type: stakingType },
   } = data;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
+
+  const isPool = stakingType === StakingType.POOLED;
 
   const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const networkJson = useGetNetworkJson(networkKey);
@@ -158,9 +161,10 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
       params: {
         networkKey: networkKey,
         selectedAccount: currentAccountAddress,
+        stakingType: stakingType,
       },
     });
-  }, [closeModal, currentAccountAddress, networkKey, navigation]);
+  }, [closeModal, navigation, networkKey, currentAccountAddress, stakingType]);
 
   const compoundAction = useCallback(() => {
     if (bondedAmount > 0) {
@@ -176,23 +180,28 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   }, [closeModal, currentAccountAddress, navigation, networkKey, bondedAmount]);
 
   const items = useMemo((): SortItem[] => {
-    const result: SortItem[] = [
-      {
-        label: i18n.stakingScreen.stakingDetail.actions.unStake,
-        key: 'unStake',
-        icon: SelectionSlash,
-        onPress: bondedAmount > 0 ? unStakeAction : noop,
-      },
-      {
-        label: i18n.stakingScreen.stakingDetail.actions.withdraw,
-        key: 'withdraw',
-        icon: Money,
-        onPress: withdrawAction,
-        color: nextWithdrawal > 0 && parseFloat(unlockingBalance || '0') > 0 ? ColorMap.primary : ColorMap.disabled,
-      },
-    ];
+    const result: SortItem[] = [];
+    if (!isPool) {
+      result.push(
+        ...[
+          {
+            label: i18n.stakingScreen.stakingDetail.actions.unStake,
+            key: 'unStake',
+            icon: SelectionSlash,
+            onPress: bondedAmount > 0 ? unStakeAction : noop,
+          },
+          {
+            label: i18n.stakingScreen.stakingDetail.actions.withdraw,
+            key: 'withdraw',
+            icon: Money,
+            onPress: withdrawAction,
+            color: nextWithdrawal > 0 && parseFloat(unlockingBalance || '0') > 0 ? ColorMap.primary : ColorMap.disabled,
+          },
+        ],
+      );
+    }
 
-    if (showClaimButton) {
+    if (showClaimButton || isPool) {
       result.push({
         label: i18n.stakingScreen.stakingDetail.actions.claim,
         key: 'claim',
@@ -201,7 +210,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
       });
     }
 
-    if (showCompoundButton) {
+    if (showCompoundButton && !isPool) {
       result.push({
         label: i18n.stakingScreen.stakingDetail.actions.compound,
         key: 'compound',
@@ -215,6 +224,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     bondedAmount,
     claimAction,
     compoundAction,
+    isPool,
     nextWithdrawal,
     showClaimButton,
     showCompoundButton,

@@ -62,7 +62,7 @@ export const AddressField = ({
   disableRightIcon,
   ...fieldBase
 }: Props) => {
-  const formattedAddress = networkPrefix ? reformatAddress(address, networkPrefix || -1) : address;
+  const formattedAddress = networkPrefix !== undefined ? reformatAddress(address, networkPrefix) : address;
   const textLength = name ? 6 : 10;
   const textColor = showRightIcon ? (disableText ? ColorMap.disabled : ColorMap.light) : ColorMap.disabled;
 

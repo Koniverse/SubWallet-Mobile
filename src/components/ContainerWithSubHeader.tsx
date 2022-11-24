@@ -10,7 +10,7 @@ import {
 } from 'styles/sharedStyles';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
   style?: StyleProp<any>;
   isShowPlaceHolder?: boolean;
   statusBarColor?: string;

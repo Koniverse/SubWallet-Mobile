@@ -1,31 +1,44 @@
-import {
-  ConfirmationHeader,
-  ConfirmationHeaderType,
-} from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationHeader';
+import { PasswordField } from 'components/Field/Password';
+import DisplayPayload from 'components/Payload/DisplayPayload';
+import useFormControl from 'hooks/screen/useFormControl';
+import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { CaretRight } from 'phosphor-react-native';
+import React, { useCallback, useState } from 'react';
+import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import {
   ConfirmationFooter,
   ConfirmationFooterType,
 } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationFooter';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
-import { PasswordField } from 'components/Field/Password';
-import { ColorMap } from 'styles/color';
-import useFormControl from 'hooks/screen/useFormControl';
-import i18n from 'utils/i18n/i18n';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { CaretRight } from 'phosphor-react-native';
+import {
+  ConfirmationHeader,
+  ConfirmationHeaderType,
+} from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase/ConfirmationHeader';
 import { DetailModal } from 'screens/Home/Browser/ConfirmationPopup/Shared/DetailModal';
-import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { ColorMap } from 'styles/color';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { SIGN_MODE } from 'types/signer';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   headerProps: ConfirmationHeaderType;
   footerProps: {
     onPressSubmitButton?: (password: string) => Promise<void>;
+    onScanSignature?: (signature: `0x${string}`) => Promise<void>;
     onPressCancelButton?: () => Promise<void>;
     onPressBlockButton?: () => Promise<void>;
   } & Omit<ConfirmationFooterType, 'onPressSubmitButton' | 'onPressCancelButton' | 'onPressBlockButton'>;
   children?: JSX.Element;
-  isShowPassword?: boolean;
+  address?: string;
+  externalInfo?: {
+    address: string;
+    genesisHash: string;
+    hashPayload: Uint8Array;
+    isMessage: boolean;
+    isEthereum: boolean;
+    isHash: boolean;
+  };
+  isNeedSignature?: boolean;
   isUseScrollView?: boolean;
   onPressViewDetail?: () => void;
   detailModalVisible?: boolean;
@@ -61,11 +74,14 @@ interface BusyType {
 }
 
 export const ConfirmationBase = ({
+  address,
+  externalInfo,
   headerProps,
   footerProps: {
     onPressSubmitButton,
     onPressBlockButton,
     onPressCancelButton,
+    onScanSignature,
     isBlockButtonBusy,
     isBlockButtonDisabled,
     isCancelButtonBusy,
@@ -80,14 +96,33 @@ export const ConfirmationBase = ({
   onChangeDetailModalVisible,
   detailModalContent,
   isShowViewDetailButton = true,
-  isShowPassword,
+  isNeedSignature,
   isUseScrollView = true,
 }: Props) => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: () => {},
   });
   const [{ isBusy, busyKey }, setBusy] = useState<BusyType>({ busyKey: null, isBusy: false });
+
   useHandlerHardwareBackPress(isBusy);
+
+  const signMode = useGetAccountSignModeByAddress(address);
+
+  const _onScanSignature = useCallback(
+    (signature: `0x${string}`) => {
+      if (onScanSignature) {
+        setBusy({ busyKey: 'SUBMIT', isBusy: true });
+        onScanSignature(signature)
+          .then(res => console.log(res))
+          .catch(console.log)
+          .finally(() => {
+            setBusy((prevState: BusyType) => ({ ...prevState, isBusy: false }));
+          });
+      }
+    },
+    [onScanSignature],
+  );
+
   const _onPressSubmitButton = () => {
     if (onPressSubmitButton) {
       setBusy({ busyKey: 'SUBMIT', isBusy: true });
@@ -128,7 +163,7 @@ export const ConfirmationBase = ({
         <ConfirmationHeader {...headerProps} />
         {children}
 
-        {isShowPassword && (
+        {isNeedSignature && signMode === SIGN_MODE.PASSWORD && (
           <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16, marginBottom: -4 }}>
             <PasswordField
               label={formState.labels.password}
@@ -138,6 +173,19 @@ export const ConfirmationBase = ({
               isBusy={false}
               errorMessages={formState.errors.password}
               onSubmitField={onSubmitField('password')}
+            />
+          </View>
+        )}
+        {isNeedSignature && signMode === SIGN_MODE.QR && externalInfo && (
+          <View style={{ width: '100%', paddingTop: 24, paddingHorizontal: 16, marginBottom: 0 }}>
+            <DisplayPayload
+              address={externalInfo.address}
+              genesisHash={externalInfo.genesisHash}
+              isEthereum={externalInfo.isEthereum}
+              isHash={externalInfo.isHash}
+              isMessage={externalInfo.isMessage}
+              hashPayload={externalInfo.hashPayload}
+              size={300}
             />
           </View>
         )}
@@ -162,12 +210,14 @@ export const ConfirmationBase = ({
         onPressCancelButton={_onPressCancelButton}
         onPressBlockButton={_onPressBlockButton}
         onPressSubmitButton={_onPressSubmitButton}
+        onScanSignature={_onScanSignature}
         isBlockButtonBusy={isBlockButtonBusy || (isBusy && busyKey === 'BLOCK')}
         isBlockButtonDisabled={isBlockButtonDisabled || isBusy}
         isCancelButtonBusy={isCancelButtonBusy || (isBusy && busyKey === 'CANCEL')}
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
-        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isShowPassword && !formState.data.password)}
+        isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isNeedSignature && !formState.data.password)}
+        isScanQrButton={isNeedSignature && signMode === SIGN_MODE.QR}
       />
 
       <DetailModal

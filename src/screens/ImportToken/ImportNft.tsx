@@ -17,7 +17,7 @@ import { NetworkField } from 'components/Field/Network';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { SubmitButton } from 'components/SubmitButton';
-import { requestCameraPermission } from 'utils/validators';
+import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';

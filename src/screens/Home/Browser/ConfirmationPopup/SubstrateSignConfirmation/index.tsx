@@ -1,22 +1,27 @@
-import { Warning } from 'components/Warning';
-import React, { useMemo, useState } from 'react';
-import { SigningRequest } from '@subwallet/extension-base/background/types';
-import { ConfirmationHookType } from 'hooks/types';
-import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
-import i18n from 'utils/i18n/i18n';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { StyleProp, Text, View } from 'react-native';
-import { Bytes } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Bytes';
-import { getNetworkJsonByGenesisHash } from 'utils/index';
-import { Extrinsic } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Extrinsic';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import useGetSignData from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetSignData';
+import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { AccountInfoField } from 'components/Field/AccountInfo';
+import { Warning } from 'components/Warning';
+import useGetSignData from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetSignData';
+import { ConfirmationHookType } from 'hooks/types';
+import React, { useCallback, useMemo, useState } from 'react';
+import { StyleProp, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
+import { Bytes } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Bytes';
+import { Extrinsic } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignConfirmation/Extrinsic';
+import { RootState } from 'stores/index';
+import { ColorMap } from 'styles/color';
+import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { HashPayloadProps, SIGN_MODE } from 'types/signer';
+import { getAccountSignMode } from 'utils/account';
+import i18n from 'utils/i18n/i18n';
+import { getNetworkJsonByGenesisHash } from 'utils/index';
+
+import { u8aWrapBytes } from '@polkadot/util';
 
 interface Props {
   payload: SigningRequest;
@@ -52,13 +57,63 @@ export const SubstrateSignConfirmation = ({
     return null;
   }, [networkMap, payload]);
 
-  const onPressCancelButton = () => {
-    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
-  };
+  const externalInfo = useMemo((): HashPayloadProps | undefined => {
+    const signMode = getAccountSignMode(account);
+    if (signMode === SIGN_MODE.QR) {
+      if (payload) {
+        return {
+          address: account.address,
+          genesisHash: payload.genesisHash.toString(),
+          isEthereum: false,
+          isMessage: false,
+          isHash: false,
+          hashPayload: payload.toU8a(),
+        };
+      }
+      if (hexBytes) {
+        const { data, address } = request.payload as SignerPayloadRaw;
 
-  const onPressSubmitButton = (password: string) => {
-    return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
-  };
+        let genesisHash = '';
+
+        for (const network of Object.values(networkMap)) {
+          const condition = encodeAddress(address, network.ss58Format) === encodeAddress(address);
+
+          if (condition) {
+            genesisHash = network.genesisHash;
+            break;
+          }
+        }
+
+        return {
+          address: account.address,
+          genesisHash: genesisHash,
+          isEthereum: false,
+          isMessage: true,
+          isHash: false,
+          hashPayload: u8aWrapBytes(data as string),
+        };
+      }
+    }
+    return undefined;
+  }, [account, hexBytes, networkMap, payload, request.payload]);
+
+  const onPressCancelButton = useCallback(() => {
+    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
+  }, [cancelRequest, confirmationId]);
+
+  const onPressSubmitButton = useCallback(
+    (password: string) => {
+      return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
+    },
+    [approveRequest, confirmationId],
+  );
+
+  const onScanSignature = useCallback(
+    (signature: `0x${string}`) => {
+      return approveRequest(CONFIRMATION_TYPE, confirmationId, { signature });
+    },
+    [approveRequest, confirmationId],
+  );
 
   const detailModalContent = useMemo(() => {
     if (payload !== null) {
@@ -80,7 +135,9 @@ export const SubstrateSignConfirmation = ({
         title: i18n.title.authorizeRequestTitle,
         url,
       }}
-      isShowPassword={!account.isReadOnly}
+      address={account.address}
+      externalInfo={externalInfo}
+      isNeedSignature={true}
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}
@@ -90,7 +147,7 @@ export const SubstrateSignConfirmation = ({
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
-        isSubmitButtonDisabled: account.isReadOnly,
+        onScanSignature: onScanSignature,
       }}>
       <View style={{ paddingHorizontal: 16 }}>
         <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>

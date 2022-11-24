@@ -18,7 +18,7 @@ import { completeConfirmation, upsertCustomToken, validateCustomToken } from '..
 import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
-import { requestCameraPermission } from 'utils/validators';
+import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';

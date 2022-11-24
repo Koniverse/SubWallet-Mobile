@@ -1,15 +1,17 @@
-import { Warning } from 'components/Warning';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
+  ConfirmationDefinitions,
   ConfirmationsQueue,
+  EvmSendTransactionRequestExternal,
   EVMTransactionArg,
   NetworkJson,
-  ResponseParseEVMTransactionInput,
+  ResponseParseEVMContractInput,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
+import { SIGN_MODE } from 'types/signer';
 import { toShort } from 'utils/index';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { IconButton } from 'components/IconButton';
@@ -17,7 +19,7 @@ import { CopySimple } from 'phosphor-react-native';
 import useGetEvmTransactionInfos from 'hooks/screen/Home/Browser/ConfirmationPopup/useGetEvmTransactionInfos';
 import i18n from 'utils/i18n/i18n';
 import FormatBalance from 'components/FormatBalance';
-import { BN } from '@polkadot/util';
+import { BN, hexToU8a } from '@polkadot/util';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 import { ConfirmationHookType } from 'hooks/types';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -30,12 +32,13 @@ export const XCM_ARGS = ['currency_address', 'amount'];
 
 interface Props {
   network?: NetworkJson;
-  payload: ConfirmationsQueue['evmSendTransactionRequest'][0];
+  payload:
+    | ConfirmationsQueue['evmSendTransactionRequest'][0]
+    | ConfirmationsQueue['evmSendTransactionRequestExternal'][0];
   cancelRequest: ConfirmationHookType['cancelRequest'];
   approveRequest: ConfirmationHookType['approveRequest'];
+  requestType: keyof Pick<ConfirmationDefinitions, 'evmSendTransactionRequest' | 'evmSendTransactionRequestExternal'>;
 }
-
-const CONFIRMATION_TYPE = 'evmSendTransactionRequest';
 
 const itemMarginBottomStyle: StyleProp<any> = {
   marginBottom: 8,
@@ -58,10 +61,6 @@ const itemWrapperStyle: StyleProp<any> = {
   marginBottom: 8,
 };
 
-const WarningStyle: StyleProp<any> = {
-  marginVertical: 8,
-};
-
 const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: string) => void) => {
   return (
     <View style={[itemWrapperStyle, { position: 'relative', marginTop: 8, marginBottom: 0 }]}>
@@ -80,15 +79,20 @@ const renderReceiveAccount = (receiveAddress: string, onPressCopyButton: (text: 
 };
 
 export const EvmSendTransactionConfirmation = ({
-  payload: { payload, url, id: confirmationId },
+  payload: { payload, url, id: confirmationId, address },
   network,
   cancelRequest,
   approveRequest,
+  requestType,
 }: Props) => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const senderAccount = accounts.find(
-    acc => payload.from && typeof payload.from === 'string' && acc.address.toLowerCase() === payload.from.toLowerCase(),
+  const senderAccount = useGetAccountByAddress(address);
+  const signMode = useGetAccountSignModeByAddress(address);
+
+  const hashPayload = useMemo(
+    (): string | undefined => (payload as EvmSendTransactionRequestExternal).hashPayload,
+    [payload],
   );
+
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { inputInfo, XCMToken } = useGetEvmTransactionInfos(payload, network);
   const toastRef = useRef<ToastContainer>(null);
@@ -134,7 +138,7 @@ export const EvmSendTransactionConfirmation = ({
   );
 
   const handleRenderInputInfo = useCallback(
-    (response: ResponseParseEVMTransactionInput) => {
+    (response: ResponseParseEVMContractInput) => {
       const info = response.result;
       if (typeof info === 'string') {
         return (
@@ -212,13 +216,23 @@ export const EvmSendTransactionConfirmation = ({
     payload.value,
   ]);
 
-  const onPressCancelButton = () => {
-    return cancelRequest(CONFIRMATION_TYPE, confirmationId);
-  };
+  const onPressCancelButton = useCallback(() => {
+    return cancelRequest(requestType, confirmationId);
+  }, [cancelRequest, confirmationId, requestType]);
 
-  const onPressSubmitButton = (password: string) => {
-    return approveRequest(CONFIRMATION_TYPE, confirmationId, { password });
-  };
+  const onPressSubmitButton = useCallback(
+    (password: string) => {
+      return approveRequest(requestType, confirmationId, { password });
+    },
+    [approveRequest, confirmationId, requestType],
+  );
+
+  const onScanSignature = useCallback(
+    (signature: `0x${string}`) => {
+      return approveRequest(requestType, confirmationId, { signature });
+    },
+    [approveRequest, confirmationId, requestType],
+  );
 
   return (
     <ConfirmationBase
@@ -226,21 +240,41 @@ export const EvmSendTransactionConfirmation = ({
         title: i18n.title.sendTransaction,
         url: url,
       }}
-      isShowPassword={!senderAccount?.isReadOnly}
+      address={address}
+      externalInfo={
+        hashPayload
+          ? {
+              hashPayload: hexToU8a(hashPayload),
+              address: address || '',
+              isHash: false,
+              genesisHash: '',
+              isEthereum: true,
+              isMessage: false,
+            }
+          : undefined
+      }
+      isNeedSignature={true}
       footerProps={{
         cancelButtonTitle: i18n.common.cancel,
         submitButtonTitle: i18n.common.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
-        isSubmitButtonDisabled: senderAccount?.isReadOnly,
+        onScanSignature: onScanSignature,
       }}
       detailModalVisible={modalVisible}
       onChangeDetailModalVisible={() => setModalVisible(false)}
       onPressViewDetail={() => setModalVisible(true)}
       detailModalContent={detailModalContent}>
       <View style={{ paddingHorizontal: 16 }}>
-        <Text style={{ ...sharedStyles.mainText, ...FontMedium, color: ColorMap.disabled, paddingVertical: 16 }}>
-          {i18n.common.approveTransactionMessage}
+        <Text
+          style={{
+            ...sharedStyles.mainText,
+            ...FontMedium,
+            color: ColorMap.disabled,
+            paddingVertical: 16,
+            textAlign: 'center',
+          }}>
+          {signMode === SIGN_MODE.QR ? i18n.common.useHardWalletToScan : i18n.common.approveTransactionMessage}
         </Text>
         <AccountInfoField
           name={senderAccount?.name || ''}
@@ -251,19 +285,13 @@ export const EvmSendTransactionConfirmation = ({
 
         {payload.to && renderReceiveAccount(payload.to, copyToClipboard)}
 
-        {!!senderAccount?.isReadOnly && (
-          <Warning isDanger style={WarningStyle} message={i18n.warningMessage.readOnly} />
-        )}
-
-        {
-          <Toast
-            duration={1500}
-            normalColor={ColorMap.notification}
-            ref={toastRef}
-            placement={'bottom'}
-            offsetBottom={200}
-          />
-        }
+        <Toast
+          duration={1500}
+          normalColor={ColorMap.notification}
+          ref={toastRef}
+          placement={'bottom'}
+          offsetBottom={200}
+        />
       </View>
     </ConfirmationBase>
   );

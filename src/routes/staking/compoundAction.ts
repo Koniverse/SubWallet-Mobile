@@ -5,7 +5,7 @@ import { TransactionResultParams } from 'types/tx';
 
 export type CompoundStakeActionStackParamList = {
   CompoundConfirm: CompoundParams;
-  CompoundAuth: {
+  CreateCompoundAuth: {
     compoundParams: CompoundParams;
     accountMinimum: string;
     validator: string;
@@ -17,7 +17,7 @@ export type CompoundStakeActionStackParamList = {
     compoundFee: string;
     si: SiDef;
   };
-  CompoundResult: {
+  CreateCompoundResult: {
     compoundParams: CompoundParams;
     txParams: TransactionResultParams;
   };
@@ -38,8 +38,8 @@ export type NavigationProps = NativeStackScreenProps<CompoundStakeActionStackPar
 export type CompoundActionNavigationProps = NavigationProps['navigation'];
 
 export type CompoundConfirmProps = NativeStackScreenProps<CompoundStakeActionStackParamList, 'CompoundConfirm'>;
-export type CompoundAuthProps = NativeStackScreenProps<CompoundStakeActionStackParamList, 'CompoundAuth'>;
-export type CompoundResultProps = NativeStackScreenProps<CompoundStakeActionStackParamList, 'CompoundResult'>;
+export type CreateCompoundAuthProps = NativeStackScreenProps<CompoundStakeActionStackParamList, 'CreateCompoundAuth'>;
+export type CompoundResultProps = NativeStackScreenProps<CompoundStakeActionStackParamList, 'CreateCompoundResult'>;
 export type CancelCompoundAuthProps = NativeStackScreenProps<CompoundStakeActionStackParamList, 'CancelCompoundAuth'>;
 export type CancelCompoundResultProps = NativeStackScreenProps<
   CompoundStakeActionStackParamList,

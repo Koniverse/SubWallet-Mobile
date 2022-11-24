@@ -119,7 +119,7 @@ const AvatarImageStyle: StyleProp<ImageStyle> = {
 
 const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }: Props) => {
   const { icon, totalStake, expectedReturn, nominatorCount, minBond, address } = data;
-  const { maxNominatorPerValidator, bondedValidators, isBondedBefore } = networkValidatorsInfo;
+  const { maxNominatorPerValidator, bondedValidators } = networkValidatorsInfo;
   const tokenSymbol = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [totalStakeValue, totalStakeToken] = getBalanceWithSi(
@@ -134,8 +134,8 @@ const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }:
   }, [maxNominatorPerValidator, nominatorCount]);
 
   const isBonding = useMemo(() => {
-    return isBondedBefore ? !!bondedValidators.find(val => val.toLowerCase() === address.toLowerCase()) : false;
-  }, [address, bondedValidators, isBondedBefore]);
+    return !!bondedValidators.find(val => val.toLowerCase() === address.toLowerCase());
+  }, [address, bondedValidators]);
 
   return (
     <TouchableOpacity style={WrapperStyle} onPress={onPress(data)}>

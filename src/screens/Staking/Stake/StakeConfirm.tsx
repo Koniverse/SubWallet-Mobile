@@ -111,8 +111,12 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
       return i18n.warningMessage.balanceTooLow;
     }
 
+    const isBoned = !!networkValidatorsInfo.bondedValidators.find(
+      address => address.toLowerCase() === validator.address.toLowerCase(),
+    );
+
     if (rawAmount <= 0) {
-      if (!networkValidatorsInfo.bondedValidators.includes(validator.address)) {
+      if (!isBoned) {
         return `${i18n.warningMessage.stakeAtLeast} ${validator.minBond} ${selectedToken}`;
       } else {
         return i18n.warningMessage.amountGtZero;
@@ -124,7 +128,7 @@ const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }
     }
 
     if (reformatAmount < minBond) {
-      if (networkValidatorsInfo.bondedValidators.includes(validator.address)) {
+      if (isBoned) {
         return '';
       } else {
         return `${i18n.warningMessage.stakeAtLeast} ${validator.minBond} ${selectedToken}`;

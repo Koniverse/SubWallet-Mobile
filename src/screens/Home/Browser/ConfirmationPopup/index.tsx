@@ -110,18 +110,19 @@ export const ConfirmationPopup = () => {
       );
     } else if (
       currentConfirmationItem.type === 'evmSignatureRequest' ||
-      currentConfirmationItem.type === 'evmSignatureRequestQr'
+      currentConfirmationItem.type === 'evmSignatureRequestExternal'
     ) {
       return (
         <EvmSignConfirmation
           payload={currentConfirmationItem.payload as ConfirmationsQueue['evmSignatureRequest'][0]}
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
+          requestType={currentConfirmationItem.type}
         />
       );
     } else if (
       currentConfirmationItem.type === 'evmSendTransactionRequest' ||
-      currentConfirmationItem.type === 'evmSendTransactionRequestQr'
+      currentConfirmationItem.type === 'evmSendTransactionRequestExternal'
     ) {
       const evmSendTransactionRequest =
         currentConfirmationItem.payload as ConfirmationsQueue['evmSendTransactionRequest'][0];
@@ -131,6 +132,7 @@ export const ConfirmationPopup = () => {
           network={networkMap[evmSendTransactionRequest.networkKey || '']}
           approveRequest={approveRequest}
           cancelRequest={cancelRequest}
+          requestType={currentConfirmationItem.type}
         />
       );
     }
