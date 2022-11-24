@@ -286,9 +286,11 @@ export const App = () => {
                         <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                         <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                       </Stack.Group>
+                      <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+                        <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
+                      </Stack.Group>
                       <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                         <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                        <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                         <Stack.Screen name="EditAccount" component={EditAccount} />
                         <Stack.Screen name="RestoreJson" component={RestoreJson} />
                         <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
