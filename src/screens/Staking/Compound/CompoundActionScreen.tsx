@@ -11,7 +11,7 @@ const CompoundActionScreen = () => {
   const UnStakeActionStack = createNativeStackNavigator<CompoundStakeActionStackParamList>();
 
   return (
-    <UnStakeActionStack.Navigator screenOptions={{ headerShown: false }}>
+    <UnStakeActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <UnStakeActionStack.Screen name="CompoundConfirm" component={CompoundConfirm} />
       <UnStakeActionStack.Screen name="CompoundAuth" component={CompoundAuth} />
       <UnStakeActionStack.Screen name="CompoundResult" component={CompoundResult} options={{ gestureEnabled: false }} />

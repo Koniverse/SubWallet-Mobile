@@ -8,7 +8,7 @@ const ClaimActionScreen = () => {
   const WithdrawActionStack = createNativeStackNavigator<ClaimStakeActionStackParamList>();
 
   return (
-    <WithdrawActionStack.Navigator screenOptions={{ headerShown: false }}>
+    <WithdrawActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <WithdrawActionStack.Screen name="ClaimAuth" component={ClaimAuth} />
       <WithdrawActionStack.Screen name="ClaimResult" component={ClaimResult} options={{ gestureEnabled: false }} />
     </WithdrawActionStack.Navigator>

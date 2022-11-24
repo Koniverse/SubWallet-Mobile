@@ -288,8 +288,6 @@ export const App = () => {
                       </Stack.Group>
                       <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                         <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                      </Stack.Group>
-                      <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                         <Stack.Screen name="CreateAccount" component={CreateAccount} />
                         <Stack.Screen name="EditAccount" component={EditAccount} />
                         <Stack.Screen name="RestoreJson" component={RestoreJson} />

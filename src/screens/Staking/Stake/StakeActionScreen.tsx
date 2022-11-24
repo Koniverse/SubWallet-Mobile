@@ -10,7 +10,7 @@ const StakeActionScreen = () => {
   const StakeActionStack = createNativeStackNavigator<StakeActionStackParamList>();
 
   return (
-    <StakeActionStack.Navigator screenOptions={{ headerShown: false }}>
+    <StakeActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <StakeActionStack.Screen name="StakeConfirm" component={StakeConfirm} />
       <StakeActionStack.Screen name="StakeAuth" component={StakeAuth} />
       <StakeActionStack.Screen name="StakeResult" component={StakeResult} options={{ gestureEnabled: false }} />

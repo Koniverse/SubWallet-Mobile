@@ -9,7 +9,7 @@ const AttachAccountScreen = () => {
   const ImportAccountQrStack = createNativeStackNavigator<AttachAccountStackParamList>();
 
   return (
-    <ImportAccountQrStack.Navigator screenOptions={{ headerShown: false }}>
+    <ImportAccountQrStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <ImportAccountQrStack.Screen name={'AttachQrSignerConfirm'} component={AttachQrSignerConfirm} />
       <ImportAccountQrStack.Screen name={'AttachReadOnly'} component={AttachReadOnlyScreen} />
       <ImportAccountQrStack.Screen name={'ImportAccountQrConfirm'} component={ImportAccountQrConfirm} />

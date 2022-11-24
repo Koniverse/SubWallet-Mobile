@@ -9,7 +9,7 @@ const UnStakeActionScreen = () => {
   const UnStakeActionStack = createNativeStackNavigator<UnStakeActionStackParamList>();
 
   return (
-    <UnStakeActionStack.Navigator screenOptions={{ headerShown: false }}>
+    <UnStakeActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <UnStakeActionStack.Screen name="UnStakeConfirm" component={UnStakeConfirm} />
       <UnStakeActionStack.Screen name="UnStakeAuth" component={UnStakeAuth} />
       <UnStakeActionStack.Screen name="UnStakeResult" component={UnStakeResult} options={{ gestureEnabled: false }} />

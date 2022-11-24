@@ -28,7 +28,7 @@ const StakingScreen = () => {
   }, [clearBackgroundServiceTimeout, isFocused, isStakingServiceActive]);
 
   return (
-    <StakingScreenStack.Navigator screenOptions={{ headerShown: false }}>
+    <StakingScreenStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <StakingScreenStack.Screen name="StakingBalances" component={StakingBalanceList} />
       <StakingScreenStack.Screen name="StakingBalanceDetail" component={StakingDetail} />
       <StakingScreenStack.Screen name="StakingNetworks" component={StakingNetworkList} />

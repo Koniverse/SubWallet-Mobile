@@ -40,7 +40,7 @@ const NFTStackScreen = () => {
   }, [clearBackgroundServiceTimeout, isFocused, isNftServiceActive]);
 
   return (
-    <NFTStack.Navigator screenOptions={{ headerShown: false }}>
+    <NFTStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <NFTStack.Screen name="CollectionList" component={NftCollectionList} />
       <NFTStack.Screen name="Collection" component={NftItemList} />
       <NFTStack.Screen name="NftDetail" component={NftDetail} />
