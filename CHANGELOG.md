@@ -1,3 +1,9 @@
+## 0.2.3 (108)
+- Support QR-signer account (#159)
+- Update capitalize first letter i18n (#256)
+- Fix bug get incorrect price information when stake/unstake (#253)
+- Fix crash app in case switch account when stand on the browser screen with the MI device (#246)
+
 ## 0.2.2 (107)
 - Fix bug crash app on build 106
 
