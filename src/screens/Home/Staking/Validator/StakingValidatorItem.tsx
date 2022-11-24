@@ -119,7 +119,7 @@ const AvatarImageStyle: StyleProp<ImageStyle> = {
 
 const StakingValidatorItem = ({ onPress, data, network, networkValidatorsInfo }: Props) => {
   const { icon, totalStake, expectedReturn, nominatorCount, minBond, address } = data;
-  const { maxNominatorPerValidator, bondedValidators, isBondedBefore } = networkValidatorsInfo;
+  const { maxNominatorPerValidator, bondedValidators } = networkValidatorsInfo;
   const tokenSymbol = useMemo((): string => network.nativeToken || 'Token', [network.nativeToken]);
 
   const [totalStakeValue, totalStakeToken] = getBalanceWithSi(

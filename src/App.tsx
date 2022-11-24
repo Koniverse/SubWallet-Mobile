@@ -342,7 +342,11 @@ export const App = () => {
                                   options={{ gestureEnabled: false }}
                                 />
                                 <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
-                                <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
+                                <Stack.Screen
+                                  name="SigningAction"
+                                  component={SigningScreen}
+                                  options={{ gestureEnabled: false }}
+                                />
                               </Stack.Group>
                               <Stack.Group
                                 screenOptions={{
