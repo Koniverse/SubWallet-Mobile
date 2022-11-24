@@ -82,6 +82,11 @@ const SigningScanPayload = () => {
     navigation.goBack();
   }, [navigation]);
 
+  const onStartOver = useCallback(() => {
+    setError('');
+    clearMultipartProgress();
+  }, [clearMultipartProgress]);
+
   useEffect(() => {
     if (step === SCANNER_QR_STEP.CONFIRM_STEP) {
       navigation.navigate('SigningAction', { screen: 'SigningConfirm' });
@@ -149,7 +154,7 @@ const SigningScanPayload = () => {
                       backgroundColor={ColorMap.dark2}
                       style={ProgressButtonStyle}
                       title={i18n.common.startOver}
-                      onPress={clearMultipartProgress}
+                      onPress={onStartOver}
                     />
                   </View>
                 )}

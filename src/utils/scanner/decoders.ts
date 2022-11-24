@@ -138,7 +138,7 @@ export const constructDataFromBytes = (
           data.data.data = uosAfterFrames.slice(44);
         } else {
           console.error('Could not determine action type.');
-          throw new Error();
+          throw new Error('Could not determine action type.');
         }
 
         return data;
@@ -223,7 +223,11 @@ export const constructDataFromBytes = (
           data.data.account = account.address;
         } catch (e) {
           console.log(e);
-          throw new Error('Something went wrong decoding the Substrate UOS payload: ' + uosAfterFrames);
+          if (e instanceof Error) {
+            throw new Error(e.message);
+          } else {
+            throw new Error('Something went wrong decoding the Substrate UOS payload: ' + uosAfterFrames);
+          }
         }
 
         return data;
