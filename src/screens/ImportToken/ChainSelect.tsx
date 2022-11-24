@@ -13,7 +13,7 @@ interface Props {
   selectedItem: string;
 }
 
-const renderEmpty = () => <EmptyList title={i18n.common.noEvmChainAvailable} icon={Aperture} />;
+const renderEmpty = () => <EmptyList title={i18n.common.noChainAvailable} icon={Aperture} />;
 
 export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChangeValue, selectedItem }: Props) => {
   return (

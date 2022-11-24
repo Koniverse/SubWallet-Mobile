@@ -78,6 +78,7 @@ import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
+import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -288,15 +289,15 @@ export const App = () => {
                                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                                 <Stack.Screen name="Settings" component={Settings} />
                                 <Stack.Screen name="SendFund" component={SendFund} />
-                                <Stack.Screen name="TransferNft" component={TransferNft} />
+                                <Stack.Screen name="TransferNft" component={TransferNftScreen} />
                                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                                 <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                                 <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                                <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                               </Stack.Group>
                               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                                <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                                 <Stack.Screen name="EditAccount" component={EditAccount} />
                                 <Stack.Screen name="RestoreJson" component={RestoreJson} />
                                 <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
