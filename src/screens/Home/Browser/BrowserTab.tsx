@@ -519,6 +519,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
                 onMessage={onWebviewMessage}
                 javaScriptEnabled={true}
                 allowFileAccess={true}
+                allowsInlineMediaPlayback={true}
                 allowUniversalAccessFromFileURLs={true}
                 allowFileAccessFromFileURLs={true}
                 domStorageEnabled={true}

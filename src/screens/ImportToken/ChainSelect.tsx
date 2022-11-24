@@ -50,7 +50,7 @@ export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChang
         title={i18n.title.chainSelect}
         autoFocus={true}
         items={formattedItemList}
-        renderListEmptyComponent={() => <EmptyList title={i18n.common.noEvmChainAvailable} icon={Aperture} />}
+        renderListEmptyComponent={() => <EmptyList title={i18n.common.noChainAvailable} icon={Aperture} />}
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onChangeModalVisible}

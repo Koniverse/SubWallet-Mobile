@@ -82,7 +82,7 @@ const NftNameTextStyle: StyleProp<TextStyle> = {
 const formConfig = {
   password: {
     require: true,
-    name: i18n.common.passwordForThisAccount.toUpperCase(),
+    name: i18n.common.passwordForThisAccount,
     value: '',
     validateFunc: validatePassword,
   },

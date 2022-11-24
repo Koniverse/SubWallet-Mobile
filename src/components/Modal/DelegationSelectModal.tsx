@@ -50,6 +50,19 @@ const DelegationSelectModal = ({
     }
   }, [validatorType]);
 
+  const noItemMessage = useMemo(() => {
+    switch (validatorType) {
+      case 'Collator':
+        return i18n.stakingScreen.validatorList.noCollatorAvailable;
+      case 'DApp':
+        return i18n.stakingScreen.validatorList.noDAppAvailable;
+      case 'Validator':
+      case 'Unknown':
+      default:
+        return i18n.stakingScreen.validatorList.noValidatorAvailable;
+    }
+  }, [validatorType]);
+
   const onSelect = useCallback(
     (item: DelegationItem) => {
       return () => {
@@ -76,7 +89,7 @@ const DelegationSelectModal = ({
         title={headerTitle}
         autoFocus={true}
         items={delegations}
-        renderListEmptyComponent={() => <EmptyList title={i18n.common.noEvmChainAvailable} icon={Aperture} />}
+        renderListEmptyComponent={() => <EmptyList title={noItemMessage} icon={Aperture} />}
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onChangeModalVisible}

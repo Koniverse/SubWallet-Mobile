@@ -34,22 +34,22 @@ const crowdloanFilterLabelStyle: StyleProp<any> = {
 
 const parachainFilterOptions: Record<string, FilterOptionType> = {
   all: {
-    label: 'All Parachains',
+    label: i18n.common.allParachains,
     icon: getLeftSelectItemIcon(CirclesThreePlus),
   },
   polkadot: {
-    label: 'Polkadot Parachain',
+    label: i18n.common.polkadotParachain,
     icon: getNetworkLogo('polkadot', 20),
   },
   kusama: {
-    label: 'Kusama Parachain',
+    label: i18n.common.kusamaParachain,
     icon: getNetworkLogo('kusama', 20),
   },
 };
 
 const crowdloanStatusFilterOptions: Record<string, FilterOptionType> = {
   all: {
-    label: 'All Projects',
+    label: i18n.common.allProjects,
     icon: getLeftSelectItemIcon(ListChecks),
   },
   completed: {
@@ -68,11 +68,11 @@ const crowdloanStatusFilterOptions: Record<string, FilterOptionType> = {
 
 const crowdloanFilterConfig = {
   paraChain: {
-    name: 'Parachain',
+    name: i18n.common.parachain,
     value: 'all',
   },
   crowdloanStatus: {
-    name: 'Crowdloan Status',
+    name: i18n.common.crowdloanStatus,
     value: 'all',
   },
 };

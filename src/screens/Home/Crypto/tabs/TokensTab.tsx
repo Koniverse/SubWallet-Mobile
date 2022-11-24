@@ -9,6 +9,7 @@ import { EmptyList } from 'components/EmptyList';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
+import { itemWrapperAppendixStyle } from 'screens/Home/Crypto/layers/shared';
 
 interface Props {
   items: TokenBalanceItemType[];
@@ -33,6 +34,7 @@ const emptyListWrapperStyle: StyleProp<any> = {
   left: 0,
   right: 0,
   paddingTop: 48,
+  backgroundColor: ColorMap.dark1,
 };
 
 export const TokensTab = ({
@@ -77,10 +79,14 @@ export const TokensTab = ({
         accessibilityComponentType
         contentContainerStyle={flatListContentContainerStyle}
         refreshControl={renderRefreshControl()}>
-        <View style={emptyListWrapperStyle}>
-          <EmptyList icon={Coins} title={i18n.common.emptyTokenListMessage} />
-          {renderFooterComponent()}
-        </View>
+        <>
+          <View style={{ height: '100%', backgroundColor: ColorMap.dark1 }} />
+          <View style={emptyListWrapperStyle}>
+            <EmptyList icon={Coins} title={i18n.common.emptyTokenListMessage} />
+            <View style={itemWrapperAppendixStyle} />
+            {renderFooterComponent()}
+          </View>
+        </>
       </Tabs.ScrollView>
     );
   }
