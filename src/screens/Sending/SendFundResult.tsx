@@ -94,7 +94,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
             <View style={{ alignItems: 'center', paddingTop: 100 }}>
               <Image source={Images.successStatusImg} style={imageStyle} />
 
-              <Text style={titleStyle}>Transaction Successful</Text>
+              <Text style={titleStyle}>{i18n.sendAssetScreen.transactionSuccessful}</Text>
               <Text style={subtitleStyle}>{i18n.common.transferSuccessMessage}</Text>
             </View>
           )}
@@ -104,7 +104,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
               contentContainerStyle={{ alignItems: 'center', paddingTop: 100 }}>
               <Image source={Images.failStatusImg} style={imageStyle} />
 
-              <Text style={titleStyle}>Transaction Fail</Text>
+              <Text style={titleStyle}>{i18n.sendAssetScreen.transactionFail}</Text>
               <Text style={subtitleStyle}>
                 {extrinsicHash ? i18n.common.transferFailMessage1 : i18n.common.transferFailMessage2}
               </Text>

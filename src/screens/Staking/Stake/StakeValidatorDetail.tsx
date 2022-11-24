@@ -104,7 +104,7 @@ const StakeValidatorDetail = ({
       <View style={WrapperStyle}>
         <ScrollView style={ScrollViewStyle} contentContainerStyle={{ ...ContainerHorizontalPadding }}>
           <View style={CenterWrapperStyle}>
-            <Text style={TotalStakeTitleTextStyle}>Total Stake</Text>
+            <Text style={TotalStakeTitleTextStyle}>{i18n.stakingScreen.validatorList.totalStake}</Text>
           </View>
           <View style={CenterWrapperStyle}>
             <BalanceVal

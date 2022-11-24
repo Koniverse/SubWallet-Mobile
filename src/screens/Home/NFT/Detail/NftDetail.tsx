@@ -247,7 +247,7 @@ const NftDetail = ({
           <View style={ResourceIconContainerStyle}>
             <SlidersHorizontal size={20} color={ColorMap.primary} />
           </View>
-          <Text style={ResourceTitleStyle}>Resources or Inventory</Text>
+          <Text style={ResourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
         </TouchableOpacity>
         <TextField
           text={collectionName || ''}
