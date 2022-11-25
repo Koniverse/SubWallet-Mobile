@@ -8,7 +8,7 @@ const WithdrawActionScreen = () => {
   const WithdrawActionStack = createNativeStackNavigator<WithdrawStakeActionStackParamList>();
 
   return (
-    <WithdrawActionStack.Navigator screenOptions={{ headerShown: false , animation: 'slide_from_right' }}>
+    <WithdrawActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <WithdrawActionStack.Screen name="WithdrawAuth" component={WithdrawAuth} />
       <WithdrawActionStack.Screen
         name="WithdrawResult"
