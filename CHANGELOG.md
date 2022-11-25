@@ -1,3 +1,7 @@
+## 0.2.3 (109)
+- Update QR-signer UI (#159)
+- Fix bug while connect to DotInsights (#264)
+
 ## 0.2.3 (108)
 - Support QR-signer account (#159)
 - Update capitalize first letter i18n (#256)
