@@ -70,7 +70,9 @@ const ResultDetail = ({ onClose, isVisible }: Props) => {
   return (
     <SubWalletModal modalVisible={isVisible}>
       <View style={ContainerStyle}>
-        <Text style={TitleTextStyle}>{i18n.title.authorizeTransaction}</Text>
+        <Text style={TitleTextStyle}>
+          {type === 'message' ? i18n.title.authorizeMessage : i18n.title.authorizeTransaction}
+        </Text>
         <AccountInfoField address={formattedAddress} name={account?.name || ''} networkKey={network?.key} />
         <ScrollView style={ContentWrapperStyle} showsVerticalScrollIndicator={false}>
           {renderContent()}

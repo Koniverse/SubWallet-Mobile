@@ -1,8 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
+import { Images } from 'assets/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Linking, ScrollView, StyleProp, View, Image } from 'react-native';
 import { SubmitButton } from 'components/SubmitButton';
-import Text from '../../components/Text';
+import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
+import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import React from 'react';
+import { Image, Linking, ScrollView, StyleProp, View } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
+import { ColorMap } from 'styles/color';
 import {
   FontMedium,
   FontSemiBold,
@@ -12,13 +17,8 @@ import {
   sharedStyles,
 } from 'styles/sharedStyles';
 import { TransferResultType } from 'types/tx';
-import { ColorMap } from 'styles/color';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
-import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
-import useScanExplorerTxUrl from 'hooks/screen/useScanExplorerTxUrl';
 import i18n from 'utils/i18n/i18n';
-import { Images } from 'assets/index';
+import Text from '../../components/Text';
 
 interface Props {
   txResult: TransferResultType;
@@ -77,9 +77,10 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
 
     return (
       <SubmitButton
-        style={{ ...MarginBottomForSubmitButton, marginTop: 16 }}
+        style={{ marginBottom: 16 }}
+        backgroundColor={ColorMap.dark2}
         disabled={!isSupportScanExplorer || !isScanExplorerTxUrl}
-        title={i18n.common.viewInExplorer}
+        title={i18n.common.viewHistory}
         onPress={() => Linking.openURL(isScanExplorerTxUrl)}
       />
     );
@@ -93,7 +94,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
             <View style={{ alignItems: 'center', paddingTop: 100 }}>
               <Image source={Images.successStatusImg} style={imageStyle} />
 
-              <Text style={titleStyle}>{i18n.sendAssetScreen.transactionSuccessful}</Text>
+              <Text style={titleStyle}>{i18n.sendAssetScreen.success}</Text>
               <Text style={subtitleStyle}>{i18n.common.transferSuccessMessage}</Text>
             </View>
           )}
@@ -103,7 +104,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
               contentContainerStyle={{ alignItems: 'center', paddingTop: 100 }}>
               <Image source={Images.failStatusImg} style={imageStyle} />
 
-              <Text style={titleStyle}>{i18n.sendAssetScreen.transactionFail}</Text>
+              <Text style={titleStyle}>{i18n.sendAssetScreen.fail}</Text>
               <Text style={subtitleStyle}>
                 {extrinsicHash ? i18n.common.transferFailMessage1 : i18n.common.transferFailMessage2}
               </Text>
@@ -113,29 +114,18 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
         </View>
 
         <View style={footerAreaStyle}>
+          {viewTransactionBtn(extrinsicHash)}
+
           {isTxSuccess && (
-            <>
-              <SubmitButton
-                title={i18n.common.backToHome}
-                backgroundColor={ColorMap.dark2}
-                style={{ marginBottom: 18 }}
-                onPress={() => navigation.navigate('Home')}
-              />
-              {/*{viewTransactionBtn(extrinsicHash)}*/}
-            </>
+            <SubmitButton
+              title={i18n.common.backToHome}
+              style={{ ...MarginBottomForSubmitButton }}
+              onPress={() => navigation.navigate('Home')}
+            />
           )}
           {!isTxSuccess && (
-            <>
-              <SubmitButton
-                title={i18n.common.resend}
-                backgroundColor={ColorMap.dark2}
-                style={{ marginBottom: 18 }}
-                onPress={onResend}
-              />
-            </>
+            <SubmitButton title={i18n.common.resend} style={{ ...MarginBottomForSubmitButton }} onPress={onResend} />
           )}
-
-          {viewTransactionBtn(extrinsicHash)}
         </View>
       </View>
     </ContainerWithSubHeader>

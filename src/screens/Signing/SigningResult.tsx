@@ -77,11 +77,17 @@ const ViewDetailIconStyle: StyleProp<ViewStyle> = {
   marginLeft: 4,
 };
 
+const ViewDetailTextStyle: StyleProp<TextStyle> = {
+  ...sharedStyles.mainText,
+  ...FontMedium,
+  color: ColorMap.disabled,
+};
+
 const SigningResult = () => {
   const navigation = useNavigation<RootNavigationProps>();
 
   const { cleanup, state: scannerState } = useContext(ScannerContext);
-  const { signedData } = scannerState;
+  const { signedData, type } = scannerState;
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -101,7 +107,9 @@ const SigningResult = () => {
   }, [cleanup, navigation]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goHome} title={i18n.title.signTransaction}>
+    <ContainerWithSubHeader
+      onPressBack={goHome}
+      title={type === 'message' ? i18n.title.signMessage : i18n.title.signTransaction}>
       <ScrollView style={WrapperStyle} contentContainerStyle={ScrollViewContainerStyle}>
         <Text style={SubTitleTextStyle}>{i18n.common.scanSignature}</Text>
         <View style={ContentContainerStyle}>
@@ -112,7 +120,7 @@ const SigningResult = () => {
           </View>
           <View style={ViewDetailContainerButtonStyle}>
             <TouchableOpacity style={ViewDetailButtonStyle} onPress={openModal}>
-              <Text>{i18n.common.viewDetails}</Text>
+              <Text style={ViewDetailTextStyle}>{i18n.common.viewDetails}</Text>
               <CaretRight color={ColorMap.disabled} size={16} style={ViewDetailIconStyle} />
             </TouchableOpacity>
           </View>

@@ -10,6 +10,7 @@ import { ArrowLeft } from 'phosphor-react-native';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleProp, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Bar as ProgressBar } from 'react-native-progress';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RootNavigationProps } from 'routes/index';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
@@ -18,7 +19,6 @@ import { ScannerStyles } from 'styles/scanner';
 import { FontMedium, FontSize0, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
-import { Bar as ProgressBar } from 'react-native-progress';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -110,7 +110,7 @@ const SigningScanPayload = () => {
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
-                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.qrSigner}</Text>
+                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanPayload}</Text>
                 <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={BackButtonStyle} onPress={goBack}>
                   <ArrowLeft size={20} weight={'bold'} color={'#FFF'} />
                 </TouchableOpacity>
@@ -134,8 +134,8 @@ const SigningScanPayload = () => {
               <View style={ScannerStyles.LeftAndRightOverlayStyle} />
             </View>
             <View style={ScannerStyles.BottomOverlayStyle}>
-              <View style={BottomSubContentStyle}>
-                {totalFrameCount > 1 && (
+              {totalFrameCount > 1 && (
+                <View style={BottomSubContentStyle}>
                   <View style={ProgressContainerStyle}>
                     <ProgressBar
                       progress={completedFramesCount / totalFrameCount}
@@ -157,8 +157,8 @@ const SigningScanPayload = () => {
                       onPress={onStartOver}
                     />
                   </View>
-                )}
-              </View>
+                </View>
+              )}
               <View style={BottomSubContentStyle}>
                 {!!error && <Warning style={BottomContentStyle} message={error} isDanger />}
               </View>

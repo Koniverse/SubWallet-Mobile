@@ -21,7 +21,10 @@ const getImageStyle = (_size: string | number, hide: boolean): StyleProp<ImageSt
   return {
     width: size - 4,
     height: size - 4,
-    display: hide ? 'none' : undefined,
+    opacity: hide ? 0 : 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
   };
 };
 
@@ -32,6 +35,7 @@ const QrPayload = ({ skipEncoding, value, style, size = 250 }: Props) => {
     (): StyleProp<ViewStyle> => ({
       width: size,
       height: size,
+      position: 'relative',
       borderWidth: 2,
       borderColor: ColorMap.light,
     }),
