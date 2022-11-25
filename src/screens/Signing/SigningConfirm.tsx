@@ -58,7 +58,7 @@ const SigningConfirm = () => {
 
   const {
     cleanup,
-    state: { step },
+    state: { step, type },
     signDataLegacy,
   } = useContext(ScannerContext);
 
@@ -120,10 +120,15 @@ const SigningConfirm = () => {
   }, [navigation, step]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.signTransaction} disabled={isBusy}>
+    <ContainerWithSubHeader
+      onPressBack={goBack}
+      title={type === 'message' ? i18n.title.signMessage : i18n.title.signTransaction}
+      disabled={isBusy}>
       <>
         <ScrollView style={WrapperStyle}>
-          <Text style={SubTitleTextStyle}>Approve request with this account</Text>
+          <Text style={SubTitleTextStyle}>
+            {type === 'message' ? i18n.signingAction.scanToSignMessage : i18n.signingAction.scanToSignTransaction}
+          </Text>
           <TextField text={account?.name || ''} disabled={true} label={i18n.common.accountName} />
           <AddressField
             address={account?.address || ''}
@@ -145,6 +150,7 @@ const SigningConfirm = () => {
         <View style={ActionContainerStyle}>
           <SubmitButton
             backgroundColor={ColorMap.dark2}
+            disabledColor={ColorMap.buttonOverlayButtonColor}
             style={ButtonStyle}
             title={i18n.common.cancel}
             disabled={isBusy}

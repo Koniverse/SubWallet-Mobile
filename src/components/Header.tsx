@@ -1,16 +1,18 @@
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { IconButton } from 'components/IconButton';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import { List, MagnifyingGlass, QrCode } from 'phosphor-react-native';
 import React, { useCallback } from 'react';
 import { ActivityIndicator, StyleProp, TouchableOpacity, View } from 'react-native';
-import Text from '../components/Text';
-import { RootStackParamList } from 'routes/index';
+import { RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
+import { RootStackParamList } from 'routes/index';
 import { RootState } from 'stores/index';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { SpaceStyle } from 'styles/space';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { List, MagnifyingGlass, QrCode } from 'phosphor-react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ColorMap } from 'styles/color';
-import { IconButton } from 'components/IconButton';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { SpaceStyle } from 'styles/space';
+import { requestCameraPermission } from 'utils/permission/camera';
+import Text from '../components/Text';
 
 export interface HeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -43,10 +45,14 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
     onPressSearchButton && onPressSearchButton();
   };
 
-  const onPressQrButton = useCallback(() => {
-    navigation.navigate('SigningAction', {
-      screen: 'SigningScanPayload',
-    });
+  const onPressQrButton = useCallback(async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      navigation.navigate('SigningAction', {
+        screen: 'SigningScanPayload',
+      });
+    }
   }, [navigation]);
 
   return (

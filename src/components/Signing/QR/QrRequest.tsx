@@ -1,31 +1,30 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { SignerResult } from '@polkadot/types/types';
+import { hexToU8a, isHex } from '@polkadot/util';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { IGNORE_QR_SIGNER } from '@subwallet/extension-koni-base/constants';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import SignatureScanner from 'components/Scanner/SignatureScanner';
 import DisplayPayload from 'components/Payload/DisplayPayload';
+import SignatureScanner from 'components/Scanner/SignatureScanner';
 import { SubmitButton } from 'components/SubmitButton';
+import { Warning } from 'components/Warning';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { useRejectExternalRequest } from 'hooks/screen/useRejectExternalRequest';
 import { WebRunnerContext } from 'providers/contexts';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
 import { QrSignerContext } from 'providers/QrSignerContext';
 import { SigningContext } from 'providers/SigningContext';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import { BaseSignProps, SigData } from 'types/signer';
+import i18n from 'utils/i18n/i18n';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { resolveExternalRequest } from '../../../messaging';
-import { BaseSignProps, SigData } from 'types/signer';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
-
-import { SignerResult } from '@polkadot/types/types';
-import { hexToU8a, isHex } from '@polkadot/util';
-import i18n from 'utils/i18n/i18n';
-import { Warning } from 'components/Warning';
 
 interface Props extends BaseSignProps {
   network: NetworkJson;
@@ -220,6 +219,7 @@ const QrRequest = ({
           <View style={ActionModalStyle}>
             <SubmitButton
               backgroundColor={ColorMap.dark2}
+              disabledColor={ColorMap.buttonOverlayButtonColor}
               style={getButtonStyle(true, CancelStyle)}
               isBusy={isCanceling}
               title={cancelText ? cancelText : i18n.common.cancel}
