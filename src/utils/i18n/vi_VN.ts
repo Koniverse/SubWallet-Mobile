@@ -212,7 +212,7 @@ export const vi = {
     scanQr: 'Scan QR',
     back: 'Back',
     useHardWalletToScan: "Use your hardware wallet's camera\nto scan this QR code",
-    useNormalWalletScan: "Use your hardware wallet's camera\nto scan this QR code",
+    useNormalWalletScan: 'Scan this QR code with your wallet',
     scanQrPayload: "Use this device's camera to scan the QR code\ndisplayed on the other wallet",
     startOver: 'Start Over',
     scanSignature: 'Scan this QR code with your other wallet\nto sign transaction',
