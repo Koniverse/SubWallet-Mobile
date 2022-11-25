@@ -114,14 +114,14 @@ export const predefinedDApps: PredefinedDApps = {
       url: 'https://www.dotinsights.xyz',
       icon: 'https://dotinsights.subwallet.app/assets/images/favicon/favicon-180x180.png',
       categories: ['data', 'utilities'],
-      isSupportSubstrateAccount: true,
+      // isSupportSubstrateAccount: true,
     },
     {
       name: 'dotinsights | Polkadot & Kusama Ecosystem Map',
       url: 'https://dotinsights.subwallet.app/',
       icon: 'https://dotinsights.subwallet.app/assets/images/favicon/favicon-180x180.png',
       categories: ['data', 'utilities'],
-      isSupportSubstrateAccount: true,
+      // isSupportSubstrateAccount: true,
     },
     {
       name: 'Singular 2.0',
