@@ -11,6 +11,7 @@ import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 
 interface Props {
   address: string;
+  isOnlyShowMainToken?: boolean;
   modalVisible: boolean;
   onPressBack?: () => void;
   onChangeModalVisible: () => void;
@@ -19,6 +20,7 @@ interface Props {
   selectedNetworkKey?: string;
   selectedToken?: string;
   externalTokenOptions?: TokenItemType[];
+  title?: string;
 }
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
@@ -51,9 +53,16 @@ export const TokenSelect = ({
   modalVisible,
   onChangeModalVisible,
   externalTokenOptions,
+  isOnlyShowMainToken,
+  title = i18n.title.token,
 }: Props) => {
   const defaultTokenOptions = useTokenOptions(address, filteredNetworkKey);
-  const tokenOptions = externalTokenOptions ? externalTokenOptions : defaultTokenOptions;
+  const mainTokenOptions = defaultTokenOptions.filter(item => item.isMainToken);
+  const tokenOptions = externalTokenOptions
+    ? externalTokenOptions
+    : isOnlyShowMainToken
+    ? mainTokenOptions
+    : defaultTokenOptions;
 
   const renderItem = ({ item }: ListRenderItemInfo<TokenItemType>) => {
     const { symbol, networkKey, displayedSymbol, isMainToken, networkDisplayName } = item;
@@ -78,7 +87,7 @@ export const TokenSelect = ({
         autoFocus={true}
         items={tokenOptions}
         style={FlatListScreenPaddingTop}
-        title={i18n.title.token}
+        title={title}
         filterFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onPressBack}

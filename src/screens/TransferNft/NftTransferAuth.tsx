@@ -24,6 +24,7 @@ import i18n from 'utils/i18n/i18n';
 import {
   evmNftSubmitTransaction,
   makeTransferNftQrEvm,
+  makeTransferNftQrSubstrate,
   nftForceUpdate,
   substrateNftSubmitTransaction,
 } from '../../messaging';
@@ -187,6 +188,7 @@ const AuthTransaction = ({
             balanceError={!!substrateTransferParams?.balanceError}
             baseProps={{}}
             handleSignPassword={substrateNftSubmitTransaction}
+            handleSignQr={makeTransferNftQrSubstrate}
             message={'There is problem when transferNft'}
             onAfterSuccess={onAfterSuccess}
             onFail={onFail}
