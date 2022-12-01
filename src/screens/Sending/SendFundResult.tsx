@@ -80,6 +80,7 @@ export const SendFundResult = ({ networkKey, txResult: { extrinsicHash, isTxSucc
         style={{ marginBottom: 16 }}
         backgroundColor={ColorMap.dark2}
         disabled={!isSupportScanExplorer || !isScanExplorerTxUrl}
+        disabledColor={ColorMap.buttonOverlayButtonColor}
         title={i18n.common.viewHistory}
         onPress={() => Linking.openURL(isScanExplorerTxUrl)}
       />

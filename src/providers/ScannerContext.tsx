@@ -443,7 +443,7 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
 
             return hexStripPrefix(signature);
           } catch (e) {
-            console.error(e);
+            // console.error(e);
             throw new Error((e as Error).message);
           }
         }

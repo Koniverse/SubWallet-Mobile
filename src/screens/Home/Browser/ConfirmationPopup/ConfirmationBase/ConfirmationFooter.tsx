@@ -25,6 +25,7 @@ export interface ConfirmationFooterType {
   isSubmitButtonBusy?: boolean;
   isScanQrButton?: boolean;
   blockApprove?: boolean;
+  isShowBackButton?: boolean;
 }
 
 const cancelButtonStyle: StyleProp<any> = {
@@ -63,6 +64,7 @@ export const ConfirmationFooter = ({
   isSubmitButtonBusy,
   isScanQrButton,
   blockApprove,
+  isShowBackButton,
 }: ConfirmationFooterType) => {
   const [isScanning, setIsScanning] = useState(false);
 
@@ -87,30 +89,43 @@ export const ConfirmationFooter = ({
       {blockApprove && <Warning isDanger style={WarningStyle} message={i18n.warningMessage.unSupportSigning} />}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 16, marginHorizontal: 8 }}>
         {/* todo: add busy prop + style to IconButton */}
-        {isShowBlockButton && (
-          <IconButton
-            icon={ShieldSlash}
-            style={blockButtonStyle}
-            onPress={onPressBlockButton}
-            disabled={isBlockButtonDisabled || isBlockButtonBusy}
-          />
-        )}
-        <SubmitButton
-          title={!blockApprove ? cancelButtonTitle : i18n.common.back}
-          backgroundColor={blockApprove ? ColorMap.secondary : ColorMap.dark2}
-          style={cancelButtonStyle}
-          onPress={onPressCancelButton}
-          disabled={isCancelButtonDisabled}
-          disabledColor={ColorMap.buttonOverlayButtonColor}
-          isBusy={isCancelButtonBusy}
-        />
-        {!blockApprove && (
+        {!isShowBackButton ? (
+          <>
+            {isShowBlockButton && (
+              <IconButton
+                icon={ShieldSlash}
+                style={blockButtonStyle}
+                onPress={onPressBlockButton}
+                disabled={isBlockButtonDisabled || isBlockButtonBusy}
+              />
+            )}
+            <SubmitButton
+              title={!blockApprove ? cancelButtonTitle : i18n.common.back}
+              backgroundColor={blockApprove ? ColorMap.secondary : ColorMap.dark2}
+              style={cancelButtonStyle}
+              onPress={onPressCancelButton}
+              disabled={isCancelButtonDisabled}
+              disabledColor={ColorMap.buttonOverlayButtonColor}
+              isBusy={isCancelButtonBusy}
+            />
+            {!blockApprove && (
+              <SubmitButton
+                style={{ flex: 1, marginRight: 8, marginLeft: 8 }}
+                title={!isScanQrButton ? submitButtonTitle : i18n.common.scanQr}
+                onPress={!isScanQrButton ? onPressSubmitButton : openScanning}
+                disabled={!isScanQrButton ? isSubmitButtonDisabled : false}
+                isBusy={isSubmitButtonBusy}
+              />
+            )}
+          </>
+        ) : (
           <SubmitButton
+            title={i18n.common.back}
             style={{ flex: 1, marginRight: 8, marginLeft: 8 }}
-            title={!isScanQrButton ? submitButtonTitle : i18n.common.scanQr}
-            onPress={!isScanQrButton ? onPressSubmitButton : openScanning}
-            disabled={!isScanQrButton ? isSubmitButtonDisabled : false}
-            isBusy={isSubmitButtonBusy}
+            onPress={onPressCancelButton}
+            disabled={isCancelButtonDisabled}
+            disabledColor={ColorMap.buttonOverlayButtonColor}
+            isBusy={isCancelButtonBusy}
           />
         )}
         <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />

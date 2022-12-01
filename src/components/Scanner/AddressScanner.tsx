@@ -1,10 +1,9 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import { ScannerStyles } from 'styles/scanner';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { X } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
@@ -13,6 +12,7 @@ import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { overlayColor, rectDimensions } from 'constants/scanner';
+import { IconButton } from 'components/IconButton';
 
 interface Props {
   onPressCancel: () => void;
@@ -76,12 +76,7 @@ export const AddressScanner = ({
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
-                <TouchableOpacity
-                  activeOpacity={BUTTON_ACTIVE_OPACITY}
-                  style={CancelButtonStyle}
-                  onPress={onPressCancel}>
-                  <X size={20} weight={'bold'} color={'#FFF'} />
-                </TouchableOpacity>
+                <IconButton icon={X} style={CancelButtonStyle} onPress={onPressCancel} />
               </View>
             </View>
             <View style={ScannerStyles.CenterOverlayStyle}>
