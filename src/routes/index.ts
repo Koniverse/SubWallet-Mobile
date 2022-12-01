@@ -56,6 +56,7 @@ export type RootStackParamList = {
   NetworkConfigDetail: { key: string };
   AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
+  WebViewModal: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

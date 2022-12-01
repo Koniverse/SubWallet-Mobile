@@ -9,6 +9,7 @@ import {
   NetWorkGroup,
   NetworkJson,
   TokenInfo,
+  TransakNetwork,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
@@ -24,7 +25,40 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { IconProps } from 'phosphor-react-native';
 import { isValidURL } from 'utils/browser';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
-
+export const PREDEFINED_TRANSAK_NETWORK: Record<string, TransakNetwork> = {
+  polkadot: {
+    networks: ['mainnet'],
+    tokens: ['DOT'],
+  },
+  kusama: {
+    networks: ['mainnet'],
+    tokens: ['KSM'],
+  },
+  astar: {
+    networks: ['astar'],
+    tokens: ['ASTR'],
+  },
+  shiden: {
+    networks: ['Shiden'],
+    tokens: ['SDN'],
+  },
+  moonbeam: {
+    networks: ['mainnet'],
+    tokens: ['GLMR'],
+  },
+  moonriver: {
+    networks: ['moonriver'],
+    tokens: ['MOVR'],
+  },
+  ethereum: {
+    networks: ['ethereum'],
+    tokens: ['ETH'],
+  },
+  binance: {
+    networks: ['bsc'],
+    tokens: ['BNB'],
+  },
+};
 export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
 export const accountAllRecoded: Recoded = {
   account: {
