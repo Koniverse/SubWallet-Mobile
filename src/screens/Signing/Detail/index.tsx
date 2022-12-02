@@ -5,7 +5,7 @@ import { deviceHeight, statusBarHeight } from 'constants/index';
 import useGetAccountAndNetworkScanned from 'hooks/screen/Signing/useGetAccountAndNetworkScanned';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useMemo } from 'react';
-import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { Platform, ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import MessageDetail from 'screens/Signing/Detail/Message';
 import EvmTransactionDetail from 'screens/Signing/Detail/Transaction/Evm';
 import SubstrateTransactionDetail from 'screens/Signing/Detail/Transaction/Substrate';
@@ -21,7 +21,7 @@ interface Props {
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   width: '100%',
-  maxHeight: deviceHeight - statusBarHeight,
+  maxHeight: deviceHeight - statusBarHeight - (Platform.OS === 'android' ? 20 : 80),
 };
 
 const TitleTextStyle: StyleProp<TextStyle> = {

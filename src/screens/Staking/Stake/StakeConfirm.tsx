@@ -80,12 +80,10 @@ const DEFAULT_AMOUNT = -1;
 
 const StakeConfirm = ({ route: { params: stakeParams }, navigation: { goBack } }: StakeConfirmProps) => {
   const { validator, networkKey, networkValidatorsInfo, selectedAccount } = stakeParams;
-  console.log('networkKey', networkKey);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);
-  console.log('network', network);
 
   const inputBalanceRef = createRef();
 

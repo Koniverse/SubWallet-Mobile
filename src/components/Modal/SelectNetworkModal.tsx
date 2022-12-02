@@ -25,7 +25,12 @@ const filterFunction = (items: { label: string; value: string }[], searchString:
 
 const defaultRenderListEmptyComponent = () => {
   return (
-    <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noNetworkAvailable} isDanger={false} />
+    <Warning
+      style={{ marginHorizontal: 16 }}
+      title={i18n.warningTitle.warning}
+      message={i18n.warningMessage.noNetworkAvailable}
+      isDanger={false}
+    />
   );
 };
 
