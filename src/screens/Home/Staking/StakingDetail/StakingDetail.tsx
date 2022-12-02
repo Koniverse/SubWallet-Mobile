@@ -182,27 +182,42 @@ const StakingDetail = ({
             decimal={0}
             si={formatBalance.findSi('-')}
           />
-          <BalanceField
-            label={i18n.stakingScreen.stakingDetail.totalReward}
-            value={reward?.totalReward || '0'}
-            token={staking.nativeToken}
-            decimal={0}
-            si={formatBalance.findSi('-')}
-          />
-          <BalanceField
-            label={i18n.stakingScreen.stakingDetail.latestReward}
-            value={reward?.latestReward || '0'}
-            token={staking.nativeToken}
-            decimal={0}
-            si={formatBalance.findSi('-')}
-          />
-          <BalanceField
-            label={i18n.stakingScreen.stakingDetail.totalSlash}
-            value={reward?.totalSlash || '0'}
-            token={staking.nativeToken}
-            decimal={0}
-            si={formatBalance.findSi('-')}
-          />
+          {reward?.totalReward && (
+            <BalanceField
+              label={i18n.stakingScreen.stakingDetail.totalReward}
+              value={reward?.totalReward || '0'}
+              token={staking.nativeToken}
+              decimal={0}
+              si={formatBalance.findSi('-')}
+            />
+          )}
+          {reward?.latestReward && (
+            <BalanceField
+              label={i18n.stakingScreen.stakingDetail.latestReward}
+              value={reward?.latestReward || '0'}
+              token={staking.nativeToken}
+              decimal={0}
+              si={formatBalance.findSi('-')}
+            />
+          )}
+          {reward?.totalSlash && (
+            <BalanceField
+              label={i18n.stakingScreen.stakingDetail.totalSlash}
+              value={reward?.totalSlash || '0'}
+              token={staking.nativeToken}
+              decimal={0}
+              si={formatBalance.findSi('-')}
+            />
+          )}
+          {stakingType === StakingType.POOLED && (
+            <BalanceField
+              label={i18n.stakingScreen.stakingDetail.unclaimedReward}
+              value={reward?.unclaimedReward || '0'}
+              token={staking.nativeToken}
+              decimal={0}
+              si={formatBalance.findSi('-')}
+            />
+          )}
         </ScrollView>
         {isCanSign && stakingType !== StakingType.POOLED && (
           <SubmitButton

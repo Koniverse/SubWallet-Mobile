@@ -1,8 +1,6 @@
 import { isHex } from '@polkadot/util';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import Text from 'components/Text';
 import { Warning } from 'components/Warning';
-import { DEVICE } from 'constants/index';
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -15,6 +13,9 @@ import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
+import ModalBase from 'components/Modal/Base/ModalBase';
+import { X } from 'phosphor-react-native';
+import { IconButton } from 'components/IconButton';
 
 interface Props {
   visible: boolean;
@@ -22,9 +23,14 @@ interface Props {
   onSuccess: (result: SigData) => void | Promise<void>;
 }
 
-const WrapperContainerStyle: StyleProp<ViewStyle> = {
-  height: DEVICE.height - 60,
-  zIndex: -1,
+const CancelButtonStyle: StyleProp<ViewStyle> = {
+  position: 'absolute',
+  right: 16,
+  zIndex: 10,
+  width: 40,
+  height: 40,
+  justifyContent: 'center',
+  alignItems: 'center',
 };
 
 const BottomSubContentStyle: StyleProp<ViewStyle> = {
@@ -38,11 +44,6 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
   justifyContent: 'center',
   backgroundColor: convertHexColorToRGBA(ColorMap.dark1, 0.5),
-};
-
-const LeftAndRightOverLay: StyleProp<ViewStyle> = {
-  marginTop: -0.5,
-  height: (ScannerStyles.LeftAndRightOverlayStyle.height as number) + 0.1,
 };
 
 const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
@@ -78,52 +79,51 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
   }, [visible]);
 
   return (
-    <SubWalletModal modalVisible={visible} onChangeModalVisible={onHideModal}>
-      <View style={WrapperContainerStyle}>
-        <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-        <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
-        <QRCodeScanner
-          reactivate={true}
-          reactivateTimeout={5000}
-          showMarker={true}
-          onRead={handleRead}
-          containerStyle={ScannerStyles.ContainerStyle}
-          cameraStyle={ScannerStyles.CameraStyle}
-          topViewStyle={ScannerStyles.ContainerStyle}
-          customMarker={
-            <View style={ScannerStyles.RectangleContainerStyle}>
-              <View style={ScannerStyles.TopOverlayStyle}>
-                <View style={ScannerStyles.HeaderStyle}>
-                  <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.approveRequest}</Text>
-                </View>
-                <View style={ScannerStyles.HeaderSubTitleStyle}>
-                  <Text style={ScannerStyles.HeaderSubTitleTextStyle}>{i18n.common.scanForApprove}</Text>
-                </View>
+    <ModalBase isVisible={visible} style={{ flex: 1, width: '100%', margin: 0 }}>
+      <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
+      <QRCodeScanner
+        reactivate={true}
+        reactivateTimeout={5000}
+        showMarker={true}
+        onRead={handleRead}
+        containerStyle={ScannerStyles.ContainerStyle}
+        cameraStyle={ScannerStyles.CameraStyle}
+        topViewStyle={ScannerStyles.ContainerStyle}
+        customMarker={
+          <View style={ScannerStyles.RectangleContainerStyle}>
+            <View style={ScannerStyles.TopOverlayStyle}>
+              <View style={ScannerStyles.HeaderStyle}>
+                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.approveRequest}</Text>
+                <IconButton icon={X} style={CancelButtonStyle} onPress={onHideModal} />
               </View>
-              <View style={ScannerStyles.CenterOverlayStyle}>
-                <View style={[ScannerStyles.LeftAndRightOverlayStyle, LeftAndRightOverLay]} />
-
-                <View style={ScannerStyles.RectangleStyle}>
-                  <BarcodeFinder
-                    width={rectDimensions}
-                    height={rectDimensions}
-                    borderColor={ColorMap.light}
-                    borderWidth={2}
-                  />
-                </View>
-
-                <View style={[ScannerStyles.LeftAndRightOverlayStyle, LeftAndRightOverLay]} />
-              </View>
-              <View style={ScannerStyles.BottomOverlayStyle}>
-                <View style={BottomSubContentStyle}>
-                  {!!error && <Warning style={BottomContentStyle} message={error} isDanger />}
-                </View>
+              <View style={ScannerStyles.HeaderSubTitleStyle}>
+                <Text style={ScannerStyles.HeaderSubTitleTextStyle}>{i18n.common.scanForApprove}</Text>
               </View>
             </View>
-          }
-        />
-      </View>
-    </SubWalletModal>
+            <View style={ScannerStyles.CenterOverlayStyle}>
+              <View style={[ScannerStyles.LeftAndRightOverlayStyle]} />
+
+              <View style={ScannerStyles.RectangleStyle}>
+                <BarcodeFinder
+                  width={rectDimensions}
+                  height={rectDimensions}
+                  borderColor={ColorMap.light}
+                  borderWidth={2}
+                />
+              </View>
+
+              <View style={[ScannerStyles.LeftAndRightOverlayStyle]} />
+            </View>
+            <View style={ScannerStyles.BottomOverlayStyle}>
+              <View style={BottomSubContentStyle}>
+                {!!error && <Warning style={BottomContentStyle} message={error} isDanger />}
+              </View>
+            </View>
+          </View>
+        }
+      />
+    </ModalBase>
   );
 };
 

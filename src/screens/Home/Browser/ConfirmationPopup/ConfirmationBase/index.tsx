@@ -217,7 +217,8 @@ export const ConfirmationBase = ({
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
         isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isNeedSignature && !formState.data.password)}
-        isScanQrButton={isNeedSignature && signMode === SIGN_MODE.QR}
+        isScanQrButton={isNeedSignature && signMode === SIGN_MODE.QR && !!externalInfo}
+        isShowBackButton={signMode === SIGN_MODE.QR && !externalInfo}
       />
 
       <DetailModal

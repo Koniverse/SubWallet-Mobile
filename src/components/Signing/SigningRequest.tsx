@@ -20,6 +20,7 @@ import { SigningContext } from 'providers/SigningContext';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import React, { useCallback, useContext, useEffect } from 'react';
 import { noop } from 'utils/function';
+import i18n from 'utils/i18n/i18n';
 
 interface Props<T extends BaseRequestSign, V extends BasicTxResponse> extends BaseSignProps {
   account: AccountJson | null;
@@ -143,7 +144,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   const handleResponseError = useCallback(
     (response: V) => {
       if (response.passwordError) {
-        onErrors(['Invalid password']);
+        onErrors([i18n.warningMessage.unableDecode]);
         clearLoading();
       } else {
         const errorMessage = response.errors?.map(err => err.message);

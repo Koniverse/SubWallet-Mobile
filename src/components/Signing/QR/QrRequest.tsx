@@ -66,7 +66,7 @@ const ActionModalStyle: StyleProp<ViewStyle> = {
   marginHorizontal: 0,
   display: 'flex',
   flexDirection: 'row',
-  marginTop: 16,
+  marginTop: 50,
 };
 
 const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
