@@ -20,7 +20,7 @@ import {
   CaretRight,
   DotsThree,
   GlobeSimple,
-  HouseSimple,
+  House,
   IconProps,
   LockSimple,
   LockSimpleOpen,
@@ -502,7 +502,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
           </View>
 
           <View style={headerRightSideStyle}>
-            <IconButton icon={HouseSimple} onPress={goBack} />
+            <IconButton icon={House} onPress={goBack} />
           </View>
         </View>
         <View style={{ flex: 1, position: 'relative', backgroundColor: ColorMap.dark1 }}>
