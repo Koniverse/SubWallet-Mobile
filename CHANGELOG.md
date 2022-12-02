@@ -1,3 +1,7 @@
+## 0.2.3 (110)
+- Support buy token feature on mobile app (#266)
+- Fix bug show incorrect account when using the import By QR function (#158)
+
 ## 0.2.3 (109)
 - Update QR-signer UI (#159)
 - Fix bug while connect to DotInsights (#264)
