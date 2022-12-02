@@ -1,3 +1,7 @@
+## 0.2.3 (111)
+- Support reward withdrawing for nomination pool (#270)
+- Fix UI bug for QRSigner screen (#271)
+
 ## 0.2.3 (110)
 - Support buy token feature on mobile app (#266)
 - Fix bug show incorrect account when using the import By QR function (#158)
