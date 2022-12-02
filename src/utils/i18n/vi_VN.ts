@@ -217,6 +217,7 @@ export const vi = {
     startOver: 'Start Over',
     scanSignature: 'Scan this QR code with your other wallet\nto sign transaction',
     viewDetails: 'View details',
+    unsupportedToken: 'Unsupported token',
   },
   title: {
     yourSecretPhrase: 'Your secret phrase',
@@ -305,6 +306,7 @@ export const vi = {
     scanPayload: 'Scan QR',
     signMessage: 'Sign Message',
     authorizeMessage: 'Authorize message',
+    serviceSelect: 'Select service',
   },
   tabName: {
     crypto: 'Crypto',
@@ -317,6 +319,7 @@ export const vi = {
     receive: 'Receive',
     send: 'Send',
     swap: 'Swap',
+    buy: 'Buy',
   },
   nftScreen: {
     nftAppearHere: 'Your NFTs will appear here',
@@ -561,6 +564,7 @@ export const vi = {
     passwordTooShort: 'Password is too short',
     noTokenAvailable: 'No token available',
     noNetworkAvailable: 'No network available',
+    noServiceAvailable: 'No service available',
     noAccountText: "You currently don't have any accounts. Create your first account to get started.",
     privateKeyWarning: 'If someone has your private key they will have full control of your account',
     secretPhraseWarning: 'If someone gets access to your secret phrase they will have full control of your account',

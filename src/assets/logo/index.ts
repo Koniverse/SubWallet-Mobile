@@ -232,5 +232,8 @@ export const ImageLogosMap = {
   boba: require('./163.boba.png'),
   bobabase: require('./163.boba.png'),
   bobabeam: require('./163.boba.png'),
+  transak: require('./164.transak.png'),
+  moonpay: require('./165.moonpay.png'),
+  onramper: require('./166.onramper.png'),
   default: require('./73.Default.png'),
 };

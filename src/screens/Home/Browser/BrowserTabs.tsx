@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
-import { Browsers, HouseSimple, Plus, X } from 'phosphor-react-native';
+import { Browsers, House, Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -146,7 +146,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
   }, [navigation]);
 
   const browserHeaderRightComponent = useMemo(() => {
-    return <IconButton style={{ marginHorizontal: 7 }} icon={HouseSimple} onPress={goToBrowserHome} />;
+    return <IconButton style={{ marginHorizontal: 7 }} icon={House} onPress={goToBrowserHome} />;
   }, [goToBrowserHome]);
 
   return (
