@@ -383,6 +383,7 @@ export const en = {
       totalSlash: 'Total slash',
       unStakeFunds: 'Unstake funds',
       stakingType: 'Staking type',
+      unclaimedReward: 'Unclaimed Reward',
       actions: {
         stake: 'Stake more',
         unStake: 'Unstake funds',
