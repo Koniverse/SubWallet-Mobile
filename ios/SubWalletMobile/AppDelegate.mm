@@ -43,7 +43,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"RnDiffApp", initProps);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"SubWalletMobile", initProps);
 
   if (@available(iOS 13.0, *)) {
     rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
