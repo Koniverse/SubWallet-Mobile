@@ -203,13 +203,9 @@ export function ScannerContextProvider({ children }: ScannerContextProviderProps
           missedFrames: nextMissedFrames,
           totalFrameCount,
         };
+      } else {
+        return _integrateMultiPartData(multipartData, totalFrameCount);
       }
-
-      return {
-        completedFramesCount: totalFrameCount,
-        missedFrames: [],
-        totalFrameCount,
-      };
     },
     [_integrateMultiPartData, state],
   );
