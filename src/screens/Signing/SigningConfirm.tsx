@@ -5,18 +5,16 @@ import { TextField } from 'components/Field/Text';
 import { SubmitButton } from 'components/SubmitButton';
 import { SCANNER_QR_STEP } from 'constants/qr';
 import useGetAccountAndNetworkScanned from 'hooks/screen/Signing/useGetAccountAndNetworkScanned';
-import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
-import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import PasswordModal from 'components/Modal/PasswordModal';
-import { Warning } from 'components/Warning';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -43,15 +41,6 @@ const ButtonStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const formConfig: FormControlConfig = {
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-};
-
 const SigningConfirm = () => {
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -66,38 +55,23 @@ const SigningConfirm = () => {
   const { account, network } = useGetAccountAndNetworkScanned();
   const [isBusy, setIsBusy] = useState(false);
   const [isVisible, setVisible] = useState<boolean>(false);
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
 
-  const onSubmit = (formState: FormState) => {
-    const password = formState.data.password;
+  const onSubmit = (password: string) => {
     setIsBusy(true);
     setVisible(false);
     signDataLegacy(false, password)
       .catch(e => {
         if (e) {
-          onUpdateErrors('password')([(e as Error).message]);
+          setErrorArr([(e as Error).message]);
         } else {
-          onUpdateErrors('password')([i18n.errorMessage.unknownError]);
+          setErrorArr([i18n.errorMessage.unknownError]);
         }
       })
       .finally(() => {
         setIsBusy(false);
+        setTimeout(() => setVisible(true), HIDE_MODAL_DURATION);
       });
-  };
-
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
-    onSubmitForm: onSubmit,
-  });
-
-  const handleChangePassword = useCallback(
-    (val: string) => {
-      onUpdateErrors('password')(undefined);
-      onChangeValue('password')(val);
-    },
-    [onChangeValue, onUpdateErrors],
-  );
-
-  const onPressSubmit = () => {
-    onSubmit(formState);
   };
 
   const goBack = useCallback(() => {
@@ -136,10 +110,6 @@ const SigningConfirm = () => {
             showRightIcon={false}
             networkPrefix={network?.ss58Format}
           />
-          {!!(formState.errors.password && formState.errors.password.length) &&
-            formState.errors.password.map((err: string) => {
-              return <Warning message={err} isDanger />;
-            })}
         </ScrollView>
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -154,10 +124,7 @@ const SigningConfirm = () => {
             style={ButtonStyle}
             title={i18n.common.approve}
             isBusy={isBusy}
-            onPress={() => {
-              onUpdateErrors('password')(undefined);
-              setVisible(true);
-            }}
+            onPress={() => setVisible(true)}
           />
         </View>
 
@@ -165,10 +132,9 @@ const SigningConfirm = () => {
           visible={isVisible}
           closeModal={() => setVisible(false)}
           isBusy={isBusy}
-          onConfirm={onPressSubmit}
-          formState={formState}
-          handleChangePassword={handleChangePassword}
-          onSubmitField={onSubmitField('password')}
+          onConfirm={onSubmit}
+          errorArr={errorArr}
+          setErrorArr={setErrorArr}
         />
       </>
     </ContainerWithSubHeader>
