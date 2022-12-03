@@ -1,4 +1,3 @@
-import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { SigningContext } from 'providers/SigningContext';
 import { PasswordField } from 'components/Field/Password';
@@ -38,12 +37,6 @@ const PasswordContainerStyle: StyleProp<ViewStyle> = {
   borderRadius: 5,
   marginBottom: 8,
 };
-
-const ErrorStyle: StyleProp<ViewStyle> = {
-  marginHorizontal: 16,
-  marginTop: 16,
-};
-
 const getWrapperStyle = (canCancel: boolean): StyleProp<ViewStyle> => {
   return {
     ...MarginBottomForSubmitButton,
@@ -122,13 +115,6 @@ const PasswordRequest = ({
 
   return (
     <>
-      {signingErrors && (
-        <View>
-          {signingErrors.map((error, index) => {
-            return <Warning style={ErrorStyle} key={index} message={error} isDanger />;
-          })}
-        </View>
-      )}
       <View style={getWrapperStyle(!!onCancel)}>
         {onCancel && (
           <SubmitButton

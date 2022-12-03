@@ -1,5 +1,6 @@
 import {
   BaseRequestSign,
+  BasicTxErrorCode,
   BasicTxResponse,
   ExternalRequestSign,
   HandleTxResponse,
@@ -37,6 +38,8 @@ interface Props<T extends BaseRequestSign, V extends BasicTxResponse> extends Ba
   style?: StyleProp<ViewStyle>;
   params: T;
 }
+
+let timeout: NodeJS.Timeout | undefined;
 
 const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   account,
@@ -88,6 +91,8 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       }
 
       if (balanceError && !data.passwordError) {
+        timeout && clearTimeout(timeout);
+        timeout = undefined;
         clearLoading();
         onErrors(['Your balance is too low to cover fees']);
         onFail(['Your balance is too low to cover fees']);
@@ -146,8 +151,16 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       if (response.passwordError) {
         onErrors([i18n.warningMessage.unableDecode]);
         clearLoading();
+        timeout = setTimeout(() => {
+          setIsVisible(true);
+        }, HIDE_MODAL_DURATION);
       } else {
         const errorMessage = response.errors?.map(err => err.message);
+        if (response.errors?.find(error => error.code === BasicTxErrorCode.KEYRING_ERROR)) {
+          timeout = setTimeout(() => {
+            setIsVisible(true);
+          }, HIDE_MODAL_DURATION);
+        }
 
         onErrors(errorMessage || []);
 
@@ -156,7 +169,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
         }
       }
     },
-    [clearLoading, onErrors],
+    [clearLoading, onErrors, setIsVisible],
   );
 
   const catchError = useCallback(
@@ -179,7 +192,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
 
         // Create transaction complete
         updateQrState(state);
-        setTimeout(() => {
+        timeout = setTimeout(() => {
           setIsCreating(false);
           setIsScanning(true);
           setIsVisible(true);
