@@ -1,6 +1,10 @@
+## 0.2.3 (112)
+- Update Password Modal for Signing Confirm (#159)
+- Fix Crash app in case send NFT when balance is not enough to pay for QR-signer account (#274)
+
 ## 0.2.3 (111)
-- Support reward withdrawing for nomination pool (#270)
-- Fix UI bug for QRSigner screen (#271)
+- Support reward withdrawing for nomination pool (#252)
+- Fix UI bug for QRSigner screen (#159)
 
 ## 0.2.3 (110)
 - Support buy token feature on mobile app (#266)
