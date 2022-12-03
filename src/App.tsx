@@ -178,6 +178,7 @@ export const App = () => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
+  StatusBar.setBackgroundColor(ColorMap.dark2);
 
   const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
   const { isLocked, lock } = useAppLock();
