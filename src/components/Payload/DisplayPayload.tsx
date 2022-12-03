@@ -48,6 +48,9 @@ const DisplayPayload = (props: Props) => {
   }, [isEthereum, isHash, isMessage]);
 
   const data = useMemo(() => {
+    if (!address) {
+      return new Uint8Array(0);
+    }
     if (isEthereum) {
       return u8aConcat(ETHEREUM_ID, numberToU8a(cmd), decodeAddress(address), u8aToU8a(hashPayload));
     } else {

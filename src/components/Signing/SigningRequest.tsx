@@ -38,6 +38,8 @@ interface Props<T extends BaseRequestSign, V extends BasicTxResponse> extends Ba
   params: T;
 }
 
+let timeout: NodeJS.Timeout | undefined;
+
 const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   account,
   balanceError,
@@ -88,6 +90,8 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
       }
 
       if (balanceError && !data.passwordError) {
+        timeout && clearTimeout(timeout);
+        timeout = undefined;
         clearLoading();
         onErrors(['Your balance is too low to cover fees']);
         onFail(['Your balance is too low to cover fees']);
@@ -179,7 +183,7 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
 
         // Create transaction complete
         updateQrState(state);
-        setTimeout(() => {
+        timeout = setTimeout(() => {
           setIsCreating(false);
           setIsScanning(true);
           setIsVisible(true);
