@@ -1,6 +1,7 @@
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
 import { SignerPayloadJSON, SignerPayloadRaw } from '@polkadot/types/types';
-import { encodeAddress } from '@polkadot/util-crypto';
+
+import { u8aWrapBytes } from '@polkadot/util';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import { AccountInfoField } from 'components/Field/AccountInfo';
@@ -20,8 +21,6 @@ import { HashPayloadProps, SIGN_MODE } from 'types/signer';
 import { getAccountSignMode } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkJsonByGenesisHash } from 'utils/index';
-
-import { u8aWrapBytes } from '@polkadot/util';
 
 interface Props {
   payload: SigningRequest;
@@ -71,18 +70,9 @@ export const SubstrateSignConfirmation = ({
         };
       }
       if (hexBytes) {
-        const { data, address } = request.payload as SignerPayloadRaw;
+        const { data } = request.payload as SignerPayloadRaw;
 
-        let genesisHash = '';
-
-        for (const network of Object.values(networkMap)) {
-          const condition = encodeAddress(address, network.ss58Format) === encodeAddress(address);
-
-          if (condition) {
-            genesisHash = network.genesisHash;
-            break;
-          }
-        }
+        const genesisHash = networkMap.polkadot.genesisHash;
 
         return {
           address: account.address,
