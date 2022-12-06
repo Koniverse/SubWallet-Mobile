@@ -1,3 +1,6 @@
+## 0.2.3 (114)
+- Update dependencies (#272)
+
 ## 0.2.3 (113)
 - Fix bug UI in SigningConfirm screen (#159)
 
