@@ -1,3 +1,6 @@
+## 0.2.3 (113)
+- Fix bug UI in SigningConfirm screen (#159)
+
 ## 0.2.3 (112)
 - Update Password Modal for Signing Confirm (#159)
 - Fix Crash app in case send NFT when balance is not enough to pay for QR-signer account (#274)
