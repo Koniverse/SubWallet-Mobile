@@ -67,10 +67,11 @@ const SigningConfirm = () => {
         } else {
           setErrorArr([i18n.errorMessage.unknownError]);
         }
+        setIsBusy(false);
+        setTimeout(() => setVisible(true), HIDE_MODAL_DURATION);
       })
       .finally(() => {
         setIsBusy(false);
-        setTimeout(() => setVisible(true), HIDE_MODAL_DURATION);
       });
   };
 
