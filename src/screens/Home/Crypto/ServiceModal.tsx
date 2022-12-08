@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -14,7 +14,8 @@ import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { ColorMap } from 'styles/color';
 import { ServiceSelectItem } from 'components/ServiceSelectItem';
 import ToastContainer from 'react-native-toast-notifications';
-import { deviceHeight } from 'constants/index';
+import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
+import useAppLock from 'hooks/useAppLock';
 
 interface Props {
   modalVisible: boolean;
@@ -74,7 +75,7 @@ export const ServiceModal = ({
       return '';
     }
   }, [networkMap, networkKey, address, networkPrefix]);
-
+  const { isLocked } = useAppLock();
   const url = useMemo((): string => {
     const host = HOST.PRODUCTION;
 
@@ -102,37 +103,96 @@ export const ServiceModal = ({
     const query = qs.stringify(params);
     return `${host}?${query}`;
   }, [formatted, networkKey, token]);
-
+  const [{ selectedService, isOpenInAppBrowser }, setSelectedService] = useState<{
+    selectedService: string | undefined;
+    isOpenInAppBrowser: boolean;
+  }>({ selectedService: undefined, isOpenInAppBrowser: false });
   const SERVICE_OPTIONS = [
     { label: 'Transak', value: 'transak', url: url },
     { label: 'MoonPay', value: 'moonpay', url: '' },
     { label: 'Onramper', value: 'onramper', url: '' },
   ];
+  const sleep = (timeout: number) => new Promise<void>(resolve => setTimeout(resolve, timeout));
 
-  const onPressItem = (currentValue: string, currentUrl: string) => {
-    if (currentUrl) {
-      InAppBrowser.isAvailable()
-        .then(() => {
-          InAppBrowser.open(currentUrl, {
-            preferredBarTintColor: ColorMap.dark1,
-            preferredControlTintColor: ColorMap.light,
-            readerMode: false,
-            animated: true,
-            modalPresentationStyle: 'pageSheet',
-            modalTransitionStyle: 'coverVertical',
-            modalEnabled: true,
-            enableBarCollapsing: false,
-          });
-        })
-        .catch(() => {
-          Linking.openURL(currentUrl);
+  const openLink = useCallback(async (currentUrl: string, animated = true) => {
+    try {
+      if (await InAppBrowser.isAvailable()) {
+        // A delay to change the StatusBar when the browser is opened
+        await InAppBrowser.open(currentUrl, {
+          // iOS Properties
+          dismissButtonStyle: 'done',
+          preferredBarTintColor: ColorMap.dark1,
+          preferredControlTintColor: ColorMap.light,
+          readerMode: true,
+          animated,
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          // Android Properties
+          showTitle: true,
+          toolbarColor: ColorMap.dark1,
+          secondaryToolbarColor: ColorMap.dark1,
+          navigationBarColor: ColorMap.dark1,
+          navigationBarDividerColor: 'white',
+          enableUrlBarHiding: true,
+          enableDefaultShare: true,
+          forceCloseOnRedirection: false,
+          // Specify full animation resource identifier(package:anim/name)
+          // or only resource name(in case of animation bundled with app).
+          animations: {
+            startEnter: 'slide_in_right',
+            startExit: 'slide_out_left',
+            endEnter: 'slide_in_left',
+            endExit: 'slide_out_right',
+          },
+          headers: {
+            'my-custom-header': 'my custom header value',
+          },
+          hasBackButton: true,
+          browserPackage: undefined,
+          showInRecents: true,
+          includeReferrer: true,
         });
+        // A delay to show an alert when the browser is closed
+        // await sleep(800);
+        // if (result.type === 'cancel') {
+        //   InAppBrowser.close();
+        // }
+        setSelectedService(prevState => ({
+          ...prevState,
+          isOpenInAppBrowser: false,
+        }));
+      } else {
+        Linking.openURL(currentUrl);
+      }
+    } catch (error) {
+      await sleep(50);
+      const errorMessage = (error as Error).message || (error as string);
+      console.log('error message for buy feature', errorMessage);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLocked) {
+      InAppBrowser.close();
     } else {
+      if (selectedService && selectedService === 'transak' && !isOpenInAppBrowser) {
+        setTimeout(() => openLink(url), HIDE_MODAL_DURATION);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocked, openLink, selectedService, url]);
+
+  const onPressItem = async (currentValue: string, currentUrl: string) => {
+    setSelectedService({ selectedService: currentValue, isOpenInAppBrowser: true });
+    if (currentUrl) {
       if (currentValue === 'transak') {
         show(i18n.common.unsupportedToken);
       } else {
         show(i18n.common.comingSoon);
       }
+      await openLink(currentUrl);
+    } else {
+      show(i18n.common.comingSoon);
     }
   };
 
@@ -156,7 +216,10 @@ export const ServiceModal = ({
         title={i18n.title.serviceSelect}
         filterFunction={filterFunction}
         renderItem={renderItem}
-        onPressBack={onPressBack}
+        onPressBack={() => {
+          setSelectedService({ selectedService: undefined, isOpenInAppBrowser: false });
+          onPressBack && onPressBack();
+        }}
         renderListEmptyComponent={renderListEmptyComponent}
       />
 
