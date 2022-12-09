@@ -23,5 +23,5 @@ export const CHAIN_TYPE_MAP = {
     'calamari_test',
   ],
   astar: ['astar', 'shiden', 'shibuya'],
-  amplitude: ['amplitude', 'amplitude_test', 'kilt', 'kilt_peregrine']
+  amplitude: ['amplitude', 'amplitude_test', 'kilt', 'kilt_peregrine'],
 };
