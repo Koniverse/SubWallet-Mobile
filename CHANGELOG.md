@@ -1,3 +1,7 @@
+## 0.2.3 (115)
+- Can not select a service to buy tokens in case opening an external browser before while user use PIN code feature (#283)
+- Fix some bugs from prebuild (#284)
+
 ## 0.2.3 (114)
 - Update dependencies (#272)
 
