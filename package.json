@@ -41,6 +41,7 @@
     "@subwallet/extension-koni-base": "^0.7.2-1wr",
     "boring-avatars": "^1.7.0",
     "deprecated-react-native-prop-types": "^3.0.1",
+    "eslint-plugin-ft-flow": "^2.0.3",
     "eventemitter3": "^5.0.0",
     "i18next": "^22.0.6",
     "moment": "^2.29.4",
