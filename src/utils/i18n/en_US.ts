@@ -215,7 +215,8 @@ export const en = {
     useNormalWalletScan: 'Scan this QR code with your wallet',
     scanQrPayload: "Use this device's camera to scan the QR code\ndisplayed on the other wallet",
     startOver: 'Start Over',
-    scanSignature: 'Scan this QR code with your other wallet\nto sign transaction',
+    scanSignatureToSignTransaction: 'Scan this QR code with your other wallet\nto sign transaction',
+    scanSignatureToSignMessage: 'Scan this QR code with your other wallet\nto sign message',
     viewDetails: 'View details',
     unsupportedToken: 'Unsupported token',
   },
@@ -367,6 +368,14 @@ export const en = {
     nft: 'NFT',
     chain: 'Chain',
     signAndSubmit: 'Sign and submit',
+    success: {
+      title: 'Transfer NFT successfully',
+      subText: 'Your transfer request has been confirmed. It might take a minute to see changes in your wallet.',
+    },
+    fail: {
+      title: 'Transfer NFT failed',
+      subText: 'There was a problem with your request. You can try again.',
+    },
   },
   stakingScreen: {
     startStaking: 'Start staking',
@@ -521,8 +530,7 @@ export const en = {
     period: 'Period',
     tip: 'Tip',
     era: 'Era',
-    scanToSignTransaction: 'Scan this QR code with your other wallet to\nsign transaction',
-    scanToSignMessage: 'Scan this QR code with your other wallet to\nsign message',
+    approveRequestThisAcc: 'Approve request this account?',
   },
   settings: {
     notifications: 'Notifications',

@@ -96,7 +96,7 @@ const StakingDetail = ({
     ) as StakingDataType;
   }, [stakingData, networkKey, stakingType]);
   const { staking, reward } = data || { staking: {}, reward: {} };
-
+  console.log('data', data);
   const isCanSign = useCurrentAccountCanSign();
 
   const convertedBalanceValue = useMemo(() => {
@@ -182,7 +182,7 @@ const StakingDetail = ({
             decimal={0}
             si={formatBalance.findSi('-')}
           />
-          {reward?.totalReward && (
+          {reward?.totalReward && reward?.totalSlash !== 'NaN' && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.totalReward}
               value={reward?.totalReward || '0'}
@@ -191,7 +191,7 @@ const StakingDetail = ({
               si={formatBalance.findSi('-')}
             />
           )}
-          {reward?.latestReward && (
+          {reward?.latestReward && reward?.totalSlash !== 'NaN' && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.latestReward}
               value={reward?.latestReward || '0'}
@@ -200,7 +200,7 @@ const StakingDetail = ({
               si={formatBalance.findSi('-')}
             />
           )}
-          {reward?.totalSlash && (
+          {reward?.totalSlash && reward?.totalSlash !== 'NaN' && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.totalSlash}
               value={reward?.totalSlash || '0'}

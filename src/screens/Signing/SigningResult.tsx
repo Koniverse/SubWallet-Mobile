@@ -111,7 +111,7 @@ const SigningResult = () => {
       onPressBack={goHome}
       title={type === 'message' ? i18n.title.signMessage : i18n.title.signTransaction}>
       <ScrollView style={WrapperStyle} contentContainerStyle={ScrollViewContainerStyle}>
-        <Text style={SubTitleTextStyle}>{i18n.common.scanSignature}</Text>
+        <Text style={SubTitleTextStyle}>{type === 'message' ? i18n.common.scanSignatureToSignMessage : i18n.common.scanSignatureToSignTransaction}</Text>
         <View style={ContentContainerStyle}>
           <View style={QrContainerStyle}>
             <View style={QrStyle}>
