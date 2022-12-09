@@ -267,7 +267,11 @@ const UnStakeConfirm = ({ route: { params: unStakeParams }, navigation: { goBack
   useEffect(() => {
     let amount = true;
     if (amount) {
-      if (CHAIN_TYPE_MAP.astar.includes(networkKey) || CHAIN_TYPE_MAP.para.includes(networkKey)) {
+      if (
+        CHAIN_TYPE_MAP.astar.includes(networkKey) ||
+        CHAIN_TYPE_MAP.para.includes(networkKey) ||
+        CHAIN_TYPE_MAP.amplitude.includes(networkKey)
+      ) {
         getStakeDelegationInfo({
           address: selectedAccount,
           networkKey: networkKey,

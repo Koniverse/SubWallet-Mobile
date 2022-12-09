@@ -24,6 +24,9 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { getStakingInputValueStyle } from 'utils/text';
+import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -82,6 +85,7 @@ const StakingDetail = ({
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
 
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
@@ -96,7 +100,6 @@ const StakingDetail = ({
     ) as StakingDataType;
   }, [stakingData, networkKey, stakingType]);
   const { staking, reward } = data || { staking: {}, reward: {} };
-
   const isCanSign = useCurrentAccountCanSign();
 
   const convertedBalanceValue = useMemo(() => {
@@ -182,7 +185,7 @@ const StakingDetail = ({
             decimal={0}
             si={formatBalance.findSi('-')}
           />
-          {reward?.totalReward && (
+          {reward?.totalReward && reward?.totalSlash !== 'NaN' && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.totalReward}
               value={reward?.totalReward || '0'}
@@ -191,7 +194,7 @@ const StakingDetail = ({
               si={formatBalance.findSi('-')}
             />
           )}
-          {reward?.latestReward && (
+          {reward?.latestReward && reward?.totalSlash !== 'NaN' && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.latestReward}
               value={reward?.latestReward || '0'}
@@ -200,7 +203,7 @@ const StakingDetail = ({
               si={formatBalance.findSi('-')}
             />
           )}
-          {reward?.totalSlash && (
+          {reward?.totalSlash && reward?.totalSlash !== 'NaN' && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.totalSlash}
               value={reward?.totalSlash || '0'}
@@ -209,7 +212,7 @@ const StakingDetail = ({
               si={formatBalance.findSi('-')}
             />
           )}
-          {stakingType === StakingType.POOLED && (
+          {stakingType === StakingType.POOLED && !isAccountAll(currentAccountAddress) && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.unclaimedReward}
               value={reward?.unclaimedReward || '0'}

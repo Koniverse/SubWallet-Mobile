@@ -100,9 +100,7 @@ const SigningConfirm = () => {
       disabled={isBusy}>
       <>
         <ScrollView style={WrapperStyle}>
-          <Text style={SubTitleTextStyle}>
-            {type === 'message' ? i18n.signingAction.scanToSignMessage : i18n.signingAction.scanToSignTransaction}
-          </Text>
+          <Text style={SubTitleTextStyle}>{i18n.signingAction.approveRequestThisAcc}</Text>
           <TextField text={account?.name || ''} disabled={true} label={i18n.common.accountName} />
           <AddressField
             address={account?.address || ''}
