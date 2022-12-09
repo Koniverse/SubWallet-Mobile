@@ -192,7 +192,11 @@ export const ServiceModal = ({
       }
       await openLink(currentUrl);
     } else {
-      show(i18n.common.comingSoon);
+      if (currentValue === 'transak') {
+        show(i18n.common.unsupportedToken);
+      } else {
+        show(i18n.common.comingSoon);
+      }
     }
   };
 
