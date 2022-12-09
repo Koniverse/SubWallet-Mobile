@@ -35,12 +35,12 @@ const NftTransferResult = ({
       extrinsicHash={extrinsicHash}
       backToHome={goHome}
       success={{
-        title: i18n.stakeAction.success.title,
-        subText: i18n.stakeAction.success.subText,
+        title: i18n.transferNft.success.title,
+        subText: i18n.transferNft.success.subText,
       }}
       fail={{
-        title: i18n.stakeAction.fail.title,
-        subText: i18n.stakeAction.fail.subText,
+        title: i18n.transferNft.fail.title,
+        subText: i18n.transferNft.fail.subText,
       }}
       handleResend={goBack}
       moonNetworkEnable={true}

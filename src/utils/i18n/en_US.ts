@@ -369,11 +369,11 @@ export const en = {
     chain: 'Chain',
     signAndSubmit: 'Sign and submit',
     success: {
-      title: 'Transfer NFT successfully',
+      title: 'Success!',
       subText: 'Your transfer request has been confirmed. It might take a minute to see changes in your wallet.',
     },
     fail: {
-      title: 'Transfer NFT failed',
+      title: 'Fail!',
       subText: 'There was a problem with your request. You can try again.',
     },
   },
