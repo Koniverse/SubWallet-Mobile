@@ -12,7 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import { CreateAccount } from 'screens/CreateAccount';
-import { AppState, StatusBar, StyleProp, View } from 'react-native';
+import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import SigningScreen from 'screens/Signing/SigningScreen';
@@ -79,6 +79,7 @@ import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -127,13 +128,13 @@ AppState.addEventListener('change', (state: string) => {
         lockWhenActive = true;
       } else {
         lockWhenActive = false;
-        lock();
+        Platform.OS === 'android' ? setTimeout(() => lock(), HIDE_MODAL_DURATION) : lock();
       }
     }, autoLockTime);
   } else if (state === 'active') {
     if (lockWhenActive) {
       if (!AutoLockState.isPreventAutoLock) {
-        lock();
+        Platform.OS === 'android' ? setTimeout(() => lock(), HIDE_MODAL_DURATION) : lock();
       }
       lockWhenActive = false;
     }

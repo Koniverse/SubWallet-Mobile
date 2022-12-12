@@ -4,7 +4,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
-import { Linking, ListRenderItemInfo } from 'react-native';
+import { Linking, ListRenderItemInfo, Platform } from 'react-native';
 import qs from 'querystring';
 import reformatAddress, { PREDEFINED_TRANSAK_NETWORK } from 'utils/index';
 import { useSelector } from 'react-redux';
@@ -175,7 +175,7 @@ export const ServiceModal = ({
     if (isLocked) {
       InAppBrowser.close();
     } else {
-      if (selectedService && selectedService === 'transak' && !isOpenInAppBrowser) {
+      if (selectedService && selectedService === 'transak' && !isOpenInAppBrowser && Platform.OS === 'ios') {
         setTimeout(() => openLink(url), HIDE_MODAL_DURATION);
       }
     }
