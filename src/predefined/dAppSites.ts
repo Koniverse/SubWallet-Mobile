@@ -9,6 +9,7 @@ export const DAppIconMap: Record<string, string> = {
   'www.xdao.app': 'https://moonbeam.network/wp-content/uploads/2022/03/xDAO.png',
   'crowdloan.interlay.io': 'https://assets.coingecko.com/coins/images/26180/small/Interlay-Coinbase-2.png',
   'ace.web3go.xyz': 'https://ace.web3go.xyz/favicon.ico',
+  'www.avault.network': 'https://www.avault.network/logo.png',
 };
 
 export const DAppTitleMap: Record<string, string> = {
@@ -67,6 +68,11 @@ export const DAppTitleMap: Record<string, string> = {
   'connect.subwallet.app': 'SubWallet Connect',
   'www.dotinsights.xyz': 'dotinsights | Polkadot & Kusama Ecosystem Map',
   'dotinsights.subwallet.app': 'dotinsights | Polkadot & Kusama Ecosystem Map',
+  'app.phala.network': 'Phala App',
+  'dex.zenlink.pro': 'Zenlink',
+  'www.avault.network': 'Avault',
+  'panoramaswap.app': 'Panorama Swap',
+  'app.taigaprotocol.io': 'TAIGA',
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -213,12 +219,13 @@ export const predefinedDApps: PredefinedDApps = {
     //   url: 'https://app.talisman.xyz/portfolio',
     //   categories: ['defi', 'crowdloans'],
     // },
-    // {
-    //   name: 'Phala App',
-    //   icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/color/Phala.svg',
-    //   url: 'https://app.phala.network/',
-    //   categories: ['defi', 'staking'],
-    // },
+    {
+      name: 'Phala App',
+      icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/color/Phala.svg',
+      url: 'https://app.phala.network/',
+      categories: ['defi', 'staking'],
+      isSupportSubstrateAccount: true,
+    },
     {
       name: 'Bit.Country Pioneer Rewards Claim',
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Bit.Country.svg',
@@ -584,6 +591,32 @@ export const predefinedDApps: PredefinedDApps = {
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Bit.Country.svg',
       url: 'https://pioneer.bit.country/',
       categories: ['nft', 'staking'],
+      isSupportSubstrateAccount: true,
+    },
+    {
+      name: 'Zenlink',
+      icon: 'https://dex.zenlink.pro/favicon.png',
+      url: 'https://dex.zenlink.pro/#/swap',
+      categories: ['defi'],
+    },
+    {
+      name: 'Avault',
+      icon: 'https://www.avault.network/logo.png',
+      url: 'https://www.avault.network/vault',
+      categories: ['evm'],
+      isSupportEthereumAccount: true,
+    },
+    {
+      name: 'Panorama Swap',
+      icon: 'https://panoramaswap.app/favicon.ico',
+      url: 'https://panoramaswap.app/',
+      categories: ['defi'],
+    },
+    {
+      name: 'TAIGA',
+      icon: 'https://d1fdloi71mui9q.cloudfront.net/8c4qoYY4S6mBVV2NUyYQ_Jq4cFVrgwJ9EF784',
+      url: 'https://app.taigaprotocol.io/assets',
+      categories: ['defi'],
       isSupportSubstrateAccount: true,
     },
     {
