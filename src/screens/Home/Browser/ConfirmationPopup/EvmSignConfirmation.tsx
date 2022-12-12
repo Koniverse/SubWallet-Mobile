@@ -1,4 +1,4 @@
-import { hexToU8a } from '@polkadot/util';
+import { u8aToU8a } from '@polkadot/util';
 import {
   ConfirmationDefinitions,
   ConfirmationsQueue,
@@ -203,7 +203,7 @@ export const EvmSignConfirmation = ({
       externalInfo={
         hashPayload
           ? {
-              hashPayload: hexToU8a(hashPayload),
+              hashPayload: u8aToU8a(hashPayload),
               address: address || '',
               isHash: false,
               genesisHash: '',
