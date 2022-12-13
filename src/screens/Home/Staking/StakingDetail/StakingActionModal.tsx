@@ -30,6 +30,7 @@ interface SortItem {
   label: string;
   onPress?: () => void;
   color?: string;
+  disabled?: boolean;
 }
 
 const TitleTextStyle: StyleProp<TextStyle> = {
@@ -49,11 +50,13 @@ const ItemContainerStyle: StyleProp<ViewStyle> = {
   paddingVertical: 14,
 };
 
-const LabelTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
-  color: ColorMap.light,
-  marginLeft: 16,
+const getLabelTextStyle = (disabled?: boolean): StyleProp<any> => {
+  return {
+    ...sharedStyles.mediumText,
+    ...FontSemiBold,
+    color: disabled ? ColorMap.disabled : ColorMap.light,
+    marginLeft: 16,
+  };
 };
 
 const MANUAL_CLAIM_CHAINS = ['astar', 'shibuya', 'shiden'];
@@ -65,6 +68,7 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   const {
     staking: { chain: networkKey, activeBalance, unlockingInfo, unlockingBalance, type: stakingType },
+    reward,
   } = data;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
@@ -207,6 +211,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
         key: 'claim',
         icon: Gift,
         onPress: bondedAmount > 0 ? claimAction : undefined,
+        disabled: reward?.unclaimedReward === '0',
       });
     }
 
@@ -226,6 +231,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     compoundAction,
     isPool,
     nextWithdrawal,
+    reward?.unclaimedReward,
     showClaimButton,
     showCompoundButton,
     unStakeAction,
@@ -236,11 +242,16 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
   return (
     <SubWalletModal modalVisible={visible} onChangeModalVisible={closeModal}>
       <Text style={TitleTextStyle}>{i18n.common.chooseAction}</Text>
-      {items.map(({ icon: Icon, onPress, key, label, color }) => {
+      {items.map(({ icon: Icon, onPress, key, label, color, disabled }) => {
         return (
-          <TouchableOpacity style={ItemContainerStyle} key={key} activeOpacity={0.5} onPress={onPress}>
+          <TouchableOpacity
+            style={ItemContainerStyle}
+            key={key}
+            activeOpacity={0.5}
+            onPress={onPress}
+            disabled={disabled}>
             <Icon size={20} color={color || ColorMap.disabled} />
-            <Text style={LabelTextStyle}>{label}</Text>
+            <Text style={getLabelTextStyle(disabled)}>{label}</Text>
           </TouchableOpacity>
         );
       })}

@@ -185,9 +185,7 @@ export const ServiceModal = ({
   const onPressItem = async (currentValue: string, currentUrl: string) => {
     setSelectedService({ selectedService: currentValue, isOpenInAppBrowser: true });
     if (currentUrl) {
-      if (currentValue === 'transak') {
-        show(i18n.common.unsupportedToken);
-      } else {
+      if (currentValue !== 'transak') {
         show(i18n.common.comingSoon);
       }
       await openLink(currentUrl);
