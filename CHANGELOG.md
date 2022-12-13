@@ -1,3 +1,8 @@
+## 0.2.3 (117)
+- Add some dApps to browser's predefined list (#282)
+- Fix some bugs (#284)
+- Fix bug Buy Token feature in Android device (#283)
+
 ## 0.2.3 (116)
 - Update Toast message for ServiceModal (#283)
 - Fix some UI bug (#284)
