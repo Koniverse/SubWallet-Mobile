@@ -225,7 +225,7 @@ export const predefinedDApps: PredefinedDApps = {
     },
     {
       name: 'Raffle & Claim Rewards',
-      icon: 'https://event.tfalpha.xyz/logo-192x192.ico',
+      icon: 'https://event.tfalpha.xyz/logo-32x32.ico',
       url: 'https://event.tfalpha.xyz/',
       categories: ['community'],
       isSupportEthereumAccount: true,
