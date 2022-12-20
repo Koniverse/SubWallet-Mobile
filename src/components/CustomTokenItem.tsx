@@ -75,7 +75,7 @@ export const CustomTokenItem = ({ item, isEditMode, onPress, handleSelected, han
     <TouchableOpacity onPress={_onPressItem}>
       <View style={itemWrapperStyle}>
         <View style={{ flexDirection: 'row', flex: 1 }}>
-          {getNetworkLogo(item.chain, 28)}
+          {getNetworkLogo(item.symbol || item.chain, 28)}
           <Text numberOfLines={1} style={itemTextStyle}>
             {item.name || item.symbol || ''}
           </Text>

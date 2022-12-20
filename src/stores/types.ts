@@ -12,7 +12,7 @@ import {
   ResponseSettingsType,
   StakeUnlockingJson,
   StakingJson,
-  StakingRewardJson,
+  StakingRewardItem,
   TransactionHistoryItemType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
@@ -110,10 +110,13 @@ export type TransactionHistorySlice = {
 export type NftSlice = NftJson & StoreSlice;
 
 export type NftCollectionSlice = NftCollectionJson & StoreSlice;
-
+export type StakingRewardJson_ = {
+  details: StakingRewardItem[];
+  ready: boolean;
+};
 export type StakingSlice = StakingJson & StoreSlice;
 export type StakeUnlockingSlice = StakeUnlockingJson & StoreSlice;
-export type StakingRewardSlice = StakingRewardJson & StoreSlice;
+export type StakingRewardSlice = StakingRewardJson_ & StoreSlice;
 export type BackgroundServiceSlice = {
   activeState: ActiveCronAndSubscriptionMap;
 };
