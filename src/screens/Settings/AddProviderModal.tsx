@@ -8,7 +8,7 @@ import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
-import { deviceHeight } from 'constants/index';
+import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -78,7 +78,7 @@ export const AddProviderModal = ({ loading, modalVisible, onCloseModal, createPr
         />
 
         <Toast
-          duration={1500}
+          duration={TOAST_DURATION}
           normalColor={ColorMap.notification}
           ref={toastRef}
           placement={'bottom'}

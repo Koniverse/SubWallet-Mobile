@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { deviceHeight } from 'constants/index';
+import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import { StakingDataType } from 'hooks/types';
 import moment from 'moment';
@@ -257,7 +257,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
       })}
       <Toast
         textStyle={{ textAlign: 'center' }}
-        duration={1500}
+        duration={TOAST_DURATION}
         normalColor={ColorMap.notification}
         ref={toastRef}
         placement={'bottom'}

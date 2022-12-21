@@ -4,7 +4,13 @@ import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SecretTypeItem } from 'components/SecretTypeItem';
-import { deviceHeight, EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import {
+  deviceHeight,
+  EVM_ACCOUNT_TYPE,
+  HIDE_MODAL_DURATION,
+  SUBSTRATE_ACCOUNT_TYPE,
+  TOAST_DURATION,
+} from 'constants/index';
 import { SCAN_TYPE } from 'constants/qr';
 import useModalScanner from 'hooks/qr/useModalScanner';
 import { Article, Eye, FileArrowUp, HardDrives, LockKey, QrCode } from 'phosphor-react-native';
@@ -247,7 +253,7 @@ const AddAccountModal = ({ modalVisible, onHideModal: onHideMainModal }: Props) 
           })}
         </View>
         <Toast
-          duration={1500}
+          duration={TOAST_DURATION}
           normalColor={ColorMap.notification}
           ref={toastRef}
           placement={'bottom'}

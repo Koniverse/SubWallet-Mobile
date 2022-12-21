@@ -6,7 +6,7 @@ import { FontBold, FontMedium, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sh
 import { ColorMap } from 'styles/color';
 import { SecretTypeItem } from 'components/SecretTypeItem';
 import { AccountActionType } from 'types/ui-types';
-import { deviceHeight } from 'constants/index';
+import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 
@@ -63,7 +63,7 @@ export const SelectImportAccountModal = ({
 
       {
         <Toast
-          duration={1500}
+          duration={TOAST_DURATION}
           normalColor={ColorMap.notification}
           ref={toastRef}
           placement={'bottom'}

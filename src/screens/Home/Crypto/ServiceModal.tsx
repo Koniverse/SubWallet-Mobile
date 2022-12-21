@@ -14,7 +14,7 @@ import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { ColorMap } from 'styles/color';
 import { ServiceSelectItem } from 'components/ServiceSelectItem';
 import ToastContainer from 'react-native-toast-notifications';
-import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
+import { deviceHeight, HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import useAppLock from 'hooks/useAppLock';
 
 interface Props {
@@ -226,7 +226,7 @@ export const ServiceModal = ({
       />
 
       <Toast
-        duration={1500}
+        duration={TOAST_DURATION}
         normalColor={ColorMap.notification}
         ref={toastRef}
         placement={'bottom'}
