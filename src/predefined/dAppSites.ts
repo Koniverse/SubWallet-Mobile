@@ -11,6 +11,7 @@ export const DAppIconMap: Record<string, string> = {
   'ace.web3go.xyz': 'https://ace.web3go.xyz/favicon.ico',
   'www.avault.network': 'https://www.avault.network/logo.png',
   'astr.domains': 'https://astr.domains/logo/logo_cic.png',
+  'tfalpha.xyz': 'https://tfalpha.xyz/img/tfa-logo.png',
 };
 
 export const DAppTitleMap: Record<string, string> = {
@@ -76,6 +77,7 @@ export const DAppTitleMap: Record<string, string> = {
   'app.taigaprotocol.io': 'TAIGA',
   'astr.domains': 'Astar Web3 Domains (.astr) - Your Perfect NFT Domains',
   'event.tfalpha.xyz': 'Raffle & Claim Rewards',
+  'tfalpha.xyz': 'Utopia & TF Alpha',
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -220,6 +222,13 @@ export const predefinedDApps: PredefinedDApps = {
       name: 'Astar Web3 Domains',
       icon: 'https://astr.domains/logo/logo_cic.png',
       url: 'https://astr.domains/buy',
+      categories: ['community'],
+      isSupportEthereumAccount: true,
+    },
+    {
+      name: 'Utopia & TF Alpha',
+      icon: 'https://tfalpha.xyz/img/tfa-logo.png',
+      url: 'https://tfalpha.xyz/',
       categories: ['community'],
       isSupportEthereumAccount: true,
     },
