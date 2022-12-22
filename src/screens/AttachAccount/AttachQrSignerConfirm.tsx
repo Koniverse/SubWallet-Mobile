@@ -18,6 +18,7 @@ import { createAccountExternalV2 } from '../../messaging';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
+import reformatAddress from 'utils/index';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -49,6 +50,7 @@ function checkValidateForm(formValidated: Record<string, boolean>) {
 
 const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBack } }: AttachQrSignerConfirmProps) => {
   const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const formattedAddress = reformatAddress(account.content, 42, account.isEthereum);
 
   const goHome = useGoHome();
   const toast = useToast();
@@ -58,7 +60,7 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
     [accounts],
   );
 
-  const [address, setAddress] = useState<string>(account.isAddress ? account.content : 'ALL');
+  const [address, setAddress] = useState<string>(account.isAddress ? formattedAddress : 'ALL');
   const [isAllow, setIsAllow] = useState<boolean>(true);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -85,7 +87,7 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
       if (account.isAddress) {
         createAccountExternalV2({
           name: name,
-          address: account.content,
+          address: formattedAddress,
           genesisHash: account.genesisHash,
           isEthereum: account.isEthereum,
           isAllowed: isAllow,
@@ -109,7 +111,7 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
         setIsBusy(false);
       }
     },
-    [account, onComplete, isAllow],
+    [account.isAddress, account.genesisHash, account.isEthereum, formattedAddress, isAllow, onComplete],
   );
 
   const show = useCallback(
@@ -143,7 +145,7 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
     onChangeValue('accountName')(account?.name || defaultName);
 
     if (account.isAddress) {
-      setAddress(account.content);
+      setAddress(formattedAddress);
     }
 
     return () => {
@@ -153,9 +155,9 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
   }, [account]);
 
   const copyToClipboard = useCallback(() => {
-    Clipboard.setString(account.content);
+    Clipboard.setString(formattedAddress);
     show(i18n.common.copiedToClipboard);
-  }, [account.content, show]);
+  }, [formattedAddress, show]);
 
   const toggleIsAllow = useCallback(() => {
     setIsAllow(state => !state);
