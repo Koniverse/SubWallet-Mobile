@@ -12,7 +12,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { BUTTON_ACTIVE_OPACITY, deviceHeight } from 'constants/index';
+import { BUTTON_ACTIVE_OPACITY, deviceHeight, TOAST_DURATION } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
@@ -173,7 +173,7 @@ export const ReceiveModal = ({
         </View>
         {
           <Toast
-            duration={1500}
+            duration={TOAST_DURATION}
             normalColor={ColorMap.notification}
             ref={toastRef}
             placement={'bottom'}

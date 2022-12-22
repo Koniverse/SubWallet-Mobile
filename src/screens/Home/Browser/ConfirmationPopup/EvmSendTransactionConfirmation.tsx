@@ -26,6 +26,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import { AccountInfoField } from 'components/Field/AccountInfo';
+import { TOAST_DURATION } from 'constants/index';
 
 export const XCM_METHOD = 'transfer(address,uint256,(uint8,bytes[]),uint64)';
 export const XCM_ARGS = ['currency_address', 'amount'];
@@ -286,7 +287,7 @@ export const EvmSendTransactionConfirmation = ({
         {payload.to && renderReceiveAccount(payload.to, copyToClipboard)}
 
         <Toast
-          duration={1500}
+          duration={TOAST_DURATION}
           normalColor={ColorMap.notification}
           ref={toastRef}
           placement={'bottom'}

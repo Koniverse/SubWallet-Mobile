@@ -79,7 +79,7 @@ import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
-import { HIDE_MODAL_DURATION } from 'constants/index';
+import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -265,7 +265,7 @@ export const App = () => {
       <View style={viewContainerStyle}>
         <View style={{ flex: 1 }}>
           <ToastProvider
-            duration={1500}
+            duration={TOAST_DURATION}
             placement="top"
             normalColor={theme.colors.notification}
             textStyle={{ textAlign: 'center' }}

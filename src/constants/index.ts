@@ -1,6 +1,7 @@
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { Dimensions, Platform } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { getBrand } from 'react-native-device-info';
 
 type DeviceInfo = {
   isIos: boolean;
@@ -30,6 +31,7 @@ export enum BitLengthOption {
   CHAIN_SPEC = 128,
   NORMAL_NUMBERS = 32,
 }
+export const TOAST_DURATION = getBrand().toLowerCase() === 'xiaomi' ? 5000 : 1500;
 export const CELL_COUNT = 6;
 export const DEVICE: DeviceInfo = {
   isIos: Platform.OS === 'ios',
