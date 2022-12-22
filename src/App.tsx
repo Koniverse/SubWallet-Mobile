@@ -289,8 +289,16 @@ export const App = () => {
                                 <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
                                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                                 <Stack.Screen name="Settings" component={Settings} />
-                                <Stack.Screen name="SendFund" component={SendFund} />
-                                <Stack.Screen name="TransferNft" component={TransferNftScreen} />
+                                <Stack.Screen
+                                  name="SendFund"
+                                  component={SendFund}
+                                  options={{ gestureEnabled: false }}
+                                />
+                                <Stack.Screen
+                                  name="TransferNft"
+                                  component={TransferNftScreen}
+                                  options={{ gestureEnabled: false }}
+                                />
                                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                                 <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
