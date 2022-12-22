@@ -10,6 +10,8 @@ export const DAppIconMap: Record<string, string> = {
   'crowdloan.interlay.io': 'https://assets.coingecko.com/coins/images/26180/small/Interlay-Coinbase-2.png',
   'ace.web3go.xyz': 'https://ace.web3go.xyz/favicon.ico',
   'www.avault.network': 'https://www.avault.network/logo.png',
+  'astr.domains': 'https://astr.domains/logo/logo_cic.png',
+  'tfalpha.xyz': 'https://tfalpha.xyz/img/tfa-logo.png',
 };
 
 export const DAppTitleMap: Record<string, string> = {
@@ -73,6 +75,9 @@ export const DAppTitleMap: Record<string, string> = {
   'www.avault.network': 'Avault',
   'panoramaswap.app': 'Panorama Swap',
   'app.taigaprotocol.io': 'TAIGA',
+  'astr.domains': 'Astar Web3 Domains (.astr) - Your Perfect NFT Domains',
+  'event.tfalpha.xyz': 'Raffle & Claim Rewards',
+  'tfalpha.xyz': 'Utopia & TF Alpha',
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -212,6 +217,27 @@ export const predefinedDApps: PredefinedDApps = {
       url: 'https://polkadot.polkassembly.io/',
       categories: ['community'],
       isSupportSubstrateAccount: true,
+    },
+    {
+      name: 'Astar Web3 Domains',
+      icon: 'https://astr.domains/logo/logo_cic.png',
+      url: 'https://astr.domains/buy',
+      categories: ['community'],
+      isSupportEthereumAccount: true,
+    },
+    {
+      name: 'Utopia & TF Alpha',
+      icon: 'https://tfalpha.xyz/img/tfa-logo.png',
+      url: 'https://tfalpha.xyz/',
+      categories: ['community'],
+      isSupportEthereumAccount: true,
+    },
+    {
+      name: 'Raffle & Claim Rewards',
+      icon: 'https://event.tfalpha.xyz/logo-32x32.ico',
+      url: 'https://event.tfalpha.xyz/',
+      categories: ['community'],
+      isSupportEthereumAccount: true,
     },
     // {
     //   name: 'Talisman App',
