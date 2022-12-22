@@ -1,10 +1,11 @@
 import { ChainBondingBasics, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo, getRoundedDecimalNumber } from 'utils/index';
+import useGetValidatorType from 'hooks/screen/Staking/useGetValidatorType';
 
 interface Props {
   network: NetworkJson;
@@ -88,8 +89,22 @@ const formatStakedReturn = (stakedReturn?: number) => {
 
 const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
   const { key: networkKey, chain: networkName } = network;
+  const validatorType = useGetValidatorType(networkKey);
   const stakedReturn = bondingMeta?.stakedReturn;
   const validatorCount = bondingMeta?.validatorCount;
+
+  const validatorTitle = useMemo((): string => {
+    switch (validatorType) {
+      case 'Collator':
+        return i18n.common.collator.toLowerCase();
+      case 'DApp':
+        return i18n.common.dApp;
+      case 'Validator':
+      case 'Unknown':
+      default:
+        return i18n.common.validator.toLowerCase();
+    }
+  }, [validatorType]);
 
   return (
     <TouchableOpacity style={WrapperStyle} activeOpacity={0.5} onPress={onPress(network)}>
@@ -101,13 +116,13 @@ const StakingNetworkItem = ({ network, bondingMeta, onPress }: Props) => {
               {networkName.replace(' Relay Chain', '')}
             </Text>
             <Text style={ValidatorTextStyle}>
-              {Math.ceil(validatorCount || 0)}&nbsp;{i18n.stakingScreen.networkList.validators}
+              {Math.ceil(validatorCount || 0)}&nbsp;{validatorTitle}
             </Text>
           </View>
         </View>
 
         <View style={BalanceInfoContainerStyle}>
-          <Text style={ReturnedTextStyle}>{formatStakedReturn(stakedReturn)}</Text>
+          {!!stakedReturn && <Text style={ReturnedTextStyle}>{formatStakedReturn(stakedReturn)}</Text>}
         </View>
       </View>
 
