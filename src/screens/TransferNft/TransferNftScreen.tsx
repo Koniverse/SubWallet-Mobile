@@ -11,8 +11,12 @@ const TransferNftScreen = () => {
   return (
     <StakeActionStack.Navigator screenOptions={{ headerShown: false }}>
       <StakeActionStack.Screen name="NftTransferConfirm" component={NftTransferConfirm} />
-      <StakeActionStack.Screen name="NftTransferAuth" component={NftTransferAuth} />
-      <StakeActionStack.Screen name="NftTransferResult" component={NftTransferResult} />
+      <StakeActionStack.Screen name="NftTransferAuth" component={NftTransferAuth} options={{ gestureEnabled: false }} />
+      <StakeActionStack.Screen
+        name="NftTransferResult"
+        component={NftTransferResult}
+        options={{ gestureEnabled: false }}
+      />
     </StakeActionStack.Navigator>
   );
 };

@@ -11,7 +11,7 @@ const UnStakeActionScreen = () => {
   return (
     <UnStakeActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <UnStakeActionStack.Screen name="UnStakeConfirm" component={UnStakeConfirm} />
-      <UnStakeActionStack.Screen name="UnStakeAuth" component={UnStakeAuth} />
+      <UnStakeActionStack.Screen name="UnStakeAuth" component={UnStakeAuth} options={{ gestureEnabled: false }} />
       <UnStakeActionStack.Screen name="UnStakeResult" component={UnStakeResult} options={{ gestureEnabled: false }} />
     </UnStakeActionStack.Navigator>
   );
