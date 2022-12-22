@@ -213,7 +213,8 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     } else {
       if (selectionProvider) {
         const { selectedNetworkKey: _selectedNetworkKey } = selectionProvider;
-        setSelectedResult({ selectedNetworkKey: _selectedNetworkKey });
+        const _selectedNetworkPrefix = networkMap[_selectedNetworkKey].ss58Format;
+        setSelectedResult({ selectedNetworkKey: _selectedNetworkKey, selectedNetworkPrefix: _selectedNetworkPrefix });
         setSelectServicesModal(true);
       } else {
         setTokenSelectAction({
