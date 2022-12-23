@@ -88,7 +88,7 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
         createAccountExternalV2({
           name: name,
           address: formattedAddress,
-          genesisHash: account.genesisHash,
+          genesisHash: '',
           isEthereum: account.isEthereum,
           isAllowed: isAllow,
           isReadOnly: false,
@@ -111,7 +111,7 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
         setIsBusy(false);
       }
     },
-    [account.isAddress, account.genesisHash, account.isEthereum, formattedAddress, isAllow, onComplete],
+    [account.isAddress, account.isEthereum, formattedAddress, isAllow, onComplete],
   );
 
   const show = useCallback(
