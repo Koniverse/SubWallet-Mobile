@@ -1,7 +1,7 @@
 {
   "name": "SubWalletMobile",
-  "version": "0.2.3",
-  "build": "117",
+  "version": "0.2.4",
+  "build": "118",
   "private": true,
   "license": "Apache-2.0",
   "bin": {

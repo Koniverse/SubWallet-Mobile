@@ -1,4 +1,4 @@
-## 0.2.3 (118)
+## 0.2.4 (118)
 - Add some dApps to browser's predefined list (#282)
 - Fix bug back the previous screen when user swipes screen (iOS) or touch the back button (Android)
 - Fix bug unable to get the wallet address when buying from the DOT token detail screen (#298)
