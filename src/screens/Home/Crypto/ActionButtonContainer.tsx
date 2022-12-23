@@ -16,6 +16,8 @@ import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { ColorMap } from 'styles/color';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
+import useShowedNetworks from 'hooks/screen/useShowedNetworks';
+import { useToast } from 'react-native-toast-notifications';
 
 interface Props extends SelectionProviderProps {
   style?: StyleProp<any>;
@@ -44,6 +46,7 @@ const actionButtonWrapper: StyleProp<any> = {
 export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const networkMap = useSelector((state: RootState) => state.networkMap.details);
   const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
+  const toast = useToast();
   const _isAccountAll = isAccountAll(currentAccountAddress);
   const navigation = useNavigation<RootNavigationProps>();
   const [receiveModalVisible, setReceiveModalVisible] = useState<boolean>(false);
@@ -53,6 +56,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
   const [selectTokenModal, setSelectTokenModal] = useState<boolean>(false);
   const [{ selectedAccount, selectedNetworkKey, selectedNetworkPrefix }, setSelectedResult] =
     useState<SelectedResultType>({});
+  const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
   const [{ onChange: onChangeAccountSelect, onBack: onBackAccountSelect }, setAccountSelectAction] = useState<
     ModalActionType<string>
   >({});
@@ -153,6 +157,18 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     }
   };
 
+  const onPressSendButton = () => {
+    if (showedNetworks && showedNetworks.length) {
+      navigation.navigate('SendFund', {
+        selectedNetworkKey: selectionProvider?.selectedNetworkKey,
+        selectedToken: selectionProvider?.selectedToken,
+      });
+    } else {
+      toast.hideAll();
+      toast.show(i18n.warningMessage.enableNetworkToContinue);
+    }
+  };
+
   const onChangeBuyAccount = (address: string) => {
     if (selectionProvider) {
       const { selectedNetworkKey: _selectedNetworkKey } = selectionProvider;
@@ -235,16 +251,7 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     <>
       <View style={[actionButtonWrapper, style]} pointerEvents="box-none">
         <ActionButton label={i18n.cryptoScreen.receive} icon={receiveIcon} onPress={onPressReceiveButton} />
-        <ActionButton
-          label={i18n.cryptoScreen.send}
-          icon={sendIcon}
-          onPress={() =>
-            navigation.navigate('SendFund', {
-              selectedNetworkKey: selectionProvider?.selectedNetworkKey,
-              selectedToken: selectionProvider?.selectedToken,
-            })
-          }
-        />
+        <ActionButton label={i18n.cryptoScreen.send} icon={sendIcon} onPress={onPressSendButton} />
         {/*<ActionButton label={i18n.cryptoScreen.swap} icon={swapIcon} onPress={onPressSwapBtn} />*/}
         <ActionButton label={i18n.cryptoScreen.buy} icon={buyIcon} onPress={onPressBuyBtn} />
       </View>
