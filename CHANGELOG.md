@@ -1,3 +1,11 @@
+## 0.2.3 (118)
+- Add some dApps to browser's predefined list (#282)
+- Fix bug back the previous screen when user swipes screen (iOS) or touch the back button (Android)
+- Fix bug unable to get the wallet address when buying from the DOT token detail screen (#298)
+- Fix bug showing not enough account on the account list of the dApp (#299)
+- Update logo for new networks on the mobile app (#300)
+- Update some information at the Select network to stake screen (#301)
+
 ## 0.2.3 (117)
 - Add some dApps to browser's predefined list (#282)
 - Fix some bugs (#284)
