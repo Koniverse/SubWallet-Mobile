@@ -626,6 +626,7 @@ export const vi = {
     unSupportSigning: 'This feature is not available for the chosen account',
     networkUnSupportQrSigner: 'This network does not support this feature with QR-signer account',
     featureIsNotAvailable: 'This feature is not available for the chosen account',
+    enableNetworkToContinue: 'Please enable the network to continue.',
   },
   errorMessage: {
     wrongPassword: 'Wrong password',
