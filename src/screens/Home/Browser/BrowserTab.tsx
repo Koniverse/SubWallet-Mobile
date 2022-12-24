@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { NativeSyntheticEvent, Platform, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, NativeSyntheticEvent, Platform, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -477,6 +477,23 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
     },
   }));
 
+  const onShouldStartLoadWithRequest = ({ url }: WebViewNavigation) => {
+    if (
+      url.startsWith('tel:') ||
+      url.startsWith('mailto:') ||
+      url.startsWith('maps:') ||
+      url.startsWith('geo:') ||
+      url.startsWith('sms:')
+    ) {
+      Linking.openURL(url).catch(er => {
+        Alert.alert('Failed to open Link: ' + er.message);
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <ScreenContainer backgroundColor={ColorMap.dark2}>
       <>
@@ -523,6 +540,7 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
                 allowUniversalAccessFromFileURLs={true}
                 allowFileAccessFromFileURLs={true}
                 domStorageEnabled={true}
+                onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
               />
             ) : (
               <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
