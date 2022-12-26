@@ -1,3 +1,8 @@
+## 0.2.4 (122)
+- Update logo for some networks (#300)
+- Display incorrect order of default network (#313)
+- FIx bug not show network when an account has sub-token but no main token (#312)
+
 ## 0.2.4 (121)
 - Fix crash app in case click on the Get Subsquare button when connecting DApp (#280)
 - Fix showing not enough account on the account list of the dApp (#299)
