@@ -1,3 +1,8 @@
+## 0.2.4 (121)
+- Fix crash app in case click on the Get Subsquare button when connecting DApp (#280)
+- Fix showing not enough account on the account list of the dApp (#299)
+- Fix crash app in case of sending assets when using an EVM account that is not connected to any network (#309)
+
 ## 0.2.4 (118)
 - Add some dApps to browser's predefined list (#282)
 - Fix bug back the previous screen when user swipes screen (iOS) or touch the back button (Android)
