@@ -85,7 +85,13 @@ function getChainTabsNetworkKeys(
   isShowZeroBalance?: boolean,
 ): string[] {
   if (!isGroupDetail) {
-    return showedNetworks;
+    const result = showedNetworks.filter(k => !prioritizedNetworkKeys.includes(k));
+    prioritizedNetworkKeys.forEach(pk => {
+      if (showedNetworks.includes(pk)) {
+        result.unshift(pk);
+      }
+    });
+    return result;
   }
 
   const networkKeys: string[] = [];
