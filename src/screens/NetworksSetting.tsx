@@ -28,18 +28,24 @@ const processNetworkMap = (
   updateKeys = false,
 ): NetworkJson[] => {
   if (!networkKeys || updateKeys) {
-    networkKeys = Object.keys(networkMap).sort((a, b) => {
-      const aActive = pendingKeys.includes(a) ? cachePendingNetworkMap[a] : networkMap[a]?.active;
-      const bActive = pendingKeys.includes(b) ? cachePendingNetworkMap[b] : networkMap[b]?.active;
+    networkKeys = Object.keys(networkMap)
+      .filter(
+        key =>
+          Object.keys(networkMap[key].providers).length > 0 ||
+          Object.keys(networkMap[key].customProviders || []).length > 0,
+      )
+      .sort((a, b) => {
+        const aActive = pendingKeys.includes(a) ? cachePendingNetworkMap[a] : networkMap[a]?.active;
+        const bActive = pendingKeys.includes(b) ? cachePendingNetworkMap[b] : networkMap[b]?.active;
 
-      if (aActive === bActive) {
-        return 0;
-      } else if (aActive) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
+        if (aActive === bActive) {
+          return 0;
+        } else if (aActive) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
   }
 
   return networkKeys.map(key => networkMap[key]);
