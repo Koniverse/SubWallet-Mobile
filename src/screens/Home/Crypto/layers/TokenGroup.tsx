@@ -16,7 +16,7 @@ import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
 import { ChainsTab } from 'screens/Home/Crypto/tabs/ChainsTab';
 import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import BigN from 'bignumber.js';
-import { BalanceInfo } from 'types/index';
+import { BalanceInfo, BalanceSubInfo } from 'types/index';
 import { ListRenderItemInfo, View } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
@@ -125,6 +125,14 @@ function getEmptyBalanceInfo(nativeToken?: string) {
   };
 }
 
+function checkExistedChildrenBalance(childrenBalances: BalanceSubInfo[]) {
+  if (childrenBalances.length) {
+    return childrenBalances.some(ele => !ele.balanceValue.eq(BN_ZERO));
+  } else {
+    return false;
+  }
+}
+
 function isEmptyList(
   list: TokenBalanceItemType[],
   accountType: AccountType,
@@ -190,7 +198,12 @@ const TokenGroupLayer = ({
     const info = accountInfoByNetworkMap[networkKey];
     const balanceInfo = networkBalanceMap[networkKey] || getEmptyBalanceInfo(info.nativeToken);
 
-    if (!isShowZeroBalance && !alwaysShowedNetworkKeys.includes(networkKey) && balanceInfo.balanceValue.eq(BN_ZERO)) {
+    if (
+      !isShowZeroBalance &&
+      !alwaysShowedNetworkKeys.includes(networkKey) &&
+      balanceInfo.balanceValue.eq(BN_ZERO) &&
+      !checkExistedChildrenBalance(balanceInfo.childrenBalances)
+    ) {
       return null;
     }
 
