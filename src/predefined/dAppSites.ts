@@ -78,6 +78,8 @@ export const DAppTitleMap: Record<string, string> = {
   'astr.domains': 'Astar Web3 Domains (.astr) - Your Perfect NFT Domains',
   'event.tfalpha.xyz': 'Raffle & Claim Rewards',
   'tfalpha.xyz': 'Utopia & TF Alpha',
+  'moons.money': 'Moon Web3 identity',
+  'www.subsquare.io': 'SubSquare - Empower the governance of substrate.',
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -310,6 +312,12 @@ export const predefinedDApps: PredefinedDApps = {
     //   categories: ['community'],
     // },
     {
+      name: 'Subsquare',
+      icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/color/SubSquare.svg',
+      url: 'https://www.subsquare.io/',
+      categories: ['community'],
+    },
+    {
       name: 'Acala Rewards Claim',
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/dapps/color/Acala.png',
       url: 'https://distribution.acala.network/claim/acala',
@@ -363,6 +371,13 @@ export const predefinedDApps: PredefinedDApps = {
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/dapps/color/StellaSwap.svg',
       url: 'https://app.stellaswap.com/exchange/swap',
       categories: ['defi', 'staking', 'evm'],
+      isSupportEthereumAccount: true,
+    },
+    {
+      name: 'Moon Web3 identity',
+      icon: 'https://moons.money/logo/logo.png?=2',
+      url: 'https://moons.money/app',
+      categories: ['evm'],
       isSupportEthereumAccount: true,
     },
     {
