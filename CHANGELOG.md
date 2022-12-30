@@ -1,3 +1,6 @@
+## 0.2.4 (123)
+- Add subsquare.io and moons.money to predefined DApp list (#282)
+
 ## 0.2.4 (122)
 - Update logo for some networks (#300)
 - Display incorrect order of default network (#313)
