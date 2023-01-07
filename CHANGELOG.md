@@ -1,3 +1,6 @@
+## 0.2.5 (124)
+- Update web-runner (#320)
+
 ## 0.2.4 (123)
 - Add subsquare.io and moons.money to predefined DApp list (#282)
 
