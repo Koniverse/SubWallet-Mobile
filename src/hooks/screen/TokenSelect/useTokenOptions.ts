@@ -26,7 +26,7 @@ function getTokenItemOptions(
     }
 
     Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
-      const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
+      const tokenInfo = chainRegistryMap[networkKey].tokenMap[token] || {};
 
       options.push({
         networkKey: networkKey,

@@ -72,7 +72,7 @@ export function getAuthTransactionFeeInfo(
   let symbol;
 
   if (feeSymbol) {
-    symbol = getTokenDisplayName(feeSymbol, tokenMap[feeSymbol].symbolAlt);
+    symbol = getTokenDisplayName(feeSymbol, tokenMap[feeSymbol]?.symbolAlt);
   } else {
     symbol = mainTokenInfo.symbol;
   }
