@@ -1,3 +1,6 @@
+## 0.2.5 (125)
+- Fix bug after update web-runner (#320)
+
 ## 0.2.5 (124)
 - Update web-runner (#320)
 
