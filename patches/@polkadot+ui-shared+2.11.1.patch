@@ -1,5 +1,5 @@
 diff --git a/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js b/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
-index 3c4a3fb..2e7c193 100644
+index 390c797..42b52fe 100644
 --- a/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
 +++ b/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
 @@ -55,7 +55,7 @@ const SCHEMA = {
@@ -12,7 +12,7 @@ index 3c4a3fb..2e7c193 100644
  };
  let zeroHash = new Uint8Array();
 diff --git a/node_modules/@polkadot/ui-shared/icons/polkadot.js b/node_modules/@polkadot/ui-shared/icons/polkadot.js
-index 8691f68..318b16b 100644
+index 8b12e00..b72c5e2 100644
 --- a/node_modules/@polkadot/ui-shared/icons/polkadot.js
 +++ b/node_modules/@polkadot/ui-shared/icons/polkadot.js
 @@ -49,7 +49,7 @@ const SCHEMA = {
