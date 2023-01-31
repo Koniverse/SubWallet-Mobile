@@ -147,9 +147,9 @@
   },
   "resolutions": {
     "@types/react": "^18.0.25",
-    "@polkadot/util": "^10.1.14",
+    "@polkadot/util": "^10.3.1",
     "@polkadot/api": "^9.9.4",
-    "@polkadot/util-crypto": "^10.1.14",
+    "@polkadot/util-crypto": "^10.3.1",
     "react-native-svg": "^13.6.0"
   },
   "jest": {
