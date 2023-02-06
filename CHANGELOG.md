@@ -1,3 +1,6 @@
+## 0.2.6 (127)
+- Upgrade react-native and web-runner (#323)
+
 ## 0.2.5 (126)
 - Upgrade react-native and web-runner (#323)
 
