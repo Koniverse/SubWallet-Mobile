@@ -1,3 +1,6 @@
+## 0.2.6 (128)
+- Update in-app browser predefined list (#322)
+
 ## 0.2.6 (127)
 - Upgrade react-native and web-runner (#323)
 
