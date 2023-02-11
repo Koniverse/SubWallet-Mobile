@@ -72,6 +72,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to capture QR code</string>
+	<key>NSMicrophoneUsageDescription</key>
+    <string>Microphone is used to record audio</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -1,3 +1,7 @@
+## 0.2.6 (129)
+- Fix error message from react-native-camera
+- Fix cosmize connect problem
+
 ## 0.2.6 (128)
 - Update in-app browser predefined list (#322)
 
