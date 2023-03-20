@@ -13,6 +13,22 @@ interface Props {
   si: SiDef;
 }
 
+export const getInputValFontSize = (inputValue: string) => {
+  const initVal = 38;
+
+  if (inputValue.length > 23) {
+    return 20;
+  } else if (inputValue.length > 17) {
+    return 24;
+  } else if (inputValue.length > 14) {
+    return 28;
+  } else if (inputValue.length > 11) {
+    return 34;
+  }
+
+  return initVal;
+};
+
 export const getInputValueStyle = (inputValue: string) => {
   const initStyle = {
     ...sharedStyles.largeText,

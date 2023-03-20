@@ -29,7 +29,7 @@ interface SelectionInfo {
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
   flex: 1,
-  backgroundColor: ColorMap.dark2,
+  backgroundColor: ColorMap.dark,
 };
 
 const viewLayerStyle: StyleProp<any> = {

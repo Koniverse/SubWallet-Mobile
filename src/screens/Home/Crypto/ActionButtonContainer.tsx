@@ -14,7 +14,6 @@ import { HIDE_MODAL_DURATION } from 'constants/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { ColorMap } from 'styles/color';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { useToast } from 'react-native-toast-notifications';
@@ -242,18 +241,12 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
     }
   };
 
-  const receiveIcon = <ArrowFatLineDown color={ColorMap.light} size={24} weight={'bold'} />;
-  const sendIcon = <PaperPlaneTilt color={ColorMap.light} size={24} weight={'bold'} />;
-  // const swapIcon = <ArrowsClockwise color={ColorMap.light} size={24} weight={'bold'} />;
-  const buyIcon = <ShoppingCartSimple color={ColorMap.light} size={24} weight={'bold'} />;
-
   return (
     <>
       <View style={[actionButtonWrapper, style]} pointerEvents="box-none">
-        <ActionButton label={i18n.cryptoScreen.receive} icon={receiveIcon} onPress={onPressReceiveButton} />
-        <ActionButton label={i18n.cryptoScreen.send} icon={sendIcon} onPress={onPressSendButton} />
-        {/*<ActionButton label={i18n.cryptoScreen.swap} icon={swapIcon} onPress={onPressSwapBtn} />*/}
-        <ActionButton label={i18n.cryptoScreen.buy} icon={buyIcon} onPress={onPressBuyBtn} />
+        <ActionButton label={i18n.cryptoScreen.receive} icon={ArrowFatLineDown} onPress={onPressReceiveButton} />
+        <ActionButton label={i18n.cryptoScreen.send} icon={PaperPlaneTilt} onPress={onPressSendButton} />
+        <ActionButton label={i18n.cryptoScreen.buy} icon={ShoppingCartSimple} onPress={onPressBuyBtn} />
       </View>
 
       <AccountSelect

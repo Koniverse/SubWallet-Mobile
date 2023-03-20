@@ -3,11 +3,10 @@ import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from '
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { BalanceVal } from 'components/BalanceVal';
 import { TokenBalanceItemType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
-import { Divider } from 'components/Divider';
-import { BalanceValDisplay } from 'components/BalanceValDisplay';
+import { Icon, Number } from 'components/design-system-ui';
+import { CaretRight } from 'phosphor-react-native';
 
 interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
 
@@ -20,6 +19,7 @@ const chainBalanceMainArea: StyleProp<any> = {
 };
 const chainBalancePart1: StyleProp<any> = {
   flexDirection: 'row',
+  alignItems: 'center',
   paddingLeft: 16,
   paddingRight: 2,
 };
@@ -45,6 +45,11 @@ const chainBalancePart2: StyleProp<any> = {
   alignItems: 'flex-end',
   paddingRight: 16,
   paddingLeft: 2,
+};
+const chainBalancePart2Wrapper: StyleProp<any> = {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingRight: 15,
 };
 
 export const TokenChainBalance = ({
@@ -80,32 +85,40 @@ export const TokenChainBalance = ({
               )}
             </View>
 
-            <BalanceVal
-              balanceValTextStyle={priceStyle}
-              startWithSymbol
-              symbol={'$'}
-              value={`${isTestnet ? 0 : priceValue}`}
+            <Number
+              value={isTestnet ? 0 : priceValue}
+              decimal={0}
+              prefix={'$'}
+              leftColor={priceStyle.color}
+              rightColor={priceStyle.color}
+              size={priceStyle.fontSize}
             />
           </View>
         </View>
 
-        <View style={chainBalancePart2}>
-          <BalanceValDisplay
-            balanceValTextStyle={textStyle}
-            startWithSymbol
-            symbol={''}
-            value={!isReady ? BN_ZERO : balanceValue}
-          />
-          <BalanceValDisplay
-            balanceValTextStyle={subTextStyle}
-            startWithSymbol
-            symbol={'$'}
-            value={isTestnet || !isReady ? BN_ZERO : convertedBalanceValue}
-          />
+        <View style={chainBalancePart2Wrapper}>
+          <View style={chainBalancePart2}>
+            <Number
+              value={!isReady ? BN_ZERO : balanceValue}
+              decimal={0}
+              rightOpacity={0.45}
+              leftColor={textStyle.color}
+              rightColor={textStyle.color}
+              size={textStyle.fontSize}
+            />
+            <Number
+              value={isTestnet || !isReady ? BN_ZERO : convertedBalanceValue}
+              decimal={0}
+              rightOpacity={0.45}
+              prefix={'$'}
+              leftColor={subTextStyle.color}
+              rightColor={subTextStyle.color}
+              size={subTextStyle.fontSize}
+            />
+          </View>
+          <Icon type="phosphor" phosphorIcon={CaretRight} size={'xs'} iconColor="white" />
         </View>
       </View>
-
-      <Divider style={{ paddingLeft: 72, paddingRight: 16, paddingBottom: 1 }} color={ColorMap.dark2} />
     </TouchableOpacity>
   );
 };

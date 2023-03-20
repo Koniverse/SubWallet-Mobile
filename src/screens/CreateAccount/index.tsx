@@ -10,6 +10,7 @@ import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -26,11 +27,9 @@ function getHeaderTitle(viewStep: number) {
   return i18n.title.nameYourWallet;
 }
 
-export const CreateAccount = ({
-  route: {
-    params: { keyTypes },
-  },
-}: CreateAccountProps) => {
+const defaultKeyTypes = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
+
+export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.INIT_SP);
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -39,13 +38,13 @@ export const CreateAccount = ({
 
   useHandlerHardwareBackPress(isBusy);
   useEffect((): void => {
-    createSeedV2(undefined, undefined, [keyTypes])
+    createSeedV2(undefined, undefined, params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes)
       .then((response): void => {
         // @ts-ignore
         setSeed(response.seed);
       })
       .catch(console.error);
-  }, [keyTypes]);
+  }, [params]);
 
   const onPressBack = () => {
     if (currentViewStep === ViewStep.INIT_SP) {
@@ -68,7 +67,14 @@ export const CreateAccount = ({
   const onCreateAccount = (curName: string, password: string) => {
     if (curName && password && seed) {
       setIsBusy(true);
-      createAccountSuriV2(curName, password, seed, true, [keyTypes], '')
+      createAccountSuriV2(
+        curName,
+        password,
+        seed,
+        true,
+        params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes,
+        '',
+      )
         .then(() => {
           backToHome(goHome, true);
         })

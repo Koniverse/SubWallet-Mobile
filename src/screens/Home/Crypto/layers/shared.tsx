@@ -9,8 +9,9 @@ import { DEVICE } from 'constants/index';
 
 export const itemWrapperStyle: StyleProp<any> = {
   width: '100%',
-  backgroundColor: ColorMap.dark1,
   position: 'relative',
+  borderRadius: 8,
+  marginBottom: 8,
 };
 
 export const itemWrapperAppendixStyle: StyleProp<any> = {

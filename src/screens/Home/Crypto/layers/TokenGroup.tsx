@@ -5,27 +5,23 @@ import { SubHeader } from 'components/SubHeader';
 import { ColorMap } from 'styles/color';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import * as Tabs from 'react-native-collapsible-tab-view';
-import {
-  isItemAllowedToShow,
-  itemWrapperAppendixStyle,
-  itemWrapperStyle,
-  renderTabBar,
-} from 'screens/Home/Crypto/layers/shared';
+import { isItemAllowedToShow, itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
-import { ChainsTab } from 'screens/Home/Crypto/tabs/ChainsTab';
 import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
 import BigN from 'bignumber.js';
-import { BalanceInfo, BalanceSubInfo } from 'types/index';
-import { ListRenderItemInfo, View } from 'react-native';
+import { BalanceInfo } from 'types/index';
+import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
 import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
-import i18n from 'utils/i18n/i18n';
 import useTokenBalanceItems from 'hooks/screen/Home/Crypto/layers/TokenGroup/useTokenBalanceItems';
-import { ChainBalance } from 'components/ChainBalance';
-import { restartSubscriptionServices } from '../../../../messaging';
+import {restartSubscriptionServices, toggleBalancesVisibility} from '../../../../messaging';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { EyeSlash, FadersHorizontal, MagnifyingGlass } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Prop {
   isShowZeroBalance?: boolean;
@@ -42,8 +38,6 @@ interface Prop {
   handleChangeTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
   totalBalanceValue: BigN;
 }
-
-const prioritizedNetworkKeys = ['kusama', 'polkadot'];
 
 function getTokenGroupDisplayName(tgKey: string) {
   const [symbol] = tgKey.split('|');
@@ -76,69 +70,6 @@ function getBalanceValue(
   return BN_ZERO;
 }
 
-function getChainTabsNetworkKeys(
-  isGroupDetail: boolean,
-  tokenBalanceItems: TokenBalanceItemType[],
-  tokenGroupMap: Record<string, string[]>,
-  showedNetworks: string[],
-  accountType: AccountType,
-  isShowZeroBalance?: boolean,
-): string[] {
-  if (!isGroupDetail) {
-    const result = showedNetworks.filter(k => !prioritizedNetworkKeys.includes(k));
-    prioritizedNetworkKeys.forEach(pk => {
-      if (showedNetworks.includes(pk)) {
-        result.unshift(pk);
-      }
-    });
-    return result;
-  }
-
-  const networkKeys: string[] = [];
-
-  tokenBalanceItems.forEach(item => {
-    if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
-      return;
-    }
-
-    if (!networkKeys.includes(item.networkKey)) {
-      networkKeys.push(item.networkKey);
-    }
-  });
-
-  const result: string[] = networkKeys.filter(k => !prioritizedNetworkKeys.includes(k)).sort();
-
-  prioritizedNetworkKeys.forEach(pk => {
-    if (networkKeys.includes(pk)) {
-      result.unshift(pk);
-    }
-  });
-
-  return result;
-}
-
-const alwaysShowedNetworkKeys = ['kusama', 'polkadot'];
-
-function getEmptyBalanceInfo(nativeToken?: string) {
-  return {
-    symbol: nativeToken || 'UNIT',
-    displayedSymbol: (nativeToken && getTokenDisplayName(nativeToken)) || 'UNIT',
-    balanceValue: BN_ZERO,
-    convertedBalanceValue: BN_ZERO,
-    detailBalances: [],
-    childrenBalances: [],
-    isReady: false,
-  };
-}
-
-function checkExistedChildrenBalance(childrenBalances: BalanceSubInfo[]) {
-  if (childrenBalances.length) {
-    return childrenBalances.some(ele => !ele.balanceValue.eq(BN_ZERO));
-  } else {
-    return false;
-  }
-}
-
 function isEmptyList(
   list: TokenBalanceItemType[],
   accountType: AccountType,
@@ -152,25 +83,31 @@ function isEmptyList(
   return !filteredList.length;
 }
 
+const renderActionsStyle: StyleProp<any> = {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+};
+
 const TokenGroupLayer = ({
   accountType,
   navigation,
   onPressSearchButton,
   accountInfoByNetworkMap,
-  onPressChainItem,
   tokenGroupMap,
   tokenBalanceKeyPriceMap,
   tokenBalanceMap,
-  showedNetworks,
-  networkBalanceMap,
   handleChangeTokenItem,
   totalBalanceValue,
   isShowZeroBalance,
 }: Prop) => {
+  const theme = useSubWalletTheme().swThemes;
   const [isRefresh, refresh] = useRefresh();
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
   const [isGroupDetail, setGroupDetail] = useState<boolean>(false);
   const [refreshTabId, setRefreshTabId] = useState<string>('');
+
   const onPressBack = () => {
     setCurrentTgKey('');
     setGroupDetail(false);
@@ -182,14 +119,6 @@ const TokenGroupLayer = ({
     tokenBalanceMap,
     tokenBalanceKeyPriceMap,
   );
-  const chainTabsNetworkKeys = getChainTabsNetworkKeys(
-    isGroupDetail,
-    tokenBalanceItems,
-    tokenGroupMap,
-    showedNetworks,
-    accountType,
-    isShowZeroBalance,
-  );
 
   const onPressTokenItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
     if (isGroupDetail) {
@@ -200,31 +129,6 @@ const TokenGroupLayer = ({
     }
   };
 
-  const renderNetworkItem = ({ item: networkKey }: ListRenderItemInfo<string>) => {
-    const info = accountInfoByNetworkMap[networkKey];
-    const balanceInfo = networkBalanceMap[networkKey] || getEmptyBalanceInfo(info.nativeToken);
-
-    if (
-      !isShowZeroBalance &&
-      !alwaysShowedNetworkKeys.includes(networkKey) &&
-      balanceInfo.balanceValue.eq(BN_ZERO) &&
-      !checkExistedChildrenBalance(balanceInfo.childrenBalances)
-    ) {
-      return null;
-    }
-
-    return (
-      <View key={info.key} style={itemWrapperStyle}>
-        <ChainBalance
-          accountInfo={info}
-          onPress={() => onPressChainItem(info, balanceInfo)}
-          balanceInfo={balanceInfo}
-        />
-        <View style={itemWrapperAppendixStyle} />
-      </View>
-    );
-  };
-
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
     const info = accountInfoByNetworkMap[item.networkKey];
 
@@ -233,9 +137,8 @@ const TokenGroupLayer = ({
     }
 
     return (
-      <View key={item.id} style={itemWrapperStyle}>
+      <View key={item.id} style={[itemWrapperStyle, { backgroundColor: '#252525' }]}>
         <TokenChainBalance onPress={() => onPressTokenItem(item, info)} {...item} />
-        <View style={itemWrapperAppendixStyle} />
       </View>
     );
   };
@@ -245,8 +148,45 @@ const TokenGroupLayer = ({
       <TabsContainerHeader
         balanceBlockProps={{
           balanceValue: getBalanceValue(isGroupDetail, currentTgKey, totalBalanceValue, tokenGroupMap, tokenBalanceMap),
+          isPriceDecrease: false,
+          totalChangeValue: 10,
         }}
       />
+    );
+  };
+
+  const _toggleBalances = async () => {
+    await toggleBalancesVisibility(v => {
+      console.log('Balances visible:', v.isShowBalance);
+    });
+  };
+
+  const renderActions = () => {
+    return (
+      <View style={renderActionsStyle}>
+        <Typography.Title level={4} style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
+          {i18n.settings.tokens}
+        </Typography.Title>
+        <View style={{ flexDirection: 'row', marginRight: -5 }}>
+          <Button
+            type="ghost"
+            size="xs"
+            icon={<Icon size="sm" phosphorIcon={EyeSlash} iconColor={theme.colorTextLight5} />}
+            onPress={_toggleBalances}
+          />
+          <Button
+            type="ghost"
+            size="xs"
+            icon={<Icon size="sm" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight5} />}
+            onPress={onPressSearchButton}
+          />
+          <Button
+            type="ghost"
+            size="xs"
+            icon={<Icon size="sm" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight5} />}
+          />
+        </View>
+      </View>
     );
   };
 
@@ -256,9 +196,9 @@ const TokenGroupLayer = ({
   };
 
   return (
-    <ScreenContainer backgroundColor={ColorMap.dark2}>
+    <ScreenContainer>
       <>
-        {!isGroupDetail && <Header navigation={navigation} onPressSearchButton={onPressSearchButton} />}
+        {!isGroupDetail && <Header navigation={navigation} />}
         {isGroupDetail && (
           <SubHeader
             backgroundColor={ColorMap.dark2}
@@ -267,33 +207,16 @@ const TokenGroupLayer = ({
           />
         )}
 
-        <Tabs.Container
-          lazy
-          containerStyle={{ backgroundColor: ColorMap.dark2 }}
-          allowHeaderOverscroll={true}
-          renderTabBar={renderTabBar}
-          renderHeader={renderTabContainerHeader}>
-          <Tabs.Tab name={'one'} label={i18n.title.token}>
-            <TokensTab
-              items={tokenBalanceItems}
-              renderItem={renderTokenTabItem}
-              isRefresh={isRefresh}
-              refresh={_onRefresh}
-              refreshTabId={refreshTabId}
-              isEmptyList={isEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
-            />
-          </Tabs.Tab>
-          <Tabs.Tab name={'two'} label={i18n.title.network}>
-            <ChainsTab
-              renderItem={renderNetworkItem}
-              networkKeys={chainTabsNetworkKeys}
-              isRefresh={isRefresh}
-              refresh={_onRefresh}
-              refreshTabId={refreshTabId}
-              isEmptyList={isEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
-            />
-          </Tabs.Tab>
-        </Tabs.Container>
+        <TokensTab
+          renderTabContainerHeader={renderTabContainerHeader}
+          items={tokenBalanceItems}
+          renderItem={renderTokenTabItem}
+          renderActions={renderActions}
+          isRefresh={isRefresh}
+          refresh={_onRefresh}
+          refreshTabId={refreshTabId}
+          isEmptyList={isEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
+        />
       </>
     </ScreenContainer>
   );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { ImageLogosMap } from 'assets/logo';
 
-const SubWalletLogo = React.lazy(() => import('./sub-wallet-logo.svg'));
 const SubWalletLogo2 = React.lazy(() => import('./logo-subwallet.svg'));
 const CheckBoxIcon = React.lazy(() => import('./checkbox.svg'));
 const SignalIcon = React.lazy(() => import('./signal.svg'));
@@ -10,7 +9,8 @@ const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
 const NftIcon = React.lazy(() => import('./logo-nft.svg'));
 
 export const Logo = {
-  SubWallet: SubWalletLogo,
+  SubWallet: require('./subwallet-logo.png'),
+  SubWalletGray: require('./subwallet-logo-gray.png'),
 };
 
 export const SVGImages = {
@@ -30,5 +30,6 @@ export const Images = {
   successStatusImg: require('./success-status.png'),
   failStatusImg: require('./fail-status.png'),
   loadingScreen: require('./loading-background.jpg'),
+  backgroundImg: require('./subwallet-background-img.png'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
 };

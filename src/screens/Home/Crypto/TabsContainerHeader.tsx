@@ -2,7 +2,6 @@ import React from 'react';
 import { BalanceBlockType, SelectionProviderType } from 'types/ui-types';
 import { ActionButtonContainer } from 'screens/Home/Crypto/ActionButtonContainer';
 import { StyleProp, View } from 'react-native';
-import { ColorMap } from 'styles/color';
 import { BalanceBlock } from 'screens/Home/Crypto/BalanceBlock';
 
 export interface TabsContainerHeaderProps {
@@ -12,10 +11,9 @@ export interface TabsContainerHeaderProps {
 }
 
 const containerStyle: StyleProp<any> = {
+  height: 220,
   paddingHorizontal: 16,
   alignItems: 'center',
-  backgroundColor: ColorMap.dark2,
-  paddingTop: 23,
   marginTop: -2,
   paddingBottom: 2,
   marginBottom: -2,

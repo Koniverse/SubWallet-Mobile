@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { useNavigation } from '@react-navigation/native';
-import { ImportSecretPhraseProps, RootNavigationProps } from 'routes/index';
+import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
@@ -16,6 +16,8 @@ import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { SelectAccountType } from 'components/common/SelectAccountType';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -57,15 +59,13 @@ const secretPhraseFormConfig: FormControlConfig = {
     // },
   },
 };
-export const ImportSecretPhrase = ({
-  route: {
-    params: { keyTypes },
-  },
-}: ImportSecretPhraseProps) => {
+
+export const ImportSecretPhrase = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
-  const [account, setAccount] = useState<AccountInfo | null>(null);
+  const [seedPhrase, setSeedPhrase] = useState('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
+  const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
   const [isBusy, setBusy] = useState(false);
   useHandlerHardwareBackPress(isBusy);
   const validateSeedAndGoToNextScreen = (currentFormState: FormState) => {
@@ -74,17 +74,15 @@ export const ImportSecretPhrase = ({
       return;
     }
     onChangeValue('seed')(seed);
-    const suri = `${seed || ''}`;
     setBusy(true);
-    validateSeedV2(seed, [keyTypes])
-      .then(({ addressMap }) => {
-        const address = addressMap[keyTypes as KeypairType];
-        setAccount({ address, suri, genesis: '' });
+    validateSeedV2(seed, keyTypes)
+      .then(() => {
+        setSeedPhrase(seed);
         onUpdateErrors('seed')();
         setCurrentViewStep(ViewStep.ENTER_PASSWORD);
       })
       .catch(() => {
-        setAccount(null);
+        setSeedPhrase('');
         onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
       })
       .finally(() => setBusy(false));
@@ -102,14 +100,14 @@ export const ImportSecretPhrase = ({
   }, [focus, navigation]);
 
   const _onImportSeed = (curName: string, password: string): void => {
-    if (curName && password && account) {
+    if (curName && password) {
       setBusy(true);
       createAccountSuriV2({
         name: curName,
         genesisHash: '',
         password,
-        suri: account.suri,
-        types: [keyTypes],
+        suri: seedPhrase,
+        types: keyTypes,
         isAllowed: true,
       })
         .then(() => {
@@ -139,11 +137,17 @@ export const ImportSecretPhrase = ({
 
               <Textarea
                 ref={formState.refs.seed}
-                style={{ marginBottom: 8, paddingTop: 16 }}
+                style={{ marginBottom: 16, paddingTop: 16 }}
                 value={formState.data.seed}
                 onChangeText={onChangeValue('seed')}
                 onSubmitEditing={onSubmitField('seed')}
                 errorMessages={formState.errors.seed}
+              />
+
+              <SelectAccountType
+                title={'Select account type'}
+                selectedItems={keyTypes}
+                setSelectedItems={setKeyTypes}
               />
             </ScrollView>
             <View style={footerAreaStyle}>

@@ -260,136 +260,129 @@ export const App = () => {
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
 
-  return useMemo(
-    () => (
-      <View style={viewContainerStyle}>
-        <View style={{ flex: 1 }}>
-          <ToastProvider
-            duration={TOAST_DURATION}
-            placement="top"
-            normalColor={theme.colors.notification}
-            textStyle={{ textAlign: 'center' }}
-            successColor={theme.colors.primary}
-            warningColor={theme.colors.notification_warning}
-            offsetTop={STATUS_BAR_HEIGHT + 40}
-            dangerColor={theme.colors.notification_danger}>
-            <ThemeContext.Provider value={theme}>
-              <SigningContextProvider>
-                <ExternalRequestContextProvider>
-                  <QrSignerContextProvider>
-                    <ScannerContextProvider>
-                      <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
-                        <Stack.Navigator
-                          screenOptions={{
-                            animation: 'fade',
-                          }}>
-                          {isAppReady && (
-                            <>
-                              <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
-                                <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
-                                <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
-                                <Stack.Screen name="Settings" component={Settings} />
-                                <Stack.Screen
-                                  name="SendFund"
-                                  component={SendFund}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen
-                                  name="TransferNft"
-                                  component={TransferNftScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
-                                <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
-                                <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
-                                <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
-                                <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                              </Stack.Group>
-                              <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
-                                <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                                <Stack.Screen name="EditAccount" component={EditAccount} />
-                                <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                                <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
-                                <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
-                                <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
-                                <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
-                                <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
-                                <Stack.Screen name="Languages" component={Languages} />
-                                <Stack.Screen name="Security" component={Security} />
-                                <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                                <Stack.Screen name="ExportAccount" component={ExportAccount} />
-                                <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
-                                <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
-                                <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
-                                <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
-                                <Stack.Screen name="ImportToken" component={ImportToken} />
-                                <Stack.Screen
-                                  name="StakeAction"
-                                  component={StakeActionScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen name="ImportNft" component={ImportNft} />
-                                <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                                <Stack.Screen
-                                  name="UnStakeAction"
-                                  component={UnStakeActionScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen
-                                  name="ClaimStakeAction"
-                                  component={ClaimActionScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen
-                                  name="WithdrawStakeAction"
-                                  component={WithdrawActionScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen
-                                  name="CompoundStakeAction"
-                                  component={CompoundActionScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                                <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
-                                <Stack.Screen
-                                  name="SigningAction"
-                                  component={SigningScreen}
-                                  options={{ gestureEnabled: false }}
-                                />
-                              </Stack.Group>
-                              <Stack.Group
-                                screenOptions={{
-                                  presentation: 'transparentModal',
-                                  contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
-                                  headerShown: false,
-                                }}>
-                                <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
-                              </Stack.Group>
-                            </>
-                          )}
-                          {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
-                        </Stack.Navigator>
-                      </NavigationContainer>
-                    </ScannerContextProvider>
-                  </QrSignerContextProvider>
-                </ExternalRequestContextProvider>
-              </SigningContextProvider>
-            </ThemeContext.Provider>
-          </ToastProvider>
-        </View>
-        {!isAppReady && (
-          <View style={layerScreenStyle}>
-            <LoadingScreen />
-          </View>
-        )}
-        {isLocked && (
-          <View style={layerScreenStyle}>
-            <LockScreen />
-          </View>
-        )}
+  return (
+    <View style={viewContainerStyle}>
+      <View style={{ flex: 1 }}>
+        <ToastProvider
+          duration={TOAST_DURATION}
+          placement="top"
+          normalColor={theme.colors.notification}
+          textStyle={{ textAlign: 'center' }}
+          successColor={theme.colors.primary}
+          warningColor={theme.colors.notification_warning}
+          offsetTop={STATUS_BAR_HEIGHT + 40}
+          dangerColor={theme.colors.notification_danger}>
+          <ThemeContext.Provider value={theme}>
+            <SigningContextProvider>
+              <ExternalRequestContextProvider>
+                <QrSignerContextProvider>
+                  <ScannerContextProvider>
+                    <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
+                      <Stack.Navigator
+                        screenOptions={{
+                          animation: 'fade',
+                        }}>
+                        {isAppReady && (
+                          <>
+                            <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
+                              <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
+                              <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
+                              <Stack.Screen name="Settings" component={Settings} />
+                              <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
+                              <Stack.Screen
+                                name="TransferNft"
+                                component={TransferNftScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                              <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
+                              <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
+                              <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
+                              <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                              <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
+                            </Stack.Group>
+                            <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
+                              <Stack.Screen name="CreateAccount" component={CreateAccount} />
+                              <Stack.Screen name="EditAccount" component={EditAccount} />
+                              <Stack.Screen name="RestoreJson" component={RestoreJson} />
+                              <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
+                              <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
+                              <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
+                              <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
+                              <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
+                              <Stack.Screen name="Languages" component={Languages} />
+                              <Stack.Screen name="Security" component={Security} />
+                              <Stack.Screen name="PinCode" component={PinCodeScreen} />
+                              <Stack.Screen name="ExportAccount" component={ExportAccount} />
+                              <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
+                              <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
+                              <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
+                              <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
+                              <Stack.Screen name="ImportToken" component={ImportToken} />
+                              <Stack.Screen
+                                name="StakeAction"
+                                component={StakeActionScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                              <Stack.Screen name="ImportNft" component={ImportNft} />
+                              <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
+                              <Stack.Screen
+                                name="UnStakeAction"
+                                component={UnStakeActionScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                              <Stack.Screen
+                                name="ClaimStakeAction"
+                                component={ClaimActionScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                              <Stack.Screen
+                                name="WithdrawStakeAction"
+                                component={WithdrawActionScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                              <Stack.Screen
+                                name="CompoundStakeAction"
+                                component={CompoundActionScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                              <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
+                              <Stack.Screen
+                                name="SigningAction"
+                                component={SigningScreen}
+                                options={{ gestureEnabled: false }}
+                              />
+                            </Stack.Group>
+                            <Stack.Group
+                              screenOptions={{
+                                presentation: 'transparentModal',
+                                contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
+                                headerShown: false,
+                              }}>
+                              <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
+                            </Stack.Group>
+                          </>
+                        )}
+                        {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
+                      </Stack.Navigator>
+                    </NavigationContainer>
+                  </ScannerContextProvider>
+                </QrSignerContextProvider>
+              </ExternalRequestContextProvider>
+            </SigningContextProvider>
+          </ThemeContext.Provider>
+        </ToastProvider>
       </View>
-    ),
-    [theme, navigationRef, Stack, isAppReady, isLocked],
+      {!isAppReady && (
+        <View style={layerScreenStyle}>
+          <LoadingScreen />
+        </View>
+      )}
+      {isLocked && (
+        <View style={layerScreenStyle}>
+          <LockScreen />
+        </View>
+      )}
+    </View>
   );
 };
 

@@ -1,26 +1,19 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { IconButton } from 'components/IconButton';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
-import { List, MagnifyingGlass, QrCode } from 'phosphor-react-native';
+import { List, QrCode } from 'phosphor-react-native';
 import React, { useCallback } from 'react';
-import { ActivityIndicator, StyleProp, TouchableOpacity, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
-import { useSelector } from 'react-redux';
 import { RootStackParamList } from 'routes/index';
-import { RootState } from 'stores/index';
-import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SpaceStyle } from 'styles/space';
 import { requestCameraPermission } from 'utils/permission/camera';
-import Text from '../components/Text';
+import { Button, Icon } from 'components/design-system-ui';
+import AccountSelectField from 'components/common/AccountSelectField';
 
 export interface HeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
-  onPressSearchButton?: () => void;
 }
 
 const headerWrapper: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
@@ -29,22 +22,7 @@ const headerWrapper: StyleProp<any> = {
   zIndex: 10,
 };
 
-const accountName: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  color: ColorMap.light,
-  ...FontSemiBold,
-  paddingLeft: 8,
-  maxWidth: 120,
-};
-
-export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const isAccountWaiting = useSelector((state: RootState) => state.accountState.isWaiting);
-
-  const _onPressSearchButton = () => {
-    onPressSearchButton && onPressSearchButton();
-  };
-
+export const Header = ({ navigation }: HeaderProps) => {
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
 
@@ -58,45 +36,27 @@ export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
       <View style={{ position: 'absolute', left: 16 }}>
-        <IconButton
-          icon={List}
+        <Button
+          style={{ marginLeft: -8 }}
+          type={'ghost'}
+          size={'xs'}
+          icon={<Icon phosphorIcon={List} size={'sm'} />}
           onPress={() => {
             navigation.navigate('Settings');
           }}
         />
       </View>
 
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('AccountsScreen');
-          }}>
-          <View style={{ flexDirection: 'row' }}>
-            <SubWalletAvatar address={currentAccount?.address || ''} size={16} />
-            {isAccountWaiting && (
-              <View
-                style={{
-                  position: 'absolute',
-                  backgroundColor: ColorMap.disabledOverlay,
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  justifyContent: 'center',
-                }}>
-                <ActivityIndicator size={4} />
-              </View>
-            )}
-            <Text style={accountName} numberOfLines={1}>
-              {currentAccount ? currentAccount.name : ''}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      <AccountSelectField onPress={() => navigation.navigate('AccountsScreen')} />
 
       <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
-        <IconButton icon={QrCode} onPress={onPressQrButton} />
-
-        <IconButton icon={MagnifyingGlass} onPress={_onPressSearchButton} />
+        <Button
+          style={{ marginRight: -8 }}
+          size={'xs'}
+          type={'ghost'}
+          icon={<Icon phosphorIcon={QrCode} weight={'bold'} />}
+          onPress={onPressQrButton}
+        />
       </View>
     </View>
   );

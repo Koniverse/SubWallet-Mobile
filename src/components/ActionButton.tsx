@@ -1,34 +1,21 @@
 import React from 'react';
-import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { TouchableOpacityProps, View } from 'react-native';
 import Text from '../components/Text';
 import { FontMedium } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { Button, Icon } from 'components/design-system-ui';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { IconProps } from 'phosphor-react-native';
 
 interface Props extends TouchableOpacityProps {
   label: string;
-  icon: JSX.Element;
+  icon: React.ElementType<IconProps>;
 }
 
-const buttonContainerStyle: StyleProp<any> = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  marginHorizontal: 15,
-};
-
-const buttonWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.secondary,
-  width: 52,
-  height: 52,
-  borderRadius: 18,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-function getButtonTextStyle(disabled: boolean) {
+function getButtonTextStyle(disabled: boolean, theme: ThemeTypes) {
   return {
-    color: disabled ? ColorMap.disabledTextColor : ColorMap.light,
+    color: disabled ? theme.colorTextLight4 : theme.colorTextLight1,
     fontSize: 15,
     lineHeight: 26,
     ...FontMedium,
@@ -36,25 +23,21 @@ function getButtonTextStyle(disabled: boolean) {
   };
 }
 
-const disabledOverlay: StyleProp<any> = {
-  position: 'absolute',
-  right: 0,
-  top: 0,
-  left: 0,
-  bottom: 0,
-  borderRadius: 18,
-  backgroundColor: ColorMap.disabledOverlay,
-};
-
 const ActionButton = (actionButtonProps: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const { label, icon, disabled } = actionButtonProps;
   return (
     <View style={{ alignItems: 'center' }}>
-      <TouchableOpacity style={buttonContainerStyle} {...actionButtonProps} disabled={disabled} activeOpacity={0.5}>
-        <View style={buttonWrapperStyle}>{icon}</View>
-        {disabled && <View style={disabledOverlay} />}
-      </TouchableOpacity>
-      <Text style={getButtonTextStyle(!!disabled)}>{label}</Text>
+      <View style={{ paddingHorizontal: theme.paddingSM }}>
+        <Button
+          shape={'squircle'}
+          size={'sm'}
+          disabled={!!disabled}
+          icon={<Icon phosphorIcon={icon} weight={'bold'} />}
+        />
+      </View>
+
+      <Text style={getButtonTextStyle(!!disabled, theme)}>{label}</Text>
     </View>
   );
 };

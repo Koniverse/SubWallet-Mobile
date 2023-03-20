@@ -1,33 +1,35 @@
 import { useNavigation } from '@react-navigation/native';
-import { Images, SVGImages } from 'assets/index';
-import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
-import { SelectImportAccountModal } from 'components/Modal/SelectImportAccountModal';
+import { Images, Logo } from 'assets/index';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
-import { SubmitButton } from 'components/SubmitButton';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import { SCAN_TYPE } from 'constants/qr';
 import useModalScanner from 'hooks/qr/useModalScanner';
 import {
-  ArchiveTray,
-  Article,
+  DeviceTabletCamera,
   Eye,
-  FileArrowUp,
-  HardDrives,
-  LockKey,
+  FileArrowDown,
+  FileJs,
+  Leaf,
+  PlusCircle,
   QrCode,
-  UserCirclePlus,
+  ShareNetwork,
+  Swatches,
+  Wallet,
 } from 'phosphor-react-native';
-import React, { Suspense, useCallback, useMemo, useRef, useState } from 'react';
-import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Image, ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import ToastContainer from 'react-native-toast-notifications';
-import { RootNavigationProps, RootStackParamList } from 'routes/index';
+import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { QrAccount } from 'types/qr/attach';
 import i18n from 'utils/i18n/i18n';
 import { requestCameraPermission } from 'utils/permission/camera';
 import Text from 'components/Text';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import AccountActionSelectModal from 'components/Modal/AccountActionSelectModal';
+import AccountActionButton from 'components/common/AccountActionButton';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -44,29 +46,50 @@ const logoStyle: StyleProp<any> = {
   justifyContent: 'flex-end',
   position: 'relative',
   alignItems: 'center',
+  paddingBottom: 22,
+};
+
+const logoTextStyle: StyleProp<any> = {
+  fontSize: 38,
+  lineHeight: 46,
+  ...FontSemiBold,
+  color: ColorMap.light,
+  paddingTop: 9,
+};
+
+const logoSubTextStyle: StyleProp<any> = {
+  fontSize: 16,
+  lineHeight: 24,
+  ...FontMedium,
+  color: 'rgba(255, 255, 255, 0.65)',
+  paddingTop: 12,
 };
 
 const firstScreenNotificationStyle: StyleProp<any> = {
   ...sharedStyles.smallText,
-  color: ColorMap.light,
+  color: 'rgba(255, 255, 255, 0.45)',
   textAlign: 'center',
   paddingHorizontal: 16,
   paddingTop: 0,
   ...FontMedium,
 };
 
-const buttonStyle: StyleProp<ViewStyle> = {
-  marginBottom: 16,
-  width: '100%',
-};
-
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [importSelectModalVisible, setSelectModalVisible] = useState<boolean>(false);
-  const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
-  const [selectedAction, setSelectedAction] = useState<keyof RootStackParamList | null>(null);
+  const [importSelectModalVisible, setImportSelectModalVisible] = useState<boolean>(false);
+  const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
+  const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
   const [scanType, setScanType] = useState<SCAN_TYPE.QR_SIGNER | SCAN_TYPE.SECRET>(SCAN_TYPE.SECRET);
-
+  const theme = useSubWalletTheme().swThemes;
+  const toastRef = useRef<ToastContainer>(null);
+  const show = useCallback((text: string) => {
+    if (toastRef.current) {
+      // @ts-ignore
+      toastRef.current.hideAll();
+      // @ts-ignore
+      toastRef.current.show(text);
+    }
+  }, []);
   const onSuccess = useCallback(
     (data: QrAccount) => {
       switch (scanType) {
@@ -88,166 +111,213 @@ export const FirstScreen = () => {
     },
     [navigation, scanType],
   );
-
   const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
-  const toastRef = useRef<ToastContainer>(null);
-  const show = useCallback((text: string) => {
-    if (toastRef.current) {
-      // @ts-ignore
-      toastRef.current.hideAll();
-      // @ts-ignore
-      toastRef.current.show(text);
-    }
-  }, []);
-  const SECRET_TYPE = useMemo(
-    () => [
-      {
-        title: i18n.common.importAccount,
-        data: [
-          {
-            icon: Article,
-            title: i18n.title.importBySecretPhrase,
-            onCLickButton: () => {
-              setSelectedAction('ImportSecretPhrase');
-              setSelectModalVisible(false);
-              setTimeout(() => {
-                setSelectTypeModalVisible(true);
-              }, HIDE_MODAL_DURATION);
-            },
-          },
-          {
-            icon: LockKey,
-            title: i18n.title.importByPrivateKey,
-            onCLickButton: () => {
-              navigation.navigate('ImportPrivateKey');
-              setSelectModalVisible(false);
-            },
-          },
-          {
-            icon: FileArrowUp,
-            title: i18n.title.importFromJson,
-            onCLickButton: () => {
-              navigation.navigate('RestoreJson');
-              setSelectModalVisible(false);
-            },
-          },
-          {
-            icon: QrCode,
-            title: i18n.title.importByQrCode,
-            onCLickButton: async () => {
-              const result = await requestCameraPermission();
 
-              if (result === RESULTS.GRANTED) {
-                setScanType(SCAN_TYPE.SECRET);
-                setSelectModalVisible(false);
-                setTimeout(() => {
-                  onOpenModal();
-                }, HIDE_MODAL_DURATION);
-              }
-            },
-          },
-        ],
+  const actionList = [
+    {
+      key: 'create',
+      icon: PlusCircle,
+      title: 'Create a new account',
+      subTitle: 'Create a new account with SubWallet',
+      onPress: () => {
+        setCreateAccountModalVisible(true);
+      },
+    },
+    {
+      key: 'import',
+      icon: FileArrowDown,
+      title: 'Import an account',
+      subTitle: 'Import an existing account',
+      onPress: () => {
+        setImportSelectModalVisible(true);
+      },
+    },
+    {
+      key: 'attach',
+      icon: Swatches,
+      title: 'Attach an account',
+      subTitle: 'Attach an account from external wallet',
+      onPress: () => {
+        setAttachAccountModalVisible(true);
+      },
+    },
+  ];
+
+  const createAccountAction = useMemo(() => {
+    return [
+      {
+        backgroundColor: '#51BC5E',
+        icon: PlusCircle,
+        label: 'Create with new Seed Phrase',
+        onClickBtn: () => {
+          setCreateAccountModalVisible(false);
+          navigation.navigate('CreateAccount', {});
+        },
       },
       {
-        title: i18n.common.attachAccount,
-        data: [
-          {
-            icon: Eye,
-            title: i18n.title.attachReadonlyAccount,
-            onCLickButton: () => {
-              navigation.navigate('AttachAccount', {
-                screen: 'AttachReadOnly',
-              });
-              setSelectModalVisible(false);
-            },
-          },
-          {
-            icon: QrCode,
-            title: i18n.title.attachQRSignerAccount,
-            onCLickButton: async () => {
-              const result = await requestCameraPermission();
+        backgroundColor: '#E6478E',
+        icon: ShareNetwork,
+        label: 'Derive from another account',
+        onClickBtn: () => {
+          setCreateAccountModalVisible(false);
+          navigation.navigate('CreateAccount', {});
+        },
+      },
+    ];
+  }, [navigation]);
 
-              if (result === RESULTS.GRANTED) {
-                setScanType(SCAN_TYPE.QR_SIGNER);
-                setSelectModalVisible(false);
-                setTimeout(() => {
-                  onOpenModal();
-                }, HIDE_MODAL_DURATION);
-              }
-            },
-          },
-          {
-            icon: HardDrives,
-            title: i18n.title.connectLedgerDevice,
-            onCLickButton: () => {
-              show(i18n.common.comingSoon);
-            },
-          },
-        ],
+  const importAccountActions = useMemo(
+    () => [
+      {
+        backgroundColor: '#51BC5E',
+        icon: Leaf,
+        label: 'Import from Seed Phrase',
+        onClickBtn: () => {
+          setImportSelectModalVisible(false);
+          navigation.navigate('ImportSecretPhrase');
+        },
+      },
+      {
+        backgroundColor: '#E68F25',
+        icon: FileJs,
+        label: 'Restore from Polkadot {.js}',
+        onClickBtn: () => {
+          setImportSelectModalVisible(false);
+          navigation.navigate('RestoreJson');
+        },
+      },
+      {
+        backgroundColor: '#4D4D4D',
+        icon: Wallet,
+        label: 'Import from MetaMask',
+        onClickBtn: () => {
+          setImportSelectModalVisible(false);
+          navigation.navigate('ImportPrivateKey');
+        },
+      },
+      {
+        backgroundColor: '#2565E6',
+        icon: QrCode,
+        label: 'Import by QR Code',
+        onClickBtn: async () => {
+          const result = await requestCameraPermission();
+
+          if (result === RESULTS.GRANTED) {
+            setScanType(SCAN_TYPE.SECRET);
+            setImportSelectModalVisible(false);
+            setTimeout(() => {
+              onOpenModal();
+            }, HIDE_MODAL_DURATION);
+          }
+        },
+      },
+    ],
+    [navigation, onOpenModal],
+  );
+
+  const attachAccountActions = useMemo(
+    () => [
+      {
+        backgroundColor: '#E68F25',
+        icon: Swatches,
+        label: 'Connect Ledger device',
+        onClickBtn: () => {
+          show(i18n.common.comingSoon);
+        },
+      },
+      {
+        backgroundColor: '#E6478E',
+        icon: QrCode,
+        label: 'Attach QR-Signer account',
+        onClickBtn: async () => {
+          const result = await requestCameraPermission();
+
+          if (result === RESULTS.GRANTED) {
+            setScanType(SCAN_TYPE.QR_SIGNER);
+            setAttachAccountModalVisible(false);
+            setTimeout(() => {
+              onOpenModal();
+            }, HIDE_MODAL_DURATION);
+          }
+        },
+      },
+      {
+        backgroundColor: '#E6478E',
+        icon: DeviceTabletCamera,
+        label: 'Attach Keystone account',
+        onClickBtn: () => {
+          show(i18n.common.comingSoon);
+        },
+      },
+      {
+        backgroundColor: '#2DA73F',
+        icon: Eye,
+        label: 'Attach read-only account',
+        onClickBtn: () => {
+          setAttachAccountModalVisible(false);
+          navigation.navigate('AttachAccount', {
+            screen: 'AttachReadOnly',
+          });
+        },
       },
     ],
     [navigation, onOpenModal, show],
   );
 
-  const onSelectSubstrateAccount = useCallback(() => {
-    setSelectTypeModalVisible(false);
-    !!selectedAction && navigation.navigate(selectedAction, { keyTypes: SUBSTRATE_ACCOUNT_TYPE });
-  }, [navigation, selectedAction]);
-
-  const onSelectEvmAccount = useCallback(() => {
-    setSelectTypeModalVisible(false);
-    !!selectedAction && navigation.navigate(selectedAction, { keyTypes: EVM_ACCOUNT_TYPE });
-  }, [navigation, selectedAction]);
-
   return (
     <View style={{ width: '100%', flex: 1 }}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
-      <ImageBackground source={Images.loadingScreen} resizeMode={'cover'} style={imageBackgroundStyle}>
+      <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
         <SafeAreaView />
         <View style={logoStyle}>
-          <View style={{ flex: 1, justifyContent: 'center', marginBottom: 16, paddingTop: 40 }}>
-            <Suspense fallback={<View style={{ width: 230, height: 230 }} />}>
-              <SVGImages.SubWallet2 width={230} height={230} />
-            </Suspense>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              marginBottom: 16,
+              paddingTop: 40,
+              alignItems: 'center',
+            }}>
+            <Image source={Logo.SubWallet} />
+            <Text style={logoTextStyle}>SubWallet</Text>
+            <Text style={logoSubTextStyle}>Polkadot, Substrate & Ethereum wallet</Text>
           </View>
 
-          <SubmitButton
-            leftIcon={UserCirclePlus}
-            title={i18n.common.createNewWalletAccount}
-            style={{ ...buttonStyle, marginTop: 48 }}
-            onPress={() => {
-              setSelectedAction('CreateAccount');
-              setSelectTypeModalVisible(true);
-            }}
-          />
-
-          <SubmitButton
-            leftIcon={ArchiveTray}
-            title={i18n.common.importAlreadyAccount}
-            style={buttonStyle}
-            backgroundColor={ColorMap.dark2}
-            onPress={() => {
-              setSelectModalVisible(true);
-            }}
-          />
+          <View style={{ width: '100%' }}>
+            {actionList.map(item => (
+              <AccountActionButton key={item.key} item={item} />
+            ))}
+          </View>
         </View>
+
         {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
-        <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart2}</Text>
+        <Text style={firstScreenNotificationStyle}>
+          <Text style={{ color: theme.colorTextLight1 }}>{i18n.common.termAndConditions}</Text>
+          <Text>{i18n.common.and}</Text>
+          <Text style={{ color: theme.colorTextLight1 }}>{i18n.common.privacyPolicy}</Text>
+        </Text>
 
-        <SelectImportAccountModal
-          modalTitle={i18n.common.selectYourImport}
-          secretTypeList={SECRET_TYPE}
-          modalVisible={importSelectModalVisible}
-          toastRef={toastRef}
-          onChangeModalVisible={() => setSelectModalVisible(false)}
+        <AccountActionSelectModal
+          modalTitle={'Create new account'}
+          modalVisible={createAccountModalVisible}
+          onChangeModalVisible={() => setCreateAccountModalVisible(false)}
+          items={createAccountAction}
         />
 
-        <SelectAccountTypeModal
-          modalVisible={selectTypeModalVisible}
-          onChangeModalVisible={() => setSelectTypeModalVisible(false)}
-          onSelectSubstrateAccount={onSelectSubstrateAccount}
-          onSelectEvmAccount={onSelectEvmAccount}
+        <AccountActionSelectModal
+          modalTitle={'Import account'}
+          modalVisible={importSelectModalVisible}
+          onChangeModalVisible={() => setImportSelectModalVisible(false)}
+          items={importAccountActions}
+        />
+
+        <AccountActionSelectModal
+          modalTitle={'Attach account'}
+          modalVisible={attachAccountModalVisible}
+          onChangeModalVisible={() => setAttachAccountModalVisible(false)}
+          items={attachAccountActions}
+          toastRef={toastRef}
         />
 
         <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={scanType} />

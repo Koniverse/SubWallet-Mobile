@@ -1,5 +1,7 @@
 import { Theme } from '@react-navigation/native';
+import swThemes from './swThemes';
 
+export type ThemeTypes = typeof swThemes & { [key: string]: any };
 export interface SWTheme extends Theme {
   colors: {
     primary: string;
@@ -21,6 +23,7 @@ export interface SWTheme extends Theme {
     checkBoxBorderColor: string;
     background2: string;
   };
+  swThemes: ThemeTypes;
 }
 
 export const THEME_PRESET: Record<string, SWTheme> = {
@@ -46,6 +49,7 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       checkBoxBorderColor: '#2D365C',
       background2: '#222',
     },
+    swThemes,
   },
   light: {
     dark: false,
@@ -69,5 +73,6 @@ export const THEME_PRESET: Record<string, SWTheme> = {
       checkBoxBorderColor: '#DDD',
       background2: '#222',
     },
+    swThemes,
   },
 };

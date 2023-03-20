@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Images, SVGImages } from 'assets/index';
+import { SVGImages } from 'assets/index';
 import { AccountType, Recoded } from 'types/ui-types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import {
@@ -13,7 +13,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
-import { Image, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
@@ -23,6 +23,7 @@ import { IconProps } from 'phosphor-react-native';
 import { isValidURL } from 'utils/browser';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { _ChainInfo } from '@subwallet/chain-list/types';
+import { Logo as SWLogo } from 'components/design-system-ui';
 export const PREDEFINED_TRANSAK_NETWORK: Record<string, TransakNetwork> = {
   polkadot: {
     networks: ['mainnet'],
@@ -305,21 +306,9 @@ export function recodeAddress(
   };
 }
 
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
-  // @ts-ignore
-  const imgSrc = Images[logoKey.toLowerCase()];
-
-  if (imgSrc) {
-    return (
-      <Image
-        style={[{ width: size, height: size, borderRadius: size, backgroundColor: ColorMap.light }, outerStyle]}
-        source={imgSrc}
-      />
-    );
-  }
-
-  return getNetworkLogo(defaultLogoKey, size);
+  return <SWLogo network={logoKey.toLowerCase()} defaultLogoKey={defaultLogoKey} size={size} />;
 }
 
 export function shuffleArray(array: any[]) {

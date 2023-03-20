@@ -16,7 +16,7 @@ export type RootStackParamList = {
   LockScreen: undefined;
   LoadingScreen: undefined;
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
-  CreateAccount: { keyTypes: KeypairType };
+  CreateAccount: { keyTypes?: KeypairType };
   QrScanner: undefined;
   AccountsScreen: undefined;
   EditAccount: { address: string; name: string };
@@ -25,7 +25,7 @@ export type RootStackParamList = {
   ExportPrivateKey: { address: string };
   Settings: undefined;
   NetworkSelect: undefined;
-  ImportSecretPhrase: { keyTypes: KeypairType };
+  ImportSecretPhrase: undefined;
   ImportPrivateKey: undefined;
   NetworksSetting: undefined;
   SendFund: { selectedNetworkKey?: string; selectedToken?: string };
