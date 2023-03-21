@@ -59,7 +59,7 @@ function checkValidateForm(formValidated: Record<string, boolean>) {
 }
 
 const AttachReadOnlyScreen = () => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();

@@ -3,7 +3,7 @@ import { RootState } from 'stores/index';
 import { getScanExplorerTransactionHistoryUrl } from 'utils/index';
 
 export default function useScanExplorerTxUrl(networkKey: string, hash?: string, useSubscan?: boolean) {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   if (!hash) {
     return '';

@@ -37,8 +37,8 @@
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
     "@reduxjs/toolkit": "^1.9.2",
-    "@subwallet/extension-base": "^0.8.1-wr",
-    "@subwallet/extension-koni-base": "^0.8.1-wr",
+    "@subwallet/extension-chains": "^0.8.1",
+    "@subwallet/extension-inject": "^0.8.1",
     "boring-avatars": "^1.7.0",
     "deprecated-react-native-prop-types": "^4.0.0",
     "eslint-plugin-ft-flow": "^2.0.3",
@@ -117,6 +117,8 @@
     "@types/redux-persist": "^4.3.1",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "@subwallet/chain-list": "^0.0.15",
+    "@subwallet/extension-base": "^0.8.1-wr2x",
     "assert": "^2.0.0",
     "axios": "^1.2.0",
     "babel-jest": "^29.3.1",
@@ -150,6 +152,8 @@
     "@polkadot/util": "^10.3.1",
     "@polkadot/api": "^9.9.4",
     "@polkadot/util-crypto": "^10.3.1",
+    "@subwallet/extension-base": "^0.8.1-wr2x",
+    "@subwallet/chain-list": "0.0.15",
     "react-native-svg": "^13.6.0"
   },
   "jest": {

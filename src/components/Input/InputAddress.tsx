@@ -8,7 +8,7 @@ import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 
 interface InputProps {
   label: string;

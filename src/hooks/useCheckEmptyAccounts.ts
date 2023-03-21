@@ -13,7 +13,7 @@ function comparor(prev: AccountsSlice, next: AccountsSlice): boolean {
 }
 
 export default function useCheckEmptyAccounts(): boolean {
-  const { accounts } = useSelector((state: RootState) => state.accounts, comparor);
+  const { accounts } = useSelector((state: RootState) => state.accountState, comparor);
 
   return !accounts.length;
 }

@@ -104,7 +104,14 @@ export const ImportSecretPhrase = ({
   const _onImportSeed = (curName: string, password: string): void => {
     if (curName && password && account) {
       setBusy(true);
-      createAccountSuriV2(curName, password, account.suri, true, [keyTypes], '')
+      createAccountSuriV2({
+        name: curName,
+        genesisHash: '',
+        password,
+        suri: account.suri,
+        types: [keyTypes],
+        isAllowed: true,
+      })
         .then(() => {
           backToHome(goHome, true);
         })

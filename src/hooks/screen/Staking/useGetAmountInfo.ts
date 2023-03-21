@@ -17,7 +17,7 @@ export interface AmountInfo {
 }
 
 const useGetAmountInfo = (rawAmount: number | string, networkKey: string): AmountInfo => {
-  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
+  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accountState);
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
   const network = useGetNetworkJson(networkKey);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);

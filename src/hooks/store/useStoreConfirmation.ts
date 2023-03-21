@@ -28,8 +28,8 @@ function getStatus(isReady: boolean | undefined, isWaiting: boolean | undefined)
 
 export default function useStoreConfirmation(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
-  const isReady = useSelector((state: RootState) => state.accounts.isReady);
-  const isWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
+  const isReady = useSelector((state: RootState) => state.accountState.isReady);
+  const isWaiting = useSelector((state: RootState) => state.accountState.isWaiting);
   const dispatch = useDispatch();
 
   useEffect(() => {

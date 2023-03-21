@@ -24,8 +24,8 @@ const usePayloadScanner = (showAlertMessage: (message: string) => void): Process
     state: { multipartComplete },
   } = useContext(ScannerContext);
 
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const parseQrData = useCallback(
     (result: BarCodeReadEvent): ParsedData => {

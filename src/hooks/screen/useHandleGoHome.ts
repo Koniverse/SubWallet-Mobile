@@ -16,7 +16,7 @@ const useHandleGoHome = ({ goHome, networkKey, networkFocusRedirect }: HandleGoH
 
   const isFocused = useIsFocused();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
 
   const [isValidNetwork, showedNetworks] = useIsValidNetwork(networkKey);
 

@@ -4,12 +4,12 @@ import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { filterNotReadOnlyAccount } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
-import { filterAndSortingAccountByAuthType, isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { filterAndSortingAccountByAuthType, isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ConnectAccount } from 'components/ConnectAccount';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { Warning } from 'components/Warning';
 import { ConfirmationHookType } from 'hooks/types';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
@@ -37,7 +37,7 @@ export const AuthorizeConfirmation = ({
   rejectRequest,
 }: Props) => {
   const { accountAuthType } = request;
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const accountList = useMemo(() => {
     return filterNotReadOnlyAccount(filterAndSortingAccountByAuthType(accounts, accountAuthType || 'substrate', true));
   }, [accountAuthType, accounts]);

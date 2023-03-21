@@ -1,18 +1,22 @@
-import React from 'react';
-import { persistor, store } from 'stores/index';
-import { PersistGate } from 'redux-persist/integration/react';
-import { Provider } from 'react-redux';
+import React, { useEffect } from 'react';
 import { WebRunnerProvider } from 'providers/WebRunnerProvider/WebRunnerProvider';
-import App from './App';
+import { DataContextProvider } from 'providers/DataContext';
+import AppNew from './AppNew';
+import { Text } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
 export const Root = () => {
+  useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 2000);
+  }, []);
+
   return (
     <WebRunnerProvider>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
+      <DataContextProvider>
+        <AppNew />
+      </DataContextProvider>
     </WebRunnerProvider>
   );
 };

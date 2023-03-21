@@ -62,7 +62,7 @@ export const ConfirmationPopup = () => {
     item => item.type !== 'addTokenRequest' && item.type !== 'addNetworkRequest',
   );
   const currentConfirmationItem = filteredConfirmationItems[confirmationIndex];
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const isLocked = useSelector((state: RootState) => state.appState.isLocked);
   const isArrowLeftDisabled = !(confirmationIndex > 0);
   const isArrowRightDisabled = !(confirmationIndex < confirmationItemsLength - 1);

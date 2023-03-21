@@ -5,7 +5,7 @@ import { AccountSelect } from 'screens/AccountSelect';
 import { TouchableOpacity } from 'react-native';
 import useGetAccountList from 'hooks/screen/useGetAccountList';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
@@ -25,7 +25,7 @@ export const SendFromAddressField = ({
   disabled,
   networkPrefix,
 }: Props) => {
-  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
+  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accountState);
   const isAllAccount = isAccountAll(currentAccountAddress);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const accountList = useGetAccountList(networkKey);

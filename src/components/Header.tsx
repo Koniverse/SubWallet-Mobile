@@ -38,8 +38,8 @@ const accountName: StyleProp<any> = {
 };
 
 export const Header = ({ navigation, onPressSearchButton }: HeaderProps) => {
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
-  const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const isAccountWaiting = useSelector((state: RootState) => state.accountState.isWaiting);
 
   const _onPressSearchButton = () => {
     onPressSearchButton && onPressSearchButton();

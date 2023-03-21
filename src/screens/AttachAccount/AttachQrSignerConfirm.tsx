@@ -49,7 +49,7 @@ function checkValidateForm(formValidated: Record<string, boolean>) {
 }
 
 const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBack } }: AttachQrSignerConfirmProps) => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const formattedAddress = reformatAddress(account.content, 42, account.isEthereum);
 
   const goHome = useGoHome();

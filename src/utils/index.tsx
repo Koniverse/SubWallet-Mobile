@@ -1,23 +1,20 @@
 import React, { Suspense } from 'react';
 import { Images, SVGImages } from 'assets/index';
 import { AccountType, Recoded } from 'types/ui-types';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import {
-  ChainRegistry,
   ContractType,
   NETWORK_STATUS,
   NetWorkGroup,
   NetworkJson,
-  TokenInfo,
   TransakNetwork,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
 import { Image, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { PREDEFINED_NETWORKS } from '@subwallet/extension-koni-base/api/predefinedNetworks';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
 import { BalanceInfo } from 'types/index';
@@ -25,6 +22,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { IconProps } from 'phosphor-react-native';
 import { isValidURL } from 'utils/browser';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 export const PREDEFINED_TRANSAK_NETWORK: Record<string, TransakNetwork> = {
   polkadot: {
     networks: ['mainnet'],
@@ -84,8 +82,8 @@ export interface NetworkSelectOption {
 export function getTokenNetworkKeyMap(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
 
-  Object.keys(PREDEFINED_NETWORKS).forEach(networkKey => {
-    let token = PREDEFINED_NETWORKS[networkKey].nativeToken;
+  Object.entries({} as Record<string, _ChainInfo>).forEach(([networkKey, chainInfo]) => {
+    let token = chainInfo.substrateInfo?.symbol || chainInfo.evmInfo?.symbol;
 
     if (!token) {
       return;
@@ -93,7 +91,7 @@ export function getTokenNetworkKeyMap(): Record<string, string[]> {
 
     token = token.toLowerCase();
 
-    const tgKey = getTokenGroupKey(token, PREDEFINED_NETWORKS[networkKey].groups.includes('TEST_NET'));
+    const tgKey = getTokenGroupKey(token, chainInfo.isTestnet);
 
     if (!result[tgKey]) {
       result[tgKey] = [networkKey];
@@ -530,33 +528,33 @@ export function getTokenBalanceKey(networkKey: string, token: string, isTestnet:
   return `${networkKey}|${token}${isTestnet ? '|test' : ''}`;
 }
 
-export function getActiveToken(
-  chainRegistryMap: Record<string, ChainRegistry>,
-  networkMap: Record<string, NetworkJson>,
-): TokenInfo[] {
-  const options: TokenInfo[] = [];
-  const activatedNetworks: string[] = [];
-
-  Object.keys(networkMap).forEach(networkKey => {
-    if (networkMap[networkKey].active) {
-      activatedNetworks.push(networkKey);
-    }
-  });
-
-  Object.keys(chainRegistryMap).forEach(networkKey => {
-    if (!activatedNetworks.includes(networkKey)) {
-      return;
-    }
-
-    Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
-      const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
-
-      options.push(tokenInfo);
-    });
-  });
-
-  return options;
-}
+// export function getActiveToken(
+//   chainRegistryMap: Record<string, ChainRegistry>,
+//   networkMap: Record<string, NetworkJson>,
+// ): TokenInfo[] {
+//   const options: TokenInfo[] = [];
+//   const activatedNetworks: string[] = [];
+//
+//   Object.keys(networkMap).forEach(networkKey => {
+//     if (networkMap[networkKey].active) {
+//       activatedNetworks.push(networkKey);
+//     }
+//   });
+//
+//   Object.keys(chainRegistryMap).forEach(networkKey => {
+//     if (!activatedNetworks.includes(networkKey)) {
+//       return;
+//     }
+//
+//     Object.keys(chainRegistryMap[networkKey].tokenMap).forEach(token => {
+//       const tokenInfo = chainRegistryMap[networkKey].tokenMap[token];
+//
+//       options.push(tokenInfo);
+//     });
+//   });
+//
+//   return options;
+// }
 
 export function getAccountType(address: string): AccountType {
   return isAccountAll(address) ? 'ALL' : isEthereumAddress(address) ? 'ETHEREUM' : 'SUBSTRATE';

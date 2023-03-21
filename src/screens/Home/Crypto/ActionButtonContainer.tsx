@@ -11,7 +11,7 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { HIDE_MODAL_DURATION } from 'constants/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { ColorMap } from 'styles/color';
@@ -44,8 +44,8 @@ const actionButtonWrapper: StyleProp<any> = {
 };
 
 export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accountState);
   const toast = useToast();
   const _isAccountAll = isAccountAll(currentAccountAddress);
   const navigation = useNavigation<RootNavigationProps>();

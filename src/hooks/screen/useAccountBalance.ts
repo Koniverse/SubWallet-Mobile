@@ -156,7 +156,7 @@ export default function useAccountBalance(
 ): AccountBalanceType {
   const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
   const balanceMap = useSelector((state: RootState) => state.balance.details);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   return useMemo<AccountBalanceType>(() => {
     return getAccountBalance(showedNetworks, chainRegistryMap, balanceMap, networkMap, tokenBalanceKeyPriceMap);

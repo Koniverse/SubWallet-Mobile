@@ -1,27 +1,37 @@
 import {
   ActiveCronAndSubscriptionMap,
-  BalanceJson,
-  ChainRegistry,
+  AssetSetting,
+  BalanceItem,
+  ChainStakingMetadata,
+  ConfirmationDefinitions,
   ConfirmationsQueue,
-  CrowdloanJson,
-  CustomTokenJson,
-  NetworkJson,
-  NftCollectionJson,
-  NftJson,
+  ConfirmationType,
+  CrowdloanItem,
+  KeyringState,
+  LanguageType,
+  NftCollection,
+  NftItem,
+  NominationPoolInfo,
+  NominatorMetadata,
   PriceJson,
-  ResponseSettingsType,
-  StakeUnlockingJson,
-  StakingJson,
+  StakingItem,
   StakingRewardItem,
-  TransactionHistoryItemType,
+  TransactionHistoryItem,
+  UiSettings,
+  ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
   AccountJson,
+  AccountsContext,
   AuthorizeRequest,
   MetadataRequest,
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
+import { SettingsStruct } from '@polkadot/ui-settings/types';
+import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
+import { _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
+import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -43,13 +53,6 @@ export type AppStateSlice = {
 
 export type AuthUrlsSlice = {
   details: Record<string, AuthUrlInfo>;
-} & StoreSlice;
-
-export type BalanceSlice = BalanceJson & StoreSlice;
-export type CrowdloanSlice = CrowdloanJson & StoreSlice;
-
-export type ChainRegistrySlice = {
-  details: Record<string, ChainRegistry>;
 } & StoreSlice;
 
 export type ConfirmationSlice = {
@@ -93,30 +96,99 @@ export type BrowserSlice = {
   bookmarks: StoredSiteInfo[];
 };
 
-export type NetworkMapSlice = {
-  details: Record<string, NetworkJson>;
-} & StoreSlice;
-
-export type CustomTokenSlice = { details: CustomTokenJson } & StoreSlice;
-
-export type PriceSlice = Omit<PriceJson, 'ready'> & StoreSlice;
-
-export type SettingsSlice = ResponseSettingsType & StoreSlice;
-
-export type TransactionHistorySlice = {
-  details: Record<string, TransactionHistoryItemType[]>;
-} & StoreSlice;
-
-export type NftSlice = NftJson & StoreSlice;
-
-export type NftCollectionSlice = NftCollectionJson & StoreSlice;
-export type StakingRewardJson_ = {
-  details: StakingRewardItem[];
-  ready: boolean;
-};
-export type StakingSlice = StakingJson & StoreSlice;
-export type StakeUnlockingSlice = StakeUnlockingJson & StoreSlice;
-export type StakingRewardSlice = StakingRewardJson_ & StoreSlice;
 export type BackgroundServiceSlice = {
   activeState: ActiveCronAndSubscriptionMap;
+};
+
+export enum ReduxStatus {
+  INIT = 'init',
+  CACHED = 'cached',
+  READY = 'ready',
+}
+export interface BaseReduxStore {
+  reduxStatus: ReduxStatus;
+}
+
+// todo: merge with UiSettings later
+export interface LocalUiSettings {
+  language: LanguageType;
+  isShowZeroBalance: boolean;
+}
+
+export interface AppSettings extends LocalUiSettings, UiSettings, SettingsStruct, BaseReduxStore {
+  authUrls: Record<string, AuthUrlInfo>;
+  mediaAllowed: boolean;
+}
+
+export interface AccountState extends AccountsContext, KeyringState, BaseReduxStore {
+  currentAccount: AccountJson | null;
+
+  isAllAccount: boolean;
+}
+
+export interface RequestState extends ConfirmationsQueue, BaseReduxStore {
+  authorizeRequest: Record<string, AuthorizeRequest>;
+  metadataRequest: Record<string, MetadataRequest>;
+  signingRequest: Record<string, SigningRequest>;
+  hasConfirmations: boolean;
+  hasInternalConfirmations: boolean;
+  numberOfConfirmations: number;
+  transactionRequest: Record<string, SWTransactionResult>;
+}
+
+export interface UpdateConfirmationsQueueRequest extends BaseReduxStore {
+  type: ConfirmationType;
+  data: Record<string, ConfirmationDefinitions[ConfirmationType][0]>;
+}
+
+export interface AssetRegistryStore extends BaseReduxStore {
+  assetRegistry: Record<string, _ChainAsset>;
+  multiChainAssetMap: Record<string, _MultiChainAsset>;
+  assetSettingMap: Record<string, AssetSetting>;
+}
+
+export interface ChainStore extends BaseReduxStore {
+  chainInfoMap: Record<string, _ChainInfo>;
+  chainStateMap: Record<string, _ChainState>;
+}
+
+export interface BalanceStore extends BaseReduxStore {
+  balanceMap: Record<string, BalanceItem>;
+}
+
+export type PriceStore = PriceJson;
+
+export interface CrowdloanStore extends BaseReduxStore {
+  crowdloanMap: Record<string, CrowdloanItem>;
+}
+
+export interface NftStore extends BaseReduxStore {
+  nftItems: NftItem[];
+  nftCollections: NftCollection[];
+}
+
+export interface StakingStore extends BaseReduxStore {
+  stakingMap: StakingItem[];
+  stakingRewardMap: StakingRewardItem[];
+  chainStakingMetadataList: ChainStakingMetadata[];
+  nominatorMetadataList: NominatorMetadata[];
+}
+
+export interface BondingStore extends BaseReduxStore {
+  nominationPoolInfoMap: Record<string, NominationPoolInfo[]>;
+  validatorInfoMap: Record<string, ValidatorInfo[]>;
+}
+
+export interface ChainValidatorParams {
+  chain: string;
+  validators: ValidatorInfo[];
+}
+
+export interface ChainNominationPoolParams {
+  chain: string;
+  pools: NominationPoolInfo[];
+}
+
+export type TransactionHistoryReducerType = {
+  historyList: TransactionHistoryItem[];
 };

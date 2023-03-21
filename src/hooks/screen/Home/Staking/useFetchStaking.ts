@@ -1,5 +1,5 @@
 import { APIItemState, StakingItem, StakingRewardItem } from '@subwallet/extension-base/background/KoniTypes';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { StakingDataType, StakingType } from 'hooks/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -104,14 +104,14 @@ const groupStakingRewardItems = (stakingRewardItems: StakingRewardItem[]): Staki
 };
 
 export default function useFetchStaking(): StakingType {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const stakingItems = useSelector((state: RootState) => state.staking.details);
   const _stakingRewardList = useSelector((state: RootState) => state.stakingReward.details);
   const unlockingItems = useSelector((state: RootState) => state.stakeUnlockingInfo.details);
   const stakeUnlockingTimestamp = useSelector((state: RootState) => state.stakeUnlockingInfo.timestamp);
   const stakingRewardReady = useSelector((state: RootState) => state.staking.ready);
-  const currentAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
 
   const partResult = useMemo((): Omit<StakingType, 'stakeUnlockingTimestamp'> => {
     const isAccountAll = currentAddress && currentAddress.toLowerCase() === ALL_ACCOUNT_KEY.toLowerCase();

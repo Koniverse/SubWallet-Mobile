@@ -32,7 +32,7 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { formatBalance } from '@polkadot/util';
-import { SupportedCrossChainsMap } from '@subwallet/extension-koni-base/api/xcm/utils';
+import { SupportedCrossChainsMap } from '@subwallet/extension-base/koni/api/xcm/utils';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { ChainAndAccountSelectScreen } from 'screens/Sending/ChainAndAccountSelectScreen';
@@ -89,8 +89,8 @@ export const SendFund = ({
   const navigation = useNavigation<RootNavigationProps>();
 
   const chainRegistry = useSelector((state: RootState) => state.chainRegistry.details);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accounts);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { currentAccountAddress, accounts } = useSelector((state: RootState) => state.accountState);
 
   const {
     signingState: { isLoading },

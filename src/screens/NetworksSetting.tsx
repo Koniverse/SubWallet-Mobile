@@ -52,7 +52,7 @@ const processNetworkMap = (
 };
 
 export const NetworksSetting = ({}: Props) => {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
   const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
   const [currentNetworkList, setCurrentNetworkList] = useState(processNetworkMap(networkMap));

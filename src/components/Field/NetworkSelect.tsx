@@ -47,7 +47,7 @@ const blockContentStyle: StyleProp<any> = {
 };
 
 export const NetworkSelectField = ({ networkKey, disabled, showIcon, outerStyle, value, ...fieldBase }: Props) => {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   return (
     <FieldBase {...fieldBase} outerStyle={outerStyle}>

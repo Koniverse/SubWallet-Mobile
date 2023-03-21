@@ -35,7 +35,7 @@ const processNetworkMap = (networkMap: Record<string, NetworkJson>) => {
 
 export const NetworkConfig = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const sortedNetworkConfigList = processNetworkMap(networkMap);
 
   const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {

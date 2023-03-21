@@ -63,7 +63,7 @@ type settingItemType = {
 export const Settings = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const { lock } = useAppLock();
   const onPressComingSoonFeature = useCallback(() => {

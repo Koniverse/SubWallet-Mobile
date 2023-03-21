@@ -46,7 +46,7 @@ export const SubstrateSignConfirmation = ({
 }: Props) => {
   const { hexBytes, payload } = useGetSignData(request);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const targetNetwork = useMemo((): null | NetworkJson => {
     if (payload !== null) {

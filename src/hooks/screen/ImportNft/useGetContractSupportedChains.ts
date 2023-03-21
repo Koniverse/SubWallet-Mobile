@@ -4,7 +4,7 @@ import { RootState } from 'stores/index';
 import { Item } from 'react-native-picker-select';
 
 export default function useGetContractSupportedChains(): Item[] {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   return useMemo((): Item[] => {
     const result: Item[] = [];

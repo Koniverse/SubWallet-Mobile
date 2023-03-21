@@ -5,8 +5,8 @@ import { useMemo } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 
 export default function useGetAccountList(networkKey?: string) {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
-  const { accounts } = useSelector((state: RootState) => state.accounts);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
   const accountListWithoutAll = accounts.filter(opt => opt.address !== 'ALL');
 
   return useMemo((): AccountJson[] => {

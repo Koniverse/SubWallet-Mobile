@@ -13,7 +13,7 @@ import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { checkAddress } from '@polkadot/phishing';
 import { NetworkSelectField } from 'components/Field/NetworkSelect';
@@ -64,7 +64,7 @@ export const ChainAndAccountSelectScreen = ({
   onPressToNextStep,
   originTokenList,
 }: Props) => {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const inputAddressRef = createRef();
   const originAccountPrefix = getNetworkPrefix(originChain, networkMap);
   const [originChainModalVisible, setOriginChainModalVisible] = useState<boolean>(false);

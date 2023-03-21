@@ -71,7 +71,7 @@ export const Confirmation = ({
   } = useContext(SigningContext);
   useHandlerHardwareBackPress(isCreating || isSubmitting);
 
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const originAccountPrefix = getNetworkPrefix(requestPayload.originNetworkKey, networkMap);
   const destinationAccountPrefix = getNetworkPrefix(requestPayload.destinationNetworkKey, networkMap);
 

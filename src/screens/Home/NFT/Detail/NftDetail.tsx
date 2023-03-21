@@ -149,8 +149,8 @@ const NftDetail = ({
 
   const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
   const nftList = useSelector((state: RootState) => state.nft.nftList);
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   const collection = useMemo(() => {
     return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};

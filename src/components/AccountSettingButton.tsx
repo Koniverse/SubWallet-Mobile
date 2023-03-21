@@ -13,9 +13,9 @@ interface Props {
 }
 
 export const AccountSettingButton = ({ navigation }: Props) => {
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
-  const isAccountWaiting = useSelector((state: RootState) => state.accounts.isWaiting);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const isAccountWaiting = useSelector((state: RootState) => state.accountState.isWaiting);
   const SubIcon = useGetAvatarSubIcon(currentAccount, 20);
 
   return (

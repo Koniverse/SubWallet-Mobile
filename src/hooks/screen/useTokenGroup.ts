@@ -180,7 +180,7 @@ function getTokenGroup(
 
 export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
   const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const tokenGroup: Record<string, string[]> = useMemo<Record<string, string[]>>(() => {
     return getTokenGroup(chainRegistryMap, networkMap);

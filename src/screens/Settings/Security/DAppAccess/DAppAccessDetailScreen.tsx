@@ -53,7 +53,7 @@ const filterFunction = (items: AccountJson[], searchString: string) => {
 
 const Content = ({ origin, accountAuthType, authInfo }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [pendingMap, setPendingMap] = useState<Record<string, boolean>>({});
   const accountItems = useMemo(() => {

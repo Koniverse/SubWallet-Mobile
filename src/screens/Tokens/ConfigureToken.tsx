@@ -17,7 +17,7 @@ import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
 import { upsertCustomToken } from '../../messaging';
-import { FUNGIBLE_TOKEN_STANDARDS } from '@subwallet/extension-koni-base/api/tokens';
+import { FUNGIBLE_TOKEN_STANDARDS } from '@subwallet/extension-base/koni/api/tokens';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 

@@ -1,7 +1,7 @@
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { CustomTokenType, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { NetworkField } from 'components/Field/Network';
 import ImagePreview from 'components/ImagePreview';

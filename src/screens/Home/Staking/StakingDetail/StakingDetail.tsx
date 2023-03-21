@@ -24,7 +24,7 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
 import { getStakingInputValueStyle } from 'utils/text';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
@@ -85,7 +85,7 @@ const StakingDetail = ({
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
 
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });

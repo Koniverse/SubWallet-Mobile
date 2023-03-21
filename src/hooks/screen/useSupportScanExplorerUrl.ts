@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isSupportScanExplorer } from 'utils/index';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 
 export default function useSupportScanExplorer(networkKey: string) {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   if (isAccountAll(networkKey.toUpperCase())) {
     return false;

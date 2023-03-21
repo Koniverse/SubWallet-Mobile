@@ -1,6 +1,6 @@
 import { decodeAddress, encodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { MODE_CAN_SIGN } from 'constants/signer';
 import { SIGN_MODE } from 'types/signer';
 

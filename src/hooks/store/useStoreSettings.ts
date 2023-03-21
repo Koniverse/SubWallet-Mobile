@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { clearWebRunnerHandler, subscribeSettings } from '../../messaging';
 import { updateSettings } from 'stores/updater';
-import { ResponseSettingsType } from '@subwallet/extension-base/background/KoniTypes';
+import { UiSettings } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 import { useSelector } from 'react-redux';
@@ -19,7 +19,7 @@ export default function useStoreSettings(): StoreStatus {
 
     if (isWebRunnerReady) {
       console.log('--- Setup redux: settings');
-      const _update = (payload: ResponseSettingsType) => {
+      const _update = (payload: UiSettings) => {
         if (cancel) {
           return;
         }

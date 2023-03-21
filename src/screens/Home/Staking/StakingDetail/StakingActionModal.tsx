@@ -75,7 +75,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
 
   const isPool = stakingType === StakingType.POOLED;
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
   const networkJson = useGetNetworkJson(networkKey);
 
   const bondedAmount = useMemo((): number => parseFloat(activeBalance || '0'), [activeBalance]);

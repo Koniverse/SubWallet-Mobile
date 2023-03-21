@@ -1,72 +1,55 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import accountsReducer from './Accounts';
-import priceReducer from './Price';
-import networkMapReducer from './NetworkMap';
-import settingsReducer from './Settings';
-import chainRegistryReducer from './ChainRegistry';
-import balanceReducer from './Balance';
 import mobileSettingsReducer from './MobileSettings';
-import transactionHistoryReducer from './TransactionHistory';
-import crowdloanReducer from './Crowdloan';
-import confirmationReducer from './Confirmation';
-import nftReducer from './Nft';
-import nftCollectionReducer from './NftCollection';
-import authUrlsReducer from './AuthUrls';
 import appStateReducer from './AppState';
 import browserReducer from './Browser';
-import stakingReducer from './Staking';
-import stakingRewardReducer from './StakingReward';
-import stakeUnlockingReducer from './StakeUnlockingInfo';
-import customTokenReducer from './CustomToken';
 import backgroundServiceReducer from './BackgroundService';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import AccountStateReducer from './base/AccountState';
+import RequestStateReducer from './base/RequestState';
+import SettingsReducer from './base/Settings';
+import BalanceReducer from './feature/Balance';
+import BondingReducer from './feature/Bonding';
+import AssetRegistryReducer from './feature/common/AssetRegistry';
+import ChainStoreReducer from './feature/common/ChainStore';
+import CrowdloanReducer from './feature/Crowdloan';
+import NftReducer from './feature/Nft';
+import PriceReducer from './feature/Price';
+import StakingReducer from './feature/Staking';
+import TransactionHistoryReducer from './feature/TransactionHistory';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: [
-    'mobileSettings',
-    'customToken',
-    'accounts',
-    'networkMap',
-    'settings',
-    'chainRegistry',
-    'price',
-    'balance',
-    'crowdloan',
-    'nftCollection',
-    'nft',
-    'authUrls',
-    'browser',
-    'staking',
-    'stakeUnlockingInfo',
-    'stakingReward',
-  ],
+  whitelist: [],
 };
 
 const rootReducer = combineReducers({
+  // Basic mobile app store
   appState: appStateReducer,
-  backgroundService: backgroundServiceReducer,
-  accounts: accountsReducer,
-  customToken: customTokenReducer,
-  authUrls: authUrlsReducer,
-  browser: browserReducer,
-  price: priceReducer,
-  networkMap: networkMapReducer,
-  settings: settingsReducer,
-  chainRegistry: chainRegistryReducer,
-  balance: balanceReducer,
   mobileSettings: mobileSettingsReducer,
-  transactionHistory: transactionHistoryReducer,
-  crowdloan: crowdloanReducer,
-  confirmation: confirmationReducer,
-  nftCollection: nftCollectionReducer,
-  nft: nftReducer,
-  staking: stakingReducer,
-  stakeUnlockingInfo: stakeUnlockingReducer,
-  stakingReward: stakingRewardReducer,
+  browser: browserReducer,
+  backgroundService: backgroundServiceReducer,
+
+  // // Feature
+  transactionHistory: TransactionHistoryReducer,
+  crowdloan: CrowdloanReducer,
+  nft: NftReducer,
+  staking: StakingReducer,
+  price: PriceReducer,
+  balance: BalanceReducer,
+  bonding: BondingReducer,
+
+  // // Common
+  chainStore: ChainStoreReducer,
+  assetRegistry: AssetRegistryReducer,
+
+  // // Base
+  requestState: RequestStateReducer,
+  settings: SettingsReducer,
+  accountState: AccountStateReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -84,4 +67,5 @@ export const store = configureStore({
 export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
+export type StoreName = keyof RootState;
 export type AppDispatch = typeof store.dispatch;

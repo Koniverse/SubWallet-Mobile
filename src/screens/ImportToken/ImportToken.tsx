@@ -22,7 +22,7 @@ import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { WebRunnerContext } from 'providers/contexts';
@@ -30,7 +30,7 @@ import { WebRunnerContext } from 'providers/contexts';
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainOptions = useGetContractSupportedChains();
-  const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
+  const { currentAccountAddress } = useSelector((state: RootState) => state.accountState);
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);

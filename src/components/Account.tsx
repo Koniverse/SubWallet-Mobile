@@ -8,7 +8,6 @@ import { accountAllRecoded, defaultRecoded, recodeAddress } from 'utils/index';
 import { RootState } from 'stores/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { Recoded } from 'types/ui-types';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
@@ -16,6 +15,7 @@ import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import i18n from 'utils/i18n/i18n';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -83,8 +83,8 @@ export const Account = ({
   isSelected,
   type: givenType,
 }: AccountProps) => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const [{ genesisHash: recodedGenesis, account }, setRecoded] = useState<Recoded>(defaultRecoded);
   const getNetworkInfoByGenesisHash = useCallback(
     (hash?: string | null): NetworkJson | null => {

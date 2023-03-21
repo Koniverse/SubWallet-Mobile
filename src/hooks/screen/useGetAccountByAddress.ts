@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 const useGetAccountByAddress = (address?: string): AccountJson | null => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   return useMemo((): AccountJson | null => {
     return findAccountByAddress(accounts, address);

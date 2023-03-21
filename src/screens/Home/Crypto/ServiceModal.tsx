@@ -66,7 +66,7 @@ export const ServiceModal = ({
       toastRef.current.show(text);
     }
   }, []);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const formatted = useMemo(() => {
     const networkInfo = networkMap[networkKey];
     if (address) {

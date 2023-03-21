@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 const useIsValidNetwork = (networkKey?: string): [boolean, string] => {
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   const showedNetwork = useShowedNetworks(currentAccountAddress, accounts);
 

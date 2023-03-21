@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 const useGetCurrentAccountSignMode = (): SIGN_MODE => {
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   return useMemo((): SIGN_MODE => {
     return getAccountSignMode(currentAccount);

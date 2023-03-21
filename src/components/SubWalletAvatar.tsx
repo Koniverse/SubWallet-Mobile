@@ -1,5 +1,4 @@
 import { Image, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-koni-base/constants';
 import Identicon from '@polkadot/reactnative-identicon';
 // @ts-ignore
 import Avatar from 'react-native-boring-avatars';
@@ -8,6 +7,7 @@ import { ColorMap } from 'styles/color';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { AvatarSubIcon } from 'types/ui-types';
 import { toDataUrl } from 'utils/blockies';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 
 interface AvatarProps extends ViewProps {
   address: string;

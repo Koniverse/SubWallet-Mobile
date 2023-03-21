@@ -54,7 +54,7 @@ const ImportAccountQrConfirm = ({
   route: { params: account },
   navigation: { goBack },
 }: ImportAccountQrConfirmProps) => {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   const goHome = useGoHome();
   const toast = useToast();

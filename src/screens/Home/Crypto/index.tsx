@@ -43,8 +43,8 @@ const viewLayerStyle: StyleProp<any> = {
 
 export const CryptoScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accounts);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accountState);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const accountType = getAccountType(currentAccountAddress);
   const { currentView, views: viewsLog, toNextView, toBack } = useViewStep(ViewStep.TOKEN_GROUP);
   const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);

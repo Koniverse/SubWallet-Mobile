@@ -16,7 +16,7 @@ import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { updateCurrentAccountAddress } from '../messaging';
 import { updateAccountsWaitingStatus } from 'stores/updater';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { Divider } from 'components/Divider';
 import AddAccountModal from 'components/Modal/AddAccountModal';
 
@@ -29,8 +29,8 @@ const accountItemContainer: StyleProp<any> = {
 
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const renderListEmptyComponent = () => {

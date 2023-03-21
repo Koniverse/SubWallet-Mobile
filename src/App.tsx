@@ -1,4 +1,5 @@
 // Copyright 2019-2022 @subwallet/extension authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 import useStoreStakeUnlockingInfo from 'hooks/store/useStoreStakeUnlockingInfo';
 import useStoreStaking from 'hooks/store/useStoreStaking';
 import useStoreStakingReward from 'hooks/store/useStoreStakingReward';
@@ -6,7 +7,6 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-// SPDX-License-Identifier: Apache-2.0
 import React, { useEffect, useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
@@ -209,7 +209,7 @@ export const App = () => {
   useStoreStaking();
   useStoreStakingReward();
   useStoreStakeUnlockingInfo();
-  // const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  // const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   // const disconnectedProviders = Object.values(networkMap).filter(
   //   item => item.apiStatus && item.apiStatus !== NETWORK_STATUS.CONNECTED,
   // );

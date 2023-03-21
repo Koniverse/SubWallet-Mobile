@@ -161,7 +161,6 @@ class WebRunnerHandler {
       retry: 0,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const check = () => {
       this.pingTimeout && clearTimeout(this.pingTimeout);
 
@@ -377,8 +376,9 @@ const now = new Date().getTime();
 
 const URI_PARAMS =
   '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
-const BASE_URI =
-  Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
+// const BASE_URI =
+//   Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
+const BASE_URI = 'http://192.168.10.133:9000';
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
   const { type } = action;

@@ -1,7 +1,7 @@
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import useGetActiveNetwork from 'hooks/screen/useGetActiveChains';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -24,7 +24,7 @@ const SEPARATOR = '___';
 export default function useGetStakingNetworks(): NetworkJson[] {
   const activeNetworkMap = useGetActiveNetwork();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
 
   const activeList = useMemo((): string => {
     return activeNetworkMap.map(network => network.key).join(SEPARATOR);

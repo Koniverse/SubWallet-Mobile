@@ -3,7 +3,7 @@ import {
   ResponseQrParseRLP,
   SignerDataType,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { createTransactionFromRLP, Transaction } from '@subwallet/extension-koni-base/utils/eth';
+import { createTransactionFromRLP, Transaction } from '@subwallet/extension-base/utils/eth';
 import { SCANNER_QR_STEP } from 'constants/qr';
 import { parseEVMTransaction, parseSubstrateTransaction, qrSignEvm, qrSignSubstrate } from '../messaging';
 import { RootState } from 'stores/index';
@@ -103,8 +103,8 @@ interface ScannerContextProviderProps {
 }
 
 export function ScannerContextProvider({ children }: ScannerContextProviderProps): React.ReactElement {
-  const accounts = useSelector((state: RootState) => state.accounts.accounts);
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const initialState = DEFAULT_STATE;
 

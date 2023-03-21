@@ -6,7 +6,7 @@ import { AccountType } from 'types/ui-types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 
 export default function useShowedNetworks(address: string, accounts: AccountJson[]): string[] {
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const accountType: AccountType | undefined = (!!address && getAccountType(address)) || undefined;
   const dep1 = JSON.stringify(accounts);
 

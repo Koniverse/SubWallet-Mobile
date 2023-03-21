@@ -81,7 +81,7 @@ const StakingValidatorList = ({
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accounts.currentAccountAddress);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
 
   const network = useGetNetworkJson(networkKey);
   const validatorType = useGetValidatorType(networkKey);

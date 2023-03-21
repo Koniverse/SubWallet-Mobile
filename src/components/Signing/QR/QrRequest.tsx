@@ -4,7 +4,6 @@
 import { SignerResult } from '@polkadot/types/types';
 import { hexToU8a, isHex } from '@polkadot/util';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { IGNORE_QR_SIGNER } from '@subwallet/extension-koni-base/constants';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import DisplayPayload from 'components/Payload/DisplayPayload';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
@@ -25,6 +24,7 @@ import { BaseSignProps, SigData } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { resolveExternalRequest } from '../../../messaging';
+import { IGNORE_QR_SIGNER } from '@subwallet/extension-base/constants';
 
 interface Props extends BaseSignProps {
   network: NetworkJson;

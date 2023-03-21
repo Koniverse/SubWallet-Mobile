@@ -62,7 +62,7 @@ export const NetworkConfigDetail = ({
 }: NetworkConfigDetailProps) => {
   const toast = useToast();
   const navigation = useNavigation<RootNavigationProps>();
-  const networkMap = useSelector((state: RootState) => state.networkMap.details);
+  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const [networkInfo, setNetworkInfo] = useState(networkMap[key]);
   const networkConfigTitle = networkInfo.chain;
   const [modalVisible, setModalVisible] = useState<boolean>(false);

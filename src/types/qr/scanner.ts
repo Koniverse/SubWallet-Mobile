@@ -1,4 +1,4 @@
-import { Transaction } from '@subwallet/extension-koni-base/utils/eth';
+import { Transaction } from '@subwallet/extension-base/utils/eth';
 
 import { GenericExtrinsicPayload } from '@polkadot/types';
 

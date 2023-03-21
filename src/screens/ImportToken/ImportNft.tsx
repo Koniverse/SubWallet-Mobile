@@ -20,7 +20,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { isValidSubstrateAddress } from '@subwallet/extension-koni-base/utils';
+import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { WebRunnerContext } from 'providers/contexts';
@@ -36,7 +36,7 @@ const WrapperStyle: StyleProp<ViewStyle> = {
 
 const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { currentAccountAddress } = useSelector((state: RootState) => state.accounts);
+  const { currentAccountAddress } = useSelector((state: RootState) => state.accountState);
   const chainOptions = useGetContractSupportedChains();
   const payload = routeParams?.payload;
   const nftInfo = payload?.payload;
