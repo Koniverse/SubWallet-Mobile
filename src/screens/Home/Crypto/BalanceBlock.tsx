@@ -1,32 +1,32 @@
 import React from 'react';
 import { BalancesVisibility } from 'components/BalancesVisibility';
-import { BalanceToUsd } from 'components/BalanceToUsd';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { BalanceBlockType } from 'types/ui-types';
 import { View } from 'react-native';
-import { Number } from 'components/design-system-ui';
+import { Number, Tag } from 'components/design-system-ui';
 
 export const BalanceBlock = ({
   isPriceDecrease,
   totalChangeValue,
-  balanceValue,
-  amountToUsd,
-  isShowBalanceToUsd = false,
-  startWithSymbol = true,
-  symbol = '$',
+  totalValue,
+  totalChangePercent,
 }: BalanceBlockType) => {
-  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-
   return (
     <>
-      <BalancesVisibility value={balanceValue} symbol={symbol} startWithSymbol={startWithSymbol} />
+      <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
 
-      <View>
-        <Number decimal={0} value={totalChangeValue} prefix={isPriceDecrease ? '- $' : '+ $'} />
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Number size={14} decimal={0} value={totalChangeValue} prefix={isPriceDecrease ? '- $' : '+ $'} />
+        <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
+          <Number
+            size={10}
+            value={totalChangePercent}
+            decimal={0}
+            prefix={isPriceDecrease ? '-' : '+'}
+            suffix={'%'}
+            weight={'700'}
+          />
+        </Tag>
       </View>
-
-      {isShowBalanceToUsd && amountToUsd && <BalanceToUsd amountToUsd={amountToUsd} isShowBalance={isShowBalance} />}
     </>
   );
 };

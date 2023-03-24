@@ -249,50 +249,50 @@ export const ActionButtonContainer = ({ style, selectionProvider }: Props) => {
         <ActionButton label={i18n.cryptoScreen.buy} icon={ShoppingCartSimple} onPress={onPressBuyBtn} />
       </View>
 
-      <AccountSelect
-        accountList={getAccountList()}
-        onChangeAddress={onChangeAccountSelect}
-        modalVisible={selectAccountModal}
-        onChangeModalVisible={() => setSelectAccountModal(false)}
-        onPressBack={onBackAccountSelect}
-      />
+      {/*<AccountSelect*/}
+      {/*  accountList={getAccountList()}*/}
+      {/*  onChangeAddress={onChangeAccountSelect}*/}
+      {/*  modalVisible={selectAccountModal}*/}
+      {/*  onChangeModalVisible={() => setSelectAccountModal(false)}*/}
+      {/*  onPressBack={onBackAccountSelect}*/}
+      {/*/>*/}
 
-      <TokenSelect
-        title={i18n.title.selectToken}
-        isOnlyShowMainToken={isSelectBuyButton}
-        address={selectedAccount || currentAccountAddress}
-        modalVisible={selectTokenModal}
-        onChangeModalVisible={() => setSelectTokenModal(false)}
-        onPressBack={onBackTokenSelect}
-        onChangeToken={onChangeTokenSelect}
-        filteredNetworkKey={selectionProvider ? selectionProvider.selectedNetworkKey : undefined}
-      />
+      {/*<TokenSelect*/}
+      {/*  title={i18n.title.selectToken}*/}
+      {/*  isOnlyShowMainToken={isSelectBuyButton}*/}
+      {/*  address={selectedAccount || currentAccountAddress}*/}
+      {/*  modalVisible={selectTokenModal}*/}
+      {/*  onChangeModalVisible={() => setSelectTokenModal(false)}*/}
+      {/*  onPressBack={onBackTokenSelect}*/}
+      {/*  onChangeToken={onChangeTokenSelect}*/}
+      {/*  filteredNetworkKey={selectionProvider ? selectionProvider.selectedNetworkKey : undefined}*/}
+      {/*/>*/}
 
-      <ServiceModal
-        modalVisible={selectServicesModalVisible}
-        onChangeModalVisible={() => setSelectServicesModal(false)}
-        onPressBack={() => {
-          setSelectServicesModal(false);
-        }}
-        token={selectionProvider?.selectedToken}
-        networkKey={selectedNetworkKey || ''}
-        networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : -1}
-        address={_isAccountAll ? selectedAccount || '' : currentAccountAddress}
-      />
+      {/*<ServiceModal*/}
+      {/*  modalVisible={selectServicesModalVisible}*/}
+      {/*  onChangeModalVisible={() => setSelectServicesModal(false)}*/}
+      {/*  onPressBack={() => {*/}
+      {/*    setSelectServicesModal(false);*/}
+      {/*  }}*/}
+      {/*  token={selectionProvider?.selectedToken}*/}
+      {/*  networkKey={selectedNetworkKey || ''}*/}
+      {/*  networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : -1}*/}
+      {/*  address={_isAccountAll ? selectedAccount || '' : currentAccountAddress}*/}
+      {/*/>*/}
 
-      <ReceiveModal
-        selectedAddress={selectedAccount}
-        networkKey={selectedNetworkKey || 'all'}
-        networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : -1}
-        receiveModalVisible={receiveModalVisible}
-        disableReselectButton={!!selectionProvider && !!selectionProvider.selectedNetworkKey}
-        onChangeVisible={() => {
-          setReceiveModalVisible(false);
-        }}
-        openChangeNetworkModal={() => {
-          actionWithSetTimeout(() => setSelectTokenModal(true));
-        }}
-      />
+      {/*<ReceiveModal*/}
+      {/*  selectedAddress={selectedAccount}*/}
+      {/*  networkKey={selectedNetworkKey || 'all'}*/}
+      {/*  networkPrefix={selectedNetworkPrefix !== undefined ? selectedNetworkPrefix : -1}*/}
+      {/*  receiveModalVisible={receiveModalVisible}*/}
+      {/*  disableReselectButton={!!selectionProvider && !!selectionProvider.selectedNetworkKey}*/}
+      {/*  onChangeVisible={() => {*/}
+      {/*    setReceiveModalVisible(false);*/}
+      {/*  }}*/}
+      {/*  openChangeNetworkModal={() => {*/}
+      {/*    actionWithSetTimeout(() => setSelectTokenModal(true));*/}
+      {/*  }}*/}
+      {/*/>*/}
     </>
   );
 };

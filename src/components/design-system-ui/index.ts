@@ -12,4 +12,5 @@ export { default as SelectItem } from './select-item';
 export { default as Typography } from './typography';
 export { default as SwModal } from './modal/SwModal';
 export { default as SwFullSizeModal } from './modal/SwFullSizeModal';
-export { default as WarningText } from './WarningText';
+export { default as WarningText } from './warning-text';
+export { default as Tag } from './tag';

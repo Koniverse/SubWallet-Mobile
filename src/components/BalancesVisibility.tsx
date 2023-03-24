@@ -1,19 +1,16 @@
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { sharedStyles } from 'styles/sharedStyles';
-import BigN from 'bignumber.js';
 import { ColorMap } from 'styles/color';
-import { getInputValFontSize } from 'components/TransferValue';
-import { toShort } from 'utils/index';
 import { Number } from 'components/design-system-ui';
+import BigN from 'bignumber.js';
 
 type Props = {
   value: BigN;
-  symbol: string;
+  symbol?: string;
   startWithSymbol?: boolean;
+  subFloatNumber?: boolean;
 };
 
 const wrapperStyle: StyleProp<any> = {
@@ -25,9 +22,9 @@ const textStyle: StyleProp<any> = {
   color: ColorMap.light,
 };
 
-export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Props) => {
-  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-  const valueStr = value.toFixed(4) + toShort(symbol, 6, 0);
+export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subFloatNumber = false }: Props) => {
+  // const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const isShowBalance = true;
 
   return (
     <View style={wrapperStyle}>
@@ -35,11 +32,11 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true }: Pr
         <Number
           value={value}
           decimal={0}
-          prefix={startWithSymbol ? symbol : undefined}
-          suffix={!startWithSymbol ? symbol : undefined}
+          prefix={startWithSymbol ? (symbol ? symbol : '$') : undefined}
+          suffix={!startWithSymbol ? (symbol ? symbol : '$') : undefined}
           weight={'600'}
-          size={getInputValFontSize(valueStr)}
-          subFloatNumber={true}
+          size={38}
+          subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}
         />
       ) : (
