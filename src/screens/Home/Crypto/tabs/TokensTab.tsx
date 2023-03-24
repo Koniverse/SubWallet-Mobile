@@ -8,7 +8,6 @@ import {
   StyleProp,
   View,
 } from 'react-native';
-import { TokenBalanceItemType } from 'types/ui-types';
 import { ColorMap } from 'styles/color';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { Coins, SlidersHorizontal } from 'phosphor-react-native';
@@ -26,6 +25,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { TokenBalanceItemType } from 'types/balance';
 
 interface Props {
   renderTabContainerHeader: () => JSX.Element;
@@ -162,7 +162,7 @@ export const TokensTab = ({
   };
 
   const customRenderItem = (data: ListRenderItemInfo<TokenBalanceItemType>) => {
-    if (data.item?.id === null) {
+    if (data.item?.slug === null) {
       return <Animated.View style={stickyHeaderStyles}>{renderActions()}</Animated.View>;
     }
 
@@ -178,7 +178,7 @@ export const TokensTab = ({
         keyboardShouldPersistTaps={'handled'}
         ListHeaderComponent={renderHeaderComponent}
         contentContainerStyle={{ paddingHorizontal: 16 }}
-        data={[{ id: null }, ...tokenBalanceItems]}
+        data={[{ slug: null }, ...tokenBalanceItems]}
         renderItem={customRenderItem}
         ListFooterComponent={renderFooterComponent}
         refreshControl={renderRefreshControl()}

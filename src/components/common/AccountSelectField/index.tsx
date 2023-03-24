@@ -17,7 +17,7 @@ interface Props {
 const AccountSelectField = ({ onPress }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = AccountSelectFieldStyles(theme);
-  const currentAccount = useSelector((state: RootState) => state.accounts.currentAccount);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const isAll = useMemo((): boolean => !!currentAccount && isAccountAll(currentAccount.address), [currentAccount]);
   // TODO: reformat address when have new network info
 

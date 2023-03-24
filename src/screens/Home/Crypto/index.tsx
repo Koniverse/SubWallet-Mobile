@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useSelector } from 'react-redux';
@@ -9,16 +9,15 @@ import { AccountInfoByNetwork, TokenItemType } from 'types/ui-types';
 import { BalanceInfo } from 'types/index';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { StyleProp, View } from 'react-native';
-import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 import useAccountInfoByNetworkMap from 'hooks/screen/Home/Crypto/useAccountInfoByNetworkMap';
 import useViewStep from 'hooks/screen/useViewStep';
 import { ViewStep } from 'screens/Home/Crypto/constant';
 import TokenGroupLayer from 'screens/Home/Crypto/layers/TokenGroup';
 import { TokenSelect } from 'screens/TokenSelect';
-import ChainDetailLayer from 'screens/Home/Crypto/layers/ChainDetail';
-import TokenHistoryLayer from 'screens/Home/Crypto/layers/TokenHistory';
 import { getAccountType } from 'utils/index';
 import { ColorMap } from 'styles/color';
+import { useGetChainSlugsByAccountType } from 'hooks/screen/Home/Crypto/useGetChainSlugsByAccountType';
+import { TokenBalanceItemType } from 'types/balance';
 
 interface SelectionInfo {
   selectedNetworkInfo?: AccountInfoByNetwork;
@@ -43,29 +42,46 @@ const viewLayerStyle: StyleProp<any> = {
 
 export const CryptoScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, currentAccountAddress } = useSelector((state: RootState) => state.accountState);
+  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const accountType = getAccountType(currentAccountAddress);
+  const accountType = getAccountType(currentAccount?.address || '');
   const { currentView, views: viewsLog, toNextView, toBack } = useViewStep(ViewStep.TOKEN_GROUP);
-  const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
-  const tokenGroupMap = useTokenGroup(showedNetworks);
-  const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
+  // const showedNetworks = useShowedNetworks(currentAccountAddress, accounts);
+  // const tokenGroupMap = useTokenGroup(showedNetworks);
+  // const tokenBalanceKeyPriceMap = useTokenBalanceKeyPriceMap(tokenGroupMap);
+  const chainsByAccountType = useGetChainSlugsByAccountType();
+  const { sortedTokenGroups, tokenGroupMap } = useTokenGroup(chainsByAccountType);
+  const { tokenGroupBalanceMap, totalBalanceInfo } = useAccountBalance(tokenGroupMap);
+  console.log('tokenGroupMap', tokenGroupMap);
 
-  const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance(
-    showedNetworks,
-    tokenBalanceKeyPriceMap,
-  );
+  const tokenGroupBalances = useMemo(() => {
+    let _tokenGroupBalances: TokenBalanceItemType[] = [];
+    sortedTokenGroups.forEach(tokenGroupKey => {
+      const item = tokenGroupBalanceMap[tokenGroupKey];
+
+      if (item) {
+        _tokenGroupBalances.push(item);
+      }
+    });
+
+    return _tokenGroupBalances;
+  }, [sortedTokenGroups, tokenGroupBalanceMap]);
+
+  // const { networkBalanceMap, totalBalanceValue, tokenBalanceMap } = useAccountBalance(
+  //   showedNetworks,
+  //   tokenBalanceKeyPriceMap,
+  // );
   const [tokenSelectModal, setTokenSelectModal] = useState<boolean>(false);
   const [{ selectedNetworkInfo, selectedTokenDisplayName, selectedTokenSymbol }, setSelectionInfo] =
     useState<SelectionInfo>({
       selectedTokenDisplayName: '',
       selectedTokenSymbol: '',
     });
-  const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = useAccountInfoByNetworkMap(
-    currentAccountAddress,
-    showedNetworks,
-    networkMap,
-  );
+  // const accountInfoByNetworkMap: Record<string, AccountInfoByNetwork> = useAccountInfoByNetworkMap(
+  //   currentAccountAddress,
+  //   showedNetworks,
+  //   networkMap,
+  // );
 
   const onPressBack = useCallback(() => {
     toBack();
@@ -112,68 +128,62 @@ export const CryptoScreen = () => {
     setTokenSelectModal(true);
   }, []);
 
-  const onChangeTokenSelectModalItem = useCallback(
-    ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
-      const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
-      handleChangeTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
-      setTokenSelectModal(false);
-    },
-    [accountInfoByNetworkMap, handleChangeTokenItem],
-  );
+  // const onChangeTokenSelectModalItem = useCallback(
+  //   ({ symbol, displayedSymbol, networkKey }: TokenItemType) => {
+  //     const _selectedNetworkInfo = accountInfoByNetworkMap[networkKey];
+  //     handleChangeTokenItem(symbol, displayedSymbol, _selectedNetworkInfo);
+  //     setTokenSelectModal(false);
+  //   },
+  //   [accountInfoByNetworkMap, handleChangeTokenItem],
+  // );
 
   return (
     <View style={viewContainerStyle}>
       <TokenGroupLayer
+        tokenGroupBalances={tokenGroupBalances}
+        totalBalanceInfo={totalBalanceInfo}
         navigation={navigation}
-        accountInfoByNetworkMap={accountInfoByNetworkMap}
-        onPressChainItem={onPressChainItem}
         tokenGroupMap={tokenGroupMap}
-        tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
-        tokenBalanceMap={tokenBalanceMap}
-        showedNetworks={showedNetworks}
-        networkBalanceMap={networkBalanceMap}
         onPressSearchButton={onPressSearchButton}
-        handleChangeTokenItem={handleChangeTokenItem}
-        totalBalanceValue={totalBalanceValue}
         accountType={accountType}
       />
 
-      {viewsLog.includes(ViewStep.CHAIN_DETAIL) && selectedNetworkInfo && (
-        <View style={viewLayerStyle}>
-          <ChainDetailLayer
-            handleChangeTokenItem={handleChangeTokenItem}
-            tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}
-            networkBalanceMap={networkBalanceMap}
-            selectedNetworkInfo={selectedNetworkInfo}
-            tokenGroupMap={tokenGroupMap}
-            accountType={accountType}
-            onPressBack={onPressBack}
-          />
-        </View>
-      )}
+      {/*{viewsLog.includes(ViewStep.CHAIN_DETAIL) && selectedNetworkInfo && (*/}
+      {/*  <View style={viewLayerStyle}>*/}
+      {/*    <ChainDetailLayer*/}
+      {/*      handleChangeTokenItem={handleChangeTokenItem}*/}
+      {/*      tokenBalanceKeyPriceMap={tokenBalanceKeyPriceMap}*/}
+      {/*      networkBalanceMap={networkBalanceMap}*/}
+      {/*      selectedNetworkInfo={selectedNetworkInfo}*/}
+      {/*      tokenGroupMap={tokenGroupMap}*/}
+      {/*      accountType={accountType}*/}
+      {/*      onPressBack={onPressBack}*/}
+      {/*    />*/}
+      {/*  </View>*/}
+      {/*)}*/}
 
-      {currentView === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (
-        <View style={viewLayerStyle}>
-          <TokenHistoryLayer
-            onPressBack={onPressBack}
-            selectedNetworkInfo={selectedNetworkInfo}
-            selectedTokenDisplayName={selectedTokenDisplayName}
-            selectedTokenSymbol={selectedTokenSymbol}
-            tokenBalanceMap={tokenBalanceMap}
-          />
-        </View>
-      )}
+      {/*{currentView === ViewStep.TOKEN_HISTORY && selectedNetworkInfo && (*/}
+      {/*  <View style={viewLayerStyle}>*/}
+      {/*    <TokenHistoryLayer*/}
+      {/*      onPressBack={onPressBack}*/}
+      {/*      selectedNetworkInfo={selectedNetworkInfo}*/}
+      {/*      selectedTokenDisplayName={selectedTokenDisplayName}*/}
+      {/*      selectedTokenSymbol={selectedTokenSymbol}*/}
+      {/*      tokenBalanceMap={tokenBalanceMap}*/}
+      {/*    />*/}
+      {/*  </View>*/}
+      {/*)}*/}
 
-      <TokenSelect
-        address={currentAccountAddress}
-        selectedNetworkKey={'all'}
-        modalVisible={tokenSelectModal}
-        onChangeToken={onChangeTokenSelectModalItem}
-        onChangeModalVisible={() => setTokenSelectModal(false)}
-        onPressBack={() => {
-          setTokenSelectModal(false);
-        }}
-      />
+      {/*<TokenSelect*/}
+      {/*  address={currentAccountAddress}*/}
+      {/*  selectedNetworkKey={'all'}*/}
+      {/*  modalVisible={tokenSelectModal}*/}
+      {/*  onChangeToken={onChangeTokenSelectModalItem}*/}
+      {/*  onChangeModalVisible={() => setTokenSelectModal(false)}*/}
+      {/*  onPressBack={() => {*/}
+      {/*    setTokenSelectModal(false);*/}
+      {/*  }}*/}
+      {/*/>*/}
     </View>
   );
 };

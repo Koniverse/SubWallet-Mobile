@@ -2,10 +2,11 @@ import * as Tabs from 'react-native-collapsible-tab-view';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import React from 'react';
-import { AccountType, TokenBalanceItemType } from 'types/ui-types';
+import { AccountType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
 import { StyleProp } from 'react-native';
 import { DEVICE } from 'constants/index';
+import {TokenBalanceItemType} from "types/balance";
 
 export const itemWrapperStyle: StyleProp<any> = {
   width: '100%',
@@ -23,7 +24,7 @@ export const itemWrapperAppendixStyle: StyleProp<any> = {
   top: '100%',
 };
 
-export const alwaysShowedKey = ['polkadot|DOT', 'kusama|KSM'];
+export const alwaysShowedKey = ['polkadot-NATIVE-DOT', 'kusama-NATIVE-KSM'];
 
 export function isItemAllowedToShow(
   item: TokenBalanceItemType,
@@ -32,10 +33,12 @@ export function isItemAllowedToShow(
   isShowZeroBalance?: boolean,
 ): boolean {
   if (!isShowZeroBalance) {
-    if (BN_ZERO.eq(item.balanceValue)) {
-      if (tokenGroupMap[item.id]) {
-        return tokenGroupMap[item.id].some(k => alwaysShowedKey.includes(k));
-      } else if (alwaysShowedKey.includes(item.id)) {
+    console.log('item.total.value', item.slug);
+    if (BN_ZERO.eq(item.total.value)) {
+      if (tokenGroupMap[item.slug]) {
+        console.log('tokenGroupMap[item.slug]', tokenGroupMap[item.slug]);
+        return tokenGroupMap[item.slug].some(k => alwaysShowedKey.includes(k));
+      } else if (alwaysShowedKey.includes(item.slug)) {
         return accountType !== 'ETHEREUM';
       }
 

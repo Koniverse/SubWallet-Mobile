@@ -1,196 +1,109 @@
-import { ChainRegistry, NetworkJson, TokenInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { _getMultiChainAsset, _isNativeTokenBySlug } from '@subwallet/extension-base/services/chain-service/utils';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getTokenBalanceKey, getTokenGroupKey, tokenNetworkKeyMap } from 'utils/index';
-import { useMemo } from 'react';
+import { isAvailableTokenAsset } from 'utils/chainAndAsset';
+import { TokenGroupHookType } from 'types/hook';
+import { AssetRegistryStore } from 'stores/types';
 
-const KNOW_MAIN_KEYS = [
-  getTokenGroupKey('DOT', true),
-  getTokenGroupKey('KSM', true),
-  getTokenGroupKey('STELLA'),
-  getTokenGroupKey('BTC'),
-];
-const KNOW_PREFIXES = ['xcm', 'tai', 'xc', 'lc', 'vs', 'l', 'x', 't', 'h', 'k', 'i'];
-// const EXCLUDE_TOKENS = [];
+function sortTokenSlugs(tokenSlugs: string[]) {
+  tokenSlugs.sort((a, b) => {
+    const hasNativeA = _isNativeTokenBySlug(a);
+    const hasNativeB = _isNativeTokenBySlug(b);
 
-function updateResult(token: string, isTestnet: string, result: Record<string, string[]>, tbKey: string) {
-  const mKey = getTokenGroupKey(token, !!isTestnet);
-
-  if (result[mKey]) {
-    result[mKey].push(tbKey);
-  } else {
-    result[mKey] = [tbKey];
-  }
-}
-
-function resortResult(result: Record<string, string[]>) {
-  const tgKeys = Object.keys(result);
-
-  tgKeys.forEach(tgKey => {
-    if (tokenNetworkKeyMap[tgKey]) {
-      const [tgToken, tgIsTestNet] = tgKey.split('|');
-      const prioritizedTbKeys: string[] = [];
-      const restTbKeys: string[] = [];
-
-      result[tgKey].forEach(tbKey => {
-        const [networkKey] = tbKey.split('|');
-
-        if (tokenNetworkKeyMap[tgKey][0] === networkKey) {
-          prioritizedTbKeys.push(tbKey);
-        } else {
-          restTbKeys.push(tbKey);
-        }
-      });
-
-      prioritizedTbKeys.sort((a, b) => {
-        const [, aToken, aIsTestNet] = a.split('|');
-        if (aToken.toLowerCase() === tgToken && aIsTestNet === tgIsTestNet) {
-          return -1;
-        }
-
-        return a.localeCompare(b);
-      });
-      restTbKeys.sort();
-
-      result[tgKey] = [...prioritizedTbKeys, ...restTbKeys];
+    if (hasNativeA && !hasNativeB) {
+      return -1; // if only element a has "NATIVE", a comes before b
+    } else if (!hasNativeA && hasNativeB) {
+      return 1; // if only element b has "NATIVE", a comes after b
     } else {
-      result[tgKey].sort();
+      return a.localeCompare(b); // if both elements have "native" or neither does, sort alphabetically
     }
   });
 }
 
-function isSameGroup(currentToken: string, comparedToken: string, isSameNetworkType: boolean): boolean {
-  // todo: may need to exclude some tokens here
-  const possibleTokens = KNOW_PREFIXES.map(p => `${p}${comparedToken}`.toLowerCase());
-
-  return possibleTokens.includes(currentToken.toLowerCase()) && isSameNetworkType;
+function sortTokenGroupMap(tokenGroupMap: TokenGroupHookType['tokenGroupMap']) {
+  Object.keys(tokenGroupMap).forEach(tokenGroup => {
+    sortTokenSlugs(tokenGroupMap[tokenGroup]);
+  });
 }
 
-function getFilteredTokenGroupMap(
-  tokenGroupMap: Record<string, string[]>,
-  showedNetworks?: string[],
-): Record<string, string[]> {
-  if (!showedNetworks) {
-    return tokenGroupMap;
-  }
+const prioritizedTokenGroups = ['DOT-Polkadot', 'KSM-Kusama'];
 
-  if (!showedNetworks.length) {
-    return {};
-  }
+function sortTokenGroups(tokenGroups: string[]) {
+  tokenGroups.sort((a, b) => {
+    const indexA = prioritizedTokenGroups.indexOf(a);
+    const indexB = prioritizedTokenGroups.indexOf(b);
 
-  const result: Record<string, string[]> = {};
-
-  Object.keys(tokenGroupMap).forEach(tgKey => {
-    const filteredGroupItems = tokenGroupMap[tgKey].filter(tbKey => {
-      const [networkKey] = tbKey.split('|');
-
-      return showedNetworks.includes(networkKey);
-    });
-
-    if (filteredGroupItems.length) {
-      result[tgKey] = filteredGroupItems;
+    if (indexA === -1 && indexB === -1) {
+      return a.localeCompare(b); // if both elements are not in the prioritizedTokenGroups array, sort alphabetically
+    } else if (indexA === -1) {
+      return 1; // if only element b is in the prioritizedTokenGroups array, a comes after b
+    } else if (indexB === -1) {
+      return -1; // if only element a is in the prioritizedTokenGroups array, a comes before b
+    } else {
+      return indexA - indexB; // if both elements are in the prioritizedTokenGroups array, sort by their position in the array
     }
   });
-
-  return result;
 }
 
 function getTokenGroup(
-  chainRegistryMap: Record<string, ChainRegistry>,
-  networkMap: Record<string, NetworkJson>,
-): Record<string, string[]> {
-  const result: Record<string, string[]> = {};
-  const tokenInfoMap: Record<string, TokenInfo> = {};
-  const testNetKeys: string[] = [];
-  const mainKeys: string[] = [...KNOW_MAIN_KEYS];
-  const allocatedKeys: string[] = [];
+  assetRegistryMap: AssetRegistryStore['assetRegistry'],
+  filteredChains?: string[],
+): TokenGroupHookType {
+  const result: TokenGroupHookType = {
+    tokenGroupMap: {},
+    sortedTokenGroups: [],
+    sortedTokenSlugs: [],
+  };
 
-  Object.keys(networkMap).forEach((networkKey: string) => {
-    if (networkMap[networkKey].groups.includes('TEST_NET')) {
-      testNetKeys.push(networkKey);
-    }
+  Object.values(assetRegistryMap).forEach(chainAsset => {
+    const chain = chainAsset.originChain;
 
-    const nativeToken = networkMap[networkKey].nativeToken;
-
-    if (nativeToken && !['UNIT', 'TOKEN'].includes(nativeToken)) {
-      mainKeys.push(getTokenGroupKey(nativeToken, networkMap[networkKey].groups.includes('TEST_NET')));
-    }
-  });
-
-  Object.keys(chainRegistryMap).forEach(networkKey => {
-    const { tokenMap } = chainRegistryMap[networkKey];
-
-    Object.keys(tokenMap).forEach(token => {
-      const _key = getTokenGroupKey(token, testNetKeys.includes(networkKey));
-
-      if (tokenMap[token].isMainToken && !mainKeys.includes(_key)) {
-        mainKeys.push(_key);
-      }
-
-      tokenInfoMap[getTokenBalanceKey(networkKey, token, testNetKeys.includes(networkKey))] = tokenMap[token];
-    });
-  });
-
-  const tokenInfoMapKeys = Object.keys(tokenInfoMap);
-
-  mainKeys.forEach(k => {
-    const [token, isTestnet] = k.split('|');
-
-    tokenInfoMapKeys.forEach(_k => {
-      if (allocatedKeys.includes(_k)) {
-        return;
-      }
-
-      const [, _token, _isTestnet] = _k.split('|');
-
-      if (isSameGroup(_token, token, isTestnet === _isTestnet)) {
-        allocatedKeys.push(_k);
-
-        if (!result[k]) {
-          result[k] = [];
-        }
-
-        result[k].push(_k);
-      }
-    });
-  });
-
-  tokenInfoMapKeys.forEach((k: string) => {
-    if (allocatedKeys.includes(k)) {
+    if (filteredChains && !filteredChains.includes(chain)) {
       return;
     }
 
-    const [, token, isTestnet] = k.split('|');
+    const multiChainAsset = _getMultiChainAsset(chainAsset);
+    const tokenGroupKey = multiChainAsset || chainAsset.slug;
 
-    if (token.startsWith('xcm')) {
-      updateResult(token.substring(3), isTestnet, result, k);
-    } else if (token.startsWith('xc')) {
-      updateResult(token.substring(2), isTestnet, result, k);
+    if (result.tokenGroupMap[tokenGroupKey]) {
+      result.tokenGroupMap[tokenGroupKey].push(chainAsset.slug);
     } else {
-      updateResult(token, isTestnet, result, k);
+      result.tokenGroupMap[tokenGroupKey] = [chainAsset.slug];
+      result.sortedTokenGroups.push(tokenGroupKey);
     }
-
-    allocatedKeys.push(k);
   });
 
-  resortResult(result);
+  sortTokenGroupMap(result.tokenGroupMap);
+  sortTokenGroups(result.sortedTokenGroups);
+
+  result.sortedTokenGroups.forEach(tokenGroup => {
+    result.sortedTokenSlugs.push(...result.tokenGroupMap[tokenGroup]);
+  });
 
   return result;
 }
 
-export default function useTokenGroup(showedNetworks?: string[]): Record<string, string[]> {
-  const chainRegistryMap = useSelector((state: RootState) => state.chainRegistry.details);
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+export default function useTokenGroup(filteredChains?: string[]): TokenGroupHookType {
+  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const assetSettingMap = useSelector((state: RootState) => state.assetRegistry.assetSettingMap);
+  const chainStateMap = useSelector((state: RootState) => state.chainStore.chainStateMap);
 
-  const tokenGroup: Record<string, string[]> = useMemo<Record<string, string[]>>(() => {
-    return getTokenGroup(chainRegistryMap, networkMap);
-  }, [chainRegistryMap, networkMap]);
+  // only get fungible tokens of active chains which has visibility = 0
+  const filteredAssetRegistryMap = useMemo(() => {
+    const _filteredAssetRegistryMap: Record<string, _ChainAsset> = {};
 
-  const dep3 = showedNetworks ? JSON.stringify(showedNetworks) : undefined;
-  const dep4 = JSON.stringify(tokenGroup);
+    Object.values(assetRegistryMap).forEach(chainAsset => {
+      if (isAvailableTokenAsset(chainAsset, assetSettingMap, chainStateMap)) {
+        _filteredAssetRegistryMap[chainAsset.slug] = chainAsset;
+      }
+    });
 
-  return useMemo<Record<string, string[]>>(() => {
-    return getFilteredTokenGroupMap(tokenGroup, showedNetworks);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dep3, dep4]);
+    return _filteredAssetRegistryMap;
+  }, [assetRegistryMap, assetSettingMap, chainStateMap]);
+
+  return useMemo<TokenGroupHookType>(() => {
+    return getTokenGroup(filteredAssetRegistryMap, filteredChains);
+  }, [filteredAssetRegistryMap, filteredChains]);
 }

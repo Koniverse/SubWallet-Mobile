@@ -7,36 +7,37 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
 import { isItemAllowedToShow, itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokensTab } from 'screens/Home/Crypto/tabs/TokensTab';
-import { AccountInfoByNetwork, AccountType, TokenBalanceItemType } from 'types/ui-types';
-import BigN from 'bignumber.js';
-import { BalanceInfo } from 'types/index';
+import { AccountType } from 'types/ui-types';
 import { ListRenderItemInfo, StyleProp, View } from 'react-native';
-import { TokenChainBalance } from 'components/TokenChainBalance';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
-import { BN_ZERO, getTokenDisplayName } from 'utils/chainBalances';
+import { getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
-import useTokenBalanceItems from 'hooks/screen/Home/Crypto/layers/TokenGroup/useTokenBalanceItems';
-import {restartSubscriptionServices, toggleBalancesVisibility} from '../../../../messaging';
+import { restartSubscriptionServices, toggleBalancesVisibility } from '../../../../messaging';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { EyeSlash, FadersHorizontal, MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { TokenBalanceItemType } from 'types/balance';
+import { AccountBalanceHookType } from 'types/hook';
+import { TokenGroupBalance } from 'components/common/TokenGroupBalanceItem';
 
 interface Prop {
+  tokenGroupBalances: TokenBalanceItemType[];
+  totalBalanceInfo: AccountBalanceHookType['totalBalanceInfo'];
   isShowZeroBalance?: boolean;
   accountType: AccountType;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   onPressSearchButton: () => void;
-  accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
-  onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
+  // accountInfoByNetworkMap: Record<string, AccountInfoByNetwork>;
+  // onPressChainItem: (info: AccountInfoByNetwork, balanceInfo: BalanceInfo) => void;
   tokenGroupMap: Record<string, string[]>;
-  tokenBalanceKeyPriceMap: Record<string, number>;
-  tokenBalanceMap: Record<string, TokenBalanceItemType>;
-  showedNetworks: string[];
-  networkBalanceMap: Record<string, BalanceInfo>;
-  handleChangeTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
-  totalBalanceValue: BigN;
+  // // tokenBalanceKeyPriceMap: Record<string, number>;
+  // tokenBalanceMap: Record<string, TokenBalanceItemType>;
+  // showedNetworks: string[];
+  // networkBalanceMap: Record<string, BalanceInfo>;
+  // handleChangeTokenItem: (tokenSymbol: string, tokenDisplayName: string, info?: AccountInfoByNetwork) => void;
+  // totalBalanceValue: BigN;
 }
 
 function getTokenGroupDisplayName(tgKey: string) {
@@ -44,31 +45,31 @@ function getTokenGroupDisplayName(tgKey: string) {
   return getTokenDisplayName(symbol.toUpperCase());
 }
 
-function getBalanceValue(
-  isGroupDetail: boolean,
-  currentTgKey: string,
-  totalBalanceValue: BigN,
-  tokenGroupMap: Record<string, string[]>,
-  tokenBalanceMap: Record<string, TokenBalanceItemType>,
-): BigN {
-  if (!isGroupDetail) {
-    return totalBalanceValue;
-  }
-
-  if (currentTgKey && tokenGroupMap[currentTgKey]) {
-    let result = new BigN(0);
-
-    tokenGroupMap[currentTgKey].forEach(tbKey => {
-      if (tokenBalanceMap[tbKey] && tokenBalanceMap[tbKey].isReady) {
-        result = result.plus(tokenBalanceMap[tbKey].convertedBalanceValue);
-      }
-    });
-
-    return result;
-  }
-
-  return BN_ZERO;
-}
+// function getBalanceValue(
+//   isGroupDetail: boolean,
+//   currentTgKey: string,
+//   totalBalanceValue: BigN,
+//   tokenGroupMap: Record<string, string[]>,
+//   tokenBalanceMap: Record<string, TokenBalanceItemType>,
+// ): BigN {
+//   if (!isGroupDetail) {
+//     return totalBalanceValue;
+//   }
+//
+//   if (currentTgKey && tokenGroupMap[currentTgKey]) {
+//     let result = new BigN(0);
+//
+//     tokenGroupMap[currentTgKey].forEach(tbKey => {
+//       if (tokenBalanceMap[tbKey] && tokenBalanceMap[tbKey].isReady) {
+//         result = result.plus(tokenBalanceMap[tbKey].convertedBalanceValue);
+//       }
+//     });
+//
+//     return result;
+//   }
+//
+//   return BN_ZERO;
+// }
 
 function isEmptyList(
   list: TokenBalanceItemType[],
@@ -91,15 +92,12 @@ const renderActionsStyle: StyleProp<any> = {
 };
 
 const TokenGroupLayer = ({
-  accountType,
+  tokenGroupBalances,
+  totalBalanceInfo,
   navigation,
   onPressSearchButton,
-  accountInfoByNetworkMap,
   tokenGroupMap,
-  tokenBalanceKeyPriceMap,
-  tokenBalanceMap,
-  handleChangeTokenItem,
-  totalBalanceValue,
+  accountType,
   isShowZeroBalance,
 }: Prop) => {
   const theme = useSubWalletTheme().swThemes;
@@ -107,38 +105,39 @@ const TokenGroupLayer = ({
   const [currentTgKey, setCurrentTgKey] = useState<string>('');
   const [isGroupDetail, setGroupDetail] = useState<boolean>(false);
   const [refreshTabId, setRefreshTabId] = useState<string>('');
-
+  const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const onPressBack = () => {
     setCurrentTgKey('');
     setGroupDetail(false);
   };
-  const tokenBalanceItems = useTokenBalanceItems(
-    isGroupDetail,
-    currentTgKey,
-    tokenGroupMap,
-    tokenBalanceMap,
-    tokenBalanceKeyPriceMap,
-  );
 
-  const onPressTokenItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
-    if (isGroupDetail) {
-      handleChangeTokenItem(item.symbol, item.displayedSymbol, info);
-    } else {
-      setCurrentTgKey(item.id);
-      setGroupDetail(true);
-    }
-  };
+  // const tokenBalanceItems = useTokenBalanceItems(
+  //   isGroupDetail,
+  //   currentTgKey,
+  //   tokenGroupMap,
+  //   tokenBalanceMap,
+  //   tokenBalanceKeyPriceMap,
+  // );
+
+  // const onPressTokenItem = (item: TokenBalanceItemType, info?: AccountInfoByNetwork) => {
+  //   if (isGroupDetail) {
+  //     handleChangeTokenItem(item.symbol, item.displayedSymbol, info);
+  //   } else {
+  //     setCurrentTgKey(item.id);
+  //     setGroupDetail(true);
+  //   }
+  // };
 
   const renderTokenTabItem = ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => {
-    const info = accountInfoByNetworkMap[item.networkKey];
+    // const info = accountInfoByNetworkMap[item.networkKey];
 
     if (!isItemAllowedToShow(item, accountType, tokenGroupMap, isShowZeroBalance)) {
       return null;
     }
 
     return (
-      <View key={item.id} style={[itemWrapperStyle, { backgroundColor: '#252525' }]}>
-        <TokenChainBalance onPress={() => onPressTokenItem(item, info)} {...item} />
+      <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: '#252525' }]}>
+        <TokenGroupBalance onPress={() => {}} {...item} />
       </View>
     );
   };
@@ -147,9 +146,10 @@ const TokenGroupLayer = ({
     return (
       <TabsContainerHeader
         balanceBlockProps={{
-          balanceValue: getBalanceValue(isGroupDetail, currentTgKey, totalBalanceValue, tokenGroupMap, tokenBalanceMap),
-          isPriceDecrease: false,
-          totalChangeValue: 10,
+          totalChangePercent: totalBalanceInfo.change.percent,
+          isPriceDecrease: isTotalBalanceDecrease,
+          totalChangeValue: totalBalanceInfo.change.value,
+          totalValue: totalBalanceInfo.convertedValue,
         }}
       />
     );
@@ -209,13 +209,13 @@ const TokenGroupLayer = ({
 
         <TokensTab
           renderTabContainerHeader={renderTabContainerHeader}
-          items={tokenBalanceItems}
+          items={tokenGroupBalances}
           renderItem={renderTokenTabItem}
           renderActions={renderActions}
           isRefresh={isRefresh}
           refresh={_onRefresh}
           refreshTabId={refreshTabId}
-          isEmptyList={isEmptyList(tokenBalanceItems, accountType, tokenGroupMap, isShowZeroBalance)}
+          isEmptyList={isEmptyList(tokenGroupBalances, accountType, tokenGroupMap, isShowZeroBalance)}
         />
       </>
     </ScreenContainer>

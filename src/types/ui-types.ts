@@ -2,7 +2,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import React from 'react';
 import { Icon, IconProps } from 'phosphor-react-native';
 import BigN from 'bignumber.js';
-import {SwNumberProps} from "components/design-system-ui/number";
+import { SwNumberProps } from 'components/design-system-ui/number';
 
 export type AccountType = 'ALL' | 'ETHEREUM' | 'SUBSTRATE';
 export type BalanceFormatType = [number, string, string | undefined];
@@ -30,13 +30,19 @@ export interface SelectionProviderProps {
 }
 
 export interface BalanceBlockType {
-  balanceValue: BigN;
-  amountToUsd?: BigN;
-  isShowBalanceToUsd?: boolean;
-  startWithSymbol?: boolean;
-  symbol?: string;
+  totalValue: BigN;
+  totalChangeValue: BigN;
+  totalChangePercent: BigN;
   isPriceDecrease: boolean;
-  totalChangeValue: SwNumberProps['value'];
+  // isShrink: boolean;
+  // onOpenSendFund: () => void;
+  // onOpenBuyTokens: () => void;
+  // onOpenReceive: () => void;
+  // balanceValue: BigN;
+  // amountToUsd?: BigN;
+  // isShowBalanceToUsd?: boolean;
+  // startWithSymbol?: boolean;
+  // symbol?: string;
 }
 
 export type AccountInfoByNetwork = {

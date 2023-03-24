@@ -3,7 +3,7 @@ import { StyleProp, Text, TouchableOpacity, TouchableOpacityProps, View } from '
 import { getNetworkLogo, toShort } from 'utils/index';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { TokenBalanceItemType } from 'types/ui-types';
+import { TokenBalanceItemType } from 'types/balance';
 import { BN_ZERO } from 'utils/chainBalances';
 import { Icon, Number } from 'components/design-system-ui';
 import { CaretRight } from 'phosphor-react-native';
@@ -89,8 +89,8 @@ export const TokenChainBalance = ({
               value={isTestnet ? 0 : priceValue}
               decimal={0}
               prefix={'$'}
-              leftColor={priceStyle.color}
-              rightColor={priceStyle.color}
+              intColor={priceStyle.color}
+              decimalColor={priceStyle.color}
               size={priceStyle.fontSize}
             />
           </View>
@@ -101,18 +101,18 @@ export const TokenChainBalance = ({
             <Number
               value={!isReady ? BN_ZERO : balanceValue}
               decimal={0}
-              rightOpacity={0.45}
-              leftColor={textStyle.color}
-              rightColor={textStyle.color}
+              decimalOpacity={0.45}
+              intColor={textStyle.color}
+              decimalColor={textStyle.color}
               size={textStyle.fontSize}
             />
             <Number
               value={isTestnet || !isReady ? BN_ZERO : convertedBalanceValue}
               decimal={0}
-              rightOpacity={0.45}
+              decimalOpacity={0.45}
               prefix={'$'}
-              leftColor={subTextStyle.color}
-              rightColor={subTextStyle.color}
+              intColor={subTextStyle.color}
+              decimalColor={subTextStyle.color}
               size={subTextStyle.fontSize}
             />
           </View>

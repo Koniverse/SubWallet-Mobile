@@ -3,7 +3,7 @@ import type { NumberFormatter } from 'utils/number';
 import { balanceFormatter, formatNumber } from 'utils/number';
 import type { BigNumber } from 'bignumber.js';
 import React, { useMemo } from 'react';
-import { TextStyle, View } from 'react-native';
+import { TextStyle, View, ViewStyle } from 'react-native';
 import { Typography } from '..';
 
 type FontWeight = 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | undefined;
@@ -24,6 +24,7 @@ export interface SwNumberProps {
   decimalColor?: string;
   unitOpacity?: number;
   unitColor?: string;
+  style?: ViewStyle;
 }
 
 interface LocaleNumberFormat {
@@ -77,6 +78,7 @@ const Number: React.FC<SwNumberProps> = props => {
     unitColor = '#fff',
     unitOpacity = 1,
     weight = '500',
+    style,
   } = props;
 
   const intStyle = useMemo(
@@ -135,7 +137,7 @@ const Number: React.FC<SwNumberProps> = props => {
   }, [formatted]);
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+    <View style={[{ flexDirection: 'row', alignItems: 'baseline' }, style]}>
       {prefix && (
         <Typography.Text
           style={{
