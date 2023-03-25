@@ -106,7 +106,7 @@ const StakingNetworkList = () => {
       renderListEmptyComponent={isNetConnected ? renderEmpty : renderNoInternetConnectedScreen}
       renderItem={renderItem}
       loading={loading}
-      filterFunction={filterFunction}
+      searchFunction={filterFunction}
       placeholder={'Search network...'}
       isNetConnected={isNetConnected}
     />

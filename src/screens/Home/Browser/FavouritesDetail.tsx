@@ -37,7 +37,7 @@ export const FavouritesDetail = () => {
       autoFocus={false}
       flatListStyle={{ paddingBottom: 12 }}
       renderItem={renderSiteItem}
-      filterFunction={filterFunction}
+      searchFunction={filterFunction}
       renderListEmptyComponent={() => {
         return <EmptyList icon={Star} title={i18n.common.favouritesEmptyListPlaceholder} />;
       }}

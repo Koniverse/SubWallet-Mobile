@@ -48,7 +48,7 @@ export const HistoryDetail = () => {
       title={i18n.common.history}
       items={historyItems}
       autoFocus={false}
-      filterFunction={filterFunction}
+      searchFunction={filterFunction}
       renderItem={renderSiteItem}
       rightIconOption={{
         icon: Trash,

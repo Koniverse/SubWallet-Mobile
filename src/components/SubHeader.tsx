@@ -23,7 +23,7 @@ export interface SubHeaderProps {
   rightButtonTitle?: string;
 }
 
-function getSubHeaderWrapperStyle(backgroundColor: string = ColorMap.dark1): StyleProp<any> {
+function getSubHeaderWrapperStyle(backgroundColor: string = '#0C0C0C'): StyleProp<any> {
   return {
     backgroundColor: backgroundColor,
     flexDirection: 'row',

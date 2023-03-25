@@ -47,7 +47,7 @@ const NftCollectionList = () => {
         title={i18n.title.nftCollections}
         renderItem={renderItem}
         renderListEmptyComponent={renderEmptyNFT}
-        filterFunction={filteredCollection}
+        searchFunction={filteredCollection}
         items={nftCollections}
         rightIconOption={{
           icon: Plus,

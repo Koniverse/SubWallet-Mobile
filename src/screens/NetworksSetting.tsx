@@ -1,42 +1,98 @@
 import React, { useEffect, useState } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
-import { disableNetworkMap, enableNetworkMap } from '../messaging';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { Warning } from 'components/Warning';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { Gear } from 'phosphor-react-native';
+import { Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
+import { updateChainActiveState } from '../messaging';
+import {
+  _isChainEvmCompatible,
+  _isCustomChain,
+  _isSubstrateChain,
+} from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {}
 
-let networkKeys: Array<string> | undefined;
+let chainKeys: Array<string> | undefined;
 
-let cachePendingNetworkMap: Record<string, boolean> = {};
+let cachePendingChainMap: Record<string, boolean> = {};
 
-const filterFunction = (items: NetworkJson[], searchString: string) => {
-  return items.filter(network => network.chain.toLowerCase().includes(searchString.toLowerCase()));
+enum FilterValue {
+  ENABLED = 'enabled',
+  DISABLED = 'disabled',
+  CUSTOM = 'custom',
+  SUBSTRATE = 'substrate',
+  EVM = 'evm',
+}
+
+const FILTER_OPTIONS = [
+  { label: 'EVM chains', value: FilterValue.EVM },
+  { label: 'Substrate chains', value: FilterValue.SUBSTRATE },
+  { label: 'Custom chains', value: FilterValue.CUSTOM },
+  { label: 'Enabled chains', value: FilterValue.ENABLED },
+  { label: 'Disabled chains', value: FilterValue.DISABLED },
+];
+
+const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
+  return items.filter(network => network.name.toLowerCase().includes(searchString.toLowerCase()));
 };
 
-const processNetworkMap = (
-  networkMap: Record<string, NetworkJson>,
-  pendingKeys = Object.keys(cachePendingNetworkMap),
+const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
+  const filteredChainList: ChainInfoWithState[] = [];
+
+  items.forEach(item => {
+    let isValidationPassed = filters.length <= 0;
+
+    for (const filter of filters) {
+      switch (filter) {
+        case FilterValue.CUSTOM:
+          isValidationPassed = _isCustomChain(item.slug);
+          break;
+        case FilterValue.ENABLED:
+          isValidationPassed = item.active;
+          break;
+        case FilterValue.DISABLED:
+          isValidationPassed = !item.active;
+          break;
+        case FilterValue.SUBSTRATE:
+          isValidationPassed = _isSubstrateChain(item);
+          break;
+        case FilterValue.EVM:
+          isValidationPassed = _isChainEvmCompatible(item);
+          break;
+        default:
+          isValidationPassed = false;
+          break;
+      }
+
+      if (isValidationPassed) {
+        break; // only need to satisfy 1 filter (OR)
+      }
+    }
+
+    if (isValidationPassed) {
+      filteredChainList.push(item);
+    }
+  });
+
+  return filteredChainList;
+};
+
+const processChainMap = (
+  chainInfoMap: Record<string, ChainInfoWithState>,
+  pendingKeys = Object.keys(cachePendingChainMap),
   updateKeys = false,
-): NetworkJson[] => {
-  if (!networkKeys || updateKeys) {
-    networkKeys = Object.keys(networkMap)
-      .filter(
-        key =>
-          Object.keys(networkMap[key].providers).length > 0 ||
-          Object.keys(networkMap[key].customProviders || []).length > 0,
-      )
+): ChainInfoWithState[] => {
+  if (!chainKeys || updateKeys) {
+    chainKeys = Object.keys(chainInfoMap)
+      .filter(key => Object.keys(chainInfoMap[key].providers).length > 0)
       .sort((a, b) => {
-        const aActive = pendingKeys.includes(a) ? cachePendingNetworkMap[a] : networkMap[a]?.active;
-        const bActive = pendingKeys.includes(b) ? cachePendingNetworkMap[b] : networkMap[b]?.active;
+        const aActive = pendingKeys.includes(a) ? cachePendingChainMap[a] : chainInfoMap[a].active;
+        const bActive = pendingKeys.includes(b) ? cachePendingChainMap[b] : chainInfoMap[b].active;
 
         if (aActive === bActive) {
           return 0;
@@ -48,64 +104,66 @@ const processNetworkMap = (
       });
   }
 
-  return networkKeys.map(key => networkMap[key]);
+  return chainKeys.map(key => chainInfoMap[key]);
 };
 
 export const NetworksSetting = ({}: Props) => {
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const navigation = useNavigation<RootNavigationProps>();
-  const [pendingNetworkMap, setPendingNetworkMap] = useState<Record<string, boolean>>(cachePendingNetworkMap);
-  const [currentNetworkList, setCurrentNetworkList] = useState(processNetworkMap(networkMap));
+  const chainInfoMap = useChainInfoWithState();
+  const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
+  const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
 
   useEffect(() => {
-    setPendingNetworkMap(prevPendingNetworkMap => {
-      Object.entries(prevPendingNetworkMap).forEach(([key, val]) => {
-        if (networkMap[key]?.active === val) {
+    setPendingChainMap(prevPendingChainMap => {
+      Object.entries(prevPendingChainMap).forEach(([key, val]) => {
+        if (chainInfoMap[key].active === val) {
           // @ts-ignore
-          delete prevPendingNetworkMap[key];
+          delete prevPendingChainMap[key];
         }
       });
 
-      return { ...prevPendingNetworkMap };
+      return { ...prevPendingChainMap };
     });
-  }, [networkMap]);
+  }, [chainInfoMap]);
 
   useEffect(() => {
-    setCurrentNetworkList(processNetworkMap(networkMap, Object.keys(pendingNetworkMap)));
-  }, [networkMap, pendingNetworkMap]);
+    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap)));
+  }, [chainInfoMap, pendingChainMap]);
 
   useEffect(() => {
-    cachePendingNetworkMap = pendingNetworkMap;
-  }, [pendingNetworkMap]);
+    cachePendingChainMap = pendingChainMap;
+  }, [pendingChainMap]);
 
-  const onToggleItem = (item: NetworkJson) => {
-    setPendingNetworkMap({ ...pendingNetworkMap, [item.key]: !item.active });
+  const onToggleItem = (item: ChainInfoWithState) => {
+    setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
     const reject = () => {
       console.warn('Toggle network request failed!');
       // @ts-ignore
       delete pendingNetworkMap[item.key];
-      setPendingNetworkMap({ ...pendingNetworkMap });
+      setPendingChainMap({ ...pendingChainMap });
     };
 
-    if (item.active) {
-      disableNetworkMap(item.key).catch(reject);
-    } else {
-      enableNetworkMap(item.key).catch(reject);
-    }
+    updateChainActiveState(item.slug, !item.active)
+      .then(result => {
+        if (!result) {
+          reject();
+        }
+      })
+      .catch(reject);
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<ChainInfoWithState>) => {
     return (
       <NetworkAndTokenToggleItem
         isDisableSwitching={
-          item.key === 'polkadot' || item.key === 'kusama' || Object.keys(pendingNetworkMap).includes(item.key)
+          item.slug === 'polkadot' || item.slug === 'kusama' || Object.keys(pendingChainMap).includes(item.slug)
         }
-        key={`${item.key}-${item.chain}`}
-        itemName={item.chain}
-        itemKey={item.key}
+        key={`${item.slug}-${item.name}`}
+        itemName={item.name}
+        itemKey={item.slug}
         // @ts-ignore
         isEnabled={
-          Object.keys(pendingNetworkMap).includes(item.key) ? pendingNetworkMap[item.key] : networkMap[item.key].active
+          Object.keys(pendingChainMap).includes(item.slug) ? pendingChainMap[item.slug] : chainInfoMap[item.slug].active
         }
         onValueChange={() => onToggleItem(item)}
       />
@@ -125,13 +183,16 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <FlatListScreen
-      rightIconOption={{ icon: Gear, onPress: () => navigation.navigate('NetworkConfig') }}
-      items={currentNetworkList}
+      rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('NetworkConfig') }}
+      items={currentChainList}
       title={i18n.title.network}
       autoFocus={false}
       renderListEmptyComponent={renderListEmptyComponent}
-      filterFunction={filterFunction}
+      searchFunction={searchFunction}
       renderItem={renderItem}
+      filterOptions={FILTER_OPTIONS}
+      filterFunction={filterFunction}
+      isShowListWrapper={true}
     />
   );
 };

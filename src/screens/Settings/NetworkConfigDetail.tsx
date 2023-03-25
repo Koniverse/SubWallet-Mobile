@@ -179,7 +179,7 @@ export const NetworkConfigDetail = ({
         renderItem={renderItem}
         autoFocus={false}
         renderListEmptyComponent={renderEmptyList}
-        filterFunction={filterFunction}
+        searchFunction={filterFunction}
         afterListItem={
           <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
             <SubmitButton isBusy={loading} title={i18n.common.done} onPress={onPressDoneButton} />

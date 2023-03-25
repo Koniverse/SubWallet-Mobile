@@ -64,7 +64,7 @@ export const NetworkConfig = () => {
       items={sortedNetworkConfigList}
       renderItem={renderItem}
       autoFocus={false}
-      filterFunction={filterFunction}
+      searchFunction={filterFunction}
       renderListEmptyComponent={renderListEmptyComponent}
     />
   );

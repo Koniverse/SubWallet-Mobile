@@ -11,6 +11,8 @@ import { defaultSortFunc } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { LazyFlatList } from 'components/LazyFlatList';
 import { NoInternetScreen } from 'components/NoInternetScreen';
+import FilterModal, { OptionType } from 'components/common/FilterModal';
+import { useFilterModal } from 'hooks/useFilterModal';
 
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 interface RightIconOpt {
@@ -34,7 +36,8 @@ interface Props<T> {
   style?: StyleProp<any>;
   rightIconOption?: RightIconOpt;
   afterListItem?: JSX.Element;
-  filterFunction: (items: T[], searchString: string) => T[];
+  searchFunction: (items: T[], searchString: string) => T[];
+  filterFunction?: (items: T[], filters: string[]) => T[];
   sortFunction?: SortFunctionInterface<T>;
   searchMarginBottom?: number;
   placeholder?: string;
@@ -45,6 +48,9 @@ interface Props<T> {
   headerContent?: () => JSX.Element;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   isNetConnected?: boolean;
+  isShowFilterBtn?: boolean;
+  filterOptions?: OptionType[];
+  isShowListWrapper?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -61,20 +67,26 @@ export function FlatListScreen<T>({
   renderItem,
   afterListItem,
   renderListEmptyComponent,
+  searchFunction,
   filterFunction,
   placeholder = i18n.common.search,
   numberColumns = 1,
-  searchMarginBottom = 8,
+  searchMarginBottom = 16,
   sortFunction = defaultSortFunc,
   flatListStyle,
   leftButtonDisabled,
   headerContent,
   refreshControl,
   isNetConnected = true,
+  isShowFilterBtn = true,
+  filterOptions,
+  isShowListWrapper = false,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
+  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
   const searchRef = useRef<TextInput>(null);
+  const { filterSelectionMap, onApplyFilter, onChangeFilterOption, selectedFilters } = useFilterModal();
 
   useEffect(() => {
     setTimeout(() => {
@@ -100,6 +112,8 @@ export function FlatListScreen<T>({
           searchText={searchString}
           style={{ marginBottom: searchMarginBottom, marginTop: 10, marginHorizontal: 16 }}
           searchRef={searchRef}
+          isShowFilterBtn={isShowFilterBtn}
+          onPressFilterBtn={() => setFilterModalVisible(true)}
         />
       )}
       {isNetConnected ? (
@@ -110,15 +124,29 @@ export function FlatListScreen<T>({
           renderItem={renderItem}
           renderListEmptyComponent={renderListEmptyComponent}
           refreshControl={refreshControl}
+          searchFunction={searchFunction}
           filterFunction={filterFunction}
+          selectedFilters={selectedFilters}
           sortFunction={sortFunction}
           loading={loading}
           numberColumns={numberColumns}
+          isShowListWrapper={isShowListWrapper}
         />
       ) : (
         <NoInternetScreen />
       )}
       {afterListItem}
+
+      {!!(filterOptions && filterOptions.length && filterSelectionMap) && (
+        <FilterModal
+          options={filterOptions}
+          modalVisible={filterModalVisible}
+          onChangeOption={onChangeFilterOption}
+          optionSelectionMap={filterSelectionMap}
+          onApplyFilter={onApplyFilter}
+          onChangeModalVisible={() => setFilterModalVisible(false)}
+        />
+      )}
     </View>
   );
 

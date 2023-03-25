@@ -4,6 +4,8 @@ import Text from 'components/Text';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import {Button, Icon, Logo} from "components/design-system-ui";
+import {PencilSimpleLine} from "phosphor-react-native";
 interface Props {
   itemName: string;
   itemKey: string;
@@ -15,9 +17,10 @@ interface Props {
 const itemArea: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
-  paddingVertical: 16,
+  paddingVertical: 6,
   alignItems: 'center',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
+  // paddingRight: 2,
   flex: 1,
 };
 
@@ -29,16 +32,17 @@ const itemBodyArea: StyleProp<any> = {
 };
 
 const itemSeparator: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
+  backgroundColor: 'rgba(33, 33, 33, 0.8)',
   height: 1,
-  marginLeft: 64,
-  marginRight: 16,
+  marginLeft: 60,
+  marginRight: 12,
 };
 
 const itemTextStyle: StyleProp<any> = {
-  paddingLeft: 16,
+  paddingLeft: 12,
   color: ColorMap.light,
-  ...sharedStyles.mediumText,
+  fontSize: 16,
+  lineHeight: 24,
   ...FontSemiBold,
   flex: 1,
 };
@@ -56,10 +60,11 @@ export const NetworkAndTokenToggleItem = ({
   isDisableSwitching,
 }: Props) => {
   return (
-    <View>
+    <View style={{ marginBottom: 8 }}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 40)}</View>
+          <Logo size={36} network={itemKey} />
+          {/*<View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 40)}</View>*/}
 
           <Text numberOfLines={1} style={itemTextStyle}>
             {itemName}
@@ -71,6 +76,13 @@ export const NetworkAndTokenToggleItem = ({
           ios_backgroundColor={ColorMap.switchInactiveButtonColor}
           value={isEnabled}
           onValueChange={onValueChange}
+        />
+
+        <Button
+          style={{ marginLeft: 8 }}
+          size={'xs'}
+          type={'ghost'}
+          icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
         />
       </View>
 

@@ -90,7 +90,7 @@ const StakingBalanceList = () => {
         showLeftBtn={false}
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
-        filterFunction={filteredFunction}
+        searchFunction={filteredFunction}
         renderItem={renderItem}
         loading={loading}
         rightIconOption={rightIconOption}

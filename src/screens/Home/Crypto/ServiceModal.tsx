@@ -216,7 +216,7 @@ export const ServiceModal = ({
         items={SERVICE_OPTIONS}
         style={FlatListScreenPaddingTop}
         title={i18n.title.serviceSelect}
-        filterFunction={filterFunction}
+        searchFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={() => {
           setSelectedService({ selectedService: undefined, isOpenInAppBrowser: false });
