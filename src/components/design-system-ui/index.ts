@@ -14,3 +14,4 @@ export { default as SwModal } from './modal/SwModal';
 export { default as SwFullSizeModal } from './modal/SwFullSizeModal';
 export { default as WarningText } from './warning-text';
 export { default as Tag } from './tag';
+export { default as Divider } from './divider';

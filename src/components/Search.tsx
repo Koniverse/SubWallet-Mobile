@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import { MagnifyingGlass, XCircle } from 'phosphor-react-native';
+import {FadersHorizontal, MagnifyingGlass, XCircle} from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import {Button, Icon} from "components/design-system-ui";
 
 interface Props extends TextInputProps {
   onSearch: (text: string) => void;
@@ -11,14 +12,16 @@ interface Props extends TextInputProps {
   autoFocus?: boolean;
   searchRef?: React.RefObject<TextInput>;
   onSubmitEditing?: TextInputProps['onSubmitEditing'];
+  isShowFilterBtn?: boolean;
+  onPressFilterBtn?: () => void;
 }
 
 const searchContainerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
+  backgroundColor: '#1A1A1A',
   borderRadius: 5,
   alignItems: 'center',
-  paddingRight: 16,
-  paddingLeft: 16,
+  // paddingRight: 16,
+  paddingLeft: 12,
   flexDirection: 'row',
   height: 44,
 };
@@ -27,8 +30,18 @@ const SearchIcon = MagnifyingGlass;
 const CancelIcon = XCircle;
 
 export const Search = (searchProps: Props) => {
-  const { onSearch, searchText, style, onClearSearchString, autoFocus, searchRef, onSubmitEditing, placeholder } =
-    searchProps;
+  const {
+    onSearch,
+    searchText,
+    style,
+    onClearSearchString,
+    autoFocus,
+    searchRef,
+    onSubmitEditing,
+    placeholder,
+    isShowFilterBtn,
+    onPressFilterBtn,
+  } = searchProps;
 
   return (
     <View style={[searchContainerStyle, style]}>
@@ -36,7 +49,7 @@ export const Search = (searchProps: Props) => {
       <TextInput
         ref={searchRef}
         style={{
-          marginHorizontal: 16,
+          marginHorizontal: 8,
           ...sharedStyles.mainText,
           lineHeight: 20,
           ...FontMedium,
@@ -56,6 +69,15 @@ export const Search = (searchProps: Props) => {
         <TouchableOpacity onPress={onClearSearchString}>
           <CancelIcon size={20} color={ColorMap.disabled} weight={'bold'} />
         </TouchableOpacity>
+      )}
+
+      {isShowFilterBtn && (
+        <Button
+          size={'xs'}
+          type={'ghost'}
+          icon={<Icon phosphorIcon={FadersHorizontal} size={'sm'} iconColor={'#A6A6A6'} />}
+          onPress={onPressFilterBtn}
+        />
       )}
     </View>
   );

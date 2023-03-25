@@ -18,13 +18,16 @@ interface Props<T> {
   items: any[];
   searchString: string;
   renderListEmptyComponent: (searchString?: string) => JSX.Element;
-  filterFunction?: (items: T[], searchString: string) => T[];
+  searchFunction?: (items: T[], searchString: string) => T[];
+  filterFunction?: (items: T[], filters: string[]) => T[];
+  selectedFilters?: string[];
   numberColumns?: number;
   flatListStyle?: StyleProp<any>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortFunction?: SortFunctionInterface<T>;
   loading?: boolean;
+  isShowListWrapper?: boolean;
 }
 
 const ItemSeparatorStyle: StyleProp<ViewStyle> = {
@@ -44,18 +47,23 @@ export function LazyFlatList<T>({
   items,
   renderListEmptyComponent,
   searchString,
+  searchFunction,
   filterFunction,
+  selectedFilters,
   numberColumns = 1,
   flatListStyle,
   refreshControl,
   renderItem,
   loading,
   sortFunction = defaultSortFunc,
+  isShowListWrapper,
 }: Props<T>) {
   const flatListRef = useRef<FlatList>(null);
   const filteredItems = useMemo(() => {
-    return filterFunction ? filterFunction(items, searchString) : items;
-  }, [filterFunction, items, searchString]);
+    let _filteredItems = searchFunction ? searchFunction(items, searchString) : items;
+
+    return filterFunction && selectedFilters ? filterFunction(_filteredItems, selectedFilters) : _filteredItems;
+  }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
   const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
   const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
 
@@ -92,21 +100,32 @@ export function LazyFlatList<T>({
   return (
     <>
       {lazyList.length ? (
-        <FlatList
-          ref={flatListRef}
-          style={{ ...ScrollViewStyle }}
-          keyboardShouldPersistTaps={'handled'}
-          data={lazyList}
-          onEndReached={onLoadMore}
-          renderItem={renderItem}
-          onEndReachedThreshold={0.3}
-          numColumns={numberColumns}
-          refreshControl={refreshControl}
-          columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
-          ListFooterComponent={renderLoadingAnimation}
-          ItemSeparatorComponent={renderSeparatorComponent}
-          contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
-        />
+        <View
+          style={
+            isShowListWrapper && {
+              backgroundColor: '#1A1A1A',
+              marginHorizontal: 16,
+              borderRadius: 8,
+              marginBottom: 94,
+              paddingVertical: 8,
+            }
+          }>
+          <FlatList
+            ref={flatListRef}
+            style={{ ...ScrollViewStyle }}
+            keyboardShouldPersistTaps={'handled'}
+            data={lazyList}
+            onEndReached={onLoadMore}
+            renderItem={renderItem}
+            onEndReachedThreshold={0.3}
+            numColumns={numberColumns}
+            refreshControl={refreshControl}
+            columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
+            ListFooterComponent={renderLoadingAnimation}
+            ItemSeparatorComponent={renderSeparatorComponent}
+            contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
+          />
+        </View>
       ) : (
         renderListEmptyComponent('searchString')
       )}

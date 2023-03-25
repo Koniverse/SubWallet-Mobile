@@ -82,11 +82,11 @@
 	<string>Access photos from library</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>fonts/SpaceGrotesk-Light.ttf</string>
-		<string>fonts/SpaceGrotesk-Medium.ttf</string>
-		<string>fonts/SpaceGrotesk-Regular.ttf</string>
-		<string>fonts/SpaceGrotesk-SemiBold.ttf</string>
-		<string>fonts/SpaceGrotesk-Bold.ttf</string>
+		<string>fonts/PlusJakartaSans-Light.ttf</string>
+		<string>fonts/PlusJakartaSans-Medium.ttf</string>
+		<string>fonts/PlusJakartaSans-Regular.ttf</string>
+		<string>fonts/PlusJakartaSans-SemiBold.ttf</string>
+		<string>fonts/PlusJakartaSans-Bold.ttf</string>
 		<string>fonts/FontAwesome.ttf</string>
 		<string>fonts/FontAwesome5_Brands.ttf</string>
 		<string>fonts/FontAwesome5_Regular.ttf</string>

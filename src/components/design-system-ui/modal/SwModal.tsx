@@ -5,6 +5,7 @@ import ModalBase from 'components/Modal/Base/ModalBase';
 import { FontSemiBold } from 'styles/sharedStyles';
 interface Props {
   children: React.ReactNode;
+  footer?: React.ReactNode;
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
   modalStyle?: StyleProp<any>;
@@ -21,7 +22,7 @@ const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> 
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     paddingTop: 8,
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     flex: isFullHeight ? 1 : undefined,
   };
 };
@@ -37,6 +38,7 @@ const subWalletModalSeparator: StyleProp<any> = {
 
 const SwModal = ({
   children,
+  footer,
   modalVisible,
   onChangeModalVisible,
   modalStyle,
@@ -61,7 +63,14 @@ const SwModal = ({
       hideModalContentWhileAnimating
       propagateSwipe>
       <View style={[getSubWalletModalContainerStyle(!!isFullHeight), modalStyle]}>
-        <View style={{ width: '100%', paddingBottom: 16, alignItems: 'center', flex: isFullHeight ? 1 : undefined }}>
+        <View
+          style={{
+            width: '100%',
+            paddingBottom: 16,
+            paddingHorizontal: 16,
+            alignItems: 'center',
+            flex: isFullHeight ? 1 : undefined,
+          }}>
           <View style={subWalletModalSeparator} />
           <View style={{ width: '100%', marginBottom: 22, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
@@ -69,6 +78,9 @@ const SwModal = ({
 
           {children}
         </View>
+
+        {footer}
+
         <SafeAreaView />
       </View>
     </ModalBase>

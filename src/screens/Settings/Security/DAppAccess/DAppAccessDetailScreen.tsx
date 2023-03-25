@@ -184,7 +184,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       title={origin}
       autoFocus={false}
       items={accountItems}
-      filterFunction={filterFunction}
+      searchFunction={filterFunction}
       renderListEmptyComponent={() => (
         <EmptyList icon={PushPinSlash} title={i18n.common.noAccountAvailableForThisDApp} />
       )}

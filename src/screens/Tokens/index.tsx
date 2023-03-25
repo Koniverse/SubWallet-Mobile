@@ -127,7 +127,7 @@ export const CustomTokenSetting = () => {
         title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
         items={customTokens}
         autoFocus={false}
-        filterFunction={filterFunction}
+        searchFunction={filterFunction}
         renderItem={renderItem}
         leftButtonDisabled={isBusy}
         renderListEmptyComponent={() => <EmptyList icon={Coins} title={i18n.errorMessage.noTokenAvailable} />}

@@ -74,7 +74,7 @@ export const AccountSelect = ({
         style={FlatListScreenPaddingTop}
         title={i18n.title.selectAccount}
         renderItem={renderItem}
-        filterFunction={filteredAccounts}
+        searchFunction={filteredAccounts}
         renderListEmptyComponent={renderListEmptyComponent}
       />
     </SubWalletFullSizeModal>

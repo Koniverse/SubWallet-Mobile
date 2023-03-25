@@ -7,11 +7,11 @@ export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
 export const STATUS_BAR_DARK_CONTENT = 'dark-content';
 
-export const FontLight = { fontFamily: 'SpaceGrotesk-Light' }; //300
-export const FontRegular = { fontFamily: 'SpaceGrotesk-Regular' }; //400
-export const FontMedium = { fontFamily: 'SpaceGrotesk-Medium' }; //500
-export const FontSemiBold = { fontFamily: 'SpaceGrotesk-SemiBold' }; //600
-export const FontBold = { fontFamily: 'SpaceGrotesk-Bold' }; //700
+export const FontLight = { fontFamily: 'PlusJakartaSans-Light' }; //300
+export const FontRegular = { fontFamily: 'PlusJakartaSans-Regular' }; //400
+export const FontMedium = { fontFamily: 'PlusJakartaSans-Medium' }; //500
+export const FontSemiBold = { fontFamily: 'PlusJakartaSans-SemiBold' }; //600
+export const FontBold = { fontFamily: 'PlusJakartaSans-Bold' }; //700
 export const FontSize0 = { fontSize: 12 };
 export const FontSize1 = { fontSize: 14 };
 export const FontSize2 = { fontSize: 15 };

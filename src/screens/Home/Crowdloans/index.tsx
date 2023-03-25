@@ -89,7 +89,7 @@ export const CrowdloansScreen = () => {
       autoFocus={false}
       items={items}
       showLeftBtn={false}
-      filterFunction={doFilterOptions}
+      searchFunction={doFilterOptions}
       rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
       afterListItem={
         <CrowdloanFilter

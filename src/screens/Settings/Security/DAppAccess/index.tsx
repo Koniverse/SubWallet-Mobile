@@ -86,7 +86,7 @@ export const DAppAccessScreen = () => {
       title={i18n.title.manageDAppAccess}
       autoFocus={false}
       items={dAppItems}
-      filterFunction={filterFunction}
+      searchFunction={filterFunction}
       renderListEmptyComponent={() => <EmptyList icon={PushPinSlash} title={i18n.common.noDAppAvailable} />}
       rightIconOption={rightIconOption}
       renderItem={renderItem}

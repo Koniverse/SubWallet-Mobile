@@ -45,6 +45,9 @@ const Icon: React.FC<SWIconProps> = ({
     if (size === 'md') {
       return 24;
     }
+    if (size === 'lg') {
+      return 28;
+    }
 
     return 32;
   }

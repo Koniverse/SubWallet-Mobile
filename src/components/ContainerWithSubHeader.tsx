@@ -19,7 +19,7 @@ export interface ContainerWithSubHeaderProps extends SubHeaderProps {
 const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgroundColor?: string) => {
   return {
     ...sharedStyles.container,
-    backgroundColor: backgroundColor || ColorMap.dark1,
+    backgroundColor: backgroundColor || '#0C0C0C',
     paddingTop: STATUS_BAR_HEIGHT + 13,
   };
 };

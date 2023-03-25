@@ -90,7 +90,7 @@ const DelegationSelectModal = ({
         autoFocus={true}
         items={delegations}
         renderListEmptyComponent={() => <EmptyList title={noItemMessage} icon={Aperture} />}
-        filterFunction={filterFunction}
+        searchFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onChangeModalVisible}
       />
