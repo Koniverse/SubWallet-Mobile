@@ -15714,11 +15714,6 @@ react-native-status-bar-height@^2.6.0:
   resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.6.0.tgz#b6afd25b6e3d533c43d0fcdcfd5cafd775592cea"
   integrity sha512-z3SGLF0mHT+OlJDq7B7h/jXPjWcdBT3V14Le5L2PjntjjWM3+EJzq2BcXDwV+v67KFNJic5pgA26cCmseYek6w==
 
-react-native-super-ellipse-mask@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/react-native-super-ellipse-mask/-/react-native-super-ellipse-mask-1.0.7.tgz#31e01b95ce1ff43904554c4a20875988eda9c212"
-  integrity sha512-Y8O91zhg8zH/uPReYAownPm4VuqM/BkaRfioAd0qr+8PcjBCdFhaJKC76X458Gw7Aj1TNl0/CaKYRQq51laiGQ==
-
 react-native-svg-transformer@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-svg-transformer/-/react-native-svg-transformer-1.0.0.tgz#7a707e5e95d20321b5f3dcfd0c3c8762ebd0221b"

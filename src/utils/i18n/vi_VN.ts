@@ -224,8 +224,8 @@ export const vi = {
     unsupportedToken: 'Unsupported token',
   },
   title: {
-    yourSecretPhrase: 'Your secret phrase',
-    verifySecretPhrase: 'Verify your secret phrase',
+    yourSeedPhrase: 'Your seed phrase',
+    verifyRecoveryPhrase: 'Verify recovery phrase',
     nameYourWallet: 'Name your wallet',
     sendFund: 'Send fund',
     sendAsset: 'Send asset',
@@ -592,7 +592,8 @@ export const vi = {
     invalidEVMPrivateKey: 'Invalid EVM private key',
     removeAccountWarning:
       'You are about to remove this account. This means that you will not able to access it via this application any more. If you wish to recover it, you will need to use the secret phrase.',
-    initSecretPhrase: 'You will lose your assets if you lose your secret phrase.',
+    initSecretPhrase:
+      'Keep your recovery phrase in a safe place, and never disclose it. Anyone with this phrase can take control of your assets.',
     exportAccountWarning: "You are exporting your account. Keep it safe and don't share it with anyone.",
     noAccountMessage: "There's no account at the moment",
     requireMessage: 'This field is required',

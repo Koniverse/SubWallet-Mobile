@@ -59,6 +59,10 @@ export function updateTab(payload: BrowserSliceTab): void {
   store.dispatch({ type: 'browser/updateTab', payload });
 }
 
+export function updateAccountsWaitingStatus(payload: boolean): void {
+  store.dispatch({ type: 'accounts/updateWaitingStatus', payload });
+}
+
 export function updateTabScreenshot(id: string, screenshot: string): void {
   store.dispatch({ type: 'browser/updateTabScreenshot', payload: { id, screenshot } });
 }

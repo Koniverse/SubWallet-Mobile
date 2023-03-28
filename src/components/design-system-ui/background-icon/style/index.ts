@@ -13,25 +13,25 @@ export default (theme: ThemeTypes) =>
   StyleSheet.create<BackgroundIconStyle>({
     noneIcon: {},
     defaultIcon: {
-      padding: 2,
+      padding: 4,
       borderTopLeftRadius: theme.borderRadius,
       borderTopRightRadius: theme.borderRadius,
       borderBottomRightRadius: theme.borderRadius,
       borderBottomLeftRadius: theme.borderRadius,
     },
     squareIcon: {
-      padding: 2,
+      padding: 4,
       borderRadius: 0,
     },
     circleIcon: {
-      padding: 2,
+      padding: 4,
       borderTopLeftRadius: 999,
       borderTopRightRadius: 999,
       borderBottomRightRadius: 999,
       borderBottomLeftRadius: 999,
     },
     squircleIcon: {
-      padding: 2,
+      padding: 4,
       borderRadius: 0,
     },
   });

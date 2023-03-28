@@ -3,19 +3,20 @@ import { GestureResponderEvent, StyleProp, TextStyle, View, ViewStyle } from 're
 import Text from '../components/Text';
 import { SpaceStyle } from 'styles/space';
 import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
-import { ArrowLeft, IconProps } from 'phosphor-react-native';
+import { ArrowLeft, CaretLeft, IconProps } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
 import { ColorMap } from 'styles/color';
-import { Button } from 'components/Button';
+import { Button, Icon } from 'components/design-system-ui';
+// import { Button } from 'components/Button';
 
 export interface SubHeaderProps {
   showRightBtn?: boolean;
   title?: string;
-  onPressBack: (event: GestureResponderEvent) => void;
+  onPressBack: (event?: GestureResponderEvent) => void;
   disabled?: boolean;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   rightIconColor?: string;
-  onPressRightIcon?: ((event: GestureResponderEvent) => void) | undefined;
+  onPressRightIcon?: ((event?: GestureResponderEvent) => void) | undefined;
   disableRightButton?: boolean;
   headerContent?: () => JSX.Element;
   backgroundColor?: string;
@@ -88,24 +89,43 @@ export const SubHeader = ({
       )}
 
       {!!showLeftBtn && (
-        <IconButton
-          icon={ArrowLeft}
-          color={disabled ? ColorMap.disabled : ColorMap.light}
-          disabled={disabled}
-          onPress={onPressBack}
-          style={{ position: 'absolute', left: 16, top: 0 }}
-        />
+        <View style={{ position: 'absolute', left: 8 }}>
+          <Button
+            disabled={disabled}
+            onPress={onPressBack}
+            size={'xs'}
+            type={'ghost'}
+            icon={
+              <Icon phosphorIcon={CaretLeft} size={'md'} iconColor={disabled ? ColorMap.disabled : ColorMap.light} />
+            }
+          />
+        </View>
+
+        // <IconButton
+        //   icon={ArrowLeft}
+        //   color={disabled ? ColorMap.disabled : ColorMap.light}
+        //   disabled={disabled}
+        //   onPress={onPressBack}
+        //   style={{ position: 'absolute', left: 8, top: 0 }}
+        // />
       )}
 
       {(!!rightIcon || !!rightButtonTitle) && (
-        <Button
-          icon={rightIcon}
-          onPress={onPressRightIcon}
-          style={{ position: 'absolute', right: 16, top: 0 }}
-          disabled={disableRightButton}
-          color={disableRightButton ? ColorMap.disabledTextColor : rightIconColor || ColorMap.light}
-          title={rightButtonTitle}
-        />
+        <View style={{ position: 'absolute', right: 8 }}>
+          <Button
+            icon={
+              <Icon
+                phosphorIcon={rightIcon}
+                size={'md'}
+                iconColor={disableRightButton ? ColorMap.disabledTextColor : rightIconColor || ColorMap.light}
+              />
+            }
+            type={'ghost'}
+            onPress={onPressRightIcon}
+            disabled={disableRightButton}>
+            {rightButtonTitle}
+          </Button>
+        </View>
       )}
     </View>
   );
