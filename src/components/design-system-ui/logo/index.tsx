@@ -5,12 +5,15 @@ import LogoStyles from './style';
 import Image from '../image';
 import ChainLogoMap, { TokenLogoMap } from './LogoMap';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import {BackgroundIcon, Icon} from 'components/design-system-ui';
+import {IconProps, WifiHigh} from 'phosphor-react-native';
 
 type IconShapeType = 'default' | 'circle' | 'squircle';
 
 export interface SWLogoProps {
   defaultLogoKey?: string;
   isShowSubLogo?: boolean;
+  isShowSubIcon?: boolean;
   network?: string;
   shape?: IconShapeType;
   size: number;
@@ -18,16 +21,19 @@ export interface SWLogoProps {
   subNetwork?: string;
   subToken?: string;
   token?: string;
+  subIcon?: React.ReactNode;
 }
 
 const Logo: React.FC<SWLogoProps> = ({
   defaultLogoKey,
   isShowSubLogo,
+  isShowSubIcon,
   network,
   shape = 'default',
   size,
   subLogoShape = 'circle',
   subNetwork,
+  subIcon,
   subToken,
   token,
 }) => {
@@ -56,6 +62,7 @@ const Logo: React.FC<SWLogoProps> = ({
         squircleSize={size}
         shape={shape}
       />
+      {isShowSubIcon && !isShowSubLogo && <View style={_style.subLogoContainer}>{subIcon}</View>}
       {isShowSubLogo && (
         <Image
           src={srcSubLogo || TokenLogoMap.subwallet}

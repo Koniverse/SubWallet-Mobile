@@ -6,14 +6,15 @@ import {
   StyleSheet,
   Text,
   TouchableHighlightProps,
+  TouchableHighlight,
   View,
   ViewStyle,
 } from 'react-native';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import { ButtonPropsType } from './PropsType';
 import Squircle from 'components/design-system-ui/squircle';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ButtonStyles from './style';
+import capitalize from '@subwallet/react-ui/es/_util/capitalize';
 
 export interface ButtonProps extends ButtonPropsType, TouchableHighlightProps {
   onPress?: (event?: GestureResponderEvent) => void;
@@ -49,6 +50,7 @@ const Button: React.FC<ButtonProps> = props => {
   const [pressIn, setPressIn] = useState<boolean>(false);
   const [touchIt, setTouchIt] = useState<boolean>(false);
   const isIconOnly = !children && children !== 0 && !!icon;
+  const buttonType = shape === 'squircle' ? 'ghost' : type;
 
   const _onPress = (event?: GestureResponderEvent) => {
     onPress && onPress(event);
@@ -76,29 +78,29 @@ const Button: React.FC<ButtonProps> = props => {
 
   const textStyle = [
     _style[`${size}RawText`],
-    _style[`${type}RawText`],
+    _style[`${buttonType}RawText`],
     (loading || !!icon) && _style.buttonRawText,
-    disabled && _style[`${type}DisabledRawText`],
+    disabled && _style[`${buttonType}DisabledRawText`],
   ];
 
   const wrapperStyle = [
     _style.wrapperStyle,
     _style[`${size}Raw`],
+    _style[`${buttonType}Raw`],
     _style[`${shape}ShapeRaw`],
-    _style[`${type}Raw`],
     _style[`${contentAlign}ContentAlign`],
     isIconOnly && _style[`${size}IconOnly`],
-    disabled && _style[`${type}DisabledRaw`],
+    disabled && _style[`${buttonType}DisabledRaw`],
     block && _style.blockButtonRaw,
-    pressIn && activeStyle && _style[`${type}Highlight`],
+    pressIn && activeStyle && _style[`${buttonType}Highlight`],
     activeStyle && touchIt && activeStyle,
     style,
   ];
 
-  const underlayColor = (StyleSheet.flatten(activeStyle ? activeStyle : _style[`${type}Highlight`]) as any)
+  const underlayColor = (StyleSheet.flatten(activeStyle ? activeStyle : _style[`${buttonType}Highlight`]) as any)
     .backgroundColor;
 
-  const indicatorColor = (StyleSheet.flatten(_style[`${type}RawText`]) as any).color;
+  const indicatorColor = (StyleSheet.flatten(_style[`${buttonType}RawText`]) as any).color;
 
   const iconNode = loading ? <ActivityIndicator animating color={indicatorColor} size="small" /> : icon ? icon : null;
 
@@ -125,8 +127,8 @@ const Button: React.FC<ButtonProps> = props => {
 
   if (shape === 'squircle' && isIconOnly) {
     return (
-      <Squircle size={size} backgroundColor={'transparent'}>
-        {buttonNode}
+      <Squircle size={size} backgroundColor={theme[`color${capitalize(type)}`]}>
+        <View style={{ position: 'absolute' }}>{buttonNode}</View>
       </Squircle>
     );
   }

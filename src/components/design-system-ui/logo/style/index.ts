@@ -7,5 +7,5 @@ export interface LogoStyle {
 
 export default (theme: ThemeTypes) =>
   StyleSheet.create<LogoStyle>({
-    subLogoContainer: { position: 'absolute', bottom: theme.margin, right: 0 },
+    subLogoContainer: { position: 'absolute', bottom: -1, right: -1 },
   });
