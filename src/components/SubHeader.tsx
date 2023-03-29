@@ -3,11 +3,9 @@ import { GestureResponderEvent, StyleProp, TextStyle, View, ViewStyle } from 're
 import Text from '../components/Text';
 import { SpaceStyle } from 'styles/space';
 import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
-import { ArrowLeft, CaretLeft, IconProps } from 'phosphor-react-native';
-import { IconButton } from 'components/IconButton';
+import { CaretLeft, IconProps } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Button, Icon } from 'components/design-system-ui';
-// import { Button } from 'components/Button';
 
 export interface SubHeaderProps {
   showRightBtn?: boolean;
@@ -100,14 +98,6 @@ export const SubHeader = ({
             }
           />
         </View>
-
-        // <IconButton
-        //   icon={ArrowLeft}
-        //   color={disabled ? ColorMap.disabled : ColorMap.light}
-        //   disabled={disabled}
-        //   onPress={onPressBack}
-        //   style={{ position: 'absolute', left: 8, top: 0 }}
-        // />
       )}
 
       {(!!rightIcon || !!rightButtonTitle) && (
@@ -120,10 +110,11 @@ export const SubHeader = ({
                 iconColor={disableRightButton ? ColorMap.disabledTextColor : rightIconColor || ColorMap.light}
               />
             }
+            size={'xs'}
             type={'ghost'}
             onPress={onPressRightIcon}
             disabled={disableRightButton}>
-            {rightButtonTitle}
+            {!!rightButtonTitle && rightButtonTitle}
           </Button>
         </View>
       )}

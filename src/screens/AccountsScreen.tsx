@@ -14,11 +14,12 @@ import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { updateCurrentAccountAddress } from '../messaging';
-import { updateAccountsWaitingStatus } from 'stores/updater';
+import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { Divider } from 'components/Divider';
 import AddAccountModal from 'components/Modal/AddAccountModal';
+import { findAccountByAddress } from 'utils/index';
+import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -30,7 +31,7 @@ const accountItemContainer: StyleProp<any> = {
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const renderListEmptyComponent = () => {
@@ -40,8 +41,21 @@ export const AccountsScreen = () => {
   const selectAccount = useCallback(
     (accAddress: string) => {
       if (currentAccountAddress !== accAddress) {
-        updateAccountsWaitingStatus(true);
-        updateCurrentAccountAddress(accAddress).catch(console.error);
+        const accountByAddress = findAccountByAddress(accounts, accAddress);
+
+        if (accountByAddress) {
+          const accountInfo = {
+            address: accAddress,
+          } as CurrentAccountInfo;
+
+          saveCurrentAccountAddress(accountInfo, () => {
+            triggerAccountsSubscription().catch(e => {
+              console.error('There is a problem when trigger Accounts Subscription', e);
+            });
+          }).catch(e => {
+            console.error('There is a problem when set Current Account', e);
+          });
+        }
       }
 
       if (navigation.getState()?.routes.length >= 3) {
@@ -51,7 +65,7 @@ export const AccountsScreen = () => {
         navigation.navigate('Home');
       }
     },
-    [navigation, currentAccountAddress],
+    [currentAccountAddress, navigation, accounts],
   );
 
   const renderItem = useCallback(

@@ -113,6 +113,15 @@ export const Security = () => {
         <ActionItem
           style={{ marginBottom: 8 }}
           color={ColorMap.light}
+          icon={Key}
+          title={'Change password'}
+          hasRightArrow
+          onPress={() => navigation.navigate('ChangePassword')}
+        />
+
+        <ActionItem
+          style={{ marginBottom: 8 }}
+          color={ColorMap.light}
           icon={GlobeHemisphereWest}
           title={i18n.common.manageDAppAccess}
           hasRightArrow
