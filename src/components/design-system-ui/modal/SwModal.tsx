@@ -3,7 +3,7 @@ import { SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { FontSemiBold } from 'styles/sharedStyles';
-interface Props {
+export interface Props {
   children: React.ReactNode;
   footer?: React.ReactNode;
   modalVisible: boolean;
