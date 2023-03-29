@@ -30,6 +30,8 @@ import Text from 'components/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountActionSelectModal from 'components/Modal/AccountActionSelectModal';
 import AccountActionButton from 'components/common/AccountActionButton';
+import {RootState} from "stores/index";
+import {useSelector} from "react-redux";
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -76,6 +78,7 @@ const firstScreenNotificationStyle: StyleProp<any> = {
 
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const hasMasterPassword = useSelector((state: RootState) => state.accountState.hasMasterPassword);
   const [importSelectModalVisible, setImportSelectModalVisible] = useState<boolean>(false);
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
@@ -151,7 +154,11 @@ export const FirstScreen = () => {
         label: 'Create with new Seed Phrase',
         onClickBtn: () => {
           setCreateAccountModalVisible(false);
-          navigation.navigate('CreateAccount', {});
+          if (hasMasterPassword) {
+            navigation.navigate('CreateAccount', {});
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: '' });
+          }
         },
       },
       {
@@ -160,11 +167,15 @@ export const FirstScreen = () => {
         label: 'Derive from another account',
         onClickBtn: () => {
           setCreateAccountModalVisible(false);
-          navigation.navigate('CreateAccount', {});
+          if (hasMasterPassword) {
+            navigation.navigate('CreateAccount', {});
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: '' });
+          }
         },
       },
     ];
-  }, [navigation]);
+  }, [hasMasterPassword, navigation]);
 
   const importAccountActions = useMemo(
     () => [
@@ -174,7 +185,11 @@ export const FirstScreen = () => {
         label: 'Import from Seed Phrase',
         onClickBtn: () => {
           setImportSelectModalVisible(false);
-          navigation.navigate('ImportSecretPhrase');
+          if (hasMasterPassword) {
+            navigation.navigate('ImportSecretPhrase');
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'ImportSecretPhrase' });
+          }
         },
       },
       {
@@ -183,7 +198,11 @@ export const FirstScreen = () => {
         label: 'Restore from Polkadot {.js}',
         onClickBtn: () => {
           setImportSelectModalVisible(false);
-          navigation.navigate('RestoreJson');
+          if (hasMasterPassword) {
+            navigation.navigate('RestoreJson');
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'RestoreJson' });
+          }
         },
       },
       {
@@ -192,7 +211,11 @@ export const FirstScreen = () => {
         label: 'Import from MetaMask',
         onClickBtn: () => {
           setImportSelectModalVisible(false);
-          navigation.navigate('ImportPrivateKey');
+          if (hasMasterPassword) {
+            navigation.navigate('ImportPrivateKey');
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'ImportPrivateKey' });
+          }
         },
       },
       {
@@ -200,19 +223,24 @@ export const FirstScreen = () => {
         icon: QrCode,
         label: 'Import by QR Code',
         onClickBtn: async () => {
-          const result = await requestCameraPermission();
+          if (hasMasterPassword) {
+            const result = await requestCameraPermission();
 
-          if (result === RESULTS.GRANTED) {
-            setScanType(SCAN_TYPE.SECRET);
+            if (result === RESULTS.GRANTED) {
+              setScanType(SCAN_TYPE.SECRET);
+              setImportSelectModalVisible(false);
+              setTimeout(() => {
+                onOpenModal();
+              }, HIDE_MODAL_DURATION);
+            }
+          } else {
             setImportSelectModalVisible(false);
-            setTimeout(() => {
-              onOpenModal();
-            }, HIDE_MODAL_DURATION);
+            navigation.navigate('CreatePassword', { pathName: 'ScanByQrCode' });
           }
         },
       },
     ],
-    [navigation, onOpenModal],
+    [hasMasterPassword, navigation, onOpenModal],
   );
 
   const attachAccountActions = useMemo(
@@ -230,14 +258,19 @@ export const FirstScreen = () => {
         icon: QrCode,
         label: 'Attach QR-Signer account',
         onClickBtn: async () => {
-          const result = await requestCameraPermission();
+          if (hasMasterPassword) {
+            const result = await requestCameraPermission();
 
-          if (result === RESULTS.GRANTED) {
-            setScanType(SCAN_TYPE.QR_SIGNER);
+            if (result === RESULTS.GRANTED) {
+              setScanType(SCAN_TYPE.QR_SIGNER);
+              setAttachAccountModalVisible(false);
+              setTimeout(() => {
+                onOpenModal();
+              }, HIDE_MODAL_DURATION);
+            }
+          } else {
             setAttachAccountModalVisible(false);
-            setTimeout(() => {
-              onOpenModal();
-            }, HIDE_MODAL_DURATION);
+            navigation.navigate('CreatePassword', { pathName: 'AttachQR-signer' });
           }
         },
       },
@@ -255,13 +288,17 @@ export const FirstScreen = () => {
         label: 'Attach read-only account',
         onClickBtn: () => {
           setAttachAccountModalVisible(false);
-          navigation.navigate('AttachAccount', {
-            screen: 'AttachReadOnly',
-          });
+          if (hasMasterPassword) {
+            navigation.navigate('AttachAccount', {
+              screen: 'AttachReadOnly',
+            });
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'AttachAccount', state: 'AttachReadOnly' });
+          }
         },
       },
     ],
-    [navigation, onOpenModal, show],
+    [hasMasterPassword, navigation, onOpenModal, show],
   );
 
   return (

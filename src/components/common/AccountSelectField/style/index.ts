@@ -13,7 +13,7 @@ export default (theme: ThemeTypes) =>
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: theme.colorBgSecondary,
+      backgroundColor: 'rgba(217, 217, 217, 0.1)',
       paddingVertical: theme.paddingXS,
       paddingHorizontal: theme.padding,
       borderRadius: 32,

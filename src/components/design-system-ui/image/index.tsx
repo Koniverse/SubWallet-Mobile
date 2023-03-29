@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { ImageRequireSource, StyleProp, View, ViewStyle } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
-import { ActivityIndicator } from '..';
+import { ActivityIndicator, Squircle } from '..';
 import ImageStyles from './style';
-// @ts-ignore
-import SuperEllipseMask from 'react-native-super-ellipse-mask';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type ImageShape = 'default' | 'square' | 'circle' | 'squircle';
@@ -44,7 +42,7 @@ const Image: React.FC<SWImageProps> = ({
   if (shape === 'squircle') {
     return (
       <View style={customStyle}>
-        <SuperEllipseMask radius={typeof squircleSize === 'number' ? squircleSize / 2.5 : 100}>
+        <Squircle customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <FastImage
             source={src}
             style={customImageStyle}
@@ -57,7 +55,7 @@ const Image: React.FC<SWImageProps> = ({
               <ActivityIndicator size={30} indicatorColor="#737373" />
             </View>
           )}
-        </SuperEllipseMask>
+        </Squircle>
       </View>
     );
   }

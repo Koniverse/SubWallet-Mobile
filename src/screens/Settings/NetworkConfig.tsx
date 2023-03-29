@@ -3,29 +3,30 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ListRenderItemInfo } from 'react-native';
-import { NETWORK_STATUS, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { NetworkConfigItem } from 'components/NetworkConfigItem';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
+import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
 
-const filterFunction = (items: NetworkJson[], searchString: string) => {
-  return items.filter(network => network.chain.toLowerCase().includes(searchString.toLowerCase()));
+const filterFunction = (items: _ChainInfo[], searchString: string) => {
+  return items.filter(network => network.name.toLowerCase().includes(searchString.toLowerCase()));
 };
 
-const processNetworkMap = (networkMap: Record<string, NetworkJson>) => {
+const processNetworkMap = (networkMap: Record<string, _ChainInfo>) => {
   return Object.values(networkMap).sort((a, b) => {
-    const aApiStatus = a.apiStatus;
-    const bApiStatus = b.apiStatus;
+    const aApiStatus = a.chainStatus;
+    const bApiStatus = b.chainStatus;
 
     if (
       aApiStatus === bApiStatus ||
-      (aApiStatus && aApiStatus !== NETWORK_STATUS.CONNECTED) ||
-      (bApiStatus && bApiStatus !== NETWORK_STATUS.CONNECTED)
+      (aApiStatus && aApiStatus !== _ChainStatus.ACTIVE) ||
+      (bApiStatus && bApiStatus !== _ChainStatus.ACTIVE)
     ) {
       return 0;
-    } else if (aApiStatus === NETWORK_STATUS.CONNECTED) {
+    } else if (aApiStatus === _ChainStatus.ACTIVE) {
       return -1;
     } else {
       return 1;
@@ -38,11 +39,11 @@ export const NetworkConfig = () => {
   const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const sortedNetworkConfigList = processNetworkMap(networkMap);
 
-  const renderItem = ({ item }: ListRenderItemInfo<NetworkJson>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<_ChainInfo>) => {
     return (
       <NetworkConfigItem
         item={item}
-        onPressConfigDetailButton={() => navigation.navigate('NetworkConfigDetail', { key: item.key })}
+        onPressConfigDetailButton={() => navigation.navigate('NetworkConfigDetail', { key: item.slug })}
       />
     );
   };

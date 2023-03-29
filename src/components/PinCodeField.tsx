@@ -21,6 +21,7 @@ const cellRoot: StyleProp<any> = {
   // backgroundColor: 'red',
   justifyContent: 'space-between',
   alignItems: 'center',
+  position: 'absolute',
 };
 
 function getCellText(): StyleProp<any> {
@@ -71,8 +72,11 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
     };
 
     return (
-      <Squircle size={'sm'} backgroundColor={getBorderColor()}>
-        <Squircle customSize={44} backgroundColor={'#1A1A1A'}>
+      <Squircle
+        customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        size={'sm'}
+        backgroundColor={getBorderColor()}>
+        <Squircle customStyle={{ position: 'absolute' }} customSize={44} backgroundColor={'#1A1A1A'}>
           <View
             // Make sure that you pass onLayout={getCellOnLayoutHandler(index)} prop to root component of "Cell"
             onLayout={getCellOnLayoutHandler(index)}

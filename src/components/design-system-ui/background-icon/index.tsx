@@ -3,9 +3,7 @@ import { IconProps } from 'phosphor-react-native';
 import { IconWeight } from 'phosphor-react-native/lib/typescript';
 import React from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
-// @ts-ignore
-import SuperEllipseMask from 'react-native-super-ellipse-mask';
-import { Icon } from '..';
+import { Icon, Squircle } from '..';
 import BackgroundIconStyles from './style';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ImageShape } from '@subwallet/react-ui/es/image';
@@ -49,8 +47,11 @@ const BackgroundIcon: React.FC<BackgroundIconProps> = ({
   if (shape === 'squircle') {
     return (
       <View style={style}>
-        <SuperEllipseMask radius={(getBackgroundIconSize() + 4) / 2.5}>
-          <View style={[{ backgroundColor }, _style[`${shape}Icon`]]}>
+        <Squircle
+          customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          backgroundColor={backgroundColor}
+          size={size}>
+          <View style={[{ backgroundColor, position: 'absolute' }, _style[`${shape}Icon`]]}>
             <Icon
               type={type}
               phosphorIcon={phosphorIcon}
@@ -60,7 +61,7 @@ const BackgroundIcon: React.FC<BackgroundIconProps> = ({
               weight={weight}
             />
           </View>
-        </SuperEllipseMask>
+        </Squircle>
       </View>
     );
   }

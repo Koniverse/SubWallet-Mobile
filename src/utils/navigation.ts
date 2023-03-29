@@ -1,11 +1,10 @@
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
-import { updateAccountsWaitingStatus } from 'stores/updater';
 import { CommonActions } from '@react-navigation/native';
 
 export function backToHome(goHome: () => void, isDispatchWaiting?: boolean) {
-  if (isDispatchWaiting) {
-    updateAccountsWaitingStatus(true);
-  }
+  // if (isDispatchWaiting) {
+  //   updateAccountsWaitingStatus(true);
+  // }
 
   goHome();
 }

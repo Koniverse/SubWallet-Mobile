@@ -40,12 +40,11 @@ export type BalanceInfo = {
 };
 
 export type CrowdloanItemType = {
-  networkKey: string;
+  slug: string;
   contribute: string | BigN;
-  contributeToUsd: string | BigN;
-  networkDisplayName: string;
-  groupDisplayName: string;
-  logo: string;
+  convertedContribute: string | BigN;
+  chainDisplayName: string;
+  relayParentDisplayName: string;
   symbol: string;
   paraState?: CrowdloanParaState;
   crowdloanUrl?: string;

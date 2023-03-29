@@ -1,17 +1,20 @@
 import React from 'react';
 import { StyleProp, Switch, View } from 'react-native';
 import Text from 'components/Text';
-import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import {Button, Icon, Logo} from "components/design-system-ui";
-import {PencilSimpleLine} from "phosphor-react-native";
+import { FontSemiBold } from 'styles/sharedStyles';
+import { BackgroundIcon, Button, Icon, Logo } from 'components/design-system-ui';
+import { PencilSimpleLine, WifiHigh, WifiSlash } from 'phosphor-react-native';
+import { _ChainStatus } from '@subwallet/chain-list/types';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
+
 interface Props {
   itemName: string;
   itemKey: string;
   isEnabled: boolean;
   onValueChange: () => void;
   isDisableSwitching?: boolean;
+  connectionStatus?: _ChainConnectionStatus;
 }
 
 const itemArea: StyleProp<any> = {
@@ -47,24 +50,31 @@ const itemTextStyle: StyleProp<any> = {
   flex: 1,
 };
 
-const logoWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.light,
-  borderRadius: 40,
-};
-
 export const NetworkAndTokenToggleItem = ({
   itemKey,
   itemName,
   isEnabled,
   onValueChange,
   isDisableSwitching,
+  connectionStatus,
 }: Props) => {
   return (
     <View style={{ marginBottom: 8 }}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <Logo size={36} network={itemKey} />
-          {/*<View style={logoWrapperStyle}>{getNetworkLogo(itemKey, 40)}</View>*/}
+          <Logo
+            size={36}
+            network={itemKey}
+            isShowSubIcon
+            subIcon={
+              <BackgroundIcon
+                phosphorIcon={connectionStatus === _ChainConnectionStatus.CONNECTED ? WifiHigh : WifiSlash}
+                size={'xs'}
+                backgroundColor={connectionStatus === _ChainConnectionStatus.CONNECTED ? '#2DA73F' : '#737373'}
+                shape={'circle'}
+              />
+            }
+          />
 
           <Text numberOfLines={1} style={itemTextStyle}>
             {itemName}

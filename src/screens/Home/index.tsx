@@ -15,6 +15,7 @@ import { CrowdloansScreen } from 'screens/Home/Crowdloans';
 import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
+import withPageWrapper from 'components/pageWrapper';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -85,7 +86,7 @@ const MainScreen = () => {
       />
       <Tab.Screen
         name={'Crowdloans'}
-        component={CrowdloansScreen}
+        component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore'])}
         options={{
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {

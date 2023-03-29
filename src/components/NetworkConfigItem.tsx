@@ -1,16 +1,17 @@
 import React, { Suspense } from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import { getNetworkLogo } from 'utils/index';
 import { IconButton } from 'components/IconButton';
 import { DotsThree } from 'phosphor-react-native';
-import { NETWORK_STATUS, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
+import { NETWORK_STATUS } from '@subwallet/extension-base/background/KoniTypes';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { SVGImages } from 'assets/index';
+import { Logo } from 'components/design-system-ui';
+import {_ChainInfo, _ChainStatus} from '@subwallet/chain-list/types';
 
 interface Props {
-  item: NetworkJson;
+  item: _ChainInfo;
   onPressConfigDetailButton: () => void;
 }
 
@@ -39,14 +40,14 @@ export const NetworkConfigItem = ({ item, onPressConfigDetailButton }: Props) =>
     <>
       <View style={NetworkConfigItemWrapper}>
         <View style={{ flexDirection: 'row', flex: 1 }}>
-          {getNetworkLogo(item.key, 40)}
+          <Logo size={36} network={item.slug} />
           <View style={{ paddingHorizontal: 16, flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 16 }}>
               <Text numberOfLines={1} style={textStyle}>
-                {item.chain}
+                {item.name}
               </Text>
-              {item.apiStatus ? (
-                item.apiStatus === NETWORK_STATUS.CONNECTED ? (
+              {item.chainStatus ? (
+                item.chainStatus === _ChainStatus.ACTIVE ? (
                   <Suspense fallback={<View style={{ width: 20, height: 20 }} />}>
                     <SVGImages.SignalIcon width={20} height={20} />
                   </Suspense>
@@ -58,11 +59,11 @@ export const NetworkConfigItem = ({ item, onPressConfigDetailButton }: Props) =>
               ) : null}
             </View>
 
-            <Text numberOfLines={1} style={subTextStyle}>
-              {item.currentProvider.startsWith('custom') && item.customProviders
-                ? item.customProviders[item.currentProvider]
-                : item.providers[item.currentProvider]}
-            </Text>
+            {/*<Text numberOfLines={1} style={subTextStyle}>*/}
+            {/*  {item.currentProvider.startsWith('custom') && item.customProviders*/}
+            {/*    ? item.customProviders[item.currentProvider]*/}
+            {/*    : item.providers[item.currentProvider]}*/}
+            {/*</Text>*/}
           </View>
         </View>
 

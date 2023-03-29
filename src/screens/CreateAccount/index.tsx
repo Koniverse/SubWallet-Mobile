@@ -20,9 +20,9 @@ const ViewStep = {
 
 function getHeaderTitle(viewStep: number) {
   if (viewStep === ViewStep.INIT_SP) {
-    return i18n.title.yourSecretPhrase;
+    return i18n.title.yourSeedPhrase;
   } else if (viewStep === ViewStep.VERIFY_SP) {
-    return i18n.title.verifySecretPhrase;
+    return i18n.title.verifyRecoveryPhrase;
   }
   return i18n.title.nameYourWallet;
 }
@@ -67,14 +67,12 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const onCreateAccount = (curName: string, password: string) => {
     if (curName && password && seed) {
       setIsBusy(true);
-      createAccountSuriV2(
-        curName,
-        password,
-        seed,
-        true,
-        params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes,
-        '',
-      )
+      createAccountSuriV2({
+        name: curName,
+        suri: seed,
+        types: params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes,
+        isAllowed: true,
+      })
         .then(() => {
           backToHome(goHome, true);
         })
