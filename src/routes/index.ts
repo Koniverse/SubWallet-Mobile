@@ -16,6 +16,17 @@ export type RootStackParamList = {
   LockScreen: undefined;
   LoadingScreen: undefined;
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
+  CreatePassword: {
+    pathName:
+      | 'CreateAccount'
+      | 'ImportSecretPhrase'
+      | 'RestoreJson'
+      | 'ImportPrivateKey'
+      | 'ScanByQrCode'
+      | 'AttachQR-signer'
+      | 'AttachAccount';
+    state?: string;
+  };
   CreateAccount: { keyTypes?: KeypairType };
   QrScanner: undefined;
   AccountsScreen: undefined;
@@ -63,6 +74,7 @@ export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
 export type RootNavigationProps = NavigationProps['navigation'];
 export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
+export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;

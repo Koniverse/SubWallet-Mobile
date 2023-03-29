@@ -60,9 +60,9 @@ export function LazyFlatList<T>({
 }: Props<T>) {
   const flatListRef = useRef<FlatList>(null);
   const filteredItems = useMemo(() => {
-    let _filteredItems = searchFunction ? searchFunction(items, searchString) : items;
+    let searchItem = searchFunction ? searchFunction(items, searchString) : items;
 
-    return filterFunction && selectedFilters ? filterFunction(_filteredItems, selectedFilters) : _filteredItems;
+    return filterFunction && selectedFilters ? filterFunction(searchItem, selectedFilters) : searchItem;
   }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
   const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
   const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);

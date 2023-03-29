@@ -5,19 +5,21 @@ import { SeedWord } from 'components/SeedWord';
 import {
   ContainerHorizontalPadding,
   FontMedium,
+  FontSemiBold,
   MarginBottomForSubmitButton,
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
 import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
-import { LeftIconButton } from 'components/LeftIconButton';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { SeedWordDataType } from 'screens/CreateAccount/types';
+import { Button, Icon } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 interface Props {
   onPressSubmit: (event: GestureResponderEvent) => void;
   seed: string;
@@ -54,7 +56,7 @@ const phraseBlockStyle: StyleProp<any> = {
 };
 
 const seedWordStyle = {
-  margin: 2,
+  margin: 4,
 };
 
 const copyButtonWrapperStyle: StyleProp<any> = {
@@ -68,6 +70,7 @@ const renderSeedWord = (item: SeedWordDataType) => {
 
 export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
   const toast = useToast();
+  const theme = useSubWalletTheme().swThemes;
 
   const seedItems = useMemo<SeedWordDataType[]>(() => {
     return seed.split(' ').map((word, index) => {
@@ -94,11 +97,22 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
           </View>
           <View style={phraseBlockStyle}>{seedItems.map(renderSeedWord)}</View>
           <View style={copyButtonWrapperStyle}>
-            <LeftIconButton
-              icon={CopySimple}
-              title={i18n.common.copyToClipboard}
-              onPress={() => copyToClipboard(seed)}
-            />
+            <Button
+              type={'ghost'}
+              size={'xs'}
+              icon={<Icon phosphorIcon={CopySimple} size={'lg'} iconColor={theme.colorTextLight4} />}
+              onPress={() => copyToClipboard(seed)}>
+              <Text
+                style={{
+                  fontSize: theme.fontSize,
+                  lineHeight: theme.lineHeight * theme.fontSize,
+                  color: theme.colorTextLight4,
+                  ...FontSemiBold,
+                  paddingLeft: 8,
+                }}>
+                Copy to clipboard
+              </Text>
+            </Button>
           </View>
         </ScrollView>
         <Warning

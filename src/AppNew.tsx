@@ -63,6 +63,7 @@ import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
+import CreateMasterPassword from "screens/MasterPassword/CreateMasterPassword";
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -228,6 +229,7 @@ export const AppNew = () => {
                               <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                             </Stack.Group>
                             <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
+                              <Stack.Screen name="CreatePassword" component={CreateMasterPassword} />
                               <Stack.Screen name="CreateAccount" component={CreateAccount} />
                               <Stack.Screen name="EditAccount" component={EditAccount} />
                               <Stack.Screen name="RestoreJson" component={RestoreJson} />

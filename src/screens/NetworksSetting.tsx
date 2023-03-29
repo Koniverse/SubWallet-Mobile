@@ -45,33 +45,35 @@ const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
   const filteredChainList: ChainInfoWithState[] = [];
 
   items.forEach(item => {
-    let isValidationPassed = filters.length <= 0;
+    let isValidationPassed = true;
 
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.CUSTOM:
-          isValidationPassed = _isCustomChain(item.slug);
+          isValidationPassed = isValidationPassed && _isCustomChain(item.slug);
           break;
         case FilterValue.ENABLED:
-          isValidationPassed = item.active;
+          isValidationPassed = isValidationPassed && item.active;
           break;
         case FilterValue.DISABLED:
-          isValidationPassed = !item.active;
+          isValidationPassed = isValidationPassed && !item.active;
           break;
         case FilterValue.SUBSTRATE:
-          isValidationPassed = _isSubstrateChain(item);
+          isValidationPassed = isValidationPassed && _isSubstrateChain(item);
           break;
         case FilterValue.EVM:
-          isValidationPassed = _isChainEvmCompatible(item);
+          // console.log('isValidationPassed1', isValidationPassed);
+          isValidationPassed = isValidationPassed && _isChainEvmCompatible(item);
           break;
         default:
           isValidationPassed = false;
           break;
       }
 
-      if (isValidationPassed) {
-        break; // only need to satisfy 1 filter (OR)
-      }
+      // console.log('isValidationPassed', isValidationPassed);
+      // if (isValidationPassed) {
+      //   break; // only need to satisfy 1 filter (OR)
+      // }
     }
 
     if (isValidationPassed) {
@@ -161,6 +163,7 @@ export const NetworksSetting = ({}: Props) => {
         key={`${item.slug}-${item.name}`}
         itemName={item.name}
         itemKey={item.slug}
+        connectionStatus={item.connectionStatus}
         // @ts-ignore
         isEnabled={
           Object.keys(pendingChainMap).includes(item.slug) ? pendingChainMap[item.slug] : chainInfoMap[item.slug].active

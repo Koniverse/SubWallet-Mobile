@@ -23,6 +23,10 @@ export function useFilterModal() {
     }));
   }, []);
 
+  const onCancelFilter = () => {
+    setSelectedFilters([]);
+  };
+
   const onApplyFilter = useCallback(() => {
     // inactiveModal(modalId); close modal
     setSelectedFilters(Object.keys(filterSelectionMap).filter(o => filterSelectionMap[o]));

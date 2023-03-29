@@ -10,18 +10,16 @@ export default function useChainInfoWithState(): Record<string, ChainInfoWithSta
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const chainStateMap = useSelector((state: RootState) => state.chainStore.chainStateMap);
 
-  const chainInfoWithStateMap: Record<string, ChainInfoWithState> = useMemo(() => {
-    return Object.values(chainInfoMap).reduce(
-      (acc, cur) => Object.assign(acc, { [cur.slug]: { ...cur, ...(chainStateMap[cur.slug] || {}) } }),
-      {},
-    );
-  }, [chainInfoMap, chainStateMap]);
-
   // const chainInfoList: ChainInfoWithState[] = useMemo(() => {
   //   return Object.values(chainInfoMap).map(item => {
   //     return { ...item, ...(chainStateMap[item.slug] || {}) };
   //   });
   // }, [chainInfoMap, chainStateMap]);
 
-  return chainInfoWithStateMap;
+  return useMemo(() => {
+    return Object.values(chainInfoMap).reduce(
+      (acc, cur) => Object.assign(acc, { [cur.slug]: { ...cur, ...(chainStateMap[cur.slug] || {}) } }),
+      {},
+    );
+  }, [chainInfoMap, chainStateMap]);
 }

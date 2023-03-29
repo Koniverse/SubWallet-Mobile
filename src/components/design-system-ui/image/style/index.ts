@@ -23,6 +23,7 @@ export default (theme: ThemeTypes) =>
     },
     squareImage: {
       borderRadius: 0,
+      position: 'absolute',
     },
     circleImage: {
       borderTopLeftRadius: 999,

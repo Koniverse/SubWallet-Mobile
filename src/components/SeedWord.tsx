@@ -20,7 +20,7 @@ function getWrapperStyle(seedWordProps: SeedWordProps): StyleProp<any> {
   const styleMap: StyleProp<any> = {
     position: 'relative',
     height: 40,
-    borderRadius: 24,
+    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
