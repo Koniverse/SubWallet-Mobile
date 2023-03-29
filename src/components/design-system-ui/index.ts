@@ -10,6 +10,7 @@ export { default as Button } from './button';
 export { default as BackgroundIcon } from './background-icon';
 export { default as SelectItem } from './select-item';
 export { default as Typography } from './typography';
+export { default as Modal } from './modal';
 export { default as SwModal } from './modal/SwModal';
 export { default as SwFullSizeModal } from './modal/SwFullSizeModal';
 export { default as WarningText } from './warning-text';
