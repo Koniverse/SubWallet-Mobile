@@ -118,8 +118,8 @@ export const CrowdloanItem = ({ item }: Props) => {
       <View style={crowdloanItemMainArea}>
         <View style={crowdloanItemPart1Style}>
           <View style={{ position: 'relative' }}>
-            {getNetworkLogo(item.networkKey, 40)}
-            {getNetworkLogo(getGroupKey(item.groupDisplayName), 16, 'default', {
+            {getNetworkLogo(item.slug, 40)}
+            {getNetworkLogo(getGroupKey(item.relayParentDisplayName), 16, 'default', {
               position: 'absolute',
               bottom: 10,
               right: 0,
@@ -129,7 +129,7 @@ export const CrowdloanItem = ({ item }: Props) => {
           <View style={crowdloanItemMetaWrapperStyle}>
             <View style={crowdloanItemTopAreaStyle}>
               <Text style={[textStyle, { maxWidth: 120 }]} numberOfLines={1}>
-                {item.networkDisplayName}
+                {item.chainDisplayName}
               </Text>
 
               {!!item.paraState && (
@@ -138,12 +138,17 @@ export const CrowdloanItem = ({ item }: Props) => {
                 </View>
               )}
             </View>
-            <Text style={subTextStyle}>{item.groupDisplayName}</Text>
+            <Text style={subTextStyle}>{item.relayParentDisplayName}</Text>
           </View>
         </View>
         <View style={crowdloanItemPart2Style}>
           <BalanceVal value={item.contribute} balanceValTextStyle={textStyle} symbol={item.symbol} />
-          <BalanceVal startWithSymbol symbol={'$'} value={item.contributeToUsd} balanceValTextStyle={subTextStyle} />
+          <BalanceVal
+            startWithSymbol
+            symbol={'$'}
+            value={item.convertedContribute}
+            balanceValTextStyle={subTextStyle}
+          />
         </View>
       </View>
       <View style={crowdloanItemSeparator} />

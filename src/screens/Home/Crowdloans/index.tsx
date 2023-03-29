@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem, getGroupKey } from 'screens/Home/Crowdloans/CrowdloanItem';
-import { CrowdloanItemType } from 'types/index';
+import { CrowdloanItemType } from '@subwallet/extension-koni-ui/src/types/crowdloan';
 import { FunnelSimple, Rocket } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { CrowdloanFilter } from 'screens/Home/Crowdloans/CrowdloanFilter';
@@ -29,13 +29,13 @@ function getListByFilterOpt(items: CrowdloanItemType[], filterOpts: FilterOptsTy
   let result: CrowdloanItemType[];
   if (filterOpts.paraChain !== 'all' && filterOpts.crowdloanStatus !== 'all') {
     result = items.filter(
-      ({ groupDisplayName, paraState }) =>
-        getGroupKey(groupDisplayName) === filterOpts.paraChain && paraState === filterOpts.crowdloanStatus,
+      ({ relayParentDisplayName, paraState }) =>
+        getGroupKey(relayParentDisplayName) === filterOpts.paraChain && paraState === filterOpts.crowdloanStatus,
     );
   } else if (filterOpts.paraChain === 'all' && filterOpts.crowdloanStatus !== 'all') {
     result = items.filter(({ paraState }) => paraState === filterOpts.crowdloanStatus);
   } else if (filterOpts.paraChain !== 'all' && filterOpts.crowdloanStatus === 'all') {
-    result = items.filter(({ groupDisplayName }) => getGroupKey(groupDisplayName) === filterOpts.paraChain);
+    result = items.filter(({ relayParentDisplayName }) => getGroupKey(relayParentDisplayName) === filterOpts.paraChain);
   } else {
     result = items;
   }
@@ -64,9 +64,7 @@ export const CrowdloansScreen = () => {
       const lowerCaseSearchString = searchString.toLowerCase();
       const result = getListByFilterOpt(itemList, filterOpts);
       if (searchString) {
-        return result.filter(({ networkDisplayName }) =>
-          networkDisplayName.toLowerCase().includes(lowerCaseSearchString),
-        );
+        return result.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchString));
       } else {
         return result;
       }
