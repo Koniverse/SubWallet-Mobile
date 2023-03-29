@@ -17,14 +17,7 @@ export const BalanceBlock = ({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Number size={14} decimal={0} value={totalChangeValue} prefix={isPriceDecrease ? '- $' : '+ $'} />
         <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
-          <Number
-            size={10}
-            value={totalChangePercent}
-            decimal={0}
-            prefix={isPriceDecrease ? '-' : '+'}
-            suffix={'%'}
-            weight={'700'}
-          />
+          <Number size={10} value={totalChangePercent} decimal={0} prefix={isPriceDecrease ? '-' : '+'} suffix={'%'} />
         </Tag>
       </View>
     </>

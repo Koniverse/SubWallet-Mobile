@@ -1,13 +1,15 @@
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
-import { sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { Number } from 'components/design-system-ui';
-import BigN from 'bignumber.js';
+import { SwNumberProps } from 'components/design-system-ui/number';
+// import { useSelector } from 'react-redux';
+// import { RootState } from 'stores/index';
 
 type Props = {
-  value: BigN;
+  value: SwNumberProps['value'];
   symbol?: string;
   startWithSymbol?: boolean;
   subFloatNumber?: boolean;
@@ -34,8 +36,8 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           decimal={0}
           prefix={startWithSymbol ? (symbol ? symbol : '$') : undefined}
           suffix={!startWithSymbol ? (symbol ? symbol : '$') : undefined}
-          weight={'600'}
           size={38}
+          textStyle={{ ...FontSemiBold, lineHeight: 46 }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}
         />

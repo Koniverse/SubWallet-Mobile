@@ -80,20 +80,6 @@ export interface TokenItemType {
   specialOption?: object;
 }
 
-export interface TokenBalanceItemType {
-  id: string;
-  logoKey: string;
-  networkKey: string;
-  networkDisplayName?: string;
-  balanceValue: BigN;
-  convertedBalanceValue: BigN;
-  symbol: string;
-  displayedSymbol: string;
-  isReady: boolean;
-  isTestnet: boolean;
-  priceValue: number;
-}
-
 export interface UseViewStepType {
   currentView: string;
   views: string[];
