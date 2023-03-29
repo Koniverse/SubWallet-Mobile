@@ -6,12 +6,11 @@ import React, { useMemo } from 'react';
 import { TextStyle, View, ViewStyle } from 'react-native';
 import { Typography } from '..';
 
-type FontWeight = 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | undefined;
 export interface SwNumberProps {
   value: string | number | BigNumber;
   decimal: number;
   size?: number;
-  weight?: FontWeight;
+  textStyle?: TextStyle;
   subFloatNumber?: boolean;
   prefix?: string;
   suffix?: string;
@@ -77,7 +76,7 @@ const Number: React.FC<SwNumberProps> = props => {
     decimalOpacity = 1,
     unitColor = '#fff',
     unitOpacity = 1,
-    weight = '500',
+    textStyle = {},
     style,
   } = props;
 
@@ -142,7 +141,7 @@ const Number: React.FC<SwNumberProps> = props => {
         <Typography.Text
           style={{
             ...unitStyle,
-            fontWeight: weight,
+            ...textStyle,
             fontSize: integerFontSize,
           }}>
           {prefix}
@@ -151,7 +150,7 @@ const Number: React.FC<SwNumberProps> = props => {
       <Typography.Text
         style={{
           ...intStyle,
-          fontWeight: weight,
+          ...textStyle,
           fontSize: integerFontSize,
         }}>
         {_int}
@@ -160,7 +159,7 @@ const Number: React.FC<SwNumberProps> = props => {
         <Typography.Text
           style={{
             ...decimalStyle,
-            fontWeight: weight,
+            ...textStyle,
             fontSize: decimalFontSize,
           }}>
           {decimalSeparator}
@@ -171,7 +170,7 @@ const Number: React.FC<SwNumberProps> = props => {
         <Typography.Text
           style={{
             ...unitStyle,
-            fontWeight: weight,
+            ...textStyle,
             fontSize: decimalFontSize,
           }}>
           &nbsp;{suffix}

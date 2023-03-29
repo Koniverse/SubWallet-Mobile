@@ -1,17 +1,16 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { List, QrCode } from 'phosphor-react-native';
 import React, { useCallback } from 'react';
 import { StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
-import { RootStackParamList } from 'routes/index';
 import { SpaceStyle } from 'styles/space';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { Button, Icon } from 'components/design-system-ui';
 import AccountSelectField from 'components/common/AccountSelectField';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-export interface HeaderProps {
-  navigation: NativeStackNavigationProp<RootStackParamList>;
-}
+export interface HeaderProps {}
 
 const headerWrapper: StyleProp<any> = {
   flexDirection: 'row',
@@ -22,7 +21,9 @@ const headerWrapper: StyleProp<any> = {
   zIndex: 10,
 };
 
-export const Header = ({ navigation }: HeaderProps) => {
+export const Header = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
 

@@ -1,19 +1,20 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 
-export interface TokenGroupBalanceItemStyles {
+export interface TokenBalanceItemStyles {
   chainBalanceMainArea: ViewStyle;
   chainBalancePart1: ViewStyle;
-  textStyle: TextStyle;
+  symbolStyle: TextStyle;
+  chainNameStyle: TextStyle;
   chainBalanceMetaWrapper: ViewStyle;
   chainBalancePart2: ViewStyle;
   chainBalancePart2Wrapper: ViewStyle;
 }
 
 export default (theme: ThemeTypes) =>
-  StyleSheet.create<TokenGroupBalanceItemStyles>({
+  StyleSheet.create<TokenBalanceItemStyles>({
     chainBalanceMainArea: {
       flexDirection: 'row',
       width: '100%',
@@ -25,18 +26,23 @@ export default (theme: ThemeTypes) =>
       justifyContent: 'center',
       paddingLeft: theme.paddingSM,
     },
-
     chainBalanceMetaWrapper: {
       flex: 1,
       paddingLeft: theme.paddingXS,
       overflow: 'hidden',
     },
-
-    textStyle: {
+    symbolStyle: {
       fontSize: theme.fontSizeLG,
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       ...FontSemiBold,
       color: ColorMap.light,
+      overflow: 'hidden',
+    },
+    chainNameStyle: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      ...FontMedium,
+      color: theme.colorTextLight4,
       overflow: 'hidden',
     },
     chainBalancePart2: {

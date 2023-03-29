@@ -4,7 +4,7 @@ export const ColorMap = {
   transparent: 'transparent',
   light: '#fff',
   dark: '#000',
-  dark1: '#161616',
+  dark1: '#0c0c0c',
   dark2: '#222',
   primary: '#42C59A',
   secondary: '#004BFF',

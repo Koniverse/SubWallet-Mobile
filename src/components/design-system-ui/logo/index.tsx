@@ -5,8 +5,6 @@ import LogoStyles from './style';
 import Image from '../image';
 import ChainLogoMap, { TokenLogoMap } from './LogoMap';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import {BackgroundIcon, Icon} from 'components/design-system-ui';
-import {IconProps, WifiHigh} from 'phosphor-react-native';
 
 type IconShapeType = 'default' | 'circle' | 'squircle';
 

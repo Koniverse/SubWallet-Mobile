@@ -12,7 +12,7 @@ export interface TextProps {
   children?: React.ReactNode;
 }
 
-const Text: React.FC<TextProps> = ({ ellipsis, monospace, size, style, children, ...restProps }) => {
+const Text: React.FC<TextProps> = ({ ellipsis, monospace, size = 'default', style, children, ...restProps }) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = TypographyStyles(theme);
   const allStyle = [monospace && _style?.monospace, size && _style[`${size}Text`], style];
