@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { useNavigation } from '@react-navigation/native';
@@ -6,7 +6,7 @@ import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
-import { createAccountSuriV2, keyringUnlock, validateSeedV2 } from '../messaging';
+import { createAccountSuriV2, validateSeedV2 } from '../messaging';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
@@ -20,8 +20,6 @@ import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { Button, Icon } from 'components/design-system-ui';
 import { FileArrowDown } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -42,12 +40,6 @@ const titleStyle: StyleProp<any> = {
   paddingBottom: 26,
 };
 
-export interface AccountInfo {
-  address: string;
-  genesis?: string;
-  suri: string;
-}
-
 const ViewStep = {
   ENTER_SEED: 1,
   ENTER_PASSWORD: 2,
@@ -58,9 +50,6 @@ const secretPhraseFormConfig: FormControlConfig = {
     name: '',
     value: '',
     require: true,
-    // transformFunc: value => {
-    //   return value.trim();
-    // },
   },
 };
 
@@ -69,48 +58,27 @@ export const ImportSecretPhrase = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const [seedPhrase, setSeedPhrase] = useState('');
+  const [validating, setValidating] = useState(false);
+  const [changed, setChanged] = useState(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
   const [isBusy, setBusy] = useState(false);
   const accountName = useGetDefaultAccountName();
   useHandlerHardwareBackPress(isBusy);
-  const hasMasterPassword = useSelector((state: RootState) => state.accountState.hasMasterPassword);
-  console.log('hasMasterPassword', hasMasterPassword);
-
-  // TODO: remove later
-  useEffect(() => {
-    keyringUnlock({
-      password: '123123',
-    }).catch((e: Error) => console.log(e));
-  }, []);
-
-  useEffect(() => {
-    if (formState.data.seed) {
-      setBusy(true);
-      console.log('formState.data.seed', formState.data.seed);
-      validateSeedV2(seedPhrase, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
-        .then(() => setSeedPhrase(formState.data.seed))
-        .catch(() => {
-          onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
-        })
-        .finally(() => setBusy(false));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyTypes]);
+  const timeOutRef = useRef<NodeJS.Timer>();
 
   const _onImportSeed = (): void => {
     setBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: formState.data.seed,
+      suri: seedPhrase,
       isAllowed: true,
       types: keyTypes,
     })
       .then(() => {
         backToHome(goHome);
       })
-      .catch((e: Error) => {
-        console.log('e', e);
+      .catch(() => {
         setBusy(false);
       });
   };
@@ -118,6 +86,45 @@ export const ImportSecretPhrase = () => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
     onSubmitForm: _onImportSeed,
   });
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+
+    if (amount) {
+      if (seedPhrase) {
+        setValidating(true);
+        onUpdateErrors('seed')([]);
+
+        timeOutRef.current = setTimeout(() => {
+          validateSeedV2(seedPhrase, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
+            .then(() => {
+              if (amount) {
+                onUpdateErrors('seed')([]);
+              }
+            })
+            .catch(() => {
+              if (amount) {
+                onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
+              }
+            })
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 300);
+      }
+    }
+
+    return () => {
+      amount = false;
+    };
+  }, [seedPhrase, changed, onUpdateErrors]);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => {
       focus('seed')();
@@ -150,9 +157,10 @@ export const ImportSecretPhrase = () => {
             style={{ marginBottom: 16, paddingTop: 16 }}
             value={formState.data.seed}
             onChangeText={(text: string) => {
+              setChanged(true);
               onChangeValue('seed')(text);
+              setSeedPhrase(text);
             }}
-            onBlur={() => setSeedPhrase(formState.data.seed)}
             onSubmitEditing={onSubmitField('seed')}
             errorMessages={formState.errors.seed}
           />
@@ -169,8 +177,8 @@ export const ImportSecretPhrase = () => {
                 iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight1}
               />
             }
-            disabled={disabled}
-            loading={isBusy}
+            disabled={disabled || validating}
+            loading={validating}
             onPress={_onImportSeed}>
             {'Import account'}
           </Button>
