@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { Keyboard, ScrollView, StyleProp, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { SubmitButton } from 'components/SubmitButton';
-import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging';
 import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import { backToHome } from 'utils/navigation';
-import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
-import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
+import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { ColorMap } from 'styles/color';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
+import { Button, Icon } from 'components/design-system-ui';
+import { FileArrowDown } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -24,31 +25,36 @@ const footerAreaStyle: StyleProp<any> = {
 };
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
-  return isValidated.privateKey && isValidated.accountName && isValidated.password && isValidated.repeatPassword;
+  return isValidated.privateKey;
 }
 
 export const ImportPrivateKey = () => {
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const [isBusy, setIsBusy] = useState(false);
   useHandlerHardwareBackPress(isBusy);
+  const accountName = useGetDefaultAccountName();
+  const timeOutRef = useRef<NodeJS.Timer>();
+  const [privateKey, setPrivateKey] = useState('');
+  const [validating, setValidating] = useState(false);
+  const [autoCorrect, setAutoCorrect] = useState('');
 
-  const _onImport = (formState: FormState) => {
-    const privateKey = formState.data.privateKey;
-    const accountName = formState.data.accountName;
-    const password = formState.data.password;
-    if (checkValidateForm(formState.isValidated)) {
-      setIsBusy(true);
-      createAccountSuriV2(accountName, password, privateKey.trim(), false, [EVM_ACCOUNT_TYPE])
-        .then(() => {
-          backToHome(goHome, true);
-        })
-        .catch(() => {
-          setIsBusy(false);
-        });
-    } else {
-      Keyboard.dismiss();
-    }
+  const _onImport = () => {
+    setIsBusy(true);
+    createAccountSuriV2({
+      name: accountName,
+      suri: privateKey.trim(),
+      isAllowed: true,
+      types: [EVM_ACCOUNT_TYPE],
+    })
+      .then(() => {
+        backToHome(goHome, true);
+      })
+      .catch((e: Error) => {
+        setIsBusy(false);
+        console.log(e);
+      });
   };
 
   const privateKeyFormConfig: FormControlConfig = {
@@ -60,29 +66,48 @@ export const ImportPrivateKey = () => {
         return value.trim();
       },
     },
-    accountName: {
-      name: i18n.common.walletName,
-      value: '',
-      require: true,
-    },
-    password: {
-      name: i18n.common.walletPassword,
-      value: '',
-      validateFunc: validatePassword,
-      require: true,
-    },
-    repeatPassword: {
-      name: i18n.common.repeatWalletPassword,
-      value: '',
-      validateFunc: (value: string, formValue: Record<string, string>) => {
-        return validatePasswordMatched(value, formValue.password);
-      },
-      require: true,
-    },
   };
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(privateKeyFormConfig, {
     onSubmitForm: _onImport,
   });
+
+  useEffect(() => {
+    let amount = true;
+
+    if (timeOutRef.current) {
+      clearTimeout(timeOutRef.current);
+    }
+    if (amount) {
+      if (privateKey) {
+        setValidating(true);
+        onUpdateErrors('privateKey')([]);
+
+        timeOutRef.current = setTimeout(() => {
+          validateMetamaskPrivateKeyV2(privateKey, [EVM_ACCOUNT_TYPE])
+            .then(({ addressMap, autoAddPrefix }) => {
+              if (amount) {
+                if (autoAddPrefix) {
+                  setAutoCorrect(`0x${privateKey}`);
+                }
+
+                onUpdateErrors('privateKey')([]);
+              }
+            })
+            .catch((e: Error) => {
+              if (amount) {
+                onUpdateErrors('privateKey')([e.message]);
+              }
+            })
+            .finally(() => {
+              if (amount) {
+                setValidating(false);
+              }
+            });
+        }, 300);
+      }
+    }
+  }, [onUpdateErrors, privateKey]);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => {
       focus('privateKey')();
@@ -90,24 +115,6 @@ export const ImportPrivateKey = () => {
 
     return unsubscribe;
   }, [focus, navigation]);
-  const validatePrivateKey = (currentPrivateKey: string) => {
-    if (!currentPrivateKey) {
-      return;
-    }
-
-    validateMetamaskPrivateKeyV2(currentPrivateKey.trim(), [EVM_ACCOUNT_TYPE])
-      .then(({ autoAddPrefix }) => {
-        let suri = `${currentPrivateKey || ''}`;
-        if (autoAddPrefix) {
-          suri = `0x${suri}`;
-        }
-        onChangeValue('privateKey')(suri);
-        onUpdateErrors('privateKey')();
-      })
-      .catch(() => {
-        onUpdateErrors('privateKey')([i18n.warningMessage.invalidEVMPrivateKey]);
-      });
-  };
 
   return (
     <SubScreenContainer title={i18n.title.importByPrivateKey} navigation={navigation} disabled={isBusy}>
@@ -118,27 +125,36 @@ export const ImportPrivateKey = () => {
             placeholderTextColor={ColorMap.disabled}
             ref={formState.refs.privateKey}
             style={{ height: 94, marginBottom: 8, paddingTop: 16 }}
-            onChangeText={onChangeValue('privateKey')}
-            value={formState.data.privateKey}
-            onBlur={() => validatePrivateKey(formState.data.privateKey)}
+            onChangeText={(text: string) => {
+              onChangeValue('privateKey')(text);
+              setAutoCorrect('');
+              setPrivateKey(text);
+            }}
+            value={autoCorrect || formState.data.privateKey}
             onSubmitEditing={onSubmitField('privateKey')}
             errorMessages={formState.errors.privateKey}
-          />
-
-          <AccountNameAndPasswordArea
-            formState={formState}
-            onChangeValue={onChangeValue}
-            onSubmitField={onSubmitField}
           />
         </ScrollView>
 
         <View style={footerAreaStyle}>
-          <SubmitButton
-            isBusy={isBusy}
-            title={i18n.common.importAccount}
-            onPress={() => _onImport(formState)}
-            disabled={!checkValidateForm(formState.isValidated)}
-          />
+          <Button
+            icon={
+              <Icon
+                phosphorIcon={FileArrowDown}
+                size={'lg'}
+                weight={'fill'}
+                iconColor={
+                  !checkValidateForm(formState.isValidated) || validating
+                    ? theme.colorTextLight5
+                    : theme.colorTextLight1
+                }
+              />
+            }
+            disabled={!checkValidateForm(formState.isValidated) || validating}
+            loading={validating || isBusy}
+            onPress={_onImport}>
+            {'Import account'}
+          </Button>
         </View>
       </View>
     </SubScreenContainer>
