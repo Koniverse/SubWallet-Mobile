@@ -86,6 +86,7 @@ export const AppNew = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
+  const accounts = useSelector((state: RootState) => state);
   const { isLocked, lock } = useAppLock();
 
   const isCryptoReady = useCryptoReady();
@@ -110,6 +111,7 @@ export const AppNew = () => {
   const isRequiredStoresReady = true;
 
   useEffect(() => {
+    console.log('accounts', accounts);
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);

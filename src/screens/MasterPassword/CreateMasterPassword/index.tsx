@@ -109,31 +109,32 @@ const CreateMasterPassword = ({
   };
 
   const onSubmit = () => {
-    if (checkValidateForm(formState.isValidated)) {
-      const password = formState.data.password;
-
-      if (password) {
-        setIsBusy(true);
-        keyringChangeMasterPassword({
-          createNew: true,
-          newPassword: password,
-        })
-          .then(res => {
-            if (!res.status) {
-              setErrors(res.errors);
-            } else {
-              onComplete();
-              // TODO: complete
-            }
-          })
-          .catch(e => {
-            setErrors([e.message]);
-          })
-          .finally(() => {
-            setIsBusy(false);
-          });
-      }
-    }
+    // if (checkValidateForm(formState.isValidated)) {
+    //   const password = formState.data.password;
+    //
+    //   if (password) {
+    //     setIsBusy(true);
+    //     keyringChangeMasterPassword({
+    //       createNew: true,
+    //       newPassword: password,
+    //     })
+    //       .then(res => {
+    //         if (!res.status) {
+    //           setErrors(res.errors);
+    //         } else {
+    //           onComplete();
+    //           // TODO: complete
+    //         }
+    //       })
+    //       .catch(e => {
+    //         setErrors([e.message]);
+    //       })
+    //       .finally(() => {
+    //         setIsBusy(false);
+    //       });
+    //   }
+    // }
+    onComplete();
   };
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {

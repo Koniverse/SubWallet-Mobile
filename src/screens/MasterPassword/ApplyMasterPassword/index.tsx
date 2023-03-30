@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ScrollView, Text, View } from 'react-native';
-import { Avatar, Button, Icon, Modal, PageIcon } from 'components/design-system-ui';
-import { ArrowCircleRight, CheckCircle, Info, ShieldStar, Trash } from 'phosphor-react-native';
+import { ScrollView, View } from 'react-native';
+import { Avatar, Button, Icon, Modal } from 'components/design-system-ui';
+import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
 import { RootState } from 'stores/index';
@@ -14,15 +14,17 @@ import { TextField } from 'components/Field/Text';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { PasswordField } from 'components/Field/Password';
-import { forgetAccount } from '../../../messaging';
+import { forgetAccount, keyringMigrateMasterPassword } from '../../../messaging';
+import { Introduction } from 'screens/MasterPassword/ApplyMasterPassword/Introduction';
+import { ApplyDone } from 'screens/MasterPassword/ApplyMasterPassword/ApplyDone';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
-
-const nextIcon = <Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill'} />;
 
 const finishIcon = <Icon phosphorIcon={CheckCircle} size={'lg'} weight="fill" />;
 
 const removeIcon = <Icon phosphorIcon={Trash} size={'lg'} iconColor={'#737373'} />;
+
+const nextIcon = <Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill'} />;
 
 const formConfig: FormControlConfig = {
   password: {
@@ -41,6 +43,7 @@ const ApplyMasterPassword = () => {
   const [migrateAccount, setMigrateAccount] = useState<AccountJson | undefined>(undefined);
   const [deleting, setDeleting] = useState<boolean>(false);
   const [isDisabled, setIsDisable] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -49,7 +52,10 @@ const ApplyMasterPassword = () => {
     [accounts],
   );
 
-  const needMigrate = useMemo(() => canMigrate.filter(acc => !acc.isMasterPassword), [canMigrate]);
+  const needMigrate = useMemo(() => {
+    return canMigrate.filter(acc => !acc.isMasterPassword);
+    // return accounts;
+  }, [canMigrate]);
 
   useEffect(() => {
     setStep(prevState => {
@@ -72,7 +78,7 @@ const ApplyMasterPassword = () => {
           // form.resetFields();
           setIsDisable(true);
 
-          return needMigrate[0];
+          return needMigrate[1];
         } else {
           const exists = needMigrate.find(acc => acc.address === prevState.address);
 
@@ -82,7 +88,7 @@ const ApplyMasterPassword = () => {
           if (exists) {
             return prevState;
           } else {
-            return needMigrate[0];
+            return needMigrate[1];
           }
         }
       });
@@ -95,7 +101,33 @@ const ApplyMasterPassword = () => {
     }
   }, [needMigrate, deleting, step]);
 
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    const password = formState.data.password;
+    if (migrateAccount?.address && password) {
+      setLoading(true);
+      setTimeout(() => {
+        keyringMigrateMasterPassword({
+          address: migrateAccount.address,
+          password: password,
+        })
+          .then(res => {
+            if (!res.status) {
+              onUpdateErrors('password')([res.errors[0]]);
+              setIsError(true);
+            } else {
+              setIsError(false);
+            }
+          })
+          .catch((e: Error) => {
+            setIsError(true);
+            onUpdateErrors('password')([e.message]);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }, 500);
+    }
+  };
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
@@ -132,11 +164,11 @@ const ApplyMasterPassword = () => {
       case 'Done':
         return 'Successful';
       case 'Migrate':
-        return `${String(migrated + 1).padStart(2, '0')}/${String(accounts.length).padStart(2, '0')}`;
+        return `${String(migrated + 1).padStart(2, '0')}/${String(canMigrate.length).padStart(2, '0')}`;
       default:
         return '';
     }
-  }, [accounts.length, step]);
+  }, [canMigrate.length, step]);
 
   const renderFooterButton = useCallback(() => {
     switch (step) {
@@ -145,7 +177,7 @@ const ApplyMasterPassword = () => {
           <Button
             icon={nextIcon}
             onPress={() => {
-              setStep(accounts.length ? 'Migrate' : 'Done');
+              setStep(needMigrate.length ? 'Migrate' : 'Done');
             }}>
             {'Apply master password now'}
           </Button>
@@ -163,7 +195,7 @@ const ApplyMasterPassword = () => {
           </Button>
         );
     }
-  }, [accounts.length, deleting, isDisabled, step]);
+  }, [step, isDisabled, deleting, needMigrate.length]);
 
   const onPressButton = () => {};
 
@@ -175,17 +207,7 @@ const ApplyMasterPassword = () => {
       showRightBtn={true}
       rightIcon={Info}>
       <View style={{ flex: 1 }}>
-        {step === 'Introduction' && (
-          <View style={{ flex: 1 }}>
-            <View style={{ flex: 1, alignItems: 'center', paddingTop: 48 }}>
-              <PageIcon icon={ShieldStar} color={theme.colorSuccess} />
-              <Text style={_style.titleStyle}>{'Apply master password'}</Text>
-              <Text style={_style.messageStyle}>
-                {'Master password created successfully. Please apply the master password to your existing accounts'}
-              </Text>
-            </View>
-          </View>
-        )}
+        {step === 'Introduction' && <Introduction />}
         {step === 'Migrate' && migrateAccount && (
           <ScrollView style={{ flex: 1, paddingHorizontal: theme.padding }}>
             <View style={{ alignItems: 'center', paddingBottom: 32, paddingTop: 16 }}>
@@ -197,7 +219,6 @@ const ApplyMasterPassword = () => {
             </View>
 
             <TextField text={migrateAccount.name || ''} label={'Account name'} />
-            {/*<AccountInfoField name={migrateAccount.name || ''} address={migrateAccount.address} />*/}
 
             <AddressField address={migrateAccount.address} label={'Account address'} />
 
@@ -222,11 +243,7 @@ const ApplyMasterPassword = () => {
             )}
           </ScrollView>
         )}
-        {step === 'Done' && (
-          <View style={{ flex: 1 }}>
-            <Text>123</Text>
-          </View>
-        )}
+        {step === 'Done' && <ApplyDone accounts={canMigrate} />}
 
         <Modal.DeleteModal
           title={'Detele this account?'}
