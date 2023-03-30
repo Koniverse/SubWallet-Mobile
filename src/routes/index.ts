@@ -24,9 +24,12 @@ export type RootStackParamList = {
       | 'ImportPrivateKey'
       | 'ScanByQrCode'
       | 'AttachQR-signer'
-      | 'AttachAccount';
+      | 'AttachAccount'
+      | 'MigratePassword';
     state?: string;
   };
+  ChangePassword: undefined;
+  MigratePassword: undefined;
   CreateAccount: { keyTypes?: KeypairType };
   QrScanner: undefined;
   AccountsScreen: undefined;
