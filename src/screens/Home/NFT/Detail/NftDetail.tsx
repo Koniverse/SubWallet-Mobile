@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
+import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
 import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import { TextField } from 'components/Field/Text';
@@ -147,18 +147,18 @@ const NftDetail = ({
 
   const toast = useToast();
 
-  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
-  const nftList = useSelector((state: RootState) => state.nft.nftList);
+  const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
+  const nftItems = useSelector((state: RootState) => state.nft.nftItems);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   const collection = useMemo(() => {
-    return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
-  }, [collectionId, nftCollectionList]);
+    return nftCollections.find(i => collectionId === `${i.collectionName}-${i.collectionId}`) || {};
+  }, [collectionId, nftCollections]);
 
   const data = useMemo(() => {
-    return nftList.find(item => nftId === `${item.collectionId}-${item.id}`) || {};
-  }, [nftId, nftList]);
+    return nftItems.find(item => nftId === `${item.collectionId}-${item.id}`) || ({} as NftItem);
+  }, [nftId, nftItems]);
 
   const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
 
@@ -255,8 +255,8 @@ const NftDetail = ({
         <TextField
           text={collectionName || ''}
           label={i18n.nftScreen.nftDetail.collectionName}
-          showRightIcon={!!data.external_url}
-          onPressRightIcon={handleClickInfoIcon(data.external_url)}
+          showRightIcon={!!data.externalUrl}
+          onPressRightIcon={handleClickInfoIcon(data.externalUrl)}
         />
         {!!data.owner && (
           <AddressField

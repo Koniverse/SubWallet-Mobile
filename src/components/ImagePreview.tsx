@@ -161,7 +161,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
       {showImage ? (
         <Image
           style={ImageStyle}
-          source={mainUrl ? { uri: url } : Images.default}
+          source={mainUrl ? (url ? { uri: url } : Images.default) : Images.default}
           onLoad={handleOnLoad}
           onError={handleImageError}
         />
@@ -183,7 +183,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
         ) : (
           <FastImage
             resizeMode={'contain'}
-            source={{ uri: url }}
+            source={url ? { uri: url } : Images.default}
             style={VideoStyle}
             onError={handleVideoError}
             onLoad={handleOnLoad}

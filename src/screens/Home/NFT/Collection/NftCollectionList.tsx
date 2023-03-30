@@ -1,16 +1,13 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, RefreshControl, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Plus } from 'phosphor-react-native';
 import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
 import { useNavigation } from '@react-navigation/native';
 import { NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
-import { useRefresh } from 'hooks/useRefresh';
-import { ColorMap } from 'styles/color';
-import { restartCronServices } from '../../../../messaging';
 
 const NftCollectionListStyle: StyleProp<any> = {
   flex: 1,
@@ -25,7 +22,7 @@ const filteredCollection = (items: NftCollection[], searchString: string) => {
 const NftCollectionList = () => {
   const { nftCollections } = useFetchNftCollection();
   const navigation = useNavigation<NFTNavigationProps>();
-  const [isRefresh, refresh] = useRefresh();
+  // const [isRefresh, refresh] = useRefresh();
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NftCollection>) => {
@@ -55,14 +52,14 @@ const NftCollectionList = () => {
             navigation.navigate('ImportNft');
           },
         }}
-        refreshControl={
-          <RefreshControl
-            style={{ backgroundColor: ColorMap.dark1 }}
-            tintColor={ColorMap.light}
-            refreshing={isRefresh}
-            onRefresh={() => refresh(restartCronServices(['nft']))}
-          />
-        }
+        // refreshControl={
+        //   <RefreshControl
+        //     style={{ backgroundColor: ColorMap.dark1 }}
+        //     tintColor={ColorMap.light}
+        //     refreshing={isRefresh}
+        //     onRefresh={() => refresh(restartCronServices(['nft']))}
+        //   />
+        // }
         numberColumns={2}
         searchMarginBottom={16}
       />
