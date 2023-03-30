@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { useNavigation } from '@react-navigation/native';
@@ -6,18 +6,22 @@ import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
-import { createAccountSuriV2, validateSeedV2 } from '../messaging';
-import { SubmitButton } from 'components/SubmitButton';
+import { createAccountSuriV2, keyringUnlock, validateSeedV2 } from '../messaging';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
 import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { backToHome } from 'utils/navigation';
-import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
+import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { SelectAccountType } from 'components/common/SelectAccountType';
+import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
+import { Button, Icon } from 'components/design-system-ui';
+import { FileArrowDown } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -61,35 +65,58 @@ const secretPhraseFormConfig: FormControlConfig = {
 };
 
 export const ImportSecretPhrase = () => {
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const [seedPhrase, setSeedPhrase] = useState('');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
   const [isBusy, setBusy] = useState(false);
+  const accountName = useGetDefaultAccountName();
   useHandlerHardwareBackPress(isBusy);
-  const validateSeedAndGoToNextScreen = (currentFormState: FormState) => {
-    const seed = currentFormState.data.seed.trim();
-    if (!seed) {
-      return;
+  const hasMasterPassword = useSelector((state: RootState) => state.accountState.hasMasterPassword);
+  console.log('hasMasterPassword', hasMasterPassword);
+
+  // TODO: remove later
+  useEffect(() => {
+    keyringUnlock({
+      password: '123123',
+    }).catch((e: Error) => console.log(e));
+  }, []);
+
+  useEffect(() => {
+    if (formState.data.seed) {
+      setBusy(true);
+      console.log('formState.data.seed', formState.data.seed);
+      validateSeedV2(seedPhrase, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
+        .then(() => setSeedPhrase(formState.data.seed))
+        .catch(() => {
+          onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
+        })
+        .finally(() => setBusy(false));
     }
-    onChangeValue('seed')(seed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyTypes]);
+
+  const _onImportSeed = (): void => {
     setBusy(true);
-    validateSeedV2(seed, keyTypes)
+    createAccountSuriV2({
+      name: accountName,
+      suri: formState.data.seed,
+      isAllowed: true,
+      types: keyTypes,
+    })
       .then(() => {
-        setSeedPhrase(seed);
-        onUpdateErrors('seed')();
-        setCurrentViewStep(ViewStep.ENTER_PASSWORD);
+        backToHome(goHome);
       })
-      .catch(() => {
-        setSeedPhrase('');
-        onUpdateErrors('seed')([i18n.errorMessage.invalidMnemonicSeed]);
-      })
-      .finally(() => setBusy(false));
+      .catch((e: Error) => {
+        console.log('e', e);
+        setBusy(false);
+      });
   };
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
-    onSubmitForm: validateSeedAndGoToNextScreen,
+    onSubmitForm: _onImportSeed,
   });
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => {
@@ -99,26 +126,6 @@ export const ImportSecretPhrase = () => {
     return unsubscribe;
   }, [focus, navigation]);
 
-  const _onImportSeed = (curName: string, password: string): void => {
-    if (curName && password) {
-      setBusy(true);
-      createAccountSuriV2({
-        name: curName,
-        genesisHash: '',
-        password,
-        suri: seedPhrase,
-        types: keyTypes,
-        isAllowed: true,
-      })
-        .then(() => {
-          backToHome(goHome, true);
-        })
-        .catch(() => {
-          setBusy(false);
-        });
-    }
-  };
-
   const onPressBack = () => {
     if (currentViewStep === ViewStep.ENTER_SEED) {
       navigation.goBack();
@@ -127,44 +134,48 @@ export const ImportSecretPhrase = () => {
     }
   };
 
+  const disabled = useMemo(
+    () => !formState.data.seed || !formState.isValidated.seed || isBusy,
+    [formState.data.seed, formState.isValidated.seed, isBusy],
+  );
+
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.title.importBySecretPhrase} disabled={isBusy}>
-      <>
-        {currentViewStep === ViewStep.ENTER_SEED && (
-          <View style={sharedStyles.layoutContainer}>
-            <ScrollView style={bodyAreaStyle}>
-              <Text style={titleStyle}>{i18n.common.importSecretPhraseTitle}</Text>
+      <View style={sharedStyles.layoutContainer}>
+        <ScrollView style={bodyAreaStyle}>
+          <Text style={titleStyle}>{i18n.common.importSecretPhraseTitle}</Text>
 
-              <Textarea
-                ref={formState.refs.seed}
-                style={{ marginBottom: 16, paddingTop: 16 }}
-                value={formState.data.seed}
-                onChangeText={onChangeValue('seed')}
-                onSubmitEditing={onSubmitField('seed')}
-                errorMessages={formState.errors.seed}
-              />
+          <Textarea
+            ref={formState.refs.seed}
+            style={{ marginBottom: 16, paddingTop: 16 }}
+            value={formState.data.seed}
+            onChangeText={(text: string) => {
+              onChangeValue('seed')(text);
+            }}
+            onBlur={() => setSeedPhrase(formState.data.seed)}
+            onSubmitEditing={onSubmitField('seed')}
+            errorMessages={formState.errors.seed}
+          />
 
-              <SelectAccountType
-                title={'Select account type'}
-                selectedItems={keyTypes}
-                setSelectedItems={setKeyTypes}
+          <SelectAccountType title={'Select account type'} selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
+        </ScrollView>
+        <View style={footerAreaStyle}>
+          <Button
+            icon={
+              <Icon
+                phosphorIcon={FileArrowDown}
+                size={'lg'}
+                weight={'fill'}
+                iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight1}
               />
-            </ScrollView>
-            <View style={footerAreaStyle}>
-              <SubmitButton
-                disabled={!formState.data.seed || !formState.isValidated.seed || isBusy}
-                isBusy={isBusy}
-                title={i18n.common.continue}
-                onPress={() => validateSeedAndGoToNextScreen(formState)}
-              />
-            </View>
-          </View>
-        )}
-
-        {currentViewStep === ViewStep.ENTER_PASSWORD && (
-          <AccountNamePasswordCreation isBusy={isBusy} onCreateAccount={_onImportSeed} />
-        )}
-      </>
+            }
+            disabled={disabled}
+            loading={isBusy}
+            onPress={_onImportSeed}>
+            {'Import account'}
+          </Button>
+        </View>
+      </View>
     </ContainerWithSubHeader>
   );
 };

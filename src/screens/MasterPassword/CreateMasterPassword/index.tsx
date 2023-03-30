@@ -21,6 +21,7 @@ import useModalScanner from 'hooks/qr/useModalScanner';
 import { QrAccount } from 'types/qr/attach';
 import CreateMasterPasswordStyle from './style';
 import useGoHome from "hooks/screen/useGoHome";
+import {KeypairType} from "@polkadot/util-crypto/types";
 
 const formConfig: FormControlConfig = {
   password: {
@@ -100,7 +101,7 @@ const CreateMasterPassword = ({
       // @ts-ignore
       navigation.navigate(pathName, { screen: state });
     } else if (pathName === 'CreateAccount') {
-      navigation.navigate(pathName, {});
+      navigation.navigate(pathName, { keyTypes: state as KeypairType });
     } else if (pathName === 'MigratePassword') {
       navigation.navigate(pathName);
     } else {
@@ -109,32 +110,31 @@ const CreateMasterPassword = ({
   };
 
   const onSubmit = () => {
-    // if (checkValidateForm(formState.isValidated)) {
-    //   const password = formState.data.password;
-    //
-    //   if (password) {
-    //     setIsBusy(true);
-    //     keyringChangeMasterPassword({
-    //       createNew: true,
-    //       newPassword: password,
-    //     })
-    //       .then(res => {
-    //         if (!res.status) {
-    //           setErrors(res.errors);
-    //         } else {
-    //           onComplete();
-    //           // TODO: complete
-    //         }
-    //       })
-    //       .catch(e => {
-    //         setErrors([e.message]);
-    //       })
-    //       .finally(() => {
-    //         setIsBusy(false);
-    //       });
-    //   }
-    // }
-    onComplete();
+    if (checkValidateForm(formState.isValidated)) {
+      const password = formState.data.password;
+
+      if (password) {
+        setIsBusy(true);
+        keyringChangeMasterPassword({
+          createNew: true,
+          newPassword: password,
+        })
+          .then(res => {
+            if (!res.status) {
+              setErrors(res.errors);
+            } else {
+              onComplete();
+              // TODO: complete
+            }
+          })
+          .catch(e => {
+            setErrors([e.message]);
+          })
+          .finally(() => {
+            setIsBusy(false);
+          });
+      }
+    }
   };
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {

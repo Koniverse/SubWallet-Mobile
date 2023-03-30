@@ -73,7 +73,7 @@ export default (theme: ThemeTypes) =>
       alignItems: 'center',
     },
     blockButtonRaw: {
-      width: '100%',
+      flex: 1,
     },
     xsIconOnly: {
       paddingHorizontal: 0,

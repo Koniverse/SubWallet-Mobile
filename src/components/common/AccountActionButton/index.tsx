@@ -25,7 +25,6 @@ const AccountActionButton = ({ item }: Props) => {
 
   return (
     <Button
-      block
       size={'xl'}
       type={item.key === 'create' ? 'primary' : 'secondary'}
       icon={
