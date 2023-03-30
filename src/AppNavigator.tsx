@@ -84,7 +84,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
     prefixes: ['subwallet://'],
     config,
   };
-  const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
 
   return (
     <>
@@ -165,7 +165,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
           )}
           {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
         </Stack.Navigator>
-        {!hasMasterPassword && <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword} />}
       </NavigationContainer>
     </>
   );

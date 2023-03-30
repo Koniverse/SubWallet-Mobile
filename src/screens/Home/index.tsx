@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useMemo} from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
@@ -16,6 +16,10 @@ import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 import withPageWrapper from 'components/pageWrapper';
+import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -119,6 +123,21 @@ const MainScreen = () => {
 
 export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
+  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
 
-  return <>{isEmptyAccounts ? <FirstScreen /> : <MainScreen />}</>;
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length,
+    [accounts],
+  );
+
+  // useEffect(() => {}, []);
+
+  return (
+    <>
+      {isEmptyAccounts ? <FirstScreen /> : <MainScreen />}
+      <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts} />
+    </>
+  );
 };
