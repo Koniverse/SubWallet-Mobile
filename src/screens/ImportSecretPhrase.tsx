@@ -59,7 +59,6 @@ export const ImportSecretPhrase = () => {
   const goHome = useGoHome();
   const [seedPhrase, setSeedPhrase] = useState('');
   const [validating, setValidating] = useState(false);
-  const [changed, setChanged] = useState(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
   const [isBusy, setBusy] = useState(false);
@@ -123,7 +122,7 @@ export const ImportSecretPhrase = () => {
     return () => {
       amount = false;
     };
-  }, [seedPhrase, changed, onUpdateErrors]);
+  }, [seedPhrase, onUpdateErrors]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => {
@@ -157,7 +156,6 @@ export const ImportSecretPhrase = () => {
             style={{ marginBottom: 16, paddingTop: 16 }}
             value={formState.data.seed}
             onChangeText={(text: string) => {
-              setChanged(true);
               onChangeValue('seed')(text);
               setSeedPhrase(text);
             }}
@@ -178,7 +176,7 @@ export const ImportSecretPhrase = () => {
               />
             }
             disabled={disabled || validating}
-            loading={validating}
+            loading={validating || isBusy}
             onPress={_onImportSeed}>
             {'Import account'}
           </Button>
