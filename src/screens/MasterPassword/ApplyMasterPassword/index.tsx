@@ -17,6 +17,9 @@ import { PasswordField } from 'components/Field/Password';
 import { forgetAccount, keyringMigrateMasterPassword } from '../../../messaging';
 import { Introduction } from 'screens/MasterPassword/ApplyMasterPassword/Introduction';
 import { ApplyDone } from 'screens/MasterPassword/ApplyMasterPassword/ApplyDone';
+import useGoHome from 'hooks/screen/useGoHome';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -37,6 +40,8 @@ const formConfig: FormControlConfig = {
 
 const ApplyMasterPassword = () => {
   const theme = useSubWalletTheme().swThemes;
+  const goHome = useGoHome();
+  const navigation = useNavigation<RootNavigationProps>();
   const _style = ApplyMasterPasswordStyle(theme);
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const [step, setStep] = useState<PageStep>('Introduction');
@@ -57,51 +62,7 @@ const ApplyMasterPassword = () => {
     // return accounts;
   }, [canMigrate]);
 
-  useEffect(() => {
-    setStep(prevState => {
-      if (prevState !== 'Introduction') {
-        return needMigrate.length ? 'Migrate' : 'Done';
-      } else {
-        return 'Introduction';
-      }
-    });
-  }, [needMigrate.length, deleting]);
-
-  useEffect(() => {
-    if (step === 'Migrate') {
-      setMigrateAccount(prevState => {
-        if (deleting) {
-          return prevState;
-        }
-
-        if (!prevState) {
-          // form.resetFields();
-          setIsDisable(true);
-
-          return needMigrate[1];
-        } else {
-          const exists = needMigrate.find(acc => acc.address === prevState.address);
-
-          // form.resetFields();
-          setIsDisable(true);
-
-          if (exists) {
-            return prevState;
-          } else {
-            return needMigrate[1];
-          }
-        }
-      });
-
-      // focusPassword();
-    } else {
-      setIsError(false);
-      // form.resetFields();
-      setIsDisable(true);
-    }
-  }, [needMigrate, deleting, step]);
-
-  const onSubmit = () => {
+  const onSubmit = useCallback(() => {
     const password = formState.data.password;
     if (migrateAccount?.address && password) {
       setLoading(true);
@@ -127,11 +88,54 @@ const ApplyMasterPassword = () => {
           });
       }, 500);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [migrateAccount?.address]);
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
+
+  useEffect(() => {
+    setStep(prevState => {
+      if (prevState !== 'Introduction') {
+        return needMigrate.length ? 'Migrate' : 'Done';
+      } else {
+        return 'Introduction';
+      }
+    });
+  }, [needMigrate.length, deleting]);
+
+  useEffect(() => {
+    if (step === 'Migrate') {
+      setMigrateAccount(prevState => {
+        if (deleting) {
+          return prevState;
+        }
+
+        if (!prevState) {
+          onChangeValue('password')('');
+          setIsDisable(true);
+
+          return needMigrate[1];
+        } else {
+          const exists = needMigrate.find(acc => acc.address === prevState.address);
+
+          onChangeValue('password')('');
+          setIsDisable(true);
+
+          if (exists) {
+            return prevState;
+          } else {
+            return needMigrate[1];
+          }
+        }
+      });
+    } else {
+      setIsError(false);
+      onChangeValue('password')('');
+      setIsDisable(true);
+    }
+  }, [needMigrate, deleting, step, onChangeValue]);
 
   const onDelete = useCallback(() => {
     if (migrateAccount?.address) {
@@ -156,7 +160,7 @@ const ApplyMasterPassword = () => {
   };
 
   const title = useMemo((): string => {
-    const migrated = 1;
+    const migrated = canMigrate.length - needMigrate.length;
 
     switch (step) {
       case 'Introduction':
@@ -168,7 +172,7 @@ const ApplyMasterPassword = () => {
       default:
         return '';
     }
-  }, [canMigrate.length, step]);
+  }, [canMigrate.length, needMigrate.length, step]);
 
   const renderFooterButton = useCallback(() => {
     switch (step) {
@@ -184,25 +188,24 @@ const ApplyMasterPassword = () => {
         );
       case 'Done':
         return (
-          <Button icon={finishIcon} onPress={onPressButton}>
+          <Button icon={finishIcon} onPress={goHome}>
             {'Finish'}
           </Button>
         );
       case 'Migrate':
         return (
-          <Button disabled={isDisabled || deleting} icon={nextIcon} onPress={onPressButton}>
+          <Button disabled={isDisabled || deleting} icon={nextIcon} onPress={onSubmit}>
             {'Next'}
           </Button>
         );
     }
-  }, [step, isDisabled, deleting, needMigrate.length]);
-
-  const onPressButton = () => {};
+  }, [step, goHome, isDisabled, deleting, onSubmit, needMigrate.length]);
 
   return (
     <ContainerWithSubHeader
-      showLeftBtn={true}
-      onPressBack={() => {}}
+      showLeftBtn={false}
+      disabled={loading}
+      onPressBack={() => navigation.canGoBack() && navigation.goBack()}
       title={title}
       showRightBtn={true}
       rightIcon={Info}>

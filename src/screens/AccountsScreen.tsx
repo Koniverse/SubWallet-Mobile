@@ -7,7 +7,7 @@ import { Account } from 'components/Account';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
-import { DotsThree, Plus } from 'phosphor-react-native';
+import { DotsThree, FileArrowDown, Plus, PlusCircle, Swatches } from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
@@ -20,6 +20,9 @@ import { Divider } from 'components/Divider';
 import AddAccountModal from 'components/Modal/AddAccountModal';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { Button, Icon } from 'components/design-system-ui';
+import AccountActionSelectModal from 'components/Modal/AccountActionSelectModal';
+import { AccountCreationArea } from 'components/common/AccountCreationArea';
 
 const accountsWrapper: StyleProp<any> = {
   flex: 1,
@@ -33,6 +36,9 @@ export const AccountsScreen = () => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
+  const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
+  const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
 
   const renderListEmptyComponent = () => {
     return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountText} isDanger={false} />;
@@ -108,15 +114,40 @@ export const AccountsScreen = () => {
 
   const renderFooterComponent = useCallback(() => {
     return (
-      <View style={{ paddingHorizontal: 16, ...MarginBottomForSubmitButton, marginTop: 16 }}>
-        <SubmitButton
-          backgroundColor={ColorMap.dark2}
-          title={i18n.common.addOrConnectAccount}
-          onPress={onCreateAccount}
+      <View
+        style={{
+          paddingHorizontal: 16,
+          ...MarginBottomForSubmitButton,
+          marginTop: 16,
+          flexDirection: 'row',
+        }}>
+        <Button
+          style={{ marginRight: 12 }}
+          block
+          icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
+          type={'secondary'}
+          onPress={() => setCreateAccountModalVisible(true)}>
+          {'Create new account'}
+        </Button>
+        <Button
+          style={{ marginRight: 12 }}
+          icon={<Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} />}
+          type={'secondary'}
+          onPress={() => setImportAccountModalVisible(true)}
         />
+        <Button
+          icon={<Icon phosphorIcon={Swatches} size={'lg'} weight={'fill'} />}
+          type={'secondary'}
+          onPress={() => setAttachAccountModalVisible(true)}
+        />
+        {/*<SubmitButton*/}
+        {/*  backgroundColor={ColorMap.dark2}*/}
+        {/*  title={i18n.common.addOrConnectAccount}*/}
+        {/*  onPress={onCreateAccount}*/}
+        {/*/>*/}
       </View>
     );
-  }, [onCreateAccount]);
+  }, []);
 
   const onHideModal = useCallback(() => {
     setModalVisible(false);
@@ -127,7 +158,7 @@ export const AccountsScreen = () => {
       navigation={navigation}
       title={i18n.title.accounts}
       rightIcon={Plus}
-      onPressRightIcon={onCreateAccount}>
+      onPressRightIcon={() => {}}>
       <View style={accountsWrapper}>
         <FlatList
           style={{ flex: 1 }}
@@ -140,6 +171,15 @@ export const AccountsScreen = () => {
         {renderFooterComponent()}
 
         <AddAccountModal onHideModal={onHideModal} modalVisible={modalVisible} />
+        <AccountCreationArea
+          allowToShowSelectType={true}
+          createAccountModalVisible={createAccountModalVisible}
+          importAccountModalVisible={importAccountModalVisible}
+          attachAccountModalVisible={attachAccountModalVisible}
+          onChangeCreateAccountModalVisible={setCreateAccountModalVisible}
+          onChangeImportAccountModalVisible={setImportAccountModalVisible}
+          onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
+        />
       </View>
     </SubScreenContainer>
   );

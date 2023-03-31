@@ -3,7 +3,9 @@ import { useCallback } from 'react';
 import { RootNavigationProps } from 'routes/index';
 import { HomeStackParamList } from 'routes/home';
 
-export default function useGoHome(params: NavigatorScreenParams<HomeStackParamList> = { screen: 'Crypto' }) {
+export default function useGoHome(
+  params: NavigatorScreenParams<HomeStackParamList> = { screen: 'Crypto', params: { screen: 'TokenGroups' } },
+) {
   const navigation = useNavigation<RootNavigationProps>();
 
   return useCallback(() => {
