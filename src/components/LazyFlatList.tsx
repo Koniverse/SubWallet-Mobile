@@ -101,15 +101,20 @@ export function LazyFlatList<T>({
     <>
       {lazyList.length ? (
         <View
-          style={
-            isShowListWrapper && {
-              backgroundColor: '#1A1A1A',
-              marginHorizontal: 16,
-              borderRadius: 8,
-              marginBottom: 94,
-              paddingVertical: 8,
-            }
-          }>
+          style={[
+            isShowListWrapper
+              ? {
+                  backgroundColor: '#1A1A1A',
+                  marginHorizontal: 16,
+                  borderRadius: 8,
+                  marginBottom: 94,
+                  paddingVertical: 8,
+                }
+              : {},
+            {
+              flex: 1,
+            },
+          ]}>
           <FlatList
             ref={flatListRef}
             style={{ ...ScrollViewStyle }}
