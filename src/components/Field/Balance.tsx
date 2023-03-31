@@ -6,6 +6,7 @@ import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { SiDef } from '@polkadot/util/types';
+import { Number } from 'components/design-system-ui';
 
 interface Props extends FieldBaseProps {
   value: string;

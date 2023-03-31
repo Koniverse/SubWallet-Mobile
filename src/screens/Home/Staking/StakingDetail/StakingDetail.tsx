@@ -19,7 +19,7 @@ import { RootNavigationProps } from 'routes/index';
 import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
+import {ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles} from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
@@ -27,6 +27,8 @@ import { getStakingInputValueStyle } from 'utils/text';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { Number } from 'components/design-system-ui';
+import {useSubWalletTheme} from "hooks/useSubWalletTheme";
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -75,7 +77,7 @@ const BalanceConvertedContainerStyle: StyleProp<ViewStyle> = {
 const BalanceConvertedTextStyle: StyleProp<TextStyle> = {
   ...sharedStyles.mainText,
   ...FontMedium,
-  color: ColorMap.primary,
+  color: '#4cd9ac',
 };
 
 const StakingDetail = ({
@@ -84,8 +86,9 @@ const StakingDetail = ({
   },
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
 
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
@@ -99,7 +102,7 @@ const StakingDetail = ({
       item => item.staking.chain === networkKey && item.staking.type === stakingType,
     ) as StakingDataType;
   }, [stakingData, networkKey, stakingType]);
-  const { staking, reward } = data || { staking: {}, reward: {} };
+  const { staking, reward, decimals } = data || { staking: {}, reward: {}, decimals: 0 };
   const isCanSign = useCurrentAccountCanSign();
 
   const convertedBalanceValue = useMemo(() => {
@@ -130,8 +133,6 @@ const StakingDetail = ({
     return <></>;
   }
 
-  const balanceValueForStyle = staking.balance ? parseFloat(staking.balance).toFixed(2).toString() : '0';
-
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
@@ -144,23 +145,22 @@ const StakingDetail = ({
             <View style={ImageContentStyle}>{getNetworkLogo(staking.chain, 32)}</View>
           </View>
           <View style={[CenterWrapperStyle, BalanceContainerStyle]}>
-            <BalanceVal
-              balanceValTextStyle={getStakingInputValueStyle(balanceValueForStyle)}
-              // symbolTextStyle={BalanceSymbolTextStyle}
-              symbol={staking.nativeToken}
-              withComma={true}
+            <Number
               value={staking.balance || '0'}
+              suffix={staking.nativeToken}
+              decimal={decimals}
+              size={40}
+              textStyle={{ fontSize: 40, lineHeight: 56, ...FontBold }}
             />
           </View>
           <View style={[CenterWrapperStyle, BalanceConvertedContainerStyle]}>
             <Text style={BalanceConvertedTextStyle}>(</Text>
-            <BalanceVal
-              balanceValTextStyle={BalanceConvertedTextStyle}
-              // symbolTextStyle={BalanceSymbolTextStyle}
-              symbol={'$'}
-              startWithSymbol={true}
-              withComma={true}
+            <Number
+              prefix={'$'}
+              size={15}
+              textStyle={{ color: theme.colorSuccess, ...FontMedium }}
               value={convertedBalanceValue}
+              decimal={decimals}
             />
             <Text style={BalanceConvertedTextStyle}>)</Text>
           </View>
@@ -175,14 +175,14 @@ const StakingDetail = ({
             label={i18n.stakingScreen.stakingDetail.activeStake}
             value={staking.activeBalance || '0'}
             token={staking.nativeToken}
-            decimal={0}
+            decimal={decimals}
             si={formatBalance.findSi('-')}
           />
           <BalanceField
             label={i18n.stakingScreen.stakingDetail.unlockingStake}
             value={staking.unlockingBalance || '0'}
             token={staking.nativeToken}
-            decimal={0}
+            decimal={decimals}
             si={formatBalance.findSi('-')}
           />
           {reward?.totalReward && reward?.totalSlash !== 'NaN' && (
@@ -190,7 +190,7 @@ const StakingDetail = ({
               label={i18n.stakingScreen.stakingDetail.totalReward}
               value={reward?.totalReward || '0'}
               token={staking.nativeToken}
-              decimal={0}
+              decimal={decimals}
               si={formatBalance.findSi('-')}
             />
           )}
@@ -199,7 +199,7 @@ const StakingDetail = ({
               label={i18n.stakingScreen.stakingDetail.latestReward}
               value={reward?.latestReward || '0'}
               token={staking.nativeToken}
-              decimal={0}
+              decimal={decimals}
               si={formatBalance.findSi('-')}
             />
           )}
@@ -208,16 +208,16 @@ const StakingDetail = ({
               label={i18n.stakingScreen.stakingDetail.totalSlash}
               value={reward?.totalSlash || '0'}
               token={staking.nativeToken}
-              decimal={0}
+              decimal={decimals}
               si={formatBalance.findSi('-')}
             />
           )}
-          {stakingType === StakingType.POOLED && !isAccountAll(currentAccountAddress) && (
+          {stakingType === StakingType.POOLED && !isAccountAll(currentAccount?.address) && (
             <BalanceField
               label={i18n.stakingScreen.stakingDetail.unclaimedReward}
               value={reward?.unclaimedReward || '0'}
               token={staking.nativeToken}
-              decimal={0}
+              decimal={decimals}
               si={formatBalance.findSi('-')}
             />
           )}

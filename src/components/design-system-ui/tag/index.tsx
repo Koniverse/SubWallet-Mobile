@@ -92,7 +92,7 @@ const Tag: React.FC<TagNativeProps> = props => {
         {React.isValidElement(children) ? (
           children
         ) : (
-          <Text style={[_styles.text, presetColor && textStyle]}>{children}</Text>
+          <Text style={[_styles.text, presetColor && textStyle, !!icon && { paddingLeft: 4 }]}>{children}</Text>
         )}
         {closableDom}
       </View>

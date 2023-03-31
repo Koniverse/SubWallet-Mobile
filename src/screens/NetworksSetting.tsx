@@ -62,7 +62,6 @@ const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
           isValidationPassed = isValidationPassed && _isSubstrateChain(item);
           break;
         case FilterValue.EVM:
-          // console.log('isValidationPassed1', isValidationPassed);
           isValidationPassed = isValidationPassed && _isChainEvmCompatible(item);
           break;
         default:
