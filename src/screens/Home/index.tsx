@@ -20,6 +20,8 @@ import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMas
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import {useNavigation} from "@react-navigation/native";
+import {RootNavigationProps} from "routes/index";
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -123,6 +125,7 @@ const MainScreen = () => {
 
 export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
+  const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
 
   const needMigrate = useMemo(
@@ -132,7 +135,11 @@ export const Home = () => {
     [accounts],
   );
 
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    if (needMigrate && hasMasterPassword) {
+      navigation.navigate('MigratePassword');
+    }
+  }, [hasMasterPassword, navigation, needMigrate]);
 
   return (
     <>

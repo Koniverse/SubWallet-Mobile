@@ -116,17 +116,24 @@ export const RestoreJson = () => {
     setIsBusy(true);
     (isKeyringPairs$Json(formattedJsonFile)
       ? batchRestoreV2(formattedJsonFile, password, getAccountsInfo(formattedJsonFile), true)
-      : jsonRestoreV2(formattedJsonFile, password, accountAddress, true)
+      : jsonRestoreV2({
+          file: formattedJsonFile,
+          password: password,
+          address: accountAddress,
+          isAllowed: true,
+          withMasterPassword: true,
+        })
     )
       .then(() => {
         setFileError(false);
         setIsBusy(false);
         onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
-        backToHome(goHome, true);
+        backToHome(goHome);
       })
-      .catch(() => {
+      .catch((e) => {
         setIsBusy(false);
+        console.log(e);
         onUpdateErrors('password')([i18n.warningMessage.unableDecode]);
       });
   };

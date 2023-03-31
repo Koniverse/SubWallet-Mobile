@@ -33,13 +33,15 @@ export const ApplyDone = ({ accounts }: Props) => {
         />
       ))}
 
-      <Typography.Text style={_style.applyDoneText}>
-        And other
-        <Typography.Text style={{ paddingHorizontal: theme.paddingXXS, color: theme.colorTextLight1 }}>{` ${
-          accounts.length - 2
-        } `}</Typography.Text>
-        accounts
-      </Typography.Text>
+      {accounts.length > 2 && (
+        <Typography.Text style={_style.applyDoneText}>
+          And other
+          <Typography.Text style={{ paddingHorizontal: theme.paddingXXS, color: theme.colorTextLight1 }}>{` ${
+            accounts.length - 2
+          } `}</Typography.Text>
+          accounts
+        </Typography.Text>
+      )}
     </View>
   );
 };

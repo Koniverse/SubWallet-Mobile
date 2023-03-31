@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { InitSecretPhrase } from 'screens/CreateAccount/InitSecretPhrase';
 import { VerifySecretPhrase } from 'screens/CreateAccount/VerifySecretPhrase';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { AccountNamePasswordCreation } from 'screens/Shared/AccountNamePasswordCreation';
 import { createAccountSuriV2, createSeedV2 } from '../../messaging';
 import { useNavigation } from '@react-navigation/native';
 import { CreateAccountProps, RootNavigationProps } from 'routes/index';
@@ -11,6 +10,7 @@ import { backToHome } from 'utils/navigation';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -34,11 +34,12 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
-  const goHome = useGoHome({ screen: 'Crypto' });
+  const goHome = useGoHome();
+  const accountName = useGetDefaultAccountName();
 
   useHandlerHardwareBackPress(isBusy);
   useEffect((): void => {
-    createSeedV2(undefined, undefined, params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes)
+    createSeedV2(undefined, undefined, defaultKeyTypes)
       .then((response): void => {
         // @ts-ignore
         setSeed(response.seed);
@@ -60,21 +61,21 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
     setCurrentViewStep(ViewStep.VERIFY_SP);
   };
 
-  const onPressSubmitVerifySecretPhrase = () => {
-    setCurrentViewStep(ViewStep.CREATE_ACCOUNT);
-  };
+  // const onPressSubmitVerifySecretPhrase = () => {
+  //   setCurrentViewStep(ViewStep.CREATE_ACCOUNT);
+  // };
 
-  const onCreateAccount = (curName: string, password: string) => {
-    if (curName && password && seed) {
+  const onCreateAccount = () => {
+    if (seed) {
       setIsBusy(true);
       createAccountSuriV2({
-        name: curName,
+        name: accountName,
         suri: seed,
         types: params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes,
         isAllowed: true,
       })
         .then(() => {
-          backToHome(goHome, true);
+          backToHome(goHome);
         })
         .catch((error: Error): void => {
           setIsBusy(false);
@@ -92,10 +93,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
               <InitSecretPhrase seed={seed} onPressSubmit={onPressSubmitInitSecretPhrase} />
             )}
             {currentViewStep === ViewStep.VERIFY_SP && (
-              <VerifySecretPhrase seed={seed} onPressSubmit={onPressSubmitVerifySecretPhrase} />
-            )}
-            {currentViewStep === ViewStep.CREATE_ACCOUNT && (
-              <AccountNamePasswordCreation isBusy={isBusy} onCreateAccount={onCreateAccount} />
+              <VerifySecretPhrase seed={seed} onPressSubmit={onCreateAccount} />
             )}
           </>
         )}
