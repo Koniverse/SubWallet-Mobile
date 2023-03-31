@@ -10,6 +10,7 @@ import { AccountType } from 'types/ui-types';
 import { RootState } from 'stores/index';
 import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
+import { isAccountAll } from 'utils/accountAll';
 
 function getChainsAccountType(
   accountType: AccountType,
@@ -49,6 +50,10 @@ export function useGetChainSlugs(address?: string): string[] {
     let _accountType: AccountType = 'ALL';
 
     if (address) {
+      if (isAccountAll(address)) {
+        return 'ALL';
+      }
+
       if (isEthereumAddress(address)) {
         _accountType = 'ETHEREUM';
       } else {
