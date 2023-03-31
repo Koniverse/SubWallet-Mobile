@@ -1,15 +1,15 @@
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
-import { BalanceVal } from 'components/BalanceVal';
+import { Icon, Tag, Number } from 'components/design-system-ui';
 import { StakingDataType } from 'hooks/types';
 import { User, Users } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
-import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   stakingData: StakingDataType;
@@ -46,67 +46,15 @@ const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
 };
 
 const NetworkNameStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
+  fontSize: 16,
+  lineHeight: 24,
   ...FontSemiBold,
   color: ColorMap.light,
-};
-
-const BaseBannerStyle: StyleProp<ViewStyle> = {
-  paddingHorizontal: 4,
-  borderRadius: 4,
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  alignSelf: 'flex-start',
-};
-
-const NominatedBannerStyle: StyleProp<ViewStyle> = {
-  backgroundColor: ColorMap.nominatedBackground,
-};
-
-const PoolBannerStyle: StyleProp<ViewStyle> = {
-  backgroundColor: ColorMap.pooledBackground,
-};
-
-const IconStyle: StyleProp<ViewStyle> = {
-  marginRight: 4,
-};
-
-const BaseNetworkSubTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  ...FontSize0,
-};
-
-const PoolNetworkSubTextStyle: StyleProp<TextStyle> = {
-  color: ColorMap.primary,
-};
-
-const NominatedNetworkSubTextStyle: StyleProp<TextStyle> = {
-  color: ColorMap.disabled,
 };
 
 const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
   alignItems: 'flex-end',
   paddingLeft: 2,
-};
-
-const BalanceTokenTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontMedium,
-  color: ColorMap.light,
-};
-
-const BalancePriceTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.light,
-};
-
-const BalanceSymbolTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.disabled,
 };
 
 const SeparatorStyle: StyleProp<ViewStyle> = {
@@ -116,15 +64,12 @@ const SeparatorStyle: StyleProp<ViewStyle> = {
 };
 
 const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
-  const { staking } = stakingData;
+  const { staking, decimals } = stakingData;
+  const theme = useSubWalletTheme().swThemes;
 
   const networkDisplayName = useMemo((): string => {
     return staking.name.replace(' Relay Chain', '');
   }, [staking.name]);
-
-  const balanceValue = useMemo((): BigN => {
-    return new BigN(staking.balance || 0);
-  }, [staking.balance]);
 
   const symbol = staking.nativeToken;
 
@@ -141,44 +86,36 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
             <Text style={NetworkNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
               {networkDisplayName}
             </Text>
-            <View
-              style={[
-                BaseBannerStyle,
-                staking.type === StakingType.NOMINATED ? NominatedBannerStyle : PoolBannerStyle,
-              ]}>
-              {staking.type === StakingType.NOMINATED ? (
-                <User size={12} color={ColorMap.disabled} style={IconStyle} />
-              ) : (
-                <Users size={12} color={ColorMap.primary} style={IconStyle} />
-              )}
-              {staking.type === StakingType.NOMINATED ? (
-                <Text style={[BaseNetworkSubTextStyle, NominatedNetworkSubTextStyle]}>
-                  {i18n.stakingScreen.balanceList.nominatedBalance}
-                </Text>
-              ) : (
-                <Text style={[BaseNetworkSubTextStyle, PoolNetworkSubTextStyle]}>
-                  {i18n.stakingScreen.balanceList.pooledBalance}
-                </Text>
-              )}
+            <View style={{ alignItems: 'flex-start' }}>
+              <Tag
+                color={staking.type === StakingType.NOMINATED ? 'success' : 'warning'}
+                closable={false}
+                bgType={'default'}
+                icon={
+                  staking.type === StakingType.NOMINATED ? (
+                    <Icon phosphorIcon={User} size={'xxs'} weight={'bold'} iconColor={theme.colorSuccess} />
+                  ) : (
+                    <Icon phosphorIcon={Users} size={'xxs'} weight={'bold'} iconColor={theme.colorWarning} />
+                  )
+                }>
+                {staking.type === StakingType.NOMINATED ? 'Nominated' : 'Pooled'}
+              </Tag>
             </View>
           </View>
         </View>
 
         <View style={BalanceInfoContainerStyle}>
-          <BalanceVal
-            balanceValTextStyle={BalanceTokenTextStyle}
-            symbolTextStyle={BalanceSymbolTextStyle}
-            symbol={symbol}
-            withSymbol={true}
-            value={balanceValue}
-          />
-          <BalanceVal
-            balanceValTextStyle={BalancePriceTextStyle}
-            symbolTextStyle={[BalanceSymbolTextStyle]}
-            startSymbolTextStyle={{ marginRight: 4 }}
-            startWithSymbol
-            symbol={'$'}
+          <Number value={staking.balance || 0} decimal={decimals} suffix={symbol} textStyle={{ ...FontSemiBold }} />
+
+          <Number
             value={convertedBalanceValue}
+            decimal={decimals}
+            prefix={'$'}
+            size={theme.fontSizeSM}
+            intOpacity={0.45}
+            decimalOpacity={0.45}
+            unitOpacity={0.45}
+            textStyle={{ ...FontMedium }}
           />
         </View>
       </View>

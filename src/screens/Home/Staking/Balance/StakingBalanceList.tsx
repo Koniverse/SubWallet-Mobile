@@ -31,7 +31,7 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
 };
 
 const StakingBalanceList = () => {
-  const { data, loading, priceMap } = useFetchStaking();
+  const { data, priceMap } = useFetchStaking();
   const isCanSign = useCurrentAccountCanSign();
   const navigation = useNavigation<HomeNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
@@ -92,7 +92,6 @@ const StakingBalanceList = () => {
         renderListEmptyComponent={renderEmpty}
         searchFunction={filteredFunction}
         renderItem={renderItem}
-        loading={loading}
         rightIconOption={rightIconOption}
         afterListItem={
           isCanSign ? (
