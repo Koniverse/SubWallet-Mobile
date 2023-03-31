@@ -5,22 +5,40 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import reformatAddress from 'utils/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
+import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 
 export default function useFetchNftCollection(): NftCollectionType {
-  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
-  const nftList = useSelector((state: RootState) => state.nft.nftList);
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
-  const networkList = Object.keys(networkMap);
+  const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
+  const nftItems = useSelector((state: RootState) => state.nft.nftItems);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+
+  const accountNetwork = useMemo(() => {
+    const originGenesisHash = currentAccount?.originGenesisHash;
+
+    if (originGenesisHash) {
+      return findNetworkJsonByGenesisHash(chainInfoMap, originGenesisHash)?.slug;
+    } else {
+      return undefined;
+    }
+  }, [chainInfoMap, currentAccount]);
 
   return useMemo((): NftCollectionType => {
-    const nftCollections: NftCollection[] = [];
+    const _nftCollections: NftCollection[] = [];
     const countMap: Record<string, number> = {};
 
-    for (const nft of nftList) {
-      const owner = nft.owner ? reformatAddress(nft.owner, 42, false) : '';
-      if (isAccountAll(currentAccountAddress) || currentAccountAddress === owner) {
-        const key = `${nft.chain}-${nft.collectionId}`;
+    for (const nftItem of nftItems) {
+      const owner = nftItem.owner ? reformatAddress(nftItem.owner, 42, false) : '';
+
+      if (!currentAccount || isAccountAll(currentAccount.address) || currentAccount.address === owner) {
+        const key = `${nftItem.chain}-${nftItem.collectionId}`;
+
+        if (accountNetwork) {
+          if (nftItem.chain !== accountNetwork) {
+            continue;
+          }
+        }
+
         if (countMap.hasOwnProperty(key)) {
           countMap[key] = countMap[key] + 1;
         } else {
@@ -29,21 +47,20 @@ export default function useFetchNftCollection(): NftCollectionType {
       }
     }
 
-    for (const nftCollection of nftCollectionList) {
-      if (!networkList.includes(nftCollection.chain || '')) {
+    for (const nftCollection of nftCollections) {
+      if (!nftCollection.chain || !chainInfoMap[nftCollection.chain]) {
         continue;
       }
       const collection: NftCollection = { ...nftCollection };
       const key = `${collection.chain}-${collection.collectionId}`;
       if (countMap[key] && countMap[key] > 0) {
         collection.itemCount = countMap[key];
-        nftCollections.push(collection);
+        _nftCollections.unshift(collection);
       }
     }
 
     return {
-      nftCollections,
+      nftCollections: _nftCollections,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAccountAddress, JSON.stringify(networkList), nftCollectionList, nftList]);
+  }, [currentAccount, chainInfoMap, nftCollections, nftItems, accountNetwork]);
 }

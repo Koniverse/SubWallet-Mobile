@@ -9,6 +9,7 @@ import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
+import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props extends FieldBaseProps {
   networkKey: string;
@@ -48,13 +49,15 @@ const logoWrapperStyle: StyleProp<any> = {
 };
 
 export const NetworkField = ({ networkKey, disabled, showIcon, ...fieldBase }: Props) => {
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   return (
     <FieldBase {...fieldBase}>
       <View style={blockContentStyle}>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={getTextStyle(!!disabled)}>{getNetworkName(networkKey, networkMap)}</Text>
+          <Text style={getTextStyle(!!disabled)}>
+            {chainInfoMap[networkKey] ? _getChainName(chainInfoMap[networkKey]) : ''}
+          </Text>
           {!!showIcon && <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} style={{ marginTop: 4 }} />}
         </View>
 

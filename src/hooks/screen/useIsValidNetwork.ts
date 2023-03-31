@@ -1,13 +1,12 @@
-import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 
 const useIsValidNetwork = (networkKey?: string): [boolean, string] => {
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
-  const showedNetwork = useShowedNetworks(currentAccountAddress, accounts);
+  const showedNetwork = useGetChainSlugs(currentAccount?.address);
 
   return useMemo(
     (): [boolean, string] => [networkKey ? showedNetwork.includes(networkKey) : true, showedNetwork.join('___')],

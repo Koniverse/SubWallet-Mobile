@@ -16,15 +16,19 @@ const useHandleGoHome = ({ goHome, networkKey, networkFocusRedirect }: HandleGoH
 
   const isFocused = useIsFocused();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   const [isValidNetwork, showedNetworks] = useIsValidNetwork(networkKey);
 
-  const [address] = useState(currentAccountAddress);
+  const [address] = useState(currentAccount?.address);
   const [networks] = useState(showedNetworks);
 
   useEffect(() => {
-    if (address !== currentAccountAddress || !isValidNetwork || (networkFocusRedirect && networks !== showedNetworks)) {
+    if (
+      address !== currentAccount?.address ||
+      !isValidNetwork ||
+      (networkFocusRedirect && networks !== showedNetworks)
+    ) {
       if (isFocused) {
         goHome();
       } else {
@@ -37,7 +41,7 @@ const useHandleGoHome = ({ goHome, networkKey, networkFocusRedirect }: HandleGoH
     }
   }, [
     address,
-    currentAccountAddress,
+    currentAccount,
     networkFocusRedirect,
     goHome,
     isFocused,

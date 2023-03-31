@@ -41,16 +41,16 @@ const NftItemList = ({
 }: NFTCollectionProps) => {
   const navigation = useNavigation<RootNavigationProps>();
 
-  const nftCollectionList = useSelector((state: RootState) => state.nftCollection.nftCollectionList);
-  const nftList = useSelector((state: RootState) => state.nft.nftList);
+  const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
+  const nftItems = useSelector((state: RootState) => state.nft.nftItems);
 
   const collection = useMemo(() => {
-    return nftCollectionList.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
-  }, [collectionId, nftCollectionList]);
+    return nftCollections.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
+  }, [collectionId, nftCollections]);
 
-  const nftItems = useMemo(() => {
-    return nftList.filter(item => item.collectionId === (collection?.collectionId || '__'));
-  }, [collection?.collectionId, nftList]);
+  const _nftItems = useMemo(() => {
+    return nftItems.filter(item => item.collectionId === (collection?.collectionId || '__'));
+  }, [collection?.collectionId, nftItems]);
   const [isRefresh, refresh] = useRefresh();
 
   const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
@@ -83,7 +83,7 @@ const NftItemList = ({
               <Text numberOfLines={1} style={[NftItemsTextStyle, { maxWidth: 200 }]}>
                 {collection?.collectionName || i18n.title.nftList}
               </Text>
-              <Text style={NftItemsTextStyle}>{` (${nftItems.length})`}</Text>
+              <Text style={NftItemsTextStyle}>{` (${_nftItems.length})`}</Text>
             </View>
           );
         }}
@@ -92,7 +92,7 @@ const NftItemList = ({
         renderItem={renderItem}
         renderListEmptyComponent={renderEmptyNFT}
         searchFunction={filteredNftItem}
-        items={nftItems}
+        items={_nftItems}
         numberColumns={2}
         searchMarginBottom={16}
         refreshControl={
