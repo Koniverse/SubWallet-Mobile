@@ -2,9 +2,11 @@ import BigN from 'bignumber.js';
 import { BalanceInfo } from 'types/index';
 import { TokenBalanceItemType } from 'types/ui-types';
 import {
+  ChainStakingMetadata,
   CrowdloanParaState,
   NftCollection,
   NftItem,
+  NominatorMetadata,
   StakingItem,
   StakingRewardItem,
 } from '@subwallet/extension-base/background/KoniTypes';
@@ -54,12 +56,13 @@ export type ConfirmationHookType = {
 
 export type StakingDataType = {
   staking: StakingItem;
+  chainStakingMetadata?: ChainStakingMetadata;
+  nominatorMetadata?: NominatorMetadata;
   reward?: StakingRewardItem;
+  decimals: number;
 };
 
-export type StakingType = {
-  loading: boolean;
+export type StakingData = {
   data: StakingDataType[];
   priceMap: Record<string, number>;
-  stakeUnlockingTimestamp: number; // the timestamp that unlocking data was retrieved
 };

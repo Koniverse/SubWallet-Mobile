@@ -1,9 +1,11 @@
 import { APIItemState, StakingItem, StakingRewardItem } from '@subwallet/extension-base/background/KoniTypes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { StakingDataType, StakingType } from 'hooks/types';
+import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
+import { StakingData, StakingDataType } from 'hooks/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 
 const groupStakingItems = (stakingItems: StakingItem[]): StakingItem[] => {
   const itemGroups: string[] = [];
@@ -103,48 +105,51 @@ const groupStakingRewardItems = (stakingRewardItems: StakingRewardItem[]): Staki
   return groupedStakingRewardItems;
 };
 
-export default function useFetchStaking(): StakingType {
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+export default function useFetchStaking() {
+  const { chainStakingMetadataList, nominatorMetadataList, stakingMap, stakingRewardMap } = useSelector(
+    (state: RootState) => state.staking,
+  );
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
-  const stakingItems = useSelector((state: RootState) => state.staking.details);
-  const _stakingRewardList = useSelector((state: RootState) => state.stakingReward.details);
-  const unlockingItems = useSelector((state: RootState) => state.stakeUnlockingInfo.details);
-  const stakeUnlockingTimestamp = useSelector((state: RootState) => state.stakeUnlockingInfo.timestamp);
-  const stakingRewardReady = useSelector((state: RootState) => state.staking.ready);
-  const currentAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
-  const partResult = useMemo((): Omit<StakingType, 'stakeUnlockingTimestamp'> => {
-    const isAccountAll = currentAddress && currentAddress.toLowerCase() === ALL_ACCOUNT_KEY.toLowerCase();
+  const isAll = useMemo(() => {
+    return currentAccount !== null && isAccountAll(currentAccount.address);
+  }, [currentAccount]);
+
+  const partResult = useMemo(() => {
     const parsedPriceMap: Record<string, number> = {};
-    let stakingRewardList = _stakingRewardList;
     let readyStakingItems: StakingItem[] = [];
+    let stakingRewardList = stakingRewardMap;
     const stakingData: StakingDataType[] = [];
-    let loading = !stakingRewardReady;
 
-    stakingItems.forEach(stakingItem => {
+    stakingMap.forEach(stakingItem => {
+      const chainInfo = chainInfoMap[stakingItem.chain];
+
       if (stakingItem.state === APIItemState.READY) {
-        loading = false;
-
-        const networkJson = networkMap[stakingItem.chain];
-
         if (
           stakingItem.balance &&
           parseFloat(stakingItem.balance) > 0 &&
           Math.round(parseFloat(stakingItem.balance) * 100) / 100 !== 0
         ) {
-          parsedPriceMap[stakingItem.chain] = priceMap[networkJson?.coinGeckoKey || stakingItem.chain];
+          parsedPriceMap[stakingItem.chain] = priceMap[chainInfo.slug || stakingItem.chain];
           readyStakingItems.push(stakingItem);
         }
       }
     });
 
-    if (isAccountAll) {
+    if (isAll) {
       readyStakingItems = groupStakingItems(readyStakingItems);
       stakingRewardList = groupStakingRewardItems(stakingRewardList);
     }
 
     for (const stakingItem of readyStakingItems) {
-      const stakingDataType: StakingDataType = { staking: stakingItem };
+      const chainInfo = chainInfoMap[stakingItem.chain];
+      const { decimals } = _getChainNativeTokenBasicInfo(chainInfo);
+      const stakingDataType: StakingDataType = {
+        staking: stakingItem,
+        decimals,
+      };
 
       for (const reward of stakingRewardList) {
         if (
@@ -154,39 +159,40 @@ export default function useFetchStaking(): StakingType {
           stakingItem.address === reward.address
         ) {
           stakingDataType.reward = reward;
+
+          break;
         }
       }
 
-      if (!isAccountAll) {
-        unlockingItems.forEach(unlockingInfo => {
+      for (const chainStakingMetadata of chainStakingMetadataList) {
+        if (stakingItem.chain === chainStakingMetadata.chain) {
+          stakingDataType.chainStakingMetadata = { ...chainStakingMetadata, type: stakingItem.type };
+          break;
+        }
+      }
+
+      if (!isAll) {
+        for (const nominatorMetadata of nominatorMetadataList) {
           if (
-            unlockingInfo.chain === stakingItem.chain &&
-            unlockingInfo.type === stakingItem.type &&
-            unlockingInfo.address === stakingItem.address
+            stakingItem.chain === nominatorMetadata.chain &&
+            stakingItem.type === nominatorMetadata.type &&
+            stakingItem.address === nominatorMetadata.address
           ) {
-            stakingDataType.staking = {
-              ...stakingItem,
-              unlockingInfo,
-            } as StakingItem;
+            stakingDataType.nominatorMetadata = nominatorMetadata;
+
+            break;
           }
-        });
+        }
       }
 
       stakingData.push(stakingDataType);
     }
 
     return {
-      loading,
       data: stakingData,
       priceMap: parsedPriceMap,
     };
-  }, [_stakingRewardList, currentAddress, networkMap, priceMap, stakingItems, stakingRewardReady, unlockingItems]);
+  }, [chainInfoMap, chainStakingMetadataList, isAll, nominatorMetadataList, priceMap, stakingMap, stakingRewardMap]);
 
-  return useMemo(
-    (): StakingType => ({
-      ...partResult,
-      stakeUnlockingTimestamp,
-    }),
-    [partResult, stakeUnlockingTimestamp],
-  );
+  return useMemo((): StakingData => ({ ...partResult }), [partResult]);
 }
