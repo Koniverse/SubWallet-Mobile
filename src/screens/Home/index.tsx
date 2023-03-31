@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 

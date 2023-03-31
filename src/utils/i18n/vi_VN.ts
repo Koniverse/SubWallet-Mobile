@@ -343,6 +343,7 @@ export const vi = {
     smartContract: 'NFT contract address',
     chain: 'Chain',
     nftCollectionName: 'NFT collection name',
+    nftType: 'NFT type',
     cancel: 'Cancel',
     importNft: 'Import NFT',
   },

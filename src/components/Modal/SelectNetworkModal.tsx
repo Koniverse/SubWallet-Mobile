@@ -18,7 +18,7 @@ interface Props {
   renderEmptyList?: () => JSX.Element;
 }
 
-const filterFunction = (items: { label: string; value: string }[], searchString: string) => {
+const searchFunction = (items: { label: string; value: string }[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
   return items.filter(item => item.label.toLowerCase().includes(lowerCaseSearchString));
 };
@@ -67,7 +67,7 @@ const SelectNetworkModal = ({
         items={networkOptions}
         style={FlatListScreenPaddingTop}
         title={title}
-        filterFunction={filterFunction}
+        searchFunction={searchFunction}
         renderItem={renderItem}
         onPressBack={onPressBack}
         renderListEmptyComponent={renderEmptyList ? renderEmptyList : defaultRenderListEmptyComponent}

@@ -1,23 +1,32 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Item } from 'react-native-picker-select';
+import { _isChainSupportEvmNft, _isChainSupportWasmNft } from '@subwallet/extension-base/services/chain-service/utils';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 
-export default function useGetContractSupportedChains(): Item[] {
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+function filterContractTypes(chainInfoMap: Record<string, _ChainInfo>, chainStateMap: Record<string, _ChainState>) {
+  const filteredChainInfoMap: Record<string, _ChainInfo> = {};
 
-  return useMemo((): Item[] => {
-    const result: Item[] = [];
-
-    for (const [key, network] of Object.entries(networkMap)) {
-      if (network.active && network.supportSmartContract && network.supportSmartContract.length > 0) {
-        result.push({
-          label: network.chain,
-          value: key,
-        });
-      }
+  Object.values(chainInfoMap).forEach(chainInfo => {
+    // todo: if mobile supports auto connect chain, then remove the condition below
+    if (!chainStateMap[chainInfo.slug]?.active) {
+      return;
     }
 
-    return result;
-  }, [networkMap]);
+    if (_isChainSupportEvmNft(chainInfo) || _isChainSupportWasmNft(chainInfo)) {
+      filteredChainInfoMap[chainInfo.slug] = chainInfo;
+    }
+  });
+
+  return filteredChainInfoMap;
+}
+
+export default function useGetContractSupportedChains(): Record<string, _ChainInfo> {
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const chainStateMap = useSelector((state: RootState) => state.chainStore.chainStateMap);
+
+  return useMemo(() => {
+    return filterContractTypes(chainInfoMap, chainStateMap);
+  }, [chainInfoMap, chainStateMap]);
 }
