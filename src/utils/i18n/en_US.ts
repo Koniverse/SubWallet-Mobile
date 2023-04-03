@@ -343,6 +343,7 @@ export const en = {
     smartContract: 'NFT contract address',
     chain: 'Chain',
     nftCollectionName: 'NFT collection name',
+    nftType: 'NFT type',
     cancel: 'Cancel',
     importNft: 'Import NFT',
   },
@@ -565,7 +566,6 @@ export const en = {
   },
   warningTitle: {
     doNotSharePrivateKey: 'Do not share your private key!',
-    doNotShareSecretPhrase: 'Do not share your secret phrase!',
     doNotShareSecretPhrase: 'Do not share your secret phrase!',
     doNotShareJsonFile: 'Do not share your JSON file!',
     warning: 'Warning',

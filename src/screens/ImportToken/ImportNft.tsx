@@ -4,12 +4,11 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from '../../messaging';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
@@ -21,9 +20,12 @@ import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { WebRunnerContext } from 'providers/contexts';
+import {
+  _isChainTestNet,
+  _parseMetadataForSmartContractAsset,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import { _AssetType } from '@subwallet/chain-list/types';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -36,27 +38,9 @@ const WrapperStyle: StyleProp<ViewStyle> = {
 
 const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { currentAccountAddress } = useSelector((state: RootState) => state.accountState);
-  const chainOptions = useGetContractSupportedChains();
+  const chainInfoMap = useGetContractSupportedChains();
   const payload = routeParams?.payload;
   const nftInfo = payload?.payload;
-  const formConfig = {
-    smartContract: {
-      require: true,
-      name: i18n.importEvmNft.smartContract,
-      value: nftInfo?.smartContract || '',
-    },
-    chain: {
-      require: true,
-      name: i18n.common.network,
-      value: nftInfo?.chain || chainOptions[0]?.value || '',
-    },
-    collectionName: {
-      require: true,
-      name: i18n.importEvmNft.nftCollectionName,
-      value: nftInfo?.name || '',
-    },
-  };
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
@@ -67,9 +51,39 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const onBack = useCallback(() => {
     navigation.navigate('Home');
   }, [navigation]);
+  const chainOptions = useMemo(() => {
+    return Object.values(chainInfoMap).map(item => ({
+      value: item.slug,
+      label: item.name,
+    }));
+  }, [chainInfoMap]);
+  const [symbol, setSymbol] = useState<string>('');
+
+  const formConfig = {
+    smartContract: {
+      require: true,
+      name: i18n.importEvmNft.smartContract,
+      value: nftInfo?.contractAddress || '',
+    },
+    chain: {
+      require: true,
+      name: i18n.common.network,
+      value: nftInfo?.originChain || chainOptions[0]?.value || '',
+    },
+    collectionName: {
+      require: true,
+      name: i18n.importEvmNft.nftCollectionName,
+      value: nftInfo?.name || '',
+    },
+    selectedNftType: {
+      name: i18n.importEvmNft.nftType,
+      value: _AssetType.ERC721,
+    },
+  };
   const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {});
+
   const { data: formData } = formState;
-  const { chain, smartContract, collectionName } = formData;
+  const { chain, smartContract, collectionName, selectedNftType } = formData;
   const handleChangeValue = useCallback(
     (key: string) => {
       return (text: string) => {
@@ -90,22 +104,26 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
 
   const handleAddToken = useCallback(() => {
     setLoading(true);
-    const customToken = {
-      smartContract: smartContract,
-      chain,
-      type: 'erc721',
-      isCustom: true,
-    } as CustomToken;
-
-    if (collectionName) {
-      customToken.name = collectionName;
-    }
-
     if (!isNetConnected) {
       setLoading(false);
       return;
     }
-    upsertCustomToken(customToken)
+
+    const formattedCollectionName = collectionName.replace(/ /g, '').toUpperCase();
+
+    upsertCustomToken({
+      originChain: chain,
+      slug: '',
+      name: collectionName,
+      symbol: symbol !== '' ? symbol : formattedCollectionName,
+      decimals: null,
+      priceId: null,
+      minAmount: null,
+      assetType: _AssetType.ERC721,
+      metadata: _parseMetadataForSmartContractAsset(smartContract),
+      multiChainAsset: null,
+      hasValue: _isChainTestNet(chainInfoMap[chain]),
+    })
       .then(resp => {
         if (resp) {
           onUpdateErrors('smartContract')([i18n.common.addNftSuccess]);
@@ -122,29 +140,24 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [chain, collectionName, isNetConnected, onBack, onUpdateErrors, smartContract]);
+  }, [chain, chainInfoMap, collectionName, isNetConnected, onBack, onUpdateErrors, smartContract, symbol]);
 
   useEffect(() => {
     let unamount = false;
     if (smartContract !== '') {
-      let tokenType: CustomTokenType | undefined; // set token type
-      const isValidContractCaller = isValidSubstrateAddress(currentAccountAddress);
+      const isValidEvmContract =
+        [_AssetType.ERC721].includes(selectedNftType as _AssetType) && isEthereumAddress(smartContract);
+      const isValidWasmContract =
+        [_AssetType.PSP34].includes(selectedNftType as _AssetType) && isValidSubstrateAddress(smartContract);
 
-      if (isEthereumAddress(smartContract)) {
-        tokenType = CustomTokenType.erc721;
-      } else if (isValidSubstrateAddress(smartContract)) {
-        tokenType = CustomTokenType.psp34;
-      }
-
-      if (!tokenType) {
+      if (!(isValidEvmContract || isValidWasmContract)) {
         onUpdateErrors('smartContract')([i18n.errorMessage.invalidEvmContractAddress]);
       } else {
         setChecking(true);
         validateCustomToken({
-          smartContract: smartContract,
-          chain,
-          type: tokenType,
-          contractCaller: isValidContractCaller ? currentAccountAddress : undefined,
+          contractAddress: smartContract,
+          originChain: chain,
+          type: selectedNftType as _AssetType,
         })
           .then(resp => {
             if (unamount) {
@@ -158,6 +171,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
               } else {
                 onChangeValue('collectionName')(resp.name);
                 onUpdateErrors('smartContract')(undefined);
+                setSymbol(resp.symbol);
               }
             }
           })
@@ -179,7 +193,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     return () => {
       unamount = true;
     };
-  }, [chain, currentAccountAddress, onChangeValue, onUpdateErrors, smartContract]);
+  }, [chain, onChangeValue, onUpdateErrors, selectedNftType, smartContract]);
 
   useEffect(() => {
     if (collectionName.split(' ').join('') === '') {
