@@ -23,13 +23,13 @@ function getDAppItems(authUrlMap: Record<string, AuthUrlInfo>): AuthUrlInfo[] {
 }
 
 export const DAppAccessScreen = () => {
-  const authUrlMap = useSelector((state: RootState) => state.authUrls.details);
+  const authUrlMap = useSelector((state: RootState) => state.settings.authUrls);
   const navigation = useNavigation<RootNavigationProps>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const dAppItems = useMemo<AuthUrlInfo[]>(() => {
     return getDAppItems(authUrlMap);
   }, [authUrlMap]);
-
+console.log('authUrlMap', authUrlMap)
   const rightIconOption = useMemo(() => {
     return {
       icon: DotsThree,

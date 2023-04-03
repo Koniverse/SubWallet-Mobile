@@ -310,6 +310,9 @@ export function recodeAddress(
 export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
   return <SWLogo network={logoKey.toLowerCase()} defaultLogoKey={defaultLogoKey} size={size} />;
 }
+export function getTokenLogo(logoKey: string, subLogoKey: string, size: number, defaultLogoKey = 'default') {
+  return <SWLogo token={logoKey.toLowerCase()} subNetwork={subLogoKey} defaultLogoKey={defaultLogoKey} size={size} />;
+}
 
 export function shuffleArray(array: any[]) {
   for (let i = array.length - 1; i > 0; i--) {
