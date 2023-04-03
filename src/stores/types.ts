@@ -51,6 +51,13 @@ export type AppStateSlice = {
   isDisplayConfirmation: boolean;
 };
 
+export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc';
+
+export type PasswordModalSlice = {
+  isShowModal: boolean;
+  selectedAction?: SelectedActionType;
+};
+
 export type AuthUrlsSlice = {
   details: Record<string, AuthUrlInfo>;
 } & StoreSlice;

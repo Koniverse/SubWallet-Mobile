@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { SubmitButton } from 'components/SubmitButton';
-import { CopySimple } from 'phosphor-react-native';
-import { ColorMap } from 'styles/color';
-import Text from '../components/Text';
 import {
   ContainerHorizontalPadding,
-  FontBold,
   FontMedium,
+  FontSemiBold,
   MarginBottomForSubmitButton,
   ScrollViewStyle,
-  sharedStyles,
 } from 'styles/sharedStyles';
-import { LeftIconButton } from 'components/LeftIconButton';
 import { useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useToast } from 'react-native-toast-notifications';
 import { ExportAccountProps, RootNavigationProps } from 'routes/index';
-import { exportAccount, exportAccountPrivateKey } from '../messaging';
-import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
-import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { ExportType, SelectExportType } from 'components/common/SelectExportType';
+import { Warning } from 'components/Warning';
+import { Button, Icon, QRCode, Typography } from 'components/design-system-ui';
+import PasswordModal from 'components/Modal/PasswordModal';
+import { exportAccount, exportAccountPrivateKey, keyringExportMnemonic } from '../messaging';
+import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
+import { KeyringPair$Json } from '@subwallet/keyring/types';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { CheckCircle, CopySimple } from 'phosphor-react-native';
+import { SeedWordDataType } from 'screens/CreateAccount/types';
+import { SeedWord } from 'components/SeedWord';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -44,210 +45,310 @@ const footerAreaStyle: StyleProp<any> = {
   ...MarginBottomForSubmitButton,
 };
 
-const warningBlockStyle: StyleProp<any> = {
-  ...sharedStyles.blockContent,
-  backgroundColor: ColorMap.warningOverlay,
-  paddingBottom: 14,
-  paddingTop: 17,
-  marginBottom: 16,
-};
-
-const warningBlockTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  color: ColorMap.warning,
-  textAlign: 'center',
-};
-
-const warningBlockTitleStyle: StyleProp<any> = {
-  ...warningBlockTextStyle,
-  ...FontBold,
-  marginBottom: 8,
-};
-
 const rsBlockStyle: StyleProp<any> = {
-  ...sharedStyles.blockContent,
-  height: 238,
-  backgroundColor: ColorMap.dark2,
+  paddingTop: 8,
+  paddingBottom: 24,
+  paddingHorizontal: 12,
+  backgroundColor: '#1A1A1A',
   marginBottom: 16,
+  borderRadius: 8,
 };
 
-// const privateBlockOverlayStyle: StyleProp<any> = {
-//   flex: 1,
-//   justifyContent: 'center',
-// };
-
-const rsBlockTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
+const blockTextStyle: StyleProp<any> = {
+  fontSize: 14,
+  lineHeight: 22,
+  color: '#fff',
   ...FontMedium,
-  color: ColorMap.disabled,
   textAlign: 'center',
 };
 
-// const privateBlockIconStyle: StyleProp<any> = {
-//   alignItems: 'center',
-// };
+const blockTitleStyle: StyleProp<any> = { ...FontSemiBold, color: 'rgba(255, 255, 255, 0.65)', marginBottom: 16 };
 
-const copyButtonWrapperStyle: StyleProp<any> = {
-  alignItems: 'center',
+const phraseBlockStyle: StyleProp<any> = {
+  paddingLeft: 14,
+  paddingRight: 14,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginBottom: 16,
+  justifyContent: 'center',
 };
 
-const buttonStyle: StyleProp<any> = {
+const seedWordStyle = {
   margin: 4,
-  flex: 1,
 };
 
 const ViewStep = {
-  HIDE_PK: 1,
-  ENTER_PW: 2,
-  SHOW_RS: 3,
+  SELECT_TYPES: 1,
+  SHOW_RS: 2,
 };
-// const PrivateBlockIcon = FingerprintSimple;
 
-const formConfig = {
-  password: {
-    require: true,
-    name: i18n.common.passwordForThisAccount,
-    value: '',
-    validateFunc: validatePassword,
-  },
+const titleMap: Record<ExportType, string> = {
+  [ExportType.JSON_FILE]: 'Successful',
+  [ExportType.QR_CODE]: 'Your QR code',
+  [ExportType.PRIVATE_KEY]: 'Your private key',
+  [ExportType.SEED_PHRASE]: 'Your recovery phrase',
 };
 
 export const ExportAccount = ({
   route: {
-    params: { address, exportType },
+    params: { address },
   },
 }: ExportAccountProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [result, setResult] = useState<string>('');
+  const theme = useSubWalletTheme().swThemes;
   const [isBusy, setIsBusy] = useState(false);
-  const [currentViewStep, setCurrentViewStep] = useState<number>(2);
+  const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  const [selectedTypes, setSelectedTypes] = useState<ExportType[]>([]);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>('');
+  const [errorArr, setErrorArr] = useState<string[] | undefined>(undefined);
+  const [privateKey, setPrivateKey] = useState<string>('');
+  const [publicKey, setPublicKey] = useState<string>('');
+  const [seedPhrase, setSeedPhrase] = useState<string>('');
+  const [jsonData, setJsonData] = useState<null | KeyringPair$Json>(null);
   const toast = useToast();
   useHandlerHardwareBackPress(isBusy);
+  const account = useGetAccountByAddress(address);
+  const seedItems = useMemo<SeedWordDataType[]>(() => {
+    return seedPhrase.split(' ').map((word, index) => {
+      return {
+        key: `${index}-${word}`,
+        title: word,
+        prefixText: `${index + 1}`.padStart(2, '0'),
+      };
+    });
+  }, [seedPhrase]);
 
-  useEffect(() => {
-    if (currentViewStep === ViewStep.ENTER_PW) {
-      focus('password')();
+  const qrData = useMemo((): string => {
+    const prefix = 'secret';
+    const result: string[] = [prefix, privateKey || '', publicKey];
+
+    if (account?.name) {
+      result.push(account.name);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentViewStep]);
-  const onSetPassword = (formState: FormState) => {
-    const password = formState.data.password;
+
+    return result.join(':');
+  }, [account?.name, publicKey, privateKey]);
+
+  const onPressSubmit = useCallback(() => {
+    if (!selectedTypes.length || !account) {
+      return;
+    }
+
+    const _address = account.address;
+
+    if (!_address) {
+      return;
+    }
+
     setIsBusy(true);
-    if (exportType === 'json') {
-      exportAccount(address, password)
-        .then(({ exportedJson }) => {
-          setResult(JSON.stringify(exportedJson));
-          setIsBusy(false);
-          setCurrentViewStep(ViewStep.SHOW_RS);
+
+    setTimeout(() => {
+      const promise = new Promise<void>((resolve, reject) => {
+        const result = {
+          privateKey: false,
+          seedPhrase: false,
+          jsonFile: false,
+        };
+
+        const checkDone = () => {
+          if (Object.values(result).every(value => value)) {
+            resolve();
+          }
+        };
+
+        if (selectedTypes.includes(ExportType.PRIVATE_KEY) || selectedTypes.includes(ExportType.QR_CODE)) {
+          exportAccountPrivateKey(_address, password)
+            .then(res => {
+              setPrivateKey(res.privateKey);
+              setPublicKey(res.publicKey);
+              result.privateKey = true;
+              checkDone();
+            })
+            .catch((e: Error) => {
+              reject(new Error(e.message));
+            });
+        } else {
+          result.privateKey = true;
+        }
+
+        if (selectedTypes.includes(ExportType.SEED_PHRASE) && account?.isMasterAccount) {
+          keyringExportMnemonic({ address, password: password })
+            .then(res => {
+              setSeedPhrase(res.result);
+              result.seedPhrase = true;
+              checkDone();
+            })
+            .catch((e: Error) => {
+              reject(new Error(e.message));
+            });
+        } else {
+          result.seedPhrase = true;
+        }
+
+        if (selectedTypes.includes(ExportType.JSON_FILE)) {
+          exportAccount(_address, password)
+            .then(res => {
+              setJsonData(res.exportedJson);
+              result.jsonFile = true;
+              checkDone();
+            })
+            .catch((e: Error) => {
+              reject(new Error(e.message));
+            });
+        } else {
+          result.jsonFile = true;
+        }
+      });
+
+      promise
+        .then(() => {
+          setCurrentViewStep(2);
+          setModalVisible(false);
         })
-        .catch((error: Error) => {
-          onUpdateErrors('password')([error.message]);
+        .catch(() => setErrorArr(['Invalid password']))
+        .finally(() => {
           setIsBusy(false);
         });
-    } else {
-      exportAccountPrivateKey(address, password)
-        .then(({ privateKey: resPrivateKey }) => {
-          setResult(resPrivateKey);
-          setIsBusy(false);
-          setCurrentViewStep(ViewStep.SHOW_RS);
-        })
-        .catch((error: Error) => {
-          onUpdateErrors('password')([error.message]);
-          setIsBusy(false);
-        });
-    }
-  };
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
-    onSubmitForm: onSetPassword,
-  });
+    }, 500);
+  }, [account, address, password, selectedTypes]);
+
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();
     toast.show(i18n.common.copiedToClipboard);
   };
 
-  // const onTapPrivate = () => {
-  //   setCurrentViewStep(ViewStep.ENTER_PW);
-  // };
+  const renderSeedWord = (item: SeedWordDataType) => {
+    return <SeedWord style={seedWordStyle} key={item.key} prefixText={item.prefixText} title={item.title} disabled />;
+  };
+
+  const renderCopyBtn = () => {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Button
+          type="ghost"
+          size={'xs'}
+          onPress={() => copyToClipboard(privateKey)}
+          icon={<Icon phosphorIcon={CopySimple} size={'md'} iconColor={theme.colorTextLight4} />}>
+          {i18n.common.copyToClipboard}
+        </Button>
+      </View>
+    );
+  };
 
   const onPressDone = () => {
     navigation.goBack();
   };
 
+  const title = useMemo(() => {
+    const exportSingle = selectedTypes.length <= 1;
+    if (currentViewStep === ViewStep.SELECT_TYPES) {
+      return i18n.title.exportAccount;
+    } else {
+      if (!exportSingle) {
+        return 'Export successful';
+      } else {
+        return titleMap[selectedTypes[0]];
+      }
+    }
+  }, [currentViewStep, selectedTypes]);
+
   return (
-    <SubScreenContainer
-      navigation={navigation}
-      disabled={isBusy}
-      title={exportType === 'json' ? i18n.title.exportAccount : i18n.title.exportPrivateKey}>
+    <SubScreenContainer navigation={navigation} disabled={isBusy} title={title}>
       <View style={layoutContainerStyle}>
         <ScrollView style={bodyAreaStyle}>
-          <View style={warningBlockStyle}>
-            <Text style={warningBlockTitleStyle}>
-              {exportType === 'json' ? i18n.warningTitle.doNotShareJsonFile : i18n.warningTitle.doNotSharePrivateKey}
-            </Text>
-            <Text style={warningBlockTextStyle}>
-              {exportType === 'json' ? i18n.warningMessage.exportAccountWarning : i18n.warningMessage.privateKeyWarning}
-            </Text>
-          </View>
+          <Warning
+            style={{ marginTop: 16 }}
+            title={'Warning: Never disclose this key'}
+            message={'Anyone with your keys can steal any assets held in your account.'}
+          />
 
-          {/*{currentViewStep === ViewStep.HIDE_PK && (*/}
-          {/*  <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={rsBlockStyle} onPress={onTapPrivate}>*/}
-          {/*    <View style={privateBlockOverlayStyle}>*/}
-          {/*      <Text style={{ ...rsBlockTextStyle, marginBottom: 4, color: ColorMap.light }}>*/}
-          {/*        {i18n.common.tapToRevealPrivateKey}*/}
-          {/*      </Text>*/}
-          {/*      <Text style={{ ...rsBlockTextStyle, marginBottom: 8 }}>{i18n.common.viewPrivateKeyTitle}</Text>*/}
-          {/*      <View style={privateBlockIconStyle}>*/}
-          {/*        <PrivateBlockIcon size={32} color={ColorMap.light} />*/}
-          {/*      </View>*/}
-          {/*    </View>*/}
-          {/*  </TouchableOpacity>*/}
-          {/*)}*/}
+          {currentViewStep === ViewStep.SELECT_TYPES && (
+            <SelectExportType
+              styles={{ marginTop: 16 }}
+              selectedItems={selectedTypes}
+              setSelectedItems={setSelectedTypes}
+            />
+          )}
 
-          {currentViewStep === ViewStep.ENTER_PW && (
+          {currentViewStep === ViewStep.SHOW_RS && (
             <>
-              <PasswordField
-                ref={formState.refs.password}
-                isBusy={isBusy}
-                label={formState.labels.password}
-                defaultValue={formState.data.password}
-                onChangeText={onChangeValue('password')}
-                errorMessages={formState.errors.password}
-                onSubmitField={onSubmitField('password')}
-              />
+              {selectedTypes.includes(ExportType.PRIVATE_KEY) && (
+                <View style={{ marginTop: theme.marginLG }}>
+                  <Typography.Text style={blockTitleStyle} size={'sm'}>
+                    YOUR PRIVATE KEY
+                  </Typography.Text>
+                  <View style={rsBlockStyle}>
+                    <Typography.Text style={blockTextStyle}>{privateKey}</Typography.Text>
+                  </View>
+                  {renderCopyBtn()}
+                </View>
+              )}
+
+              {selectedTypes.includes(ExportType.SEED_PHRASE) && (
+                <View style={{ marginTop: theme.marginLG }}>
+                  <Typography.Text style={blockTitleStyle} size={'sm'}>
+                    YOUR SEED PHRASE
+                  </Typography.Text>
+                  <View style={phraseBlockStyle}>{seedItems.map(renderSeedWord)}</View>
+                  {renderCopyBtn()}
+                </View>
+              )}
+
+              {selectedTypes.includes(ExportType.QR_CODE) && (
+                <View style={{ marginTop: theme.marginLG }}>
+                  <Typography.Text style={blockTitleStyle} size={'sm'}>
+                    YOUR QR
+                  </Typography.Text>
+                  <View style={{ alignItems: 'center', marginBottom: 16 }}>
+                    <QRCode errorLevel={'H'} value={qrData} />
+                  </View>
+
+                  {renderCopyBtn()}
+                </View>
+              )}
+
+              {selectedTypes.includes(ExportType.JSON_FILE) && (
+                <View style={{ marginTop: theme.marginLG }}>
+                  <Typography.Text style={blockTitleStyle} size={'sm'}>
+                    YOUR JSON FILE
+                  </Typography.Text>
+                  <View style={rsBlockStyle}>
+                    <Typography.Text style={blockTextStyle}>{JSON.stringify(jsonData)}</Typography.Text>
+                  </View>
+                  {renderCopyBtn()}
+                </View>
+              )}
             </>
-          )}
-
-          {currentViewStep === ViewStep.SHOW_RS && (
-            <View style={rsBlockStyle}>
-              <Text style={rsBlockTextStyle}>{result}</Text>
-            </View>
-          )}
-
-          {currentViewStep === ViewStep.SHOW_RS && (
-            <View style={copyButtonWrapperStyle}>
-              <LeftIconButton
-                icon={CopySimple}
-                title={i18n.common.copyToClipboard}
-                onPress={() => copyToClipboard(result)}
-              />
-            </View>
           )}
         </ScrollView>
 
         <View style={footerAreaStyle}>
-          {currentViewStep === ViewStep.ENTER_PW ? (
-            <SubmitButton
-              title={i18n.common.continue}
-              disabled={!formState.isValidated.password}
-              isBusy={isBusy}
-              style={buttonStyle}
-              onPress={onSubmitField('password')}
-            />
+          {currentViewStep === ViewStep.SELECT_TYPES ? (
+            <Button disabled={!(selectedTypes && selectedTypes.length)} block onPress={() => setModalVisible(true)}>
+              {i18n.common.confirm}
+            </Button>
           ) : (
-            <SubmitButton title={i18n.common.done} disabled={isBusy} style={buttonStyle} onPress={onPressDone} />
+            <Button
+              block
+              disabled={isBusy}
+              onPress={onPressDone}
+              icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}>
+              {i18n.common.finish}
+            </Button>
           )}
         </View>
+
+        <PasswordModal
+          visible={modalVisible}
+          closeModal={() => setModalVisible(false)}
+          isBusy={isBusy}
+          onConfirm={onPressSubmit}
+          errorArr={errorArr}
+          setErrorArr={setErrorArr}
+          onChangePassword={setPassword}
+        />
       </View>
     </SubScreenContainer>
   );

@@ -17,3 +17,4 @@ export { default as WarningText } from './warning-text';
 export { default as Tag } from './tag';
 export { default as Divider } from './divider';
 export { default as PageIcon } from './page-icon';
+export { default as QRCode } from './qr-code';

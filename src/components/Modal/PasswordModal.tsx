@@ -18,6 +18,7 @@ interface Props {
   isBusy: boolean;
   errorArr: string[] | undefined;
   setErrorArr: (val: string[] | undefined) => void;
+  onChangePassword?: (value: string) => void;
 }
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -51,7 +52,7 @@ const formConfig: FormControlConfig = {
   },
 };
 
-const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr }: Props) => {
+const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr, onChangePassword }: Props) => {
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const onSubmit = useCallback(
     (formState: FormState) => {
@@ -67,9 +68,10 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
   const handleChangePassword = useCallback(
     (val: string) => {
       setErrorArr(undefined);
+      onChangePassword && onChangePassword(val);
       onChangeValue('password')(val);
     },
-    [onChangeValue, setErrorArr],
+    [onChangePassword, onChangeValue, setErrorArr],
   );
 
   const onPress = useCallback(() => {

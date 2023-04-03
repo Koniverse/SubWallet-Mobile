@@ -14,7 +14,7 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import useGetActiveNetwork from 'hooks/screen/useGetActiveChains';
 import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
-import { CopySimple, FileText, Key, QrCode, Trash } from 'phosphor-react-native';
+import { CopySimple, Export, Trash } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -110,12 +110,8 @@ export const EditAccount = ({
     [toast],
   );
 
-  const onExportPrivateKey = useCallback(() => {
-    navigation.navigate('ExportAccount', { address: currentAddress, exportType: 'privateKey' });
-  }, [currentAddress, navigation]);
-
-  const onExportJson = useCallback(() => {
-    navigation.navigate('ExportAccount', { address: currentAddress, exportType: 'json' });
+  const onExportAccount = useCallback(() => {
+    navigation.navigate('ExportAccount', { address: currentAddress });
   }, [currentAddress, navigation]);
 
   const onRemoveAccount = useCallback(() => {
@@ -126,10 +122,6 @@ export const EditAccount = ({
     _saveChange(formState);
     blur('accountName')();
   }, [_saveChange, blur, formState]);
-
-  const onOpenNetworkModal = useCallback(() => {
-    setNetworkModalVisible(true);
-  }, []);
 
   const onCloseNetworkModal = useCallback(() => {
     setNetworkModalVisible(false);
@@ -190,25 +182,18 @@ export const EditAccount = ({
           <>
             <ActionItem
               style={getExportButtonStyle()}
-              title={i18n.settings.exportPrivateKey}
-              icon={Key}
+              title={'Export this account'}
+              icon={Export}
               hasRightArrow
-              onPress={onExportPrivateKey}
+              onPress={onExportAccount}
             />
-            <ActionItem
-              style={getExportButtonStyle()}
-              title={i18n.title.exportJson}
-              icon={FileText}
-              hasRightArrow
-              onPress={onExportJson}
-            />
-            <ActionItem
-              style={getExportButtonStyle(true)}
-              title={i18n.title.exportQrSigner}
-              icon={QrCode}
-              hasRightArrow
-              onPress={onOpenNetworkModal}
-            />
+            {/*<ActionItem*/}
+            {/*  style={getExportButtonStyle(true)}*/}
+            {/*  title={'Derive an account'}*/}
+            {/*  icon={ShareNetwork}*/}
+            {/*  hasRightArrow*/}
+            {/*  onPress={onExportPrivateKey}*/}
+            {/*/>*/}
           </>
         )}
 

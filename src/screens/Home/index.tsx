@@ -20,8 +20,9 @@ import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMas
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import {useNavigation} from "@react-navigation/native";
-import {RootNavigationProps} from "routes/index";
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import { keyringLock } from '../../messaging';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -140,6 +141,10 @@ export const Home = () => {
       navigation.navigate('MigratePassword');
     }
   }, [hasMasterPassword, navigation, needMigrate]);
+
+  useEffect(() => {
+    keyringLock().catch((e: Error) => console.log(e));
+  }, []);
 
   return (
     <>

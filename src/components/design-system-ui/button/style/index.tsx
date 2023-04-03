@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import {FontSemiBold} from "styles/sharedStyles";
 export interface ButtonStyles {
   container: ViewStyle;
   blockButtonRaw: ViewStyle;
@@ -36,6 +37,7 @@ export interface ButtonStyles {
   warningDisabledRaw: ViewStyle;
   dangerDisabledRaw: ViewStyle;
   ghostDisabledRaw: ViewStyle;
+  textStyle: TextStyle;
   buttonRawText: TextStyle;
   primaryRawText: TextStyle;
   secondaryRawText: TextStyle;
@@ -188,6 +190,9 @@ export default (theme: ThemeTypes) =>
       paddingLeft: theme.paddingXS,
     },
     //text style follow type
+    textStyle: {
+      ...FontSemiBold,
+    },
     primaryRawText: {
       color: theme.colorTextLight1,
     },
