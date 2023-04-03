@@ -7,6 +7,11 @@ import { NetworkField } from 'components/Field/Network';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
 import { ScrollView, View } from 'react-native';
+import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
+import {
+  _getContractAddressOfToken,
+  _isSmartContractToken,
+} from '@subwallet/extension-base/services/chain-service/utils';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -15,11 +20,10 @@ import { useToast } from 'react-native-toast-notifications';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
 import { upsertCustomToken } from '../../messaging';
-import { FUNGIBLE_TOKEN_STANDARDS } from '@subwallet/extension-base/koni/api/tokens';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
+import { _ChainAsset } from '@subwallet/chain-list/types';
 
 export const ConfigureToken = ({
   route: {
@@ -27,19 +31,20 @@ export const ConfigureToken = ({
   },
 }: ConfigureTokenProps) => {
   const toast = useToast();
-  const customTokenInfo = JSON.parse(tokenDetail) as CustomToken;
+  const customTokenInfo = JSON.parse(tokenDetail) as _ChainAsset;
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setBusy] = useState<boolean>(false);
+  const tokenInfo = useGetChainAssetInfo(customTokenInfo.slug) as _ChainAsset;
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const formConfig = {
     tokenName: {
       name: i18n.importToken.tokenName,
-      value: customTokenInfo.name || '',
+      value: tokenInfo.name || '',
     },
   };
   const onSubmit = (formState: FormState) => {
     const newTokenInfo = {
-      ...customTokenInfo,
+      ...tokenInfo,
       name: formState.data.tokenName,
     };
     setBusy(true);
@@ -70,19 +75,21 @@ export const ConfigureToken = ({
     toast.hideAll();
     toast.show(i18n.common.copiedToClipboard);
   };
-
+  console.log('tokenInfo', tokenInfo);
   return (
     <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={i18n.title.configureToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
-          <AddressField
-            label={i18n.importToken.contractAddress}
-            address={customTokenInfo.smartContract}
-            rightIcon={CopySimple}
-            onPressRightIcon={() => copyToClipboard(customTokenInfo.smartContract)}
-          />
-          <NetworkField disabled={true} label={i18n.common.network} networkKey={customTokenInfo.chain} />
-          {!FUNGIBLE_TOKEN_STANDARDS.includes(customTokenInfo.type) && (
+          {_isSmartContractToken(tokenInfo) && (
+            <AddressField
+              label={i18n.importToken.contractAddress}
+              address={_getContractAddressOfToken(tokenInfo)}
+              rightIcon={CopySimple}
+              onPressRightIcon={() => copyToClipboard(_getContractAddressOfToken(tokenInfo))}
+            />
+          )}
+          <NetworkField disabled={true} label={i18n.common.network} networkKey={tokenInfo.originChain} />
+          {!tokenInfo.assetType && (
             <InputText
               ref={formState.refs.tokenName}
               label={formState.labels.tokenName}
@@ -92,19 +99,13 @@ export const ConfigureToken = ({
             />
           )}
 
-          {FUNGIBLE_TOKEN_STANDARDS.includes(customTokenInfo.type) && (
-            <TextField disabled={true} label={i18n.common.symbol} text={customTokenInfo.symbol || ''} />
+          {tokenInfo.symbol && <TextField disabled={true} label={i18n.common.symbol} text={tokenInfo.symbol} />}
+
+          {tokenInfo.decimals && (
+            <TextField disabled={true} label={i18n.common.decimals} text={tokenInfo.decimals.toString()} />
           )}
 
-          {FUNGIBLE_TOKEN_STANDARDS.includes(customTokenInfo.type) && (
-            <TextField
-              disabled={true}
-              label={i18n.common.decimals}
-              text={customTokenInfo.decimals ? customTokenInfo.decimals.toString() : ''}
-            />
-          )}
-
-          <TextField disabled={true} label={i18n.common.tokenType} text={customTokenInfo.type.toUpperCase()} />
+          <TextField disabled={true} label={i18n.common.tokenType} text={tokenInfo.assetType.toUpperCase()} />
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />

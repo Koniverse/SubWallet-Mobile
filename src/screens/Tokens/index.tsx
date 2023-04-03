@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { CustomToken, DeleteCustomTokenParams } from '@subwallet/extension-base/background/KoniTypes';
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Trash } from 'phosphor-react-native';
 import { Alert, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
@@ -11,10 +10,10 @@ import { RootNavigationProps } from 'routes/index';
 import { SubmitButton } from 'components/SubmitButton';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { deleteCustomTokens } from '../../messaging';
 import { useToast } from 'react-native-toast-notifications';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import useFetchCustomToken from 'hooks/screen/Setting/useFetchCustomToken';
+import { _ChainAsset } from '@subwallet/chain-list/types';
 
 const filterFunction = (items: CustomToken[], searchString: string) => {
   return items.filter(
@@ -26,7 +25,7 @@ const filterFunction = (items: CustomToken[], searchString: string) => {
 
 export const CustomTokenSetting = () => {
   const toast = useToast();
-  const customTokens = useFetchCustomToken();
+  const { assetItems, assetSettingMap } = useFetchCustomToken();
   const navigation = useNavigation<RootNavigationProps>();
   const [selectedTokens, setSelectedTokens] = useState<DeleteCustomTokenParams[]>([]);
   const [isEditMode, setEditMode] = useState<boolean>(false);
@@ -99,7 +98,7 @@ export const CustomTokenSetting = () => {
     ]);
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<CustomToken>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<_ChainAsset>) => {
     return (
       <CustomTokenItem
         item={item}
@@ -125,7 +124,7 @@ export const CustomTokenSetting = () => {
           onPress: () => setEditMode(!isEditMode),
         }}
         title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
-        items={customTokens}
+        items={assetItems}
         autoFocus={false}
         searchFunction={filterFunction}
         renderItem={renderItem}

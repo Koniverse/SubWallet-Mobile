@@ -1,20 +1,9 @@
-import { CustomToken } from '@subwallet/extension-base/background/KoniTypes';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
-export default function useFetchCustomToken(): CustomToken[] {
-  const customToken = useSelector((state: RootState) => state.customToken.details);
-  const filteredCustomTokens: CustomToken[] = [];
-
-  Object.values(customToken).forEach(_tokenList => {
-    const tokenList = _tokenList as CustomToken[];
-
-    for (const token of tokenList) {
-      if (!token.isDeleted) {
-        filteredCustomTokens.push(token);
-      }
-    }
-  });
-
-  return filteredCustomTokens;
+export default function useFetchCustomToken() {
+  const { assetRegistry, assetSettingMap } = useSelector((state: RootState) => state.assetRegistry);
+  const assetItems = useMemo(() => Object.values(assetRegistry), [assetRegistry]);
+  return { assetItems, assetSettingMap };
 }

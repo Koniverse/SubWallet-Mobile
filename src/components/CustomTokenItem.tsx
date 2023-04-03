@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { getNetworkLogo } from 'utils/index';
+import { getTokenLogo } from 'utils/index';
 import { CaretRight, MinusCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { CustomToken, DeleteCustomTokenParams } from '@subwallet/extension-base/background/KoniTypes';
+import { _ChainAsset } from '@subwallet/chain-list/types';
+import { Logo as SWLogo } from 'components/design-system-ui';
 
 interface Props {
-  item: CustomToken;
+  item: _ChainAsset;
   isEditMode: boolean;
   onPress: () => void;
   handleSelected: (val: DeleteCustomTokenParams) => void;
@@ -48,19 +49,19 @@ export const CustomTokenItem = ({ item, isEditMode, onPress, handleSelected, han
 
       if (checked) {
         handleSelected({
-          smartContract: item.smartContract,
-          chain: item.chain,
-          type: item.type,
+          smartContract: item.metadata,
+          chain: item.slug,
+          type: item.assetType,
         });
       } else {
         handleUnselected({
-          smartContract: item.smartContract,
-          chain: item.chain,
-          type: item.type,
+          smartContract: item.metadata,
+          chain: item.slug,
+          type: item.assetType,
         });
       }
     },
-    [handleSelected, handleUnselected, item.chain, item.smartContract, item.type],
+    [handleSelected, handleUnselected, item.slug, item.metadata, item.assetType],
   );
 
   const _onPressItem = useCallback(() => {
@@ -75,7 +76,13 @@ export const CustomTokenItem = ({ item, isEditMode, onPress, handleSelected, han
     <TouchableOpacity onPress={_onPressItem}>
       <View style={itemWrapperStyle}>
         <View style={{ flexDirection: 'row', flex: 1 }}>
-          {getNetworkLogo(item.symbol || item.chain, 28)}
+          <SWLogo
+            token={item.symbol.toLowerCase()}
+            subNetwork={item.originChain}
+            defaultLogoKey={'default'}
+            size={28}
+            isShowSubLogo
+          />
           <Text numberOfLines={1} style={itemTextStyle}>
             {item.name || item.symbol || ''}
           </Text>
