@@ -52,7 +52,7 @@ export const TokenDetailModal = ({ modalVisible, onChangeModalVisible, currentTo
       <View style={_style.blockContainer}>
         {items.map(item => (
           <View key={item.key} style={_style.row}>
-            <Typography.Text style={{ ...FontSemiBold }}>{item.label}</Typography.Text>
+            <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>{item.label}</Typography.Text>
 
             <Number
               style={_style.value}

@@ -81,6 +81,7 @@ export const TokenGroupBalanceItem = ({
                     fontSize: theme.fontSizeLG,
                     ...FontSemiBold,
                     lineHeight: theme.lineHeightLG * theme.fontSizeLG,
+                    color: theme.colorTextLight1,
                   }}>
                   ******
                 </Typography.Text>
