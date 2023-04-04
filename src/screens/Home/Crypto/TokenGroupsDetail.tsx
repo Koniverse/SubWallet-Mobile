@@ -13,6 +13,10 @@ import { TokenGroupsDetailUpperBlock } from 'screens/Home/Crypto/TokenGroupsDeta
 import { useNavigation } from '@react-navigation/native';
 import { TokenDetailModal } from 'screens/Home/Crypto/TokenDetailModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { TokenSelector } from 'components/Modal/common/TokenSelector';
+import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -28,6 +32,21 @@ export const TokenGroupsDetail = ({
   const navigation = useNavigation<CryptoNavigationProps>();
   const [currentTokenInfo, setCurrentTokenInfo] = useState<CurrentSelectToken | undefined>(undefined);
   const [tokenDetailVisible, setTokenDetailVisible] = useState<boolean>(false);
+  const {
+    accountSelectorItems,
+    onOpenReceive,
+    openSelectAccount,
+    openSelectToken,
+    selectedAccount,
+    selectedNetwork,
+    isTokenSelectorModalVisible,
+    isAccountSelectorModalVisible,
+    onCloseSelectAccount,
+    onCloseSelectToken,
+    onCloseQrModal,
+    isQrModalVisible,
+    tokenSelectorItems,
+  } = useReceiveQR(tokenGroupSlug);
 
   const {
     accountBalance: { tokenBalanceMap, tokenGroupBalanceMap },
@@ -87,12 +106,13 @@ export const TokenGroupsDetail = ({
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock
+        onOpenReceive={onOpenReceive}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
         tokenGroupSlug={tokenGroupSlug}
       />
     );
-  }, [onClickBack, tokenGroupSlug, tokenBalanceValue]);
+  }, [onOpenReceive, tokenBalanceValue, onClickBack, tokenGroupSlug]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
@@ -120,6 +140,27 @@ export const TokenGroupsDetail = ({
           tokenBalanceMap={tokenBalanceMap}
           modalVisible={tokenDetailVisible}
           onChangeModalVisible={onCloseTokenDetailModal}
+        />
+
+        <AccountSelector
+          modalVisible={isAccountSelectorModalVisible}
+          onCancel={onCloseSelectAccount}
+          items={accountSelectorItems}
+          onSelectItem={openSelectAccount}
+        />
+
+        <TokenSelector
+          modalVisible={isTokenSelectorModalVisible}
+          items={tokenSelectorItems}
+          onSelectItem={openSelectToken}
+          onCancel={onCloseSelectToken}
+        />
+
+        <ReceiveModal
+          modalVisible={isQrModalVisible}
+          address={selectedAccount}
+          selectedNetwork={selectedNetwork}
+          onCancel={onCloseQrModal}
         />
       </>
     </ScreenContainer>

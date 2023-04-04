@@ -1,32 +1,30 @@
 import React, { useMemo, useRef } from 'react';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { Linking, Share, StyleProp, TouchableOpacity, View } from 'react-native';
+import { Linking, Share, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontBold, FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import QRCode from 'react-native-qrcode-svg';
-import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
+import reformatAddress, { getNetworkLogo, getScanExplorerAddressInfoUrl, toShort } from 'utils/index';
 import { IconButton } from 'components/IconButton';
 import { CopySimple } from 'phosphor-react-native';
 import { SubmitButton } from 'components/SubmitButton';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { BUTTON_ACTIVE_OPACITY, deviceHeight, TOAST_DURATION } from 'constants/index';
+import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
-import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
-import useSupportScanExplorer from 'hooks/screen/useSupportScanExplorerUrl';
 import ToastContainer from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import {
+  _getBlockExplorerFromChain,
+  _getChainSubstrateAddressPrefix,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 
 interface Props {
-  selectedAddress?: string;
-  receiveModalVisible: boolean;
-  onChangeVisible: () => void;
-  networkKey: string;
-  networkPrefix: number;
-  openChangeNetworkModal: () => void;
-  disableReselectButton?: boolean;
+  modalVisible: boolean;
+  address?: string;
+  selectedNetwork?: string;
+  onCancel: () => void;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -86,19 +84,10 @@ function receiveModalExplorerBtnStyle(borderColor: string): StyleProp<any> {
 }
 
 const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
-export const ReceiveModal = ({
-  selectedAddress,
-  receiveModalVisible,
-  onChangeVisible,
-  networkKey,
-  networkPrefix,
-  openChangeNetworkModal,
-  disableReselectButton,
-}: Props) => {
+export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel }: Props) => {
   const toastRef = useRef<ToastContainer>(null);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const chainInfo = useFetchChainInfo(selectedNetwork || '');
 
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
@@ -109,19 +98,44 @@ export const ReceiveModal = ({
       toastRef.current.show(i18n.common.copiedToClipboard);
     }
   };
-  const formattedAddress = useMemo(() => {
-    const networkInfo = networkMap[networkKey];
 
-    return reformatAddress(selectedAddress || currentAccountAddress, networkPrefix, networkInfo?.isEthereum);
-  }, [networkMap, networkKey, selectedAddress, currentAccountAddress, networkPrefix]);
-  const isSupportScanExplorer = useSupportScanExplorer(networkKey);
-  const scanExplorerAddressUrl = useScanExplorerAddressUrl(networkKey, formattedAddress);
+  const formattedAddress = useMemo(() => {
+    if (chainInfo) {
+      const isEvmChain = !!chainInfo.evmInfo;
+      const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
+
+      return reformatAddress(address || '', networkPrefix, isEvmChain);
+    } else {
+      return address || '';
+    }
+  }, [address, chainInfo]);
+
+  const scanExplorerAddressUrl = useMemo(() => {
+    let route = '';
+    const blockExplorer = selectedNetwork && _getBlockExplorerFromChain(chainInfo);
+
+    if (blockExplorer && blockExplorer.includes('subscan.io')) {
+      route = 'account';
+    } else {
+      route = 'address';
+    }
+
+    if (blockExplorer) {
+      return `${blockExplorer}${route}/${formattedAddress}`;
+    } else {
+      return getScanExplorerAddressInfoUrl(selectedNetwork || '', formattedAddress);
+    }
+  }, [selectedNetwork, formattedAddress, chainInfo]);
 
   const onShareImg = () => {
+    if (!chainInfo?.slug) {
+      return;
+    }
+
     svg.toDataURL(data => {
       const shareImageBase64 = {
         title: 'QR',
-        message: `My Public Address to Receive ${networkKey.toUpperCase()}: ${formattedAddress}`,
+        message: `My Public Address to Receive ${chainInfo?.slug.toUpperCase()}: ${formattedAddress}`,
         url: `data:image/png;base64,${data}`,
       };
       Share.share(shareImageBase64);
@@ -129,7 +143,7 @@ export const ReceiveModal = ({
   };
 
   return (
-    <SubWalletModal modalVisible={receiveModalVisible} onChangeModalVisible={onChangeVisible}>
+    <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
       <View style={receiveModalContentWrapper}>
         <Text style={receiveModalTitle}>{i18n.title.receiveAsset}</Text>
         <View style={{ borderWidth: 2, borderColor: ColorMap.light }}>
@@ -139,15 +153,7 @@ export const ReceiveModal = ({
         <Text style={receiveModalGuide}>{i18n.common.receiveModalText}</Text>
 
         <View style={receiveModalAddressWrapper}>
-          <TouchableOpacity
-            disabled={disableReselectButton}
-            activeOpacity={BUTTON_ACTIVE_OPACITY}
-            onPress={() => {
-              onChangeVisible();
-              openChangeNetworkModal();
-            }}>
-            {getNetworkLogo(networkKey, 20)}
-          </TouchableOpacity>
+          {getNetworkLogo(chainInfo?.slug || '', 20)}
 
           <Text style={receiveModalAddressText}>{toShort(formattedAddress, 12, 12)}</Text>
           <IconButton
@@ -160,16 +166,21 @@ export const ReceiveModal = ({
 
         <View style={{ flexDirection: 'row', paddingTop: 27 }}>
           <SubmitButton
-            disabled={!isSupportScanExplorer}
+            disabled={!scanExplorerAddressUrl}
             disabledColor={ColorMap.buttonOverlayButtonColor}
             title={i18n.common.explorer}
             backgroundColor={ColorMap.dark2}
-            style={receiveModalExplorerBtnStyle(!isSupportScanExplorer ? 'rgba(255, 255, 255, 0.5)' : ColorMap.light)}
+            style={receiveModalExplorerBtnStyle(!scanExplorerAddressUrl ? 'rgba(255, 255, 255, 0.5)' : ColorMap.light)}
             onPress={() => {
-              isSupportScanExplorer && Linking.openURL(scanExplorerAddressUrl);
+              !!scanExplorerAddressUrl && Linking.openURL(scanExplorerAddressUrl);
             }}
           />
-          <SubmitButton style={{ flex: 1, marginLeft: 8 }} title={i18n.common.share} onPress={onShareImg} />
+          <SubmitButton
+            disabled={!chainInfo?.slug}
+            style={{ flex: 1, marginLeft: 8 }}
+            title={i18n.common.share}
+            onPress={onShareImg}
+          />
         </View>
         {
           <Toast
