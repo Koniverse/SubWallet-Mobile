@@ -1,7 +1,6 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
-import { CryptoContext } from 'providers/screen/Home/CryptoContext';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { TokenBalanceItemType } from 'types/balance';
 import { ScreenContainer } from 'components/ScreenContainer';
@@ -19,6 +18,9 @@ import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useAccountBalance from 'hooks/screen/useAccountBalance';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -52,10 +54,9 @@ export const TokenGroupsDetail = ({
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
-  const {
-    accountBalance: { tokenBalanceMap, tokenGroupBalanceMap },
-    tokenGroupStructure: { tokenGroupMap },
-  } = useContext(CryptoContext);
+  const chainsByAccountType = useGetChainSlugs();
+  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
+  const { tokenBalanceMap, tokenGroupBalanceMap } = useAccountBalance(tokenGroupMap);
 
   const tokenBalanceValue = useMemo<SwNumberProps['value']>(() => {
     if (tokenGroupSlug) {

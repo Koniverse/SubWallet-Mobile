@@ -1,6 +1,5 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { CryptoContext } from 'providers/screen/Home/CryptoContext';
 import { TokenBalanceItemType } from 'types/balance';
 import { CryptoNavigationProps } from 'routes/home';
 import { TokensLayout } from 'screens/Home/Crypto/shared/TokensLayout';
@@ -24,6 +23,9 @@ import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
 import { updateUiSettings } from 'stores/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
+import useTokenGroup from 'hooks/screen/useTokenGroup';
+import useAccountBalance from 'hooks/screen/useAccountBalance';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -35,10 +37,10 @@ const renderActionsStyle: StyleProp<any> = {
 export const TokenGroups = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<CryptoNavigationProps>();
-  const {
-    accountBalance: { tokenGroupBalanceMap, totalBalanceInfo },
-    tokenGroupStructure: { sortedTokenGroups },
-  } = useContext(CryptoContext);
+
+  const chainsByAccountType = useGetChainSlugs();
+  const { sortedTokenGroups, tokenGroupMap } = useTokenGroup(chainsByAccountType);
+  const { tokenGroupBalanceMap, totalBalanceInfo } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const {
