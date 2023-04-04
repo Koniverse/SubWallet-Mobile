@@ -17,6 +17,8 @@ import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -47,6 +49,8 @@ export const TokenGroupsDetail = ({
     isQrModalVisible,
     tokenSelectorItems,
   } = useReceiveQR(tokenGroupSlug);
+
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   const {
     accountBalance: { tokenBalanceMap, tokenGroupBalanceMap },
@@ -117,10 +121,10 @@ export const TokenGroupsDetail = ({
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
       <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: theme.colorBgSecondary }]}>
-        <TokenBalanceItem onPress={onClickItem(item)} {...item} />
+        <TokenBalanceItem onPress={onClickItem(item)} {...item} isShowBalance={isShowBalance} />
       </View>
     ),
-    [onClickItem, theme.colorBgSecondary],
+    [isShowBalance, onClickItem, theme.colorBgSecondary],
   );
 
   const onCloseTokenDetailModal = useCallback(() => {

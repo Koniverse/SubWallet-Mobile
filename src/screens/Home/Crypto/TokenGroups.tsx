@@ -8,7 +8,7 @@ import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenGroupBalanceItem } from 'components/common/TokenGroupBalanceItem';
 import { LeftIconButton } from 'components/LeftIconButton';
-import { EyeSlash, FadersHorizontal, SlidersHorizontal } from 'phosphor-react-native';
+import { Eye, EyeSlash, FadersHorizontal, SlidersHorizontal } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { TokenGroupsUpperBlock } from 'screens/Home/Crypto/TokenGroupsUpperBlock';
 import { Header } from 'components/Header';
@@ -21,6 +21,9 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
+import { updateUiSettings } from 'stores/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -36,6 +39,7 @@ export const TokenGroups = () => {
     accountBalance: { tokenGroupBalanceMap, totalBalanceInfo },
     tokenGroupStructure: { sortedTokenGroups },
   } = useContext(CryptoContext);
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const {
     accountSelectorItems,
@@ -79,16 +83,16 @@ export const TokenGroups = () => {
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
       <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: theme.colorBgSecondary }]}>
-        <TokenGroupBalanceItem onPress={onClickItem(item)} {...item} />
+        <TokenGroupBalanceItem onPress={onClickItem(item)} {...item} isShowBalance={isShowBalance} />
       </View>
     ),
-    [onClickItem, theme.colorBgSecondary],
+    [isShowBalance, onClickItem, theme.colorBgSecondary],
   );
 
   const _toggleBalances = useCallback(() => {
     (async () => {
       await toggleBalancesVisibility(v => {
-        console.log('Balances visible:', v.isShowBalance);
+        updateUiSettings(v);
       });
     })();
   }, []);
@@ -103,7 +107,7 @@ export const TokenGroups = () => {
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={EyeSlash} iconColor={theme.colorTextLight5} />}
+            icon={<Icon size="md" phosphorIcon={isShowBalance ? EyeSlash : Eye} iconColor={theme.colorTextLight5} />}
             onPress={_toggleBalances}
           />
           {/*<Button*/}
@@ -120,7 +124,7 @@ export const TokenGroups = () => {
         </View>
       </View>
     );
-  }, [_toggleBalances, theme.colorTextLight1, theme.colorTextLight5]);
+  }, [_toggleBalances, isShowBalance, theme.colorTextLight1, theme.colorTextLight5]);
 
   const listHeaderNode = useMemo(() => {
     return (
