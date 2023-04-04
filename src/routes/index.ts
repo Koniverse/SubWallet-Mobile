@@ -46,7 +46,7 @@ export type RootStackParamList = {
   Languages: undefined;
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
-  ExportAccount: { address: string; exportType: 'json' | 'privateKey' };
+  ExportAccount: { address: string };
   ExportJson: { address: string };
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };

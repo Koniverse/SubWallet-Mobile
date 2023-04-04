@@ -77,6 +77,7 @@ const Button: React.FC<ButtonProps> = props => {
   };
 
   const textStyle = [
+    _style.textStyle,
     _style[`${size}RawText`],
     _style[`${buttonType}RawText`],
     (loading || !!icon) && _style.buttonRawText,

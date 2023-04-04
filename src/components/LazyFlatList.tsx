@@ -107,8 +107,9 @@ export function LazyFlatList<T>({
                   backgroundColor: '#1A1A1A',
                   marginHorizontal: 16,
                   borderRadius: 8,
-                  marginBottom: 94,
+                  // marginBottom: 94,
                   paddingVertical: 8,
+                  flex: 1,
                 }
               : {},
             {

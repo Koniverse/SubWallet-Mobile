@@ -23,6 +23,7 @@ import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
+import { UnlockModal } from 'components/common/UnlockModal';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -86,7 +87,6 @@ export const AppNew = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
-  const accounts = useSelector((state: RootState) => state);
   const { isLocked, lock } = useAppLock();
 
   const isCryptoReady = useCryptoReady();
@@ -111,7 +111,6 @@ export const AppNew = () => {
   const isRequiredStoresReady = true;
 
   useEffect(() => {
-    console.log('accounts', accounts);
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
@@ -136,7 +135,10 @@ export const AppNew = () => {
               <ExternalRequestContextProvider>
                 <QrSignerContextProvider>
                   <ScannerContextProvider>
-                    <AppNavigator isAppReady={isAppReady} />
+                    <>
+                      <AppNavigator isAppReady={isAppReady} />
+                      <UnlockModal />
+                    </>
                   </ScannerContextProvider>
                 </QrSignerContextProvider>
               </ExternalRequestContextProvider>
