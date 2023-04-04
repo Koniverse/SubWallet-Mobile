@@ -310,7 +310,12 @@ export function recodeAddress(
 export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
   return <SWLogo network={logoKey.toLowerCase()} defaultLogoKey={defaultLogoKey} size={size} />;
 }
-export function getTokenLogo(logoKey: string, subLogoKey: string, size: number, defaultLogoKey = 'default') {
+export function getTokenLogo(
+  logoKey: string,
+  subLogoKey: string | undefined,
+  size: number,
+  defaultLogoKey = 'default',
+) {
   return <SWLogo token={logoKey.toLowerCase()} subNetwork={subLogoKey} defaultLogoKey={defaultLogoKey} size={size} />;
 }
 

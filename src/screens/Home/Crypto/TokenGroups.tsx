@@ -17,6 +17,10 @@ import { Button, Icon, Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { toggleBalancesVisibility } from '../../../messaging';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { TokenSelector } from 'components/Modal/common/TokenSelector';
+import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
+import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -32,11 +36,22 @@ export const TokenGroups = () => {
     accountBalance: { tokenGroupBalanceMap, totalBalanceInfo },
     tokenGroupStructure: { sortedTokenGroups },
   } = useContext(CryptoContext);
-  // const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-
-  console.log('tokenGroupStructure', sortedTokenGroups);
-
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
+  const {
+    accountSelectorItems,
+    onOpenReceive,
+    openSelectAccount,
+    openSelectToken,
+    selectedAccount,
+    selectedNetwork,
+    isTokenSelectorModalVisible,
+    isAccountSelectorModalVisible,
+    onCloseSelectAccount,
+    onCloseSelectToken,
+    onCloseQrModal,
+    isQrModalVisible,
+    tokenSelectorItems,
+  } = useReceiveQR();
 
   const onClickItem = useCallback(
     (item: TokenBalanceItemType) => {
@@ -110,6 +125,7 @@ export const TokenGroups = () => {
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsUpperBlock
+        onOpenReceive={onOpenReceive}
         totalChangePercent={totalBalanceInfo.change.percent}
         totalChangeValue={totalBalanceInfo.change.value}
         totalValue={totalBalanceInfo.convertedValue}
@@ -118,6 +134,7 @@ export const TokenGroups = () => {
     );
   }, [
     isTotalBalanceDecrease,
+    onOpenReceive,
     totalBalanceInfo.change.percent,
     totalBalanceInfo.change.value,
     totalBalanceInfo.convertedValue,
@@ -146,6 +163,27 @@ export const TokenGroups = () => {
           listActions={actionsNode}
           renderItem={renderItem}
           layoutFooter={listFooterNode}
+        />
+
+        <AccountSelector
+          modalVisible={isAccountSelectorModalVisible}
+          onCancel={onCloseSelectAccount}
+          items={accountSelectorItems}
+          onSelectItem={openSelectAccount}
+        />
+
+        <TokenSelector
+          modalVisible={isTokenSelectorModalVisible}
+          items={tokenSelectorItems}
+          onSelectItem={openSelectToken}
+          onCancel={onCloseSelectToken}
+        />
+
+        <ReceiveModal
+          modalVisible={isQrModalVisible}
+          address={selectedAccount}
+          selectedNetwork={selectedNetwork}
+          onCancel={onCloseQrModal}
         />
       </>
     </ScreenContainer>

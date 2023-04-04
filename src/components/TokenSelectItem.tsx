@@ -1,14 +1,17 @@
 import React from 'react';
-import { StyleProp, View } from 'react-native';
-import Text from '../components/Text';
-import { getNetworkLogo } from 'utils/index';
+import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { getTokenLogo } from 'utils/index';
+import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { CircleWavyCheck } from 'phosphor-react-native';
-interface Props {
+
+interface Props extends TouchableOpacityProps {
   itemName: string;
-  itemKey: string;
-  isSelected?: boolean;
+  logoKey: string;
+  subLogoKey?: string;
+  isSelected: boolean;
+  onSelectNetwork: () => void;
   defaultItemKey?: string;
   showSeparator?: boolean;
   iconSize?: number;
@@ -48,19 +51,21 @@ const logoWrapperStyle: StyleProp<any> = {
 
 const CheckIcon = CircleWavyCheck;
 
-export const NetworkSelectItemContent = ({
-  itemKey,
+export const TokenSelectItem = ({
   itemName,
+  logoKey,
+  subLogoKey,
   isSelected,
+  onSelectNetwork,
   defaultItemKey,
   showSeparator = true,
   iconSize = 28,
 }: Props) => {
   return (
-    <View>
+    <TouchableOpacity onPress={onSelectNetwork}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View style={logoWrapperStyle}>{getNetworkLogo(itemKey, iconSize, defaultItemKey)}</View>
+          <View style={logoWrapperStyle}>{getTokenLogo(logoKey, subLogoKey, iconSize, defaultItemKey)}</View>
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 
@@ -68,6 +73,6 @@ export const NetworkSelectItemContent = ({
       </View>
 
       {showSeparator && <View style={itemSeparator} />}
-    </View>
+    </TouchableOpacity>
   );
 };

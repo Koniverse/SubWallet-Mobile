@@ -25,7 +25,7 @@ function getButtonTextStyle(disabled: boolean, theme: ThemeTypes) {
 
 const ActionButton = (actionButtonProps: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { label, icon, disabled } = actionButtonProps;
+  const { label, icon, disabled, onPress } = actionButtonProps;
   return (
     <View style={{ alignItems: 'center' }}>
       <View style={{ paddingHorizontal: theme.paddingSM }}>
@@ -34,6 +34,8 @@ const ActionButton = (actionButtonProps: Props) => {
           size={'sm'}
           disabled={!!disabled}
           icon={<Icon phosphorIcon={icon} weight={'bold'} />}
+          // @ts-ignore
+          onPress={() => onPress && onPress()}
         />
       </View>
 
