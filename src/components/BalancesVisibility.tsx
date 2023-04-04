@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import { FontSemiBold } from 'styles/sharedStyles';
 import { Number } from 'components/design-system-ui';
 import { SwNumberProps } from 'components/design-system-ui/number';
-// import { useSelector } from 'react-redux';
-// import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type Props = {
   value: SwNumberProps['value'];
@@ -19,14 +19,9 @@ const wrapperStyle: StyleProp<any> = {
   height: 51,
 };
 
-const textStyle: StyleProp<any> = {
-  ...sharedStyles.largeText,
-  color: ColorMap.light,
-};
-
 export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subFloatNumber = false }: Props) => {
-  // const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-  const isShowBalance = true;
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const theme = useSubWalletTheme().swThemes;
 
   return (
     <View style={wrapperStyle}>
@@ -42,7 +37,7 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           decimalOpacity={0.45}
         />
       ) : (
-        <Text style={textStyle}>******</Text>
+        <Text style={{ ...FontSemiBold, lineHeight: 46, fontSize: 38, color: theme.colorTextLight1 }}>******</Text>
       )}
     </View>
   );

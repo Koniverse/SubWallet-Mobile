@@ -3,6 +3,7 @@ import { ThemeTypes } from 'styles/themes';
 
 export interface TypographyStyle {
   monospace: TextStyle;
+  defaultText: TextStyle;
   xsText: TextStyle;
   smText: TextStyle;
   mdText: TextStyle;

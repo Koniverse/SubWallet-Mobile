@@ -5,8 +5,10 @@ import i18n from 'utils/i18n/i18n';
 import { ArrowFatLineDown, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { BalancesVisibility } from 'components/BalancesVisibility';
-import { Number, Tag } from 'components/design-system-ui';
+import { Number, Tag, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -44,26 +46,53 @@ export const TokenGroupsUpperBlock = ({
   totalChangeValue,
   totalValue,
 }: Props) => {
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+
   return (
     <View style={containerStyle} pointerEvents="box-none">
       <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Number
-          textStyle={{ ...FontMedium }}
-          decimal={0}
-          value={totalChangeValue}
-          prefix={isPriceDecrease ? '- $' : '+ $'}
-        />
-        <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
+        {isShowBalance && (
           <Number
-            textStyle={{ ...FontMedium, lineHeight: 18 }}
-            size={10}
-            value={totalChangePercent}
+            textStyle={{ ...FontMedium }}
             decimal={0}
-            prefix={isPriceDecrease ? '-' : '+'}
-            suffix={'%'}
+            value={totalChangeValue}
+            prefix={isPriceDecrease ? '- $' : '+ $'}
           />
+        )}
+
+        {!isShowBalance && (
+          <Typography.Text
+            style={{
+              ...FontMedium,
+            }}>
+            {'******'}
+          </Typography.Text>
+        )}
+
+        <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
+          {isShowBalance && (
+            <Number
+              textStyle={{ ...FontMedium, lineHeight: 18 }}
+              size={10}
+              value={totalChangePercent}
+              decimal={0}
+              prefix={isPriceDecrease ? '- ' : '+ '}
+              suffix={'%'}
+            />
+          )}
+
+          {!isShowBalance && (
+            <Typography.Text
+              style={{
+                ...FontMedium,
+                lineHeight: 18,
+                fontSize: 10,
+              }}>
+              {'******'}
+            </Typography.Text>
+          )}
         </Tag>
       </View>
 

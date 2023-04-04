@@ -2,13 +2,15 @@ import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import { BN_ZERO } from 'utils/chainBalances';
-import { Icon, Logo, Number } from 'components/design-system-ui';
+import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { CaretRight } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenBalanceItemStyles from './style';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
-interface Props extends TokenBalanceItemType, TouchableOpacityProps {}
+interface Props extends TokenBalanceItemType, TouchableOpacityProps {
+  isShowBalance?: boolean;
+}
 
 export const TokenBalanceItem = ({
   symbol,
@@ -17,6 +19,7 @@ export const TokenBalanceItem = ({
   isReady,
   total,
   chain,
+  isShowBalance,
   ...wrapperProps
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -40,24 +43,42 @@ export const TokenBalanceItem = ({
 
         <View style={_style.chainBalancePart2Wrapper}>
           <View style={_style.chainBalancePart2}>
-            <Number
-              style={{ paddingBottom: 4 }}
-              value={!isReady ? BN_ZERO : total.value}
-              decimal={0}
-              decimalOpacity={0.45}
-              size={theme.fontSizeLG}
-              textStyle={{ ...FontSemiBold, lineHeight: theme.lineHeightLG * theme.fontSizeLG }}
-            />
-            <Number
-              value={isTestnet || !isReady ? BN_ZERO : total.convertedValue}
-              decimal={0}
-              intOpacity={0.45}
-              unitOpacity={0.45}
-              decimalOpacity={0.45}
-              prefix={'$'}
-              size={theme.fontSize}
-              textStyle={{ ...FontMedium, lineHeight: theme.lineHeight * theme.fontSize }}
-            />
+            {isShowBalance && (
+              <>
+                <Number
+                  style={{ paddingBottom: 4 }}
+                  value={!isReady ? BN_ZERO : total.value}
+                  decimal={0}
+                  decimalOpacity={0.45}
+                  size={theme.fontSizeLG}
+                  textStyle={{ ...FontSemiBold, lineHeight: theme.lineHeightLG * theme.fontSizeLG }}
+                />
+                <Number
+                  value={isTestnet || !isReady ? BN_ZERO : total.convertedValue}
+                  decimal={0}
+                  intOpacity={0.45}
+                  unitOpacity={0.45}
+                  decimalOpacity={0.45}
+                  prefix={'$'}
+                  size={theme.fontSize}
+                  textStyle={{ ...FontMedium, lineHeight: theme.lineHeight * theme.fontSize }}
+                />
+              </>
+            )}
+
+            {!isShowBalance && (
+              <>
+                <Typography.Text
+                  style={{
+                    fontSize: theme.fontSizeLG,
+                    ...FontSemiBold,
+                    lineHeight: theme.lineHeightLG * theme.fontSizeLG,
+                  }}>
+                  ******
+                </Typography.Text>
+                <Typography.Text style={{ ...FontMedium, color: theme.colorTextLight4 }}>******</Typography.Text>
+              </>
+            )}
           </View>
           <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
         </View>
