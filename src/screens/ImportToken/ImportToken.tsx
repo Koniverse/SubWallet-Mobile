@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportTokenProps, RootNavigationProps } from 'routes/index';
@@ -15,7 +15,6 @@ import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContract
 import { TextField } from 'components/Field/Text';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { completeConfirmation, upsertCustomToken, validateCustomToken } from '../../messaging';
-import { CustomToken, CustomTokenType } from '@subwallet/extension-base/background/KoniTypes';
 import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/permission/camera';
@@ -26,11 +25,17 @@ import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { WebRunnerContext } from 'providers/contexts';
+import { _AssetType } from '@subwallet/chain-list/types';
+import {
+  _isChainTestNet,
+  _parseMetadataForSmartContractAsset,
+} from '@subwallet/extension-base/services/chain-service/utils';
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const chainOptions = useGetContractSupportedChains();
-  const { currentAccountAddress } = useSelector((state: RootState) => state.accountState);
+  const chainInfoMap = useGetContractSupportedChains();
+  console.log('chainInfoMap', chainInfoMap);
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
@@ -38,15 +43,24 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const payload = routeParams?.payload;
   const tokenInfo = payload?.payload;
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
+  const [name, setName] = useState('');
+
+  const chainOptions = useMemo(() => {
+    return Object.values(chainInfoMap).map(item => ({
+      value: item.slug,
+      label: item.name,
+    }));
+  }, [chainInfoMap]);
+
   const formConfig = {
     contractAddress: {
       require: true,
       name: i18n.importToken.contractAddress,
-      value: tokenInfo?.smartContract || '',
+      value: tokenInfo?.contractAddress || '',
     },
     chain: {
       name: i18n.common.network,
-      value: tokenInfo?.chain || chainOptions[0]?.value || '',
+      value: tokenInfo?.originChain || chainOptions[0]?.value || '',
     },
     symbol: {
       name: i18n.common.symbol,
@@ -61,17 +75,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const onSubmit = (formState: FormState) => {
     setBusy(true);
     const { contractAddress, chain, decimals, symbol } = formState.data;
-    const customToken = {
-      smartContract: contractAddress,
-      chain,
-      decimals: parseInt(decimals),
-      type: 'erc20',
-      isCustom: true,
-    } as CustomToken;
-
-    if (symbol) {
-      customToken.symbol = symbol;
-    }
 
     onUpdateErrors('contractAddress')(undefined);
 
@@ -84,7 +87,19 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       return;
     }
 
-    upsertCustomToken(customToken)
+    upsertCustomToken({
+      originChain: chain,
+      slug: '',
+      name,
+      symbol,
+      decimals: parseInt(decimals),
+      priceId: null,
+      minAmount: null,
+      assetType: _AssetType.ERC20,
+      metadata: _parseMetadataForSmartContractAsset(contractAddress),
+      multiChainAsset: null,
+      hasValue: _isChainTestNet(chainInfoMap[chain]),
+    })
       .then(resp => {
         if (resp) {
           _goBack();
@@ -106,13 +121,13 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     const currentContractAddress = formState.data.contractAddress;
     const currentChain = formState.data.chain;
     if (currentContractAddress !== '') {
-      let tokenType: CustomTokenType | undefined;
-      const isValidContractCaller = isValidSubstrateAddress(currentAccountAddress);
+      let tokenType: _AssetType | undefined;
+      const isValidContractCaller = isValidSubstrateAddress(currentAccount?.address || '');
 
       if (isEthereumAddress(currentContractAddress)) {
-        tokenType = CustomTokenType.erc20;
+        tokenType = _AssetType.ERC20;
       } else if (isValidSubstrateAddress(currentContractAddress)) {
-        tokenType = CustomTokenType.psp22;
+        tokenType = _AssetType.PSP22;
       }
 
       if (!tokenType) {
@@ -121,8 +136,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
         onUpdateErrors('contractAddress')([i18n.errorMessage.invalidEvmContractAddress]);
       } else {
         validateCustomToken({
-          smartContract: currentContractAddress,
-          chain: currentChain,
+          contractAddress: currentContractAddress,
+          originChain: currentChain,
           type: tokenType,
           contractCaller: isValidContractCaller ? currentContractAddress : undefined,
         })
@@ -135,6 +150,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               } else {
                 onUpdateErrors('contractAddress')(undefined);
                 onChangeValue('symbol')(resp.symbol);
+                setName(resp.name);
                 if (resp.decimals) {
                   onChangeValue('decimals')(String(resp.decimals));
                 }
@@ -148,7 +164,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           });
       }
     }
-  }, [currentAccountAddress, formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
+  }, [currentAccount?.address, formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
 
   const onUpdateContractAddress = (text: string) => {
     if (formState.refs.contractAddress && formState.refs.contractAddress.current) {
@@ -258,6 +274,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           onChangeModalVisible={() => setShowChainModal(false)}
           onChangeValue={(text: string) => {
             handleChangeValue('chain')(text);
+            setName('');
             setShowChainModal(false);
           }}
           selectedItem={formState.data.chain}
