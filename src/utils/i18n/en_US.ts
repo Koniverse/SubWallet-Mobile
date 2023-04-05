@@ -311,6 +311,7 @@ export const en = {
     signMessage: 'Sign Message',
     authorizeMessage: 'Authorize message',
     serviceSelect: 'Select service',
+    customization: 'Customization',
   },
   tabName: {
     crypto: 'Crypto',
@@ -324,6 +325,7 @@ export const en = {
     send: 'Send',
     swap: 'Swap',
     buy: 'Buy',
+    showZeroBalance: 'Show zero balance',
   },
   nftScreen: {
     nftAppearHere: 'Your NFTs will appear here',

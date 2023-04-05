@@ -5,7 +5,6 @@ import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { BackgroundIcon, Button, Icon, Logo } from 'components/design-system-ui';
 import { PencilSimpleLine, WifiHigh, WifiSlash } from 'phosphor-react-native';
-import { _ChainStatus } from '@subwallet/chain-list/types';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 
 interface Props {
@@ -15,6 +14,7 @@ interface Props {
   onValueChange: () => void;
   isDisableSwitching?: boolean;
   connectionStatus?: _ChainConnectionStatus;
+  showEditButton?: boolean;
 }
 
 const itemArea: StyleProp<any> = {
@@ -57,6 +57,7 @@ export const NetworkAndTokenToggleItem = ({
   onValueChange,
   isDisableSwitching,
   connectionStatus,
+  showEditButton,
 }: Props) => {
   return (
     <View style={{ marginBottom: 8 }}>
@@ -88,12 +89,14 @@ export const NetworkAndTokenToggleItem = ({
           onValueChange={onValueChange}
         />
 
-        <Button
-          style={{ marginLeft: 8 }}
-          size={'xs'}
-          type={'ghost'}
-          icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
-        />
+        {showEditButton && (
+          <Button
+            style={{ marginLeft: 8 }}
+            size={'xs'}
+            type={'ghost'}
+            icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
+          />
+        )}
       </View>
 
       <View style={itemSeparator} />

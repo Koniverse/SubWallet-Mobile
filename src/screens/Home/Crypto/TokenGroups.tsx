@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TokenBalanceItemType } from 'types/balance';
 import { CryptoNavigationProps } from 'routes/home';
@@ -26,6 +26,7 @@ import { RootState } from 'stores/index';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
+import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -43,6 +44,7 @@ export const TokenGroups = () => {
   const { tokenGroupBalanceMap, totalBalanceInfo } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
+  const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
   const {
     accountSelectorItems,
     onOpenReceive,
@@ -99,6 +101,14 @@ export const TokenGroups = () => {
     })();
   }, []);
 
+  const onCloseCustomizationModal = useCallback(() => {
+    setCustomizationModalVisible(false);
+  }, []);
+
+  const onOpenCustomizationModal = useCallback(() => {
+    setCustomizationModalVisible(true);
+  }, []);
+
   const actionsNode = useMemo(() => {
     return (
       <View style={renderActionsStyle}>
@@ -122,11 +132,12 @@ export const TokenGroups = () => {
             type="ghost"
             size="xs"
             icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight5} />}
+            onPress={onOpenCustomizationModal}
           />
         </View>
       </View>
     );
-  }, [_toggleBalances, isShowBalance, theme.colorTextLight1, theme.colorTextLight5]);
+  }, [_toggleBalances, isShowBalance, onOpenCustomizationModal, theme.colorTextLight1, theme.colorTextLight5]);
 
   const listHeaderNode = useMemo(() => {
     return (
@@ -191,6 +202,8 @@ export const TokenGroups = () => {
           selectedNetwork={selectedNetwork}
           onCancel={onCloseQrModal}
         />
+
+        <CustomizationModal modalVisible={isCustomizationModalVisible} onCancel={onCloseCustomizationModal} />
       </>
     </ScreenContainer>
   );
