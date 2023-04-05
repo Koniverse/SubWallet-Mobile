@@ -15,7 +15,7 @@ import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
-interface RightIconOpt {
+export interface RightIconOpt {
   icon?: (iconProps: IconProps) => JSX.Element;
   title?: string;
   disabled?: boolean;
@@ -28,13 +28,14 @@ interface Props<T> {
   title?: string;
   withSearchInput?: boolean;
   withSubHeader?: boolean;
-  autoFocus: boolean;
+  autoFocus?: boolean;
   renderListEmptyComponent: (searchString?: string) => JSX.Element;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   onPressBack?: () => void;
   showLeftBtn?: boolean;
   style?: StyleProp<any>;
   rightIconOption?: RightIconOpt;
+  beforeListItem?: JSX.Element;
   afterListItem?: JSX.Element;
   searchFunction: (items: T[], searchString: string) => T[];
   filterFunction?: (items: T[], filters: string[]) => T[];
@@ -81,6 +82,7 @@ export function FlatListScreen<T>({
   isShowFilterBtn = true,
   filterOptions,
   isShowListWrapper = false,
+  beforeListItem,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -103,6 +105,8 @@ export function FlatListScreen<T>({
 
   const renderContent = () => (
     <View style={{ flex: 1 }}>
+      {beforeListItem}
+
       {withSearchInput && (
         <Search
           autoFocus={false}

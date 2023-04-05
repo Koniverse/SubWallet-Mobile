@@ -30,8 +30,9 @@ export default (theme: ThemeTypes) =>
     defaultText: { fontSize: theme.fontSize, lineHeight: theme.lineHeight * theme.fontSize },
     xsText: { fontSize: theme.fontSizeXS, lineHeight: theme.lineHeightXS * theme.fontSizeXS },
     smText: { fontSize: theme.fontSizeSM, lineHeight: theme.lineHeightSM * theme.fontSizeSM },
-    mdText: { fontSize: theme.fontSizeLG, lineHeight: theme.lineHeightLG * theme.fontSizeLG },
-    lgText: { fontSize: theme.fontSizeXL, lineHeight: theme.lineHeightXL * theme.fontSizeXL },
+    mdText: { fontSize: theme.fontSizeMD, lineHeight: theme.lineHeightLG * theme.fontSizeLG },
+    // todo: current has no lineHeightXL, use lineHeightHeading4 for temporary solution
+    lgText: { fontSize: theme.fontSizeXL, lineHeight: theme.lineHeightHeading4 * theme.fontSizeXL },
     // Title styles
     titleLevel1: { fontSize: theme.fontSizeHeading1, lineHeight: theme.lineHeightHeading1 * theme.fontSizeHeading1 },
     titleLevel2: { fontSize: theme.fontSizeHeading2, lineHeight: theme.lineHeightHeading2 * theme.fontSizeHeading2 },

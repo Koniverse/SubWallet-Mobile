@@ -9,6 +9,7 @@ import { Number, Tag, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -46,6 +47,7 @@ export const TokenGroupsUpperBlock = ({
   totalChangeValue,
   totalValue,
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   return (
@@ -66,6 +68,7 @@ export const TokenGroupsUpperBlock = ({
           <Typography.Text
             style={{
               ...FontMedium,
+              color: theme.colorTextLight1,
             }}>
             {'******'}
           </Typography.Text>
@@ -89,6 +92,7 @@ export const TokenGroupsUpperBlock = ({
                 ...FontMedium,
                 lineHeight: 18,
                 fontSize: 10,
+                color: theme.colorTextLight1,
               }}>
               {'******'}
             </Typography.Text>
