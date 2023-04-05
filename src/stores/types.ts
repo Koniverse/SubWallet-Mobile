@@ -51,7 +51,7 @@ export type AppStateSlice = {
   isDisplayConfirmation: boolean;
 };
 
-export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc';
+export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc' | 'migratePassword';
 
 export type PasswordModalSlice = {
   isShowModal: boolean;

@@ -26,6 +26,7 @@ export const ApplyDone = ({ accounts }: Props) => {
 
       {accounts.slice(0, 2).map(acc => (
         <AccountInfoField
+          key={acc.address}
           address={acc.address}
           name={acc.name || ''}
           rightIcon={<Icon size={'sm'} phosphorIcon={CheckCircle} iconColor={theme.colorSuccess} weight={'fill'} />}

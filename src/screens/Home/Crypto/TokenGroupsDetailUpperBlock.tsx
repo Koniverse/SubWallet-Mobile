@@ -16,7 +16,7 @@ import { ThemeTypes } from 'styles/themes';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
-  tokenGroupSlug: string;
+  groupSymbol: string;
   onClickBack: () => void;
   onOpenSendFund?: () => void;
   onOpenBuyTokens?: () => void;
@@ -29,35 +29,19 @@ export const TokenGroupsDetailUpperBlock = ({
   onOpenSendFund,
   onClickBack,
   balanceValue,
-  tokenGroupSlug,
+  groupSymbol,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
-  const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
-  const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const _style = createStyleSheet(theme);
-
-  const symbol = useMemo<string>(() => {
-    if (tokenGroupSlug) {
-      if (multiChainAssetMap[tokenGroupSlug]) {
-        return multiChainAssetMap[tokenGroupSlug].symbol;
-      }
-
-      if (assetRegistryMap[tokenGroupSlug]) {
-        return assetRegistryMap[tokenGroupSlug].symbol;
-      }
-    }
-
-    return '';
-  }, [tokenGroupSlug, assetRegistryMap, multiChainAssetMap]);
 
   const isSupportBuyTokens = useMemo(() => {
     const transakInfoItems = Object.values(PREDEFINED_TRANSAK_TOKEN);
 
     for (const infoItem of transakInfoItems) {
-      if (infoItem.symbol === symbol) {
+      if (infoItem.symbol === groupSymbol) {
         const supportType = infoItem.support;
 
         if (isAllAccount) {
@@ -75,7 +59,7 @@ export const TokenGroupsDetailUpperBlock = ({
     }
 
     return false;
-  }, [accounts, currentAccount?.address, isAllAccount, symbol]);
+  }, [accounts, currentAccount?.address, isAllAccount, groupSymbol]);
 
   return (
     <View style={_style.containerStyle} pointerEvents="box-none">
@@ -88,7 +72,7 @@ export const TokenGroupsDetailUpperBlock = ({
         />
         <View style={_style.tokenDisplay}>
           <Typography.Title level={4} style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
-            {`${i18n.title.token}: ${symbol}`}
+            {`${i18n.title.token}: ${groupSymbol}`}
           </Typography.Title>
         </View>
       </View>

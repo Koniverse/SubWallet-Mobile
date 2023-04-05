@@ -6,7 +6,7 @@ import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { Linking, ListRenderItemInfo, Platform } from 'react-native';
 import qs from 'querystring';
-import reformatAddress, { PREDEFINED_TRANSAK_NETWORK } from 'utils/index';
+import reformatAddress from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import Toast from 'react-native-toast-notifications';
@@ -16,13 +16,13 @@ import { ServiceSelectItem } from 'components/ServiceSelectItem';
 import ToastContainer from 'react-native-toast-notifications';
 import { deviceHeight, HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import useAppLock from 'hooks/useAppLock';
+import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
+import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {
   modalVisible: boolean;
   address: string;
-  networkKey: string;
-  networkPrefix: number;
-  token?: string;
+  token: string;
   onPressBack?: () => void;
   onChangeModalVisible: () => void;
 }
@@ -48,15 +48,17 @@ const HOST = {
   PRODUCTION: 'https://global.transak.com',
 };
 
-export const ServiceModal = ({
-  onPressBack,
-  modalVisible,
-  onChangeModalVisible,
-  networkKey,
-  networkPrefix,
-  address,
-  token,
-}: Props) => {
+const tokenKeyMapIsEthereum: Record<string, boolean> = (() => {
+  const result: Record<string, boolean> = {};
+
+  Object.values(PREDEFINED_TRANSAK_TOKEN).forEach(info => {
+    result[info.slug] = info.support === 'ETHEREUM';
+  });
+
+  return result;
+})();
+
+export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, address, token }: Props) => {
   const toastRef = useRef<ToastContainer>(null);
   const show = useCallback((text: string) => {
     if (toastRef.current) {
@@ -66,43 +68,37 @@ export const ServiceModal = ({
       toastRef.current.show(text);
     }
   }, []);
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
+  const networkPrefix = useMemo(() => {
+    const chain = PREDEFINED_TRANSAK_TOKEN[token].chain;
+    return _getChainSubstrateAddressPrefix(chainInfoMap[chain]);
+  }, [chainInfoMap, token]);
+
   const formatted = useMemo(() => {
-    const networkInfo = networkMap[networkKey];
-    if (address) {
-      return reformatAddress(address, networkPrefix, networkInfo?.isEthereum);
-    } else {
-      return '';
-    }
-  }, [networkMap, networkKey, address, networkPrefix]);
+    return tokenKeyMapIsEthereum[token]
+      ? address
+      : reformatAddress(address, networkPrefix === undefined ? -1 : networkPrefix);
+  }, [token, address, networkPrefix]);
   const { isLocked } = useAppLock();
+
   const url = useMemo((): string => {
     const host = HOST.PRODUCTION;
-
-    const _network = PREDEFINED_TRANSAK_NETWORK[networkKey];
-
-    if (!_network) {
-      return '';
+    if (!token || !PREDEFINED_TRANSAK_TOKEN[token]) {
     }
 
-    const networks = [..._network.networks];
-    const tokenList = _network.tokens ? [..._network.tokens] : undefined;
-    const defaultToken = tokenList ? tokenList[0] : undefined;
-
-    if (token && token !== defaultToken) {
-      return '';
-    }
+    const { symbol, transakNetwork } = PREDEFINED_TRANSAK_TOKEN[token];
 
     const params = {
       apiKey: '4b3bfb00-7f7c-44b3-844f-d4504f1065be',
-      defaultCryptoCurrency: defaultToken,
-      cryptoCurrencyList: tokenList ? tokenList.join(',') : undefined,
-      networks: networkKey !== 'shiden' ? networks.join(',') : undefined,
+      defaultCryptoCurrency: symbol,
+      cryptoCurrencyList: symbol,
+      networks: transakNetwork,
       walletAddress: formatted,
     };
     const query = qs.stringify(params);
     return `${host}?${query}`;
-  }, [formatted, networkKey, token]);
+  }, [formatted, token]);
+
   const [{ selectedService, isOpenInAppBrowser }, setSelectedService] = useState<{
     selectedService: string | undefined;
     isOpenInAppBrowser: boolean;
@@ -222,6 +218,7 @@ export const ServiceModal = ({
           setSelectedService({ selectedService: undefined, isOpenInAppBrowser: false });
           onPressBack && onPressBack();
         }}
+        isShowFilterBtn={false}
         renderListEmptyComponent={renderListEmptyComponent}
       />
 

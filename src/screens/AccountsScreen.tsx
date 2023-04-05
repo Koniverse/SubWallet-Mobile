@@ -47,7 +47,6 @@ export const AccountsScreen = () => {
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
   const dispatch = useDispatch();
-  console.log('isLocked', isLocked);
 
   useEffect(() => {
     let event: EmitterSubscription;

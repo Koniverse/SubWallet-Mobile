@@ -5,20 +5,26 @@ import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeM
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { _ChainAsset } from '@subwallet/chain-list/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenSelectItem } from 'components/TokenSelectItem';
 
+export type TokenItemType = {
+  name: string;
+  slug: string;
+  symbol: string;
+  originChain: string;
+};
+
 interface Props {
   modalVisible: boolean;
   onCancel: () => void;
-  onSelectItem: (item: _ChainAsset) => void;
-  items: _ChainAsset[];
+  onSelectItem: (item: TokenItemType) => void;
+  items: TokenItemType[];
   title?: string;
 }
 
-const filterFunction = (items: _ChainAsset[], searchString: string) => {
+const filterFunction = (items: TokenItemType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
   return items.filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString));
 };
@@ -38,7 +44,7 @@ export const TokenSelector = ({ modalVisible, onCancel, onSelectItem, items, tit
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<_ChainAsset>) => {
+    ({ item }: ListRenderItemInfo<TokenItemType>) => {
       const { symbol, name, originChain } = item;
 
       return (

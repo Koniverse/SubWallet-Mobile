@@ -796,6 +796,9 @@ export const ChainLogoMap: Record<string, string> = {
   parity: ProjectLogos.parity,
   keystone: ProjectLogos.keystone,
   ledger: ProjectLogos.ledger,
+  transak: ProjectLogos.transak,
+  moonpay: ProjectLogos.moonpay,
+  onramper: ProjectLogos.onramper,
 };
 
 export const TokenLogoMap: Record<string, string> = {
