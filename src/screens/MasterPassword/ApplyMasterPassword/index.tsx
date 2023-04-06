@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ScrollView, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, View } from 'react-native';
 import { Avatar, Button, Icon, Modal } from 'components/design-system-ui';
 import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
 import { RootState } from 'stores/index';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { AddressField } from 'components/Field/Address';
 import { TextField } from 'components/Field/Text';
@@ -20,6 +20,7 @@ import { ApplyDone } from 'screens/MasterPassword/ApplyMasterPassword/ApplyDone'
 import useGoHome from 'hooks/screen/useGoHome';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { updatePasswordModalState, updateSelectedAction } from 'stores/PasswordModalState';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -51,6 +52,7 @@ const ApplyMasterPassword = () => {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const dispatch = useDispatch();
 
   const canMigrate = useMemo(
     () => accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal),
@@ -59,7 +61,6 @@ const ApplyMasterPassword = () => {
 
   const needMigrate = useMemo(() => {
     return canMigrate.filter(acc => !acc.isMasterPassword);
-    // return accounts;
   }, [canMigrate]);
 
   const onSubmit = useCallback(() => {
@@ -96,6 +97,17 @@ const ApplyMasterPassword = () => {
   });
 
   useEffect(() => {
+    const event = DeviceEventEmitter.addListener('migratePassword', () => {
+      setStep('Migrate');
+    });
+
+    return () => {
+      event.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    onUpdateErrors('password')(undefined);
     setStep(prevState => {
       if (prevState !== 'Introduction') {
         return needMigrate.length ? 'Migrate' : 'Done';
@@ -103,7 +115,7 @@ const ApplyMasterPassword = () => {
         return 'Introduction';
       }
     });
-  }, [needMigrate.length, deleting]);
+  }, [needMigrate.length, onUpdateErrors]);
 
   useEffect(() => {
     if (step === 'Migrate') {
@@ -113,10 +125,9 @@ const ApplyMasterPassword = () => {
         }
 
         if (!prevState) {
-          onChangeValue('password')('');
           setIsDisable(true);
 
-          return needMigrate[1];
+          return needMigrate[0];
         } else {
           const exists = needMigrate.find(acc => acc.address === prevState.address);
 
@@ -126,16 +137,23 @@ const ApplyMasterPassword = () => {
           if (exists) {
             return prevState;
           } else {
-            return needMigrate[1];
+            return needMigrate[0];
           }
         }
       });
     } else {
       setIsError(false);
-      onChangeValue('password')('');
       setIsDisable(true);
     }
   }, [needMigrate, deleting, step, onChangeValue]);
+
+  useEffect(() => {
+    if (step === 'Migrate') {
+      if (formState.data.password && !formState.errors.password.length) {
+        setIsDisable(false);
+      }
+    }
+  }, [formState.data.password, formState.errors.password, step]);
 
   const onDelete = useCallback(() => {
     if (migrateAccount?.address) {
@@ -181,7 +199,8 @@ const ApplyMasterPassword = () => {
           <Button
             icon={nextIcon}
             onPress={() => {
-              setStep(needMigrate.length ? 'Migrate' : 'Done');
+              dispatch(updatePasswordModalState(true));
+              dispatch(updateSelectedAction('migratePassword'));
             }}>
             {'Apply master password now'}
           </Button>
@@ -194,12 +213,12 @@ const ApplyMasterPassword = () => {
         );
       case 'Migrate':
         return (
-          <Button disabled={isDisabled || deleting} icon={nextIcon} onPress={onSubmit}>
+          <Button loading={loading} disabled={isDisabled || deleting} icon={nextIcon} onPress={onSubmit}>
             {'Next'}
           </Button>
         );
     }
-  }, [step, goHome, isDisabled, deleting, onSubmit, needMigrate.length]);
+  }, [step, goHome, loading, isDisabled, deleting, onSubmit, dispatch]);
 
   return (
     <ContainerWithSubHeader

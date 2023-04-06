@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
+import { _ChainAsset } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import {
   _getMultiChainAsset,
@@ -13,63 +13,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { AccountType } from 'types/ui-types';
 import { getAccountType } from 'utils/index';
 import { RootState } from 'stores/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { HIDE_MODAL_DURATION } from 'constants/index';
+import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
 
 type ReceiveSelectedResult = {
   selectedAccount?: string;
   selectedNetwork?: string;
 };
-
-function getAccountTypeByTokenGroup(
-  tokenGroupSlug: string,
-  assetRegistryMap: Record<string, _ChainAsset>,
-  chainInfoMap: Record<string, _ChainInfo>,
-): AccountType {
-  // case tokenGroupSlug is token slug
-  if (assetRegistryMap[tokenGroupSlug]) {
-    const chainSlug = assetRegistryMap[tokenGroupSlug].originChain;
-
-    if (_isChainEvmCompatible(chainInfoMap[chainSlug])) {
-      return 'ETHEREUM';
-    } else {
-      return 'SUBSTRATE';
-    }
-  }
-
-  // case tokenGroupSlug is multiChainAsset slug
-
-  const assetRegistryItems: _ChainAsset[] = Object.values(assetRegistryMap);
-
-  const typesCheck: AccountType[] = [];
-
-  for (const assetItem of assetRegistryItems) {
-    if (!_isAssetFungibleToken(assetItem) || _getMultiChainAsset(assetItem) !== tokenGroupSlug) {
-      continue;
-    }
-
-    const chainSlug = assetRegistryMap[assetItem.slug].originChain;
-
-    const currentType = _isChainEvmCompatible(chainInfoMap[chainSlug]) ? 'ETHEREUM' : 'SUBSTRATE';
-
-    if (!typesCheck.includes(currentType)) {
-      typesCheck.push(currentType);
-    }
-
-    if (typesCheck.length === 2) {
-      break;
-    }
-  }
-
-  if (!typesCheck.length || typesCheck.length === 2) {
-    return 'ALL';
-  }
-
-  return typesCheck[0];
-}
 
 export default function useReceiveQR(tokenGroupSlug?: string) {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
@@ -81,7 +35,6 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const [isTokenSelectorModalVisible, setTokenSelectorModalVisible] = useState<boolean>(false);
   const [isAccountSelectorModalVisible, setAccountSelectorModalVisible] = useState<boolean>(false);
   const [isQrModalVisible, setQrModalVisible] = useState<boolean>(false);
-
   const [{ selectedAccount, selectedNetwork }, setReceiveSelectedResult] = useState<ReceiveSelectedResult>({
     selectedAccount: isAllAccount ? undefined : currentAccount?.address,
   });
@@ -204,8 +157,8 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   );
 
   const openSelectToken = useCallback(
-    (item: _ChainAsset) => {
-      setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: item.originChain }));
+    (value: TokenItemType) => {
+      setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: value.originChain }));
       setTokenSelectorModalVisible(false);
       actionWithSetTimeout(() => {
         setQrModalVisible(true);
