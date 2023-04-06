@@ -642,3 +642,7 @@ export function isNftTransferSupported(networkKey: string, networkJson: NetworkJ
 
   return SUPPORTED_TRANSFER_SUBSTRATE_CHAIN.includes(networkKey);
 }
+
+export function isUrl(targetString: string) {
+  return targetString.startsWith('http:') || targetString.startsWith('https:') || targetString.startsWith('wss:');
+}

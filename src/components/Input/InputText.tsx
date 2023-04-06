@@ -21,7 +21,7 @@ const blockContentStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   paddingHorizontal: 16,
-  paddingBottom: 8,
+  paddingBottom: 12,
 };
 
 function getInputStyle(isError: boolean) {
@@ -48,15 +48,17 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     autoFocus,
     onSubmitField,
     value,
+    label,
     ...fieldBase
   } = passwordFieldProps;
   return (
     <>
       <FieldBase {...fieldBase}>
-        <View style={blockContentStyle}>
+        <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
           <TextInput
             ref={ref}
             autoCorrect={false}
+            autoCapitalize={'none'}
             autoFocus={autoFocus}
             style={getInputStyle(!!(errorMessages && errorMessages.length))}
             placeholderTextColor={ColorMap.disabled}

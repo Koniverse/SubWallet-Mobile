@@ -169,6 +169,7 @@ export const NetworksSetting = ({}: Props) => {
         }
         onValueChange={() => onToggleItem(item)}
         showEditButton
+        onPressEditBtn={() => navigation.navigate('NetworkSettingDetail', { chainSlug: item.slug })}
       />
     );
   };

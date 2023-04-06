@@ -52,8 +52,14 @@ const SelectItem = (props: SelectItemProps) => {
         )}
       </View>
 
-      <Text style={selectItemTextStyle}>{label}</Text>
-      {isSelected && <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />}
+      <Text numberOfLines={1} style={selectItemTextStyle}>
+        {label}
+      </Text>
+      {isSelected && (
+        <View style={{ paddingLeft: 16 }}>
+          <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />
+        </View>
+      )}
     </TouchableOpacity>
   );
 };

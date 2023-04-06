@@ -1,0 +1,317 @@
+import React, { useCallback, useMemo, useState } from 'react';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { FloppyDiskBack, Trash } from 'phosphor-react-native';
+import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { RpcSelectField } from 'components/Field/RpcSelect';
+import { RpcSelectorModal } from 'components/common/RpcSelectorModal';
+import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
+import { NetworkSettingDetailProps, RootNavigationProps } from 'routes/index';
+import useFetchChainState from 'hooks/screen/useFetchChainState';
+import { sharedStyles } from 'styles/sharedStyles';
+import { NetworkNameField } from 'components/Field/NetworkName';
+import { TextField } from 'components/Field/Text';
+import {
+  _getBlockExplorerFromChain,
+  _getChainNativeTokenBasicInfo,
+  _getChainSubstrateAddressPrefix,
+  _getCrowdloanUrlFromChain,
+  _getEvmChainId,
+  _getSubstrateParaId,
+  _isChainEvmCompatible,
+  _isCustomChain,
+  _isPureEvmChain,
+  _isSubstrateChain,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import InputText from 'components/Input/InputText';
+import { Button, Icon } from 'components/design-system-ui';
+import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
+import { removeChain, upsertChain } from '../messaging';
+import { useToast } from 'react-native-toast-notifications';
+import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
+import { isUrl } from 'utils/index';
+import { useNavigation } from '@react-navigation/native';
+import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
+
+const ContainerStyle: StyleProp<ViewStyle> = {
+  ...sharedStyles.layoutContainer,
+};
+
+const validateCrowdloanUrl = (value: string): string[] => {
+  if (value.length !== 0 && !isUrl(value)) {
+    return ['Crowdloan URL must be a valid URL'];
+  } else {
+    return [];
+  }
+};
+
+const validateBlockExplorer = (value: string): string[] => {
+  if (value.length !== 0 && !isUrl(value)) {
+    return ['Block explorer must be a valid URL'];
+  } else {
+    return [];
+  }
+};
+
+export const NetworkSettingDetail = ({
+  route: {
+    params: { chainSlug },
+  },
+}: NetworkSettingDetailProps) => {
+  const navigation = useNavigation<RootNavigationProps>();
+  const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const _chainInfo = useFetchChainInfo(chainSlug);
+  const _chainState = useFetchChainState(chainSlug);
+  const [chainInfo] = useState(_chainInfo);
+  const [chainState] = useState(_chainState);
+  const toast = useToast();
+
+  const { decimals, symbol } = useMemo(() => {
+    return _getChainNativeTokenBasicInfo(chainInfo);
+  }, [chainInfo]);
+
+  const addressPrefix = useMemo(() => {
+    return _getChainSubstrateAddressPrefix(chainInfo);
+  }, [chainInfo]);
+
+  const paraId = useMemo(() => {
+    return _getSubstrateParaId(chainInfo);
+  }, [chainInfo]);
+
+  const chainId = useMemo(() => {
+    return _getEvmChainId(chainInfo);
+  }, [chainInfo]);
+
+  const isPureEvmChain = useMemo(() => {
+    return chainInfo && _isPureEvmChain(chainInfo);
+  }, [chainInfo]);
+
+  const currentProviderUrl = useMemo(() => {
+    return chainInfo.providers[chainState.currentProvider];
+  }, [chainInfo.providers, chainState.currentProvider]);
+
+  const chainTypeString = useCallback(() => {
+    let result = '';
+    const types: string[] = [];
+
+    if (_isSubstrateChain(chainInfo)) {
+      types.push('Substrate');
+    }
+
+    if (_isChainEvmCompatible(chainInfo)) {
+      types.push('EVM');
+    }
+
+    for (let i = 0; i < types.length; i++) {
+      result = result.concat(types[i]);
+
+      if (i !== types.length - 1) {
+        result = result.concat(', ');
+      }
+    }
+
+    return result;
+  }, [chainInfo]);
+
+  const _blockExplorer = useMemo(() => _getBlockExplorerFromChain(chainInfo), [chainInfo]);
+
+  const _crowdloanUrl = useMemo(() => _getCrowdloanUrlFromChain(chainInfo), [chainInfo]);
+
+  const formConfig = useMemo((): FormControlConfig => {
+    return {
+      currentProvider: {
+        name: 'provider',
+        value: currentProviderUrl,
+        require: true,
+      },
+      blockExplorer: {
+        name: 'blockExplorer',
+        value: _blockExplorer,
+        validateFunc: (value: string) => {
+          return validateBlockExplorer(value);
+        },
+      },
+      crowdloanUrl: {
+        name: 'crowdloanUrl',
+        value: _crowdloanUrl,
+        validateFunc: (value: string) => {
+          return validateCrowdloanUrl(value);
+        },
+      },
+    };
+  }, [_blockExplorer, _crowdloanUrl, currentProviderUrl]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const onSubmit = () => {
+    setLoading(true);
+    const currentProvider = formState.data.currentProvider;
+    const blockExplorer = formState.data.blockExplorer;
+    const crowdloanUrl = formState.data.crowdloanUrl;
+
+    const params: _NetworkUpsertParams = {
+      mode: 'update',
+      chainEditInfo: {
+        slug: chainInfo.slug,
+        currentProvider: currentProvider,
+        providers: chainInfo.providers,
+        blockExplorer,
+        crowdloanUrl,
+      },
+    };
+
+    upsertChain(params)
+      .then(result => {
+        setLoading(false);
+
+        if (result) {
+          toast.hideAll();
+          toast.show('Updated chain successfully');
+        } else {
+          toast.hideAll();
+          toast.show('An error occurred, please try again');
+        }
+      })
+      .catch(() => {
+        setLoading(false);
+        toast.hideAll();
+        toast.show('An error occurred, please try again');
+      });
+  };
+
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+    onSubmitForm: onSubmit,
+  });
+
+  const onPressDeleteBtn = () => {
+    setDeleteModalVisible(true);
+  };
+
+  const handeDeleteCustomToken = () => {
+    setIsDeleting(true);
+    removeChain(chainInfo.slug)
+      .then(result => {
+        if (result) {
+          toast.show('Deleted chain successfully');
+          navigation.goBack();
+        } else {
+          toast.show('Error. Please try again');
+        }
+        setIsDeleting(false);
+      })
+      .catch(() => {
+        toast.show('Error. Please try again');
+        setIsDeleting(false);
+      });
+  };
+
+  const onChangeBlockExplorer = (value: string) => {
+    if (!value) {
+      onUpdateErrors('blockExplorer')([]);
+    }
+
+    onChangeValue('blockExplorer')(value);
+  };
+
+  const onChangeCrowdloanUrl = (value: string) => {
+    if (!value) {
+      onUpdateErrors('crowdloanUrl')([]);
+    }
+
+    onChangeValue('crowdloanUrl')(value);
+  };
+
+  return (
+    <ContainerWithSubHeader
+      showLeftBtn={true}
+      rightIcon={Trash}
+      disableRightButton={!(_isCustomChain(chainInfo.slug) && !chainState.active)}
+      onPressBack={() => navigation.goBack()}
+      onPressRightIcon={onPressDeleteBtn}
+      title={'Config network'}>
+      <View style={ContainerStyle}>
+        <ScrollView style={{ flex: 1 }}>
+          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setRpcSelectorModalVisible(true)}>
+            <RpcSelectField showRightIcon value={formState.data.currentProvider} />
+          </TouchableOpacity>
+
+          <View style={{ flexDirection: 'row', width: '100%' }}>
+            <NetworkNameField outerStyle={{ flex: 2, marginRight: 12 }} chain={'polkadot'} />
+
+            <TextField outerStyle={{ flex: 1 }} text={symbol} />
+          </View>
+
+          <View style={{ flexDirection: 'row', width: '100%' }}>
+            <TextField outerStyle={{ flex: 1, marginRight: 12 }} text={decimals.toString()} />
+            {!isPureEvmChain ? (
+              <TextField outerStyle={{ flex: 1 }} text={paraId > -1 ? paraId.toString() : 'ParaId'} />
+            ) : (
+              <TextField outerStyle={{ flex: 1 }} text={chainId > -1 ? chainId.toString() : 'None'} />
+            )}
+          </View>
+
+          <View style={[{ width: '100%' }, !isPureEvmChain && { flexDirection: 'row' }]}>
+            {!isPureEvmChain && (
+              <TextField
+                outerStyle={[{ flex: 1 }, !isPureEvmChain && { marginRight: 12 }]}
+                text={addressPrefix.toString()}
+              />
+            )}
+
+            <TextField outerStyle={{ flex: 1 }} text={chainTypeString()} />
+          </View>
+
+          <InputText
+            ref={formState.refs.blockExplorer}
+            value={formState.data.blockExplorer}
+            onChangeText={onChangeBlockExplorer}
+            onSubmitField={onSubmitField('blockExplorer')}
+            errorMessages={formState.errors.blockExplorer}
+          />
+
+          <InputText
+            ref={formState.refs.crowdloanUrl}
+            value={formState.data.crowdloanUrl}
+            onChangeText={onChangeCrowdloanUrl}
+            onSubmitField={onSubmitField('crowdloanUrl')}
+            errorMessages={formState.errors.crowdloanUrl}
+          />
+        </ScrollView>
+
+        <View>
+          <Button
+            disabled={
+              !!formState.errors.blockExplorer.length ||
+              !!formState.errors.crowdloanUrl.length ||
+              !!formState.errors.currentProvider.length ||
+              formState.data.currentProvider === currentProviderUrl ||
+              isDeleting
+            }
+            loading={loading}
+            icon={<Icon phosphorIcon={FloppyDiskBack} size={'lg'} weight={'fill'} />}
+            onPress={onSubmit}>
+            {'Save'}
+          </Button>
+        </View>
+
+        <DeleteModal
+          title={'Delete network'}
+          visible={deleteModalVisible}
+          message={'Delete network'}
+          onDelete={handeDeleteCustomToken}
+        />
+
+        <RpcSelectorModal
+          chainInfo={chainInfo}
+          modalVisible={rpcSelectorModalVisible}
+          selectedValue={formState.data.currentProvider}
+          onPressBack={() => setRpcSelectorModalVisible(false)}
+          onSelectItem={(value: string) => {
+            onChangeValue('currentProvider')(value);
+          }}
+        />
+      </View>
+    </ContainerWithSubHeader>
+  );
+};
