@@ -88,14 +88,14 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
             </Text>
             <View style={{ alignItems: 'flex-start' }}>
               <Tag
-                color={staking.type === StakingType.NOMINATED ? 'success' : 'warning'}
+                color={staking.type === StakingType.NOMINATED ? 'warning' : 'success'}
                 closable={false}
                 bgType={'default'}
                 icon={
                   staking.type === StakingType.NOMINATED ? (
-                    <Icon phosphorIcon={User} size={'xxs'} weight={'bold'} iconColor={theme.colorSuccess} />
+                    <Icon phosphorIcon={User} size={'xxs'} weight={'bold'} iconColor={theme.colorWarning} />
                   ) : (
-                    <Icon phosphorIcon={Users} size={'xxs'} weight={'bold'} iconColor={theme.colorWarning} />
+                    <Icon phosphorIcon={Users} size={'xxs'} weight={'bold'} iconColor={theme.colorSuccess} />
                   )
                 }>
                 {staking.type === StakingType.NOMINATED ? 'Nominated' : 'Pooled'}

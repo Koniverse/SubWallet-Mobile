@@ -47,6 +47,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
+import {NetworkSettingDetail} from "screens/NetworkSettingDetail";
 
 interface Props {
   isAppReady: boolean;
@@ -109,6 +110,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                 <Stack.Screen name="CreatePassword" component={CreateMasterPassword} />
+                <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
                 <Stack.Screen name="MigratePassword" component={ApplyMasterPassword} />
                 <Stack.Screen name="EditAccount" component={EditAccount} />

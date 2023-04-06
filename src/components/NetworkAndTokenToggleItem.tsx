@@ -15,6 +15,7 @@ interface Props {
   isDisableSwitching?: boolean;
   connectionStatus?: _ChainConnectionStatus;
   onPressEditBtn?: () => void;
+  showEditButton?: boolean;
 }
 
 const itemArea: StyleProp<any> = {
@@ -58,6 +59,7 @@ export const NetworkAndTokenToggleItem = ({
   isDisableSwitching,
   connectionStatus,
   onPressEditBtn,
+  showEditButton,
 }: Props) => {
   return (
     <View style={{ marginBottom: 8 }}>
@@ -89,13 +91,15 @@ export const NetworkAndTokenToggleItem = ({
           onValueChange={onValueChange}
         />
 
-        <Button
-          style={{ marginLeft: 8 }}
-          size={'xs'}
-          type={'ghost'}
-          icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
-          onPress={onPressEditBtn}
-        />
+        {showEditButton && (
+          <Button
+            style={{ marginLeft: 8 }}
+            size={'xs'}
+            type={'ghost'}
+            icon={<Icon phosphorIcon={PencilSimpleLine} size={'sm'} iconColor={'rgba(166, 166, 166, 1)'} />}
+            onPress={onPressEditBtn}
+          />
+        )}
       </View>
 
       <View style={itemSeparator} />

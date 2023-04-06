@@ -23,7 +23,7 @@ const getTextStyle = (isDisabled: boolean, color?: string): StyleProp<any> => {
     ...FontMedium,
     lineHeight: 25,
     paddingHorizontal: 16,
-    paddingBottom: 10,
+    paddingBottom: 12,
     color: color ? color : isDisabled ? ColorMap.disabled : ColorMap.light,
   };
 };
@@ -32,7 +32,6 @@ const blockContentStyle: StyleProp<any> = {
   position: 'relative',
   flexDirection: 'row',
   alignItems: 'center',
-  height: 34,
 };
 
 const infoIconStyle: StyleProp<any> = {
@@ -46,6 +45,7 @@ export const TextField = ({
   showRightIcon,
   onPressRightIcon,
   icon,
+  label,
   disabled,
   textColor,
   iconColor,
@@ -53,7 +53,7 @@ export const TextField = ({
 }: Props) => {
   return (
     <FieldBase {...fieldBase}>
-      <View style={blockContentStyle}>
+      <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <Text style={getTextStyle(!!disabled, textColor)}>{text}</Text>
         {(showRightIcon || icon) && (
           <IconButton

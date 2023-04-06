@@ -24,15 +24,15 @@ const SEPARATOR = '___';
 export default function useGetStakingNetworks(): NetworkJson[] {
   const activeNetworkMap = useGetActiveNetwork();
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
 
   const activeList = useMemo((): string => {
     return activeNetworkMap.map(network => network.key).join(SEPARATOR);
   }, [activeNetworkMap]);
 
   return useMemo((): NetworkJson[] => {
-    const isEthAccount = isEthereumAddress(currentAccountAddress);
-    const isAllAccount = isAccountAll(currentAccountAddress);
+    const isEthAccount = isEthereumAddress(currentAccount?.address);
+    const isAllAccount = isAccountAll(currentAccount?.address);
 
     const filterFunction = isAllAccount
       ? filterAllAccount
@@ -42,5 +42,5 @@ export default function useGetStakingNetworks(): NetworkJson[] {
 
     return activeNetworkMap.filter(filterFunction);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeList, currentAccountAddress]);
+  }, [activeList, currentAccount?.address]);
 }
