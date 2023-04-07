@@ -49,3 +49,8 @@ export type CrowdloanItemType = {
   paraState?: CrowdloanParaState;
   crowdloanUrl?: string;
 };
+
+export type ChainInfo = {
+  slug: string;
+  name: string;
+};
