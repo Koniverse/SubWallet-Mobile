@@ -222,6 +222,10 @@ export const en = {
     scanSignatureToSignMessage: 'Scan this QR code with your other wallet\nto sign message',
     viewDetails: 'View details',
     unsupportedToken: 'Unsupported token',
+    sender: 'Sender',
+    recipient: 'Recipient',
+    originChain: 'Origin chain',
+    destinationChain: 'Destination chain',
   },
   title: {
     yourSeedPhrase: 'Your seed phrase',

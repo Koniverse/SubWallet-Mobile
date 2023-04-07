@@ -12,6 +12,7 @@ export const FontRegular = { fontFamily: 'PlusJakartaSans-Regular' }; //400
 export const FontMedium = { fontFamily: 'PlusJakartaSans-Medium' }; //500
 export const FontSemiBold = { fontFamily: 'PlusJakartaSans-SemiBold' }; //600
 export const FontBold = { fontFamily: 'PlusJakartaSans-Bold' }; //700
+export const FontMonoRegular = { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' }; //700
 export const FontSize0 = { fontSize: 12 };
 export const FontSize1 = { fontSize: 14 };
 export const FontSize2 = { fontSize: 15 };

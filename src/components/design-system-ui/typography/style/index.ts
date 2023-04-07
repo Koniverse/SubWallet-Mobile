@@ -1,5 +1,6 @@
 import { Platform, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMonoRegular } from 'styles/sharedStyles';
 
 export interface TypographyStyle {
   monospace: TextStyle;
@@ -24,9 +25,7 @@ export interface TypographyStyle {
 export default (theme: ThemeTypes) =>
   StyleSheet.create<TypographyStyle>({
     // Text styles
-    monospace: {
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    },
+    monospace: { ...FontMonoRegular },
     defaultText: { fontSize: theme.fontSize, lineHeight: theme.lineHeight * theme.fontSize },
     xsText: { fontSize: theme.fontSizeXS, lineHeight: theme.lineHeightXS * theme.fontSizeXS },
     smText: { fontSize: theme.fontSizeSM, lineHeight: theme.lineHeightSM * theme.fontSizeSM },

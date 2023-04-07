@@ -1,22 +1,16 @@
 import React, { useMemo } from 'react';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import { KeypairType } from '@polkadot/util-crypto/types';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import { Text, View } from 'react-native';
 import { Avatar } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AvatarGroupStyle from './style';
 import { FontBold } from 'styles/sharedStyles';
-
-export interface BaseAccountInfo {
-  address: string;
-  name?: string;
-  type?: KeypairType;
-}
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
-  accounts?: Array<BaseAccountInfo>;
+  addresses?: string[];
 }
 
 const sizeAva = {
@@ -24,13 +18,17 @@ const sizeAva = {
   large: 24,
 };
 
-const AvatarGroup = ({ accounts: _accounts }: Props) => {
+const AvatarGroup = ({ addresses: _addresses }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
   const _style = AvatarGroupStyle(theme);
-  const noAllAccount: BaseAccountInfo[] = useMemo((): BaseAccountInfo[] => {
-    return (_accounts || accounts).filter(account => !isAccountAll(account.address));
-  }, [accounts, _accounts]);
+  const noAllAccount: string[] = useMemo((): string[] => {
+    if (_addresses) {
+      return _addresses.filter(a => !isAccountAll(a));
+    }
+
+    return accounts.filter(account => !isAccountAll(account.address)).map(a => a.address);
+  }, [_addresses, accounts]);
 
   const showCount: number = useMemo((): number => {
     return noAllAccount.length > 2 ? 3 : 2;
@@ -65,9 +63,9 @@ const AvatarGroup = ({ accounts: _accounts }: Props) => {
           <View key={index} style={getAvatarStyle(index)}>
             <Avatar
               size={showCount === 3 ? sizeAva.default : sizeAva.large}
-              value={account.address}
+              value={account}
               identPrefix={42}
-              theme={account.type === 'ethereum' ? 'ethereum' : 'polkadot'}
+              theme={isEthereumAddress(account) ? 'ethereum' : 'polkadot'}
             />
           </View>
         );
