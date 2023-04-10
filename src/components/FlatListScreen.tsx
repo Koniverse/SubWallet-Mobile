@@ -13,6 +13,8 @@ import { LazyFlatList } from 'components/LazyFlatList';
 import { NoInternetScreen } from 'components/NoInternetScreen';
 import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import { LazySectionList } from 'components/LazySectionList';
 
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 export interface RightIconOpt {
@@ -52,6 +54,10 @@ interface Props<T> {
   isShowFilterBtn?: boolean;
   filterOptions?: OptionType[];
   isShowListWrapper?: boolean;
+  grouping?: {
+    renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
+    groupBy: (item: T) => string;
+  };
 }
 
 export function FlatListScreen<T>({
@@ -83,6 +89,7 @@ export function FlatListScreen<T>({
   filterOptions,
   isShowListWrapper = false,
   beforeListItem,
+  grouping,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -121,21 +128,39 @@ export function FlatListScreen<T>({
         />
       )}
       {isNetConnected ? (
-        <LazyFlatList
-          items={items}
-          searchString={searchString}
-          flatListStyle={flatListStyle}
-          renderItem={renderItem}
-          renderListEmptyComponent={renderListEmptyComponent}
-          refreshControl={refreshControl}
-          searchFunction={searchFunction}
-          filterFunction={filterFunction}
-          selectedFilters={selectedFilters}
-          sortFunction={sortFunction}
-          loading={loading}
-          numberColumns={numberColumns}
-          isShowListWrapper={isShowListWrapper}
-        />
+        grouping ? (
+          <LazySectionList
+            items={items}
+            searchString={searchString}
+            listStyle={flatListStyle}
+            renderItem={renderItem}
+            renderListEmptyComponent={renderListEmptyComponent}
+            refreshControl={refreshControl}
+            searchFunction={searchFunction}
+            filterFunction={filterFunction}
+            selectedFilters={selectedFilters}
+            sortFunction={sortFunction}
+            loading={loading}
+            groupBy={grouping.groupBy}
+            renderSectionHeader={grouping.renderSectionHeader}
+          />
+        ) : (
+          <LazyFlatList
+            items={items}
+            searchString={searchString}
+            flatListStyle={flatListStyle}
+            renderItem={renderItem}
+            renderListEmptyComponent={renderListEmptyComponent}
+            refreshControl={refreshControl}
+            searchFunction={searchFunction}
+            filterFunction={filterFunction}
+            selectedFilters={selectedFilters}
+            sortFunction={sortFunction}
+            loading={loading}
+            numberColumns={numberColumns}
+            isShowListWrapper={isShowListWrapper}
+          />
+        )
       ) : (
         <NoInternetScreen />
       )}
