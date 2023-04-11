@@ -47,7 +47,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
-import {NetworkSettingDetail} from "screens/NetworkSettingDetail";
+import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
+import { Confirmations } from 'screens/Confirmations';
 
 interface Props {
   isAppReady: boolean;
@@ -162,6 +163,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   headerShown: false,
                 }}>
                 <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
+                <Stack.Screen name="Confirmations" component={Confirmations} />
               </Stack.Group>
             </>
           )}

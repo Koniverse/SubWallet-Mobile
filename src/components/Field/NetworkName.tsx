@@ -41,7 +41,7 @@ export const NetworkNameField = ({ chain, disabled, label, customStyle, ...field
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   return (
-    <FieldBase {...fieldBase}>
+    <FieldBase label={label} {...fieldBase}>
       <View style={[blockContentStyle, customStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row' }}>
           <Icon phosphorIcon={Globe} size={'md'} iconColor={theme.colorTextLight5} weight={'bold'} />

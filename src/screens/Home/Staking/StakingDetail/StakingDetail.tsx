@@ -2,7 +2,6 @@ import { formatBalance } from '@polkadot/util';
 import { useNavigation } from '@react-navigation/native';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
-import { BalanceVal } from 'components/BalanceVal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
@@ -16,19 +15,18 @@ import { User, Users } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
-import { StakingBalanceDetailProps } from 'routes/staking/stakingScreen';
+import {StakingBalanceDetailProps, StakingScreenNavigationProps} from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
-import {ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles} from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkLogo } from 'utils/index';
-import { getStakingInputValueStyle } from 'utils/text';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Number } from 'components/design-system-ui';
-import {useSubWalletTheme} from "hooks/useSubWalletTheme";
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -87,7 +85,7 @@ const StakingDetail = ({
   navigation: { goBack },
 }: StakingBalanceDetailProps) => {
   const theme = useSubWalletTheme().swThemes;
-  const navigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<StakingScreenNavigationProps>();
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const goHome = useGoHome({ screen: 'Staking', params: { screen: 'StakingBalances' } });
 
@@ -118,16 +116,8 @@ const StakingDetail = ({
   }, []);
 
   const handleStakeMore = useCallback(() => {
-    navigation.navigate('Home', {
-      screen: 'Staking',
-      params: {
-        screen: 'StakingValidators',
-        params: {
-          networkKey: networkKey,
-        },
-      },
-    });
-  }, [navigation, networkKey]);
+    navigation.navigate('Stake', { chain: undefined, type: undefined });
+  }, [navigation]);
 
   if (data === undefined) {
     return <></>;

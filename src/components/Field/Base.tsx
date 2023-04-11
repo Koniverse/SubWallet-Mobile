@@ -28,6 +28,7 @@ const labelStyle: StyleProp<any> = {
 };
 
 export const FieldBase = ({ children, label, fieldBgc, outerStyle, ...props }: FieldBaseProps) => {
+  console.log('label', label);
   return (
     <View style={[getWrapperStyle(fieldBgc || ColorMap.dark2), outerStyle]} {...props}>
       {!!label && <Text style={labelStyle}>{label}</Text>}

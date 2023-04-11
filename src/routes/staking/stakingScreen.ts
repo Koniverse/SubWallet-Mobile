@@ -17,11 +17,12 @@ export type StakingScreenStackParamList = {
     validatorInfo: ValidatorInfo;
     networkValidatorsInfo: NetworkValidatorsInfo;
   };
+  Stake: { chain?: string; type?: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<StakingScreenStackParamList>;
 export type StakingScreenNavigationProps = NavigationProps['navigation'];
-
+export type StakeScreenNavigationProps = NativeStackScreenProps<StakingScreenStackParamList, 'Stake'>;
 export type StakingBalancesProps = NativeStackScreenProps<StakingScreenStackParamList, 'StakingBalances'>;
 export type StakingBalanceDetailProps = NativeStackScreenProps<StakingScreenStackParamList, 'StakingBalanceDetail'>;
 export type StakingNetworksProps = NativeStackScreenProps<StakingScreenStackParamList, 'StakingNetworks'>;

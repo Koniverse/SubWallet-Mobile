@@ -53,7 +53,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
   } = passwordFieldProps;
   return (
     <>
-      <FieldBase {...fieldBase}>
+      <FieldBase label={label} {...fieldBase}>
         <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
           <TextInput
             ref={ref}

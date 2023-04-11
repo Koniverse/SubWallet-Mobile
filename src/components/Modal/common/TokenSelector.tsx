@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { Warning } from 'components/Warning';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
@@ -22,6 +22,8 @@ interface Props {
   onSelectItem: (item: TokenItemType) => void;
   items: TokenItemType[];
   title?: string;
+  acceptDefaultValue?: boolean;
+  value?: string;
 }
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
@@ -40,8 +42,34 @@ const renderListEmptyComponent = () => {
   );
 };
 
-export const TokenSelector = ({ modalVisible, onCancel, onSelectItem, items, title = i18n.title.token }: Props) => {
+export const TokenSelector = ({
+  modalVisible,
+  onCancel,
+  onSelectItem,
+  items,
+  title = i18n.title.token,
+  acceptDefaultValue,
+  value,
+}: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+
+  useEffect(() => {
+    console.log('items', items);
+    if (acceptDefaultValue) {
+      if (!value) {
+        onSelectItem(items[0]);
+      } else {
+        const existed = items.find(item => item.slug === value);
+
+        if (!existed) {
+          onSelectItem(items[0]);
+        } else {
+          onSelectItem(existed);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenItemType>) => {
