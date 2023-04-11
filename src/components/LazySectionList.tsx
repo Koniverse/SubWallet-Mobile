@@ -2,77 +2,95 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
 import {
   ActivityIndicator,
-  FlatList,
   ListRenderItemInfo,
   RefreshControlProps,
+  SectionList,
   StyleProp,
   View,
-  ViewStyle,
 } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 
 interface Props<T> {
   items: T[];
   searchString: string;
   renderListEmptyComponent: (searchString?: string) => JSX.Element;
+  renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
   searchFunction?: (items: T[], searchString: string) => T[];
   filterFunction?: (items: T[], filters: string[]) => T[];
+  groupBy: (item: T) => string;
   selectedFilters?: string[];
-  numberColumns?: number;
-  flatListStyle?: StyleProp<any>;
+  listStyle?: StyleProp<any>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortFunction?: SortFunctionInterface<T>;
   loading?: boolean;
-  isShowListWrapper?: boolean;
 }
-
-const ItemSeparatorStyle: StyleProp<ViewStyle> = {
-  height: 16,
-};
 
 const IndicatorStyle: StyleProp<any> = {
   width: '100%',
   height: '100%',
 };
 
-const ColumnWrapperStyle: StyleProp<ViewStyle> = {
-  justifyContent: 'space-between',
-};
-
-export function LazyFlatList<T>({
+export function LazySectionList<T>({
   items,
   renderListEmptyComponent,
+  renderSectionHeader,
   searchString,
   searchFunction,
   filterFunction,
   selectedFilters,
-  numberColumns = 1,
-  flatListStyle,
+  listStyle,
+  groupBy,
   refreshControl,
   renderItem,
   loading,
   sortFunction = defaultSortFunc,
-  isShowListWrapper,
 }: Props<T>) {
-  const flatListRef = useRef<FlatList>(null);
+  const sectionListRef = useRef<SectionList>(null);
   const filteredItems = useMemo(() => {
     let searchItem = searchFunction ? searchFunction(items, searchString) : items;
 
     return filterFunction && selectedFilters ? filterFunction(searchItem, selectedFilters) : searchItem;
   }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
-  const sortedItems = useMemo(() => filteredItems.sort(sortFunction), [filteredItems, sortFunction]);
-  const { isLoading, lazyList, onLoadMore, setPageNumber } = useLazyList(sortedItems);
+
+  const sections = useMemo(() => {
+    return filteredItems.reduce((groups: { title: string; data: T[] }[], item) => {
+      const groupTitle = groupBy(item);
+      const group = groups.find(g => g.title === groupTitle);
+      if (group) {
+        group.data.push(item);
+      } else {
+        groups.push({ title: groupTitle, data: [item] });
+      }
+
+      groups.forEach(g => {
+        g.data.sort(sortFunction);
+      });
+
+      return groups;
+    }, []);
+  }, [filteredItems, groupBy, sortFunction]);
+
+  const {
+    isLoading,
+    lazyList: lazySections,
+    onLoadMore,
+    setPageNumber,
+  } = useLazyList(sections, {
+    itemPerPage: 2,
+    lazyTime: 300,
+  });
 
   useEffect(() => {
     let unmount = false;
-    if (flatListRef.current) {
+    if (sectionListRef.current) {
       if (!unmount) {
         setPageNumber(1);
-        flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+        sectionListRef.current.scrollToLocation({ itemIndex: 0, sectionIndex: 0, animated: false });
       }
     }
 
@@ -90,46 +108,26 @@ export function LazyFlatList<T>({
     return isLoading ? <ActivityLoading /> : null;
   };
 
-  const renderSeparatorComponent = () => {
-    return numberColumns > 1 ? <View style={ItemSeparatorStyle} /> : null;
-  };
-
   if (loading) {
     return <ActivityIndicator style={IndicatorStyle} size={'large'} animating={true} />;
   }
+
   return (
     <>
-      {lazyList.length ? (
-        <View
-          style={[
-            isShowListWrapper
-              ? {
-                  backgroundColor: '#1A1A1A',
-                  marginHorizontal: 16,
-                  borderRadius: 8,
-                  // marginBottom: 94,
-                  paddingVertical: 8,
-                  flex: 1,
-                }
-              : {},
-            {
-              flex: 1,
-            },
-          ]}>
-          <FlatList
-            ref={flatListRef}
+      {lazySections.length ? (
+        <View>
+          <SectionList
+            ref={sectionListRef}
             style={{ ...ScrollViewStyle }}
             keyboardShouldPersistTaps={'handled'}
-            data={lazyList}
             onEndReached={onLoadMore}
             renderItem={renderItem}
+            renderSectionHeader={renderSectionHeader}
             onEndReachedThreshold={0.3}
-            numColumns={numberColumns}
             refreshControl={refreshControl}
-            columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
-            ItemSeparatorComponent={renderSeparatorComponent}
-            contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
+            contentContainerStyle={listStyle}
+            sections={lazySections}
           />
         </View>
       ) : (

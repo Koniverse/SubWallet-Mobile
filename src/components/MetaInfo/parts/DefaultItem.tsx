@@ -17,7 +17,7 @@ const DefaultItem: React.FC<DefaultInfoItem> = ({
   labelAlign,
   valueColorSchema,
   children,
-  valueAlign,
+  valueAlign = 'right',
 }: DefaultInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -28,6 +28,7 @@ const DefaultItem: React.FC<DefaultInfoItem> = ({
       ..._style.value,
       ...valueGeneralStyle,
       ...(valueColorSchema && { color: getSchemaColor(valueColorSchema, theme) }),
+      flexShrink: 1,
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
 
