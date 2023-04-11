@@ -5,8 +5,13 @@ import { PageIcon, Typography } from 'components/design-system-ui';
 import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TransactionDoneStyle from './TransactionDone/style';
+import { TransactionDoneProps } from 'routes/index';
 
-export const TransactionDone = () => {
+export const TransactionDone = ({
+  route: {
+    params: { chainType, chain, extrinsicHash },
+  },
+}: TransactionDoneProps) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = TransactionDoneStyle(theme);
 

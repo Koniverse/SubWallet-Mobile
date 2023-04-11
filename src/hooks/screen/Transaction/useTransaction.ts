@@ -7,6 +7,7 @@ import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _getOriginChainOfAsset } from '@subwallet/extension-base/services/chain-service/utils';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 export const useTransaction = (action: string, extraFormConfig: FormControlConfig) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -56,8 +57,6 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     navigation.navigate(homePath);
   }, [homePath, navigation]);
 
-  const onDone = useCallback(() => {}, []);
-
   const transactionFormConfig: FormControlConfig = {
     from: {
       name: 'From',
@@ -78,11 +77,16 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     ...extraFormConfig,
   };
 
-  const onSubmitForm = () => {};
+  const { formState, onChangeValue, onSubmitField, focus } = useFormControl(transactionFormConfig, {});
 
-  const { formState, onChangeValue, onSubmitField, focus } = useFormControl(transactionFormConfig, {
-    onSubmitForm: onSubmitForm,
-  });
+  const onDone = useCallback(
+    (extrinsicHash: string) => {
+      const chainType = isEthereumAddress(formState.data.from) ? 'ethereum' : 'substrate';
+
+      navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, extrinsicHash: extrinsicHash });
+    },
+    [formState.data.chain, formState.data.from, navigation],
+  );
 
   const onChangeFromValue = (value: string) => {
     onChangeValue('from')(value);

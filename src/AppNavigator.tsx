@@ -49,6 +49,7 @@ import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMas
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
+import {TransactionDone} from "screens/Transaction";
 
 interface Props {
   isAppReady: boolean;
@@ -155,6 +156,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 />
                 <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="TransactionDone" component={TransactionDone} />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{
