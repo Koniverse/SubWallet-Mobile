@@ -11,6 +11,7 @@ import { RootState } from 'stores/index';
 import { useIsFocused } from '@react-navigation/native';
 import { startCronAndSubscriptionServices } from '../../../messaging';
 import withPageWrapper from 'components/pageWrapper';
+import { Stake } from 'screens/Transaction/Stake';
 
 const StakingScreen = () => {
   const StakingScreenStack = createNativeStackNavigator();
@@ -35,9 +36,7 @@ const StakingScreen = () => {
         component={withPageWrapper(StakingBalanceList, ['staking', 'price'])}
       />
       <StakingScreenStack.Screen name="StakingBalanceDetail" component={StakingDetail} />
-      <StakingScreenStack.Screen name="StakingNetworks" component={StakingNetworkList} />
-      <StakingScreenStack.Screen name="StakingValidators" component={StakingValidatorList} />
-      <StakingScreenStack.Screen name="StakingValidatorDetail" component={StakingValidatorDetail} />
+      <StakingScreenStack.Screen name="Stake" component={Stake} />
     </StakingScreenStack.Navigator>
   );
 };

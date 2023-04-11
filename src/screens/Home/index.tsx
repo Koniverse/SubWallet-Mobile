@@ -128,6 +128,7 @@ export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
 
   const needMigrate = useMemo(
     () =>
@@ -139,11 +140,16 @@ export const Home = () => {
   useEffect(() => {
     if (needMigrate && hasMasterPassword) {
       navigation.navigate('MigratePassword');
+    } else if (hasMasterPassword && hasConfirmations) {
+      navigation.navigate('Confirmations');
     }
-  }, [hasMasterPassword, navigation, needMigrate]);
+  }, [hasConfirmations, hasMasterPassword, navigation, needMigrate]);
 
   useEffect(() => {
-    keyringLock().catch((e: Error) => console.log(e));
+    if (hasMasterPassword) {
+      keyringLock().catch((e: Error) => console.log(e));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

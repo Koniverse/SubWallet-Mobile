@@ -316,7 +316,15 @@ export function getTokenLogo(
   size: number,
   defaultLogoKey = 'default',
 ) {
-  return <SWLogo token={logoKey.toLowerCase()} subNetwork={subLogoKey} defaultLogoKey={defaultLogoKey} size={size} />;
+  return (
+    <SWLogo
+      token={logoKey.toLowerCase()}
+      subNetwork={subLogoKey}
+      defaultLogoKey={defaultLogoKey}
+      size={size}
+      isShowSubLogo={!!subLogoKey}
+    />
+  );
 }
 
 export function shuffleArray(array: any[]) {

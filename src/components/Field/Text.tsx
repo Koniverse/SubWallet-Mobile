@@ -52,7 +52,7 @@ export const TextField = ({
   ...fieldBase
 }: Props) => {
   return (
-    <FieldBase {...fieldBase}>
+    <FieldBase label={label} {...fieldBase}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <Text style={getTextStyle(!!disabled, textColor)}>{text}</Text>
         {(showRightIcon || icon) && (

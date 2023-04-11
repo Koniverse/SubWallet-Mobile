@@ -53,6 +53,7 @@ export type RootStackParamList = {
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   ConfirmationPopup: undefined;
+  Confirmations: undefined;
   FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;
   DAppAccess: undefined;

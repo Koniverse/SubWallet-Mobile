@@ -213,12 +213,38 @@ const ApplyMasterPassword = () => {
         );
       case 'Migrate':
         return (
-          <Button loading={loading} disabled={isDisabled || deleting} icon={nextIcon} onPress={onSubmit}>
+          <Button
+            loading={loading}
+            disabled={isDisabled || deleting || !!formState.errors.password.length}
+            icon={
+              <Icon
+                phosphorIcon={ArrowCircleRight}
+                size={'lg'}
+                weight={'fill'}
+                iconColor={
+                  isDisabled || deleting || !!formState.errors.password.length
+                    ? theme.colorTextLight5
+                    : theme.colorWhite
+                }
+              />
+            }
+            onPress={onSubmit}>
             {'Next'}
           </Button>
         );
     }
-  }, [step, goHome, loading, isDisabled, deleting, onSubmit, dispatch]);
+  }, [
+    step,
+    goHome,
+    loading,
+    isDisabled,
+    deleting,
+    formState.errors.password.length,
+    theme.colorTextLight5,
+    theme.colorWhite,
+    onSubmit,
+    dispatch,
+  ]);
 
   return (
     <ContainerWithSubHeader
@@ -232,7 +258,7 @@ const ApplyMasterPassword = () => {
         {step === 'Introduction' && <Introduction />}
         {step === 'Migrate' && migrateAccount && (
           <ScrollView style={{ flex: 1, paddingHorizontal: theme.padding }}>
-            <View style={{ alignItems: 'center', paddingBottom: 32, paddingTop: 16 }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: 32, paddingTop: 16 }}>
               <Avatar
                 size={112}
                 value={migrateAccount.address}

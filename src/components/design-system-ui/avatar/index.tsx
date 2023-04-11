@@ -26,14 +26,14 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size, value, identPrefix }) => {
 
   if (theme === 'ethereum') {
     return (
-      <View style={[_style.container, { width: size, borderWidth: size / 20 }]}>
-        <Image source={{ uri: toDataUrl(value) }} style={getEthereumIdenticonStyle(size - 4)} />
+      <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
+        <Image source={{ uri: toDataUrl(value) }} style={getEthereumIdenticonStyle(size - 8)} />
       </View>
     );
   }
   return (
     <View style={[_style.container, { borderWidth: size / 20 }]}>
-      <Identicon prefix={identPrefix} value={value} size={size - 4} theme="polkadot" />
+      <Identicon prefix={identPrefix} value={value} size={size - 8} theme="polkadot" />
     </View>
   );
 };

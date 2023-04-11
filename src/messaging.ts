@@ -29,6 +29,7 @@ import {
   AccountExternalError,
   AccountsWithCurrentAddress,
   ActiveCronAndSubscriptionMap,
+  AmountData,
   AssetSettingUpdateReq,
   BalanceJson,
   BrowserConfirmationType,
@@ -80,6 +81,7 @@ import {
   RequestSigningApprovePasswordV2,
   RequestStakeCancelWithdrawal,
   RequestStakeClaimReward,
+  RequestStakePoolingBonding,
   RequestStakeWithdrawal,
   RequestSubscribeBalance,
   RequestSubscribeBalancesVisibility,
@@ -1135,10 +1137,13 @@ export async function cancelSubscription(request: string): Promise<boolean> {
   return sendMessage('pri(subscription.cancel)', request);
 }
 
+export async function getFreeBalance(request: RequestFreeBalance): Promise<AmountData> {
+  return sendMessage('pri(freeBalance.get)', request);
+}
 export async function subscribeFreeBalance(
   request: RequestFreeBalance,
-  callback: (balance: string) => void,
-): Promise<string> {
+  callback: (balance: AmountData) => void,
+): Promise<AmountData> {
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 
@@ -1219,6 +1224,10 @@ export async function subscribeStakingNominatorMetadata(
 
 export async function submitBonding(request: RequestBondingSubmit): Promise<SWTransactionResponse> {
   return sendMessage('pri(bonding.submitBondingTransaction)', request);
+}
+
+export async function submitPoolBonding(request: RequestStakePoolingBonding): Promise<SWTransactionResponse> {
+  return sendMessage('pri(bonding.nominationPool.submitBonding)', request);
 }
 
 export async function submitUnbonding(request: RequestUnbondingSubmit): Promise<SWTransactionResponse> {

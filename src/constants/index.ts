@@ -39,3 +39,4 @@ export const DEVICE: DeviceInfo = {
   width: deviceWidth,
   height: deviceHeight,
 };
+export const ALL_KEY = 'all';

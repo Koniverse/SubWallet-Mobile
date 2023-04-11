@@ -49,7 +49,7 @@ export const RpcSelectField = ({
   const theme = useSubWalletTheme().swThemes;
 
   return (
-    <FieldBase {...fieldBase} outerStyle={outerStyle}>
+    <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon phosphorIcon={leftIcon} size={'md'} iconColor={theme.colorTextLight5} />
