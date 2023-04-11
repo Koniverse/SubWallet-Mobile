@@ -11,7 +11,6 @@ import { CompoundStakeActionStackParamList } from 'routes/staking/compoundAction
 import { StakeActionStackParamList } from 'routes/staking/stakeAction';
 import { UnStakeActionStackParamList } from 'routes/staking/unStakeAction';
 import { WithdrawStakeActionStackParamList } from 'routes/staking/withdrawAction';
-import {NetworkSettingDetail} from "screens/NetworkSettingDetail";
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -69,6 +68,7 @@ export type RootStackParamList = {
   WithdrawStakeAction: NavigatorScreenParams<WithdrawStakeActionStackParamList>;
   ClaimStakeAction: NavigatorScreenParams<ClaimStakeActionStackParamList>;
   CompoundStakeAction: NavigatorScreenParams<CompoundStakeActionStackParamList>;
+  TransactionDone: { chainType: string; chain: string; extrinsicHash: string };
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
   AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
@@ -101,3 +101,4 @@ export type StakeActionProps = NativeStackScreenProps<RootStackParamList, 'Stake
 export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeAction'>;
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;
 export type NetworkSettingDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkSettingDetail'>;
+export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'TransactionDone'>;

@@ -4,7 +4,7 @@ import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo
 import { TransactionConfirmation } from 'screens/Confirmations/Transaction';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
-import { SafeAreaView } from 'react-native';
+import {SafeAreaView, View} from 'react-native';
 
 const titleMap: Record<ConfirmationType, string> = {
   addNetworkRequest: 'Add Network Request',
@@ -49,19 +49,21 @@ export const Confirmations = () => {
   }, [index, numberOfConfirmations]);
 
   return (
-    <ScreenContainer backgroundColor={'#0C0C0C'}>
-      <>
-        <ConfirmationHeader
-          index={index}
-          numberOfConfirmations={numberOfConfirmations}
-          title={titleMap[confirmation?.type]}
-          onPressPrev={prevConfirmation}
-          onPressNext={nextConfirmation}
-        />
+    <View style={{ width: '100%', flex: 1 }}>
+      <ScreenContainer backgroundColor={'#0C0C0C'}>
+        <>
+          <ConfirmationHeader
+            index={index}
+            numberOfConfirmations={numberOfConfirmations}
+            title={titleMap[confirmation?.type]}
+            onPressPrev={prevConfirmation}
+            onPressNext={nextConfirmation}
+          />
 
-        {content}
-        <SafeAreaView />
-      </>
-    </ScreenContainer>
+          {content}
+          <SafeAreaView />
+        </>
+      </ScreenContainer>
+    </View>
   );
 };

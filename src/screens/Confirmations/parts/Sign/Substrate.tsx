@@ -9,9 +9,6 @@ import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-reac
 import { View } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { useNavigation } from '@react-navigation/native';
-import { StakeActionStackParamList } from 'routes/staking/stakeAction';
-import { StakingScreenNavigationProps, StakingScreenStackParamList } from 'routes/staking/stakingScreen';
 
 interface Props {
   account: AccountJson;
@@ -27,7 +24,6 @@ const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMo
 
 export const SubstrateSignArea = (props: Props) => {
   const { account, id, payload } = props;
-  const navigation = useNavigation<StakingScreenNavigationProps>();
 
   const [loading, setLoading] = useState(false);
 
@@ -49,9 +45,8 @@ export const SubstrateSignArea = (props: Props) => {
     setLoading(true);
     handleCancel(id).finally(() => {
       setLoading(false);
-      navigation.goBack();
     });
-  }, [id, navigation]);
+  }, [id]);
 
   const onApprovePassword = useCallback(() => {
     setLoading(true);
@@ -80,7 +75,7 @@ export const SubstrateSignArea = (props: Props) => {
   }, [onApprovePassword, onConfirmQr, signMode]);
 
   return (
-    <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+    <View style={{ flexDirection: 'row', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
       <Button
         style={{ marginRight: 6 }}
         disabled={loading}

@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   View,
   ViewStyle,
+  TextStyle,
 } from 'react-native';
 import { ButtonPropsType } from './PropsType';
 import Squircle from 'components/design-system-ui/squircle';
@@ -22,6 +23,7 @@ export interface ButtonProps extends ButtonPropsType, TouchableHighlightProps {
   onPressOut?: (event?: GestureResponderEvent) => void;
   activeStyle?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
+  externalTextStyle?: TextStyle;
 }
 
 const Button: React.FC<ButtonProps> = props => {
@@ -42,6 +44,7 @@ const Button: React.FC<ButtonProps> = props => {
     onShowUnderlay,
     onHideUnderlay,
     icon,
+    externalTextStyle,
     contentAlign = 'center',
     ...restProps
   } = props;
@@ -80,6 +83,7 @@ const Button: React.FC<ButtonProps> = props => {
     _style.textStyle,
     _style[`${size}RawText`],
     _style[`${buttonType}RawText`],
+    externalTextStyle,
     (loading || !!icon) && _style.buttonRawText,
     disabled && _style[`${buttonType}DisabledRawText`],
   ];
@@ -104,7 +108,6 @@ const Button: React.FC<ButtonProps> = props => {
   const indicatorColor = (StyleSheet.flatten(_style[`${buttonType}RawText`]) as any).color;
 
   const iconNode = loading ? <ActivityIndicator animating color={indicatorColor} size="small" /> : icon ? icon : null;
-
   const buttonNode = (
     <TouchableHighlight
       accessibilityRole="button"
@@ -121,7 +124,7 @@ const Button: React.FC<ButtonProps> = props => {
       onHideUnderlay={_onHideUnderlay}>
       <View style={[_style.container, { paddingVertical: 16 }]}>
         {iconNode}
-        {typeof children === 'string' ? <Text style={textStyle}>{children}</Text> : <>{children}</>}
+        {typeof children === 'string' ? <Text style={textStyle}>{children}</Text> : children}
       </View>
     </TouchableHighlight>
   );

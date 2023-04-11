@@ -7,11 +7,7 @@ import { TokenSelectField } from 'components/Field/TokenSelect';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useGetSupportedStakingTokens from 'hooks/screen/Staking/useGetSupportedStakingTokens';
-import {
-  RequestBondingSubmit,
-  RequestStakePoolingBonding,
-  StakingType
-} from '@subwallet/extension-base/background/KoniTypes';
+import { RequestStakePoolingBonding, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { StakeScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useSelector } from 'react-redux';
@@ -25,6 +21,7 @@ import BigN from 'bignumber.js';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { Button } from 'components/design-system-ui';
 import { submitPoolBonding } from '../../../messaging';
+import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 
 const stakeFormConfig = {
   stakingType: {
@@ -80,7 +77,7 @@ export const Stake = ({
   const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
-  const { title, formState, onChangeValue, onChangeFromValue, onChangeAssetValue, onChangeAmountValue } =
+  const { title, formState, onChangeValue, onChangeFromValue, onChangeAssetValue, onChangeAmountValue, onDone } =
     useTransaction('stake', stakeFormConfig);
   const tokenList = useGetSupportedStakingTokens(
     formState.data.stakingType as StakingType,
@@ -90,7 +87,7 @@ export const Stake = ({
   const accountInfo = useGetAccountByAddress(formState.data.from);
   const { nativeTokenBalance } = useGetBalance(formState.data.chain, formState.data.from);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(formState.data.chain);
-
+  const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const existentialDeposit = useMemo(() => {
     const assetInfo = assetRegistry[formState.data.asset];
 
@@ -111,8 +108,6 @@ export const Stake = ({
       return balance.minus(ed).toString();
     }
   }, [existentialDeposit, nativeTokenBalance.value]);
-
-  console.log('value', formState.data);
 
   return (
     <ScreenContainer backgroundColor={'#0C0C0C'}>
@@ -143,9 +138,9 @@ export const Stake = ({
           <FreeBalance label={'Available balance:'} address={formState.data.from} chain={formState.data.chain} />
 
           <InputAmount
-            value={formState.data.asset}
+            value={formState.data.value}
             maxValue={maxValue}
-            onChangeValue={onChangeAmountValue}
+            onChangeValue={text => onChangeAmountValue(text)}
             decimals={decimals}
           />
 

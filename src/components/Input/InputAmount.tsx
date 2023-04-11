@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useCallback, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import BigN from 'bignumber.js';
 import { Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -45,7 +45,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   const [inputValue, setInputValue] = useState(value);
   const _onClickMaxBtn = useCallback(() => {
     const transformVal = getInputValuesFromString(maxValue, decimals);
-
+    setInputValue(transformVal);
     onChangeValue(transformVal);
   }, [decimals, maxValue, onChangeValue]);
 
@@ -103,8 +103,8 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
         placeholderTextColor={theme.colorTextTertiary}
         editable={disable}
       />
-      <Button type={'ghost'} size={'xs'} onPress={_onClickMaxBtn}>
-        <Text style={{ color: theme.colorSuccess }}>Max</Text>
+      <Button type={'ghost'} externalTextStyle={{ color: theme.colorSuccess }} size={'xs'} onPress={_onClickMaxBtn}>
+        {'Max'}
       </Button>
     </View>
   );

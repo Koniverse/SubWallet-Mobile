@@ -7,8 +7,7 @@ import { completeConfirmation } from '../../../../messaging';
 import { ConfirmationDefinitions, ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/index';
-import {useNavigation} from "@react-navigation/native";
-import {StakingScreenNavigationProps} from "routes/staking/stakingScreen";
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 interface Props {
   id: string;
@@ -38,7 +37,6 @@ export const EvmSignArea = (props: Props) => {
   } = payload;
   const signMode = useMemo(() => getSignMode(account), [account]);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation<StakingScreenNavigationProps>();
 
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
@@ -55,9 +53,8 @@ export const EvmSignArea = (props: Props) => {
     setLoading(true);
     handleCancel(type, id).finally(() => {
       setLoading(false);
-      navigation.goBack();
     });
-  }, [id, navigation, type]);
+  }, [id, type]);
 
   const onApprovePassword = useCallback(() => {
     setLoading(true);
@@ -69,7 +66,7 @@ export const EvmSignArea = (props: Props) => {
   }, [id, type]);
 
   return (
-    <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+    <View style={{ flexDirection: 'row', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
       <Button
         style={{ marginRight: 6 }}
         disabled={loading}

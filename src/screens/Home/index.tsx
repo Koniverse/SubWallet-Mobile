@@ -23,6 +23,8 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { keyringLock } from '../../messaging';
+import { SwFullSizeModal } from 'components/design-system-ui';
+import { Confirmations } from 'screens/Confirmations';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -128,7 +130,7 @@ export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
+  const { hasConfirmations, hasInternalConfirmations } = useSelector((state: RootState) => state.requestState);
 
   const needMigrate = useMemo(
     () =>
@@ -140,10 +142,8 @@ export const Home = () => {
   useEffect(() => {
     if (needMigrate && hasMasterPassword) {
       navigation.navigate('MigratePassword');
-    } else if (hasMasterPassword && hasConfirmations) {
-      navigation.navigate('Confirmations');
     }
-  }, [hasConfirmations, hasMasterPassword, navigation, needMigrate]);
+  }, [hasMasterPassword, navigation, needMigrate]);
 
   useEffect(() => {
     if (hasMasterPassword) {
@@ -156,6 +156,9 @@ export const Home = () => {
     <>
       {isEmptyAccounts ? <FirstScreen /> : <MainScreen />}
       <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts} />
+      <SwFullSizeModal modalVisible={hasConfirmations || hasInternalConfirmations}>
+        <Confirmations />
+      </SwFullSizeModal>
     </>
   );
 };
