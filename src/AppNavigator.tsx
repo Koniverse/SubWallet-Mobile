@@ -1,3 +1,4 @@
+import React from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { Home } from 'screens/Home';
 import { NetworksSetting } from 'screens/NetworksSetting';
@@ -43,13 +44,12 @@ import { RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
+import ErrorBoundary from 'react-native-error-boundary';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
-import {TransactionDone} from "screens/Transaction";
+import { TransactionDone } from 'screens/Transaction';
+import ErrorFallback from 'components/common/ErrorFallbackScreen';
 
 interface Props {
   isAppReady: boolean;
@@ -87,11 +87,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
     prefixes: ['subwallet://'],
     config,
   };
-  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+
+  const onError = (error: Error, stackTrace: string) => {
+    console.log('error boundary', error, stackTrace);
+  };
 
   return (
-    <>
-      <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
+    <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
+      <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
           screenOptions={{
             animation: 'fade',
@@ -171,8 +174,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
           )}
           {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
         </Stack.Navigator>
-      </NavigationContainer>
-    </>
+      </ErrorBoundary>
+    </NavigationContainer>
   );
 };
 

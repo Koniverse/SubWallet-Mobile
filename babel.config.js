@@ -30,6 +30,7 @@ module.exports = {
       },
     ],
     'react-native-reanimated/plugin',
+    ['module:react-native-dotenv'],
   ],
   presets: ['module:metro-react-native-babel-preset'],
 };
