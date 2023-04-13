@@ -203,16 +203,19 @@ const NftDetail = ({
       return;
     }
 
-    navigation.navigate('TransferNft', {
-      screen: 'NftTransferConfirm',
+    navigation.navigate('Home', {
+      screen: 'NFT',
       params: {
-        nftItem: data,
-        collectionImage: collectionImage,
-        collectionId: collectionRawId,
-        senderAddress: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
+        screen: 'SendNFT',
+        params: {
+          itemId: data.id,
+          chain: data.chain,
+          collectionId: collectionRawId,
+          owner: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
+        },
       },
     });
-  }, [canSend, data, networkJson, navigation, collectionImage, collectionRawId, currentAccount?.address, show]);
+  }, [canSend, data, networkJson, navigation, collectionRawId, currentAccount?.address, show]);
 
   const handleClickInfoIcon = useCallback((url?: string) => {
     if (!url) {
