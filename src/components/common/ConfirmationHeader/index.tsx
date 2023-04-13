@@ -18,7 +18,7 @@ export const ConfirmationHeader = ({ onPressPrev, onPressNext, title, numberOfCo
       rightIcon={CaretRight}
       onPressRightIcon={onPressNext}
       showLeftBtn={index > 0}
-      showRightBtn={index === numberOfConfirmations - 1 || numberOfConfirmations === 1}
+      showRightBtn={!(index === numberOfConfirmations - 1 || numberOfConfirmations === 1)}
     />
   );
 };

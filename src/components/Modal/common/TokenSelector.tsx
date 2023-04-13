@@ -23,7 +23,7 @@ interface Props {
   items: TokenItemType[];
   title?: string;
   acceptDefaultValue?: boolean;
-  value?: string;
+  defaultValue?: string;
 }
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
@@ -49,17 +49,16 @@ export const TokenSelector = ({
   items,
   title = i18n.title.token,
   acceptDefaultValue,
-  value,
+  defaultValue,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   useEffect(() => {
-    console.log('items', items);
     if (acceptDefaultValue) {
-      if (!value) {
+      if (!defaultValue) {
         onSelectItem(items[0]);
       } else {
-        const existed = items.find(item => item.slug === value);
+        const existed = items.find(item => item.slug === defaultValue);
 
         if (!existed) {
           onSelectItem(items[0]);

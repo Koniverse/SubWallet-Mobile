@@ -73,11 +73,12 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     value: {
       name: 'Value',
       value: '',
+      require: true,
     },
     ...extraFormConfig,
   };
 
-  const { formState, onChangeValue, onSubmitField, focus } = useFormControl(transactionFormConfig, {});
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(transactionFormConfig, {});
 
   const onDone = useCallback(
     (extrinsicHash: string) => {
@@ -114,5 +115,6 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     onChangeValue,
     goBack,
     onDone,
+    onUpdateErrors,
   };
 };

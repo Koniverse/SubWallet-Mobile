@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import BigN from "bignumber.js";
 
 // 1000.12345 -> 1,000; 1000,654321 -> 1,001
 export const formatLocaleNumber = (number: number, digits?: number): string => {
@@ -38,7 +39,7 @@ export function randomIntFromInterval(min: number, max: number) {
 }
 
 // Number from @subwallet-react-ui
-export const BN_TEN = new BigNumber(10);
+export const BN_TEN = new BigN(10);
 export interface NumberFormatter {
   (input: string, metadata?: Record<string, number>): string;
 }

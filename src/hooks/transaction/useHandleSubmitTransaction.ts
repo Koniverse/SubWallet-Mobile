@@ -11,7 +11,9 @@ const useHandleSubmitTransaction = (
   const onSuccess = useCallback(
     (rs: SWTransactionResponse) => {
       const { errors, extrinsicHash, warnings } = rs;
-
+      console.log('errors', errors);
+      console.log('extrinsicHash', extrinsicHash);
+      console.log('warnings', warnings);
       if (errors.length || warnings.length) {
         if (errors[0]?.message !== 'User reject request') {
           show(errors[0]?.message || warnings[0]?.message);
@@ -27,6 +29,7 @@ const useHandleSubmitTransaction = (
 
   const onError = useCallback(
     (error: Error) => {
+      console.log('error', error);
       show(error.message);
     },
     [show],

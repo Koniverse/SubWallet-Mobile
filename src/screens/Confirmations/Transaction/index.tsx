@@ -11,12 +11,14 @@ import { JoinPoolTransactionConfirmation } from './variants';
 import { View } from 'react-native';
 import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
+import LeavePoolTransactionConfirmation from "screens/Confirmations/Transaction/variants/LeavePool";
 
 interface Props {
   confirmation: ConfirmationQueueItem;
 }
 
 const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTransactionConfirmation => {
+  console.log('extrinsicType', extrinsicType);
   switch (extrinsicType) {
     // case ExtrinsicType.TRANSFER_BALANCE:
     // case ExtrinsicType.TRANSFER_TOKEN:
@@ -26,8 +28,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     //   return SendNftTransactionConfirmation;
     case ExtrinsicType.STAKING_JOIN_POOL:
       return JoinPoolTransactionConfirmation;
-    // case ExtrinsicType.STAKING_LEAVE_POOL:
-    //   return LeavePoolTransactionConfirmation;
+    case ExtrinsicType.STAKING_LEAVE_POOL:
+      return LeavePoolTransactionConfirmation;
     // case ExtrinsicType.STAKING_BOND:
     //   return BondTransactionConfirmation;
     // case ExtrinsicType.STAKING_UNBOND:

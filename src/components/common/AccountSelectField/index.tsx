@@ -1,9 +1,8 @@
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableWithoutFeedback } from 'react-native';
 import { Avatar, Icon, Typography } from 'components/design-system-ui';
 import { isAccountAll } from '@subwallet/extension-koni-base/utils';
 import AvatarGroup from '../AvatarGroup';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
