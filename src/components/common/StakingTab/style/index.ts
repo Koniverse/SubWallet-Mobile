@@ -16,7 +16,7 @@ export default (theme: ThemeTypes) =>
       backgroundColor: theme.colorBgSecondary,
       borderRadius: theme.borderRadiusLG,
       padding: theme.paddingXXS,
-      marginVertical: theme.margin,
+      marginBottom: theme.margin,
     },
     item: { flex: 1, alignItems: 'center', height: 32, justifyContent: 'center', borderRadius: 8 },
     selectedItem: { backgroundColor: '#252525' },

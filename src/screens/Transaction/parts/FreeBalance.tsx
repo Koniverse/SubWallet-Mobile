@@ -3,7 +3,7 @@ import { useGetBalance } from 'hooks/balance';
 import { Text, View } from 'react-native';
 import { Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import {FontMedium} from "styles/sharedStyles";
+import { FontMedium } from 'styles/sharedStyles';
 
 interface Props {
   address?: string;
@@ -21,7 +21,7 @@ export const FreeBalance = ({ address, chain, label, tokenSlug }: Props) => {
   }
 
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View style={{ flexDirection: 'row', marginBottom: 12 }}>
       <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
         {label || 'Sender available balance:'}
       </Text>

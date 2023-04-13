@@ -3,7 +3,8 @@ import { TextInput, View } from 'react-native';
 import BigN from 'bignumber.js';
 import { Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { FontMedium } from 'styles/sharedStyles';
+import { Warning } from 'components/Warning';
+import InputAmountStyles from './style';
 
 interface InputAmountProps {
   placeholder?: string;
@@ -12,6 +13,7 @@ interface InputAmountProps {
   onChangeValue: (value: string) => void;
   maxValue: string;
   disable?: boolean;
+  errorMessages?: string[];
 }
 
 const isValidInput = (input: string) => {
@@ -41,7 +43,8 @@ export const getOutputValuesFromString: (input: string, power: number) => string
 
 const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   const theme = useSubWalletTheme().swThemes;
-  const { decimals, disable, placeholder, maxValue, onChangeValue, value } = props;
+  const _style = InputAmountStyles(theme);
+  const { decimals, disable, placeholder, maxValue, onChangeValue, value, errorMessages } = props;
   const [inputValue, setInputValue] = useState(value);
   const _onClickMaxBtn = useCallback(() => {
     const transformVal = getInputValuesFromString(maxValue, decimals);
@@ -60,9 +63,8 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     (_value: string) => {
       let currentValue = '';
       const maxLength = getMaxLengthText(_value);
-
-      if (_value.length > maxLength) {
-        currentValue = value.slice(0, maxLength);
+      if (_value.length < maxLength) {
+        currentValue = _value.slice(0, maxLength);
       }
 
       setInputValue(currentValue);
@@ -70,43 +72,34 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
       const transformVal = getOutputValuesFromString(currentValue, decimals);
       onChangeValue(transformVal);
     },
-    [decimals, getMaxLengthText, onChangeValue, value],
+    [decimals, getMaxLengthText, onChangeValue],
   );
 
   return (
-    <View
-      style={{
-        backgroundColor: theme.colorBgSecondary,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 4,
-        paddingLeft: 16,
-        paddingRight: 4,
-        borderRadius: 5,
-      }}>
-      <TextInput
-        style={{
-          padding: 0,
-          textAlignVertical: 'top',
-          fontSize: theme.fontSize,
-          ...FontMedium,
-          color: theme.colorTextTertiary,
-          flex: 1,
-        }}
-        autoCorrect={false}
-        keyboardType={'decimal-pad'}
-        placeholder={placeholder || 'Amount'}
-        ref={ref}
-        onChangeText={onChangeInput}
-        defaultValue={inputValue}
-        maxLength={getMaxLengthText(inputValue)}
-        placeholderTextColor={theme.colorTextTertiary}
-        editable={disable}
-      />
-      <Button type={'ghost'} externalTextStyle={{ color: theme.colorSuccess }} size={'xs'} onPress={_onClickMaxBtn}>
-        {'Max'}
-      </Button>
-    </View>
+    <>
+      <View style={_style.container}>
+        <TextInput
+          style={_style.inputTextStyle}
+          autoCorrect={false}
+          keyboardType={'decimal-pad'}
+          placeholder={placeholder || 'Amount'}
+          ref={ref}
+          onChangeText={onChangeInput}
+          defaultValue={inputValue}
+          maxLength={getMaxLengthText(inputValue)}
+          placeholderTextColor={theme.colorTextTertiary}
+          editable={disable}
+        />
+        <Button type={'ghost'} externalTextStyle={{ color: theme.colorSuccess }} size={'xs'} onPress={_onClickMaxBtn}>
+          {'Max'}
+        </Button>
+      </View>
+
+      {!!(errorMessages && errorMessages.length) &&
+        errorMessages.map((message, index) => (
+          <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
+        ))}
+    </>
   );
 };
 

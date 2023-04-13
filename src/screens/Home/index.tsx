@@ -131,6 +131,7 @@ export const Home = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { hasConfirmations, hasInternalConfirmations } = useSelector((state: RootState) => state.requestState);
+  console.log('hasConfirmations', hasConfirmations, hasInternalConfirmations);
 
   const needMigrate = useMemo(
     () =>

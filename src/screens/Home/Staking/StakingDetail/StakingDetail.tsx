@@ -116,8 +116,8 @@ const StakingDetail = ({
   }, []);
 
   const handleStakeMore = useCallback(() => {
-    navigation.navigate('Stake', { chain: undefined, type: undefined });
-  }, [navigation]);
+    navigation.navigate('Stake', { chain: staking.chain, type: stakingType });
+  }, [navigation, staking.chain, stakingType]);
 
   if (data === undefined) {
     return <></>;

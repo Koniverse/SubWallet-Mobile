@@ -1198,12 +1198,8 @@ export async function completeConfirmation<CT extends ConfirmationType>(
   return sendMessage('pri(confirmations.complete)', { [type]: payload });
 }
 
-export async function getBondingOptions(
-  networkKey: string,
-  address: string,
-  type: StakingType,
-): Promise<ValidatorInfo[]> {
-  return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, address, type });
+export async function getBondingOptions (networkKey: string, type: StakingType): Promise<ValidatorInfo[]> {
+  return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
 }
 
 export async function getNominationPoolOptions(chain: string): Promise<NominationPoolInfo[]> {

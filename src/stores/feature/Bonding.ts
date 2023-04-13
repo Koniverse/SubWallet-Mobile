@@ -41,5 +41,5 @@ const bondingSlice = createSlice({
   },
 });
 
-export const { updateChainValidators } = bondingSlice.actions;
+export const { updateChainValidators, updateNominationPools } = bondingSlice.actions;
 export default bondingSlice.reducer;
