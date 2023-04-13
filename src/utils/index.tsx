@@ -264,7 +264,7 @@ export function findAccountByAddress(accounts: AccountJson[], _address: string):
   return accounts.find(({ address }): boolean => address === _address) || null;
 }
 
-export default function reformatAddress(address: string, networkPrefix: number, isEthereum = false): string {
+export default function reformatAddress(address: string, networkPrefix: number = 42, isEthereum = false): string {
   if (isAccountAll(address)) {
     return address;
   }

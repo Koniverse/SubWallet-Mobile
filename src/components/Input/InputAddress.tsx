@@ -141,7 +141,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
           {showAvatar && (
             <>
               {isAddressValid ? (
-                <SubWalletAvatar address={address || ''} size={16} style={{ borderColor: 'transparent' }} />
+                <SubWalletAvatar address={address || ''} size={24} style={{ borderColor: 'transparent' }} />
               ) : (
                 <View style={identiconPlaceholderStyle} />
               )}
