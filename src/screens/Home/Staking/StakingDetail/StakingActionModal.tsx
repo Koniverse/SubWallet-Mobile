@@ -10,13 +10,11 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
-import { RootNavigationProps } from 'routes/index';
-import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
+import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 
 interface Props {
   visible: boolean;
@@ -71,11 +69,10 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     reward,
   } = data;
   const toastRef = useRef<ToastContainer>(null);
-  const navigation = useNavigation<RootNavigationProps>();
+  const navigation = useNavigation<StakingScreenNavigationProps>();
 
   const isPool = stakingType === StakingType.POOLED;
 
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
   const networkJson = useGetNetworkJson(networkKey);
 
   const bondedAmount = useMemo((): number => parseFloat(activeBalance || '0'), [activeBalance]);
@@ -85,14 +82,6 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
     [unlockingInfo?.nextWithdrawalAmount],
   );
   const nextWithdrawal = useMemo((): number => unlockingInfo?.nextWithdrawal || 0, [unlockingInfo?.nextWithdrawal]);
-  const nextWithdrawalAction = useMemo(
-    (): string => unlockingInfo?.nextWithdrawalAction || '',
-    [unlockingInfo?.nextWithdrawalAction],
-  );
-  const validatorAddress = useMemo(
-    (): string => unlockingInfo?.validatorAddress || '',
-    [unlockingInfo?.validatorAddress],
-  );
 
   const showClaimButton = useMemo((): boolean => MANUAL_CLAIM_CHAINS.includes(networkKey), [networkKey]);
   const showCompoundButton = useMemo((): boolean => MANUAL_COMPOUND_CHAINS.includes(networkKey), [networkKey]);
@@ -117,71 +106,32 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
 
   const unStakeAction = useCallback(() => {
     closeModal();
-    navigation.navigate('UnStakeAction', {
-      screen: 'UnStakeConfirm',
-      params: {
-        selectedAccount: currentAccountAddress,
-        networkKey: networkKey,
-        bondedAmount: parseFloat(activeBalance || '0'),
-      },
-    });
-  }, [activeBalance, closeModal, currentAccountAddress, networkKey, navigation]);
+    navigation.navigate('Unbond', { chain: networkKey, type: stakingType });
+  }, [closeModal, navigation, networkKey, stakingType]);
 
   const withdrawAction = useCallback(() => {
     if (redeemable > 0) {
       closeModal();
-      navigation.navigate('WithdrawStakeAction', {
-        screen: 'WithdrawAuth',
-        params: {
-          selectedAccount: currentAccountAddress,
-          networkKey: networkKey,
-          nextWithdrawalAction: nextWithdrawalAction,
-          withdrawAmount: redeemable,
-          targetValidator: validatorAddress,
-        },
-      });
+      navigation.navigate('Unbond', { chain: networkKey, type: stakingType });
     } else if (unlockingBalance && parseFloat(unlockingBalance) !== 0) {
       if (toastRef.current) {
         toastRef.current.hideAll();
         toastRef.current.show(withdrawNote);
       }
     }
-  }, [
-    redeemable,
-    unlockingBalance,
-    closeModal,
-    navigation,
-    currentAccountAddress,
-    networkKey,
-    nextWithdrawalAction,
-    validatorAddress,
-    withdrawNote,
-  ]);
+  }, [redeemable, unlockingBalance, closeModal, navigation, networkKey, stakingType, withdrawNote]);
 
   const claimAction = useCallback(() => {
     closeModal();
-    navigation.navigate('ClaimStakeAction', {
-      screen: 'ClaimAuth',
-      params: {
-        networkKey: networkKey,
-        selectedAccount: currentAccountAddress,
-        stakingType: stakingType,
-      },
-    });
-  }, [closeModal, navigation, networkKey, currentAccountAddress, stakingType]);
+    navigation.navigate('Unbond', { chain: networkKey, type: stakingType });
+  }, [closeModal, navigation, networkKey, stakingType]);
 
   const compoundAction = useCallback(() => {
     if (bondedAmount > 0) {
       closeModal();
-      navigation.navigate('CompoundStakeAction', {
-        screen: 'CompoundConfirm',
-        params: {
-          selectedAccount: currentAccountAddress,
-          networkKey: networkKey,
-        },
-      });
+      navigation.navigate('Unbond', { chain: networkKey, type: stakingType });
     }
-  }, [closeModal, currentAccountAddress, navigation, networkKey, bondedAmount]);
+  }, [bondedAmount, closeModal, navigation, networkKey, stakingType]);
 
   const items = useMemo((): SortItem[] => {
     const result: SortItem[] = [];

@@ -1,10 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useContext, useEffect } from 'react';
 import StakingBalanceList from 'screens/Home/Staking/Balance/StakingBalanceList';
-import StakingNetworkList from 'screens/Home/Staking/Network/StakingNetworkList';
 import StakingDetail from 'screens/Home/Staking/StakingDetail/StakingDetail';
-import StakingValidatorList from 'screens/Home/Staking/Validator/StakingValidatorList';
-import StakingValidatorDetail from 'screens/Home/Staking/ValidatorDetail/StakingValidatorDetail';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -12,6 +9,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { startCronAndSubscriptionServices } from '../../../messaging';
 import withPageWrapper from 'components/pageWrapper';
 import { Stake } from 'screens/Transaction/Stake';
+import { Unbond } from 'screens/Transaction/Unbond';
 
 const StakingScreen = () => {
   const StakingScreenStack = createNativeStackNavigator();
@@ -37,6 +35,7 @@ const StakingScreen = () => {
       />
       <StakingScreenStack.Screen name="StakingBalanceDetail" component={StakingDetail} />
       <StakingScreenStack.Screen name="Stake" component={Stake} />
+      <StakingScreenStack.Screen name="Unbond" component={Unbond} />
     </StakingScreenStack.Navigator>
   );
 };

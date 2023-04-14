@@ -56,13 +56,12 @@ export const Stake = ({
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
   const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [poolLoading, setPoolLoading] = useState(false);
   const [validatorLoading, setValidatorLoading] = useState(false);
-  const { accounts } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const isEthAdr = isEthereumAddress(currentAccount?.address);
 
@@ -348,7 +347,7 @@ export const Stake = ({
             </TouchableOpacity>
           )}
 
-          {!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain}/>}
+          {!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain} />}
 
           <TouchableOpacity
             onPress={() => {
@@ -357,7 +356,7 @@ export const Stake = ({
             <TokenSelectField logoKey={symbol.toLowerCase()} subLogoKey={chain} value={symbol} showIcon />
           </TouchableOpacity>
 
-          {!!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain}/>}
+          {!!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain} />}
 
           <InputAmount
             value={currentValue}

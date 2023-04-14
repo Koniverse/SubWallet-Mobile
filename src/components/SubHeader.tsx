@@ -65,6 +65,7 @@ export const SubHeader = ({
   showLeftBtn = true,
   rightButtonTitle = '',
   rightIconColor,
+  showRightBtn,
 }: SubHeaderProps) => {
   const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
 

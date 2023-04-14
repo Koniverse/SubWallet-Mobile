@@ -39,6 +39,7 @@ const blockContentStyle: StyleProp<any> = {
   position: 'relative',
   flexDirection: 'row',
   alignItems: 'center',
+  paddingTop: 10,
   paddingBottom: 12,
   justifyContent: 'space-between',
   paddingHorizontal: 16,

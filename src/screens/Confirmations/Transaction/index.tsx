@@ -12,6 +12,7 @@ import { View } from 'react-native';
 import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
 import LeavePoolTransactionConfirmation from "screens/Confirmations/Transaction/variants/LeavePool";
+import UnbondTransactionConfirmation from "screens/Confirmations/Transaction/variants/Unbond";
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -32,8 +33,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return LeavePoolTransactionConfirmation;
     // case ExtrinsicType.STAKING_BOND:
     //   return BondTransactionConfirmation;
-    // case ExtrinsicType.STAKING_UNBOND:
-    //   return UnbondTransactionConfirmation;
+    case ExtrinsicType.STAKING_UNBOND:
+      return UnbondTransactionConfirmation;
     // case ExtrinsicType.STAKING_WITHDRAW:
     //   return WithdrawTransactionConfirmation;
     // case ExtrinsicType.STAKING_CLAIM_REWARD:
