@@ -13,6 +13,7 @@ import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
 import LeavePoolTransactionConfirmation from "screens/Confirmations/Transaction/variants/LeavePool";
 import UnbondTransactionConfirmation from "screens/Confirmations/Transaction/variants/Unbond";
+import {ClaimRewardTransactionConfirmation} from "screens/Confirmations/Transaction/variants/ClaimReward";
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -37,8 +38,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
       return UnbondTransactionConfirmation;
     // case ExtrinsicType.STAKING_WITHDRAW:
     //   return WithdrawTransactionConfirmation;
-    // case ExtrinsicType.STAKING_CLAIM_REWARD:
-    //   return ClaimRewardTransactionConfirmation;
+    case ExtrinsicType.STAKING_CLAIM_REWARD:
+      return ClaimRewardTransactionConfirmation;
     // case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
     //   return CancelUnstakeTransactionConfirmation;
     default:
