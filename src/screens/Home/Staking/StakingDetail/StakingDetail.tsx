@@ -212,7 +212,7 @@ const StakingDetail = ({
             />
           )}
         </ScrollView>
-        {isCanSign && stakingType !== StakingType.POOLED && (
+        {isCanSign && (
           <SubmitButton
             style={{ marginTop: 16, marginHorizontal: 16 }}
             title={i18n.stakingScreen.stakingDetail.actions.stake}

@@ -15,10 +15,9 @@ export const ConfirmationHeader = ({ onPressPrev, onPressNext, title, numberOfCo
     <SubHeader
       onPressBack={onPressPrev}
       title={title}
-      rightIcon={CaretRight}
+      rightIcon={index === numberOfConfirmations - 1 || numberOfConfirmations === 1 ? undefined : CaretRight}
       onPressRightIcon={onPressNext}
       showLeftBtn={index > 0}
-      showRightBtn={!(index === numberOfConfirmations - 1 || numberOfConfirmations === 1)}
     />
   );
 };

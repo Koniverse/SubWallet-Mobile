@@ -49,7 +49,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   const _onClickMaxBtn = useCallback(() => {
     const transformVal = getInputValuesFromString(maxValue, decimals);
     setInputValue(transformVal);
-    onChangeValue(transformVal);
+    onChangeValue(maxValue);
   }, [decimals, maxValue, onChangeValue]);
 
   const getMaxLengthText = useCallback(
@@ -61,9 +61,9 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
 
   const onChangeInput = useCallback(
     (_value: string) => {
-      let currentValue = '';
+      let currentValue = _value;
       const maxLength = getMaxLengthText(_value);
-      if (_value.length < maxLength) {
+      if (_value.length > maxLength) {
         currentValue = _value.slice(0, maxLength);
       }
 

@@ -82,6 +82,7 @@ import {
   RequestStakeCancelWithdrawal,
   RequestStakeClaimReward,
   RequestStakePoolingBonding,
+  RequestStakePoolingUnbonding,
   RequestStakeWithdrawal,
   RequestSubscribeBalance,
   RequestSubscribeBalancesVisibility,
@@ -1198,7 +1199,7 @@ export async function completeConfirmation<CT extends ConfirmationType>(
   return sendMessage('pri(confirmations.complete)', { [type]: payload });
 }
 
-export async function getBondingOptions (networkKey: string, type: StakingType): Promise<ValidatorInfo[]> {
+export async function getBondingOptions(networkKey: string, type: StakingType): Promise<ValidatorInfo[]> {
   return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
 }
 
@@ -1216,6 +1217,10 @@ export async function subscribeStakingNominatorMetadata(
   callback: (data: NominatorMetadata[]) => void,
 ): Promise<NominatorMetadata[]> {
   return sendMessage('pri(bonding.subscribeNominatorMetadata)', null, callback);
+}
+
+export async function submitPoolUnbonding(request: RequestStakePoolingUnbonding): Promise<SWTransactionResponse> {
+  return sendMessage('pri(bonding.nominationPool.submitUnbonding)', request);
 }
 
 export async function submitBonding(request: RequestBondingSubmit): Promise<SWTransactionResponse> {

@@ -1,7 +1,7 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontSemiBold } from 'styles/sharedStyles';
 import { Book, Lightning } from 'phosphor-react-native';
 import { ActivityIndicator, Avatar, Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';

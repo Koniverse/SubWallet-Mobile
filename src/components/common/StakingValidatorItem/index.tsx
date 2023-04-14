@@ -29,8 +29,7 @@ export const StakingValidatorItem = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingValidatorItemStyle(theme);
-  const { address, identity, decimals, symbol, commission, expectedReturn } = validatorInfo;
-  console.log('validatorInfo', validatorInfo);
+  const { address, identity, symbol, commission, expectedReturn } = validatorInfo;
   const onPressItem = useCallback(() => {
     onPress && onPress(getValidatorKey(address, identity));
   }, [address, identity, onPress]);
