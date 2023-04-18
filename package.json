@@ -7,8 +7,18 @@
   "bin": {
     "autocheck": "./scripts/autocheck.mjs"
   },
+  "reactNativePermissionsIOS": [
+    "Camera",
+    "FaceID",
+    "MediaLibrary",
+    "Notifications",
+    "Microphone",
+    "LocationWhenInUse",
+    "PhotoLibrary",
+    "PhotoLibraryAddOnly"
+  ],
   "scripts": {
-    "postinstall": "patch-package",
+    "postinstall": "patch-package && rm -rf node_modules/react-native-qrcode-scanner/node_modules/react-native-permissions && npx react-native setup-ios-permissions",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -81,7 +91,7 @@
     "react-native-modal": "^13.0.1",
     "react-native-modal-popover": "^2.1.3",
     "react-native-pager-view": "^6.1.2",
-    "react-native-permissions": "^3.6.1",
+    "react-native-permissions": "^3.8.0",
     "react-native-picker-select": "^8.0.4",
     "react-native-progress": "^5.0.0",
     "react-native-qrcode-scanner": "^1.5.5",
