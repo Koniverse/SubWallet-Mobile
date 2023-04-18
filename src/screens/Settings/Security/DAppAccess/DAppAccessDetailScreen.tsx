@@ -17,7 +17,7 @@ import {
   changeAuthorizationPerAccount,
   forgetSite,
   toggleAuthorization,
-} from '../../../../messaging';
+} from 'messaging/index';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';

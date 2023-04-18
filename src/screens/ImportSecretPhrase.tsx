@@ -6,7 +6,7 @@ import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
-import { createAccountSuriV2, validateSeedV2 } from '../messaging';
+import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';

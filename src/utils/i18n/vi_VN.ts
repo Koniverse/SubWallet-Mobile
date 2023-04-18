@@ -317,6 +317,7 @@ export const vi = {
     authorizeMessage: 'Authorize message',
     serviceSelect: 'Select service',
     customization: 'Customization',
+    login: 'Login',
   },
   tabName: {
     crypto: 'Crypto',

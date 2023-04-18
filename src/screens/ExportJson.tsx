@@ -6,7 +6,7 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, ScrollViewStyle, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { PasswordField } from 'components/Field/Password';
 import { Warning } from 'components/Warning';
-import { exportAccount } from '../messaging';
+import { exportAccount } from 'messaging/index';
 import { LeftIconButton } from 'components/LeftIconButton';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';

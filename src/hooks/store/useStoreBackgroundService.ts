@@ -2,7 +2,7 @@ import { StoreStatus } from 'stores/types';
 import { useContext, useEffect, useState } from 'react';
 import { WebRunnerContext } from 'providers/contexts';
 import { updateBackgroundServiceActiveState } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeActiveCronAndSubscriptionServiceMap } from '../../messaging';
+import { clearWebRunnerHandler, subscribeActiveCronAndSubscriptionServiceMap } from 'messaging/index';
 import { ActiveCronAndSubscriptionMap } from '@subwallet/extension-base/background/KoniTypes';
 import { getId } from '@subwallet/extension-base/utils/getId';
 

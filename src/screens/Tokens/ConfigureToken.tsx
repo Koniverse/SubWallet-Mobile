@@ -20,7 +20,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { SubmitButton } from 'components/SubmitButton';
 import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { upsertCustomToken } from '../../messaging';
+import { upsertCustomToken } from 'messaging/index';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { _ChainAsset } from '@subwallet/chain-list/types';

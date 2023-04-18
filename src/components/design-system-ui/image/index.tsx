@@ -41,11 +41,11 @@ const Image: React.FC<SWImageProps> = ({
   ];
   if (shape === 'squircle') {
     return (
-      <View style={customStyle}>
+      <View style={[{ position: 'relative' }, customStyle]}>
         <Squircle customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <FastImage
             source={src}
-            style={customImageStyle}
+            style={[customImageStyle, { position: 'absolute' }]}
             onLoadStart={onLoadStart}
             onLoadEnd={onLoadEnd}
             {...restProps}
@@ -60,7 +60,7 @@ const Image: React.FC<SWImageProps> = ({
     );
   }
   return (
-    <View style={customStyle}>
+    <View style={[{ position: 'relative' }, customStyle]}>
       <FastImage source={src} style={customImageStyle} onLoadStart={onLoadStart} onLoadEnd={onLoadEnd} {...restProps} />
       {isLoading && (
         <View style={[_style.loadingImage, _style[`${shape}Image`]]}>

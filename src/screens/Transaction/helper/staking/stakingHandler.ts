@@ -1,5 +1,5 @@
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
-import { getBondingOptions, getNominationPoolOptions } from '../../../../messaging';
+import { getBondingOptions, getNominationPoolOptions } from 'messaging/index';
 import { store } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
 

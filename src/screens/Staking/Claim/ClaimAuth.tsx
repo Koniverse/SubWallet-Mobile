@@ -15,7 +15,7 @@ import { RootNavigationProps } from 'routes/index';
 import { ClaimAuthProps } from 'routes/staking/claimAction';
 import { centerStyle, ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { claimRewardQr, getStakeClaimRewardTxInfo, submitStakeClaimReward } from '../../../messaging';
+import { claimRewardQr, getStakeClaimRewardTxInfo, submitStakeClaimReward } from 'messaging/index';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';

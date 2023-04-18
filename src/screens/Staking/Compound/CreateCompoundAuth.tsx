@@ -24,7 +24,7 @@ import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { createCompoundQr, submitTuringStakeCompounding } from '../../../messaging';
+import { createCompoundQr, submitTuringStakeCompounding } from 'messaging/index';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,

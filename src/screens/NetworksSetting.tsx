@@ -8,7 +8,7 @@ import { Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
-import { updateChainActiveState } from '../messaging';
+import { updateChainActiveState } from 'messaging/index';
 import {
   _isChainEvmCompatible,
   _isCustomChain,

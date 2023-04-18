@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CustomTokenType, NftItem } from '@subwallet/extension-base/background/KoniTypes';
-import { evmNftGetTransaction, substrateNftGetTransaction, wasmNftGetTransaction } from '../../messaging';
+import { evmNftGetTransaction, substrateNftGetTransaction, wasmNftGetTransaction } from 'messaging/index';
 import { SUPPORTED_TRANSFER_CHAIN_NAME, TransferResponse } from 'types/nft';
 
 async function substrateTransferHandler(

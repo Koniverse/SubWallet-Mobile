@@ -25,7 +25,7 @@ import { useGetBalance } from 'hooks/balance';
 import BigN from 'bignumber.js';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { Button, Divider, Icon } from 'components/design-system-ui';
-import { submitBonding, submitPoolBonding } from '../../../messaging';
+import { submitBonding, submitPoolBonding } from 'messaging/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { PoolSelector } from 'components/Modal/common/PoolSelector';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';

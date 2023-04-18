@@ -21,7 +21,7 @@ import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { saveCurrentAccountAddress, triggerAccountsSubscription } from '../messaging';
+import { saveCurrentAccountAddress, triggerAccountsSubscription } from 'messaging/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { Divider } from 'components/Divider';
 import { findAccountByAddress } from 'utils/index';

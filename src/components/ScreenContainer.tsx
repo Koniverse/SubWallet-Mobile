@@ -6,7 +6,7 @@ import { randomIntFromInterval } from 'utils/number';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
-  children: JSX.Element;
+  children: React.ReactNode | React.ReactNode[];
   backgroundColor?: string;
   safeAreaBottomViewColor?: string;
 }

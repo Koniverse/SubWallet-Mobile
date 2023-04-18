@@ -9,7 +9,7 @@ import { SubmitButton } from 'components/SubmitButton';
 import i18n from 'utils/i18n/i18n';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { NETWORK_ERROR, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { completeConfirmation, upsertNetworkMap, validateNetwork } from '../../messaging';
+import { completeConfirmation, upsertNetworkMap, validateNetwork } from 'messaging/index';
 import { useToast } from 'react-native-toast-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { Plus, PushPinSlash } from 'phosphor-react-native';

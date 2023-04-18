@@ -13,7 +13,7 @@ import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
-import { restartCronAndSubscriptionServices } from '../../../../messaging';
+import { restartCronAndSubscriptionServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 
 const renderEmpty = (val?: string) => {

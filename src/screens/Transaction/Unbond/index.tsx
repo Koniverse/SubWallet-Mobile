@@ -39,7 +39,7 @@ import { accountFilterFunc } from 'screens/Transaction/helper/staking';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { submitPoolUnbonding, submitUnbonding } from '../../../messaging';
+import { submitPoolUnbonding, submitUnbonding } from 'messaging/index';
 import { FontMedium } from 'styles/sharedStyles';
 
 const _accountFilterFunc = (

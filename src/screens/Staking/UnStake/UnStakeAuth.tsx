@@ -23,7 +23,7 @@ import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi, toShort } from 'utils/index';
-import { makeUnBondingQr, submitUnbonding } from '../../../messaging';
+import { makeUnBondingQr, submitUnbonding } from 'messaging/index';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,

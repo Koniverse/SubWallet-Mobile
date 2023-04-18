@@ -11,7 +11,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
-import { restartSubscriptionServices, startSubscriptionServices } from '../../../messaging';
+import { restartSubscriptionServices, startSubscriptionServices } from 'messaging/index';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';

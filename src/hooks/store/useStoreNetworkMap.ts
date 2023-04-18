@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { updateNetworkMap } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeNetworkMap } from '../../messaging';
+import { clearWebRunnerHandler, subscribeNetworkMap } from 'messaging/index';
 import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';

@@ -6,7 +6,7 @@ import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl from 'hooks/screen/useFormControl';
 import { CheckCircle } from 'phosphor-react-native';
-import { keyringUnlock } from '../../../messaging';
+import { keyringUnlock } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePasswordModalState } from 'stores/PasswordModalState';

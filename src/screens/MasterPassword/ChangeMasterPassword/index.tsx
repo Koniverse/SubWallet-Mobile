@@ -7,7 +7,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useFormControl from 'hooks/screen/useFormControl';
 import { PasswordField } from 'components/Field/Password';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
-import { keyringChangeMasterPassword } from '../../../messaging';
+import { keyringChangeMasterPassword } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import ChangeMasterPasswordStyle from './style';

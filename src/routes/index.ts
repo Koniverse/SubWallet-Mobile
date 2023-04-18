@@ -11,6 +11,7 @@ import { CompoundStakeActionStackParamList } from 'routes/staking/compoundAction
 import { StakeActionStackParamList } from 'routes/staking/stakeAction';
 import { UnStakeActionStackParamList } from 'routes/staking/unStakeAction';
 import { WithdrawStakeActionStackParamList } from 'routes/staking/withdrawAction';
+import Login from 'screens/MasterPassword/Login';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -74,6 +75,7 @@ export type RootStackParamList = {
   AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
   WebViewModal: undefined;
+  Login: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

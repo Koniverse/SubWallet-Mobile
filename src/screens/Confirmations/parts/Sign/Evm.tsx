@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
 import { EvmSignatureSupportType } from 'types/confirmation';
-import { completeConfirmation } from '../../../../messaging';
+import { completeConfirmation } from 'messaging/index';
 import { ConfirmationDefinitions, ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/index';

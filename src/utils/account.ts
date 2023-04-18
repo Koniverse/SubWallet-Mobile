@@ -1,9 +1,16 @@
 import { decodeAddress, encodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { AccountJson } from '@subwallet/extension-base/background/types';
+import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import {
+  _getChainSubstrateAddressPrefix,
+  _isChainEvmCompatible,
+} from '@subwallet/extension-base/services/chain-service/utils';
+import { isAccountAll, reformatAddress } from '@subwallet/extension-base/utils';
 import { MODE_CAN_SIGN } from 'constants/signer';
 import { SIGN_MODE } from 'types/signer';
-import {AccountAddressType, AccountSignMode} from 'types/index';
+import { AccountAddressType, AccountSignMode } from 'types/index';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { Recoded } from 'types/ui-types';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
@@ -100,4 +107,58 @@ export const getSignMode = (account: AccountJson | null | undefined): AccountSig
       }
     }
   }
+};
+
+export const isNoAccount = (accounts: AccountJson[] | null): boolean => {
+  return accounts ? !accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY).length : false;
+};
+
+export const defaultRecoded: Recoded = { account: null, formatted: null, prefix: 42, isEthereum: false };
+
+export const accountAllRecoded: Recoded = {
+  account: {
+    address: ALL_ACCOUNT_KEY,
+  },
+  formatted: ALL_ACCOUNT_KEY,
+  prefix: 42,
+  isEthereum: false,
+};
+
+const findSubstrateAccount = (accounts: AccountJson[], publicKey: Uint8Array): AccountJson | null => {
+  const pkStr = publicKey.toString();
+
+  return (
+    accounts
+      .filter(a => !isAccountAll(a.address))
+      .find(({ address }): boolean => decodeAddress(address).toString() === pkStr) || null
+  );
+};
+
+export const recodeAddress = (
+  address: string | undefined,
+  accounts: AccountWithChildren[],
+  networkInfo: _ChainInfo | null,
+): Recoded => {
+  if (!address) {
+    return defaultRecoded;
+  } else if (isAccountAll(address)) {
+    return accountAllRecoded;
+  }
+
+  const publicKey = decodeAddress(address);
+  const account = findAccountByAddress(accounts, address) || findSubstrateAccount(accounts, publicKey);
+  const prefix =
+    networkInfo && _getChainSubstrateAddressPrefix(networkInfo) !== -1
+      ? _getChainSubstrateAddressPrefix(networkInfo)
+      : 42;
+  const isEthereum = isEthereumAddress(address) || (!!networkInfo && _isChainEvmCompatible(networkInfo));
+
+  return {
+    account,
+    formatted: reformatAddress(address, prefix, isEthereum),
+    genesisHash: account?.genesisHash,
+    originGenesisHash: account?.originGenesisHash,
+    prefix,
+    isEthereum,
+  };
 };

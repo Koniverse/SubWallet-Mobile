@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { BaseTransactionConfirmationProps } from 'screens/Confirmations/Transaction/variants/Base';
+import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { ExtrinsicDataTypeMap, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import MetaInfo from 'components/MetaInfo';

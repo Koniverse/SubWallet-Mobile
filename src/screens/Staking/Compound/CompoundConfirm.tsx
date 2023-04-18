@@ -36,7 +36,7 @@ import {
   getStakeDelegationInfo,
   getTuringCancelStakeCompoundTxInfo,
   getTuringStakeCompoundTxInfo,
-} from '../../../messaging';
+} from 'messaging/index';
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';

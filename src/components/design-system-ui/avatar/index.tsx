@@ -1,5 +1,6 @@
 import Identicon from '@polkadot/reactnative-identicon';
-import React from 'react';
+import { decodeAddress, encodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import React, { useMemo } from 'react';
 import { Image, StyleProp, View } from 'react-native';
 // @ts-ignore
 import { toDataUrl } from './blockies.js';
@@ -13,27 +14,41 @@ function getEthereumIdenticonStyle(size: number): StyleProp<any> {
   };
 }
 
+type IconTheme = 'polkadot' | 'ethereum';
+
 export interface SWLogoProps {
-  theme?: 'polkadot' | 'ethereum';
-  size: number;
+  theme?: IconTheme;
+  size?: number;
   value: string | null;
   identPrefix?: number;
 }
 
-const Avatar: React.FC<SWLogoProps> = ({ theme, size, value, identPrefix }) => {
+const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value }) => {
   const themes = useSubWalletTheme().swThemes;
   const _style = AvatarStyles(themes);
 
-  if (theme === 'ethereum') {
+  const formattedAddress = useMemo((): string | null => {
+    try {
+      return encodeAddress(decodeAddress(value || ''));
+    } catch (e) {
+      return value;
+    }
+  }, [value]);
+
+  const _theme = useMemo((): IconTheme => {
+    return theme || isAddress(value) ? (isEthereumAddress(value || '') ? 'ethereum' : 'polkadot') : 'polkadot';
+  }, [theme, value]);
+
+  if (_theme === 'ethereum') {
     return (
       <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
-        <Image source={{ uri: toDataUrl(value) }} style={getEthereumIdenticonStyle(size - 8)} />
+        <Image source={{ uri: toDataUrl(formattedAddress) }} style={getEthereumIdenticonStyle(size - 8)} />
       </View>
     );
   }
   return (
     <View style={[_style.container, { borderWidth: size / 20 }]}>
-      <Identicon prefix={identPrefix} value={value} size={size - 8} theme="polkadot" />
+      <Identicon value={formattedAddress} size={size - 8} theme="polkadot" />
     </View>
   );
 };

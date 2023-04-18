@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { WebRunnerContext, WebRunnerState, WebRunnerStatus } from '../contexts';
 import WebView from 'react-native-webview';
-import { resetHandlerMaps, setupWebview } from '../../messaging';
+import { resetHandlerMaps, setupWebview } from 'messaging/index';
 import { WebRunner } from 'providers/WebRunnerProvider/WebRunner';
 import EventEmitter from 'eventemitter3';
 import { DelayBackgroundService } from 'types/background';

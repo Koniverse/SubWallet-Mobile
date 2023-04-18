@@ -22,7 +22,7 @@ import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { ValidatorSortBy, ValidatorType } from 'types/staking';
 import i18n from 'utils/i18n/i18n';
-import { getBondingOptions } from '../../../../messaging';
+import { getBondingOptions } from 'messaging/index';
 import { StakingValidatorsProps } from 'routes/staking/stakingScreen';
 import { WebRunnerContext } from 'providers/contexts';
 

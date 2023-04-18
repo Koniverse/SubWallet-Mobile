@@ -4,7 +4,7 @@ import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAuthUrls } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeAuthUrl } from '../../messaging';
+import { clearWebRunnerHandler, subscribeAuthUrl } from 'messaging/index';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreAuthUrls(): StoreStatus {

@@ -9,7 +9,7 @@ import { ListRenderItemInfo } from 'react-native';
 import { DAppAccessItem } from 'components/DAppAccessItem';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { changeAuthorizationAll, forgetAllSite } from '../../../../messaging';
+import { changeAuthorizationAll, forgetAllSite } from 'messaging/index';
 import { updateAuthUrls } from 'stores/updater';
 import i18n from 'utils/i18n/i18n';
 import { EmptyList } from 'components/EmptyList';

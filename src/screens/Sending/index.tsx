@@ -19,7 +19,7 @@ import {
   transferCheckReferenceCount,
   transferCheckSupporting,
   transferGetExistentialDeposit,
-} from '../../messaging';
+} from 'messaging/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Confirmation } from 'screens/Sending/Confirmation';
 import { TransferResultType } from 'types/tx';

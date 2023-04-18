@@ -70,5 +70,5 @@ export default (theme: ThemeTypes) =>
       color: theme.colorTextLight3,
       ...FontMedium,
       textAlign: 'center',
-    }
+    },
   });

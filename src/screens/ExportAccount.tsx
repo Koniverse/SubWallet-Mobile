@@ -18,7 +18,7 @@ import { ExportType, SelectExportType } from 'components/common/SelectExportType
 import { Warning } from 'components/Warning';
 import { Button, Icon, QRCode, Typography } from 'components/design-system-ui';
 import PasswordModal from 'components/Modal/PasswordModal';
-import { exportAccount, exportAccountPrivateKey, keyringExportMnemonic } from '../messaging';
+import { exportAccount, exportAccountPrivateKey, keyringExportMnemonic } from 'messaging/index';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { KeyringPair$Json } from '@subwallet/keyring/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';

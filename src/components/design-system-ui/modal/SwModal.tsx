@@ -11,7 +11,7 @@ export interface Props {
   modalStyle?: StyleProp<any>;
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
-  modalTitle: string;
+  modalTitle?: string;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {

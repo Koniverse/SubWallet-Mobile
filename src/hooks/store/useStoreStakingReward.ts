@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
 import { updateStakingReward } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeStakingReward } from '../../messaging';
+import { clearWebRunnerHandler, subscribeStakingReward } from 'messaging/index';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreStakingReward(): StoreStatus {

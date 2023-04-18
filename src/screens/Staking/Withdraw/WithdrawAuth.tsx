@@ -15,7 +15,7 @@ import { RootNavigationProps } from 'routes/index';
 import { WithdrawAuthProps } from 'routes/staking/withdrawAction';
 import { centerStyle, ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { getStakeWithdrawalTxInfo, stakeWithdrawQr, submitStakeWithdrawal } from '../../../messaging';
+import { getStakeWithdrawalTxInfo, stakeWithdrawQr, submitStakeWithdrawal } from 'messaging/index';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';
 import { NoInternetScreen } from 'components/NoInternetScreen';

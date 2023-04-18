@@ -5,7 +5,7 @@ import {
   subscribeConfirmations,
   subscribeMetadataRequests,
   subscribeSigningRequests,
-} from '../../messaging';
+} from 'messaging/index';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';
 import { useDispatch, useSelector } from 'react-redux';

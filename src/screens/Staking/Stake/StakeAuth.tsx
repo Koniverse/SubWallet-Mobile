@@ -19,7 +19,7 @@ import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { getBalanceWithSi } from 'utils/index';
-import { submitBonding, makeBondingQr } from '../../../messaging';
+import { submitBonding, makeBondingQr } from 'messaging/index';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';

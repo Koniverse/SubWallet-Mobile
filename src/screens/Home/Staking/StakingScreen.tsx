@@ -6,7 +6,7 @@ import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useIsFocused } from '@react-navigation/native';
-import { startCronAndSubscriptionServices } from '../../../messaging';
+import { startCronAndSubscriptionServices } from 'messaging/index';
 import withPageWrapper from 'components/pageWrapper';
 import { Stake } from 'screens/Transaction/Stake';
 import { Unbond } from 'screens/Transaction/Unbond';

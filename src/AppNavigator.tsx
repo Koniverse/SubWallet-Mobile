@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { Home } from 'screens/Home';
+import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { Settings } from 'screens/Settings';
 import { SendFund } from 'screens/Sending';
@@ -50,6 +51,8 @@ import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
 import { TransactionDone } from 'screens/Transaction';
 import ErrorFallback from 'components/common/ErrorFallbackScreen';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   isAppReady: boolean;
@@ -83,6 +86,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
+
+  const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
+
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: ['subwallet://'],
     config,
@@ -91,6 +97,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const onError = (error: Error, stackTrace: string) => {
     console.log('error boundary', error, stackTrace);
   };
+
+  useEffect(() => {
+    if (hasConfirmations) {
+      navigationRef.current?.navigate('Confirmations');
+    }
+  }, [hasConfirmations, navigationRef]);
 
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
@@ -169,6 +181,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 }}>
                 <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
                 <Stack.Screen name="Confirmations" component={Confirmations} />
+                <Stack.Screen name="Login" component={Login} />
               </Stack.Group>
             </>
           )}

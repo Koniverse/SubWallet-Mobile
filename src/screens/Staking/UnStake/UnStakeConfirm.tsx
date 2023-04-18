@@ -42,7 +42,7 @@ import {
 import { BN_TEN } from 'utils/chainBalances';
 import i18n from 'utils/i18n/i18n';
 import { CHAIN_TYPE_MAP } from 'constants/stakingScreen';
-import { getStakeDelegationInfo, getUnbondingTxInfo } from '../../../messaging';
+import { getStakeDelegationInfo, getUnbondingTxInfo } from 'messaging/index';
 import DelegationBriefInfo from 'components/Staking/DelegationBriefInfo';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';

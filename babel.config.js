@@ -16,6 +16,7 @@ module.exports = {
           components: './src/components',
           constants: './src/constants',
           hooks: './src/hooks',
+          messaging: './src/messaging',
           providers: './src/providers',
           screens: './src/screens',
           stores: './src/stores',

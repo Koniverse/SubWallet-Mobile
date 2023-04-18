@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
-import { approveSignPasswordV2, cancelSignRequest } from '../../../../messaging';
+import { approveSignPasswordV2, cancelSignRequest } from 'messaging/index';
 import { AccountSignMode } from 'types/index';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';

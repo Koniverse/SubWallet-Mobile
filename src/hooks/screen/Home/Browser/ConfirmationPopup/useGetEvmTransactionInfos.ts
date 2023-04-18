@@ -5,7 +5,7 @@ import {
   NetworkJson,
   ResponseParseEVMContractInput,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { parseEVMTransactionInput, validateCustomToken } from '../../../../../messaging';
+import { parseEVMTransactionInput, validateCustomToken } from 'messaging/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { XCM_ARGS, XCM_METHOD } from 'screens/Home/Browser/ConfirmationPopup/EvmSendTransactionConfirmation';

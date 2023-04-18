@@ -1,15 +1,15 @@
 import React from 'react';
-import { View } from 'react-native';
+import {Text, View} from 'react-native';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
-import { BaseTransactionConfirmationProps } from 'screens/Confirmations/Transaction/variants/Base';
-import { RequestStakePoolingUnbonding } from '@subwallet/extension-base/background/KoniTypes';
+import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
+import { RequestStakePoolingBonding } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import MetaInfo from 'components/MetaInfo';
 
 type Props = BaseTransactionConfirmationProps;
 
-const LeavePoolTransactionConfirmation = ({ transaction }: Props) => {
-  const data = transaction.data as RequestStakePoolingUnbonding;
+const StakeTransactionConfirmation = ({ transaction }: Props) => {
+  const data = transaction.data as RequestStakePoolingBonding;
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
 
   return (
@@ -17,7 +17,7 @@ const LeavePoolTransactionConfirmation = ({ transaction }: Props) => {
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
-        <MetaInfo.Number decimals={decimals} label={'Unbond amount'} suffix={symbol} value={data.amount} />
+        <MetaInfo.Number decimals={decimals} label={'Amount'} suffix={symbol} value={data.amount} />
         <MetaInfo.Number
           decimals={decimals}
           label={'Estimated fee'}
@@ -29,4 +29,4 @@ const LeavePoolTransactionConfirmation = ({ transaction }: Props) => {
   );
 };
 
-export default LeavePoolTransactionConfirmation;
+export default StakeTransactionConfirmation;

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { BaseTransactionConfirmation } from 'screens/Confirmations/Transaction/variants/Base';
+import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -11,8 +11,8 @@ import { JoinPoolTransactionConfirmation, SendNftTransactionConfirmation } from 
 import { View } from 'react-native';
 import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
-import LeavePoolTransactionConfirmation from "screens/Confirmations/Transaction/variants/LeavePool";
-import UnbondTransactionConfirmation from "screens/Confirmations/Transaction/variants/Unbond";
+import LeavePoolTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/LeavePool';
+import UnbondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Unbond';
 
 interface Props {
   confirmation: ConfirmationQueueItem;

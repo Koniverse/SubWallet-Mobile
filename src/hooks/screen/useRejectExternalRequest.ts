@@ -5,7 +5,7 @@ import { MANUAL_CANCEL_EXTERNAL_REQUEST } from 'constants/signer';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
 import { QrSignerContext } from 'providers/QrSignerContext';
 import { SigningContext } from 'providers/SigningContext';
-import { rejectExternalRequest } from '../../messaging';
+import { rejectExternalRequest } from 'messaging/index';
 import { useCallback, useContext } from 'react';
 
 interface Result {

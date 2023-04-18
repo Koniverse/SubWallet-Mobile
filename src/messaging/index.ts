@@ -2,7 +2,7 @@ import { getId } from '@subwallet/extension-base/utils/getId';
 import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 import { WebRunnerStatus } from 'providers/contexts';
-import { WebviewError, WebviewNotReadyError, WebviewResponseError } from './errors/WebViewErrors';
+import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
 import type {
   AccountJson,

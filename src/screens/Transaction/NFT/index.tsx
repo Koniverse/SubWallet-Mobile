@@ -35,7 +35,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { FormState } from 'hooks/screen/useFormControl';
 import { nftParamsHandler } from '../helper';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from '../../../messaging';
+import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { SendNFTProps } from 'screens/Home/NFT/NFTStackScreen';
 
 const DEFAULT_ITEM: NftItem = {
