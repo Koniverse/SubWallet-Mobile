@@ -10,6 +10,7 @@ import { startCronAndSubscriptionServices } from '../../../messaging';
 import withPageWrapper from 'components/pageWrapper';
 import { Stake } from 'screens/Transaction/Stake';
 import { Unbond } from 'screens/Transaction/Unbond';
+import ClaimReward from 'screens/Transaction/ClaimReward';
 
 const StakingScreen = () => {
   const StakingScreenStack = createNativeStackNavigator();
@@ -36,6 +37,7 @@ const StakingScreen = () => {
       <StakingScreenStack.Screen name="StakingBalanceDetail" component={StakingDetail} />
       <StakingScreenStack.Screen name="Stake" component={Stake} />
       <StakingScreenStack.Screen name="Unbond" component={Unbond} />
+      <StakingScreenStack.Screen name="ClaimReward" component={ClaimReward} />
     </StakingScreenStack.Navigator>
   );
 };

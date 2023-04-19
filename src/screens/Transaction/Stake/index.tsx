@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { Header } from 'components/Header';
 import { TouchableOpacity, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
@@ -38,15 +37,16 @@ import { parseNominations } from 'utils/transaction/stake';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
-import { Info, PlusCircle } from 'phosphor-react-native';
+import { PlusCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { isAccountAll } from 'utils/accountAll';
-import { SubHeader } from 'components/SubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { BN_TEN } from 'utils/number';
 import useGetNativeTokenSlug from 'hooks/useGetNativeTokenSlug';
+import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
+import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 
 export const Stake = ({
   route: {
@@ -61,6 +61,7 @@ export const Stake = ({
   const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [poolLoading, setPoolLoading] = useState(false);
+  const [detailNetworkModalVisible, setDetailNetworkModalVisible] = useState(false);
   const [validatorLoading, setValidatorLoading] = useState(false);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const isEthAdr = isEthereumAddress(currentAccount?.address);
@@ -321,17 +322,12 @@ export const Stake = ({
   return (
     <ScreenContainer backgroundColor={'#0C0C0C'}>
       <>
-        <Header />
-
-        <View style={{ marginTop: 16 }}>
-          <SubHeader
-            onPressBack={() => navigation.goBack()}
-            title={title}
-            showRightBtn
-            rightIcon={Info}
-            onPressRightIcon={() => {}}
-          />
-        </View>
+        <TransactionHeader
+          title={title}
+          navigation={navigation}
+          showRightIcon
+          onPressRightIcon={() => setDetailNetworkModalVisible(true)}
+        />
 
         <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {!_stakingType && (
@@ -433,6 +429,16 @@ export const Stake = ({
             Stake
           </Button>
         </View>
+
+        {chainStakingMetadata && (
+          <NetworkDetailModal
+            modalVisible={detailNetworkModalVisible}
+            chainStakingMetadata={chainStakingMetadata}
+            stakingType={_stakingType as StakingType}
+            minimumActive={{ decimals, value: minStake, symbol }}
+            onCloseModal={() => setDetailNetworkModalVisible(false)}
+          />
+        )}
       </>
     </ScreenContainer>
   );

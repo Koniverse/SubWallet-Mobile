@@ -159,7 +159,6 @@ export const Unbond = ({
   const onSubmit = useCallback(() => {
     let unbondingPromise: Promise<SWTransactionResponse>;
 
-    console.log('currentValue2222222', currentValue);
     if (nominatorMetadata.type === StakingType.POOLED) {
       const params: RequestStakePoolingUnbonding = {
         amount: currentValue,
@@ -236,7 +235,6 @@ export const Unbond = ({
 
   const _onChangeAmount = useCallback(
     (text: string) => {
-      console.log('text', text);
       onChangeAmountValue(text);
       validateAmountInput(text, minValue, bondedValue, decimals);
     },

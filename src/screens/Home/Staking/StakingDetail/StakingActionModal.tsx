@@ -123,7 +123,7 @@ const StakingActionModal = ({ closeModal, visible, data }: Props) => {
 
   const claimAction = useCallback(() => {
     closeModal();
-    navigation.navigate('Unbond', { chain: networkKey, type: stakingType });
+    navigation.navigate('ClaimReward', { chain: networkKey, type: stakingType });
   }, [closeModal, navigation, networkKey, stakingType]);
 
   const compoundAction = useCallback(() => {
