@@ -13,10 +13,8 @@ export default (theme: ThemeTypes, linkIconBg?: string) => {
       flexDirection: 'row',
       flexWrap: 'wrap',
       alignItems: 'center',
-      // width: 'max-content',
       marginHorizontal: 'auto',
       padding: theme.paddingXS,
-      marginBottom: theme.marginXS,
       marginTop: 0,
     },
     linkIcon: {

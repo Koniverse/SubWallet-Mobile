@@ -7,15 +7,16 @@ import { Text, View } from 'react-native';
 
 interface Props {
   request: ConfirmationRequestBase;
+  gap?: number;
 }
 
 const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {
-  const { request } = props;
+  const { request, gap = 20 } = props;
   const domain = getDomainFromUrl(request.url);
   const leftLogoUrl = `https://icons.duckduckgo.com/ip2/${domain}.ico`;
 
   return (
-    <View style={{ display: 'flex', alignItems: 'center' }}>
+    <View style={{ display: 'flex', alignItems: 'center', marginTop: gap }}>
       <DualLogo
         leftLogo={<Logo network="subwallet" shape="squircle" size={56} />}
         rightLogo={<Image shape="squircle" src={{ uri: leftLogoUrl }} squircleSize={56} />}

@@ -1,3 +1,4 @@
+import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
@@ -75,9 +76,8 @@ export const SubstrateSignArea = (props: Props) => {
   }, [onApprovePassword, onConfirmQr, signMode]);
 
   return (
-    <View style={{ flexDirection: 'row', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
+    <ConfirmationFooter>
       <Button
-        style={{ marginRight: 6 }}
         disabled={loading}
         block
         icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
@@ -86,7 +86,6 @@ export const SubstrateSignArea = (props: Props) => {
         {'Cancel'}
       </Button>
       <Button
-        style={{ marginLeft: 6 }}
         block
         disabled={isMessage && !modeCanSignMessage.includes(signMode)}
         icon={<Icon phosphorIcon={approveIcon} weight={'fill'} />}
@@ -94,6 +93,6 @@ export const SubstrateSignArea = (props: Props) => {
         onPress={onConfirm}>
         {'Approve'}
       </Button>
-    </View>
+    </ConfirmationFooter>
   );
 };

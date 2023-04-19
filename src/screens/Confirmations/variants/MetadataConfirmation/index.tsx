@@ -4,12 +4,8 @@ import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
 import { CheckCircle, XCircle } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { StyleProp, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { approveMetaRequest, rejectMetaRequest } from 'messaging/index';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -22,19 +18,11 @@ const handleConfirm = async ({ id }: MetadataRequest) => await approveMetaReques
 
 const handleCancel = async ({ id }: MetadataRequest) => await rejectMetaRequest(id);
 
-const textStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.disabled,
-};
-
 const MetadataConfirmation: React.FC<Props> = (props: Props) => {
   const { request } = props;
   const { specVersion, tokenDecimals, tokenSymbol, chain } = request.request;
 
   const theme = useSubWalletTheme().swThemes;
-
-  const { accounts } = useSelector((state: RootState) => state.accountState);
 
   const styles = useMemo(() => createStyle(theme), [theme]);
 

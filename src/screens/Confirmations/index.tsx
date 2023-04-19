@@ -1,7 +1,10 @@
-import { AuthorizeRequest, MetadataRequest } from '@subwallet/extension-base/background/types';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { RootStackParamList } from 'routes/index';
 import MetadataConfirmation from 'screens/Confirmations/variants/MetadataConfirmation';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -13,6 +16,7 @@ import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { ColorMap } from 'styles/color';
 
 import { AuthorizeConfirmation } from './variants';
+import SignConfirmation from './variants/SignConfirmation';
 
 const confirmationPopupWrapper: StyleProp<any> = {
   maxHeight: '90%',
@@ -43,6 +47,8 @@ const titleMap: Record<ConfirmationType, string> = {
 } as Record<ConfirmationType, string>;
 
 export const Confirmations = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const { confirmationQueue, numberOfConfirmations } = useConfirmationsInfo();
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
@@ -98,10 +104,6 @@ export const Confirmations = () => {
   }, [confirmation, transactionRequest]);
 
   const content = useMemo((): React.ReactNode => {
-    if (!confirmation) {
-      return null;
-    }
-
     if (!confirmation) {
       return null;
     }
@@ -166,9 +168,7 @@ export const Confirmations = () => {
       case 'metadataRequest':
         return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
       case 'signingRequest':
-      // return (
-      // <SignConfirmation request={confirmation.item as SigningRequest} />
-      // );
+        return <SignConfirmation request={confirmation.item as SigningRequest} />;
     }
 
     return null;
@@ -181,6 +181,12 @@ export const Confirmations = () => {
       }
     }
   }, [index, numberOfConfirmations]);
+
+  useEffect(() => {
+    if (!confirmation) {
+      navigation.goBack();
+    }
+  }, [confirmation, navigation]);
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>

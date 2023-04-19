@@ -87,7 +87,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
+  const { numberOfConfirmations } = useSelector((state: RootState) => state.requestState);
 
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: ['subwallet://'],
@@ -99,10 +99,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
   };
 
   useEffect(() => {
-    if (hasConfirmations) {
+    if (!!numberOfConfirmations) {
       navigationRef.current?.navigate('Confirmations');
     }
-  }, [hasConfirmations, navigationRef]);
+  }, [numberOfConfirmations, navigationRef]);
 
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>

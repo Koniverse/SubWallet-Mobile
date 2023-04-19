@@ -173,7 +173,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <ConfirmationContent gap={theme.size}>
-        <ConfirmationGeneralInfo request={request} />
+        <ConfirmationGeneralInfo request={request} gap={theme.size} />
         <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         <ScrollView
           style={styles.scroll}
