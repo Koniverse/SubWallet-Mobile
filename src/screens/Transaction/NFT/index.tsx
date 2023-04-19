@@ -173,8 +173,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   }, []);
   const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
 
-  // const disableSubmit = !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected;
-  const disableSubmit = false;
+  const disableSubmit = !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected;
 
   const onSubmitForm = useCallback(
     async (_formState: FormState) => {

@@ -106,8 +106,10 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
   const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address)) && isValidValue;
-  const onChangeInputText = (text: string) => {
+  const onChangeInputText = (rawText: string) => {
+    const text = rawText.trim();
     setAddress(text);
+
     if (isValidCurrentAddress(text, isEthereumAddress(text))) {
       onChange(reformatAddress(text, 42), text);
     } else {

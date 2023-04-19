@@ -30,7 +30,7 @@ import {
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { SettingsStruct } from '@polkadot/ui-settings/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
+import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
@@ -122,7 +122,11 @@ export interface LocalUiSettings {
   isShowZeroBalance: boolean;
 }
 
-export interface AppSettings extends LocalUiSettings, UiSettings, SettingsStruct, BaseReduxStore {
+export interface AppSettings
+  extends LocalUiSettings,
+    UiSettings,
+    Omit<SettingsStruct, 'camera' | 'notification'>,
+    BaseReduxStore {
   authUrls: Record<string, AuthUrlInfo>;
   mediaAllowed: boolean;
 }
@@ -152,6 +156,7 @@ export interface AssetRegistryStore extends BaseReduxStore {
   assetRegistry: Record<string, _ChainAsset>;
   multiChainAssetMap: Record<string, _MultiChainAsset>;
   assetSettingMap: Record<string, AssetSetting>;
+  xcmRefMap: Record<string, _AssetRef>;
 }
 
 export interface ChainStore extends BaseReduxStore {

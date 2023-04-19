@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGetBalance } from 'hooks/balance';
 import { Text, View } from 'react-native';
 import { Number } from 'components/design-system-ui';
@@ -10,11 +10,20 @@ interface Props {
   tokenSlug?: string;
   label?: string;
   chain?: string;
+  onBalanceReady?: (rs: boolean) => void;
 }
 
-export const FreeBalance = ({ address, chain, label, tokenSlug }: Props) => {
+export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { nativeTokenBalance, nativeTokenSlug, tokenBalance } = useGetBalance(chain, address, tokenSlug);
+  const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance } = useGetBalance(
+    chain,
+    address,
+    tokenSlug,
+  );
+
+  useEffect(() => {
+    onBalanceReady?.(!isLoading && !error);
+  }, [error, isLoading, onBalanceReady]);
 
   if (!address && !chain) {
     return <></>;
@@ -39,7 +48,7 @@ export const FreeBalance = ({ address, chain, label, tokenSlug }: Props) => {
       )}
       {!!(tokenSlug && tokenSlug !== nativeTokenSlug) && (
         <>
-          <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium }}>{'and'}</Text>
+          <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium }}>{' and '}</Text>
           <Number
             decimal={tokenBalance?.decimals || 18}
             decimalColor={theme.colorTextTertiary}

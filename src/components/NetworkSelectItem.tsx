@@ -5,7 +5,7 @@ import { NetworkSelectItemContent } from 'components/NetworkSelectItemContent';
 interface Props extends TouchableOpacityProps {
   itemName: string;
   itemKey: string;
-  isSelected: boolean;
+  isSelected?: boolean;
   onSelectNetwork: () => void;
   defaultItemKey?: string;
   showSeparator?: boolean;

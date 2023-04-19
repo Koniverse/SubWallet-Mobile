@@ -26,7 +26,7 @@ import {
   subscribeStakingReward,
   subscribeTransactionRequests,
   subscribeTxHistory,
-  subscribeUiSettings,
+  subscribeUiSettings, subscribeXcmRefMap,
 } from 'stores/utils';
 import React, { useContext, useEffect } from 'react';
 import { Provider } from 'react-redux';
@@ -216,6 +216,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
       _DataContext.addHandler({
         ...subscribeAssetSettings,
         name: 'subscribeAssetSettings',
+        relatedStores: ['assetRegistry'],
+        isStartImmediately: true,
+      });
+      _DataContext.addHandler({
+        ...subscribeXcmRefMap,
+        name: 'subscribeXcmRefMap',
         relatedStores: ['assetRegistry'],
         isStartImmediately: true,
       });

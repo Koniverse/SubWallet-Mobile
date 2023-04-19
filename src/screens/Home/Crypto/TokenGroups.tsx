@@ -29,6 +29,7 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
+import { useToast } from 'react-native-toast-notifications';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -48,6 +49,7 @@ export const TokenGroups = () => {
   const [accessBy, setAccessBy] = useState<'buy' | 'receive' | undefined>(undefined);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const {
     accountSelectorItems,
     onOpenReceive,
@@ -79,6 +81,8 @@ export const TokenGroups = () => {
     buyAccountSelectorItems,
     buyTokenSelectorItems,
   } = useBuyToken();
+
+  const toast = useToast();
 
   const onClickItem = useCallback(
     (item: TokenBalanceItemType) => {
@@ -168,6 +172,24 @@ export const TokenGroups = () => {
     onOpenReceive();
   }, [onOpenReceive]);
 
+  const showNoti = useCallback(
+    (text: string) => {
+      toast.hideAll();
+      toast.show(text, { textStyle: { textAlign: 'center' } });
+    },
+    [toast],
+  );
+
+  const _onOpenSendFund = useCallback(() => {
+    if (currentAccount && currentAccount.isReadOnly) {
+      //todo: i18n
+      showNoti('The account you are using is read-only, you cannot send assets with it');
+      return;
+    }
+
+    navigation.navigate('SendFund', {});
+  }, [currentAccount, navigation, showNoti]);
+
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsUpperBlock
@@ -177,11 +199,13 @@ export const TokenGroups = () => {
         totalValue={totalBalanceInfo.convertedValue}
         isPriceDecrease={isTotalBalanceDecrease}
         onOpenBuyTokens={_onOpenBuyTokens}
+        onOpenSendFund={_onOpenSendFund}
       />
     );
   }, [
     _onOpenBuyTokens,
     _onOpenReceive,
+    _onOpenSendFund,
     isTotalBalanceDecrease,
     totalBalanceInfo.change.percent,
     totalBalanceInfo.change.value,
