@@ -4,6 +4,7 @@ import { ThemeTypes } from 'styles/themes';
 export interface ComponentStyle {
   middle: ViewStyle;
   container: ViewStyle;
+  right: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
@@ -18,6 +19,9 @@ export default (theme: ThemeTypes) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       overflow: 'hidden',
+    },
+    right: {
+      marginRight: theme.marginXS + 2,
     },
   });
 };

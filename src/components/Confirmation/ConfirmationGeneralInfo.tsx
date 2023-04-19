@@ -1,4 +1,4 @@
-import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
+import { ConfirmationRequestBase } from '@subwallet/extension-base/background/types';
 import { getDomainFromUrl } from '@subwallet/extension-base/utils';
 import { Image, Logo } from 'components/design-system-ui';
 import DualLogo from 'components/Logo/DualLogo';
@@ -6,7 +6,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 interface Props {
-  request: AuthorizeRequest;
+  request: ConfirmationRequestBase;
 }
 
 const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {

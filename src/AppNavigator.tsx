@@ -180,7 +180,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   headerShown: false,
                 }}>
                 <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
-                <Stack.Screen name="Confirmations" component={Confirmations} />
+              </Stack.Group>
+              <Stack.Group
+                screenOptions={{
+                  presentation: 'transparentModal',
+                  contentStyle: { backgroundColor: theme.swThemes.colorBgMask },
+                  headerShown: false,
+                }}>
+                <Stack.Screen name="Confirmations" component={Confirmations} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="Login" component={Login} />
               </Stack.Group>
             </>

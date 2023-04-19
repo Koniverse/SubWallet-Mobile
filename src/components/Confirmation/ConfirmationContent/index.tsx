@@ -5,14 +5,19 @@ import createStyle from './styles';
 
 type Props = {
   children: React.ReactNode | React.ReactNode[];
+  gap?: number;
 };
 
 const ConfirmationContent: React.FC<Props> = (props: Props) => {
-  const { children } = props;
+  const { children, gap } = props;
   const theme = useSubWalletTheme().swThemes;
-  const styles = useMemo(() => createStyle(theme), [theme]);
+  const styles = useMemo(() => createStyle(theme, gap), [theme, gap]);
 
-  return <ScrollView style={styles.container}>{children}</ScrollView>;
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {children}
+    </ScrollView>
+  );
 };
 
 export default ConfirmationContent;

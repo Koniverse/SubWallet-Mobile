@@ -1,8 +1,8 @@
-import { AuthorizeRequest } from '@subwallet/extension-base/background/types';
+import { AuthorizeRequest, MetadataRequest } from '@subwallet/extension-base/background/types';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
-import { SwModal } from 'components/design-system-ui';
-import { ScreenContainer } from 'components/ScreenContainer';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import MetadataConfirmation from 'screens/Confirmations/variants/MetadataConfirmation';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 import { TransactionConfirmation } from 'screens/Confirmations/variants/Transaction';
@@ -24,6 +24,13 @@ const confirmationPopupWrapper: StyleProp<any> = {
   paddingTop: 8,
 };
 
+const subWalletModalSeparator: StyleProp<any> = {
+  width: 56,
+  height: 4,
+  borderRadius: 2,
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+};
+
 const titleMap: Record<ConfirmationType, string> = {
   addNetworkRequest: 'Add Network Request',
   addTokenRequest: 'Add Token Request',
@@ -40,6 +47,7 @@ export const Confirmations = () => {
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
+  useHandlerHardwareBackPress(true);
 
   const nextConfirmation = useCallback(() => {
     setIndex(val => Math.min(val + 1, numberOfConfirmations - 1));
@@ -156,9 +164,7 @@ export const Confirmations = () => {
       case 'authorizeRequest':
         return <AuthorizeConfirmation request={confirmation.item as AuthorizeRequest} />;
       case 'metadataRequest':
-      // return (
-      // <MetadataConfirmation request={confirmation.item as MetadataRequest} />
-      // );
+        return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
       case 'signingRequest':
       // return (
       // <SignConfirmation request={confirmation.item as SigningRequest} />
@@ -180,6 +186,7 @@ export const Confirmations = () => {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
         <View style={confirmationPopupWrapper}>
+          <View style={subWalletModalSeparator} />
           <ConfirmationHeader
             index={index}
             numberOfConfirmations={numberOfConfirmations}

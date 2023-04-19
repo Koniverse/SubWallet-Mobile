@@ -23,7 +23,7 @@ const AccountItemBase: React.FC<AccountItemBaseProps> = (props: AccountItemBaseP
 
   const theme = useSubWalletTheme().swThemes;
 
-  const { container: containerStyle, middle: middleStyle, ...restStyle } = customStyle || {};
+  const { container: containerStyle, middle: middleStyle, right: rightStyle, ...restStyle } = customStyle || {};
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const _rightItem = rightItem || (
@@ -45,6 +45,7 @@ const AccountItemBase: React.FC<AccountItemBaseProps> = (props: AccountItemBaseP
       customStyle={{
         container: [styles.container, containerStyle],
         middle: [styles.middle, middleStyle],
+        right: [styles.right, rightStyle],
         ...restStyle,
       }}
       {...restProps}

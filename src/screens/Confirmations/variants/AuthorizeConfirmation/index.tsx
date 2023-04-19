@@ -1,20 +1,26 @@
+import { KeypairType } from '@polkadot/util-crypto/types';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AccountAuthType, AccountJson, AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import AccountItemWithName from 'components/Account/Item/AccountItemWithName';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/Confirmation';
 import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
-import { ShieldSlash } from 'phosphor-react-native';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ShieldSlash, XCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleProp, Text } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
 import { useSelector } from 'react-redux';
+import { RootStackParamList } from 'routes/index';
 import { RootState } from 'stores/index';
-import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { isNoAccount } from 'utils/account';
 import { isAccountAll } from 'utils/accountAll';
 import i18n from 'utils/i18n/i18n';
+
+import createStyle from './styles';
 
 interface Props {
   request: AuthorizeRequest;
@@ -55,17 +61,17 @@ export const filterAuthorizeAccounts = (accounts: AccountJson[], accountAuthType
   return rs;
 };
 
-const textStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.disabled,
-};
-
 const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   const { request } = props;
   const { accountAuthType, allowedAccounts } = request.request;
 
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const theme = useSubWalletTheme().swThemes;
+
   const { accounts } = useSelector((state: RootState) => state.accountState);
+
+  const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [loading, setLoading] = useState(false);
 
@@ -74,7 +80,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     [accountAuthType, accounts],
   );
 
-  // Selected map with default values is map of all acounts
+  // Selected map with default values is map of all accounts
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
 
   // Create selected map by default
@@ -119,21 +125,20 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   }, [request, selectedMap]);
 
   const onAddAccount = useCallback(() => {
-    // TODO: navigate to add account screen
-    // let types: KeypairType[];
-    //
-    // switch (accountAuthType) {
-    //   case 'substrate':
-    //     types = [SUBSTRATE_ACCOUNT_TYPE];
-    //     break;
-    //   case 'evm':
-    //     types = [EVM_ACCOUNT_TYPE];
-    //     break;
-    //   default:
-    //     types = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
-    // }
-    // navigate('/accounts/new-seed-phrase', { state: { accountTypes: types } });
-  }, []);
+    let types: KeypairType | undefined;
+
+    switch (accountAuthType) {
+      case 'substrate':
+        types = SUBSTRATE_ACCOUNT_TYPE;
+        break;
+      case 'evm':
+        types = EVM_ACCOUNT_TYPE;
+        break;
+      default:
+        types = undefined;
+    }
+    navigation.navigate('CreateAccount', { keyTypes: types });
+  }, [accountAuthType, navigation]);
 
   const onAccountSelect = useCallback(
     (address: string) => {
@@ -167,14 +172,12 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
 
   return (
     <React.Fragment>
-      <ConfirmationContent>
+      <ConfirmationContent gap={theme.size}>
         <ConfirmationGeneralInfo request={request} />
-        <Text style={[textStyle, { paddingBottom: 16, width: '100%', paddingTop: 24 }]}>
-          {i18n.common.chooseAccount}
-        </Text>
+        <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         <ScrollView
-          style={{ maxHeight: 180, width: '100%' }}
-          contentContainerStyle={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+          style={styles.scroll}
+          contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}>
           <>
             {visibleAccounts.length > 1 && (
@@ -203,17 +206,34 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         </ScrollView>
       </ConfirmationContent>
       <ConfirmationFooter>
-        <Button icon={<Icon phosphorIcon={ShieldSlash} weight="fill" />} type="danger" onPress={onBlock} />
-        <Button block={true} type="secondary" onPress={onCancel}>
-          {i18n.common.cancel}
-        </Button>
-        <Button
-          block={true}
-          onPress={onConfirm}
-          disabled={Object.values(selectedMap).every(value => !value)}
-          loading={loading}>
-          {i18n.common.connect}
-        </Button>
+        {visibleAccounts.length > 1 ? (
+          <>
+            <Button icon={<Icon phosphorIcon={ShieldSlash} weight="fill" />} type="danger" onPress={onBlock} />
+            <Button block={true} type="secondary" onPress={onCancel}>
+              {i18n.common.cancel}
+            </Button>
+            <Button
+              block={true}
+              onPress={onConfirm}
+              disabled={Object.values(selectedMap).every(value => !value)}
+              loading={loading}>
+              {i18n.common.connect}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              icon={<Icon phosphorIcon={XCircle} weight="fill" />}
+              block={true}
+              type="secondary"
+              onPress={onCancel}>
+              {i18n.common.cancel}
+            </Button>
+            <Button block={true} onPress={onAddAccount}>
+              Create one
+            </Button>
+          </>
+        )}
       </ConfirmationFooter>
     </React.Fragment>
   );
