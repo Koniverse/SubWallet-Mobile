@@ -176,14 +176,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
               <Stack.Group
                 screenOptions={{
                   presentation: 'transparentModal',
-                  contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
-                  headerShown: false,
-                }}>
-                <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
-              </Stack.Group>
-              <Stack.Group
-                screenOptions={{
-                  presentation: 'transparentModal',
                   contentStyle: { backgroundColor: theme.swThemes.colorBgMask },
                   headerShown: false,
                 }}>
