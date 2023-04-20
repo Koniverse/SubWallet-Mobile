@@ -15,7 +15,7 @@ import LeavePoolTransactionConfirmation from 'screens/Confirmations/Transaction/
 import UnbondTransactionConfirmation from 'screens/Confirmations/Transaction/variants/Unbond';
 import { ClaimRewardTransactionConfirmation } from 'screens/Confirmations/Transaction/variants/ClaimReward';
 import { CancelUnstakeTransactionConfirmation } from 'screens/Confirmations/Transaction/variants/CancelUnstake';
-
+import { WithdrawTransactionConfirmation } from 'screens/Confirmations/Transaction/variants/Withdraw';
 interface Props {
   confirmation: ConfirmationQueueItem;
 }
@@ -37,8 +37,8 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
     //   return BondTransactionConfirmation;
     case ExtrinsicType.STAKING_UNBOND:
       return UnbondTransactionConfirmation;
-    // case ExtrinsicType.STAKING_WITHDRAW:
-    //   return WithdrawTransactionConfirmation;
+    case ExtrinsicType.STAKING_WITHDRAW:
+      return WithdrawTransactionConfirmation;
     case ExtrinsicType.STAKING_CLAIM_REWARD:
       return ClaimRewardTransactionConfirmation;
     case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
