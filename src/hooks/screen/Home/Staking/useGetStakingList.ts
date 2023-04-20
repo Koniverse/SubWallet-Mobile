@@ -1,11 +1,37 @@
-import { APIItemState, StakingItem, StakingRewardItem } from '@subwallet/extension-base/background/KoniTypes';
+// Copyright 2019-2022 @polkadot/extension-koni-ui authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import {
+  APIItemState,
+  NominatorMetadata,
+  StakingItem,
+  StakingRewardItem,
+  StakingStatus,
+  StakingType,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
-import { StakingData, StakingDataType } from 'hooks/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+
+import { BN, BN_ZERO } from '@polkadot/util';
 import { RootState } from 'stores/index';
-import { isAccountAll } from '@subwallet/extension-base/utils';
+import { isAccountAll } from 'utils/accountAll';
+import { StakingData, StakingDataType } from 'hooks/types';
+
+function validateValueInString(value?: string) {
+  try {
+    if (!value) {
+      return false;
+    }
+
+    const valueInNumber = parseFloat(value);
+
+    return !(isNaN(valueInNumber) || valueInNumber === undefined || valueInNumber === null);
+  } catch (err) {
+    return false;
+  }
+}
 
 const groupStakingItems = (stakingItems: StakingItem[]): StakingItem[] => {
   const itemGroups: string[] = [];
@@ -41,9 +67,17 @@ const groupStakingItems = (stakingItems: StakingItem[]): StakingItem[] => {
         groupedStakingItem.type = stakingItem.type;
         groupedStakingItem.state = stakingItem.state;
 
-        groupedBalance += parseFloat(stakingItem.balance as string);
-        groupedActiveBalance += parseFloat(stakingItem.activeBalance as string);
-        groupedUnlockingBalance += parseFloat(stakingItem.unlockingBalance as string);
+        if (validateValueInString(stakingItem.balance as string)) {
+          groupedBalance += parseFloat(stakingItem.balance as string);
+        }
+
+        if (validateValueInString(stakingItem.activeBalance as string)) {
+          groupedActiveBalance += parseFloat(stakingItem.activeBalance as string);
+        }
+
+        if (validateValueInString(stakingItem.unlockingBalance as string)) {
+          groupedUnlockingBalance += parseFloat(stakingItem.unlockingBalance as string);
+        }
       }
     }
 
@@ -88,10 +122,21 @@ const groupStakingRewardItems = (stakingRewardItems: StakingRewardItem[]): Staki
         groupedStakingRewardItem.type = stakingRewardItem.type;
         groupedStakingRewardItem.address = ALL_ACCOUNT_KEY;
 
-        groupedLatestReward += parseFloat(stakingRewardItem.latestReward as string);
-        groupedTotalReward += parseFloat(stakingRewardItem.totalReward as string);
-        groupedTotalSlash += parseFloat(stakingRewardItem.totalSlash as string);
-        groupedUnclaimedReward += parseFloat(stakingRewardItem.unclaimedReward as string);
+        if (validateValueInString(stakingRewardItem.latestReward as string)) {
+          groupedLatestReward += parseFloat(stakingRewardItem.latestReward as string);
+        }
+
+        if (validateValueInString(stakingRewardItem.totalReward as string)) {
+          groupedTotalReward += parseFloat(stakingRewardItem.totalReward as string);
+        }
+
+        if (validateValueInString(stakingRewardItem.totalSlash as string)) {
+          groupedTotalSlash += parseFloat(stakingRewardItem.totalSlash as string);
+        }
+
+        if (validateValueInString(stakingRewardItem.unclaimedReward as string)) {
+          groupedUnclaimedReward += parseFloat(stakingRewardItem.unclaimedReward as string);
+        }
       }
     }
 
@@ -105,10 +150,70 @@ const groupStakingRewardItems = (stakingRewardItems: StakingRewardItem[]): Staki
   return groupedStakingRewardItems;
 };
 
-export default function useFetchStaking() {
+const getGroupStatus = (earnMapping: Record<string, boolean> = {}): StakingStatus => {
+  const list = Object.values(earnMapping);
+
+  if (list.every(value => !value)) {
+    return StakingStatus.NOT_EARNING;
+  } else if (list.every(value => value)) {
+    return StakingStatus.EARNING_REWARD;
+  } else {
+    return StakingStatus.PARTIALLY_EARNING;
+  }
+};
+
+const groupNominatorMetadatas = (nominatorMetadataList: NominatorMetadata[]): NominatorMetadata[] => {
+  const itemGroups: string[] = [];
+
+  for (const nominatorMetadata of nominatorMetadataList) {
+    const group = `${nominatorMetadata.chain}-${nominatorMetadata.type}`;
+
+    if (!itemGroups.includes(group)) {
+      itemGroups.push(group);
+    }
+  }
+
+  const groupedNominatorMetadataList: NominatorMetadata[] = [];
+
+  for (const group of itemGroups) {
+    const [chain, type] = group.split('-');
+
+    const groupedNominatorMetadata: NominatorMetadata = {
+      chain,
+      type: type as StakingType,
+      address: '',
+      activeStake: '',
+      nominations: [],
+      unstakings: [],
+      status: StakingStatus.NOT_EARNING,
+    };
+
+    let groupedActiveStake = BN_ZERO;
+    const earnMapping: Record<string, boolean> = {};
+
+    for (const nominatorMetadata of nominatorMetadataList) {
+      if (nominatorMetadata.chain === chain && nominatorMetadata.type === type) {
+        groupedActiveStake = groupedActiveStake.add(new BN(nominatorMetadata.activeStake));
+        earnMapping[nominatorMetadata.address] = nominatorMetadata.status === StakingStatus.EARNING_REWARD;
+        groupedNominatorMetadata.unstakings = [...groupedNominatorMetadata.unstakings, ...nominatorMetadata.unstakings];
+      }
+    }
+
+    groupedNominatorMetadata.address = ALL_ACCOUNT_KEY;
+    groupedNominatorMetadata.activeStake = groupedActiveStake.toString();
+    groupedNominatorMetadata.status = getGroupStatus(earnMapping);
+    groupedNominatorMetadataList.push(groupedNominatorMetadata);
+  }
+
+  return groupedNominatorMetadataList;
+};
+
+export default function useGetStakingList() {
   const { chainStakingMetadataList, nominatorMetadataList, stakingMap, stakingRewardMap } = useSelector(
     (state: RootState) => state.staking,
   );
+
+  console.log('chainStakingMetadataList', chainStakingMetadataList);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
@@ -121,6 +226,7 @@ export default function useFetchStaking() {
     const parsedPriceMap: Record<string, number> = {};
     let readyStakingItems: StakingItem[] = [];
     let stakingRewardList = stakingRewardMap;
+    let nominatorMetadatas = nominatorMetadataList;
     const stakingData: StakingDataType[] = [];
 
     stakingMap.forEach(stakingItem => {
@@ -141,6 +247,7 @@ export default function useFetchStaking() {
     if (isAll) {
       readyStakingItems = groupStakingItems(readyStakingItems);
       stakingRewardList = groupStakingRewardItems(stakingRewardList);
+      nominatorMetadatas = groupNominatorMetadatas(nominatorMetadataList);
     }
 
     for (const stakingItem of readyStakingItems) {
@@ -171,17 +278,15 @@ export default function useFetchStaking() {
         }
       }
 
-      if (!isAll) {
-        for (const nominatorMetadata of nominatorMetadataList) {
-          if (
-            stakingItem.chain === nominatorMetadata.chain &&
-            stakingItem.type === nominatorMetadata.type &&
-            stakingItem.address === nominatorMetadata.address
-          ) {
-            stakingDataType.nominatorMetadata = nominatorMetadata;
+      for (const nominatorMetadata of nominatorMetadatas) {
+        if (
+          stakingItem.chain === nominatorMetadata.chain &&
+          stakingItem.type === nominatorMetadata.type &&
+          stakingItem.address === nominatorMetadata.address
+        ) {
+          stakingDataType.nominatorMetadata = nominatorMetadata;
 
-            break;
-          }
+          break;
         }
       }
 

@@ -5,17 +5,14 @@ import BigN from 'bignumber.js';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { BalanceField } from 'components/Field/Balance';
 import { TextField } from 'components/Field/Text';
-import { SubmitButton } from 'components/SubmitButton';
-import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import { StakingDataType } from 'hooks/types';
-import { User, Users } from 'phosphor-react-native';
+import { DotsThree, User, Users } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { RootNavigationProps } from 'routes/index';
-import {StakingBalanceDetailProps, StakingScreenNavigationProps} from 'routes/staking/stakingScreen';
+import { StakingBalanceDetailProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontBold, FontMedium, sharedStyles } from 'styles/sharedStyles';
@@ -25,14 +22,17 @@ import { getNetworkLogo } from 'utils/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Number } from 'components/design-system-ui';
+import { Button, Icon, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
+import { ALL_KEY } from 'constants/index';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 16,
+  backgroundColor: '#0C0C0C',
 };
 
 const ScrollViewStyle: StyleProp<ViewStyle> = {
@@ -91,7 +91,7 @@ const StakingDetail = ({
 
   useHandleGoHome({ goHome: goHome, networkKey: networkKey, networkFocusRedirect: false });
 
-  const { data: stakingData, priceMap } = useFetchStaking();
+  const { data: stakingData, priceMap } = useGetStakingList();
 
   const [visible, setVisible] = useState(false);
 
@@ -114,10 +114,6 @@ const StakingDetail = ({
   const closeModal = useCallback(() => {
     setVisible(false);
   }, []);
-
-  const handleStakeMore = useCallback(() => {
-    navigation.navigate('Stake', { chain: staking.chain, type: stakingType });
-  }, [navigation, staking.chain, stakingType]);
 
   if (data === undefined) {
     return <></>;
@@ -212,14 +208,44 @@ const StakingDetail = ({
             />
           )}
         </ScrollView>
-        {isCanSign && (
-          <SubmitButton
-            style={{ marginTop: 16, marginHorizontal: 16 }}
-            title={i18n.stakingScreen.stakingDetail.actions.stake}
-            onPress={handleStakeMore}
+        <View style={{ flexDirection: 'row', paddingTop: 16, paddingHorizontal: 16 }}>
+          <Button
+            style={{ marginRight: 6 }}
+            type={'secondary'}
+            onPress={openModal}
+            icon={<Icon phosphorIcon={DotsThree} size={'lg'} iconColor={theme.colorWhite} />}
           />
-        )}
-        <StakingActionModal closeModal={closeModal} visible={visible} data={data} />
+          <Button
+            style={{ flex: 1, marginHorizontal: 6 }}
+            type={'secondary'}
+            onPress={() => {
+              navigation.navigate('Unbond', {
+                type: data.chainStakingMetadata?.type || ALL_KEY,
+                chain: data.chainStakingMetadata?.chain || ALL_KEY,
+              });
+            }}>
+            {'Unstake'}
+          </Button>
+          <Button
+            style={{ flex: 1, marginLeft: 6 }}
+            type={'primary'}
+            onPress={() => {
+              navigation.navigate('Stake', {
+                type: data.chainStakingMetadata?.type || ALL_KEY,
+                chain: data.nominatorMetadata?.chain || ALL_KEY,
+              });
+            }}>
+            {'Stake more'}
+          </Button>
+        </View>
+        <StakingActionModal
+          closeModal={closeModal}
+          visible={visible}
+          chainStakingMetadata={data.chainStakingMetadata}
+          nominatorMetadata={data.nominatorMetadata}
+          staking={staking}
+          reward={reward}
+        />
       </View>
     </ContainerWithSubHeader>
   );

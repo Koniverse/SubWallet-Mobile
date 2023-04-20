@@ -20,6 +20,7 @@ export type StakingScreenStackParamList = {
   Stake: { chain?: string; type?: string };
   Unbond: { chain?: string; type?: string };
   ClaimReward: { chain?: string; type?: string };
+  CancelUnstake: { chain?: string; type?: string };
 };
 
 export type NavigationProps = NativeStackScreenProps<StakingScreenStackParamList>;
@@ -27,6 +28,7 @@ export type StakingScreenNavigationProps = NavigationProps['navigation'];
 export type StakeScreenNavigationProps = NativeStackScreenProps<StakingScreenStackParamList, 'Stake'>;
 export type UnbondScreenNavigationProps = NativeStackScreenProps<StakingScreenStackParamList, 'Unbond'>;
 export type ClaimRewardScreenNavigationProps = NativeStackScreenProps<StakingScreenStackParamList, 'ClaimReward'>;
+export type CancelUnstakeScreenNavigationProps = NativeStackScreenProps<StakingScreenStackParamList, 'CancelUnstake'>;
 export type StakingBalancesProps = NativeStackScreenProps<StakingScreenStackParamList, 'StakingBalances'>;
 export type StakingBalanceDetailProps = NativeStackScreenProps<StakingScreenStackParamList, 'StakingBalanceDetail'>;
 export type StakingNetworksProps = NativeStackScreenProps<StakingScreenStackParamList, 'StakingNetworks'>;
