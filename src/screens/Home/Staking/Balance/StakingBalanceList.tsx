@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { SubmitButton } from 'components/SubmitButton';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ListRenderItemInfo, RefreshControl, SafeAreaView, View } from 'react-native';
 import { HomeNavigationProps } from 'routes/home';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
@@ -15,8 +14,10 @@ import { ColorMap } from 'styles/color';
 import { restartCronAndSubscriptionServices } from '../../../../messaging';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
-import {StakingScreenNavigationProps} from "routes/staking/stakingScreen";
-import {Button} from "components/design-system-ui";
+import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { Button } from 'components/design-system-ui';
+import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
+import StakingActionModal from "screens/Home/Staking/StakingDetail/StakingActionModal";
 
 const renderEmpty = (val?: string) => {
   if (val) {
@@ -38,17 +39,15 @@ const StakingBalanceList = () => {
   const navigation = useNavigation<HomeNavigationProps>();
   const stakingNavigation = useNavigation<StakingScreenNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
+  const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
+  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+  const [moreActionModalVisible, setMoreActionModalVisible] = useState<boolean>(false);
 
   const handleOnPress = useCallback(
     (stakingData: StakingDataType): (() => void) => {
       return () => {
-        navigation.navigate('Staking', {
-          screen: 'StakingBalanceDetail',
-          params: {
-            networkKey: stakingData.staking.chain,
-            stakingType: stakingData.staking.type,
-          },
-        });
+        setSelectedItem(stakingData);
+        setDetailModalVisible(true);
       };
     },
     [navigation],
@@ -116,6 +115,27 @@ const StakingBalanceList = () => {
             }}
           />
         }
+      />
+
+      {!!(selectedItem && selectedItem.nominatorMetadata && selectedItem.chainStakingMetadata) && (
+        <StakingDetailModal
+          modalVisible={detailModalVisible}
+          onCloseDetailModal={() => setDetailModalVisible(false)}
+          onOpenMoreActionModal={() => setMoreActionModalVisible(true)}
+          chainStakingMetadata={selectedItem.chainStakingMetadata}
+          nominatorMetadata={selectedItem.nominatorMetadata}
+          rewardItem={selectedItem.reward}
+          staking={selectedItem.staking}
+        />
+      )}
+
+      <StakingActionModal
+        closeModal={() => setMoreActionModalVisible(false)}
+        visible={moreActionModalVisible}
+        chainStakingMetadata={selectedItem?.chainStakingMetadata}
+        nominatorMetadata={selectedItem?.nominatorMetadata}
+        staking={selectedItem?.staking}
+        reward={selectedItem?.reward}
       />
 
       <SafeAreaView />
