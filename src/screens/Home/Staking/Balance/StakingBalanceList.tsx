@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { SubmitButton } from 'components/SubmitButton';
-import useFetchStaking from 'hooks/screen/Home/Staking/useFetchStaking';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import { StakingDataType } from 'hooks/types';
 import { Plus } from 'phosphor-react-native';
@@ -15,6 +14,7 @@ import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { restartCronAndSubscriptionServices } from '../../../../messaging';
 import { useRefresh } from 'hooks/useRefresh';
+import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 
 const renderEmpty = (val?: string) => {
   if (val) {
@@ -31,7 +31,8 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
 };
 
 const StakingBalanceList = () => {
-  const { data, priceMap } = useFetchStaking();
+  const { data, priceMap } = useGetStakingList();
+  console.log('data', data);
   const isCanSign = useCurrentAccountCanSign();
   const navigation = useNavigation<HomeNavigationProps>();
   const [isRefresh, refresh] = useRefresh();

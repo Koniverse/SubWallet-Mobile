@@ -6,7 +6,6 @@ import { ALL_KEY } from 'constants/index';
 
 const useGetNativeTokenSlug = (chainSlug: string): string => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-
   return useMemo(() => {
     if (chainSlug && chainSlug !== ALL_KEY) {
       const chainInfo = chainInfoMap[chainSlug];
