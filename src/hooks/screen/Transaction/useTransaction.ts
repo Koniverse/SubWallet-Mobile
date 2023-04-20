@@ -23,6 +23,8 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
         return ExtrinsicType.STAKING_CANCEL_UNSTAKE;
       case 'claim-reward':
         return ExtrinsicType.STAKING_CLAIM_REWARD;
+      case 'withdraw':
+        return ExtrinsicType.STAKING_WITHDRAW;
       case 'compound':
         return ExtrinsicType.STAKING_COMPOUNDING;
       case 'send-nft':

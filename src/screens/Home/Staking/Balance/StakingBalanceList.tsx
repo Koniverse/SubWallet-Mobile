@@ -15,6 +15,8 @@ import { ColorMap } from 'styles/color';
 import { restartCronAndSubscriptionServices } from '../../../../messaging';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
+import {StakingScreenNavigationProps} from "routes/staking/stakingScreen";
+import {Button} from "components/design-system-ui";
 
 const renderEmpty = (val?: string) => {
   if (val) {
@@ -32,9 +34,9 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
 
 const StakingBalanceList = () => {
   const { data, priceMap } = useGetStakingList();
-  console.log('data', data);
   const isCanSign = useCurrentAccountCanSign();
   const navigation = useNavigation<HomeNavigationProps>();
+  const stakingNavigation = useNavigation<StakingScreenNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
 
   const handleOnPress = useCallback(
@@ -67,10 +69,8 @@ const StakingBalanceList = () => {
   );
 
   const handlePressStartStaking = useCallback(() => {
-    navigation.navigate('Staking', {
-      screen: 'StakingNetworks',
-    });
-  }, [navigation]);
+    stakingNavigation.navigate('Stake', {});
+  }, [stakingNavigation]);
 
   const rightIconOption = useMemo(() => {
     if (!isCanSign) {
@@ -97,7 +97,7 @@ const StakingBalanceList = () => {
         afterListItem={
           isCanSign ? (
             <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
-              <SubmitButton title={i18n.stakingScreen.startStaking} onPress={handlePressStartStaking} />
+              <Button onPress={handlePressStartStaking}>{i18n.stakingScreen.startStaking}</Button>
             </View>
           ) : undefined
         }
