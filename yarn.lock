@@ -4277,10 +4277,10 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.39.0.tgz#eb916ff5fea7fa02e77745823fde21af979273d2"
   integrity sha512-qZYpuE6n+mwew+X71dOur/CbMXj6rNW27o63JeJwdQH/GvcSKm3JLNhd+bGzwUKg0D/zD30Qc6p4JykArzM+tA==
 
-"@subwallet/chain-list@0.0.15", "@subwallet/chain-list@^0.0.15", "@subwallet/chain-list@^0.0.16", "@subwallet/chain-list@^0.0.27":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.0.15.tgz#06fbccb5a3761a13bf1fdc475a893cc35509b55e"
-  integrity sha512-Wk87GHiN5dxPntU+gAtvtLOOtq/9/gEzPjM0yHDpYlu1BzyxgkQluULSiuSNTfX4f7iJwc/LecDh4p/v0+Bn/Q==
+"@subwallet/chain-list@0.0.31", "@subwallet/chain-list@^0.0.16", "@subwallet/chain-list@^0.0.27":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.0.31.tgz#05f8f5a87ad0ce1ccc7a958b68f17ca4074f8c23"
+  integrity sha512-7qwKVYnfWowQz++Zu5pTxGkPVZ6G5cclO2vhxO9ODA9bu27SRXUTTT8eyCbG0qdie4gzODBWjW53kRQ2paK2Hg==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^10.2.1"
