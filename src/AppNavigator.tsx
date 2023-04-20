@@ -50,6 +50,7 @@ import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
 import { TransactionDone } from 'screens/Transaction';
 import ErrorFallback from 'components/common/ErrorFallbackScreen';
+import ChangeMasterPassword from "screens/MasterPassword/ChangeMasterPassword";
 
 interface Props {
   isAppReady: boolean;
@@ -128,6 +129,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Languages" component={Languages} />
                 <Stack.Screen name="Security" component={Security} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} />
+                <Stack.Screen name="ChangePassword" component={ChangeMasterPassword} />
                 <Stack.Screen name="ExportAccount" component={ExportAccount} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                 <Stack.Screen name="NetworkConfig" component={NetworkConfig} />

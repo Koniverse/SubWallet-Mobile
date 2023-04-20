@@ -32,4 +32,5 @@ export const Images = {
   loadingScreen: require('./loading-background.jpg'),
   backgroundImg: require('./subwallet-background-img.png'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
+  avatarPlaceholder: require('./avatar-placeholder.png'),
 };
