@@ -3,7 +3,7 @@ import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '
 import { Home } from 'screens/Home';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { Settings } from 'screens/Settings';
-import { SendFund } from 'screens/Sending';
+import { SendFund } from 'screens/Transaction/SendFund';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';

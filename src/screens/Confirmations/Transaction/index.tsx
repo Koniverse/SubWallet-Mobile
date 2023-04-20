@@ -7,13 +7,13 @@ import { RootState } from 'stores/index';
 import { SigningRequest } from '@subwallet/extension-base/background/types';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { JoinPoolTransactionConfirmation, SendNftTransactionConfirmation } from './variants';
+import { JoinPoolTransactionConfirmation, SendNftTransactionConfirmation, TransferBlock } from './variants';
 import { View } from 'react-native';
 import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
-import LeavePoolTransactionConfirmation from "screens/Confirmations/Transaction/variants/LeavePool";
-import UnbondTransactionConfirmation from "screens/Confirmations/Transaction/variants/Unbond";
-import {ClaimRewardTransactionConfirmation} from "screens/Confirmations/Transaction/variants/ClaimReward";
+import LeavePoolTransactionConfirmation from 'screens/Confirmations/Transaction/variants/LeavePool';
+import UnbondTransactionConfirmation from 'screens/Confirmations/Transaction/variants/Unbond';
+import { ClaimRewardTransactionConfirmation } from 'screens/Confirmations/Transaction/variants/ClaimReward';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
@@ -22,10 +22,10 @@ interface Props {
 const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTransactionConfirmation => {
   console.log('extrinsicType', extrinsicType);
   switch (extrinsicType) {
-    // case ExtrinsicType.TRANSFER_BALANCE:
-    // case ExtrinsicType.TRANSFER_TOKEN:
-    // case ExtrinsicType.TRANSFER_XCM:
-    //   return TransferBlock;
+    case ExtrinsicType.TRANSFER_BALANCE:
+    case ExtrinsicType.TRANSFER_TOKEN:
+    case ExtrinsicType.TRANSFER_XCM:
+      return TransferBlock;
     case ExtrinsicType.SEND_NFT:
       return SendNftTransactionConfirmation;
     case ExtrinsicType.STAKING_JOIN_POOL:

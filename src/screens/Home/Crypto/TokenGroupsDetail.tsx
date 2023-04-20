@@ -23,6 +23,7 @@ import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
+import { useToast } from 'react-native-toast-notifications';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -54,6 +55,7 @@ export const TokenGroupsDetail = ({
 
     return '';
   }, [tokenGroupSlug, assetRegistryMap, multiChainAssetMap]);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   const {
     accountSelectorItems,
@@ -86,6 +88,8 @@ export const TokenGroupsDetail = ({
     buyAccountSelectorItems,
     buyTokenSelectorItems,
   } = useBuyToken(tokenGroupSlug, groupSymbol);
+
+  const toast = useToast();
 
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
@@ -153,17 +157,36 @@ export const TokenGroupsDetail = ({
     onOpenBuyToken();
   }, [onOpenBuyToken]);
 
+  const showNoti = useCallback(
+    (text: string) => {
+      toast.hideAll();
+      toast.show(text, { textStyle: { textAlign: 'center' } });
+    },
+    [toast],
+  );
+
+  const _onOpenSendFund = useCallback(() => {
+    if (currentAccount && currentAccount.isReadOnly) {
+      //todo: i18n
+      showNoti('The account you are using is read-only, you cannot send assets with it');
+      return;
+    }
+
+    navigation.navigate('SendFund', { slug: tokenGroupSlug });
+  }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
+
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock
         onOpenReceive={_onOpenReceive}
         onOpenBuyTokens={onPressBuyToken}
+        onOpenSendFund={_onOpenSendFund}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
         groupSymbol={groupSymbol}
       />
     );
-  }, [_onOpenReceive, onPressBuyToken, tokenBalanceValue, onClickBack, groupSymbol]);
+  }, [_onOpenReceive, onPressBuyToken, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (

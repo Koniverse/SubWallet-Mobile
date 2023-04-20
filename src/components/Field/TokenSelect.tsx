@@ -3,7 +3,7 @@ import React from 'react';
 import { getTokenLogo } from 'utils/index';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
-import {FontMedium, FontSemiBold, FontSize2} from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
 

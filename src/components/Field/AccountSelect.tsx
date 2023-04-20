@@ -1,9 +1,9 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
-import {getTokenLogo, toShort} from 'utils/index';
+import { toShort } from 'utils/index';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
-import {FontMedium, FontSemiBold, FontSize2} from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
 import { Avatar } from 'components/design-system-ui';
@@ -60,7 +60,7 @@ export const AccountSelectField = ({
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Avatar value={value} size={24} />
           <Text style={accountNameTextStyle}>{accountName}</Text>
-          <Text style={getTextStyle(!!disabled)}>{`(${toShort(value, 4, 4)})`}</Text>
+          {!!value && <Text style={getTextStyle(!!disabled)}>{`(${toShort(value, 4, 4)})`}</Text>}
         </View>
 
         {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}

@@ -29,7 +29,6 @@ import { RestoreJson } from 'screens/RestoreJson';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { SendFund } from 'screens/Sending';
 import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
@@ -80,6 +79,7 @@ import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
+import { SendFund } from 'screens/Transaction/SendFund';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -289,11 +289,6 @@ export const App = () => {
                               <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                               <Stack.Screen name="Settings" component={Settings} />
                               <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
-                              <Stack.Screen
-                                name="TransferNft"
-                                component={TransferNftScreen}
-                                options={{ gestureEnabled: false }}
-                              />
                               <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                               <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                               <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />

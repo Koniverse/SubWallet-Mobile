@@ -14,6 +14,8 @@ interface InputAmountProps {
   maxValue: string;
   disable?: boolean;
   errorMessages?: string[];
+  onSetMax?: (value: boolean) => void;
+  showMaxButton?: boolean;
 }
 
 const isValidInput = (input: string) => {
@@ -44,13 +46,24 @@ export const getOutputValuesFromString: (input: string, power: number) => string
 const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = InputAmountStyles(theme);
-  const { decimals, disable, placeholder, maxValue, onChangeValue, value, errorMessages } = props;
+  const {
+    decimals,
+    disable,
+    placeholder,
+    maxValue,
+    onChangeValue,
+    value,
+    errorMessages,
+    onSetMax,
+    showMaxButton = true,
+  } = props;
   const [inputValue, setInputValue] = useState(value);
   const _onClickMaxBtn = useCallback(() => {
     const transformVal = getInputValuesFromString(maxValue, decimals);
     setInputValue(transformVal);
     onChangeValue(maxValue);
-  }, [decimals, maxValue, onChangeValue]);
+    onSetMax?.(true);
+  }, [decimals, maxValue, onChangeValue, onSetMax]);
 
   const getMaxLengthText = useCallback(
     (_value: string) => {
@@ -61,6 +74,10 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
 
   const onChangeInput = useCallback(
     (_value: string) => {
+      if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(_value)) {
+        return;
+      }
+
       let currentValue = _value;
       const maxLength = getMaxLengthText(_value);
       if (_value.length > maxLength) {
@@ -71,8 +88,9 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
 
       const transformVal = getOutputValuesFromString(currentValue, decimals);
       onChangeValue(transformVal);
+      onSetMax?.(false);
     },
-    [decimals, getMaxLengthText, onChangeValue],
+    [decimals, getMaxLengthText, onChangeValue, onSetMax],
   );
 
   return (
@@ -88,11 +106,13 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
           defaultValue={inputValue}
           maxLength={getMaxLengthText(inputValue)}
           placeholderTextColor={theme.colorTextTertiary}
-          editable={disable}
+          editable={!disable}
         />
-        <Button type={'ghost'} externalTextStyle={{ color: theme.colorSuccess }} size={'xs'} onPress={_onClickMaxBtn}>
-          {'Max'}
-        </Button>
+        {showMaxButton && (
+          <Button type={'ghost'} externalTextStyle={{ color: theme.colorSuccess }} size={'xs'} onPress={_onClickMaxBtn}>
+            {'Max'}
+          </Button>
+        )}
       </View>
 
       {!!(errorMessages && errorMessages.length) &&
