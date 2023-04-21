@@ -86,7 +86,7 @@ export function FlatListScreen<T>({
   headerContent,
   refreshControl,
   isNetConnected = true,
-  isShowFilterBtn = true,
+  isShowFilterBtn,
   filterOptions,
   isShowListWrapper = false,
   beforeListItem,

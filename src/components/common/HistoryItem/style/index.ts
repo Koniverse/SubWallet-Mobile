@@ -1,5 +1,6 @@
 import { ThemeTypes } from 'styles/themes';
 import { StyleSheet } from 'react-native';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create({
@@ -30,12 +31,14 @@ export default (theme: ThemeTypes) => {
       alignItems: 'center',
     },
     upperText: {
+      ...FontSemiBold,
       fontSize: theme.fontSizeHeading5,
       lineHeight: theme.lineHeightHeading5 * theme.fontSizeHeading5,
       color: theme.colorTextLight1,
       fontWeight: theme.headingFontWeight,
     },
     lowerText: {
+      ...FontMedium,
       fontSize: theme.fontSizeSM,
       lineHeight: theme.lineHeightSM * theme.fontSizeSM,
       color: theme.colorTextLight4,
