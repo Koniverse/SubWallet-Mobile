@@ -34,12 +34,12 @@ export const ConfigureToken = ({
   const customTokenInfo = JSON.parse(tokenDetail) as _ChainAsset;
   const navigation = useNavigation<RootNavigationProps>();
   const [isBusy, setBusy] = useState<boolean>(false);
-  const tokenInfo = useGetChainAssetInfo(customTokenInfo.slug) as _ChainAsset;
+  const tokenInfo = useGetChainAssetInfo(customTokenInfo.slug) as _ChainAsset | undefined;
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const formConfig = {
     tokenName: {
       name: i18n.importToken.tokenName,
-      value: tokenInfo.name || '',
+      value: tokenInfo?.symbol || '',
     },
   };
 
@@ -52,7 +52,7 @@ export const ConfigureToken = ({
   );
 
   const handleDeleteToken = useCallback(() => {
-    deleteCustomAssets(tokenInfo.slug)
+    deleteCustomAssets(tokenInfo?.slug || '')
       .then(result => {
         if (result) {
           navigation.goBack();
@@ -64,7 +64,7 @@ export const ConfigureToken = ({
       .catch(() => {
         showToast(i18n.errorMessage.occurredError);
       });
-  }, [navigation, showToast, tokenInfo.slug]);
+  }, [navigation, showToast, tokenInfo?.slug]);
 
   const onDeleteTokens = () => {
     Alert.alert('Delete tokens', 'Make sure you want to delete selected tokens', [
@@ -79,28 +79,30 @@ export const ConfigureToken = ({
   };
 
   const onSubmit = (formState: FormState) => {
-    const newTokenInfo = {
-      ...tokenInfo,
-      name: formState.data.tokenName,
-    };
-    setBusy(true);
-    if (!isNetConnected) {
-      setBusy(false);
-      return;
+    if (tokenInfo) {
+      const newTokenInfo = {
+        ...tokenInfo,
+        name: formState.data.tokenName,
+      };
+      setBusy(true);
+      if (!isNetConnected) {
+        setBusy(false);
+        return;
+      }
+      upsertCustomToken(newTokenInfo)
+        .then(resp => {
+          if (resp) {
+            navigation.goBack();
+          } else {
+            onUpdateErrors('tokenName')([i18n.errorMessage.occurredError]);
+          }
+          setBusy(false);
+        })
+        .catch(() => {
+          setBusy(false);
+          console.error();
+        });
     }
-    upsertCustomToken(newTokenInfo)
-      .then(resp => {
-        if (resp) {
-          navigation.goBack();
-        } else {
-          onUpdateErrors('tokenName')([i18n.errorMessage.occurredError]);
-        }
-        setBusy(false);
-      })
-      .catch(() => {
-        setBusy(false);
-        console.error();
-      });
   };
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
@@ -111,7 +113,7 @@ export const ConfigureToken = ({
     toast.hideAll();
     toast.show(i18n.common.copiedToClipboard);
   };
-  console.log('tokenInfo', tokenInfo);
+
   return (
     <ContainerWithSubHeader
       onPressBack={() => navigation.goBack()}
@@ -119,10 +121,10 @@ export const ConfigureToken = ({
       disabled={isBusy}
       rightIcon={Trash}
       onPressRightIcon={onDeleteTokens}
-      disableRightButton={!(_isCustomAsset(tokenInfo.slug) && _isSmartContractToken(tokenInfo))}>
+      disableRightButton={!tokenInfo || !(_isCustomAsset(tokenInfo?.slug || '') && _isSmartContractToken(tokenInfo))}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
-          {_isSmartContractToken(tokenInfo) && (
+          {tokenInfo && _isSmartContractToken(tokenInfo) && (
             <AddressField
               label={i18n.importToken.contractAddress}
               address={_getContractAddressOfToken(tokenInfo)}
@@ -130,8 +132,8 @@ export const ConfigureToken = ({
               onPressRightIcon={() => copyToClipboard(_getContractAddressOfToken(tokenInfo))}
             />
           )}
-          <NetworkField disabled={true} label={i18n.common.network} networkKey={tokenInfo.originChain} />
-          {!tokenInfo.assetType && (
+          <NetworkField disabled={true} label={i18n.common.network} networkKey={tokenInfo?.originChain || ''} />
+          {tokenInfo && !tokenInfo.assetType && (
             <InputText
               ref={formState.refs.tokenName}
               label={formState.labels.tokenName}
@@ -141,19 +143,21 @@ export const ConfigureToken = ({
             />
           )}
 
-          {tokenInfo.symbol && <TextField disabled={true} label={i18n.common.symbol} text={tokenInfo.symbol} />}
+          {tokenInfo && tokenInfo.symbol && (
+            <TextField disabled={true} label={i18n.common.symbol} text={tokenInfo.symbol} />
+          )}
 
-          {tokenInfo.decimals && (
+          {tokenInfo && tokenInfo.decimals && (
             <TextField disabled={true} label={i18n.common.decimals} text={tokenInfo.decimals.toString()} />
           )}
 
-          <TextField disabled={true} label={i18n.common.tokenType} text={tokenInfo.assetType.toUpperCase()} />
+          <TextField disabled={true} label={i18n.common.tokenType} text={tokenInfo?.assetType.toUpperCase() || ''} />
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
           )}
         </ScrollView>
-        {_isCustomAsset(tokenInfo.slug) && (
+        {tokenInfo && _isCustomAsset(tokenInfo.slug) && (
           <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
             <Button
               type={'secondary'}
