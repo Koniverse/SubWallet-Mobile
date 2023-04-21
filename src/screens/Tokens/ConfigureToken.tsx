@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ConfigureTokenProps, RootNavigationProps } from 'routes/index';
@@ -6,24 +6,24 @@ import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
 import {
   _getContractAddressOfToken,
+  _isCustomAsset,
   _isSmartContractToken,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { CopySimple } from 'phosphor-react-native';
+import { CopySimple, Trash } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import i18n from 'utils/i18n/i18n';
 import { useToast } from 'react-native-toast-notifications';
-import { SubmitButton } from 'components/SubmitButton';
-import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { upsertCustomToken } from '../../messaging';
+import { deleteCustomAssets, upsertCustomToken } from '../../messaging';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { _ChainAsset } from '@subwallet/chain-list/types';
+import { Button } from 'components/design-system-ui';
 
 export const ConfigureToken = ({
   route: {
@@ -42,6 +42,42 @@ export const ConfigureToken = ({
       value: tokenInfo.name || '',
     },
   };
+
+  const showToast = useCallback(
+    (message: string) => {
+      toast.hideAll();
+      toast.show(message);
+    },
+    [toast],
+  );
+
+  const handleDeleteToken = useCallback(() => {
+    deleteCustomAssets(tokenInfo.slug)
+      .then(result => {
+        if (result) {
+          navigation.goBack();
+          showToast(i18n.common.importTokenSuccessMessage);
+        } else {
+          showToast(i18n.errorMessage.occurredError);
+        }
+      })
+      .catch(() => {
+        showToast(i18n.errorMessage.occurredError);
+      });
+  }, [navigation, showToast, tokenInfo.slug]);
+
+  const onDeleteTokens = () => {
+    Alert.alert('Delete tokens', 'Make sure you want to delete selected tokens', [
+      {
+        text: i18n.common.cancel,
+      },
+      {
+        text: i18n.common.ok,
+        onPress: () => handleDeleteToken(),
+      },
+    ]);
+  };
+
   const onSubmit = (formState: FormState) => {
     const newTokenInfo = {
       ...tokenInfo,
@@ -77,7 +113,13 @@ export const ConfigureToken = ({
   };
   console.log('tokenInfo', tokenInfo);
   return (
-    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={i18n.title.configureToken} disabled={isBusy}>
+    <ContainerWithSubHeader
+      onPressBack={() => navigation.goBack()}
+      title={i18n.title.configureToken}
+      disabled={isBusy}
+      rightIcon={Trash}
+      onPressRightIcon={onDeleteTokens}
+      disableRightButton={!(_isCustomAsset(tokenInfo.slug) && _isSmartContractToken(tokenInfo))}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
           {_isSmartContractToken(tokenInfo) && (
@@ -111,23 +153,24 @@ export const ConfigureToken = ({
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
           )}
         </ScrollView>
-        <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
-          <SubmitButton
-            disabled={isBusy}
-            disabledColor={ColorMap.buttonOverlayButtonColor}
-            title={i18n.common.cancel}
-            backgroundColor={ColorMap.dark2}
-            style={{ flex: 1, marginRight: 8 }}
-            onPress={() => navigation.goBack()}
-          />
-          <SubmitButton
-            disabled={!isNetConnected}
-            isBusy={isBusy}
-            style={{ flex: 1, marginLeft: 8 }}
-            title={i18n.common.save}
-            onPress={() => onSubmit(formState)}
-          />
-        </View>
+        {_isCustomAsset(tokenInfo.slug) && (
+          <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
+            <Button
+              type={'secondary'}
+              disabled={isBusy}
+              style={{ flex: 1, marginRight: 6 }}
+              onPress={() => navigation.goBack()}>
+              {i18n.common.cancel}
+            </Button>
+            <Button
+              disabled={!isNetConnected}
+              loading={isBusy}
+              style={{ flex: 1, marginLeft: 6 }}
+              onPress={() => onSubmit(formState)}>
+              {i18n.common.save}
+            </Button>
+          </View>
+        )}
       </View>
     </ContainerWithSubHeader>
   );
