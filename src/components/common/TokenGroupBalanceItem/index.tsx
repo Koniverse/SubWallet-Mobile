@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
-import { BN_ZERO } from 'utils/chainBalances';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
 import { CaretRight } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -16,7 +15,6 @@ export const TokenGroupBalanceItem = ({
   symbol,
   isTestnet,
   priceValue,
-  isReady,
   total,
   priceChangeStatus,
   isShowBalance,
@@ -55,14 +53,14 @@ export const TokenGroupBalanceItem = ({
             {isShowBalance && (
               <>
                 <Number
-                  value={!isReady ? BN_ZERO : total.value}
+                  value={total.value}
                   decimal={0}
                   decimalOpacity={0.45}
                   size={theme.fontSizeLG}
                   textStyle={{ ...FontSemiBold, lineHeight: theme.lineHeightLG * theme.fontSizeLG }}
                 />
                 <Number
-                  value={isTestnet || !isReady ? BN_ZERO : total.convertedValue}
+                  value={total.convertedValue}
                   decimal={0}
                   intOpacity={0.45}
                   unitOpacity={0.45}

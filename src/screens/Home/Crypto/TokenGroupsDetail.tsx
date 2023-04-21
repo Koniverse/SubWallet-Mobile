@@ -3,7 +3,7 @@ import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { TokenBalanceItemType } from 'types/balance';
-import { ScreenContainer } from 'components/ScreenContainer';
+import { GradientBackgroundColorSet, ScreenContainer } from 'components/ScreenContainer';
 import { Header } from 'components/Header';
 import { TokensLayout } from 'screens/Home/Crypto/shared/TokensLayout';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
@@ -203,7 +203,7 @@ export const TokenGroupsDetail = ({
   }, []);
 
   return (
-    <ScreenContainer>
+    <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>
       <>
         <Header />
 
