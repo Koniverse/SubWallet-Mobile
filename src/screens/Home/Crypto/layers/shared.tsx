@@ -6,7 +6,7 @@ import { AccountType } from 'types/ui-types';
 import { BN_ZERO } from 'utils/chainBalances';
 import { StyleProp } from 'react-native';
 import { DEVICE } from 'constants/index';
-import {TokenBalanceItemType} from "types/balance";
+import { TokenBalanceItemType } from 'types/balance';
 
 export const itemWrapperStyle: StyleProp<any> = {
   width: '100%',

@@ -80,13 +80,21 @@ export const TokenGroupsDetailUpperBlock = ({
       <BalancesVisibility value={balanceValue} startWithSymbol subFloatNumber />
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
-        <ActionButton label={i18n.cryptoScreen.receive} icon={ArrowFatLineDown} onPress={onOpenReceive} />
-        <ActionButton label={i18n.cryptoScreen.send} icon={PaperPlaneTilt} onPress={onOpenSendFund} />
+        <ActionButton
+          icon={ArrowFatLineDown}
+          onPress={onOpenReceive}
+          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
+        />
+        <ActionButton
+          icon={PaperPlaneTilt}
+          onPress={onOpenSendFund}
+          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
+        />
         <ActionButton
           disabled={!isSupportBuyTokens}
-          label={i18n.cryptoScreen.buy}
           icon={ShoppingCartSimple}
           onPress={onOpenBuyTokens}
+          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />
       </View>
     </View>
@@ -97,23 +105,24 @@ export const TokenGroupsDetailUpperBlock = ({
 function createStyleSheet(theme: ThemeTypes) {
   return StyleSheet.create({
     actionButtonWrapper: {
-      paddingTop: 36,
+      paddingTop: 24,
       flexDirection: 'row',
       width: '100%',
       justifyContent: 'center',
-      paddingBottom: 25,
     },
     containerStyle: {
-      height: 220,
+      height: 214,
       alignItems: 'center',
-      marginTop: -2,
       paddingBottom: 2,
-      marginBottom: -2,
+      marginLeft: -8,
+      marginRight: -8,
     },
     topArea: {
       alignSelf: 'stretch',
       flexDirection: 'row',
       alignItems: 'center',
+      paddingTop: 16,
+      paddingBottom: 16,
     },
     tokenDisplay: {
       flex: 1,

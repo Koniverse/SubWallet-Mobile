@@ -22,7 +22,7 @@ interface Props {
 }
 
 const actionButtonWrapper: StyleProp<any> = {
-  paddingTop: 36,
+  paddingTop: 24,
   flexDirection: 'row',
   width: '100%',
   justifyContent: 'center',
@@ -30,8 +30,9 @@ const actionButtonWrapper: StyleProp<any> = {
 };
 
 const containerStyle: StyleProp<any> = {
-  height: 220,
+  height: 238,
   paddingHorizontal: 16,
+  paddingTop: 32,
   alignItems: 'center',
   marginTop: -2,
   paddingBottom: 2,
@@ -54,7 +55,7 @@ export const TokenGroupsUpperBlock = ({
     <View style={containerStyle} pointerEvents="box-none">
       <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
 
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
         {isShowBalance && (
           <Number
             textStyle={{ ...FontMedium }}
@@ -101,9 +102,24 @@ export const TokenGroupsUpperBlock = ({
       </View>
 
       <View style={[actionButtonWrapper]} pointerEvents="box-none">
-        <ActionButton label={i18n.cryptoScreen.receive} icon={ArrowFatLineDown} onPress={onOpenReceive} />
-        <ActionButton label={i18n.cryptoScreen.send} icon={PaperPlaneTilt} onPress={onOpenSendFund} />
-        <ActionButton label={i18n.cryptoScreen.buy} icon={ShoppingCartSimple} onPress={onOpenBuyTokens} />
+        <ActionButton
+          label={i18n.cryptoScreen.receive}
+          icon={ArrowFatLineDown}
+          onPress={onOpenReceive}
+          buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
+        />
+        <ActionButton
+          label={i18n.cryptoScreen.send}
+          icon={PaperPlaneTilt}
+          onPress={onOpenSendFund}
+          buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
+        />
+        <ActionButton
+          label={i18n.cryptoScreen.buy}
+          icon={ShoppingCartSimple}
+          onPress={onOpenBuyTokens}
+          buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
+        />
       </View>
     </View>
   );

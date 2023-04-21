@@ -1,16 +1,16 @@
 import React from 'react';
-import { TouchableOpacityProps, View } from 'react-native';
+import { StyleProp, TouchableOpacityProps, View, ViewStyle } from 'react-native';
 import Text from '../components/Text';
 import { FontMedium } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
 import { Button, Icon } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { IconProps } from 'phosphor-react-native';
 
 interface Props extends TouchableOpacityProps {
-  label: string;
+  label?: string;
   icon: React.ElementType<IconProps>;
+  buttonWrapperStyle?: StyleProp<ViewStyle>;
 }
 
 function getButtonTextStyle(disabled: boolean, theme: ThemeTypes) {
@@ -25,10 +25,10 @@ function getButtonTextStyle(disabled: boolean, theme: ThemeTypes) {
 
 const ActionButton = (actionButtonProps: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { label, icon, disabled, onPress } = actionButtonProps;
+  const { label, icon, disabled, onPress, buttonWrapperStyle } = actionButtonProps;
   return (
     <View style={{ alignItems: 'center' }}>
-      <View style={{ paddingHorizontal: theme.paddingSM }}>
+      <View style={buttonWrapperStyle}>
         <Button
           shape={'squircle'}
           size={'sm'}
@@ -39,7 +39,7 @@ const ActionButton = (actionButtonProps: Props) => {
         />
       </View>
 
-      <Text style={getButtonTextStyle(!!disabled, theme)}>{label}</Text>
+      {!!label && <Text style={getButtonTextStyle(!!disabled, theme)}>{label}</Text>}
     </View>
   );
 };

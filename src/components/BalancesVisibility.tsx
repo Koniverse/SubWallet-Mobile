@@ -16,7 +16,7 @@ type Props = {
 };
 
 const wrapperStyle: StyleProp<any> = {
-  height: 51,
+  height: 46,
 };
 
 export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subFloatNumber = false }: Props) => {
