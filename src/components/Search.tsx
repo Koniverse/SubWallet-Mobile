@@ -20,7 +20,7 @@ const searchContainerStyle: StyleProp<any> = {
   backgroundColor: '#1A1A1A',
   borderRadius: 5,
   alignItems: 'center',
-  // paddingRight: 16,
+  paddingRight: 4,
   paddingLeft: 12,
   flexDirection: 'row',
   height: 44,
