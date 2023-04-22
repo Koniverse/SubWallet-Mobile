@@ -43,6 +43,7 @@ export type RootStackParamList = {
   ImportPrivateKey: undefined;
   NetworksSetting: undefined;
   NetworkSettingDetail: { chainSlug: string };
+  ImportNetwork: undefined;
   SendFund: { slug?: string };
   Languages: undefined;
   Security: undefined;

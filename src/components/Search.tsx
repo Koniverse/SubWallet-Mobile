@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
+import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
 import { FadersHorizontal, MagnifyingGlass, XCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
@@ -69,7 +69,7 @@ export const Search = (searchProps: Props) => {
         <Button
           size={'xs'}
           type={'ghost'}
-          icon={<Icon phosphorIcon={CancelIcon} size={'sm'} iconColor={ColorMap.disabled} />}
+          icon={<Icon phosphorIcon={CancelIcon} size={'sm'} iconColor={'#A6A6A6'} />}
           onPress={onClearSearchString}
         />
       )}

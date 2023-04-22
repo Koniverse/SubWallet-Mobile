@@ -50,7 +50,8 @@ import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
 import { TransactionDone } from 'screens/Transaction';
 import ErrorFallback from 'components/common/ErrorFallbackScreen';
-import ChangeMasterPassword from "screens/MasterPassword/ChangeMasterPassword";
+import ChangeMasterPassword from 'screens/MasterPassword/ChangeMasterPassword';
+import { ImportNetwork } from 'screens/ImportNetwork';
 
 interface Props {
   isAppReady: boolean;
@@ -117,6 +118,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                 <Stack.Screen name="CreatePassword" component={CreateMasterPassword} />
                 <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
+                <Stack.Screen name="ImportNetwork" component={ImportNetwork} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
                 <Stack.Screen name="MigratePassword" component={ApplyMasterPassword} />
                 <Stack.Screen name="EditAccount" component={EditAccount} />

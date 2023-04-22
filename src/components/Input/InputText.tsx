@@ -4,6 +4,9 @@ import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import { Warning } from 'components/Warning';
+import { Icon } from 'components/design-system-ui';
+import { IconProps } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props extends FieldBaseProps {
   onChangeText?: (text: string) => void;
@@ -15,6 +18,9 @@ interface Props extends FieldBaseProps {
   onSubmitField?: () => void;
   defaultValue?: string;
   value: string;
+  placeholder?: string;
+  leftIcon?: React.ElementType<IconProps>;
+  rightIcon?: React.ReactNode;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -38,6 +44,7 @@ function getInputStyle(isError: boolean) {
 }
 
 const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInput>) => {
+  const theme = useSubWalletTheme().swThemes;
   const {
     defaultValue,
     onChangeText,
@@ -49,16 +56,25 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
     onSubmitField,
     value,
     label,
+    placeholder,
+    leftIcon,
+    rightIcon,
     ...fieldBase
   } = passwordFieldProps;
   return (
     <>
       <FieldBase label={label} {...fieldBase}>
         <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
+          {leftIcon && (
+            <View style={{ paddingRight: theme.paddingXS }}>
+              <Icon phosphorIcon={leftIcon} iconColor={theme.colorTextLight5} />
+            </View>
+          )}
           <TextInput
             ref={ref}
             autoCorrect={false}
             autoCapitalize={'none'}
+            placeholder={placeholder}
             autoFocus={autoFocus}
             style={getInputStyle(!!(errorMessages && errorMessages.length))}
             placeholderTextColor={ColorMap.disabled}
@@ -73,6 +89,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
             selectTextOnFocus={!isBusy}
             value={value}
           />
+          {rightIcon}
         </View>
       </FieldBase>
 
