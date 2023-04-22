@@ -5,6 +5,9 @@ import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
+import AddNetworkConfirmation from 'screens/Confirmations/variants/AddNetworkConfirmation';
+import EvmSignatureConfirmation from 'screens/Confirmations/variants/EvmSignatureConfirmation';
+import EvmTransactionConfirmation from 'screens/Confirmations/variants/EvmTransactionConfirmation';
 import MetadataConfirmation from 'screens/Confirmations/variants/MetadataConfirmation';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -12,7 +15,7 @@ import { TransactionConfirmation } from 'screens/Confirmations/variants/Transact
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { ColorMap } from 'styles/color';
 
 import { AuthorizeConfirmation } from './variants';
@@ -146,23 +149,26 @@ export const Confirmations = () => {
 
     switch (confirmation.type) {
       case 'addNetworkRequest':
-      // return <AddNetworkConfirmation request={confirmation.item as ConfirmationDefinitions['addNetworkRequest'][0]} />;
+        return (
+          <AddNetworkConfirmation request={confirmation.item as ConfirmationDefinitions['addNetworkRequest'][0]} />
+        );
       case 'addTokenRequest':
-      // return <AddTokenConfirmation request={confirmation.item as ConfirmationDefinitions['addTokenRequest'][0]} />;
+        // return <AddTokenConfirmation request={confirmation.item as ConfirmationDefinitions['addTokenRequest'][0]} />;
+        return null;
       case 'evmSignatureRequest':
-      // return (
-      // <EvmSignatureConfirmation
-      //   request={confirmation.item as ConfirmationDefinitions['evmSignatureRequest'][0]}
-      //   type={confirmation.type}
-      // />
-      // );
+        return (
+          <EvmSignatureConfirmation
+            request={confirmation.item as ConfirmationDefinitions['evmSignatureRequest'][0]}
+            type={confirmation.type}
+          />
+        );
       case 'evmSendTransactionRequest':
-      // return (
-      // <EvmTransactionConfirmation
-      //   request={confirmation.item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
-      //   type={confirmation.type}
-      // />
-      // );
+        return (
+          <EvmTransactionConfirmation
+            request={confirmation.item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
+            type={confirmation.type}
+          />
+        );
       case 'authorizeRequest':
         return <AuthorizeConfirmation request={confirmation.item as AuthorizeRequest} />;
       case 'metadataRequest':
