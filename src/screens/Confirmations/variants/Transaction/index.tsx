@@ -1,6 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Transaction/variants/Base';
+import BondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Bond';
+import CancelUnstakeTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/CancelUnstake';
+import ClaimRewardTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/ClaimReward';
+import TransferBlock from 'screens/Confirmations/variants/Transaction/variants/TransferBlock';
+import WithdrawTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Withdraw';
 import { ConfirmationQueueItem } from 'stores/base/RequestState';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -21,26 +26,26 @@ interface Props {
 const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTransactionConfirmation => {
   console.log('extrinsicType', extrinsicType);
   switch (extrinsicType) {
-    // case ExtrinsicType.TRANSFER_BALANCE:
-    // case ExtrinsicType.TRANSFER_TOKEN:
-    // case ExtrinsicType.TRANSFER_XCM:
-    //   return TransferBlock;
+    case ExtrinsicType.TRANSFER_BALANCE:
+    case ExtrinsicType.TRANSFER_TOKEN:
+    case ExtrinsicType.TRANSFER_XCM:
+      return TransferBlock;
     case ExtrinsicType.SEND_NFT:
       return SendNftTransactionConfirmation;
     case ExtrinsicType.STAKING_JOIN_POOL:
       return JoinPoolTransactionConfirmation;
     case ExtrinsicType.STAKING_LEAVE_POOL:
       return LeavePoolTransactionConfirmation;
-    // case ExtrinsicType.STAKING_BOND:
-    //   return BondTransactionConfirmation;
+    case ExtrinsicType.STAKING_BOND:
+      return BondTransactionConfirmation;
     case ExtrinsicType.STAKING_UNBOND:
       return UnbondTransactionConfirmation;
-    // case ExtrinsicType.STAKING_WITHDRAW:
-    //   return WithdrawTransactionConfirmation;
-    // case ExtrinsicType.STAKING_CLAIM_REWARD:
-    //   return ClaimRewardTransactionConfirmation;
-    // case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
-    //   return CancelUnstakeTransactionConfirmation;
+    case ExtrinsicType.STAKING_WITHDRAW:
+      return WithdrawTransactionConfirmation;
+    case ExtrinsicType.STAKING_CLAIM_REWARD:
+      return ClaimRewardTransactionConfirmation;
+    case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
+      return CancelUnstakeTransactionConfirmation;
     default:
       return BaseTransactionConfirmation;
   }

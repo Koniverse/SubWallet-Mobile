@@ -6,6 +6,8 @@ export interface BaseTransactionConfirmationProps {
   transaction: SWTransactionResult;
 }
 
-export const BaseTransactionConfirmation = ({ transaction }: BaseTransactionConfirmationProps) => {
+export const BaseTransactionConfirmation: React.FC<BaseTransactionConfirmationProps> = ({
+  transaction,
+}: BaseTransactionConfirmationProps) => {
   return <Text>{transaction.extrinsicType}</Text>;
 };
