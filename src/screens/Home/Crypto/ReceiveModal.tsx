@@ -1,14 +1,10 @@
 import React, { useMemo, useRef } from 'react';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { Linking, Share, StyleProp, View } from 'react-native';
-import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
-import { FontBold, FontSemiBold, sharedStyles, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import QRCode from 'react-native-qrcode-svg';
+import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import reformatAddress, { getNetworkLogo, getScanExplorerAddressInfoUrl, toShort } from 'utils/index';
-import { IconButton } from 'components/IconButton';
-import { CopySimple } from 'phosphor-react-native';
-import { SubmitButton } from 'components/SubmitButton';
+import { CopySimple, GlobeHemisphereWest, Share as ShareIcon } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import Toast from 'react-native-toast-notifications';
@@ -19,6 +15,8 @@ import {
   _getChainSubstrateAddressPrefix,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
+import { Button, Icon, QRCode, Typography } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   modalVisible: boolean;
@@ -32,71 +30,23 @@ const receiveModalContentWrapper: StyleProp<any> = {
   width: '100%',
 };
 
-const receiveModalTitle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontBold,
-  color: ColorMap.light,
-  paddingBottom: 24,
-};
-
-const receiveModalGuide: StyleProp<any> = {
-  color: ColorMap.disabled,
-  ...sharedStyles.mainText,
-  ...FontSemiBold,
-  paddingVertical: 16,
-};
-
-const receiveModalAddressWrapper: StyleProp<any> = {
-  paddingHorizontal: 16,
-  backgroundColor: ColorMap.dark1,
-  borderRadius: 5,
-  height: 48,
-  width: '100%',
-  flexDirection: 'row',
-  alignItems: 'center',
-  position: 'relative',
-};
-
-const receiveModalAddressText: StyleProp<any> = {
-  color: ColorMap.disabled,
-  ...sharedStyles.mainText,
-  ...FontSemiBold,
-  paddingLeft: 16,
-};
-
-const receiveModalCopyBtn: StyleProp<any> = {
-  width: 48,
-  height: '100%',
-  position: 'absolute',
-  right: 0,
-  borderTopRightRadius: 5,
-  borderBottomRightRadius: 5,
-};
-
-function receiveModalExplorerBtnStyle(borderColor: string): StyleProp<any> {
-  return {
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: borderColor,
-    flex: 1,
-    marginRight: 8,
-  };
-}
-
 const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
   const chainInfo = useFetchChainInfo(selectedNetwork || '');
 
   const copyToClipboard = (text: string) => {
-    Clipboard.setString(text);
-    if (toastRef.current) {
-      // @ts-ignore
-      toastRef.current.hideAll();
-      // @ts-ignore
-      toastRef.current.show(i18n.common.copiedToClipboard);
-    }
+    return () => {
+      Clipboard.setString(text);
+      if (toastRef.current) {
+        // @ts-ignore
+        toastRef.current.hideAll();
+        // @ts-ignore
+        toastRef.current.show(i18n.common.copiedToClipboard);
+      }
+    };
   };
 
   const formattedAddress = useMemo(() => {
@@ -145,42 +95,78 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
   return (
     <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
       <View style={receiveModalContentWrapper}>
-        <Text style={receiveModalTitle}>{i18n.title.receiveAsset}</Text>
-        <View style={{ borderWidth: 2, borderColor: ColorMap.light }}>
-          <QRCode value={formattedAddress} size={180} getRef={(ref?) => (svg = ref)} />
+        <Typography.Text
+          size={'lg'}
+          style={{
+            color: theme.colorWhite,
+            ...FontSemiBold,
+          }}>
+          {/* todo: i18n */}
+          {'Your QR code'}
+        </Typography.Text>
+        <View style={{ paddingTop: 38 }}>
+          <QRCode value={formattedAddress} size={264} getRef={(ref?) => (svg = ref)} errorLevel={'Q'} />
         </View>
 
-        <Text style={receiveModalGuide}>{i18n.common.receiveModalText}</Text>
+        <View
+          style={{
+            height: 48,
+            flexDirection: 'row',
+            backgroundColor: theme.colorBgSecondary,
+            padding: theme.paddingXXS,
+            paddingLeft: theme.paddingSM,
+            alignItems: 'center',
+            gap: theme.paddingXS,
+            borderRadius: theme.borderRadiusLG,
+            marginVertical: theme.margin,
+          }}>
+          {getNetworkLogo(chainInfo?.slug || '', 24)}
 
-        <View style={receiveModalAddressWrapper}>
-          {getNetworkLogo(chainInfo?.slug || '', 20)}
+          <Typography.Text
+            style={{
+              color: theme.colorTextLight4,
+              ...FontMedium,
+            }}>
+            {toShort(formattedAddress, 7, 7)}
+          </Typography.Text>
 
-          <Text style={receiveModalAddressText}>{toShort(formattedAddress, 12, 12)}</Text>
-          <IconButton
-            style={receiveModalCopyBtn}
-            icon={CopySimple}
-            color={ColorMap.disabled}
-            onPress={() => copyToClipboard(formattedAddress)}
+          <Button
+            icon={<Icon phosphorIcon={CopySimple} weight={'bold'} size={'sm'} iconColor={theme.colorTextLight4} />}
+            type={'ghost'}
+            size={'xs'}
+            onPress={copyToClipboard(formattedAddress)}
           />
         </View>
 
-        <View style={{ flexDirection: 'row', paddingTop: 27 }}>
-          <SubmitButton
+        <View
+          style={{
+            marginHorizontal: -theme.size,
+            paddingHorizontal: theme.size,
+            gap: theme.size,
+            flexDirection: 'row',
+            paddingTop: theme.size,
+            borderTopColor: theme.colorBgSecondary,
+            borderTopWidth: 2,
+            borderStyle: 'solid',
+          }}>
+          <Button
+            style={{ flex: 1 }}
             disabled={!scanExplorerAddressUrl}
-            disabledColor={ColorMap.buttonOverlayButtonColor}
-            title={i18n.common.explorer}
-            backgroundColor={ColorMap.dark2}
-            style={receiveModalExplorerBtnStyle(!scanExplorerAddressUrl ? 'rgba(255, 255, 255, 0.5)' : ColorMap.light)}
+            icon={<Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} size={'lg'} />}
+            type={'secondary'}
             onPress={() => {
               !!scanExplorerAddressUrl && Linking.openURL(scanExplorerAddressUrl);
-            }}
-          />
-          <SubmitButton
+            }}>
+            {i18n.common.explorer}
+          </Button>
+
+          <Button
+            style={{ flex: 1 }}
             disabled={!chainInfo?.slug}
-            style={{ flex: 1, marginLeft: 8 }}
-            title={i18n.common.share}
-            onPress={onShareImg}
-          />
+            icon={<Icon phosphorIcon={ShareIcon} weight={'fill'} size={'lg'} />}
+            onPress={onShareImg}>
+            {i18n.common.share}
+          </Button>
         </View>
         {
           <Toast
