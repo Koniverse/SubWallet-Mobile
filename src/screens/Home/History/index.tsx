@@ -4,6 +4,7 @@ import {
   Aperture,
   ArrowDownLeft,
   ArrowUpRight,
+  Clock,
   ClockCounterClockwise,
   Database,
   IconProps,
@@ -16,7 +17,7 @@ import {
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { isTypeStaking } from 'utils/transaction/detectType';
+import { isTypeStaking, isTypeTransfer } from 'utils/transaction/detectType';
 import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'types/history';
 import { customFormatDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
@@ -33,6 +34,7 @@ import { ListRenderItemInfo, View } from 'react-native';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { EmptyList } from 'components/EmptyList';
 
 type Props = {};
 
@@ -155,6 +157,74 @@ const typeTitleMap: Record<string, string> = {
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
 };
 
+enum FilterValue {
+  SEND = 'send',
+  RECEIVED = 'received',
+  NFT = 'nft',
+  STAKE = 'stake',
+  CLAIM = 'claim',
+  CROWDLOAN = 'crowdloan',
+  SUCCESSFUL = 'successful',
+  FAILED = 'failed',
+}
+
+const FILTER_OPTIONS = [
+  { label: 'Send token transaction', value: FilterValue.SEND },
+  { label: 'Receive token transaction', value: FilterValue.RECEIVED },
+  { label: 'NFT transaction', value: FilterValue.NFT },
+  { label: 'Stake transaction', value: FilterValue.STAKE },
+  { label: 'Claim reward transaction', value: FilterValue.CLAIM },
+  // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
+  { label: 'Successful transaction', value: FilterValue.SUCCESSFUL },
+  { label: 'Failed transaction', value: FilterValue.FAILED },
+];
+
+const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {
+  const filteredChainList: TransactionHistoryDisplayItem[] = [];
+
+  items.forEach(item => {
+    let isValidationPassed = true;
+
+    for (const filter of filters) {
+      switch (filter) {
+        case FilterValue.SEND:
+          isValidationPassed = isTypeTransfer(item.type) && item.direction === TransactionDirection.SEND;
+          break;
+        case FilterValue.RECEIVED:
+          isValidationPassed = isTypeTransfer(item.type) && item.direction === TransactionDirection.RECEIVED;
+          break;
+        case FilterValue.NFT:
+          isValidationPassed = item.type === ExtrinsicType.SEND_NFT;
+          break;
+        case FilterValue.STAKE:
+          isValidationPassed = isTypeStaking(item.type);
+          break;
+        case FilterValue.CLAIM:
+          isValidationPassed = item.type === ExtrinsicType.STAKING_CLAIM_REWARD;
+          break;
+        case FilterValue.CROWDLOAN:
+          isValidationPassed = item.type === ExtrinsicType.CROWDLOAN;
+          break;
+        case FilterValue.SUCCESSFUL:
+          isValidationPassed = item.status === ExtrinsicStatus.SUCCESS;
+          break;
+        case FilterValue.FAILED:
+          isValidationPassed = item.status === ExtrinsicStatus.FAIL;
+          break;
+        default:
+          isValidationPassed = false;
+          break;
+      }
+    }
+
+    if (isValidationPassed) {
+      filteredChainList.push(item);
+    }
+  });
+
+  return filteredChainList;
+};
+
 function History(): React.ReactElement<Props> {
   // const dataContext = useContext(DataContext);
   const theme = useSubWalletTheme().swThemes;
@@ -256,10 +326,6 @@ function History(): React.ReactElement<Props> {
     }
   }, [curAdr, currentAccount?.address]);
 
-  const emptyList = useCallback(() => {
-    return <></>;
-  }, []);
-
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TransactionHistoryDisplayItem>) => {
       return (
@@ -307,6 +373,11 @@ function History(): React.ReactElement<Props> {
     return b.time - a.time;
   }, []);
 
+  const emptyList = useCallback(() => {
+    //todo: i18n
+    return <EmptyList icon={Clock} title={'Your transactions history will appear here!'} />;
+  }, []);
+
   return (
     <>
       <FlatListScreen
@@ -316,9 +387,11 @@ function History(): React.ReactElement<Props> {
         title={i18n.title.history}
         searchFunction={searchFunc}
         renderItem={renderItem}
-        isShowFilterBtn={false}
+        isShowFilterBtn
         renderListEmptyComponent={emptyList}
         grouping={grouping}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
         sortFunction={sortFunction}
         flatListStyle={{ paddingHorizontal: theme.padding, marginTop: -theme.marginXS }}
       />

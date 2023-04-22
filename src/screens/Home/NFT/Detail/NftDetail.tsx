@@ -17,13 +17,14 @@ import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { accountCanSign, findAccountByAddress, getAccountSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import reformatAddress, { isNftTransferSupported } from 'utils/index';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { Button } from 'components/design-system-ui';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -232,63 +233,72 @@ const NftDetail = ({
       title={data.name || i18n.title.nftDetail}
       style={ContainerHeaderStyle}
       onPressBack={() => navigation.goBack()}>
-      <ScrollView style={ContainerDetailStyle} contentContainerStyle={{ paddingBottom: 16 }}>
-        <View style={ImageContainerStyle}>
-          <ImagePreview
-            style={ImageStyle}
-            mainUrl={data.image}
-            backupUrl={collectionImage}
-            borderRadius={5}
-            borderPlace={'full'}
-          />
-        </View>
-        {canSend && <SubmitButton style={SendButtonStyle} onPress={handleClickTransfer} title={i18n.common.send} />}
-        {!!data.description && (
-          <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
-            <Text style={AttValueStyle}>{data?.description}</Text>
+      <>
+        <ScrollView style={ContainerDetailStyle}>
+          <View style={ImageContainerStyle}>
+            <ImagePreview
+              style={ImageStyle}
+              mainUrl={data.image}
+              backupUrl={collectionImage}
+              borderRadius={14.32}
+              borderPlace={'full'}
+            />
           </View>
-        )}
-        <TouchableOpacity style={ResourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
-          <View style={ResourceIconContainerStyle}>
-            <SlidersHorizontal size={20} color={ColorMap.primary} />
-          </View>
-          <Text style={ResourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
-        </TouchableOpacity>
-        <TextField
-          text={collectionName || ''}
-          label={i18n.nftScreen.nftDetail.collectionName}
-          showRightIcon={!!data.externalUrl}
-          onPressRightIcon={handleClickInfoIcon(data.externalUrl)}
-        />
-        {!!data.owner && (
-          <AddressField
-            address={data.owner}
-            networkPrefix={networkJson.ss58Format}
-            label={i18n.nftScreen.nftDetail.ownedBy}
-            onPressRightIcon={handleClickInfoIcon(ownerUrl)}
-          />
-        )}
-        {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
-        <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
-        {!!data.rarity && (
-          <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
-            <Text style={AttValueStyle}>{data?.rarity}</Text>
-          </View>
-        )}
-        {!!data.properties && (
-          <View>
-            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
-            <View style={PropContainerStyle}>
-              {Object.keys(data?.properties).map((key, index) => {
-                // @ts-ignore
-                return propDetail(key, data?.properties[key], index);
-              })}
+          {!!data.description && (
+            <View>
+              <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
+              <Text style={AttValueStyle}>{data?.description}</Text>
             </View>
+          )}
+          <TouchableOpacity style={ResourceContainerStyle} activeOpacity={0.5} onPress={handleClickComingSoon}>
+            <View style={ResourceIconContainerStyle}>
+              <SlidersHorizontal size={20} color={ColorMap.primary} />
+            </View>
+            <Text style={ResourceTitleStyle}>{i18n.nftScreen.nftDetail.resourcesOrInventory}</Text>
+          </TouchableOpacity>
+          <TextField
+            text={collectionName || ''}
+            label={i18n.nftScreen.nftDetail.collectionName}
+            showRightIcon={!!data.externalUrl}
+            onPressRightIcon={handleClickInfoIcon(data.externalUrl)}
+          />
+          {!!data.owner && (
+            <AddressField
+              address={data.owner}
+              networkPrefix={networkJson.ss58Format}
+              label={i18n.nftScreen.nftDetail.ownedBy}
+              onPressRightIcon={handleClickInfoIcon(ownerUrl)}
+            />
+          )}
+          {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
+          <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
+          {!!data.rarity && (
+            <View>
+              <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
+              <Text style={AttValueStyle}>{data?.rarity}</Text>
+            </View>
+          )}
+          {!!data.properties && (
+            <View>
+              <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
+              <View style={PropContainerStyle}>
+                {Object.keys(data?.properties).map((key, index) => {
+                  // @ts-ignore
+                  return propDetail(key, data?.properties[key], index);
+                })}
+              </View>
+            </View>
+          )}
+        </ScrollView>
+
+        {canSend && (
+          <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
+            <Button onPress={handleClickTransfer}>
+              {i18n.common.send}
+            </Button>
           </View>
         )}
-      </ScrollView>
+      </>
     </ContainerWithSubHeader>
   );
 };

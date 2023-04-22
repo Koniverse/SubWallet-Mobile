@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import {FadersHorizontal, MagnifyingGlass, XCircle} from 'phosphor-react-native';
+import { FadersHorizontal, MagnifyingGlass, XCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import {Button, Icon} from "components/design-system-ui";
+import { Button, Icon } from 'components/design-system-ui';
 
 interface Props extends TextInputProps {
   onSearch: (text: string) => void;
@@ -66,9 +66,12 @@ export const Search = (searchProps: Props) => {
         onSubmitEditing={onSubmitEditing}
       />
       {!!searchText && (
-        <TouchableOpacity onPress={onClearSearchString}>
-          <CancelIcon size={20} color={ColorMap.disabled} weight={'bold'} />
-        </TouchableOpacity>
+        <Button
+          size={'xs'}
+          type={'ghost'}
+          icon={<Icon phosphorIcon={CancelIcon} size={'sm'} iconColor={ColorMap.disabled} />}
+          onPress={onClearSearchString}
+        />
       )}
 
       {isShowFilterBtn && (
