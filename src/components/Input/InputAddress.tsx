@@ -9,6 +9,7 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
+import {Avatar} from "components/design-system-ui";
 
 interface InputProps {
   label: string;
@@ -142,11 +143,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
           {showAvatar && (
             <>
-              {isAddressValid ? (
-                <SubWalletAvatar address={address || ''} size={24} style={{ borderColor: 'transparent' }} />
-              ) : (
-                <View style={identiconPlaceholderStyle} />
-              )}
+              {isAddressValid ? <Avatar value={address || ''} size={24} /> : <View style={identiconPlaceholderStyle} />}
             </>
           )}
           {!isInputBlur ? (

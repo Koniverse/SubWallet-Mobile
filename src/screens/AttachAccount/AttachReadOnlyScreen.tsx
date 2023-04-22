@@ -3,7 +3,6 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -20,6 +19,7 @@ import { createAccountExternalV2 } from '../../messaging';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
+import { Button } from 'components/design-system-ui';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -242,13 +242,13 @@ const AttachReadOnlyScreen = () => {
         {errors.length > 0 &&
           errors.map((message, index) => <Warning isDanger message={message} key={index} style={WarningStyle} />)}
         <View style={ActionAreaStyle}>
-          <SubmitButton
-            disabled={errors.length > 0 || !checkValidateForm(formState.isValidated)}
-            isBusy={isBusy}
+          <Button
             style={ButtonStyle}
-            title={i18n.common.attachAccount}
+            loading={isBusy}
             onPress={handleSubmit}
-          />
+            disabled={errors.length > 0 || !checkValidateForm(formState.isValidated)}>
+            {i18n.common.attachAccount}
+          </Button>
         </View>
         <AddressScanner qrModalVisible={isScanning} onPressCancel={onCloseScanner} onChangeAddress={onScan} />
       </View>

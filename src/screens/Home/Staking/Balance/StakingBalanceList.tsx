@@ -15,7 +15,6 @@ import { restartCronAndSubscriptionServices } from '../../../../messaging';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
-import { Button } from 'components/design-system-ui';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { Header } from 'components/Header';
@@ -84,6 +83,7 @@ const StakingBalanceList = () => {
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [moreActionModalVisible, setMoreActionModalVisible] = useState<boolean>(false);
+  console.log('selectedItem', selectedItem)
 
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {

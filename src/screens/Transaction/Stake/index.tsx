@@ -3,7 +3,7 @@ import { ScreenContainer } from 'components/ScreenContainer';
 import { TouchableOpacity, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
-import { TokenSelector } from 'components/Modal/common/TokenSelector';
+import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import useGetSupportedStakingTokens from 'hooks/screen/Staking/useGetSupportedStakingTokens';
 import {
@@ -44,7 +44,6 @@ import { isAccountAll } from 'utils/accountAll';
 import { useNavigation } from '@react-navigation/native';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { BN_TEN } from 'utils/number';
-import useGetNativeTokenSlug from 'hooks/useGetNativeTokenSlug';
 import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 
@@ -148,7 +147,6 @@ export const Stake = ({
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const isAllAccount = isAccountAll(currentAccount?.address || '');
-  const defaultSlug = useGetNativeTokenSlug(stakingChain || '');
   const existentialDeposit = useMemo(() => {
     const assetInfo = assetRegistry[asset];
 
@@ -317,6 +315,14 @@ export const Stake = ({
     }, 300);
   };
 
+  const onSelectToken = useCallback(
+    (item?: TokenItemType) => {
+      onChangeAssetValue(item?.slug || '');
+      setTokenSelectModalVisible(false);
+    },
+    [onChangeAssetValue],
+  );
+
   const onPreCheckReadOnly = usePreCheckReadOnly(from);
 
   return (
@@ -401,14 +407,10 @@ export const Stake = ({
 
           <TokenSelector
             modalVisible={tokenSelectModalVisible}
-            defaultValue={defaultSlug}
+            defaultValue={asset}
             items={tokenList}
             onCancel={() => setTokenSelectModalVisible(false)}
-            acceptDefaultValue
-            onSelectItem={item => {
-              onChangeAssetValue(item.slug);
-              setTokenSelectModalVisible(false);
-            }}
+            onSelectItem={onSelectToken}
           />
         </View>
         <View style={{ padding: 16 }}>

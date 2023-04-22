@@ -21,7 +21,7 @@ interface Props extends FieldBaseProps {
 const blockContentStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
   paddingBottom: 8,
 };
 

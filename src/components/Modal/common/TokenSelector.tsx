@@ -19,10 +19,9 @@ export type TokenItemType = {
 interface Props {
   modalVisible: boolean;
   onCancel: () => void;
-  onSelectItem: (item: TokenItemType) => void;
+  onSelectItem: (item?: TokenItemType) => void;
   items: TokenItemType[];
   title?: string;
-  acceptDefaultValue?: boolean;
   defaultValue?: string;
 }
 
@@ -48,36 +47,32 @@ export const TokenSelector = ({
   onSelectItem,
   items,
   title = i18n.title.token,
-  acceptDefaultValue,
   defaultValue,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-
   useEffect(() => {
-    if (acceptDefaultValue) {
-      if (!defaultValue) {
+    if (!defaultValue) {
+      onSelectItem(items[0]);
+    } else {
+      const existed = items.find(item => item.slug === defaultValue);
+
+      if (!existed) {
         onSelectItem(items[0]);
       } else {
-        const existed = items.find(item => item.slug === defaultValue);
-
-        if (!existed) {
-          onSelectItem(items[0]);
-        } else {
-          onSelectItem(existed);
-        }
+        onSelectItem(existed);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [items, defaultValue]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenItemType>) => {
-      const { symbol, name, originChain } = item;
+      const { symbol, originChain } = item;
 
       return (
         <TokenSelectItem
           key={`${symbol}-${originChain}`}
-          itemName={`${name} (${chainInfoMap[originChain]?.name || ''})`}
+          itemName={`${symbol} (${chainInfoMap[originChain]?.name || ''})`}
           logoKey={symbol.toLowerCase()}
           subLogoKey={originChain}
           isSelected={false}

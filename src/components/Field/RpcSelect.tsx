@@ -34,7 +34,7 @@ const blockContentStyle: StyleProp<any> = {
   alignItems: 'center',
   paddingBottom: 12,
   justifyContent: 'space-between',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
 };
 
 export const RpcSelectField = ({

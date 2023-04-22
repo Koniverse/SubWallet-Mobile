@@ -29,7 +29,7 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size, value, identPrefix }) => {
   if (!value || !isAddress(value)) {
     return (
       <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
-        <Image source={{ uri: Images.avatarPlaceholder }} style={getEthereumIdenticonStyle(size - 8)} />
+        <Image source={Images.avatarPlaceholder} style={getEthereumIdenticonStyle(size - 8)} />
       </View>
     );
   }

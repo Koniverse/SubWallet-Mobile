@@ -3,7 +3,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { MODE_CAN_SIGN } from 'constants/signer';
 import { SIGN_MODE } from 'types/signer';
-import {AccountAddressType, AccountSignMode} from 'types/index';
+import { AccountAddressType, AccountSignMode } from 'types/index';
 
 export const findAccountByAddress = (accounts: AccountJson[], address?: string): AccountJson | null => {
   try {
@@ -12,7 +12,7 @@ export const findAccountByAddress = (accounts: AccountJson[], address?: string):
     }
 
     if (address === ALL_ACCOUNT_KEY) {
-      const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
+      const result = accounts.find(account => account.address.toLowerCase() === address.toLowerCase());
 
       return result || null;
     }

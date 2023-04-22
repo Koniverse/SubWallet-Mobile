@@ -26,7 +26,7 @@ const AddressStyle: StyleProp<any> = {
 const BlockContentStyle: StyleProp<any> = {
   position: 'relative',
   flexDirection: 'row',
-  paddingLeft: 16,
+  paddingLeft: 12,
   alignItems: 'center',
   paddingBottom: 10,
 };

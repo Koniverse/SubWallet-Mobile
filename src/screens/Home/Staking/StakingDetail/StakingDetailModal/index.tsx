@@ -35,6 +35,7 @@ import { ArrowCircleUpRight, DotsThree } from 'phosphor-react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { FontMedium } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
+import { isAccountAll } from 'utils/accountAll';
 
 interface Props {
   nominatorMetadata: NominatorMetadata;
@@ -92,7 +93,7 @@ export const StakingDetailModal = ({
   const modalTitle = type === StakingType.NOMINATED.valueOf() ? 'Nomination details' : 'Pooled details';
   const theme = useSubWalletTheme().swThemes;
   const [seeMore, setSeeMore] = useState<boolean>(false);
-  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const onClickFooterButton = usePreCheckReadOnly(currentAccount?.address);
   const chainInfo = useFetchChainInfo(staking.chain);
   const { decimals } = _getChainNativeTokenBasicInfo(chainInfo);
@@ -255,7 +256,15 @@ export const StakingDetailModal = ({
           <TouchableHighlight style={{ width: '100%' }}>
             <>
               <MetaInfo>
-                <MetaInfo.Account address={address} label={'Account'} name={account?.name} />
+                {isAccountAll(address) ? (
+                  <MetaInfo.AccountGroup
+                    label={'Account'}
+                    content={address}
+                    addresses={accounts.map(acc => acc.address)}
+                  />
+                ) : (
+                  <MetaInfo.Account address={address} label={'Account'} name={account?.name} />
+                )}
 
                 <MetaInfo.DisplayType label={'Staking type'} typeName={stakingTypeNameMap[staking.type]} />
 
