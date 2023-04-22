@@ -19,8 +19,8 @@ const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> 
     marginTop: 'auto',
     backgroundColor: '#0C0C0C',
     alignItems: 'center',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
     paddingTop: 8,
     // paddingHorizontal: 16,
     flex: isFullHeight ? 1 : undefined,
@@ -28,10 +28,10 @@ const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> 
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
-  width: 56,
-  height: 4,
-  borderRadius: 2,
-  backgroundColor: ColorMap.modalSeparatorColor,
+  width: 70,
+  height: 5,
+  borderRadius: 100,
+  backgroundColor: 'rgba(255, 255, 255, 0.2)',
   marginBottom: 22,
   textAlign: 'center',
 };
@@ -52,7 +52,7 @@ const SwModal = ({
       onModalHide={onModalHide} // Auto trigger when close modal
       swipeDirection={onChangeModalVisible ? 'down' : undefined}
       style={{ margin: 0 }}
-      backdropColor={ColorMap.dark1}
+      backdropColor={'#1A1A1A'}
       backdropOpacity={0.8}
       onSwipeComplete={onChangeModalVisible}
       onBackdropPress={onChangeModalVisible}
@@ -72,7 +72,7 @@ const SwModal = ({
             flex: isFullHeight ? 1 : undefined,
           }}>
           <View style={subWalletModalSeparator} />
-          <View style={{ width: '100%', marginBottom: 22, alignItems: 'center' }}>
+          <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
           </View>
 

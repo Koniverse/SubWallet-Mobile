@@ -23,8 +23,8 @@ const itemArea: StyleProp<any> = {
   justifyContent: 'space-between',
   paddingVertical: 6,
   alignItems: 'center',
-  paddingHorizontal: 12,
-  // paddingRight: 2,
+  paddingLeft: 12,
+  paddingRight: 4,
   flex: 1,
 };
 
