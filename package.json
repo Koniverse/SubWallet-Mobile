@@ -42,6 +42,7 @@
     "@reduxjs/toolkit": "^1.9.2",
     "@subwallet/extension-dapp": "^0.8.1",
     "@subwallet/extension-koni-base": "^0.8.1-wr",
+    "@subwallet/extension-chains": "^0.8.1",
     "@subwallet/keyring": "^0.0.4",
     "@subwallet/react-ui": "^5.1.2-b22",
     "@subwallet/ui-keyring": "^0.0.3",

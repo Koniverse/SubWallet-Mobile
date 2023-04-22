@@ -206,7 +206,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         </ScrollView>
       </ConfirmationContent>
       <ConfirmationFooter>
-        {visibleAccounts.length > 1 ? (
+        {visibleAccounts.length > 0 ? (
           <>
             <Button icon={<Icon phosphorIcon={ShieldSlash} weight="fill" />} type="danger" onPress={onBlock} />
             <Button block={true} type="secondary" onPress={onCancel}>

@@ -1,5 +1,5 @@
+import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
 import { EvmSignatureSupportType } from 'types/confirmation';
@@ -7,7 +7,6 @@ import { completeConfirmation } from 'messaging/index';
 import { ConfirmationDefinitions, ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/index';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 interface Props {
   id: string;
@@ -66,9 +65,9 @@ export const EvmSignArea = (props: Props) => {
   }, [id, type]);
 
   return (
-    <View style={{ flexDirection: 'row', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
+    <ConfirmationFooter>
       <Button
-        style={{ marginRight: 6 }}
+        block={true}
         disabled={loading}
         icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
         type={'secondary'}
@@ -76,13 +75,13 @@ export const EvmSignArea = (props: Props) => {
         {'Cancel'}
       </Button>
       <Button
-        style={{ marginLeft: 6 }}
+        block={true}
         disabled={!canSign}
         icon={<Icon phosphorIcon={approveIcon} weight={'fill'} />}
         loading={loading}
         onPress={onApprovePassword}>
         {'Approve'}
       </Button>
-    </View>
+    </ConfirmationFooter>
   );
 };

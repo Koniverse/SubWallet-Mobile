@@ -7,7 +7,7 @@ import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { getSchemaColor, renderColContent } from 'components/MetaInfo/shared';
 
 export interface DefaultInfoItem extends InfoItemBase {
-  children?: string | ((valueStyle: TextStyle) => React.ReactNode);
+  children?: React.ReactNode | ((valueStyle: TextStyle) => React.ReactNode);
   labelAlign?: 'top' | 'center';
   valueAlign?: 'left' | 'right';
 }

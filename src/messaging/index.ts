@@ -1,7 +1,10 @@
 import { getId } from '@subwallet/extension-base/utils/getId';
+import { metadataExpand } from '@subwallet/extension-chains';
+import { Chain } from '@subwallet/extension-chains/types';
 import { RefObject } from 'react';
 import WebView from 'react-native-webview';
 import { WebRunnerStatus } from 'providers/contexts';
+import { getSavedMeta, setSavedMeta } from 'utils/MetadataCache';
 import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../errors/WebViewErrors';
 import EventEmitter from 'eventemitter3';
 import type {
@@ -150,6 +153,7 @@ import {
 } from '@subwallet/extension-base/services/chain-service/types';
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
+import { _getKnownHashes } from 'utils/defaultChains';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -1325,4 +1329,43 @@ export async function subscribeTransactions(
   callback: (rs: Record<string, SWTransactionResult>) => void,
 ): Promise<Record<string, SWTransactionResult>> {
   return sendMessage('pri(transactions.subscribe)', null, callback);
+}
+
+export async function getMetadata(genesisHash?: string | null, isPartial = false): Promise<Chain | null> {
+  if (!genesisHash) {
+    return null;
+  }
+
+  // const chains = await getNetworkMap();
+  const parsedChains = _getKnownHashes({});
+
+  let request = getSavedMeta(genesisHash);
+
+  if (!request) {
+    request = sendMessage('pri(metadata.get)', genesisHash || null);
+    setSavedMeta(genesisHash, request);
+  }
+
+  const def = await request;
+
+  if (def) {
+    return metadataExpand(def, isPartial);
+  } else if (isPartial) {
+    const chain = parsedChains.find(_chain => _chain.genesisHash === genesisHash);
+
+    if (chain) {
+      return metadataExpand(
+        {
+          ...chain,
+          specVersion: 0,
+          tokenDecimals: 15,
+          tokenSymbol: 'Unit',
+          types: {},
+        },
+        isPartial,
+      );
+    }
+  }
+
+  return null;
 }

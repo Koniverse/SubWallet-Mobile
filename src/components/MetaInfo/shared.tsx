@@ -29,20 +29,16 @@ export function getSchemaColor(schema: SchemeColor, theme: ThemeTypes) {
 }
 
 export function renderColContent(
-  content: string | ((textStyle: TextStyle) => React.ReactNode) | undefined,
+  content: React.ReactNode | ((textStyle: TextStyle) => React.ReactNode) | undefined,
   textStyle: TextStyle,
 ) {
   if (!content) {
     return null;
   }
 
-  if (typeof content === 'string') {
-    return <Typography.Text style={textStyle}>{content}</Typography.Text>;
-  }
-
   if (typeof content === 'function') {
     return content(textStyle);
   }
 
-  return null;
+  return <Typography.Text style={textStyle}>{content}</Typography.Text>;
 }

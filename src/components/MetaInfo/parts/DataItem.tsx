@@ -8,7 +8,7 @@ import { TextStyle, View } from 'react-native';
 import { FontMonoRegular } from 'styles/sharedStyles';
 
 export interface DataInfoItem extends InfoItemBase {
-  children: string | ((valueStyle: TextStyle) => React.ReactNode);
+  children: React.ReactNode | ((valueStyle: TextStyle) => React.ReactNode);
 }
 
 const DataItem: React.FC<DataInfoItem> = ({ children, valueColorSchema, label }: DataInfoItem) => {

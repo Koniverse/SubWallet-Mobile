@@ -63,7 +63,7 @@ export enum AccountSignMode {
   LEDGER = 'ledger',
   READ_ONLY = 'readonly',
   ALL_ACCOUNT = 'all',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
 }
 
 export type ChainInfo = {
