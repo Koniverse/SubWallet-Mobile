@@ -7,6 +7,7 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
 import { Avatar } from 'components/design-system-ui';
+import {isEthereumAddress} from "@polkadot/util-crypto";
 
 interface Props extends FieldBaseProps {
   disabled?: boolean;
@@ -17,21 +18,32 @@ interface Props extends FieldBaseProps {
 }
 
 const accountNameTextStyle: StyleProp<any> = {
-  fontSize: 16,
-  lineHeight: 24,
+  fontSize: 14,
+  lineHeight: 22,
   ...FontSemiBold,
   color: 'rgba(255, 255, 255, 0.85)',
   paddingLeft: 8,
 };
 
-const getTextStyle = (disabled: boolean): StyleProp<any> => {
+const getTextStyle = (disabled: boolean, color?: string): StyleProp<any> => {
   return {
     fontSize: 14,
     lineHeight: 22,
-    ...FontMedium,
-    paddingLeft: 4,
+    ...FontSemiBold,
+    paddingLeft: 8,
     paddingRight: 8,
-    color: 'rgba(255, 255, 255, 0.45)',
+    color: color || 'rgba(255, 255, 255, 0.45)',
+  };
+};
+
+const getPlaceholderStyle = (): StyleProp<any> => {
+  return {
+    fontSize: 14,
+    lineHeight: 22,
+    ...FontSemiBold,
+    paddingLeft: 8,
+    paddingRight: 8,
+    color: '#FFF',
   };
 };
 
@@ -42,7 +54,8 @@ const blockContentStyle: StyleProp<any> = {
   paddingTop: 10,
   paddingBottom: 12,
   justifyContent: 'space-between',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
+  height: 48,
 };
 
 export const AccountSelectField = ({
@@ -58,9 +71,10 @@ export const AccountSelectField = ({
     <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Avatar value={value} size={24} />
-          <Text style={accountNameTextStyle}>{accountName}</Text>
+          <Avatar value={value} size={24} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
+          {!!value && <Text style={accountNameTextStyle}>{accountName}</Text>}
           {!!value && <Text style={getTextStyle(!!disabled)}>{`(${toShort(value, 4, 4)})`}</Text>}
+          {!value && <Text style={getPlaceholderStyle()}>{`Select account`}</Text>}
         </View>
 
         {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}

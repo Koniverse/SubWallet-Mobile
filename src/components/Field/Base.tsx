@@ -13,7 +13,7 @@ export interface FieldBaseProps extends ViewProps {
 function getWrapperStyle(backgroundColor: string): StyleProp<any> {
   return {
     backgroundColor,
-    borderRadius: 5,
+    borderRadius: 8,
     marginBottom: 8,
   };
 }
@@ -21,15 +21,15 @@ function getWrapperStyle(backgroundColor: string): StyleProp<any> {
 const labelStyle: StyleProp<any> = {
   ...FontSize0,
   ...FontMedium,
-  lineHeight: 25,
-  paddingHorizontal: 16,
+  lineHeight: 22,
+  paddingHorizontal: 12,
   paddingTop: 4,
   color: ColorMap.disabled,
 };
 
 export const FieldBase = ({ children, label, fieldBgc, outerStyle, ...props }: FieldBaseProps) => {
   return (
-    <View style={[getWrapperStyle(fieldBgc || ColorMap.dark2), outerStyle]} {...props}>
+    <View style={[getWrapperStyle(fieldBgc || '#1A1A1A'), outerStyle]} {...props}>
       {!!label && <Text style={labelStyle}>{label}</Text>}
       {children}
     </View>

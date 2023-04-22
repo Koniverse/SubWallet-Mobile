@@ -24,7 +24,7 @@ const textStyle: StyleProp<any> = {
 
 const balanceStyle: StyleProp<any> = {
   ...textStyle,
-  paddingLeft: 16,
+  paddingLeft: 12,
   paddingRight: 8,
   paddingBottom: 10,
   flex: 1,

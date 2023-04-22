@@ -3,12 +3,12 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getNetworkLogo } from 'utils/index';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
+import { _ChainInfo } from '@subwallet/chain-list/types';
 
 interface Props extends FieldBaseProps {
   networkKey: string;
@@ -18,12 +18,12 @@ interface Props extends FieldBaseProps {
   value?: string;
 }
 
-const getNetworkName = (networkKey: string, networkMap: Record<string, NetworkJson>) => {
+const getNetworkName = (networkKey: string, networkMap: Record<string, _ChainInfo>) => {
   if (!networkMap[networkKey]) {
     return networkKey;
   }
 
-  return networkMap[networkKey].chain;
+  return networkMap[networkKey].name;
 };
 
 const getTextStyle = (disabled: boolean): StyleProp<any> => {
@@ -43,7 +43,7 @@ const blockContentStyle: StyleProp<any> = {
   alignItems: 'center',
   paddingBottom: 10,
   justifyContent: 'space-between',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
 };
 
 export const NetworkSelectField = ({ networkKey, disabled, showIcon, outerStyle, value, ...fieldBase }: Props) => {

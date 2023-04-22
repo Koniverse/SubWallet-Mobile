@@ -10,12 +10,13 @@ import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { Recoded } from 'types/ui-types';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { IconButton } from 'components/IconButton';
 import i18n from 'utils/i18n/i18n';
 import { isAccountAll } from '@subwallet/extension-base/utils';
+import { Avatar } from 'components/design-system-ui';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 export interface AccountProps extends AccountJson {
   name: string;
@@ -149,12 +150,7 @@ export const Account = ({
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingTop: 16, paddingBottom: 16 }}>
-      <SubWalletAvatar
-        address={address}
-        size={34}
-        hasBorder={isSelected}
-        SubIcon={showSubIcon && SubIcon ? SubIcon : undefined}
-      />
+      <Avatar value={address} size={34} theme={isEthereumAddress(address) ? 'ethereum' : 'polkadot'} />
       <View style={{ marginLeft: 16 }}>
         <Name />
 
@@ -170,11 +166,6 @@ export const Account = ({
           )}
         </View>
       </View>
-      {/*{networkInfo?.genesisHash && isShowBanner && (*/}
-      {/*  <View style={chainTagStyle} data-field="chain">*/}
-      {/*    <Text>{networkInfo.chain.replace(' Relay Chain', '')}</Text>*/}
-      {/*  </View>*/}
-      {/*)}*/}
     </View>
   );
 };

@@ -17,8 +17,8 @@ interface Props extends FieldBaseProps {
 }
 
 const accountNameTextStyle: StyleProp<any> = {
-  fontSize: 16,
-  lineHeight: 24,
+  fontSize: 14,
+  lineHeight: 22,
   ...FontSemiBold,
   color: 'rgba(255, 255, 255, 0.85)',
   maxWidth: 200,

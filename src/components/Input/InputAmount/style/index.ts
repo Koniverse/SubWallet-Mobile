@@ -14,10 +14,11 @@ export default (theme: ThemeTypes) =>
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: theme.paddingXXS,
-      paddingLeft: theme.padding,
+      paddingLeft: theme.paddingSM,
       paddingRight: theme.paddingXXS,
       borderRadius: theme.borderRadiusLG,
       marginBottom: theme.marginXS,
+      height: 48,
     },
     inputTextStyle: {
       padding: 0,

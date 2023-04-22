@@ -32,7 +32,7 @@ const addressStyle: StyleProp<any> = {
 const blockContentStyle: StyleProp<any> = {
   position: 'relative',
   flexDirection: 'row',
-  paddingLeft: 16,
+  paddingLeft: 12,
   alignItems: 'center',
   paddingBottom: 10,
 };

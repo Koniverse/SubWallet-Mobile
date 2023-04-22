@@ -1,5 +1,4 @@
 import { PasswordField } from 'components/Field/Password';
-import { SubmitButton } from 'components/SubmitButton';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext } from 'react';
@@ -10,6 +9,7 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
+import { Button } from 'components/design-system-ui';
 
 interface Props {
   visible: boolean;
@@ -31,10 +31,6 @@ const TitleTextStyle: StyleProp<TextStyle> = {
   textAlign: 'center',
   color: ColorMap.light,
   marginBottom: 24,
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  marginTop: 16,
 };
 
 const PasswordContainerStyle: StyleProp<ViewStyle> = {
@@ -100,13 +96,13 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
         )}
 
-        <SubmitButton
-          title={i18n.common.confirm}
-          style={ButtonStyle}
-          isBusy={isBusy}
+        <Button
+          style={{ marginTop: 16 }}
+          loading={isBusy}
           onPress={onPress}
-          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected}
-        />
+          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected}>
+          {i18n.common.confirm}
+        </Button>
       </View>
     </SubWalletModal>
   );
