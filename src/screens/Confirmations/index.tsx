@@ -6,6 +6,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
 import AddNetworkConfirmation from 'screens/Confirmations/variants/AddNetworkConfirmation';
+import AddTokenConfirmation from 'screens/Confirmations/variants/AddTokenConfirmation';
 import EvmSignatureConfirmation from 'screens/Confirmations/variants/EvmSignatureConfirmation';
 import EvmTransactionConfirmation from 'screens/Confirmations/variants/EvmTransactionConfirmation';
 import MetadataConfirmation from 'screens/Confirmations/variants/MetadataConfirmation';
@@ -153,8 +154,7 @@ export const Confirmations = () => {
           <AddNetworkConfirmation request={confirmation.item as ConfirmationDefinitions['addNetworkRequest'][0]} />
         );
       case 'addTokenRequest':
-        // return <AddTokenConfirmation request={confirmation.item as ConfirmationDefinitions['addTokenRequest'][0]} />;
-        return null;
+        return <AddTokenConfirmation request={confirmation.item as ConfirmationDefinitions['addTokenRequest'][0]} />;
       case 'evmSignatureRequest':
         return (
           <EvmSignatureConfirmation

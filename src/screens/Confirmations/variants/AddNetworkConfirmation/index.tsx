@@ -59,7 +59,6 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
       <ConfirmationContent gap={theme.size}>
         <ConfirmationGeneralInfo request={request} gap={theme.size} />
         <Text style={styles.title}>{i18n.confirmation.addNetworkRequest}</Text>
-
         <View>
           <FieldBase>
             <View style={styles.textField}>

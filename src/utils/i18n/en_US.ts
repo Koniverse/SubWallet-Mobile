@@ -601,6 +601,8 @@ export const en = {
     fromAccount: 'From account',
     toAccount: 'To account',
     toContract: 'To contract',
+    tokenType: 'Token type',
+    contractAddress: 'Contract address',
   },
   signingAction: {
     basic: 'Basic',
@@ -716,6 +718,7 @@ export const en = {
     networkUnSupportQrSigner: 'This network does not support this feature with QR-signer account',
     featureIsNotAvailable: 'This feature is not available for the chosen account',
     enableNetworkToContinue: 'Please enable the network to continue.',
+    tokenExists: 'The token already exists.',
   },
   errorMessage: {
     invalidPinCode: 'Invalid PIN Code',
