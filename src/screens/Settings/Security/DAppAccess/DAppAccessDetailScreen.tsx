@@ -12,12 +12,7 @@ import { Account } from 'components/Account';
 import { Divider } from 'components/Divider';
 import { ColorMap } from 'styles/color';
 import { filterNotReadOnlyAccount } from 'utils/account';
-import {
-  changeAuthorization,
-  changeAuthorizationPerAccount,
-  forgetSite,
-  toggleAuthorization,
-} from 'messaging/index';
+import { changeAuthorization, changeAuthorizationPerAccount, forgetSite, toggleAuthorization } from 'messaging/index';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';
@@ -206,7 +201,7 @@ export const DAppAccessDetailScreen = ({
     params: { origin, accountAuthType },
   },
 }: DAppAccessDetailProps) => {
-  const authInfo: undefined | AuthUrlInfo = useSelector((state: RootState) => state.authUrls.details[origin]);
+  const authInfo: undefined | AuthUrlInfo = useSelector((state: RootState) => state.settings.authUrls[origin]);
 
   return <>{!!authInfo && <Content accountAuthType={accountAuthType} origin={origin} authInfo={authInfo} />}</>;
 };
