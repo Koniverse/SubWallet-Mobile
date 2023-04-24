@@ -7,6 +7,7 @@ import { ContainerHorizontalPadding, FontMedium, FontSize0, sharedStyles } from 
 import { ColorMap } from 'styles/color';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { Logo, Number } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   item: CrowdloanItemType;
@@ -115,9 +116,10 @@ export function getGroupKey(groupDisplayName: string) {
 }
 
 export const CrowdloanItem = ({ item }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   return (
     <TouchableOpacity
-      style={{ ...ContainerHorizontalPadding, ...containerStyle }}
+      style={{ ...ContainerHorizontalPadding, ...containerStyle, backgroundColor: theme.colorBgSecondary }}
       activeOpacity={BUTTON_ACTIVE_OPACITY}
       onPress={() => Linking.openURL(item.crowdloanUrl ? item.crowdloanUrl : '')}
       disabled={!item.crowdloanUrl}>

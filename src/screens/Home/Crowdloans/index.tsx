@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
@@ -14,6 +14,9 @@ import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useIsFocused } from '@react-navigation/native';
+import { Header } from 'components/Header';
+import { ScreenContainer } from 'components/ScreenContainer';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;
@@ -38,8 +41,8 @@ const defaultFilterOpts = [
 ];
 
 export const CrowdloansScreen = () => {
+  const theme = useSubWalletTheme().swThemes;
   const items: CrowdloanItemType[] = useGetCrowdloanList();
-  const [filterOpts, setFilterOpts] = useState<string[]>([]);
   const [isRefresh, refresh] = useRefresh();
   const { clearBackgroundServiceTimeout } = useContext(WebRunnerContext);
   const isCrowdloanServiceActive = useSelector(
@@ -47,20 +50,16 @@ export const CrowdloansScreen = () => {
   );
   const isFocused = useIsFocused();
 
-  const doFilterOptions = useCallback(
-    (itemList: CrowdloanItemType[], searchKeyword: string) => {
-      const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
-      const result = getListByFilterOpt(itemList, filterOpts);
-      if (searchKeyword.length > 0) {
-        return result.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchKeyword));
-      }
-      return result;
-    },
-    [filterOpts],
-  );
+  const doFilterOptions = useCallback((itemList: CrowdloanItemType[], searchKeyword: string) => {
+    const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
+    // const result = getListByFilterOpt(itemList, filterOpts);
+    if (searchKeyword.length > 0) {
+      return itemList.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchKeyword));
+    }
+    return itemList;
+  }, []);
 
   function getListByFilterOpt(crowdloanItems: CrowdloanItemType[], filterOptions: string[]) {
-    setFilterOpts(filterOptions);
     if (filterOptions.length === 0) {
       return crowdloanItems;
     }
@@ -83,25 +82,32 @@ export const CrowdloansScreen = () => {
   }, [clearBackgroundServiceTimeout, isFocused, isCrowdloanServiceActive]);
 
   return (
-    <FlatListScreen
-      title={i18n.tabName.crowdloans}
-      renderListEmptyComponent={renderListEmptyComponent}
-      renderItem={renderItem}
-      autoFocus={false}
-      items={items}
-      showLeftBtn={false}
-      searchFunction={doFilterOptions}
-      filterOptions={defaultFilterOpts}
-      filterFunction={getListByFilterOpt}
-      // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
-      refreshControl={
-        <RefreshControl
-          style={{ backgroundColor: ColorMap.dark1 }}
-          tintColor={ColorMap.light}
-          refreshing={isRefresh}
-          onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
+    <ScreenContainer backgroundColor={theme.colorBgDefault}>
+      <>
+        <Header />
+        <FlatListScreen
+          isShowFilterBtn
+          title={i18n.tabName.crowdloans}
+          renderListEmptyComponent={renderListEmptyComponent}
+          renderItem={renderItem}
+          autoFocus={false}
+          items={items}
+          showLeftBtn={false}
+          searchFunction={doFilterOptions}
+          filterOptions={defaultFilterOpts}
+          filterFunction={getListByFilterOpt}
+          needGapWithStatusBar={false}
+          // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
+          refreshControl={
+            <RefreshControl
+              style={{ backgroundColor: ColorMap.dark1 }}
+              tintColor={ColorMap.light}
+              refreshing={isRefresh}
+              onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
+            />
+          }
         />
-      }
-    />
+      </>
+    </ScreenContainer>
   );
 };
