@@ -156,7 +156,7 @@ export const Home = () => {
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     if (isReady && isLoading) {
-      setTimeout(() => setLoading(false), 300);
+      setTimeout(() => setLoading(false), 500);
     }
   }, [isReady, isLoading]);
 

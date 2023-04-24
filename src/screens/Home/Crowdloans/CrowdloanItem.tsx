@@ -3,15 +3,21 @@ import { Linking, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { CrowdloanItemType } from 'types/index';
 import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
-import { BalanceVal } from 'components/BalanceVal';
 import { ContainerHorizontalPadding, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { getNetworkLogo } from 'utils/index';
+import { Logo, Number } from 'components/design-system-ui';
 
 interface Props {
   item: CrowdloanItemType;
 }
+
+const containerStyle: StyleProp<any> = {
+  backgroundColor: ColorMap.dark2,
+  marginHorizontal: 16,
+  marginBottom: 8,
+  borderRadius: 8,
+};
 
 const subTextStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -111,19 +117,20 @@ export function getGroupKey(groupDisplayName: string) {
 export const CrowdloanItem = ({ item }: Props) => {
   return (
     <TouchableOpacity
-      style={{ ...ContainerHorizontalPadding }}
+      style={{ ...ContainerHorizontalPadding, ...containerStyle }}
       activeOpacity={BUTTON_ACTIVE_OPACITY}
       onPress={() => Linking.openURL(item.crowdloanUrl ? item.crowdloanUrl : '')}
       disabled={!item.crowdloanUrl}>
       <View style={crowdloanItemMainArea}>
         <View style={crowdloanItemPart1Style}>
           <View style={{ position: 'relative' }}>
-            {getNetworkLogo(item.slug, 40)}
-            {getNetworkLogo(getGroupKey(item.relayParentDisplayName), 16, 'default', {
-              position: 'absolute',
-              bottom: 10,
-              right: 0,
-            })}
+            <Logo
+              size={40}
+              network={item.slug.toLowerCase()}
+              isShowSubLogo
+              subNetwork={getGroupKey(item.relayParentDisplayName)}
+              subLogoShape="circle"
+            />
           </View>
 
           <View style={crowdloanItemMetaWrapperStyle}>
@@ -142,12 +149,22 @@ export const CrowdloanItem = ({ item }: Props) => {
           </View>
         </View>
         <View style={crowdloanItemPart2Style}>
-          <BalanceVal value={item.contribute} balanceValTextStyle={textStyle} symbol={item.symbol} />
-          <BalanceVal
-            startWithSymbol
-            symbol={'$'}
+          <Number
+            value={item.contribute}
+            decimal={0}
+            suffix={item.symbol}
+            intColor={textStyle.color}
+            decimalColor={subTextStyle.color}
+            size={textStyle.fontSize}
+          />
+          <Number
             value={item.convertedContribute}
-            balanceValTextStyle={subTextStyle}
+            decimal={0}
+            prefix={'$'}
+            unitColor={subTextStyle.color}
+            intColor={subTextStyle.color}
+            decimalColor={subTextStyle.color}
+            size={subTextStyle.fontSize}
           />
         </View>
       </View>
