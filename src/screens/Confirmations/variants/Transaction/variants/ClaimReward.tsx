@@ -3,11 +3,12 @@
 
 import { RequestStakeClaimReward } from '@subwallet/extension-base/background/KoniTypes';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
+import { ConfirmationContent } from 'components/Confirmation';
 import MetaInfo from 'components/MetaInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
 import { BaseTransactionConfirmationProps } from './Base';
 
@@ -22,7 +23,7 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
   const { decimals, symbol } = useGetNativeTokenBasicInfo(data.chain);
 
   return (
-    <View>
+    <ConfirmationContent>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         {data.unclaimedReward && (
@@ -47,7 +48,7 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
           ? 'Your rewards will be bonded back into the pool'
           : 'Claimed rewards would be immediately added to your account as transferable balance'}
       </Text>
-    </View>
+    </ConfirmationContent>
   );
 };
 

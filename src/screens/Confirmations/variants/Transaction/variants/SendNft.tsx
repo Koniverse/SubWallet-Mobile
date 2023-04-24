@@ -1,5 +1,5 @@
+import { ConfirmationContent } from 'components/Confirmation';
 import React from 'react';
-import { View } from 'react-native';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { ExtrinsicDataTypeMap, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -9,7 +9,6 @@ import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type Props = BaseTransactionConfirmationProps;
-//todo: i18n
 const SendNftTransactionConfirmation = ({ transaction }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const data = transaction.data as ExtrinsicDataTypeMap[ExtrinsicType.SEND_NFT];
@@ -17,7 +16,7 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
   const networkPrefix = useGetChainPrefixBySlug(transaction.chain);
 
   return (
-    <View style={{ paddingHorizontal: theme.size, paddingTop: theme.size }}>
+    <ConfirmationContent>
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={data.senderAddress} label={i18n.common.sender} networkPrefix={networkPrefix} />
 
@@ -39,7 +38,7 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
-    </View>
+    </ConfirmationContent>
   );
 };
 

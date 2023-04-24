@@ -1,15 +1,20 @@
 import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
+import SignatureScanner from 'components/Scanner/SignatureScanner';
+import useCheckLogin from 'hooks/useCheckLogin';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
-import { approveSignPasswordV2, cancelSignRequest } from 'messaging/index';
+import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from 'messaging/index';
+import { useSelector } from 'react-redux';
+import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
+import { RootState } from 'stores/index';
 import { AccountSignMode } from 'types/index';
+import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
-import { View } from 'react-native';
 import { Button, Icon } from 'components/design-system-ui';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   account: AccountJson;
@@ -21,15 +26,22 @@ const handleConfirm = async (id: string) => await approveSignPasswordV2({ id });
 
 const handleCancel = async (id: string) => await cancelSignRequest(id);
 
+const handleSignature = async (id: string, { signature }: SigData) => await approveSignSignature(id, signature);
+
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
   const { account, id, payload } = props;
 
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
+
   const [loading, setLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [isShowQr, setIsShowQr] = useState(false);
 
   const signMode = useMemo(() => getSignMode(account), [account]);
   const isMessage = isSubstrateMessage(payload);
+  const checkLogin = useCheckLogin();
 
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
@@ -41,6 +53,14 @@ export const SubstrateSignArea = (props: Props) => {
         return CheckCircle;
     }
   }, [signMode]);
+
+  const genesisHash = useMemo(() => {
+    if (isSubstrateMessage(payload)) {
+      return chainInfoMap.polkadot.substrateInfo?.genesisHash || '';
+    } else {
+      return payload.genesisHash.toHex();
+    }
+  }, [chainInfoMap.polkadot.substrateInfo?.genesisHash, payload]);
 
   const onCancel = useCallback(() => {
     setLoading(true);
@@ -63,7 +83,27 @@ export const SubstrateSignArea = (props: Props) => {
     }, 1000);
   }, [id]);
 
-  const onConfirmQr = useCallback(() => {}, []);
+  const onApproveSignature = useCallback(
+    (signature: SigData) => {
+      setLoading(true);
+
+      setTimeout(() => {
+        handleSignature(id, signature)
+          .catch(e => {
+            console.log(e);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }, 300);
+    },
+    [id],
+  );
+
+  const onConfirmQr = useCallback(() => {
+    setIsShowQr(true);
+    setIsScanning(false);
+  }, []);
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -71,9 +111,27 @@ export const SubstrateSignArea = (props: Props) => {
         onConfirmQr();
         break;
       default:
-        onApprovePassword();
+        checkLogin(onApprovePassword)();
     }
-  }, [onApprovePassword, onConfirmQr, signMode]);
+  }, [checkLogin, onApprovePassword, onConfirmQr, signMode]);
+
+  const onSuccess = useCallback(
+    (sig: SigData) => {
+      setIsScanning(false);
+      onApproveSignature && onApproveSignature(sig);
+    },
+    [onApproveSignature],
+  );
+
+  const openScanning = useCallback(() => {
+    setIsShowQr(false);
+    setIsScanning(true);
+  }, []);
+
+  const hideScanning = useCallback(() => {
+    setIsShowQr(false);
+    setIsScanning(false);
+  }, []);
 
   return (
     <ConfirmationFooter>
@@ -83,7 +141,7 @@ export const SubstrateSignArea = (props: Props) => {
         icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
         type={'secondary'}
         onPress={onCancel}>
-        {'Cancel'}
+        {i18n.common.cancel}
       </Button>
       <Button
         block
@@ -91,8 +149,16 @@ export const SubstrateSignArea = (props: Props) => {
         icon={<Icon phosphorIcon={approveIcon} weight={'fill'} />}
         loading={loading}
         onPress={onConfirm}>
-        {'Approve'}
+        {i18n.common.approve}
       </Button>
+      {signMode === AccountSignMode.QR && (
+        <>
+          <DisplayPayloadModal visible={isShowQr} onClose={hideScanning} onOpenScan={openScanning}>
+            <SubstrateQr address={account.address} genesisHash={genesisHash} payload={payload || ''} />
+          </DisplayPayloadModal>
+          <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />
+        </>
+      )}
     </ConfirmationFooter>
   );
 };

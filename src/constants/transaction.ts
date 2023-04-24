@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationType } from 'stores/base/RequestState';
 
 export const TRANSACTION_TITLE_MAP: Record<ExtrinsicType, string> = {
   [ExtrinsicType.TRANSFER_BALANCE]: 'Transfer',
@@ -21,5 +22,11 @@ export const TRANSACTION_TITLE_MAP: Record<ExtrinsicType, string> = {
   [ExtrinsicType.STAKING_COMPOUNDING]: 'Compound',
   [ExtrinsicType.STAKING_CANCEL_COMPOUNDING]: 'Cancel Compound',
   [ExtrinsicType.EVM_EXECUTE]: 'Execute',
-  [ExtrinsicType.UNKNOWN]: 'Unknown'
+  [ExtrinsicType.UNKNOWN]: 'Unknown',
 };
+
+export const NEED_SIGN_CONFIRMATION: ConfirmationType[] = [
+  'evmSignatureRequest',
+  'evmSendTransactionRequest',
+  'signingRequest',
+];

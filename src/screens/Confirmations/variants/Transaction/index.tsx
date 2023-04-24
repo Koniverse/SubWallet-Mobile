@@ -1,3 +1,4 @@
+import { ConfirmationContent } from 'components/Confirmation';
 import React, { useCallback, useMemo } from 'react';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Transaction/variants/Base';
@@ -76,7 +77,7 @@ export const TransactionConfirmation = (props: Props) => {
   }, []);
   return (
     <>
-      <View style={{ flex: 1 }}>{renderContent(_transaction)}</View>
+      {renderContent(_transaction)}
       {type === 'signingRequest' && (
         <SubstrateSignArea account={(item as SigningRequest).account} id={item.id} payload={substratePayload} />
       )}
