@@ -103,7 +103,7 @@ export const Settings = () => {
       [
         {
           icon: GitFork,
-          title: i18n.settings.network,
+          title: 'Manage Chains',
           hasRightArrow: true,
           onPress: () => navigation.navigate('NetworksSetting'),
         },

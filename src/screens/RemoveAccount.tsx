@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { SubmitButton } from 'components/SubmitButton';
 import { Trash } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import {
+  ContainerHorizontalPadding,
+  FontMedium,
+  FontSemiBold,
+  MarginBottomForSubmitButton,
+  sharedStyles,
+} from 'styles/sharedStyles';
 import { useNavigation } from '@react-navigation/native';
 import { RemoveAccountProps, RootNavigationProps } from 'routes/index';
 import { forgetAccount } from 'messaging/index';
@@ -14,6 +19,7 @@ import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { Button } from 'components/design-system-ui';
 
 const layoutContainerStyle: StyleProp<any> = {
   ...ContainerHorizontalPadding,
@@ -30,11 +36,9 @@ const bodyContentStyle: StyleProp<any> = {
 };
 
 const footerAreaStyle: StyleProp<any> = {
-  marginLeft: -4,
-  marginRight: -4,
   flexDirection: 'row',
   paddingTop: 12,
-  paddingBottom: 38,
+  ...MarginBottomForSubmitButton,
 };
 
 const iconWrapperStyle: StyleProp<any> = {
@@ -58,11 +62,6 @@ const text2Style: StyleProp<any> = {
   ...FontMedium,
   color: ColorMap.disabled,
   textAlign: 'center',
-};
-
-const buttonStyle: StyleProp<any> = {
-  margin: 4,
-  flex: 1,
 };
 
 const Icon = Trash;
@@ -110,21 +109,17 @@ export const RemoveAccount = ({
         </View>
 
         <View style={footerAreaStyle}>
-          <SubmitButton
+          <Button disabled={isBusy} type={'secondary'} onPress={onCancel} style={{ flex: 1, marginRight: 6 }}>
+            {i18n.common.cancel}
+          </Button>
+          <Button
             disabled={isBusy}
-            disabledColor={ColorMap.buttonOverlayButtonColor}
-            title={i18n.common.cancel}
-            backgroundColor={ColorMap.dark2}
-            style={buttonStyle}
-            onPress={onCancel}
-          />
-          <SubmitButton
-            isBusy={isBusy}
-            title={i18n.common.remove}
-            backgroundColor={ColorMap.danger}
-            style={buttonStyle}
+            loading={isBusy}
+            type={'danger'}
             onPress={onConfirm}
-          />
+            style={{ flex: 1, marginLeft: 6 }}>
+            {i18n.common.remove}
+          </Button>
         </View>
       </View>
     </SubScreenContainer>

@@ -16,6 +16,7 @@ import i18n from 'utils/i18n/i18n';
 import ToastContainer from 'react-native-toast-notifications';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
+import {Button} from "components/design-system-ui";
 
 interface Props {
   address: string;
@@ -170,13 +171,13 @@ export const ExportJson = ({ address, closeModal }: Props) => {
             )}
           </View>
           <View style={footerAreaStyle}>
-            <SubmitButton
-              title={fileContent ? i18n.common.done : i18n.common.continue}
+            <Button
+              block
               disabled={!formState.isValidated.password}
-              isBusy={isBusy}
-              style={buttonStyle}
-              onPress={fileContent ? () => closeModal(false) : () => onSetPassword(formState)}
-            />
+              loading={isBusy}
+              onPress={fileContent ? () => closeModal(false) : () => onSetPassword(formState)}>
+              {fileContent ? i18n.common.done : i18n.common.continue}
+            </Button>
           </View>
 
           {

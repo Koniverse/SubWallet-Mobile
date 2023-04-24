@@ -3,10 +3,10 @@ import { Keyboard, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
-import { SubmitButton } from 'components/SubmitButton';
 import { AccountNameAndPasswordArea } from 'components/AccountNameAndPasswordArea';
 import i18n from 'utils/i18n/i18n';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import { Button } from 'components/design-system-ui';
 
 const bodyAreaStyle: StyleProp<any> = {
   flex: 1,
@@ -102,12 +102,12 @@ export const AccountNamePasswordCreation = ({ isBusy, onCreateAccount }: Props) 
         <AccountNameAndPasswordArea formState={formState} onChangeValue={onChangeValue} onSubmitField={onSubmitField} />
       </ScrollView>
       <View style={footerAreaStyle}>
-        <SubmitButton
+        <Button
           disabled={!checkValidateForm(formState.isValidated)}
-          isBusy={isBusy}
-          title={i18n.common.finish}
-          onPress={() => _onCreateAccount(formState)}
-        />
+          loading={isBusy}
+          onPress={() => _onCreateAccount(formState)}>
+          {i18n.common.finish}
+        </Button>
       </View>
     </View>
   );

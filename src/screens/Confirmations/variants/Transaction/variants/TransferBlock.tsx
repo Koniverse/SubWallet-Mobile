@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ExtrinsicDataTypeMap, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
+import { ConfirmationContent } from 'components/Confirmation';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -27,7 +28,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
   const senderPrefix = useGetChainPrefixBySlug(transaction.chain);
 
   return (
-    <>
+    <ConfirmationContent>
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account address={data.from} label={'Sender'} networkPrefix={senderPrefix} />
 
@@ -61,7 +62,7 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
-    </>
+    </ConfirmationContent>
   );
 };
 

@@ -288,7 +288,7 @@ export const ImportNetwork = () => {
   }, [isShowConnectionStatus, isValidating, providerValidation.status, theme]);
 
   return (
-    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={'Networks'}>
+    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={'Import Chain'}>
       <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
         <InputText
           leftIcon={ShareNetwork}

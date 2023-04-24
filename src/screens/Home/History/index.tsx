@@ -380,27 +380,25 @@ function History(): React.ReactElement<Props> {
   }, []);
 
   return (
-    <ScreenContainer>
-      <View style={{ flex: 1, paddingBottom: theme.size }}>
-        <FlatListScreen
-          showLeftBtn={true}
-          items={historyList}
-          style={FlatListScreenPaddingTop}
-          title={i18n.title.history}
-          searchFunction={searchFunc}
-          renderItem={renderItem}
-          isShowFilterBtn
-          renderListEmptyComponent={emptyList}
-          grouping={grouping}
-          filterOptions={FILTER_OPTIONS}
-          filterFunction={filterFunction}
-          sortFunction={sortFunction}
-          flatListStyle={{ paddingHorizontal: theme.padding, marginTop: -theme.marginXS }}
-        />
+    <View style={{ flex: 1, paddingBottom: theme.size }}>
+      <FlatListScreen
+        showLeftBtn={true}
+        items={historyList}
+        style={FlatListScreenPaddingTop}
+        title={i18n.title.history}
+        searchFunction={searchFunc}
+        renderItem={renderItem}
+        isShowFilterBtn
+        renderListEmptyComponent={emptyList}
+        grouping={grouping}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
+        sortFunction={sortFunction}
+        flatListStyle={{ paddingHorizontal: theme.padding, marginTop: -theme.marginXS }}
+      />
 
-        <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
-      </View>
-    </ScreenContainer>
+      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
+    </View>
   );
 }
 

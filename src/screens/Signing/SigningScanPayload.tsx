@@ -19,6 +19,7 @@ import { ScannerStyles } from 'styles/scanner';
 import { FontMedium, FontSize0, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
+import { Button } from 'components/design-system-ui';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -150,12 +151,9 @@ const SigningScanPayload = () => {
                     <Text style={ProgressTextStyle}>
                       {completedFramesCount}/{totalFrameCount}
                     </Text>
-                    <SubmitButton
-                      backgroundColor={ColorMap.dark2}
-                      style={ProgressButtonStyle}
-                      title={i18n.common.startOver}
-                      onPress={onStartOver}
-                    />
+                    <Button type={'secondary'} style={ProgressButtonStyle} onPress={onStartOver}>
+                      {i18n.common.startOver}
+                    </Button>
                   </View>
                 </View>
               )}

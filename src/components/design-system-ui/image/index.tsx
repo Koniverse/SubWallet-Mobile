@@ -35,14 +35,17 @@ const Image: React.FC<SWImageProps> = ({
   const customStyle = [_style.container, containerStyle];
   const customImageStyle = [
     _style[`${shape}Image`],
-    { width: squircleSize || 'undefined' },
+    { width: squircleSize || 'undefined', height: squircleSize || 'undefined' },
     _style.backgroundColor,
     style,
   ];
   if (shape === 'squircle') {
     return (
       <View style={[{ position: 'relative' }, customStyle]}>
-        <Squircle customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Squircle
+          customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          // backgroundColor={'transparent'}
+        >
           <FastImage
             source={src}
             style={[customImageStyle, { position: 'absolute' }]}

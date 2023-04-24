@@ -3,10 +3,10 @@
 
 import { RequestStakeCancelWithdrawal } from '@subwallet/extension-base/background/KoniTypes';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
+import { ConfirmationContent } from 'components/Confirmation';
 import MetaInfo from 'components/MetaInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import React from 'react';
-import { View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 
 import { BaseTransactionConfirmationProps } from './Base';
@@ -20,7 +20,7 @@ const CancelUnstakeTransactionConfirmation: React.FC<Props> = (props: Props) => 
   const { decimals, symbol } = useGetNativeTokenBasicInfo(data.chain);
 
   return (
-    <View>
+    <ConfirmationContent>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number
@@ -37,7 +37,7 @@ const CancelUnstakeTransactionConfirmation: React.FC<Props> = (props: Props) => 
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
-    </View>
+    </ConfirmationContent>
   );
 };
 

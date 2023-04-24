@@ -76,6 +76,7 @@ export type RootStackParamList = {
   WebViewModal: undefined;
   History: undefined;
   Login: undefined;
+  AddProvider: { slug: string };
   ConnectParitySigner: undefined;
   ConnectKeystone: undefined;
   AttachReadOnly: undefined;
@@ -108,3 +109,4 @@ export type UnStakeAction = NativeStackScreenProps<RootStackParamList, 'UnStakeA
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;
 export type NetworkSettingDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkSettingDetail'>;
 export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'TransactionDone'>;
+export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddProvider'>;

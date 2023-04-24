@@ -14,7 +14,6 @@ import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import Text from 'components/Text';
 import FormatBalance from 'components/FormatBalance';
-import { SubmitButton } from 'components/SubmitButton';
 import { BalanceFormatType, TokenItemType } from 'types/ui-types';
 import { SiDef } from '@polkadot/util/types';
 import BigN from 'bignumber.js';
@@ -25,6 +24,7 @@ import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useTokenBalanceKeyPriceMap from 'hooks/screen/useTokenBalanceKeyPriceMap';
 import { SendAssetInputBalance } from 'screens/Sending/Field/SendAssetInputBalance';
 import { WebRunnerContext } from 'providers/contexts';
+import { Button } from 'components/design-system-ui';
 
 interface Props {
   amount: string;
@@ -168,12 +168,12 @@ export const TypeAmountScreen = ({
           </TouchableOpacity>
         </View>
 
-        <SubmitButton
+        <Button
           disabled={!canMakeTransfer || !isNetConnected || !isReady}
-          title={i18n.common.continue}
           style={{ width: '100%', ...MarginBottomForSubmitButton }}
-          onPress={onPressToNextStep}
-        />
+          onPress={onPressToNextStep}>
+          {i18n.common.continue}
+        </Button>
       </View>
 
       <TokenSelect

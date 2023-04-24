@@ -1,5 +1,5 @@
+import { ConfirmationContent } from 'components/Confirmation';
 import React from 'react';
-import { View } from 'react-native';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { RequestBondingSubmit } from '@subwallet/extension-base/background/KoniTypes';
@@ -13,7 +13,7 @@ const UnbondTransactionConfirmation = ({ transaction }: Props) => {
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
 
   return (
-    <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+    <ConfirmationContent>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
@@ -25,7 +25,7 @@ const UnbondTransactionConfirmation = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
-    </View>
+    </ConfirmationContent>
   );
 };
 

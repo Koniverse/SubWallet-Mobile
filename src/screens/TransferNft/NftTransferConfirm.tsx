@@ -7,7 +7,6 @@ import { NetworkField } from 'components/Field/Network';
 import ImagePreview from 'components/ImagePreview';
 import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
@@ -40,6 +39,7 @@ import transferHandler from 'services/nft/transferHandler';
 import { ColorMap } from 'styles/color';
 import { SubstrateTransferParams, SUPPORTED_TRANSFER_SUBSTRATE_CHAIN, Web3TransferParams } from 'types/nft';
 import { requestCameraPermission } from 'utils/permission/camera';
+import { Button } from 'components/design-system-ui';
 
 const ImageContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
@@ -230,13 +230,13 @@ const NftTransferConfirm = ({ route: { params: transferParams } }: NftTransferCo
             {!!error && <Warning message={error} isDanger />}
           </ScrollView>
           <View style={{ ...ContainerHorizontalPadding, marginTop: 16 }}>
-            <SubmitButton
-              isBusy={loading}
+            <Button
+              loading={loading}
               disabled={disableSubmit}
               style={{ width: '100%', ...MarginBottomForSubmitButton }}
-              title={i18n.transferNft.send}
-              onPress={handleSend}
-            />
+              onPress={handleSend}>
+              {i18n.transferNft.send}
+            </Button>
           </View>
 
           <AddressScanner

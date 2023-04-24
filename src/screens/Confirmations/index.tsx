@@ -1,26 +1,36 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AuthorizeRequest, MetadataRequest, SigningRequest } from '@subwallet/extension-base/background/types';
+import {
+  AccountJson,
+  AuthorizeRequest,
+  MetadataRequest,
+  SigningRequest,
+} from '@subwallet/extension-base/background/types';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
+import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
-import AddNetworkConfirmation from 'screens/Confirmations/variants/AddNetworkConfirmation';
-import AddTokenConfirmation from 'screens/Confirmations/variants/AddTokenConfirmation';
-import EvmSignatureConfirmation from 'screens/Confirmations/variants/EvmSignatureConfirmation';
-import EvmTransactionConfirmation from 'screens/Confirmations/variants/EvmTransactionConfirmation';
-import MetadataConfirmation from 'screens/Confirmations/variants/MetadataConfirmation';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
-import { TransactionConfirmation } from 'screens/Confirmations/variants/Transaction';
 import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { ColorMap } from 'styles/color';
+import { isRawPayload } from 'utils/confirmation/request/substrate';
 
-import { AuthorizeConfirmation } from './variants';
-import SignConfirmation from './variants/SignConfirmation';
+import {
+  AddNetworkConfirmation,
+  AddTokenConfirmation,
+  AuthorizeConfirmation,
+  EvmSignatureConfirmation,
+  EvmTransactionConfirmation,
+  MetadataConfirmation,
+  NotSupportConfirmation,
+  TransactionConfirmation,
+  SignConfirmation,
+} from './variants';
 
 const confirmationPopupWrapper: StyleProp<any> = {
   maxHeight: '90%',
@@ -112,37 +122,39 @@ export const Confirmations = () => {
       return null;
     }
 
-    // if (NEED_SIGN_CONFIRMATION.includes(confirmation.type)) {
-    //   let account: AccountJson | undefined;
-    //   let canSign = true;
-    //   let isMessage = false;
-    //
-    //   if (confirmation.type === 'signingRequest') {
-    //     const request = confirmation.item as SigningRequest;
-    //     const _isMessage = isRawPayload(request.request.payload);
-    //
-    //     account = request.account;
-    //     canSign = !_isMessage || !account.isHardware;
-    //     isMessage = _isMessage;
-    //   } else if (confirmation.type === 'evmSignatureRequest' || confirmation.type === 'evmSendTransactionRequest') {
-    //     const request = confirmation.item as ConfirmationDefinitions['evmSignatureRequest' | 'evmSendTransactionRequest'][0];
-    //
-    //     account = request.payload.account;
-    //     canSign = request.payload.canSign;
-    //     isMessage = confirmation.type === 'evmSignatureRequest';
-    //   }
-    //
-    //   if (account?.isReadOnly || !canSign) {
-    //     return (
-    //       <NotSupportConfirmation
-    //         account={account}
-    //         isMessage={isMessage}
-    //         request={confirmation.item}
-    //         type={confirmation.type}
-    //       />
-    //     );
-    //   }
-    // }
+    if (NEED_SIGN_CONFIRMATION.includes(confirmation.type)) {
+      let account: AccountJson | undefined;
+      let canSign = true;
+      let isMessage = false;
+
+      if (confirmation.type === 'signingRequest') {
+        const request = confirmation.item as SigningRequest;
+        const _isMessage = isRawPayload(request.request.payload);
+
+        account = request.account;
+        canSign = !_isMessage || !account.isHardware;
+        isMessage = _isMessage;
+      } else if (confirmation.type === 'evmSignatureRequest' || confirmation.type === 'evmSendTransactionRequest') {
+        const request = confirmation.item as ConfirmationDefinitions[
+          | 'evmSignatureRequest'
+          | 'evmSendTransactionRequest'][0];
+
+        account = request.payload.account;
+        canSign = request.payload.canSign;
+        isMessage = confirmation.type === 'evmSignatureRequest';
+      }
+
+      if (account?.isReadOnly || !canSign) {
+        return (
+          <NotSupportConfirmation
+            account={account}
+            isMessage={isMessage}
+            request={confirmation.item}
+            type={confirmation.type}
+          />
+        );
+      }
+    }
 
     if (confirmation.item.isInternal) {
       return <TransactionConfirmation confirmation={confirmation} />;

@@ -29,7 +29,7 @@ export const DAppAccessScreen = () => {
   const dAppItems = useMemo<AuthUrlInfo[]>(() => {
     return getDAppItems(authUrlMap);
   }, [authUrlMap]);
-console.log('authUrlMap', authUrlMap)
+
   const rightIconOption = useMemo(() => {
     return {
       icon: DotsThree,

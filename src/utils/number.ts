@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import BigN from "bignumber.js";
 
 // 1000.12345 -> 1,000; 1000,654321 -> 1,001
 export const formatLocaleNumber = (number: number, digits?: number): string => {
@@ -39,7 +38,7 @@ export function randomIntFromInterval(min: number, max: number) {
 }
 
 // Number from @subwallet-react-ui
-export const BN_TEN = new BigN(10);
+export const BN_TEN = new BigNumber(10);
 export interface NumberFormatter {
   (input: string, metadata?: Record<string, number>): string;
 }
@@ -55,12 +54,18 @@ const clearZero = (result: string): string => {
   return result;
 };
 
+const NUM_1T = new BigNumber(1e12);
+const TLIM = new BigNumber(1e17);
+const NUM_1B = new BigNumber(1e9);
+const BLIM = new BigNumber(1e14);
+const NUM_1M = new BigNumber(1e6);
+const NUM_100M = new BigNumber(1e8);
 export const balanceFormatter: NumberFormatter = (input: string, metadata?: Record<string, number>): string => {
   const absGteOne = new BigNumber(input).abs().gte(1);
   const minNumberFormat = metadata?.minNumberFormat || 2;
   const maxNumberFormat = metadata?.maxNumberFormat || 6;
 
-  const [int, decimal] = input.split('.');
+  const [int, decimal = '0'] = input.split('.');
   let _decimal = '';
 
   if (absGteOne) {
@@ -69,13 +74,21 @@ export const balanceFormatter: NumberFormatter = (input: string, metadata?: Reco
 
     // If count of number in integer part greater or equal maxNumberFormat, do not show decimal
     if (intNumber.gte(max)) {
+      if (intNumber.gte(NUM_100M)) {
+        if (intNumber.gte(BLIM)) {
+          if (intNumber.gte(TLIM)) {
+            return `${intNumber.dividedBy(NUM_1T).toFixed(2)} T`;
+          }
+          return `${intNumber.dividedBy(NUM_1B).toFixed(2)} B`;
+        }
+        return `${intNumber.dividedBy(NUM_1M).toFixed(2)} M`;
+      }
+
       return int;
     }
 
     // Get only minNumberFormat number at decimal
-    if (decimal === undefined) {
-      _decimal = '0';
-    } else if (decimal.length <= minNumberFormat) {
+    if (decimal.length <= minNumberFormat) {
       _decimal = decimal;
     } else {
       _decimal = decimal.slice(0, minNumberFormat);
