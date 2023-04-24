@@ -14,6 +14,7 @@ interface Props extends FieldBaseProps {
   outerStyle?: StyleProp<any>;
   value?: string;
   leftIcon?: (iconProps: IconProps) => JSX.Element;
+  rightIcon?: (iconProps: IconProps) => JSX.Element;
 }
 
 const getTextStyle = (disabled: boolean): StyleProp<any> => {
@@ -41,6 +42,7 @@ export const RpcSelectField = ({
   disabled,
   showRightIcon,
   leftIcon = ShareNetwork,
+  rightIcon = CaretDown,
   outerStyle,
   value,
   label,
@@ -58,7 +60,9 @@ export const RpcSelectField = ({
           </Text>
         </View>
 
-        {!!showRightIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}
+        {!!showRightIcon && (
+          <Icon phosphorIcon={rightIcon} size={'sm'} iconColor={theme.colorTextLight4} weight={'bold'} />
+        )}
       </View>
     </FieldBase>
   );

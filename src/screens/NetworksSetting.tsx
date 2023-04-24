@@ -196,6 +196,7 @@ export const NetworksSetting = ({}: Props) => {
       searchFunction={searchFunction}
       renderItem={renderItem}
       filterOptions={FILTER_OPTIONS}
+      isShowFilterBtn
       filterFunction={filterFunction}
       isShowListWrapper={true}
     />

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { FloppyDiskBack, Trash } from 'phosphor-react-native';
+import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
 import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { RpcSelectField } from 'components/Field/RpcSelect';
@@ -8,7 +8,7 @@ import { RpcSelectorModal } from 'components/common/RpcSelectorModal';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { NetworkSettingDetailProps, RootNavigationProps } from 'routes/index';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
-import { sharedStyles } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { NetworkNameField } from 'components/Field/NetworkName';
 import { TextField } from 'components/Field/Text';
 import {
@@ -63,10 +63,8 @@ export const NetworkSettingDetail = ({
   const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const _chainInfo = useFetchChainInfo(chainSlug);
-  const _chainState = useFetchChainState(chainSlug);
-  const [chainInfo] = useState(_chainInfo);
-  const [chainState] = useState(_chainState);
+  const chainInfo = useFetchChainInfo(chainSlug);
+  const chainState = useFetchChainState(chainSlug);
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
 
@@ -129,14 +127,14 @@ export const NetworkSettingDetail = ({
         require: true,
       },
       blockExplorer: {
-        name: 'blockExplorer',
+        name: 'Block explorer',
         value: _blockExplorer || '',
         validateFunc: (value: string) => {
           return validateBlockExplorer(value);
         },
       },
       crowdloanUrl: {
-        name: 'crowdloanUrl',
+        name: 'Crowdloan url',
         value: _crowdloanUrl,
         validateFunc: (value: string) => {
           return validateCrowdloanUrl(value);
@@ -247,6 +245,14 @@ export const NetworkSettingDetail = ({
     isDeleting,
   ]);
 
+  const onPressRpcField = () => {
+    if (Object.keys(chainInfo.providers).length === 1) {
+      navigation.navigate('AddProvider', { slug: chainInfo.slug });
+    } else {
+      setRpcSelectorModalVisible(true);
+    }
+  };
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -257,8 +263,12 @@ export const NetworkSettingDetail = ({
       title={'Config network'}>
       <View style={ContainerStyle}>
         <ScrollView style={{ flex: 1 }}>
-          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setRpcSelectorModalVisible(true)}>
-            <RpcSelectField showRightIcon value={formState.data.currentProvider} />
+          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
+            <RpcSelectField
+              showRightIcon
+              value={formState.data.currentProvider}
+              rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
+            />
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', width: '100%' }}>
@@ -293,6 +303,7 @@ export const NetworkSettingDetail = ({
             onChangeText={onChangeBlockExplorer}
             onSubmitField={onSubmitField('blockExplorer')}
             errorMessages={formState.errors.blockExplorer}
+            placeholder={formState.labels.blockExplorer}
           />
 
           <InputText
@@ -301,10 +312,11 @@ export const NetworkSettingDetail = ({
             onChangeText={onChangeCrowdloanUrl}
             onSubmitField={onSubmitField('crowdloanUrl')}
             errorMessages={formState.errors.crowdloanUrl}
+            placeholder={formState.labels.crowdloanUrl}
           />
         </ScrollView>
 
-        <View>
+        <View style={{ ...MarginBottomForSubmitButton }}>
           <Button
             disabled={isDisabledSubmitButton}
             loading={loading}
@@ -332,7 +344,7 @@ export const NetworkSettingDetail = ({
         />
 
         <RpcSelectorModal
-          chainInfo={chainInfo}
+          chainSlug={chainSlug}
           modalVisible={rpcSelectorModalVisible}
           selectedValue={formState.data.currentProvider}
           onPressBack={() => setRpcSelectorModalVisible(false)}

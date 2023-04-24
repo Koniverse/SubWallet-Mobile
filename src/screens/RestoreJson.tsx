@@ -24,6 +24,7 @@ import { toShort } from 'utils/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { Button } from 'components/design-system-ui';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -131,7 +132,7 @@ export const RestoreJson = () => {
         setAccountsInfo(() => []);
         backToHome(goHome);
       })
-      .catch((e) => {
+      .catch(e => {
         setIsBusy(false);
         console.log(e);
         onUpdateErrors('password')([i18n.warningMessage.unableDecode]);
@@ -265,16 +266,16 @@ export const RestoreJson = () => {
         )}
 
         <View style={footerAreaStyle}>
-          <SubmitButton
-            isBusy={isBusy}
-            title={currentViewStep === ViewStep.PASTE_JSON ? i18n.common.continue : i18n.common.importAccount}
+          <Button
+            loading={isBusy}
             onPress={onPressSubmitButton}
             disabled={
               currentViewStep === ViewStep.PASTE_JSON
                 ? !formState.data.file || !formState.errors.file || isFileError
                 : isFileError || !formState.isValidated.password || !formState.data.password || !formState.data.file
-            }
-          />
+            }>
+            {currentViewStep === ViewStep.PASTE_JSON ? i18n.common.continue : i18n.common.importAccount}
+          </Button>
         </View>
       </View>
     </ContainerWithSubHeader>

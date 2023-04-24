@@ -16,6 +16,7 @@ import { Plus, PushPinSlash } from 'phosphor-react-native';
 import { AddProviderModal } from 'screens/Settings/AddProviderModal';
 import { isValidProvider } from 'utils/index';
 import { EmptyList } from 'components/EmptyList';
+import {Button} from "components/design-system-ui";
 
 function filterFunction(items: Record<string, string>[], searchString: string) {
   return items.filter(item => item.text.toLowerCase().includes(searchString.toLowerCase()));
@@ -182,7 +183,9 @@ export const NetworkConfigDetail = ({
         searchFunction={filterFunction}
         afterListItem={
           <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
-            <SubmitButton isBusy={loading} title={i18n.common.done} onPress={onPressDoneButton} />
+            <Button loading={loading} onPress={onPressDoneButton}>
+              {i18n.common.done}
+            </Button>
           </View>
         }
       />

@@ -55,6 +55,7 @@ import History from 'screens/Home/History';
 import withPageWrapper from 'components/pageWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import {AddProvider} from "screens/AddProvider";
 
 interface Props {
   isAppReady: boolean;
@@ -138,6 +139,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ImportNetwork" component={ImportNetwork} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
                 <Stack.Screen name="MigratePassword" component={ApplyMasterPassword} />
+                <Stack.Screen name="AddProvider" component={AddProvider} />
                 <Stack.Screen name="EditAccount" component={EditAccount} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} />
                 <Stack.Screen name="RemoveAccount" component={RemoveAccount} />

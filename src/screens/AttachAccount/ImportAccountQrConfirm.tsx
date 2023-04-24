@@ -3,7 +3,6 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { AddressField } from 'components/Field/Address';
 import InputCheckBox from 'components/Input/InputCheckBox';
-import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import { Copy } from 'phosphor-react-native';
@@ -19,6 +18,7 @@ import { checkPublicAndPrivateKey, createAccountWithSecret } from 'messaging/ind
 import { centerStyle, ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
+import { Button } from 'components/design-system-ui';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -222,13 +222,9 @@ const ImportAccountQrConfirm = ({
         {errors.length > 0 &&
           errors.map((message, index) => <Warning isDanger message={message} key={index} style={WarningStyle} />)}
         <View style={ActionAreaStyle}>
-          <SubmitButton
-            disabled={loading || errors.length > 0}
-            isBusy={isBusy}
-            style={ButtonStyle}
-            title={i18n.common.importAccount}
-            onPress={handleSubmit}
-          />
+          <Button disabled={loading || errors.length > 0} loading={isBusy} style={ButtonStyle} onPress={handleSubmit}>
+            {i18n.common.importAccount}
+          </Button>
         </View>
       </View>
     </ContainerWithSubHeader>

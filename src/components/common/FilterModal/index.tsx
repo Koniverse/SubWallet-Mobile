@@ -3,6 +3,7 @@ import { Button, Divider, Icon, SwModal } from 'components/design-system-ui';
 import { Text, View } from 'react-native';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { FadersHorizontal } from 'phosphor-react-native';
+import {MarginBottomForSubmitButton} from "styles/sharedStyles";
 
 export type OptionType = {
   label: string;
@@ -32,7 +33,7 @@ const FilterModal = ({
     return (
       <>
         <Divider style={{ paddingTop: 4, paddingBottom: 16 }} color={'#1A1A1A'} />
-        <View style={{ width: '100%', paddingHorizontal: 16 }}>
+        <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
           <Button
             icon={<Icon phosphorIcon={FadersHorizontal} size={'lg'} />}
             onPress={() => {
