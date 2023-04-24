@@ -8,6 +8,7 @@ import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByChainId from 'hooks/chain/useGetChainInfoByChainId';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { useCallback, useMemo } from 'react';
+import { View } from 'react-native';
 
 interface Props {
   request: EvmSendTransactionRequest;
@@ -61,7 +62,9 @@ const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
         <MetaInfo.Default label={'Method'} labelAlign="top">
           {data.methodName}
         </MetaInfo.Default>
-        <MetaInfo.Data label={'Arguments'}>{data.args.map(value => handlerRenderArg(value, ''))}</MetaInfo.Data>
+        <MetaInfo.Data label={'Arguments'}>
+          <View style={{ marginLeft: 8 }}>{data.args.map(value => handlerRenderArg(value, ''))}</View>
+        </MetaInfo.Data>
       </>
     );
   }, [handlerRenderArg, request.parseData]);

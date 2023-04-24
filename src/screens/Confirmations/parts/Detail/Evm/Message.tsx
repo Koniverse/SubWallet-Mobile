@@ -99,11 +99,14 @@ const EvmMessageDetail: React.FC<Props> = (props: Props) => {
               }
 
               const RenderComponent = isLeaf ? MetaInfo.Data : MetaInfo.Default;
+              const label = key.charAt(0).toUpperCase() + key.substring(1);
 
               return (
-                <RenderComponent {...{ labelAlign: 'top' }} key={index} label={key}>
-                  {renderData(datum) as string}
-                </RenderComponent>
+                <View style={styles.node}>
+                  <RenderComponent {...{ labelAlign: 'top' }} key={index} label={label}>
+                    {renderData(datum) as string}
+                  </RenderComponent>
+                </View>
               );
             })}
           </>

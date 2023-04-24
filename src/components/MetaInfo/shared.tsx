@@ -1,4 +1,4 @@
-import { TextStyle } from 'react-native';
+import { TextStyle, View } from 'react-native';
 import React from 'react';
 import Typography from '../design-system-ui/typography';
 import { SchemeColor } from 'components/MetaInfo/types';
@@ -36,9 +36,13 @@ export function renderColContent(
     return null;
   }
 
+  if (typeof content === 'string') {
+    return <Typography.Text style={textStyle}>{content}</Typography.Text>;
+  }
+
   if (typeof content === 'function') {
     return content(textStyle);
   }
 
-  return <Typography.Text style={textStyle}>{content}</Typography.Text>;
+  return content;
 }
