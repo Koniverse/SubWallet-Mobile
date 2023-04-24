@@ -316,8 +316,8 @@ export const Stake = ({
   };
 
   const onSelectToken = useCallback(
-    (item?: TokenItemType) => {
-      onChangeAssetValue(item?.slug || '');
+    (item: TokenItemType) => {
+      onChangeAssetValue(item.slug);
       setTokenSelectModalVisible(false);
     },
     [onChangeAssetValue],
@@ -352,10 +352,17 @@ export const Stake = ({
           {!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain} />}
 
           <TouchableOpacity
+            disabled={stakingChain !== ALL_KEY || !from}
             onPress={() => {
               setTokenSelectModalVisible(true);
             }}>
-            <TokenSelectField logoKey={symbol.toLowerCase()} subLogoKey={chain} value={symbol} showIcon />
+            <TokenSelectField
+              disabled={stakingChain !== ALL_KEY || !from}
+              logoKey={symbol.toLowerCase()}
+              subLogoKey={chain}
+              value={symbol}
+              showIcon
+            />
           </TouchableOpacity>
 
           {!!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain} />}
@@ -409,6 +416,7 @@ export const Stake = ({
             modalVisible={tokenSelectModalVisible}
             defaultValue={asset}
             items={tokenList}
+            acceptDefaultValue
             onCancel={() => setTokenSelectModalVisible(false)}
             onSelectItem={onSelectToken}
           />

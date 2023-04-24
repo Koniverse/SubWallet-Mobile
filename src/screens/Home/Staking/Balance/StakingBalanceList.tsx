@@ -83,7 +83,6 @@ const StakingBalanceList = () => {
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [moreActionModalVisible, setMoreActionModalVisible] = useState<boolean>(false);
-  console.log('selectedItem', selectedItem)
 
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
