@@ -5,7 +5,7 @@ import { sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'style
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
-  children: JSX.Element;
+  children: React.ReactNode | React.ReactNode[];
   backgroundColor?: string;
   safeAreaBottomViewColor?: string;
   gradientBackground?: [string, string];

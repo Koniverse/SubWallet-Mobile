@@ -5,7 +5,7 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { createTransactionFromRLP, Transaction } from '@subwallet/extension-base/utils/eth';
 import { SCANNER_QR_STEP } from 'constants/qr';
-import { parseEVMTransaction, parseSubstrateTransaction, qrSignEvm, qrSignSubstrate } from '../messaging';
+import { parseEVMTransaction, parseSubstrateTransaction, qrSignEvm, qrSignSubstrate } from 'messaging/index';
 import { RootState } from 'stores/index';
 import {
   CompletedParsedData,

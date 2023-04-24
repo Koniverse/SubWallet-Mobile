@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { clearWebRunnerHandler, subscribeBalance } from '../../messaging';
+import { clearWebRunnerHandler, subscribeBalance } from 'messaging/index';
 import { updateBalance } from 'stores/updater';
 import { BalanceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';

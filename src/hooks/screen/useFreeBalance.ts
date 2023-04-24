@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useEffect, useState } from 'react';
-import { cancelSubscription, subscribeFreeBalance } from '../../messaging';
+import { cancelSubscription, subscribeFreeBalance } from 'messaging/index';
 
 export default function useFreeBalance(
   networkKey: string | undefined | null,

@@ -3,7 +3,7 @@ import {
   clearWebRunnerHandler,
   subscribeAccountsWithCurrentAddress,
   updateCurrentAccountAddress,
-} from '../../messaging';
+} from 'messaging/index';
 import { updateAccountsAndCurrentAccount, updateAccountsSlice, updateAccountsWaitingStatus } from 'stores/updater';
 import { WebRunnerContext } from 'providers/contexts';
 import { StoreStatus } from 'stores/types';

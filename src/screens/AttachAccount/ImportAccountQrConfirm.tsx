@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 import { ImportAccountQrConfirmProps } from 'routes/account/attachAccount';
 import { RootState } from 'stores/index';
 import { backToHome } from 'utils/navigation';
-import { checkPublicAndPrivateKey, createAccountWithSecret } from '../../messaging';
+import { checkPublicAndPrivateKey, createAccountWithSecret } from 'messaging/index';
 import { centerStyle, ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';

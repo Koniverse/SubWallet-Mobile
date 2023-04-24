@@ -8,7 +8,7 @@ import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { useNavigation } from '@react-navigation/native';
 import { RemoveAccountProps, RootNavigationProps } from 'routes/index';
-import { forgetAccount } from '../messaging';
+import { forgetAccount } from 'messaging/index';
 import { toShort } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';

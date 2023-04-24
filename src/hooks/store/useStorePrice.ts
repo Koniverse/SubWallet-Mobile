@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { clearWebRunnerHandler, subscribePrice } from '../../messaging';
+import { clearWebRunnerHandler, subscribePrice } from 'messaging/index';
 import { updatePrice } from 'stores/updater';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';

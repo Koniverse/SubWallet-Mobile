@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { Home } from 'screens/Home';
+import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { Settings } from 'screens/Settings';
 import { SendFund } from 'screens/Transaction/SendFund';
@@ -37,8 +38,6 @@ import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen'
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import SigningScreen from 'screens/Signing/SigningScreen';
-import { ColorMap } from 'styles/color';
-import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
@@ -52,6 +51,8 @@ import { TransactionDone } from 'screens/Transaction';
 import ErrorFallback from 'components/common/ErrorFallbackScreen';
 import ChangeMasterPassword from 'screens/MasterPassword/ChangeMasterPassword';
 import { ImportNetwork } from 'screens/ImportNetwork';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   isAppReady: boolean;
@@ -85,6 +86,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
+
+  const { numberOfConfirmations } = useSelector((state: RootState) => state.requestState);
+
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: ['subwallet://'],
     config,
@@ -93,6 +97,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const onError = (error: Error, stackTrace: string) => {
     console.log('error boundary', error, stackTrace);
   };
+
+  useEffect(() => {
+    if (!!numberOfConfirmations) {
+      navigationRef.current?.navigate('Confirmations');
+    }
+  }, [numberOfConfirmations, navigationRef]);
 
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
@@ -168,11 +178,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
               <Stack.Group
                 screenOptions={{
                   presentation: 'transparentModal',
-                  contentStyle: { backgroundColor: ColorMap.modalBackDropDarkColor },
+                  contentStyle: { backgroundColor: theme.swThemes.colorBgMask },
                   headerShown: false,
                 }}>
-                <Stack.Screen name="ConfirmationPopup" component={ConfirmationPopup} />
-                <Stack.Screen name="Confirmations" component={Confirmations} />
+                <Stack.Screen name="Confirmations" component={Confirmations} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="Login" component={Login} />
               </Stack.Group>
             </>
           )}

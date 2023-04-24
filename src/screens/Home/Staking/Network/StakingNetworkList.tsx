@@ -10,7 +10,7 @@ import { RootNavigationProps } from 'routes/index';
 import StakingNetworkItem from 'screens/Home/Staking/Network/StakingNetworkItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
-import { getChainBondingBasics } from '../../../../messaging';
+import { getChainBondingBasics } from 'messaging/index';
 import { WebRunnerContext } from 'providers/contexts';
 import { NoInternetScreen } from 'components/NoInternetScreen';
 

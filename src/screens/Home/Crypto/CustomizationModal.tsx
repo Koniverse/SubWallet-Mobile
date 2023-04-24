@@ -5,7 +5,7 @@ import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
-import { updateChainActiveState } from '../../../messaging';
+import { updateChainActiveState } from 'messaging/index';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
 import { Typography } from 'components/design-system-ui';

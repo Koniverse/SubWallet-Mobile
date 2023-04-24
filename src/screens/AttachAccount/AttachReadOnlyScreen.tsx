@@ -15,7 +15,7 @@ import { QrAccount } from 'types/qr/attach';
 import { backToHome } from 'utils/navigation';
 import { readOnlyScan } from 'utils/scanner/attach';
 import { requestCameraPermission } from 'utils/permission/camera';
-import { createAccountExternalV2 } from '../../messaging';
+import { createAccountExternalV2 } from 'messaging/index';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';

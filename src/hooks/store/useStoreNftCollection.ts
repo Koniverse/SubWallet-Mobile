@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { updateNftCollection } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeNftCollection } from '../../messaging';
+import { clearWebRunnerHandler, subscribeNftCollection } from 'messaging/index';
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';

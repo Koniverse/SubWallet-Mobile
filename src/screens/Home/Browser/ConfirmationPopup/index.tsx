@@ -108,10 +108,7 @@ export const ConfirmationPopup = () => {
           cancelRequest={cancelRequest}
         />
       );
-    } else if (
-      currentConfirmationItem.type === 'evmSignatureRequest' ||
-      currentConfirmationItem.type === 'evmSignatureRequestExternal'
-    ) {
+    } else if (currentConfirmationItem.type === 'evmSignatureRequest') {
       return (
         <EvmSignConfirmation
           payload={currentConfirmationItem.payload as ConfirmationsQueue['evmSignatureRequest'][0]}
@@ -120,10 +117,7 @@ export const ConfirmationPopup = () => {
           requestType={currentConfirmationItem.type}
         />
       );
-    } else if (
-      currentConfirmationItem.type === 'evmSendTransactionRequest' ||
-      currentConfirmationItem.type === 'evmSendTransactionRequestExternal'
-    ) {
+    } else if (currentConfirmationItem.type === 'evmSendTransactionRequest') {
       const evmSendTransactionRequest =
         currentConfirmationItem.payload as ConfirmationsQueue['evmSendTransactionRequest'][0];
       return (

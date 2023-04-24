@@ -23,7 +23,7 @@ import { FontMedium, FontSemiBold, MarginBottomForSubmitButton, sharedStyles } f
 import { BaseSignProps, SigData } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { requestCameraPermission } from 'utils/permission/camera';
-import { resolveExternalRequest } from '../../../messaging';
+import { resolveExternalRequest } from 'messaging/index';
 import { IGNORE_QR_SIGNER } from '@subwallet/extension-base/constants';
 
 interface Props extends BaseSignProps {

@@ -25,7 +25,7 @@ import {
   sharedStyles,
 } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { getBondingTxInfo } from '../../../messaging';
+import { getBondingTxInfo } from 'messaging/index';
 import useGetAmountInfo from 'hooks/screen/Staking/useGetAmountInfo';
 import { WebRunnerContext } from 'providers/contexts';
 

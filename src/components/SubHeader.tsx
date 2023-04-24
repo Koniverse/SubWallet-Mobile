@@ -10,7 +10,7 @@ import { Button, Icon } from 'components/design-system-ui';
 export interface SubHeaderProps {
   showRightBtn?: boolean;
   title?: string;
-  onPressBack: (event?: GestureResponderEvent) => void;
+  onPressBack?: (event?: GestureResponderEvent) => void;
   disabled?: boolean;
   rightIcon?: (iconProps: IconProps) => JSX.Element;
   rightIconColor?: string;

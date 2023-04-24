@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { CustomTokenJson } from '@subwallet/extension-base/background/KoniTypes';
 import { updateCustomToken } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeCustomToken } from '../../messaging';
+import { clearWebRunnerHandler, subscribeCustomToken } from 'messaging/index';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreCustomToken(): StoreStatus {

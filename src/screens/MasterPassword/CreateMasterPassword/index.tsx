@@ -9,7 +9,7 @@ import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 import { Warning } from 'components/Warning';
-import { keyringChangeMasterPassword } from '../../../messaging';
+import { keyringChangeMasterPassword } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { CreatePasswordProps, RootNavigationProps } from 'routes/index';
 import { requestCameraPermission } from 'utils/permission/camera';

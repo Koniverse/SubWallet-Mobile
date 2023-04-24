@@ -13,7 +13,7 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { restartCronServices } from '../../../../messaging';
+import { restartCronServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 
 const NftItemListStyle: StyleProp<any> = {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { InitSecretPhrase } from 'screens/CreateAccount/InitSecretPhrase';
 import { VerifySecretPhrase } from 'screens/CreateAccount/VerifySecretPhrase';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { createAccountSuriV2, createSeedV2 } from '../../messaging';
+import { createAccountSuriV2, createSeedV2 } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { CreateAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';

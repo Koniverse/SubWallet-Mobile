@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { CONFIRMATIONS_FIELDS } from 'stores/base/RequestState';
 import { RootState } from 'stores/index';
 import { useCallback, useMemo } from 'react';
 import {
@@ -11,7 +12,7 @@ import {
   completeConfirmation,
   rejectAuthRequestV2,
   rejectMetaRequest,
-} from '../messaging';
+} from 'messaging/index';
 import { ConfirmationHookType, ConfirmationItem, ConfirmationType } from 'hooks/types';
 import { ConfirmationDefinitions } from '@subwallet/extension-base/background/KoniTypes';
 import { ConfirmationSlice } from 'stores/types';
@@ -33,20 +34,22 @@ function getConfirmationItems(confirmationRequestMap: ConfirmationSlice['details
   const items: ConfirmationItem[] = [];
 
   Object.keys(confirmationRequestMap).forEach(type => {
-    // @ts-ignore
-    Object.values(confirmationRequestMap[type]).forEach(payload => {
-      items.push({
-        type: type as keyof ConfirmationSlice['details'],
-        payload,
+    if (CONFIRMATIONS_FIELDS.includes(type)) {
+      // @ts-ignore
+      Object.values(confirmationRequestMap[type]).forEach(payload => {
+        items.push({
+          type: type as keyof ConfirmationSlice['details'],
+          payload,
+        });
       });
-    });
+    }
   });
 
   return items;
 }
 
 export default function useConfirmations(): ConfirmationHookType {
-  const confirmationRequestMap = useSelector((state: RootState) => state.confirmation.details);
+  const confirmationRequestMap = useSelector((state: RootState) => state.requestState);
   const isDisplayConfirmation = useSelector((state: RootState) => state.appState.isDisplayConfirmation);
   const confirmationItems = useMemo<ConfirmationItem[]>(() => {
     return getConfirmationItems(confirmationRequestMap);

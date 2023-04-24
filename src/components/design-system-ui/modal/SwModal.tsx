@@ -3,7 +3,7 @@ import { SafeAreaView, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { FontSemiBold } from 'styles/sharedStyles';
-export interface Props {
+export interface SWModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   modalVisible: boolean;
@@ -11,7 +11,7 @@ export interface Props {
   modalStyle?: StyleProp<any>;
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
-  modalTitle: string;
+  modalTitle?: string;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -45,7 +45,7 @@ const SwModal = ({
   modalTitle,
   onModalHide,
   isFullHeight = false,
-}: Props) => {
+}: SWModalProps) => {
   return (
     <ModalBase
       isVisible={modalVisible}

@@ -26,7 +26,7 @@ import {
 import InputText from 'components/Input/InputText';
 import { Button, Icon } from 'components/design-system-ui';
 import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
-import { removeChain, upsertChain } from '../messaging';
+import { removeChain, upsertChain } from 'messaging/index';
 import { useToast } from 'react-native-toast-notifications';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { isUrl } from 'utils/index';

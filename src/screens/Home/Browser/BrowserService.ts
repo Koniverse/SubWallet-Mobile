@@ -1,7 +1,7 @@
 import React from 'react';
 import WebView from 'react-native-webview';
 import EventEmitter from 'eventemitter3';
-import { clearWebRunnerHandler, postMessage } from '../../../messaging';
+import { clearWebRunnerHandler, postMessage } from 'messaging/index';
 import { MESSAGE_ORIGIN_CONTENT } from '@subwallet/extension-base/defaults';
 import { TransportRequestMessage } from '@subwallet/extension-base/background/types';
 import { getId } from '@subwallet/extension-base/utils/getId';

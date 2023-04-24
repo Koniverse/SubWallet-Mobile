@@ -123,6 +123,14 @@ export const predefinedDApps: PredefinedDApps = {
   ],
   dapps: [
     {
+      name: 'Subwallet connect',
+      icon: 'https://connect.subwallet.app/icon-128.png',
+      url: 'https://connect.subwallet.app/#/',
+      categories: ['test'],
+      isSupportSubstrateAccount: true,
+      isSupportEthereumAccount: true,
+    },
+    {
       name: 'dotinsights | Polkadot & Kusama Ecosystem Map',
       url: 'https://www.dotinsights.xyz',
       icon: 'https://dotinsights.subwallet.app/assets/images/favicon/favicon-180x180.png',
@@ -728,14 +736,6 @@ export const predefinedDApps: PredefinedDApps = {
       icon: 'https://inkwhale.net/apple-touch-icon.png',
       url: 'https://inkwhale.net',
       categories: ['defi'],
-    },
-    {
-      name: 'Subwallet connect',
-      icon: 'https://connect.subwallet.app/icon-128.png',
-      url: 'https://connect.subwallet.app/#/',
-      categories: ['test'],
-      isSupportSubstrateAccount: true,
-      isSupportEthereumAccount: true,
     },
   ],
 };

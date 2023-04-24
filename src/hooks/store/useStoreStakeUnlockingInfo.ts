@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
 import { updateStakeUnlockingInfo } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeStakeUnlockingInfo } from '../../messaging';
+import { clearWebRunnerHandler, subscribeStakeUnlockingInfo } from 'messaging/index';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
 export default function useStoreStakeUnlockingInfo() {

@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { WebRunnerContext } from 'providers/contexts';
 import { CrowdloanJson } from '@subwallet/extension-base/background/KoniTypes';
 import { updateCrowdloan } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeCrowdloan } from '../../messaging';
+import { clearWebRunnerHandler, subscribeCrowdloan } from 'messaging/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getId } from '@subwallet/extension-base/utils/getId';

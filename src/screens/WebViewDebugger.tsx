@@ -9,7 +9,7 @@ import { WebRunnerContext } from 'providers/contexts';
 import { Button } from 'components/Button';
 import { MessageTypes } from '@subwallet/extension-base/background/types';
 import { Textarea } from 'components/Textarea';
-import { sendMessage } from '../messaging';
+import { sendMessage } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Dropdown } from 'components/Dropdown';
 

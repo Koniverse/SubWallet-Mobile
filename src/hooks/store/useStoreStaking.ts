@@ -3,7 +3,7 @@ import { WebRunnerContext } from 'providers/contexts';
 import { useSelector } from 'react-redux';
 import { StoreStatus } from 'stores/types';
 import { updateStaking } from 'stores/updater';
-import { clearWebRunnerHandler, subscribeStaking } from '../../messaging';
+import { clearWebRunnerHandler, subscribeStaking } from 'messaging/index';
 import { useContext, useEffect, useState } from 'react';
 import { RootState } from 'stores/index';
 import { getId } from '@subwallet/extension-base/utils/getId';

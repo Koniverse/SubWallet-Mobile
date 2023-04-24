@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ScrollView, StyleProp, View } from 'react-native';
 import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
-import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from '../messaging';
+import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from 'messaging/index';
 import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import { backToHome } from 'utils/navigation';

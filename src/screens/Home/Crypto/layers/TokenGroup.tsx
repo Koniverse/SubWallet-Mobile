@@ -12,7 +12,7 @@ import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import TabsContainerHeader from 'screens/Home/Crypto/TabsContainerHeader';
 import { getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
-import { restartSubscriptionServices, toggleBalancesVisibility } from '../../../../messaging';
+import { restartSubscriptionServices, toggleBalancesVisibility } from 'messaging/index';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import {EyeSlash, FadersHorizontal, Heart, MagnifyingGlass} from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';

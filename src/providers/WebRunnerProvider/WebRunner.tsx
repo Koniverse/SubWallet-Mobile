@@ -13,7 +13,7 @@ import {
   startCronAndSubscriptionServices,
   startCronServices,
   startSubscriptionServices,
-} from '../../messaging';
+} from 'messaging/index';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
@@ -378,6 +378,7 @@ const now = new Date().getTime();
 const URI_PARAMS =
   '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
 
+// const BASE_URI = 'http://192.168.10.153:9000';
 const BASE_URI = WEB_RUNNER_BASE_URI
   ? WEB_RUNNER_BASE_URI
   : Platform.OS === 'android'

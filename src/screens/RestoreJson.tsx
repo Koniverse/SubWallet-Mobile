@@ -7,7 +7,7 @@ import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-do
 import * as RNFS from 'react-native-fs';
 import { SubmitButton } from 'components/SubmitButton';
 import { isKeyringPairs$Json } from 'types/typeGuards';
-import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from '../messaging';
+import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from 'messaging/index';
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';

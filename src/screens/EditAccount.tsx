@@ -23,7 +23,7 @@ import { ColorMap } from 'styles/color';
 import { SIGN_MODE } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { editAccount } from '../messaging';
+import { editAccount } from 'messaging/index';
 
 const editAccountAddressItem: StyleProp<any> = {
   borderRadius: 5,

@@ -6,7 +6,7 @@ import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContract
 import useFormControl from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { upsertCustomToken, validateCustomToken } from '../../messaging';
+import { upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { AddressScanner } from 'components/Scanner/AddressScanner';

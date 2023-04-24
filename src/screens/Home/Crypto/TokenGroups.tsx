@@ -14,7 +14,7 @@ import { Header } from 'components/Header';
 import { GradientBackgroundColorSet, ScreenContainer } from 'components/ScreenContainer';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { toggleBalancesVisibility } from '../../../messaging';
+import { toggleBalancesVisibility } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';

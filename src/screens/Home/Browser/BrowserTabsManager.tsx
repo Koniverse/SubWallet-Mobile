@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BrowserTabsManagerProps, RootNavigationProps } from 'routes/index';
-import { BrowserTab, BrowserTabRef } from 'screens/Home/Browser/BrowserTab';
 import { useNavigation } from '@react-navigation/native';
-import useConfirmations from 'hooks/useConfirmations';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { StyleProp, View } from 'react-native';
-import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
-import { BrowserSliceTab, SiteInfo } from 'stores/types';
-import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
-import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
+import { _AssetType } from '@subwallet/chain-list/types';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { ConfirmationItem } from 'hooks/types';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
+import useConfirmations from 'hooks/useConfirmations';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { StyleProp, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { BrowserTabsManagerProps, RootNavigationProps } from 'routes/index';
+import { BrowserTab, BrowserTabRef } from 'screens/Home/Browser/BrowserTab';
+import { BrowserTabs } from 'screens/Home/Browser/BrowserTabs';
+import { RootState } from 'stores/index';
+import { BrowserSliceTab, SiteInfo } from 'stores/types';
+import { clearAllTabScreenshots, createNewTabIfEmpty, updateActiveTab } from 'stores/updater';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -52,7 +53,7 @@ function getTabItemWrapperStyle(isTabActive: boolean): StyleProp<any> {
 function ConfirmationTrigger() {
   const navigation = useNavigation<RootNavigationProps>();
   const isLocked = useSelector((state: RootState) => state.appState.isLocked);
-  const { isEmptyRequests, isDisplayConfirmation, confirmationItems } = useConfirmations();
+  const { confirmationItems } = useConfirmations();
 
   useEffect(() => {
     const addTokenRequest = confirmationItems.find(item => item.type === 'addTokenRequest') as
@@ -71,16 +72,13 @@ function ConfirmationTrigger() {
       const addTokenPayload = addTokenRequest.payload as ConfirmationsQueue['addTokenRequest'][0];
       if (addTokenRequest.payload) {
         navigation.navigate('ImportToken', { payload: addTokenPayload });
-      } else if (addTokenPayload.payload.type === 'erc721') {
+      } else if (addTokenPayload.payload.type === _AssetType.ERC721) {
         navigation.navigate('ImportNft', { payload: addTokenPayload });
       }
 
       return;
     }
-    if (isDisplayConfirmation && !isLocked && !isEmptyRequests) {
-      navigation.navigate('ConfirmationPopup');
-    }
-  }, [isDisplayConfirmation, isEmptyRequests, navigation, isLocked, confirmationItems]);
+  }, [navigation, isLocked, confirmationItems]);
 
   return <></>;
 }

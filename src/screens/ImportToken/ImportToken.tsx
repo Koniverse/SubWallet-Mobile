@@ -12,7 +12,7 @@ import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { completeConfirmation, upsertCustomToken, validateCustomToken } from '../../messaging';
+import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/permission/camera';

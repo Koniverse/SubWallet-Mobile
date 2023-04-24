@@ -27,7 +27,7 @@ import {
   makeTransferNftQrSubstrate,
   nftForceUpdate,
   substrateNftSubmitTransaction,
-} from '../../messaging';
+} from 'messaging/index';
 import { Warning } from 'components/Warning';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { WebRunnerContext } from 'providers/contexts';

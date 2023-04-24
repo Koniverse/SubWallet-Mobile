@@ -4,7 +4,7 @@ import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/cha
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getFreeBalance } from '../../messaging';
+import { getFreeBalance } from 'messaging/index';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 

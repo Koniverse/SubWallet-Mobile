@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { clearWebRunnerHandler, subscribeChainRegistry } from '../../messaging';
+import { clearWebRunnerHandler, subscribeChainRegistry } from 'messaging/index';
 import { updateChainRegistry } from 'stores/updater';
 import { ChainRegistry } from '@subwallet/extension-base/background/KoniTypes';
 import { WebRunnerContext } from 'providers/contexts';

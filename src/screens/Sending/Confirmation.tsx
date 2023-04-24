@@ -14,7 +14,7 @@ import { AddressField } from 'components/Field/Address';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BalanceField } from 'components/Field/Balance';
-import { makeCrossChainTransfer, makeCrossChainTransferQr, makeTransfer, makeTransferQr } from '../../messaging';
+import { makeCrossChainTransfer, makeCrossChainTransferQr, makeTransfer, makeTransferQr } from 'messaging/index';
 import { TransferResultType } from 'types/tx';
 import { TransferValue } from 'components/TransferValue';
 import { BalanceFormatType } from 'types/ui-types';

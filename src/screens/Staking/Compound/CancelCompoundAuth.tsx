@@ -21,7 +21,7 @@ import { CancelCompoundAuthProps } from 'routes/staking/compoundAction';
 import { ContainerHorizontalPadding, ScrollViewStyle } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { cancelCompoundQr, submitTuringCancelStakeCompounding } from '../../../messaging';
+import { cancelCompoundQr, submitTuringCancelStakeCompounding } from 'messaging/index';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
