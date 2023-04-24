@@ -19,10 +19,11 @@ export type TokenItemType = {
 interface Props {
   modalVisible: boolean;
   onCancel: () => void;
-  onSelectItem: (item?: TokenItemType) => void;
+  onSelectItem: (item: TokenItemType) => void;
   items: TokenItemType[];
   title?: string;
   defaultValue?: string;
+  acceptDefaultValue?: boolean;
 }
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
@@ -46,20 +47,23 @@ export const TokenSelector = ({
   onCancel,
   onSelectItem,
   items,
+  acceptDefaultValue,
   title = i18n.title.token,
   defaultValue,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   useEffect(() => {
-    if (!defaultValue) {
-      onSelectItem(items[0]);
-    } else {
-      const existed = items.find(item => item.slug === defaultValue);
-
-      if (!existed) {
-        onSelectItem(items[0]);
+    if (acceptDefaultValue) {
+      if (!defaultValue) {
+        items[0] && onSelectItem(items[0]);
       } else {
-        onSelectItem(existed);
+        const existed = items.find(item => item.slug === defaultValue);
+
+        if (!existed) {
+          items[0] && onSelectItem(items[0]);
+        } else {
+          onSelectItem(existed);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

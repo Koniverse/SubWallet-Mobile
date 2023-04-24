@@ -18,12 +18,12 @@ interface Props extends TextInputProps {
 
 const searchContainerStyle: StyleProp<any> = {
   backgroundColor: '#1A1A1A',
-  borderRadius: 5,
+  borderRadius: 8,
   alignItems: 'center',
   paddingRight: 4,
   paddingLeft: 12,
   flexDirection: 'row',
-  height: 44,
+  height: 48,
 };
 
 const SearchIcon = MagnifyingGlass;

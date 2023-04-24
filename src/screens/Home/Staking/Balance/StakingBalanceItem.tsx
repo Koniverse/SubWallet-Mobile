@@ -44,7 +44,7 @@ const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
 };
 
 const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
-  paddingLeft: 16,
+  paddingLeft: 8,
   paddingRight: 8,
   flex: 1,
   display: 'flex',
