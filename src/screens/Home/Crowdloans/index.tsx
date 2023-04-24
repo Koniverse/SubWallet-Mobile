@@ -1,12 +1,10 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
-import { CrowdloanItem, getGroupKey } from 'screens/Home/Crowdloans/CrowdloanItem';
+import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 import { CrowdloanItemType } from '@subwallet/extension-koni-ui/src/types/crowdloan';
-import { FunnelSimple, Rocket } from 'phosphor-react-native';
+import { Rocket } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
-import { CrowdloanFilter } from 'screens/Home/Crowdloans/CrowdloanFilter';
-import { FilterOptsType } from 'types/ui-types';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { ColorMap } from 'styles/color';
@@ -25,33 +23,23 @@ const renderListEmptyComponent = () => {
   return <EmptyList title={i18n.common.emptyCrowdloanListMessage} icon={Rocket} />;
 };
 
-function getListByFilterOpt(items: CrowdloanItemType[], filterOpts: FilterOptsType) {
-  let result: CrowdloanItemType[];
-  if (filterOpts.paraChain !== 'all' && filterOpts.crowdloanStatus !== 'all') {
-    result = items.filter(
-      ({ relayParentDisplayName, paraState }) =>
-        getGroupKey(relayParentDisplayName) === filterOpts.paraChain && paraState === filterOpts.crowdloanStatus,
-    );
-  } else if (filterOpts.paraChain === 'all' && filterOpts.crowdloanStatus !== 'all') {
-    result = items.filter(({ paraState }) => paraState === filterOpts.crowdloanStatus);
-  } else if (filterOpts.paraChain !== 'all' && filterOpts.crowdloanStatus === 'all') {
-    result = items.filter(({ relayParentDisplayName }) => getGroupKey(relayParentDisplayName) === filterOpts.paraChain);
-  } else {
-    result = items;
-  }
-
-  return result;
+enum FilterValue {
+  POLKADOT_PARACHAIN = 'Polkadot parachain',
+  KUSAMA_PARACHAIN = 'Kusama parachain',
+  WINNER = 'completed',
+  FAIL = 'failed',
 }
 
-const defaultFilterOpts = {
-  paraChain: 'all',
-  crowdloanStatus: 'all',
-};
+const defaultFilterOpts = [
+  { label: i18n.crowdloanScreen.filter.polkadotChain, value: FilterValue.POLKADOT_PARACHAIN },
+  { label: i18n.crowdloanScreen.filter.kusamaChain, value: FilterValue.KUSAMA_PARACHAIN },
+  { label: i18n.crowdloanScreen.filter.win, value: FilterValue.WINNER },
+  { label: i18n.crowdloanScreen.filter.fail, value: FilterValue.FAIL },
+];
 
 export const CrowdloansScreen = () => {
   const items: CrowdloanItemType[] = useGetCrowdloanList();
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [filterOpts, setFilterOpts] = useState<FilterOptsType>(defaultFilterOpts);
+  const [filterOpts, setFilterOpts] = useState<string[]>([]);
   const [isRefresh, refresh] = useRefresh();
   const { clearBackgroundServiceTimeout } = useContext(WebRunnerContext);
   const isCrowdloanServiceActive = useSelector(
@@ -60,17 +48,32 @@ export const CrowdloansScreen = () => {
   const isFocused = useIsFocused();
 
   const doFilterOptions = useCallback(
-    (itemList: CrowdloanItemType[], searchString: string) => {
-      const lowerCaseSearchString = searchString.toLowerCase();
+    (itemList: CrowdloanItemType[], searchKeyword: string) => {
+      const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
       const result = getListByFilterOpt(itemList, filterOpts);
-      if (searchString) {
-        return result.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchString));
-      } else {
-        return result;
+      if (searchKeyword.length > 0) {
+        return result.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchKeyword));
       }
+      return result;
     },
     [filterOpts],
   );
+
+  function getListByFilterOpt(crowdloanItems: CrowdloanItemType[], filterOptions: string[]) {
+    setFilterOpts(filterOptions);
+    if (filterOptions.length === 0) {
+      return crowdloanItems;
+    }
+    let result: CrowdloanItemType[];
+    result = crowdloanItems.filter(({ relayParentDisplayName, paraState = '' }) => {
+      if (filterOptions.includes(relayParentDisplayName) || filterOptions.includes(paraState)) {
+        return true;
+      }
+      return false;
+    });
+
+    return result;
+  }
 
   useEffect(() => {
     if (isFocused && !isCrowdloanServiceActive) {
@@ -88,15 +91,9 @@ export const CrowdloansScreen = () => {
       items={items}
       showLeftBtn={false}
       searchFunction={doFilterOptions}
-      rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
-      afterListItem={
-        <CrowdloanFilter
-          modalVisible={modalVisible}
-          onChangeModalVisible={() => setModalVisible(false)}
-          filterOpts={filterOpts}
-          onChangeFilterOpts={setFilterOpts}
-        />
-      }
+      filterOptions={defaultFilterOpts}
+      filterFunction={getListByFilterOpt}
+      // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
       refreshControl={
         <RefreshControl
           style={{ backgroundColor: ColorMap.dark1 }}
