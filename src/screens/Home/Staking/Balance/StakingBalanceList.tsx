@@ -110,15 +110,11 @@ const StakingBalanceList = () => {
   }, [stakingNavigation]);
 
   const rightIconOption = useMemo(() => {
-    if (!isCanSign) {
-      return undefined;
-    }
-
     return {
       icon: Plus,
       onPress: handlePressStartStaking,
     };
-  }, [handlePressStartStaking, isCanSign]);
+  }, [handlePressStartStaking]);
 
   return (
     <ScreenContainer backgroundColor={theme.colorBgDefault}>
@@ -135,13 +131,6 @@ const StakingBalanceList = () => {
           filterFunction={filterFunction}
           renderItem={renderItem}
           rightIconOption={rightIconOption}
-          // afterListItem={
-          //   isCanSign ? (
-          //     <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
-          //       <Button onPress={handlePressStartStaking}>{i18n.stakingScreen.startStaking}</Button>
-          //     </View>
-          //   ) : undefined
-          // }
           refreshControl={
             <RefreshControl
               style={{ backgroundColor: ColorMap.dark1 }}

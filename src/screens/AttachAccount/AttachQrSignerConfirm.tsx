@@ -3,7 +3,6 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { AddressField } from 'components/Field/Address';
 import InputCheckBox from 'components/Input/InputCheckBox';
-import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import { Copy } from 'phosphor-react-native';
@@ -19,6 +18,7 @@ import { ContainerHorizontalPadding, MarginBottomForSubmitButton, sharedStyles }
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import reformatAddress from 'utils/index';
+import { Button } from 'components/design-system-ui';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -195,13 +195,13 @@ const AttachQrSignerConfirm = ({ route: { params: account }, navigation: { goBac
         {errors.length > 0 &&
           errors.map((message, index) => <Warning isDanger message={message} key={index} style={WarningStyle} />)}
         <View style={ActionAreaStyle}>
-          <SubmitButton
+          <Button
             disabled={!checkValidateForm(formState.isValidated) || errors.length > 0}
-            isBusy={isBusy}
+            loading={isBusy}
             style={ButtonStyle}
-            title={i18n.common.attachAccount}
-            onPress={handleSubmit}
-          />
+            onPress={handleSubmit}>
+            {i18n.common.attachAccount}
+          </Button>
         </View>
       </View>
     </ContainerWithSubHeader>

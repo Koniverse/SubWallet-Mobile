@@ -36,6 +36,7 @@ const LabelStyle: StyleProp<TextStyle> = {
   fontSize: 14,
   lineHeight: 22,
   ...FontMedium,
+  fontWeight: '600',
   color: '#fff',
 };
 

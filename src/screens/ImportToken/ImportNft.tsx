@@ -15,7 +15,6 @@ import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
-import { SubmitButton } from 'components/SubmitButton';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
@@ -26,6 +25,7 @@ import {
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { _AssetType } from '@subwallet/chain-list/types';
+import { Button } from 'components/design-system-ui';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -276,13 +276,9 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
         )}
 
-        <SubmitButton
-          isBusy={loading}
-          title={i18n.importEvmNft.importNft}
-          activeOpacity={BUTTON_ACTIVE_OPACITY}
-          onPress={handleAddToken}
-          disabled={isDisableAddNFT || !isNetConnected || !isReady}
-        />
+        <Button loading={loading} onPress={handleAddToken} disabled={isDisableAddNFT || !isNetConnected || !isReady}>
+          {i18n.importEvmNft.importNft}
+        </Button>
 
         <AddressScanner
           qrModalVisible={isShowQrModalVisible}

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { GestureResponderEvent, ScrollView, StyleProp, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
 import { SeedWord } from 'components/SeedWord';
 import {
@@ -10,7 +10,6 @@ import {
   ScrollViewStyle,
   sharedStyles,
 } from 'styles/sharedStyles';
-import { SubmitButton } from 'components/SubmitButton';
 import { Warning } from 'components/Warning';
 import { CopySimple } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -21,7 +20,7 @@ import { SeedWordDataType } from 'screens/CreateAccount/types';
 import { Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 interface Props {
-  onPressSubmit: (event: GestureResponderEvent) => void;
+  onPressSubmit: () => void;
   seed: string;
 }
 
@@ -122,7 +121,7 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
         />
       </View>
       <View style={footerAreaStyle}>
-        <SubmitButton title={i18n.common.continue} onPress={onPressSubmit} />
+        <Button onPress={onPressSubmit}>{i18n.common.continue}</Button>
       </View>
     </View>
   );

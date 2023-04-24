@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { GestureResponderEvent, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
 import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhraseArea';
-import { SubmitButton } from 'components/SubmitButton';
 import { shuffleArray } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
+import { Button } from 'components/design-system-ui';
 
 interface Props {
-  onPressSubmit: (event: GestureResponderEvent) => void;
+  onPressSubmit: () => void;
   seed: string;
 }
 
@@ -111,11 +111,9 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
         <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
       </View>
       <View style={footerAreaStyle}>
-        <SubmitButton
-          disabled={!isCorrectWord(selectedWords, seed)}
-          title={i18n.common.continue}
-          onPress={onPressSubmit}
-        />
+        <Button disabled={!isCorrectWord(selectedWords, seed)} onPress={onPressSubmit}>
+          {i18n.common.continue}
+        </Button>
       </View>
     </View>
   );

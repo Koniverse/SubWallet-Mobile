@@ -1,16 +1,18 @@
 import React, { useCallback, useMemo } from 'react';
-import { SelectItem, SwFullSizeModal } from 'components/design-system-ui';
+import { Button, Icon, SelectItem, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { ContainerHorizontalPadding, FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { _ChainInfo } from '@subwallet/chain-list/types';
+import { ContainerHorizontalPadding, FlatListScreenPaddingTop, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ListRenderItemInfo, View } from 'react-native';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
-import { ShareNetwork } from 'phosphor-react-native';
+import { PlusCircle, ShareNetwork } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 
 interface Props {
-  chainInfo: _ChainInfo;
+  chainSlug: string;
   modalVisible: boolean;
   selectedValue: string;
   onPressBack: () => void;
@@ -41,13 +43,15 @@ const searchFunction = (items: { label: string; value: string }[], searchString:
 
 export const RpcSelectorModal = ({
   modalVisible,
-  chainInfo,
+  chainSlug,
   selectedValue,
   renderEmptyList,
   onPressBack,
   onSelectItem,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
+  const chainInfo = useFetchChainInfo(chainSlug);
   const providerList = useMemo(() => {
     return Object.entries(chainInfo.providers).map(([key, provider]) => {
       return {
@@ -87,6 +91,18 @@ export const RpcSelectorModal = ({
         onPressBack={onPressBack}
         renderListEmptyComponent={renderEmptyList ? renderEmptyList : defaultRenderListEmptyComponent}
         isShowFilterBtn={false}
+        afterListItem={
+          <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
+            <Button
+              icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
+              onPress={() => {
+                onPressBack();
+                navigation.navigate('AddProvider', { slug: chainInfo.slug });
+              }}>
+              {'Add new provider'}
+            </Button>
+          </View>
+        }
       />
     </SwFullSizeModal>
   );

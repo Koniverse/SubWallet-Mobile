@@ -6,7 +6,6 @@ import i18n from 'utils/i18n/i18n';
 import { SendFromAddressField } from 'screens/Sending/Field/SendFromAddressField';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
-import { SubmitButton } from 'components/SubmitButton';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { DestinationChainSelect } from 'screens/DestinationChainSelect';
 import { requestCameraPermission } from 'utils/permission/camera';
@@ -24,6 +23,7 @@ import { ChainSelectContainer } from 'screens/Sending/Field/ChainSelectContainer
 import { getNetworkPrefix } from 'screens/Sending/Confirmation';
 import { WebRunnerContext } from 'providers/contexts';
 import SelectNetworkModal from 'components/Modal/SelectNetworkModal';
+import { Button } from 'components/design-system-ui';
 
 interface Props {
   senderAddress: string;
@@ -216,12 +216,12 @@ export const ChainAndAccountSelectScreen = ({
       </ScrollView>
 
       <View style={{ marginTop: 16 }}>
-        <SubmitButton
+        <Button
           disabled={!isValidTransferInfo || !isNetConnected}
-          title={i18n.common.continue}
           style={{ width: '100%', ...MarginBottomForSubmitButton }}
-          onPress={onPressToNextStep}
-        />
+          onPress={onPressToNextStep}>
+          {i18n.common.continue}
+        </Button>
       </View>
 
       <SelectNetworkModal

@@ -13,6 +13,7 @@ import { updateLanguage } from 'stores/MobileSettings';
 import { RootState } from 'stores/index';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import moment from 'moment';
+import {Button} from "components/design-system-ui";
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -63,7 +64,7 @@ export const Languages = () => {
       <View style={{ flex: 1 }}>
         <FlatList data={filteredLanguageOption} renderItem={renderItem} style={{ ...ScrollViewStyle }} />
         <View style={footerAreaStyle}>
-          <SubmitButton title={i18n.common.done} onPress={onPressDone} />
+          <Button onPress={onPressDone}>{i18n.common.done}</Button>
         </View>
       </View>
     </SelectScreen>

@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { AddressField } from 'components/Field/Address';
 import { TextField } from 'components/Field/Text';
-import { SubmitButton } from 'components/SubmitButton';
 import { SCANNER_QR_STEP } from 'constants/qr';
 import useGetAccountAndNetworkScanned from 'hooks/screen/Signing/useGetAccountAndNetworkScanned';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
@@ -15,6 +14,7 @@ import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sha
 import i18n from 'utils/i18n/i18n';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { HIDE_MODAL_DURATION } from 'constants/index';
+import { Button } from 'components/design-system-ui';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   ...ContainerHorizontalPadding,
@@ -111,20 +111,12 @@ const SigningConfirm = () => {
           />
         </ScrollView>
         <View style={ActionContainerStyle}>
-          <SubmitButton
-            backgroundColor={ColorMap.dark2}
-            disabledColor={ColorMap.buttonOverlayButtonColor}
-            style={ButtonStyle}
-            title={i18n.common.cancel}
-            disabled={isBusy}
-            onPress={goBack}
-          />
-          <SubmitButton
-            style={ButtonStyle}
-            title={i18n.common.approve}
-            isBusy={isBusy}
-            onPress={() => setVisible(true)}
-          />
+          <Button type={'secondary'} style={ButtonStyle} disabled={isBusy} onPress={goBack}>
+            {i18n.common.cancel}
+          </Button>
+          <Button style={ButtonStyle} loading={isBusy} onPress={() => setVisible(true)}>
+            {i18n.common.approve}
+          </Button>
         </View>
 
         <PasswordModal
