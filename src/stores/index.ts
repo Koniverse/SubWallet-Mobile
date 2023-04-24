@@ -18,7 +18,7 @@ import NftReducer from './feature/Nft';
 import PriceReducer from './feature/Price';
 import StakingReducer from './feature/Staking';
 import TransactionHistoryReducer from './feature/TransactionHistory';
-import PasswordModalReducer from "stores/PasswordModalState";
+import PasswordModalReducer from 'stores/PasswordModalState';
 
 const persistConfig = {
   key: 'root',

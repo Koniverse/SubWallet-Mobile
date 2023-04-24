@@ -32,6 +32,7 @@ import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { isUrl } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...sharedStyles.layoutContainer,
@@ -67,6 +68,7 @@ export const NetworkSettingDetail = ({
   const [chainInfo] = useState(_chainInfo);
   const [chainState] = useState(_chainState);
   const toast = useToast();
+  const theme = useSubWalletTheme().swThemes;
 
   const { decimals, symbol } = useMemo(() => {
     return _getChainNativeTokenBasicInfo(chainInfo);
@@ -128,7 +130,7 @@ export const NetworkSettingDetail = ({
       },
       blockExplorer: {
         name: 'blockExplorer',
-        value: _blockExplorer,
+        value: _blockExplorer || '',
         validateFunc: (value: string) => {
           return validateBlockExplorer(value);
         },
@@ -222,6 +224,29 @@ export const NetworkSettingDetail = ({
     onChangeValue('crowdloanUrl')(value);
   };
 
+  const isDisabledSubmitButton = useMemo(() => {
+    return (
+      !!formState.errors.blockExplorer.length ||
+      !!formState.errors.crowdloanUrl.length ||
+      !!formState.errors.currentProvider.length ||
+      isDeleting ||
+      (formState.data.currentProvider === currentProviderUrl &&
+        formState.data.blockExplorer === _blockExplorer &&
+        formState.data.crowdloanUrl === _crowdloanUrl)
+    );
+  }, [
+    _blockExplorer,
+    _crowdloanUrl,
+    currentProviderUrl,
+    formState.data.blockExplorer,
+    formState.data.crowdloanUrl,
+    formState.data.currentProvider,
+    formState.errors.blockExplorer.length,
+    formState.errors.crowdloanUrl.length,
+    formState.errors.currentProvider.length,
+    isDeleting,
+  ]);
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -281,25 +306,29 @@ export const NetworkSettingDetail = ({
 
         <View>
           <Button
-            disabled={
-              !!formState.errors.blockExplorer.length ||
-              !!formState.errors.crowdloanUrl.length ||
-              !!formState.errors.currentProvider.length ||
-              formState.data.currentProvider === currentProviderUrl ||
-              isDeleting
-            }
+            disabled={isDisabledSubmitButton}
             loading={loading}
-            icon={<Icon phosphorIcon={FloppyDiskBack} size={'lg'} weight={'fill'} />}
+            icon={
+              <Icon
+                phosphorIcon={FloppyDiskBack}
+                size={'lg'}
+                weight={'fill'}
+                iconColor={isDisabledSubmitButton ? theme.colorTextLight5 : theme.colorWhite}
+              />
+            }
             onPress={onSubmit}>
             {'Save'}
           </Button>
         </View>
 
         <DeleteModal
-          title={'Delete network'}
+          title={'Delete chain'}
           visible={deleteModalVisible}
-          message={'Delete network'}
+          confirmation={'You are about to delete this chain'}
+          message={'Confirm delete this chain'}
           onDelete={handeDeleteCustomToken}
+          onChangeModalVisible={() => setDeleteModalVisible(false)}
+          loading={isDeleting}
         />
 
         <RpcSelectorModal

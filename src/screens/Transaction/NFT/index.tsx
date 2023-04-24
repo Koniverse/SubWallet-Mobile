@@ -26,7 +26,6 @@ import { RESULTS } from 'react-native-permissions';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import useGoHome from 'hooks/screen/useGoHome';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
 import { Button } from 'components/design-system-ui';
@@ -37,6 +36,8 @@ import { nftParamsHandler } from '../helper';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { SendNFTProps } from 'screens/Home/NFT/NFTStackScreen';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -79,6 +80,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
     params: { chain: nftChain, collectionId, itemId, owner },
   },
 }: SendNFTProps) => {
+  const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
@@ -171,10 +173,12 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const closeQrScan = useCallback(() => {
     setIsShowQrModalVisible(false);
   }, []);
-  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
 
-  // const disableSubmit = !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected;
-  const disableSubmit = false;
+  const goBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const disableSubmit = !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected;
 
   const onSubmitForm = useCallback(
     async (_formState: FormState) => {
@@ -227,7 +231,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   return (
     <ContainerWithSubHeader
       title={title}
-      onPressBack={goHome}
+      onPressBack={goBack}
       disabled={loading}
       rightButtonTitle={i18n.transferNft.send}
       disableRightButton={disableSubmit}

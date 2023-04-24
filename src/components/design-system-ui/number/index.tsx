@@ -130,9 +130,11 @@ const Number: React.FC<SwNumberProps> = props => {
     }
   }, [value, decimal, customFormatter, formatType, metadata]);
 
-  const [_int, _dec] = useMemo((): [string, string] => {
-    const [int, dec] = formatted.split('.');
-    return [intToLocaleString(int, thousandSeparator), dec];
+  const [_int, _dec, _abbreviation] = useMemo((): [string, string, string] => {
+    const [int, decAndAbb] = formatted.split('.');
+    const [dec, abbreviation] = decAndAbb ? decAndAbb.split(' ') : [''];
+
+    return [intToLocaleString(int, thousandSeparator), dec, abbreviation];
   }, [formatted]);
 
   return (
@@ -164,6 +166,16 @@ const Number: React.FC<SwNumberProps> = props => {
           }}>
           {decimalSeparator}
           {_dec}
+        </Typography.Text>
+      )}
+      {!!_abbreviation && (
+        <Typography.Text
+          style={{
+            ...intStyle,
+            ...textStyle,
+            fontSize: integerFontSize,
+          }}>
+          {` ${_abbreviation}`}
         </Typography.Text>
       )}
       {suffix && (

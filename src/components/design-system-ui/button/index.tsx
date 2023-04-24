@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   GestureResponderEvent,
@@ -107,7 +107,17 @@ const Button: React.FC<ButtonProps> = props => {
 
   const indicatorColor = (StyleSheet.flatten(_style[`${buttonType}RawText`]) as any).color;
 
-  const iconNode = loading ? <ActivityIndicator animating color={indicatorColor} size="small" /> : icon ? icon : null;
+  const iconNode = useMemo(() => {
+    if (loading) {
+      return <ActivityIndicator animating color={indicatorColor} size="small" />;
+    }
+
+    if (typeof icon === 'function') {
+      return icon(indicatorColor);
+    }
+
+    return icon || null;
+  }, [icon, indicatorColor, loading]);
   const buttonNode = (
     <TouchableHighlight
       accessibilityRole="button"

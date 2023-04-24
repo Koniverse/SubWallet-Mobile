@@ -5,8 +5,6 @@ import { ImportTokenProps, RootNavigationProps } from 'routes/index';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { SubmitButton } from 'components/SubmitButton';
-import { ColorMap } from 'styles/color';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { NetworkField } from 'components/Field/Network';
@@ -30,11 +28,11 @@ import {
   _isChainTestNet,
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
+import { Button } from 'components/design-system-ui';
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useGetContractSupportedChains();
-  console.log('chainInfoMap', chainInfoMap);
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
@@ -252,21 +250,16 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           />
         </ScrollView>
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
-          <SubmitButton
-            disabled={isBusy}
-            disabledColor={ColorMap.buttonOverlayButtonColor}
-            title={i18n.common.cancel}
-            backgroundColor={ColorMap.dark2}
-            style={{ flex: 1, marginRight: 8 }}
-            onPress={_goBack}
-          />
-          <SubmitButton
+          <Button disabled={isBusy} type={'secondary'} style={{ flex: 1, marginRight: 6 }} onPress={_goBack}>
+            {i18n.common.cancel}
+          </Button>
+          <Button
             disabled={addTokenButtonDisabled}
-            isBusy={isBusy}
-            style={{ flex: 1, marginLeft: 8 }}
-            title={i18n.common.addToken}
-            onPress={() => onSubmit(formState)}
-          />
+            loading={isBusy}
+            style={{ flex: 1, marginLeft: 6 }}
+            onPress={() => onSubmit(formState)}>
+            {i18n.common.addToken}
+          </Button>
         </View>
         <ChainSelect
           items={chainOptions}

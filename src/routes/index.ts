@@ -44,7 +44,8 @@ export type RootStackParamList = {
   ImportPrivateKey: undefined;
   NetworksSetting: undefined;
   NetworkSettingDetail: { chainSlug: string };
-  SendFund: { selectedNetworkKey?: string; selectedToken?: string };
+  ImportNetwork: undefined;
+  SendFund: { slug?: string };
   Languages: undefined;
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };

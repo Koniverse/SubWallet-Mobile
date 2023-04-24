@@ -14,13 +14,17 @@ export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   style?: StyleProp<any>;
   isShowPlaceHolder?: boolean;
   statusBarColor?: string;
+  needGapWithStatusBar?: boolean;
 }
 
-const getContainerStyle: (backgroundColor?: string) => StyleProp<any> = (backgroundColor?: string) => {
+const getContainerStyle: (backgroundColor?: string, needGapWithStatusBar?: boolean) => StyleProp<any> = (
+  backgroundColor?: string,
+  needGapWithStatusBar?: boolean,
+) => {
   return {
     ...sharedStyles.container,
     backgroundColor: backgroundColor || '#0C0C0C',
-    paddingTop: STATUS_BAR_HEIGHT + 13,
+    paddingTop: needGapWithStatusBar ? STATUS_BAR_HEIGHT + 13 : 16,
   };
 };
 
@@ -29,12 +33,13 @@ export const ContainerWithSubHeader = ({
   style,
   isShowPlaceHolder = true,
   statusBarColor = ColorMap.dark1,
+  needGapWithStatusBar = true,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={[getContainerStyle(subHeaderProps.backgroundColor), style]}>
+      style={[getContainerStyle(subHeaderProps.backgroundColor, needGapWithStatusBar), style]}>
       {isShowPlaceHolder && <View style={getStatusBarPlaceholderStyle(statusBarColor)} />}
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />

@@ -162,6 +162,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
       <FlatListScreen
         beforeListItem={beforeList}
         items={currentChainList}
+        isShowFilterBtn={false}
         style={FlatListScreenPaddingTop}
         title={i18n.title.customization}
         searchFunction={searchFunction}

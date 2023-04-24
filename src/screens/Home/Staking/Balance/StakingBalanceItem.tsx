@@ -2,7 +2,7 @@ import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { Icon, Tag, Number } from 'components/design-system-ui';
 import { StakingDataType } from 'hooks/types';
-import { User, Users } from 'phosphor-react-native';
+import {CaretRight, User, Users} from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
@@ -27,8 +27,14 @@ const InfoContainerStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
   width: '100%',
-  paddingTop: 20,
-  paddingBottom: 12,
+  paddingLeft: 12,
+  paddingRight: 12,
+  paddingTop: 11,
+  paddingBottom: 11,
+  backgroundColor: '#1A1A1A',
+  borderRadius: 8,
+  marginBottom: 8,
+  alignItems: 'center',
 };
 const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
   flexDirection: 'row',
@@ -38,7 +44,7 @@ const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
 };
 
 const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
-  paddingLeft: 16,
+  paddingLeft: 8,
   paddingRight: 8,
   flex: 1,
   display: 'flex',
@@ -55,12 +61,7 @@ const NetworkNameStyle: StyleProp<TextStyle> = {
 const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
   alignItems: 'flex-end',
   paddingLeft: 2,
-};
-
-const SeparatorStyle: StyleProp<ViewStyle> = {
-  borderBottomWidth: 1,
-  borderBottomColor: ColorMap.dark2,
-  marginLeft: 56,
+  paddingRight: 12,
 };
 
 const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
@@ -118,9 +119,8 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
             textStyle={{ ...FontMedium }}
           />
         </View>
+        <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'md'} />
       </View>
-
-      <View style={SeparatorStyle} />
     </TouchableOpacity>
   );
 };

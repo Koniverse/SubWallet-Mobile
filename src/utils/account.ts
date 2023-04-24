@@ -19,7 +19,7 @@ export const findAccountByAddress = (accounts: AccountJson[], address?: string):
     }
 
     if (address === ALL_ACCOUNT_KEY) {
-      const result = accounts.find(account => account.address.toLowerCase() === originAddress.toLowerCase());
+      const result = accounts.find(account => account.address.toLowerCase() === address.toLowerCase());
 
       return result || null;
     }

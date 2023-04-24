@@ -69,7 +69,6 @@ const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
           break;
       }
 
-      // console.log('isValidationPassed', isValidationPassed);
       // if (isValidationPassed) {
       //   break; // only need to satisfy 1 filter (OR)
       // }
@@ -128,7 +127,7 @@ export const NetworksSetting = ({}: Props) => {
   }, [chainInfoMap]);
 
   useEffect(() => {
-    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap)));
+    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), true));
   }, [chainInfoMap, pendingChainMap]);
 
   useEffect(() => {
@@ -165,7 +164,9 @@ export const NetworksSetting = ({}: Props) => {
         connectionStatus={item.connectionStatus}
         // @ts-ignore
         isEnabled={
-          Object.keys(pendingChainMap).includes(item.slug) ? pendingChainMap[item.slug] : chainInfoMap[item.slug].active
+          Object.keys(pendingChainMap).includes(item.slug)
+            ? pendingChainMap[item.slug]
+            : chainInfoMap[item.slug]?.active || false
         }
         onValueChange={() => onToggleItem(item)}
         showEditButton
@@ -187,7 +188,7 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <FlatListScreen
-      rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('NetworkConfig') }}
+      rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('ImportNetwork') }}
       items={currentChainList}
       title={i18n.title.network}
       autoFocus={false}

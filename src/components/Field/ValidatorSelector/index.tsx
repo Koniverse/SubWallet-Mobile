@@ -20,14 +20,14 @@ const blockContentStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  paddingLeft: 16,
+  paddingLeft: 12,
   paddingRight: 6,
   paddingBottom: 4,
 };
 
 const textStyle: StyleProp<any> = {
-  fontSize: 16,
-  lineHeight: 24,
+  fontSize: 14,
+  lineHeight: 22,
   ...FontSemiBold,
   color: 'rgba(255, 255, 255, 0.85)',
 };

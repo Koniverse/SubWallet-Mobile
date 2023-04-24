@@ -11,7 +11,8 @@ import { RootState } from 'stores/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import reformatAddress, { toShort } from 'utils/index';
 import Typography from '../../design-system-ui/typography';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import { Avatar } from 'components/design-system-ui';
+import { isAddress } from '@polkadot/util-crypto';
 
 export interface AccountInfoItem extends InfoItemBase {
   address: string;
@@ -53,6 +54,10 @@ const AccountItem: React.FC<AccountInfoItem> = ({
       }
     }
 
+    if (!accountAddress || !isAddress(accountAddress)) {
+      return accountAddress;
+    }
+
     return reformatAddress(accountAddress, addPrefix);
   }, [account, accountAddress, addressPrefix, chainInfoMap]);
 
@@ -70,7 +75,7 @@ const AccountItem: React.FC<AccountInfoItem> = ({
       <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
         <View style={[_style.valueWrapper, { gap: theme.sizeXS }]}>
-          <SubWalletAvatar address={address} size={24} />
+          <Avatar value={address} size={24} />
           <Typography.Text ellipsis style={valueStyle}>
             {name || toShort(address)}
           </Typography.Text>

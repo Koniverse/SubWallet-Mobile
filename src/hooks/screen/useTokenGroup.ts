@@ -3,7 +3,7 @@ import { _getMultiChainAsset, _isNativeTokenBySlug } from '@subwallet/extension-
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { isAvailableTokenAsset } from 'utils/chainAndAsset';
+import { isTokenAvailable } from 'utils/chainAndAsset';
 import { TokenGroupHookType } from 'types/hook';
 import { AssetRegistryStore } from 'stores/types';
 
@@ -95,7 +95,7 @@ export default function useTokenGroup(filteredChains?: string[]): TokenGroupHook
     const _filteredAssetRegistryMap: Record<string, _ChainAsset> = {};
 
     Object.values(assetRegistryMap).forEach(chainAsset => {
-      if (isAvailableTokenAsset(chainAsset, assetSettingMap, chainStateMap)) {
+      if (isTokenAvailable(chainAsset, assetSettingMap, chainStateMap, true)) {
         _filteredAssetRegistryMap[chainAsset.slug] = chainAsset;
       }
     });

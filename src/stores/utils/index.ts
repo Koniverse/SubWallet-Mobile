@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
+import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
   AccountsWithCurrentAddress,
@@ -255,6 +255,17 @@ export const subscribeMultiChainAssetMap = lazySubscribeMessage(
   updateMultiChainAssetRegistry,
 );
 
+export const updateXcmRefMap = (data: Record<string, _AssetRef>) => {
+  store.dispatch({ type: 'assetRegistry/updateXcmRefMap', payload: data });
+};
+
+export const subscribeXcmRefMap = lazySubscribeMessage(
+  'pri(chainService.subscribeXcmRefMap)',
+  null,
+  updateXcmRefMap,
+  updateXcmRefMap,
+);
+
 export const updateAssetSettingMap = (data: Record<string, AssetSetting>) => {
   store.dispatch({ type: 'assetRegistry/updateAssetSettingMap', payload: data });
 };
@@ -335,6 +346,7 @@ export const subscribeStakingReward = lazySubscribeMessage(
 );
 
 export const updateChainStakingMetadata = (data: ChainStakingMetadata[]) => {
+  console.log('data-------------', data);
   store.dispatch({ type: 'staking/updateChainStakingMetadata', payload: data });
 };
 

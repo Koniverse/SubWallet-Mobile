@@ -33,4 +33,5 @@ export const Images = {
   backgroundImg: require('./subwallet-background-img.png'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
   squircleBorder: require('./squircleBorder.png'),
+  avatarPlaceholder: require('./avatar-placeholder.png'),
 };

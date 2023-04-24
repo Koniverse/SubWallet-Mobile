@@ -58,6 +58,7 @@ interface Props<T> {
     renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
     groupBy: (item: T) => string;
   };
+  needGapWithStatusBar?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -85,11 +86,12 @@ export function FlatListScreen<T>({
   headerContent,
   refreshControl,
   isNetConnected = true,
-  isShowFilterBtn = true,
+  isShowFilterBtn,
   filterOptions,
   isShowListWrapper = false,
   beforeListItem,
   grouping,
+  needGapWithStatusBar,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -197,7 +199,8 @@ export function FlatListScreen<T>({
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       rightIconColor={rightIconOption?.color}
-      isShowPlaceHolder={false}>
+      isShowPlaceHolder={false}
+      needGapWithStatusBar={needGapWithStatusBar}>
       {renderContent()}
     </ContainerWithSubHeader>
   );

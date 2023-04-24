@@ -6,6 +6,7 @@ import { Image, StyleProp, View } from 'react-native';
 import { toDataUrl } from './blockies.js';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AvatarStyles from './style';
+import { Images } from 'assets/index';
 function getEthereumIdenticonStyle(size: number): StyleProp<any> {
   return {
     width: size,
@@ -38,6 +39,14 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value }) => {
   const _theme = useMemo((): IconTheme => {
     return theme || isAddress(value) ? (isEthereumAddress(value || '') ? 'ethereum' : 'polkadot') : 'polkadot';
   }, [theme, value]);
+
+  if (!value || !isAddress(value)) {
+    return (
+      <View style={[_style.container, { width: size, height: size, borderWidth: size / 20 }]}>
+        <Image source={Images.avatarPlaceholder} style={getEthereumIdenticonStyle(size - 8)} />
+      </View>
+    );
+  }
 
   if (_theme === 'ethereum') {
     return (

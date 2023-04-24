@@ -7,6 +7,6 @@ export interface ButtonPropsType {
   loading?: boolean;
   shape?: 'default' | 'square' | 'round' | 'circle' | 'squircle';
   block?: boolean;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | ((color: string) => React.ReactNode);
   contentAlign?: 'center' | 'left';
 }

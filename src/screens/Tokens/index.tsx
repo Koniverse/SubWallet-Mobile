@@ -1,115 +1,81 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
-import { Coins, Trash } from 'phosphor-react-native';
-import { Alert, ListRenderItemInfo, SafeAreaView, View } from 'react-native';
+import { Coins, Plus } from 'phosphor-react-native';
+import { ListRenderItemInfo, SafeAreaView } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import { CustomTokenItem } from 'components/CustomTokenItem';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { SubmitButton } from 'components/SubmitButton';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import { useToast } from 'react-native-toast-notifications';
-import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import useFetchCustomToken from 'hooks/screen/Setting/useFetchCustomToken';
 import { _ChainAsset } from '@subwallet/chain-list/types';
-
-const filterFunction = (items: CustomToken[], searchString: string) => {
-  return items.filter(
-    item =>
-      item.name?.toLowerCase().includes(searchString.toLowerCase()) ||
-      item.symbol?.toLowerCase().includes(searchString.toLowerCase()),
-  );
+import { TokenToggleItem } from 'components/common/TokenToggleItem';
+import { updateAssetSetting } from '../../messaging';
+const filterFunction = (items: _ChainAsset[], searchString: string) => {
+  return items.filter(item => item?.symbol.toLowerCase().includes(searchString.toLowerCase()));
 };
 
+let cachePendingAssetMap: Record<string, boolean> = {};
+
 export const CustomTokenSetting = () => {
-  const toast = useToast();
   const { assetItems, assetSettingMap } = useFetchCustomToken();
   const navigation = useNavigation<RootNavigationProps>();
-  const [selectedTokens, setSelectedTokens] = useState<DeleteCustomTokenParams[]>([]);
-  const [isEditMode, setEditMode] = useState<boolean>(false);
-  const [isBusy, setBusy] = useState<boolean>(false);
-  useHandlerHardwareBackPress(isBusy);
-  const showToast = useCallback(
-    (message: string) => {
-      toast.hideAll();
-      toast.show(message);
-    },
-    [toast],
-  );
+  const [pendingAssetMap, setPendingAssetMap] = useState<Record<string, boolean>>(cachePendingAssetMap);
 
-  const handleSelected = useCallback(
-    (data: DeleteCustomTokenParams) => {
-      setSelectedTokens([...selectedTokens, data]);
-    },
-    [selectedTokens],
-  );
-
-  const handleUnselected = useCallback(
-    (data: DeleteCustomTokenParams) => {
-      const _selectedTokens = [];
-
-      for (const token of selectedTokens) {
-        if (token.chain === data.chain) {
-          if (token.smartContract !== data.smartContract) {
-            _selectedTokens.push(token);
-          }
-        } else {
-          _selectedTokens.push(token);
+  useEffect(() => {
+    setPendingAssetMap(prePendingAssetMap => {
+      Object.entries(prePendingAssetMap).forEach(([key, val]) => {
+        if (assetSettingMap[key].visible === val) {
+          delete prePendingAssetMap[key];
         }
-      }
-
-      setSelectedTokens(_selectedTokens);
-    },
-    [selectedTokens],
-  );
-
-  const handleDeleteTokens = useCallback(() => {
-    setBusy(true);
-    deleteCustomTokens(selectedTokens)
-      .then(resp => {
-        if (resp) {
-          setBusy(false);
-          showToast(i18n.common.importTokenSuccessMessage);
-          setSelectedTokens([]);
-          setEditMode(false);
-        } else {
-          setBusy(false);
-          showToast(i18n.errorMessage.occurredError);
-        }
-        setSelectedTokens([]);
-      })
-      .catch(e => {
-        console.warn(`delete token err: ${e}`);
-        setBusy(false);
       });
-  }, [selectedTokens, showToast]);
 
-  const onDeleteTokens = () => {
-    Alert.alert('Delete tokens', 'Make sure you want to delete selected tokens', [
-      {
-        text: i18n.common.cancel,
+      return { ...prePendingAssetMap };
+    });
+  }, [assetSettingMap]);
+
+  useEffect(() => {
+    cachePendingAssetMap = pendingAssetMap;
+  }, [pendingAssetMap]);
+
+  const onToggleItem = (item: _ChainAsset) => {
+    setPendingAssetMap({ ...pendingAssetMap, [item.slug]: !assetSettingMap[item.slug].visible });
+    const reject = () => {
+      console.warn('Toggle token request failed!');
+      // @ts-ignore
+      delete pendingassetMap[item.key];
+      setPendingAssetMap({ ...pendingAssetMap });
+    };
+
+    updateAssetSetting({
+      tokenSlug: item.slug,
+      assetSetting: {
+        visible: !assetSettingMap[item.slug].visible,
       },
-      {
-        text: i18n.common.ok,
-        onPress: () => handleDeleteTokens(),
-      },
-    ]);
+    })
+      .then(result => {
+        if (!result) {
+          reject();
+        }
+      })
+      .catch(reject);
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<_ChainAsset>) => {
     return (
-      <CustomTokenItem
+      <TokenToggleItem
         item={item}
-        isEditMode={isEditMode}
         onPress={() =>
           navigation.navigate('ConfigureToken', {
             tokenDetail: JSON.stringify(item),
           })
         }
-        handleSelected={handleSelected}
-        handleUnselected={handleUnselected}
+        isEnabled={
+          Object.keys(pendingAssetMap).includes(item.slug)
+            ? pendingAssetMap[item.slug]
+            : assetSettingMap[item.slug]?.visible || false
+        }
+        onValueChange={() => onToggleItem(item)}
+        isDisableSwitching={Object.keys(pendingAssetMap).includes(item.slug)}
       />
     );
   };
@@ -118,34 +84,16 @@ export const CustomTokenSetting = () => {
     <>
       <FlatListScreen
         rightIconOption={{
-          title: isEditMode ? i18n.common.done : '',
-          icon: isEditMode ? undefined : Trash,
-          disabled: isBusy,
-          onPress: () => setEditMode(!isEditMode),
+          icon: Plus,
+          onPress: () => navigation.navigate('ImportToken'),
         }}
-        title={isEditMode ? i18n.common.deleteToken : i18n.settings.tokens}
+        title={i18n.settings.tokens}
         items={assetItems}
         autoFocus={false}
         searchFunction={filterFunction}
         renderItem={renderItem}
-        leftButtonDisabled={isBusy}
         renderListEmptyComponent={() => <EmptyList icon={Coins} title={i18n.errorMessage.noTokenAvailable} />}
-        afterListItem={
-          <View style={{ ...MarginBottomForSubmitButton, ...ContainerHorizontalPadding, paddingTop: 16 }}>
-            {isEditMode ? (
-              <SubmitButton
-                isBusy={isBusy}
-                disabled={!selectedTokens.length}
-                title={i18n.common.deleteToken}
-                backgroundColor={ColorMap.danger}
-                disabledColor={ColorMap.dangerOverlay2}
-                onPress={onDeleteTokens}
-              />
-            ) : (
-              <SubmitButton title={i18n.common.importToken} onPress={() => navigation.navigate('ImportToken')} />
-            )}
-          </View>
-        }
+        isShowListWrapper
       />
 
       <SafeAreaView />

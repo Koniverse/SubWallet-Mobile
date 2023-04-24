@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
@@ -22,7 +22,8 @@ import { RootState } from 'stores/index';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { keyringLock } from 'messaging/index';
+import { keyringLock } from '../../messaging';
+import { ActivityIndicator } from 'components/design-system-ui';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -127,7 +128,7 @@ const MainScreen = () => {
 export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { accounts, hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
 
   const needMigrate = useMemo(
     () =>
@@ -148,6 +149,21 @@ export const Home = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const [isLoading, setLoading] = useState(true);
+  useEffect(() => {
+    if (isReady && isLoading) {
+      setTimeout(() => setLoading(false), 500);
+    }
+  }, [isReady, isLoading]);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator indicatorColor="white" size={30} />
+      </View>
+    );
+  }
 
   return (
     <>

@@ -13,7 +13,7 @@ export interface ButtonStyles {
 export default (theme: ThemeTypes) =>
   StyleSheet.create<ButtonStyles>({
     container: { flex: 1, backgroundColor: 'black' },
-    gradientContainer: { flex: 1, paddingBottom: theme.paddingXL },
+    gradientContainer: { flex: 1, paddingBottom: theme.paddingXL, paddingHorizontal: theme.padding },
     content: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     logo: { width: 112, height: 112, marginBottom: 32 },
     title: { marginBottom: theme.margin, color: '#BF1616', fontWeight: `${theme.fontWeightStrong}` },

@@ -7,11 +7,11 @@ import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenGroupBalanceItem } from 'components/common/TokenGroupBalanceItem';
 import { LeftIconButton } from 'components/LeftIconButton';
-import { Eye, EyeSlash, FadersHorizontal, SlidersHorizontal } from 'phosphor-react-native';
+import { Eye, EyeSlash, FadersHorizontal, MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { TokenGroupsUpperBlock } from 'screens/Home/Crypto/TokenGroupsUpperBlock';
 import { Header } from 'components/Header';
-import { ScreenContainer } from 'components/ScreenContainer';
+import { GradientBackgroundColorSet, ScreenContainer } from 'components/ScreenContainer';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { toggleBalancesVisibility } from 'messaging/index';
@@ -29,12 +29,16 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
+import { useToast } from 'react-native-toast-notifications';
+import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
+  paddingTop: 16,
+  paddingBottom: 12,
 };
 
 export const TokenGroups = () => {
@@ -42,12 +46,14 @@ export const TokenGroups = () => {
   const navigation = useNavigation<CryptoNavigationProps>();
 
   const chainsByAccountType = useGetChainSlugs();
-  const { sortedTokenGroups, tokenGroupMap } = useTokenGroup(chainsByAccountType);
-  const { tokenGroupBalanceMap, totalBalanceInfo } = useAccountBalance(tokenGroupMap);
+  const { sortedTokenGroups, tokenGroupMap, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
+  const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [accessBy, setAccessBy] = useState<'buy' | 'receive' | undefined>(undefined);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
+  const [isTokenSearchModalVisible, setTokenSearchModalVisible] = useState<boolean>(false);
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const {
     accountSelectorItems,
     onOpenReceive,
@@ -80,7 +86,9 @@ export const TokenGroups = () => {
     buyTokenSelectorItems,
   } = useBuyToken();
 
-  const onClickItem = useCallback(
+  const toast = useToast();
+
+  const onPressItem = useCallback(
     (item: TokenBalanceItemType) => {
       return () => {
         navigation.navigate('TokenGroupsDetail', {
@@ -89,6 +97,14 @@ export const TokenGroups = () => {
       };
     },
     [navigation],
+  );
+
+  const onPressSearchItem = useCallback(
+    (item: TokenBalanceItemType) => {
+      setTokenSearchModalVisible(false);
+      onPressItem(item)();
+    },
+    [onPressItem],
   );
 
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
@@ -106,10 +122,10 @@ export const TokenGroups = () => {
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
       <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: theme.colorBgSecondary }]}>
-        <TokenGroupBalanceItem onPress={onClickItem(item)} {...item} isShowBalance={isShowBalance} />
+        <TokenGroupBalanceItem onPress={onPressItem(item)} {...item} isShowBalance={isShowBalance} />
       </View>
     ),
-    [isShowBalance, onClickItem, theme.colorBgSecondary],
+    [isShowBalance, onPressItem, theme.colorBgSecondary],
   );
 
   const _toggleBalances = useCallback(() => {
@@ -128,6 +144,10 @@ export const TokenGroups = () => {
     setCustomizationModalVisible(true);
   }, []);
 
+  const onOpenTokenSearchModal = useCallback(() => {
+    setTokenSearchModalVisible(true);
+  }, []);
+
   const actionsNode = useMemo(() => {
     return (
       <View style={renderActionsStyle}>
@@ -141,12 +161,12 @@ export const TokenGroups = () => {
             icon={<Icon size="md" phosphorIcon={isShowBalance ? EyeSlash : Eye} iconColor={theme.colorTextLight5} />}
             onPress={_toggleBalances}
           />
-          {/*<Button*/}
-          {/*  type="ghost"*/}
-          {/*  size="xs"*/}
-          {/*  icon={<Icon size="sm" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight5} />}*/}
-          {/*  // onPress={onPressSearchButton}*/}
-          {/*/>*/}
+          <Button
+            type="ghost"
+            size="xs"
+            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight5} />}
+            onPress={onOpenTokenSearchModal}
+          />
           <Button
             type="ghost"
             size="xs"
@@ -156,7 +176,14 @@ export const TokenGroups = () => {
         </View>
       </View>
     );
-  }, [_toggleBalances, isShowBalance, onOpenCustomizationModal, theme.colorTextLight1, theme.colorTextLight5]);
+  }, [
+    _toggleBalances,
+    isShowBalance,
+    onOpenCustomizationModal,
+    onOpenTokenSearchModal,
+    theme.colorTextLight1,
+    theme.colorTextLight5,
+  ]);
 
   const _onOpenBuyTokens = useCallback(() => {
     setAccessBy('buy');
@@ -168,6 +195,36 @@ export const TokenGroups = () => {
     onOpenReceive();
   }, [onOpenReceive]);
 
+  const showNoti = useCallback(
+    (text: string) => {
+      toast.hideAll();
+      toast.show(text, { textStyle: { textAlign: 'center' } });
+    },
+    [toast],
+  );
+
+  const _onOpenSendFund = useCallback(() => {
+    if (currentAccount && currentAccount.isReadOnly) {
+      //todo: i18n
+      showNoti('The account you are using is read-only, you cannot send assets with it');
+      return;
+    }
+
+    navigation.navigate('SendFund', {});
+  }, [currentAccount, navigation, showNoti]);
+
+  const tokenSearchItems = useMemo<TokenBalanceItemType[]>(() => {
+    const items: TokenBalanceItemType[] = [];
+
+    sortedTokenSlugs.forEach(t => {
+      if (tokenBalanceMap[t]) {
+        items.push(tokenBalanceMap[t]);
+      }
+    });
+
+    return items;
+  }, [sortedTokenSlugs, tokenBalanceMap]);
+
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsUpperBlock
@@ -177,11 +234,13 @@ export const TokenGroups = () => {
         totalValue={totalBalanceInfo.convertedValue}
         isPriceDecrease={isTotalBalanceDecrease}
         onOpenBuyTokens={_onOpenBuyTokens}
+        onOpenSendFund={_onOpenSendFund}
       />
     );
   }, [
     _onOpenBuyTokens,
     _onOpenReceive,
+    _onOpenSendFund,
     isTotalBalanceDecrease,
     totalBalanceInfo.change.percent,
     totalBalanceInfo.change.value,
@@ -201,11 +260,14 @@ export const TokenGroups = () => {
   }, [navigation]);
 
   return (
-    <ScreenContainer>
+    <ScreenContainer
+      gradientBackground={isTotalBalanceDecrease ? GradientBackgroundColorSet[1] : GradientBackgroundColorSet[0]}>
       <>
         <Header />
 
         <TokensLayout
+          stickyNode={actionsNode}
+          stickyBackground={isTotalBalanceDecrease ? GradientBackgroundColorSet[1] : GradientBackgroundColorSet[0]}
           items={tokenGroupBalanceItems}
           layoutHeader={listHeaderNode}
           listActions={actionsNode}
@@ -246,6 +308,14 @@ export const TokenGroups = () => {
           address={selectedAccount}
           selectedNetwork={selectedNetwork}
           onCancel={onCloseQrModal}
+        />
+
+        <TokenSearchModal
+          modalVisible={isTokenSearchModalVisible}
+          onSelectItem={onPressSearchItem}
+          isShowBalance={isShowBalance}
+          items={tokenSearchItems}
+          onCancel={() => setTokenSearchModalVisible(false)}
         />
 
         <CustomizationModal modalVisible={isCustomizationModalVisible} onCancel={onCloseCustomizationModal} />

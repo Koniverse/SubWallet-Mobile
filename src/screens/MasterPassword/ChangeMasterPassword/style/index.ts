@@ -9,7 +9,7 @@ export interface ChangeMasterPasswordStyle {
 
 export default (theme: ThemeTypes) =>
   StyleSheet.create<ChangeMasterPasswordStyle>({
-    bodyWrapper: { paddingHorizontal: theme.padding, flex: 1 },
+    bodyWrapper: { paddingHorizontal: theme.padding, flex: 1, paddingTop: theme.padding },
     footerAreaStyle: {
       marginTop: theme.marginXS,
       marginHorizontal: theme.margin,

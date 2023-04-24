@@ -4277,10 +4277,10 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.39.0.tgz#eb916ff5fea7fa02e77745823fde21af979273d2"
   integrity sha512-qZYpuE6n+mwew+X71dOur/CbMXj6rNW27o63JeJwdQH/GvcSKm3JLNhd+bGzwUKg0D/zD30Qc6p4JykArzM+tA==
 
-"@subwallet/chain-list@0.0.15", "@subwallet/chain-list@^0.0.15", "@subwallet/chain-list@^0.0.16", "@subwallet/chain-list@^0.0.27":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.0.15.tgz#06fbccb5a3761a13bf1fdc475a893cc35509b55e"
-  integrity sha512-Wk87GHiN5dxPntU+gAtvtLOOtq/9/gEzPjM0yHDpYlu1BzyxgkQluULSiuSNTfX4f7iJwc/LecDh4p/v0+Bn/Q==
+"@subwallet/chain-list@0.0.31", "@subwallet/chain-list@^0.0.16", "@subwallet/chain-list@^0.0.27":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.0.31.tgz#05f8f5a87ad0ce1ccc7a958b68f17ca4074f8c23"
+  integrity sha512-7qwKVYnfWowQz++Zu5pTxGkPVZ6G5cclO2vhxO9ODA9bu27SRXUTTT8eyCbG0qdie4gzODBWjW53kRQ2paK2Hg==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^10.2.1"
@@ -15697,7 +15697,7 @@ react-native-permissions@^2.0.2:
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-2.2.2.tgz#3d2a63f6b7d6be52fc86e30f77412a9566283028"
   integrity sha512-ihf4shQDSX5Oo9ChQXb9kr13mmyyNem5MaEvOpr3dCjhBOBWyEMztXm9/uPK1Qg5PsNpaYLa1KpcPZDCw87LXg==
 
-react-native-permissions@^3.6.1:
+react-native-permissions@^3.8.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.8.0.tgz#7c1f75ae126c7d0b863eec9d2f5cd93ff8ad8310"
   integrity sha512-BfZ7ksgdpGchHZH8M/kxCGZbWeACANbnPmb3hNjVOMDQusc4PWlPpobX3eBqYMSKbpi7bMECeV9BVU4QuwAf9A==

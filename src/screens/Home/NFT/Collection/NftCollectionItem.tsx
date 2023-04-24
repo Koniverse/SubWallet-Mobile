@@ -19,14 +19,13 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
-  borderRadius: 5,
+  borderRadius: 8,
+  overflow: 'hidden',
   backgroundColor: ColorMap.dark2,
 };
 
 const LogoStyle: StyleProp<ViewStyle> = {
   width: '100%',
-  borderTopLeftRadius: 5,
-  borderTopRightRadius: 5,
   aspectRatio: 1,
 };
 

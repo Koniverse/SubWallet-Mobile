@@ -47,7 +47,7 @@ export type CrowdloanItemType = {
   relayParentDisplayName: string;
   symbol: string;
   paraState?: CrowdloanParaState;
-  crowdloanUrl?: string;
+  crowdloanUrl?: string | null;
 };
 
 export enum AccountAddressType {

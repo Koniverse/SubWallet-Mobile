@@ -15,10 +15,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import LinearGradient from 'react-native-linear-gradient';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 interface Props {
   layoutHeader: React.ReactElement;
   listActions?: React.ReactElement;
+  stickyBackground?: [string, string];
+  stickyNode?: React.ReactElement;
   layoutFooter?: React.ReactElement;
   items: TokenBalanceItemType[];
   renderItem: ListRenderItem<TokenBalanceItemType>;
@@ -51,7 +56,10 @@ export const TokensLayout = ({
   renderItem,
   isRefreshing,
   refresh,
+  stickyBackground,
+  stickyNode,
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
   const isAnimating = useSharedValue(0);
 
@@ -139,9 +147,40 @@ export const TokensLayout = ({
   }
 
   return (
-    <>
-      {!!listActions && (
-        <Animated.View style={[{ paddingHorizontal: 16 }, stickyHeaderInvisibleStyles]}>{listActions}</Animated.View>
+    <View style={{ flex: 1, position: 'relative' }}>
+      {!!stickyNode && (
+        <Animated.View
+          style={[
+            {
+              paddingHorizontal: 16,
+              backgroundColor: theme.colorBgDefault,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1000,
+              overflow: 'hidden',
+            },
+            stickyHeaderInvisibleStyles,
+          ]}>
+
+          {!!stickyBackground && (
+            <LinearGradient
+              locations={[0, 0.5]}
+              colors={stickyBackground}
+              style={{
+                flex: 1,
+                marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
+                height: 600,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+              }}
+            />
+          )}
+          {stickyNode}
+        </Animated.View>
       )}
 
       <AnimatedFlatlist
@@ -155,6 +194,6 @@ export const TokensLayout = ({
         ListFooterComponent={layoutFooter}
         refreshControl={refreshControlNode}
       />
-    </>
+    </View>
   );
 };

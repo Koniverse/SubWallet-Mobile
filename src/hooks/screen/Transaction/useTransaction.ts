@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _getOriginChainOfAsset } from '@subwallet/extension-base/services/chain-service/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isAccountAll } from 'utils/accountAll';
 
 export const useTransaction = (action: string, extraFormConfig: FormControlConfig) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -22,6 +23,8 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
         return ExtrinsicType.STAKING_CANCEL_UNSTAKE;
       case 'claim-reward':
         return ExtrinsicType.STAKING_CLAIM_REWARD;
+      case 'withdraw':
+        return ExtrinsicType.STAKING_WITHDRAW;
       case 'compound':
         return ExtrinsicType.STAKING_COMPOUNDING;
       case 'send-nft':
@@ -60,7 +63,7 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
   const transactionFormConfig: FormControlConfig = {
     from: {
       name: 'From',
-      value: currentAccount?.address || '',
+      value: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
     },
     chain: {
       name: 'Chain',

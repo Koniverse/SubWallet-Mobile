@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleProp, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
-import {FadersHorizontal, MagnifyingGlass, XCircle} from 'phosphor-react-native';
+import { StyleProp, TextInput, TextInputProps, View } from 'react-native';
+import { FadersHorizontal, MagnifyingGlass, XCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import {Button, Icon} from "components/design-system-ui";
+import { Button, Icon } from 'components/design-system-ui';
 
 interface Props extends TextInputProps {
   onSearch: (text: string) => void;
@@ -18,12 +18,12 @@ interface Props extends TextInputProps {
 
 const searchContainerStyle: StyleProp<any> = {
   backgroundColor: '#1A1A1A',
-  borderRadius: 5,
+  borderRadius: 8,
   alignItems: 'center',
-  // paddingRight: 16,
+  paddingRight: 4,
   paddingLeft: 12,
   flexDirection: 'row',
-  height: 44,
+  height: 48,
 };
 
 const SearchIcon = MagnifyingGlass;
@@ -66,9 +66,12 @@ export const Search = (searchProps: Props) => {
         onSubmitEditing={onSubmitEditing}
       />
       {!!searchText && (
-        <TouchableOpacity onPress={onClearSearchString}>
-          <CancelIcon size={20} color={ColorMap.disabled} weight={'bold'} />
-        </TouchableOpacity>
+        <Button
+          size={'xs'}
+          type={'ghost'}
+          icon={<Icon phosphorIcon={CancelIcon} size={'sm'} iconColor={'#A6A6A6'} />}
+          onPress={onClearSearchString}
+        />
       )}
 
       {isShowFilterBtn && (

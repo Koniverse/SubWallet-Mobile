@@ -2,16 +2,14 @@ import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getNetworkLogo } from 'utils/index';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import {StyleProp, View, ViewStyle} from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import Text from '../../components/Text';
 import { FontMedium, FontSize2 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import {CaretDown, Globe} from 'phosphor-react-native';
+import { Globe } from 'phosphor-react-native';
 import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
-import {Icon} from "components/design-system-ui";
-import {useSubWalletTheme} from "hooks/useSubWalletTheme";
+import { Icon } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props extends FieldBaseProps {
   chain: string;
@@ -33,7 +31,7 @@ const getTextStyle = (disabled: boolean): StyleProp<any> => {
 
 const blockContentStyle: StyleProp<any> = {
   position: 'relative',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
 };
 
 export const NetworkNameField = ({ chain, disabled, label, customStyle, ...fieldBase }: Props) => {

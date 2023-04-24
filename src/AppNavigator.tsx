@@ -4,7 +4,7 @@ import { Home } from 'screens/Home';
 import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { Settings } from 'screens/Settings';
-import { SendFund } from 'screens/Sending';
+import { SendFund } from 'screens/Transaction/SendFund';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
@@ -38,8 +38,6 @@ import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen'
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import SigningScreen from 'screens/Signing/SigningScreen';
-import { ColorMap } from 'styles/color';
-import { ConfirmationPopup } from 'screens/Home/Browser/ConfirmationPopup';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
@@ -51,6 +49,8 @@ import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
 import { TransactionDone } from 'screens/Transaction';
 import ErrorFallback from 'components/common/ErrorFallbackScreen';
+import ChangeMasterPassword from 'screens/MasterPassword/ChangeMasterPassword';
+import { ImportNetwork } from 'screens/ImportNetwork';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
@@ -128,6 +128,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                 <Stack.Screen name="CreatePassword" component={CreateMasterPassword} />
                 <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
+                <Stack.Screen name="ImportNetwork" component={ImportNetwork} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
                 <Stack.Screen name="MigratePassword" component={ApplyMasterPassword} />
                 <Stack.Screen name="EditAccount" component={EditAccount} />
@@ -140,6 +141,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Languages" component={Languages} />
                 <Stack.Screen name="Security" component={Security} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} />
+                <Stack.Screen name="ChangePassword" component={ChangeMasterPassword} />
                 <Stack.Screen name="ExportAccount" component={ExportAccount} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                 <Stack.Screen name="NetworkConfig" component={NetworkConfig} />

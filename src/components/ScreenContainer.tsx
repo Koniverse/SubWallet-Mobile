@@ -2,13 +2,13 @@ import React from 'react';
 import { SafeAreaView, StatusBar, StyleProp, StyleSheet, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
-import { randomIntFromInterval } from 'utils/number';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
   backgroundColor?: string;
   safeAreaBottomViewColor?: string;
+  gradientBackground?: [string, string];
 }
 
 function getContainerStyle(backgroundColor: string): StyleProp<any> {
@@ -19,29 +19,42 @@ function getContainerStyle(backgroundColor: string): StyleProp<any> {
   };
 }
 
-const backgroundColorSet = [
+export const GradientBackgroundColorSet: [string, string][] = [
   ['rgba(76, 234, 172, 0.15)', 'rgba(217, 217, 217, 0)'],
   ['rgba(234, 76, 76, 0.15)', 'rgba(217, 217, 217, 0)'],
+  ['rgba(0, 75, 255, 0.15)', 'rgba(217, 217, 217, 0)'],
 ];
-const gradientBackground = backgroundColorSet[randomIntFromInterval(0, 1)];
 
-export const ScreenContainer = ({ children, backgroundColor }: Props) => {
+export const ScreenContainer = ({
+  children,
+  backgroundColor,
+  gradientBackground = ['transparent', 'transparent'],
+}: Props) => {
   return (
     <View style={getContainerStyle(backgroundColor || ColorMap.dark1)}>
       <LinearGradient
         locations={[0, 0.5]}
         colors={backgroundColor ? [backgroundColor, backgroundColor] : gradientBackground}
-        style={styles.gradientWrapper}>
-        <SafeAreaView>
-          <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
-        </SafeAreaView>
-        <View style={styles.contentContainer}>{children}</View>
-      </LinearGradient>
+        style={styles.gradientWrapper}
+      />
+      <SafeAreaView>
+        <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
+      </SafeAreaView>
+      <View style={styles.contentContainer}>{children}</View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  gradientWrapper: { flex: 1, marginTop: -STATUS_BAR_HEIGHT, paddingTop: STATUS_BAR_HEIGHT },
+  gradientWrapper: {
+    flex: 1,
+    marginTop: -STATUS_BAR_HEIGHT,
+    paddingTop: STATUS_BAR_HEIGHT,
+    height: 600,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
   contentContainer: { flex: 1, overflow: 'hidden' },
 });

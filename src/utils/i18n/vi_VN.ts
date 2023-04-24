@@ -446,6 +446,14 @@ export const vi = {
       subText: 'There was a problem with your request. You can try again.',
     },
   },
+  crowdloanScreen: {
+    filter: {
+      polkadotChain: 'Polkadot relay chain',
+      kusamaChain: 'Kusama relay chain',
+      win: 'Winner projects',
+      fail: 'Failed project',
+    },
+  },
   stakingScreen: {
     startStaking: 'Start staking',
     balanceList: {

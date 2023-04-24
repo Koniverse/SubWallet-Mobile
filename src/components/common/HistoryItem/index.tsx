@@ -61,14 +61,13 @@ export const HistoryItem = ({ item, onPress, style }: Props) => {
         </View>
 
         <View style={_style.rightPart}>
-          <View>
+          <View style={{ alignItems: 'flex-end' }}>
             <Number
               decimal={item?.amount?.decimals || 0}
               decimalOpacity={0.45}
               suffix={item?.amount?.symbol}
               value={item?.amount?.value || '0'}
               textStyle={_style.upperText}
-              style={{ justifyContent: 'flex-end' }}
             />
             <Number
               decimal={item?.fee?.decimals || 0}
@@ -77,6 +76,7 @@ export const HistoryItem = ({ item, onPress, style }: Props) => {
               suffix={item.fee?.symbol}
               unitOpacity={1}
               value={item.fee?.value || '0'}
+              size={theme.fontSizeSM}
               textStyle={_style.lowerText}
             />
           </View>
