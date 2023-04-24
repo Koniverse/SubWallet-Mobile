@@ -260,7 +260,7 @@ export const NetworkSettingDetail = ({
       disableRightButton={!(_isCustomChain(chainInfo.slug) && !chainState.active)}
       onPressBack={() => navigation.goBack()}
       onPressRightIcon={onPressDeleteBtn}
-      title={'Config network'}>
+      title={'Chain detail'}>
       <View style={ContainerStyle}>
         <ScrollView style={{ flex: 1 }}>
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>

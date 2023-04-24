@@ -56,7 +56,7 @@ const Logo: React.FC<SWLogoProps> = ({
     <View>
       <Image
         src={srcLogo || TokenLogoMap.subwallet}
-        style={{ width: size, height: size }}
+        style={{ width: size, height: size, backgroundColor: 'black' }}
         squircleSize={size}
         shape={shape}
       />

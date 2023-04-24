@@ -190,7 +190,7 @@ export const NetworksSetting = ({}: Props) => {
     <FlatListScreen
       rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('ImportNetwork') }}
       items={currentChainList}
-      title={i18n.title.network}
+      title={'Manage Chains'}
       autoFocus={false}
       renderListEmptyComponent={renderListEmptyComponent}
       searchFunction={searchFunction}

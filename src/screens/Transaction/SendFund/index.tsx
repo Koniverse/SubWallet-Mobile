@@ -45,6 +45,9 @@ import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { ContainerHorizontalPadding, FontMedium } from 'styles/sharedStyles';
 import { SendFundProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -236,6 +239,7 @@ export const SendFund = ({
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
   const [isBalanceReady, setIsBalanceReady] = useState(true);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
   const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
@@ -548,7 +552,7 @@ export const SendFund = ({
   }, []);
 
   return (
-    <ContainerWithSubHeader title={title} onPressBack={goHome} disabled={loading}>
+    <ContainerWithSubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <>
           <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: 10 }}>

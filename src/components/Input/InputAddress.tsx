@@ -9,7 +9,8 @@ import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
-import {Avatar} from "components/design-system-ui";
+import { Avatar } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface InputProps {
   label: string;
@@ -106,6 +107,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
+  const themes = useSubWalletTheme().swThemes;
   const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address)) && isValidValue;
   const onChangeInputText = (rawText: string) => {
     const text = rawText.trim();
@@ -137,7 +139,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   }));
 
   return (
-    <View style={getInputContainerStyle(containerStyle)}>
+    <View style={[getInputContainerStyle(containerStyle), { backgroundColor: themes.colorBgSecondary }]}>
       <TouchableOpacity activeOpacity={1} onPress={onPressContainer} disabled={disable}>
         <Text style={inputLabelStyle}>{label}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
