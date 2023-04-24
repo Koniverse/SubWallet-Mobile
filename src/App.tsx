@@ -7,10 +7,9 @@ import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
@@ -77,7 +76,6 @@ import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { CustomTokenSetting } from 'screens/Tokens';
-import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import { SendFund } from 'screens/Transaction/SendFund';
 
@@ -340,7 +338,6 @@ export const App = () => {
                                 component={CompoundActionScreen}
                                 options={{ gestureEnabled: false }}
                               />
-                              <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
                               <Stack.Screen
                                 name="SigningAction"
                                 component={SigningScreen}
