@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import {
-  ActivityIndicator,
-  ListRenderItemInfo,
-  RefreshControlProps,
-  SectionList,
-  StyleProp,
-  View,
-} from 'react-native';
+import { ActivityIndicator, ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/useLazyList';
 import { defaultSortFunc } from 'utils/function';
