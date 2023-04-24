@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
+import { RESULTS } from 'react-native-permissions';
 import { QrAccount } from 'types/qr/attach';
+import { requestCameraPermission } from 'utils/permission/camera';
 
 interface ResultProps {
   isScanning: boolean;
@@ -15,8 +17,12 @@ const useModalScanner = (onSuccess: (result: QrAccount) => void): ResultProps =>
     setIsScanning(false);
   }, []);
 
-  const onOpenModal = useCallback(() => {
-    setIsScanning(true);
+  const onOpenModal = useCallback(async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      setIsScanning(true);
+    }
   }, []);
 
   const onScan = useCallback(

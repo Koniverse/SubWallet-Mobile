@@ -11,18 +11,12 @@ import {
   Swatches,
   Wallet,
 } from 'phosphor-react-native';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
-import { SCAN_TYPE } from 'constants/qr';
 import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import useModalScanner from 'hooks/qr/useModalScanner';
-import { QrAccount } from 'types/qr/attach';
-import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import ToastContainer from 'react-native-toast-notifications';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import { KeypairType } from '@polkadot/util-crypto/types';
@@ -48,29 +42,8 @@ export const AccountCreationArea = ({
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const [scanType, setScanType] = useState<SCAN_TYPE.QR_SIGNER | SCAN_TYPE.SECRET>(SCAN_TYPE.SECRET);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
-  const onSuccess = useCallback(
-    (data: QrAccount) => {
-      switch (scanType) {
-        case SCAN_TYPE.QR_SIGNER:
-          navigation.navigate('AttachAccount', {
-            screen: 'AttachQrSignerConfirm',
-            params: data,
-          });
-          break;
-        case SCAN_TYPE.SECRET:
-          navigation.navigate('AttachAccount', {
-            screen: 'ImportAccountQrConfirm',
-            params: data,
-          });
-          break;
-        default:
-          break;
-      }
-    },
-    [navigation, scanType],
-  );
+
   const toastRef = useRef<ToastContainer>(null);
   const show = useCallback((text: string) => {
     if (toastRef.current) {
@@ -80,8 +53,6 @@ export const AccountCreationArea = ({
       toastRef.current.show(text);
     }
   }, []);
-
-  const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
 
   const onSelectAccountType = useCallback(
     (keyType: KeypairType) => {
@@ -177,24 +148,16 @@ export const AccountCreationArea = ({
         icon: QrCode,
         label: 'Import by QR Code',
         onClickBtn: async () => {
+          onChangeImportAccountModalVisible(false);
           if (hasMasterPassword) {
-            const result = await requestCameraPermission();
-
-            if (result === RESULTS.GRANTED) {
-              setScanType(SCAN_TYPE.SECRET);
-              onChangeImportAccountModalVisible(false);
-              setTimeout(() => {
-                onOpenModal();
-              }, HIDE_MODAL_DURATION);
-            }
+            navigation.navigate('ImportQrCode');
           } else {
-            onChangeImportAccountModalVisible(false);
-            navigation.navigate('CreatePassword', { pathName: 'ScanByQrCode' });
+            navigation.navigate('CreatePassword', { pathName: 'ImportQrCode' });
           }
         },
       },
     ],
-    [hasMasterPassword, navigation, onChangeImportAccountModalVisible, onOpenModal],
+    [hasMasterPassword, navigation, onChangeImportAccountModalVisible],
   );
 
   const attachAccountActions = useMemo(
@@ -213,18 +176,11 @@ export const AccountCreationArea = ({
         label: 'Attach QR-Signer account',
         onClickBtn: async () => {
           if (hasMasterPassword) {
-            const result = await requestCameraPermission();
-
-            if (result === RESULTS.GRANTED) {
-              setScanType(SCAN_TYPE.QR_SIGNER);
-              onChangeAttachAccountModalVisible(false);
-              setTimeout(() => {
-                onOpenModal();
-              }, HIDE_MODAL_DURATION);
-            }
+            onChangeAttachAccountModalVisible(false);
+            navigation.navigate('ConnectParitySigner');
           } else {
             onChangeAttachAccountModalVisible(false);
-            navigation.navigate('CreatePassword', { pathName: 'AttachQR-signer' });
+            navigation.navigate('CreatePassword', { pathName: 'ConnectParitySigner' });
           }
         },
       },
@@ -232,8 +188,14 @@ export const AccountCreationArea = ({
         backgroundColor: '#E6478E',
         icon: DeviceTabletCamera,
         label: 'Attach Keystone account',
-        onClickBtn: () => {
-          show(i18n.common.comingSoon);
+        onClickBtn: async () => {
+          if (hasMasterPassword) {
+            onChangeAttachAccountModalVisible(false);
+            navigation.navigate('ConnectKeystone');
+          } else {
+            onChangeAttachAccountModalVisible(false);
+            navigation.navigate('CreatePassword', { pathName: 'ConnectKeystone' });
+          }
         },
       },
       {
@@ -243,16 +205,14 @@ export const AccountCreationArea = ({
         onClickBtn: () => {
           onChangeAttachAccountModalVisible(false);
           if (hasMasterPassword) {
-            navigation.navigate('AttachAccount', {
-              screen: 'AttachReadOnly',
-            });
+            navigation.navigate('AttachReadOnly');
           } else {
-            navigation.navigate('CreatePassword', { pathName: 'AttachAccount', state: 'AttachReadOnly' });
+            navigation.navigate('CreatePassword', { pathName: 'AttachReadOnly' });
           }
         },
       },
     ],
-    [hasMasterPassword, navigation, onChangeAttachAccountModalVisible, onOpenModal, show],
+    [hasMasterPassword, navigation, onChangeAttachAccountModalVisible, show],
   );
   return (
     <>
@@ -284,8 +244,6 @@ export const AccountCreationArea = ({
         onSelectSubstrateAccount={() => onSelectAccountType(SUBSTRATE_ACCOUNT_TYPE)}
         onSelectEvmAccount={() => onSelectAccountType(EVM_ACCOUNT_TYPE)}
       />
-
-      <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={scanType} />
     </>
   );
 };

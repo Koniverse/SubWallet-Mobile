@@ -1,7 +1,6 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { AttachAccountStackParamList } from 'routes/account/attachAccount';
 import { HomeStackParamList } from 'routes/home';
 import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTypes';
 import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
@@ -11,7 +10,6 @@ import { CompoundStakeActionStackParamList } from 'routes/staking/compoundAction
 import { StakeActionStackParamList } from 'routes/staking/stakeAction';
 import { UnStakeActionStackParamList } from 'routes/staking/unStakeAction';
 import { WithdrawStakeActionStackParamList } from 'routes/staking/withdrawAction';
-import Login from 'screens/MasterPassword/Login';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -23,10 +21,11 @@ export type RootStackParamList = {
       | 'ImportSecretPhrase'
       | 'RestoreJson'
       | 'ImportPrivateKey'
-      | 'ScanByQrCode'
-      | 'AttachQR-signer'
-      | 'AttachAccount'
-      | 'MigratePassword';
+      | 'ImportQrCode'
+      | 'MigratePassword'
+      | 'ConnectParitySigner'
+      | 'ConnectKeystone'
+      | 'AttachReadOnly';
     state?: string;
   };
   ChangePassword: undefined;
@@ -73,11 +72,14 @@ export type RootStackParamList = {
   TransactionDone: { chainType: string; chain: string; extrinsicHash: string };
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
-  AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
   WebViewModal: undefined;
   History: undefined;
   Login: undefined;
+  ConnectParitySigner: undefined;
+  ConnectKeystone: undefined;
+  AttachReadOnly: undefined;
+  ImportQrCode: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;

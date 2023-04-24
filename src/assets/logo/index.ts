@@ -275,5 +275,9 @@ export const ImageLogosMap = {
   xx_network: require('./199.xxnetwork.png'),
   watr_network: require('./200.watr.png'),
   watr_network_evm: require('./200.watr.png'),
+  parity: require('./201.parity.png'),
+  keystone: require('./202.keystone.png'),
+  subwallet: require('./00.subwallet.png'),
+  __qr_code__: require('./203.__qr_code__.png'),
   default: require('./73.Default.png'),
 };

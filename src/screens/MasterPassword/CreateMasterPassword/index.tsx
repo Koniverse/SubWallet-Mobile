@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { View } from 'react-native';
 import { CheckCircle, Info } from 'phosphor-react-native';
@@ -12,16 +12,8 @@ import { Warning } from 'components/Warning';
 import { keyringChangeMasterPassword } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { CreatePasswordProps, RootNavigationProps } from 'routes/index';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
-import { SCAN_TYPE } from 'constants/qr';
-import { HIDE_MODAL_DURATION } from 'constants/index';
-import QrAddressScanner from 'components/Scanner/QrAddressScanner';
-import useModalScanner from 'hooks/qr/useModalScanner';
-import { QrAccount } from 'types/qr/attach';
 import CreateMasterPasswordStyle from './style';
-import useGoHome from "hooks/screen/useGoHome";
-import {KeypairType} from "@polkadot/util-crypto/types";
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 const formConfig: FormControlConfig = {
   password: {
@@ -54,53 +46,9 @@ const CreateMasterPassword = ({
   const _style = CreateMasterPasswordStyle(theme);
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
-  const [scanType, setScanType] = useState<SCAN_TYPE.QR_SIGNER | SCAN_TYPE.SECRET>(SCAN_TYPE.SECRET);
-
-  const onSuccess = useCallback(
-    (data: QrAccount) => {
-      switch (scanType) {
-        case SCAN_TYPE.QR_SIGNER:
-          navigation.navigate('AttachAccount', {
-            screen: 'AttachQrSignerConfirm',
-            params: data,
-          });
-          break;
-        case SCAN_TYPE.SECRET:
-          navigation.navigate('AttachAccount', {
-            screen: 'ImportAccountQrConfirm',
-            params: data,
-          });
-          break;
-        default:
-          break;
-      }
-    },
-    [navigation, scanType],
-  );
-
-  const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSuccess);
 
   const onComplete = async () => {
-    if (pathName === 'ScanByQrCode' || pathName === 'AttachQR-signer') {
-      const result = await requestCameraPermission();
-
-      if (result === RESULTS.GRANTED) {
-        if (pathName === 'ScanByQrCode') {
-          setScanType(SCAN_TYPE.SECRET);
-          setTimeout(() => {
-            onOpenModal();
-          }, HIDE_MODAL_DURATION);
-        } else {
-          setScanType(SCAN_TYPE.QR_SIGNER);
-          setTimeout(() => {
-            onOpenModal();
-          }, HIDE_MODAL_DURATION);
-        }
-      }
-    } else if (pathName === 'AttachAccount') {
-      // @ts-ignore
-      navigation.navigate(pathName, { screen: state });
-    } else if (pathName === 'CreateAccount') {
+    if (pathName === 'CreateAccount') {
       navigation.navigate(pathName, { keyTypes: state as KeypairType });
     } else if (pathName === 'MigratePassword') {
       navigation.navigate(pathName);
@@ -198,7 +146,6 @@ const CreateMasterPassword = ({
           {'Finish'}
         </Button>
       </View>
-      <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={scanType} />
     </ContainerWithSubHeader>
   );
 };

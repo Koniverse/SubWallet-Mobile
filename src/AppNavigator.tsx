@@ -1,5 +1,9 @@
 import React, { useEffect } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import AttachReadOnly from 'screens/Account/AttachReadOnly';
+import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
+import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySigner';
+import ImportQrCode from 'screens/Account/ImportQrCode';
 import { Home } from 'screens/Home';
 import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
@@ -36,7 +40,6 @@ import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
-import AttachAccountScreen from 'screens/AttachAccount/AttachAccountScreen';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootStackParamList } from './routes';
@@ -178,9 +181,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   component={CompoundActionScreen}
                   options={{ gestureEnabled: false }}
                 />
-                <Stack.Screen name="AttachAccount" component={AttachAccountScreen} />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransactionDone" component={TransactionDone} />
+                <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
+                <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
+                <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} />
+                <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{
