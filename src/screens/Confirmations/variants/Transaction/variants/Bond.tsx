@@ -1,3 +1,4 @@
+import { ConfirmationContent } from 'components/Confirmation';
 import React from 'react';
 import { View } from 'react-native';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
@@ -14,7 +15,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
   const addressList = data.selectedValidators.map(validator => validator.address);
 
   return (
-    <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+    <ConfirmationContent>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
@@ -32,7 +33,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
-    </View>
+    </ConfirmationContent>
   );
 };
 
