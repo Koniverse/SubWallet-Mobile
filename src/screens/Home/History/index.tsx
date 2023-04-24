@@ -35,6 +35,7 @@ import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
+import { ScreenContainer } from 'components/ScreenContainer';
 
 type Props = {};
 
@@ -379,25 +380,27 @@ function History(): React.ReactElement<Props> {
   }, []);
 
   return (
-    <>
-      <FlatListScreen
-        showLeftBtn={false}
-        items={historyList}
-        style={FlatListScreenPaddingTop}
-        title={i18n.title.history}
-        searchFunction={searchFunc}
-        renderItem={renderItem}
-        isShowFilterBtn
-        renderListEmptyComponent={emptyList}
-        grouping={grouping}
-        filterOptions={FILTER_OPTIONS}
-        filterFunction={filterFunction}
-        sortFunction={sortFunction}
-        flatListStyle={{ paddingHorizontal: theme.padding, marginTop: -theme.marginXS }}
-      />
+    <ScreenContainer>
+      <View style={{ flex: 1, paddingBottom: theme.size }}>
+        <FlatListScreen
+          showLeftBtn={true}
+          items={historyList}
+          style={FlatListScreenPaddingTop}
+          title={i18n.title.history}
+          searchFunction={searchFunc}
+          renderItem={renderItem}
+          isShowFilterBtn
+          renderListEmptyComponent={emptyList}
+          grouping={grouping}
+          filterOptions={FILTER_OPTIONS}
+          filterFunction={filterFunction}
+          sortFunction={sortFunction}
+          flatListStyle={{ paddingHorizontal: theme.padding, marginTop: -theme.marginXS }}
+        />
 
-      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
-    </>
+        <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
+      </View>
+    </ScreenContainer>
   );
 }
 

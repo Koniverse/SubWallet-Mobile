@@ -5,7 +5,7 @@ import { Linking, ScrollView, StyleProp } from 'react-native';
 import Text from 'components/Text';
 import { ActionItem } from 'components/ActionItem';
 import {
-  BellRinging,
+  BellRinging, Clock,
   Coin,
   DiscordLogo,
   FileText,
@@ -75,6 +75,12 @@ export const Settings = () => {
   const settingList: settingItemType[][] = useMemo(
     () => [
       [
+        {
+          icon: Clock,
+          title: i18n.title.history,
+          hasRightArrow: true,
+          onPress: () => navigation.navigate('History'),
+        },
         {
           icon: ShieldCheck,
           title: i18n.title.security,

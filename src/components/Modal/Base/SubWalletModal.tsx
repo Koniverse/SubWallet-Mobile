@@ -14,10 +14,10 @@ interface Props {
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
   return {
     marginTop: 'auto',
-    backgroundColor: ColorMap.dark2,
+    backgroundColor: ColorMap.backgroundDefault,
     alignItems: 'center',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
     paddingTop: 8,
     paddingHorizontal: 16,
     flex: isFullHeight ? 1 : undefined,
@@ -25,11 +25,11 @@ const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> 
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
-  width: 56,
-  height: 4,
-  borderRadius: 2,
+  width: 70,
+  height: 5,
+  borderRadius: 100,
   backgroundColor: ColorMap.modalSeparatorColor,
-  marginBottom: 19,
+  marginBottom: 22,
   textAlign: 'center',
 };
 
@@ -47,7 +47,7 @@ export const SubWalletModal = ({
       onModalHide={onModalHide} // Auto trigger when close modal
       swipeDirection={onChangeModalVisible ? 'down' : undefined}
       style={{ margin: 0 }}
-      backdropColor={ColorMap.dark1}
+      backdropColor={ColorMap.backgroundSecondary}
       backdropOpacity={0.8}
       onSwipeComplete={onChangeModalVisible}
       onBackdropPress={onChangeModalVisible}

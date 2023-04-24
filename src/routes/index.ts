@@ -76,6 +76,7 @@ export type RootStackParamList = {
   AttachAccount: NavigatorScreenParams<AttachAccountStackParamList>;
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
   WebViewModal: undefined;
+  History: undefined;
   Login: undefined;
 };
 

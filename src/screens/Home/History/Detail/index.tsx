@@ -10,7 +10,7 @@ import { RootState } from 'stores/index';
 import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { ArrowSquareUpRight } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 type Props = {
@@ -31,9 +31,7 @@ export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }:
 
   const openBlockExplorer = useCallback((link: string) => {
     return () => {
-      //todo: open in browser
-      // window.open(link, '_blank');
-      console.log('link', link);
+      Linking.openURL(link);
     };
   }, []);
 

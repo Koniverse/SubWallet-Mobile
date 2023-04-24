@@ -6,6 +6,8 @@ export const ColorMap = {
   dark: '#000',
   dark1: '#0c0c0c',
   dark2: '#222',
+  backgroundSecondary: '#1A1A1A',
+  backgroundDefault: '#0c0c0c',
   primary: '#42C59A',
   secondary: '#004BFF',
   danger: '#F5000E',

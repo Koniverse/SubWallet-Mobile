@@ -41,7 +41,7 @@ export const Header = () => {
           style={{ marginLeft: -8 }}
           type={'ghost'}
           size={'xs'}
-          icon={<Icon phosphorIcon={List} size={'sm'} />}
+          icon={<Icon phosphorIcon={List} size={'md'} />}
           onPress={() => {
             navigation.navigate('Settings');
           }}
