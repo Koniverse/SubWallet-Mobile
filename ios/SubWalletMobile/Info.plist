@@ -77,9 +77,11 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Access location from library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Access photos from library</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Access Apple Music from library</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>fonts/PlusJakartaSans-Light.ttf</string>

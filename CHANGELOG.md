@@ -1,3 +1,7 @@
+## 1.0.1 (132)
+- Upgrade Background from extension 1.0.x
+- Upgrade UI
+
 ## 0.2.6 (129)
 - Fix error message from react-native-camera
 - Fix cosmize connect problem
