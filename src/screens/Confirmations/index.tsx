@@ -7,6 +7,7 @@ import {
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
+import { UnlockModal } from 'components/common/UnlockModal';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -222,6 +223,7 @@ export const Confirmations = () => {
           <SafeAreaView />
         </View>
       </View>
+      {Platform.OS === 'ios' && <UnlockModal />}
     </KeyboardAvoidingView>
   );
 };
