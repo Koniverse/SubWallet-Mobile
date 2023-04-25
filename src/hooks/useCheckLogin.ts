@@ -9,20 +9,20 @@ import { updatePasswordModalState } from 'stores/PasswordModalState';
 type VoidFunction = () => void;
 
 const useCheckLogin = (): ((onClick: VoidFunction) => VoidFunction) => {
-  const { isLocked } = useSelector((state: RootState) => state.accountState);
+  const { isLocked, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const dispatch = useDispatch();
 
   return useCallback(
     (onClick: VoidFunction) => {
       return () => {
-        if (isLocked) {
+        if (hasMasterPassword && isLocked) {
           dispatch(updatePasswordModalState(true));
         } else {
           onClick();
         }
       };
     },
-    [dispatch, isLocked],
+    [dispatch, hasMasterPassword, isLocked],
   );
 };
 

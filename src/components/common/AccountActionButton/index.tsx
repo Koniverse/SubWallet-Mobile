@@ -1,4 +1,3 @@
-import useCheckLogin from 'hooks/useCheckLogin';
 import React from 'react';
 import Button from '../../design-system-ui/button';
 import { View } from 'react-native';
@@ -24,8 +23,6 @@ const AccountActionButton = ({ item }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = AccountActionButtonStyles(theme);
 
-  const checkLogin = useCheckLogin();
-
   return (
     <Button
       size={'xl'}
@@ -35,7 +32,7 @@ const AccountActionButton = ({ item }: Props) => {
           <Icon phosphorIcon={item.icon} weight={'fill'} />
         </View>
       }
-      onPress={checkLogin(item.onPress)}
+      onPress={item.onPress}
       style={{ marginBottom: 8 }}
       contentAlign={'left'}>
       <View>

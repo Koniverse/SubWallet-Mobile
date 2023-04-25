@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updatePasswordModalState } from 'stores/PasswordModalState';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { RootState } from 'stores/index';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 export const UnlockModal = () => {
   const { isShowModal, selectedAction } = useSelector((state: RootState) => state.passwordModalState);
@@ -22,7 +23,6 @@ export const UnlockModal = () => {
       name: i18n.common.walletPassword,
       value: '',
       validateFunc: validatePassword,
-      require: true,
     },
   };
 
@@ -50,6 +50,7 @@ export const UnlockModal = () => {
           } else {
             onHideModal();
             onChangeValue('password')('');
+            onUpdateErrors('password')(undefined);
             if (selectedAction) {
               setTimeout(() => {
                 DeviceEventEmitter.emit(selectedAction);
@@ -74,10 +75,17 @@ export const UnlockModal = () => {
     return loading || !formState.data.password || formState.errors.password.length > 0;
   }, [formState.data.password, formState.errors.password.length, loading]);
 
+  const onChangePassword = (value: string) => {
+    if (!value) {
+      onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
+    }
+    onChangeValue('password')(value);
+  };
+
   const renderFooter = () => {
     return (
       <>
-        <View style={{ width: '100%', paddingHorizontal: 16 }}>
+        <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
           <Button
             loading={loading}
             disabled={isDisabled}
@@ -98,13 +106,17 @@ export const UnlockModal = () => {
   };
 
   return (
-    <SwModal modalVisible={isShowModal} modalTitle={'Enter password'} footer={renderFooter()}>
+    <SwModal
+      modalVisible={isShowModal}
+      modalTitle={'Enter password'}
+      footer={renderFooter()}
+      onChangeModalVisible={() => dispatch(updatePasswordModalState(false))}>
       <View style={{ width: '100%' }}>
         <PasswordField
           ref={formState.refs.password}
           label={formState.labels.password}
           defaultValue={formState.data.password}
-          onChangeText={value => onChangeValue('password')(value)}
+          onChangeText={onChangePassword}
           errorMessages={formState.errors.password}
           onSubmitField={onSubmitField('password')}
         />
