@@ -23,6 +23,12 @@ export default (theme: ThemeTypes) => {
       position: 'relative',
       marginLeft: theme.marginXS,
     },
-    nodeLeaf: {},
+    nodeLeaf: {
+      marginTop: '0 !important',
+      width: '100%',
+      overflow: 'hidden',
+      maxWidth: theme.controlHeightLG * 5,
+      flex: 2,
+    },
   });
 };
