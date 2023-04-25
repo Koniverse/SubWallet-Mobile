@@ -75,7 +75,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
         isAllowed: true,
       })
         .then(() => {
-          if (params.isBack) {
+          if (!params.isBack) {
             backToHome(goHome);
           } else {
             navigation.goBack();

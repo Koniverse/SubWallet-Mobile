@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { NavigationState } from '@react-navigation/routers';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
@@ -42,7 +43,7 @@ import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen'
 import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import { RootStackParamList } from './routes';
+import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -58,7 +59,7 @@ import History from 'screens/Home/History';
 import withPageWrapper from 'components/pageWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import {AddProvider} from "screens/AddProvider";
+import { AddProvider } from 'screens/AddProvider';
 
 interface Props {
   isAppReady: boolean;
@@ -96,8 +97,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
+  const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
 
-  const { numberOfConfirmations } = useSelector((state: RootState) => state.requestState);
+  const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
 
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: ['subwallet://'],
@@ -108,14 +110,22 @@ const AppNavigator = ({ isAppReady }: Props) => {
     console.log('error boundary', error, stackTrace);
   };
 
+  const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
+    setCurrentRoute(state?.routes[state?.index]);
+  }, []);
+
   useEffect(() => {
-    if (!!numberOfConfirmations) {
-      navigationRef.current?.navigate('Confirmations');
+    if (hasConfirmations && currentRoute) {
+      if (currentRoute.name !== 'Confirmations') {
+        if (currentRoute.name !== 'CreateAccount') {
+          navigationRef.current?.navigate('Confirmations');
+        }
+      }
     }
-  }, [numberOfConfirmations, navigationRef]);
+  }, [hasConfirmations, navigationRef, currentRoute]);
 
   return (
-    <NavigationContainer linking={linking} ref={navigationRef} theme={theme}>
+    <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
           screenOptions={{
