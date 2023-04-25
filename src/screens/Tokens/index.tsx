@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Plus } from 'phosphor-react-native';
@@ -6,10 +6,12 @@ import { ListRenderItemInfo, SafeAreaView } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import useFetchCustomToken from 'hooks/screen/Setting/useFetchCustomToken';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { TokenToggleItem } from 'components/common/TokenToggleItem';
 import { updateAssetSetting } from '../../messaging';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
 const filterFunction = (items: _ChainAsset[], searchString: string) => {
   return items.filter(item => item?.symbol.toLowerCase().includes(searchString.toLowerCase()));
 };
@@ -17,7 +19,18 @@ const filterFunction = (items: _ChainAsset[], searchString: string) => {
 let cachePendingAssetMap: Record<string, boolean> = {};
 
 export const CustomTokenSetting = () => {
-  const { assetItems, assetSettingMap } = useFetchCustomToken();
+  const { assetRegistry, assetSettingMap } = useSelector((state: RootState) => state.assetRegistry);
+  const assetItems = useMemo(() => {
+    const allFungibleTokens: _ChainAsset[] = [];
+
+    Object.values(assetRegistry).forEach(asset => {
+      if (_isAssetFungibleToken(asset)) {
+        allFungibleTokens.push(asset);
+      }
+    });
+
+    return allFungibleTokens;
+  }, [assetRegistry]);
   const navigation = useNavigation<RootNavigationProps>();
   const [pendingAssetMap, setPendingAssetMap] = useState<Record<string, boolean>>(cachePendingAssetMap);
 
@@ -38,7 +51,7 @@ export const CustomTokenSetting = () => {
   }, [pendingAssetMap]);
 
   const onToggleItem = (item: _ChainAsset) => {
-    setPendingAssetMap({ ...pendingAssetMap, [item.slug]: !assetSettingMap[item.slug].visible });
+    setPendingAssetMap({ ...pendingAssetMap, [item.slug]: !assetSettingMap[item.slug]?.visible });
     const reject = () => {
       console.warn('Toggle token request failed!');
       // @ts-ignore
@@ -49,7 +62,7 @@ export const CustomTokenSetting = () => {
     updateAssetSetting({
       tokenSlug: item.slug,
       assetSetting: {
-        visible: !assetSettingMap[item.slug].visible,
+        visible: !assetSettingMap[item.slug]?.visible,
       },
     })
       .then(result => {

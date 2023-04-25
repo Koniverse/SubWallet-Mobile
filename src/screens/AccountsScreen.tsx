@@ -194,11 +194,7 @@ export const AccountsScreen = () => {
   };
 
   return (
-    <SubScreenContainer
-      navigation={navigation}
-      title={i18n.title.accounts}
-      rightIcon={Plus}
-      onPressRightIcon={() => {}}>
+    <SubScreenContainer navigation={navigation} title={i18n.title.accounts}>
       <View style={accountsWrapper}>
         <FlatList
           style={{ flex: 1 }}
