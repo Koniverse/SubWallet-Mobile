@@ -75,7 +75,11 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
         isAllowed: true,
       })
         .then(() => {
-          backToHome(goHome);
+          if (params.isBack) {
+            backToHome(goHome);
+          } else {
+            navigation.goBack();
+          }
         })
         .catch((error: Error): void => {
           setIsBusy(false);

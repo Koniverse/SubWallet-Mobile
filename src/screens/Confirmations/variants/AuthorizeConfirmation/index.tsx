@@ -8,8 +8,9 @@ import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/Confirm
 import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import useCheckLogin from 'hooks/useCheckLogin';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { ShieldSlash, XCircle } from 'phosphor-react-native';
+import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
@@ -79,6 +80,8 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     () => filterAuthorizeAccounts(accounts, accountAuthType || 'both'),
     [accountAuthType, accounts],
   );
+
+  const checkLogin = useCheckLogin();
 
   // Selected map with default values is map of all accounts
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
@@ -174,7 +177,11 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     <React.Fragment>
       <ConfirmationContent gap={theme.size}>
         <ConfirmationGeneralInfo request={request} gap={theme.size} />
-        <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
+        {visibleAccounts.length > 0 ? (
+          <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
+        ) : (
+          <Text style={styles.textCenter}>You don't have any accounts to connect. Please create a new account</Text>
+        )}
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.contentContainer}
@@ -229,7 +236,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
-            <Button block={true} onPress={onAddAccount}>
+            <Button
+              block={true}
+              onPress={checkLogin(onAddAccount)}
+              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
               Create one
             </Button>
           </>

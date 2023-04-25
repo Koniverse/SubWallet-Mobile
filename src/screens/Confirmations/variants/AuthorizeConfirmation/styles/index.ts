@@ -1,10 +1,9 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
   text: TextStyle;
+  textCenter: TextStyle;
   scroll: ViewStyle;
   contentContainer: ViewStyle;
 }
@@ -12,10 +11,18 @@ export interface ComponentStyle {
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     text: {
-      ...sharedStyles.mainText,
-      ...FontMedium,
-      color: ColorMap.disabled,
+      color: theme.colorText,
+      fontSize: theme.fontSizeHeading6,
+      lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       width: '100%',
+    },
+    textCenter: {
+      color: theme.colorTextTertiary,
+      fontSize: theme.fontSizeHeading6,
+      lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      width: '100%',
+      textAlign: 'center',
+      paddingHorizontal: theme.padding
     },
     scroll: {
       maxHeight: 180,
