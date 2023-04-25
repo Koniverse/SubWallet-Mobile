@@ -1,7 +1,17 @@
 import { Images, Logo } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { useState } from 'react';
-import { Image, ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  DeviceEventEmitter,
+  EmitterSubscription,
+  Image,
+  ImageBackground,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleProp,
+  View,
+} from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -9,6 +19,10 @@ import Text from 'components/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountActionButton from 'components/common/AccountActionButton';
 import { AccountCreationArea } from 'components/common/AccountCreationArea';
+import { SelectedActionType } from 'stores/types';
+import { updateSelectedAction } from 'stores/PasswordModalState';
+import { useDispatch } from 'react-redux';
+import useCheckLogin from 'hooks/useCheckLogin';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -54,10 +68,31 @@ const firstScreenNotificationStyle: StyleProp<any> = {
 };
 
 export const FirstScreen = () => {
+  const [selectedAction, setSelectedAction] = useState<SelectedActionType | undefined>(undefined);
   const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
   const theme = useSubWalletTheme().swThemes;
+  const checkLogin = useCheckLogin();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    let event: EmitterSubscription;
+    if (selectedAction) {
+      event = DeviceEventEmitter.addListener(selectedAction, () => {
+        if (selectedAction === 'createAcc') {
+          setCreateAccountModalVisible(true);
+        } else if (selectedAction === 'importAcc') {
+          setImportAccountModalVisible(true);
+        } else if (selectedAction === 'attachAcc') {
+          setAttachAccountModalVisible(true);
+        }
+      });
+    }
+
+    return () => {
+      selectedAction && event.remove();
+    };
+  }, [selectedAction]);
 
   const actionList = [
     {
@@ -66,7 +101,9 @@ export const FirstScreen = () => {
       title: 'Create a new account',
       subTitle: 'Create a new account with SubWallet',
       onPress: () => {
-        setCreateAccountModalVisible(true);
+        setSelectedAction('createAcc');
+        dispatch(updateSelectedAction('createAcc'));
+        checkLogin(() => setCreateAccountModalVisible(true))();
       },
     },
     {
@@ -75,7 +112,9 @@ export const FirstScreen = () => {
       title: 'Import an account',
       subTitle: 'Import an existing account',
       onPress: () => {
-        setImportAccountModalVisible(true);
+        setSelectedAction('importAcc');
+        dispatch(updateSelectedAction('importAcc'));
+        checkLogin(() => setImportAccountModalVisible(true))();
       },
     },
     {
@@ -84,7 +123,9 @@ export const FirstScreen = () => {
       title: 'Attach an account',
       subTitle: 'Attach an account from external wallet',
       onPress: () => {
-        setAttachAccountModalVisible(true);
+        setSelectedAction('attachAcc');
+        dispatch(updateSelectedAction('attachAcc'));
+        checkLogin(() => setAttachAccountModalVisible(true))();
       },
     },
   ];
