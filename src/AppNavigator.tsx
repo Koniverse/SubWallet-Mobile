@@ -206,7 +206,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   contentStyle: { backgroundColor: theme.swThemes.colorBgMask },
                   headerShown: false,
                 }}>
-                <Stack.Screen name="Confirmations" component={Confirmations} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="Confirmations"
+                  component={Confirmations}
+                  options={{ gestureEnabled: false, animationDuration: 100 }}
+                />
                 <Stack.Screen name="Login" component={Login} />
               </Stack.Group>
             </>

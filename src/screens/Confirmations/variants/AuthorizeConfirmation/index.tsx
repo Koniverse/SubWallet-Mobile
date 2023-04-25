@@ -115,9 +115,8 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     setLoading(true);
     handleCancel(request).finally(() => {
       setLoading(false);
-      navigation.navigate('Confirmations');
     });
-  }, [request, navigation]);
+  }, [request]);
 
   const onConfirm = useCallback(() => {
     setLoading(true);
@@ -141,8 +140,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
       default:
         types = undefined;
     }
-    navigation.goBack();
-    navigation.navigate('CreateAccount', { keyTypes: types, isBack: true });
+    navigation.replace('CreateAccount', { keyTypes: types, isBack: true });
   }, [accountAuthType, navigation]);
 
   const onAccountSelect = useCallback(
