@@ -30,7 +30,7 @@ export type RootStackParamList = {
   };
   ChangePassword: undefined;
   MigratePassword: undefined;
-  CreateAccount: { keyTypes?: KeypairType };
+  CreateAccount: { keyTypes?: KeypairType; isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: undefined;
   EditAccount: { address: string; name: string };
