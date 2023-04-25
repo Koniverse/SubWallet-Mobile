@@ -202,8 +202,14 @@ export const Confirmations = () => {
   }, [index, numberOfConfirmations]);
 
   useEffect(() => {
-    if (!confirmation) {
-      navigation.goBack();
+    if (!confirmation && navigation.isFocused()) {
+      const state = navigation.getState();
+      const confirmationRoute = state.routes.find(route => route.name === 'Confirmations');
+      if (!confirmationRoute) {
+        navigation.goBack();
+      } else {
+        navigation.pop(state.index - state.routes.indexOf(confirmationRoute) + 1);
+      }
     }
   }, [confirmation, navigation]);
 
