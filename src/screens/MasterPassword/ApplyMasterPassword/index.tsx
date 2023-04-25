@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { DeviceEventEmitter, ScrollView, View } from 'react-native';
-import { Avatar, Button, Icon, Modal } from 'components/design-system-ui';
+import { Avatar, Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
@@ -21,6 +21,8 @@ import useGoHome from 'hooks/screen/useGoHome';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { updatePasswordModalState, updateSelectedAction } from 'stores/PasswordModalState';
+import i18n from 'utils/i18n/i18n';
+import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -35,7 +37,6 @@ const formConfig: FormControlConfig = {
     name: 'Current password',
     value: '',
     validateFunc: validatePassword,
-    require: true,
   },
 };
 
@@ -78,6 +79,7 @@ const ApplyMasterPassword = () => {
               setIsError(true);
             } else {
               setIsError(false);
+              onUpdateErrors('password')(undefined);
             }
           })
           .catch((e: Error) => {
@@ -174,6 +176,10 @@ const ApplyMasterPassword = () => {
   }, [migrateAccount?.address, onUpdateErrors]);
 
   const onChangePasswordValue = (currentValue: string) => {
+    if (!currentValue) {
+      onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
+    }
+
     onChangeValue('password')(currentValue);
   };
 
@@ -293,7 +299,8 @@ const ApplyMasterPassword = () => {
         )}
         {step === 'Done' && <ApplyDone accounts={canMigrate} />}
 
-        <Modal.DeleteModal
+        <DeleteModal
+          confirmation={''}
           title={'Detele this account?'}
           visible={modalVisible}
           message={

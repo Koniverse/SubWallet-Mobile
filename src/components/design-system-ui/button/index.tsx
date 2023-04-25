@@ -15,7 +15,6 @@ import { ButtonPropsType } from './PropsType';
 import Squircle from 'components/design-system-ui/squircle';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ButtonStyles from './style';
-import capitalize from '@subwallet/react-ui/es/_util/capitalize';
 
 export interface ButtonProps extends ButtonPropsType, TouchableHighlightProps {
   onPress?: (event?: GestureResponderEvent) => void;
@@ -141,7 +140,13 @@ const Button: React.FC<ButtonProps> = props => {
 
   if (shape === 'squircle' && isIconOnly) {
     return (
-      <Squircle size={size} backgroundColor={theme[`color${capitalize(type)}`]}>
+      <Squircle
+        size={size}
+        backgroundColor={
+          disabled
+            ? (_style[`${type}DisabledRaw`].backgroundColor as string) || '#fff'
+            : (_style[`${type}Raw`].backgroundColor as string) || '#fff'
+        }>
         <View style={{ position: 'absolute' }}>{buttonNode}</View>
       </Squircle>
     );
