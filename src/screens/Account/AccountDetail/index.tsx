@@ -1,14 +1,14 @@
-import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ActivityIndicator, BackgroundIcon, Button, Icon } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
-import useGetActiveNetwork from 'hooks/screen/useGetActiveChains';
 import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -32,12 +32,10 @@ export const AccountDetail = ({
   const goHome = useGoHome();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
-  const networks = useGetActiveNetwork();
   const account = useGetAccountByAddress(currentAddress);
   const SubIcon = useGetAvatarSubIcon(account, 32);
   const signMode = useGetAccountSignModeByAddress(currentAddress);
 
-  const isEthereum = useMemo((): boolean => isEthereumAddress(currentAddress), [currentAddress]);
   const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
   const styles = useMemo(() => createStyle(theme), [theme]);
 
@@ -49,17 +47,6 @@ export const AccountDetail = ({
       },
     }),
     [name],
-  );
-
-  const networkOptions = useMemo(
-    () =>
-      networks
-        .filter(network => !!network.isEthereum === isEthereum)
-        .map(network => ({
-          label: network.chain.replace(' Relay Chain', ''),
-          value: network.key,
-        })),
-    [networks, isEthereum],
   );
 
   const saveTimeOutRef = useRef<NodeJS.Timer>();
@@ -117,8 +104,6 @@ export const AccountDetail = ({
       return;
     }
 
-    setDeriving(true);
-
     setTimeout(() => {
       deriveAccountV3({
         address: account.address,
@@ -134,6 +119,14 @@ export const AccountDetail = ({
         });
     }, 500);
   }, [account?.address, goHome, toast]);
+
+  const { onPress, onPasswordComplete, visible, onHideModal } = useUnlockModal(onDerive);
+
+  const onPressDerive = useCallback(() => {
+    setDeriving(true);
+
+    onPress().catch(() => setDeriving(false));
+  }, [onPress]);
 
   return (
     <SubScreenContainer
@@ -202,7 +195,7 @@ export const AccountDetail = ({
             contentAlign="left"
             type="secondary"
             loading={deriving}
-            onPress={onDerive}>
+            onPress={onPressDerive}>
             Derive an account
           </Button>
           <Button
@@ -239,6 +232,7 @@ export const AccountDetail = ({
             Remove this account
           </Button>
         </View>
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </SubScreenContainer>
   );
