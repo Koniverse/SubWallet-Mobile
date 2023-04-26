@@ -20,7 +20,6 @@ import i18n from 'utils/i18n/i18n';
 import { DelayBackgroundService } from 'types/background';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { WEB_RUNNER_BASE_URI } from '@env';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 900000; //15*60*1000
@@ -378,7 +377,6 @@ const now = new Date().getTime();
 const URI_PARAMS =
   '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
 
-// const BASE_URI = 'http://192.168.10.153:9000';
 const BASE_URI =
   Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
 
