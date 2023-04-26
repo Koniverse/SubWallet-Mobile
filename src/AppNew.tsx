@@ -23,7 +23,6 @@ import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
-import { UnlockModal } from 'components/common/UnlockModal';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -137,7 +136,6 @@ export const AppNew = () => {
                   <ScannerContextProvider>
                     <>
                       <AppNavigator isAppReady={isAppReady} />
-                      <UnlockModal />
                     </>
                   </ScannerContextProvider>
                 </QrSignerContextProvider>

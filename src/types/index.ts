@@ -70,3 +70,5 @@ export type ChainInfo = {
   slug: string;
   name: string;
 };
+
+export type VoidFunction = () => void;

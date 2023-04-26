@@ -1,23 +1,26 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Icon, SwModal } from 'components/design-system-ui';
-import { DeviceEventEmitter, View } from 'react-native';
+import { View } from 'react-native';
 import { PasswordField } from 'components/Field/Password';
+import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl from 'hooks/screen/useFormControl';
 import { CheckCircle } from 'phosphor-react-native';
 import { keyringUnlock } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { useDispatch, useSelector } from 'react-redux';
-import { updatePasswordModalState } from 'stores/PasswordModalState';
-import { HIDE_MODAL_DURATION } from 'constants/index';
-import { RootState } from 'stores/index';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
-export const UnlockModal = () => {
-  const { isShowModal, selectedAction } = useSelector((state: RootState) => state.passwordModalState);
+interface Props {
+  onPasswordComplete: VoidFunction;
+  visible: boolean;
+  onHideModal: VoidFunction;
+}
+
+export const UnlockModal: React.FC<Props> = (props: Props) => {
+  const { visible, onPasswordComplete, onHideModal } = props;
   const theme = useSubWalletTheme().swThemes;
-  const dispatch = useDispatch();
+
   const formConfig = {
     password: {
       name: i18n.common.walletPassword,
@@ -27,15 +30,6 @@ export const UnlockModal = () => {
   };
 
   const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    focus('password')();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onHideModal = () => {
-    dispatch(updatePasswordModalState(false));
-  };
 
   const onSubmit = () => {
     const password = formState.data.password;
@@ -48,14 +42,7 @@ export const UnlockModal = () => {
           if (!data.status) {
             onUpdateErrors('password')(['Invalid password']);
           } else {
-            onHideModal();
-            onChangeValue('password')('');
-            onUpdateErrors('password')(undefined);
-            if (selectedAction) {
-              setTimeout(() => {
-                DeviceEventEmitter.emit(selectedAction);
-              }, HIDE_MODAL_DURATION);
-            }
+            onPasswordComplete();
           }
         })
         .catch((e: Error) => {
@@ -75,42 +62,53 @@ export const UnlockModal = () => {
     return loading || !formState.data.password || formState.errors.password.length > 0;
   }, [formState.data.password, formState.errors.password.length, loading]);
 
-  const onChangePassword = (value: string) => {
-    if (!value) {
-      onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
-    }
-    onChangeValue('password')(value);
-  };
+  const onChangePassword = useCallback(
+    (value: string) => {
+      if (!value) {
+        onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
+      }
+      onChangeValue('password')(value);
+    },
+    [onChangeValue, onUpdateErrors],
+  );
 
-  const renderFooter = () => {
-    return (
-      <>
-        <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
-          <Button
-            loading={loading}
-            disabled={isDisabled}
-            icon={
-              <Icon
-                phosphorIcon={CheckCircle}
-                size={'lg'}
-                weight={'fill'}
-                iconColor={loading || !formState.data.password ? theme.colorTextLight5 : theme.colorTextLight1}
-              />
-            }
-            onPress={onSubmit}>
-            {'Apply'}
-          </Button>
-        </View>
-      </>
-    );
-  };
+  useEffect(() => {
+    focus('password')();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!visible) {
+      onChangeValue('password')('');
+      onUpdateErrors('password')([]);
+    }
+  }, [visible, onChangeValue, onUpdateErrors]);
 
   return (
     <SwModal
-      modalVisible={isShowModal}
+      modalVisible={visible}
       modalTitle={'Enter password'}
-      footer={renderFooter()}
-      onChangeModalVisible={() => dispatch(updatePasswordModalState(false))}>
+      footer={
+        <>
+          <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
+            <Button
+              loading={loading}
+              disabled={isDisabled}
+              icon={
+                <Icon
+                  phosphorIcon={CheckCircle}
+                  size={'lg'}
+                  weight={'fill'}
+                  iconColor={loading || !formState.data.password ? theme.colorTextLight5 : theme.colorTextLight1}
+                />
+              }
+              onPress={onSubmit}>
+              {'Apply'}
+            </Button>
+          </View>
+        </>
+      }
+      onChangeModalVisible={onHideModal}>
       <View style={{ width: '100%' }}>
         <PasswordField
           ref={formState.refs.password}

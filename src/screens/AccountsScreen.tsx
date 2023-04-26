@@ -1,24 +1,19 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  StyleProp,
-  TouchableOpacity,
-  View,
-  DeviceEventEmitter,
-  EmitterSubscription,
-} from 'react-native';
+import { UnlockModal } from 'components//common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
+import React, { useCallback, useRef, useState } from 'react';
+import { FlatList, ListRenderItemInfo, StyleProp, TouchableOpacity, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Account } from 'components/Account';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { IconButton } from 'components/IconButton';
-import { DotsThree, FileArrowDown, Plus, PlusCircle, Swatches } from 'phosphor-react-native';
+import { DotsThree, FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
 import { Warning } from 'components/Warning';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
+import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { saveCurrentAccountAddress, triggerAccountsSubscription } from 'messaging/index';
@@ -28,7 +23,6 @@ import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { Button, Icon } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/AccountCreationArea';
-import { updatePasswordModalState, updateSelectedAction } from 'stores/PasswordModalState';
 import { SelectedActionType } from 'stores/types';
 
 const accountsWrapper: StyleProp<any> = {
@@ -40,36 +34,32 @@ const accountItemContainer: StyleProp<any> = {
 
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { accounts } = useSelector((state: RootState) => state.accountState);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-  const [selectedAction, setSelectedAction] = useState<SelectedActionType | undefined>(undefined);
+
+  const selectedAction = useRef<SelectedActionType>();
+
   const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    let event: EmitterSubscription;
-    if (selectedAction) {
-      event = DeviceEventEmitter.addListener(selectedAction, () => {
-        if (selectedAction === 'createAcc') {
-          setCreateAccountModalVisible(true);
-        } else if (selectedAction === 'importAcc') {
-          setImportAccountModalVisible(true);
-        } else if (selectedAction === 'attachAcc') {
-          setAttachAccountModalVisible(true);
-        }
-      });
-    }
-
-    return () => {
-      selectedAction && event.remove();
-    };
-  }, [selectedAction]);
 
   const renderListEmptyComponent = () => {
     return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountText} isDanger={false} />;
   };
+
+  const onComplete = useCallback(() => {
+    switch (selectedAction.current) {
+      case 'createAcc':
+        setCreateAccountModalVisible(true);
+        break;
+      case 'attachAcc':
+        setAttachAccountModalVisible(true);
+        break;
+      case 'importAcc':
+        setImportAccountModalVisible(true);
+        break;
+    }
+  }, []);
 
   const selectAccount = useCallback(
     (accAddress: string) => {
@@ -135,19 +125,15 @@ export const AccountsScreen = () => {
     [currentAccountAddress, navigation, selectAccount],
   );
 
-  const onPressActionButton = (action: SelectedActionType) => {
-    if (isLocked) {
-      dispatch(updatePasswordModalState(true));
-    } else {
-      if (action === 'createAcc') {
-        setCreateAccountModalVisible(true);
-      } else if (action === 'importAcc') {
-        setImportAccountModalVisible(true);
-      } else if (action === 'attachAcc') {
-        setAttachAccountModalVisible(true);
-      }
-    }
-  };
+  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal(onComplete);
+
+  const onPressActionButton = useCallback(
+    (action: SelectedActionType) => {
+      selectedAction.current = action;
+      onPress().finally(noop);
+    },
+    [onPress],
+  );
 
   const renderFooterComponent = () => {
     return (
@@ -164,8 +150,6 @@ export const AccountsScreen = () => {
           icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setSelectedAction('createAcc');
-            dispatch(updateSelectedAction('createAcc'));
             onPressActionButton('createAcc');
           }}>
           {'Create new account'}
@@ -175,8 +159,6 @@ export const AccountsScreen = () => {
           icon={<Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setSelectedAction('importAcc');
-            dispatch(updateSelectedAction('importAcc'));
             onPressActionButton('importAcc');
           }}
         />
@@ -184,8 +166,6 @@ export const AccountsScreen = () => {
           icon={<Icon phosphorIcon={Swatches} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setSelectedAction('attachAcc');
-            dispatch(updateSelectedAction('attachAcc'));
             onPressActionButton('attachAcc');
           }}
         />
@@ -216,6 +196,7 @@ export const AccountsScreen = () => {
           onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
         />
       </View>
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </SubScreenContainer>
   );
 };
