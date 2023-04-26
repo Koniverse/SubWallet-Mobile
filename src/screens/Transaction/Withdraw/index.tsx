@@ -27,7 +27,7 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { isActionFromValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { submitStakeWithdrawal } from 'messaging/index';

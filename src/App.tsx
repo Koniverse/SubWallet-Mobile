@@ -22,7 +22,7 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
-import { EditAccount } from 'screens/EditAccount';
+import { AccountDetail } from 'screens/Account/AccountDetail';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
@@ -295,7 +295,7 @@ export const App = () => {
                             </Stack.Group>
                             <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                               <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                              <Stack.Screen name="EditAccount" component={EditAccount} />
+                              <Stack.Screen name="EditAccount" component={AccountDetail} />
                               <Stack.Screen name="RestoreJson" component={RestoreJson} />
                               <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                               <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />

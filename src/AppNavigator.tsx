@@ -18,7 +18,7 @@ import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
 import { AccountsScreen } from 'screens/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/CreateAccount';
-import { EditAccount } from 'screens/EditAccount';
+import { AccountDetail } from 'screens/Account/AccountDetail';
 import { RestoreJson } from 'screens/RestoreJson';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
@@ -158,7 +158,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   options={{ gestureEnabled: false }}
                 />
                 <Stack.Screen name="AddProvider" component={AddProvider} />
-                <Stack.Screen name="EditAccount" component={EditAccount} />
+                <Stack.Screen name="EditAccount" component={AccountDetail} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} />
                 <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                 <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
