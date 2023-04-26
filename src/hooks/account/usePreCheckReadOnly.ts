@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import useIsReadOnlyAccount from './useIsReadOnlyAccount';
+import useIsReadOnlyAccount from '../useIsReadOnlyAccount';
 import { useToast } from 'react-native-toast-notifications';
 
 type VoidFunction = () => void;

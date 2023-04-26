@@ -23,7 +23,7 @@ import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSelector';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,

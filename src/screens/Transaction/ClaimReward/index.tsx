@@ -13,7 +13,7 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { submitStakeClaimReward } from '../../../messaging';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';

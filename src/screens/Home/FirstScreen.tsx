@@ -22,7 +22,7 @@ import { AccountCreationArea } from 'components/common/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
 import { updateSelectedAction } from 'stores/PasswordModalState';
 import { useDispatch } from 'react-redux';
-import useCheckLogin from 'hooks/useCheckLogin';
+import useCheckLogin from 'hooks/common/useCheckLogin';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,

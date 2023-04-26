@@ -18,7 +18,7 @@ import { isActionFromValidator } from '@subwallet/extension-base/koni/api/stakin
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { Header } from 'components/Header';
 import { TouchableOpacity, View } from 'react-native';

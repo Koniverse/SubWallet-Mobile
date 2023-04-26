@@ -3,7 +3,7 @@
 
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { SubHeader } from 'components/SubHeader';
-import useCheckCamera from 'hooks/useCheckCamera';
+import useCheckCamera from 'hooks/common/useCheckCamera';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { QrCode } from 'phosphor-react-native';
 import React, { useMemo } from 'react';

@@ -229,6 +229,7 @@ export const vi = {
     viewOnExplorer: 'View on explorer',
   },
   title: {
+    accountDetails: 'Account details',
     yourSeedPhrase: 'Your seed phrase',
     verifyRecoveryPhrase: 'Verify recovery phrase',
     nameYourWallet: 'Name your wallet',
