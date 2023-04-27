@@ -1,17 +1,7 @@
 import { Images, Logo } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { useEffect, useState } from 'react';
-import {
-  DeviceEventEmitter,
-  EmitterSubscription,
-  Image,
-  ImageBackground,
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleProp,
-  View,
-} from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { Image, ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -20,9 +10,9 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountActionButton from 'components/common/AccountActionButton';
 import { AccountCreationArea } from 'components/common/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
-import { updateSelectedAction } from 'stores/PasswordModalState';
-import { useDispatch } from 'react-redux';
-import useCheckLogin from 'hooks/useCheckLogin';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
+import { noop } from 'utils/function';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -68,31 +58,35 @@ const firstScreenNotificationStyle: StyleProp<any> = {
 };
 
 export const FirstScreen = () => {
-  const [selectedAction, setSelectedAction] = useState<SelectedActionType | undefined>(undefined);
   const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
   const theme = useSubWalletTheme().swThemes;
-  const checkLogin = useCheckLogin();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    let event: EmitterSubscription;
-    if (selectedAction) {
-      event = DeviceEventEmitter.addListener(selectedAction, () => {
-        if (selectedAction === 'createAcc') {
-          setCreateAccountModalVisible(true);
-        } else if (selectedAction === 'importAcc') {
-          setImportAccountModalVisible(true);
-        } else if (selectedAction === 'attachAcc') {
-          setAttachAccountModalVisible(true);
-        }
-      });
-    }
+  const selectedAction = useRef<SelectedActionType>();
 
-    return () => {
-      selectedAction && event.remove();
-    };
-  }, [selectedAction]);
+  const onComplete = useCallback(() => {
+    switch (selectedAction.current) {
+      case 'createAcc':
+        setCreateAccountModalVisible(true);
+        break;
+      case 'attachAcc':
+        setAttachAccountModalVisible(true);
+        break;
+      case 'importAcc':
+        setImportAccountModalVisible(true);
+        break;
+    }
+  }, []);
+
+  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal(onComplete);
+
+  const onPressActionButton = useCallback(
+    (action: SelectedActionType) => {
+      selectedAction.current = action;
+      onPress().finally(noop);
+    },
+    [onPress],
+  );
 
   const actionList = [
     {
@@ -100,33 +94,21 @@ export const FirstScreen = () => {
       icon: PlusCircle,
       title: 'Create a new account',
       subTitle: 'Create a new account with SubWallet',
-      onPress: () => {
-        setSelectedAction('createAcc');
-        dispatch(updateSelectedAction('createAcc'));
-        checkLogin(() => setCreateAccountModalVisible(true))();
-      },
+      onPress: () => onPressActionButton('createAcc'),
     },
     {
       key: 'import',
       icon: FileArrowDown,
       title: 'Import an account',
       subTitle: 'Import an existing account',
-      onPress: () => {
-        setSelectedAction('importAcc');
-        dispatch(updateSelectedAction('importAcc'));
-        checkLogin(() => setImportAccountModalVisible(true))();
-      },
+      onPress: () => onPressActionButton('importAcc'),
     },
     {
       key: 'attach',
       icon: Swatches,
       title: 'Attach an account',
       subTitle: 'Attach an account from external wallet',
-      onPress: () => {
-        setSelectedAction('attachAcc');
-        dispatch(updateSelectedAction('attachAcc'));
-        checkLogin(() => setAttachAccountModalVisible(true))();
-      },
+      onPress: () => onPressActionButton('attachAcc'),
     },
   ];
 
@@ -172,6 +154,7 @@ export const FirstScreen = () => {
           onChangeImportAccountModalVisible={setImportAccountModalVisible}
           onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
         />
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
         <SafeAreaView />
       </ImageBackground>
     </View>

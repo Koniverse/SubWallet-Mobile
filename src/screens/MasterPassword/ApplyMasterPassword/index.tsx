@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { DeviceEventEmitter, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Avatar, Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, CheckCircle, Info, Trash } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
 import { RootState } from 'stores/index';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { AddressField } from 'components/Field/Address';
 import { TextField } from 'components/Field/Text';
@@ -18,10 +18,13 @@ import { forgetAccount, keyringMigrateMasterPassword } from 'messaging/index';
 import { Introduction } from 'screens/MasterPassword/ApplyMasterPassword/Introduction';
 import { ApplyDone } from 'screens/MasterPassword/ApplyMasterPassword/ApplyDone';
 import useGoHome from 'hooks/screen/useGoHome';
-import { updatePasswordModalState, updateSelectedAction } from 'stores/PasswordModalState';
 import i18n from 'utils/i18n/i18n';
 import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
+import { SelectedActionType } from 'stores/types';
+import { noop } from 'utils/function';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -51,7 +54,7 @@ const ApplyMasterPassword = () => {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const dispatch = useDispatch();
+  const selectedAction = useRef<SelectedActionType>();
   useHandlerHardwareBackPress(true);
   const migrated = useMemo(
     () => accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
@@ -104,16 +107,6 @@ const ApplyMasterPassword = () => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
-
-  useEffect(() => {
-    const event = DeviceEventEmitter.addListener('migratePassword', () => {
-      setStep('Migrate');
-    });
-
-    return () => {
-      event.remove();
-    };
-  }, []);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);
@@ -207,16 +200,27 @@ const ApplyMasterPassword = () => {
     }
   }, [canMigrate.length, needMigrate.length, step]);
 
+  const onComplete = useCallback(() => {
+    if (selectedAction.current === 'migratePassword') {
+      setStep('Migrate');
+    }
+  }, []);
+
+  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal(onComplete);
+
+  const onPressActionButton = useCallback(
+    (action: SelectedActionType) => {
+      selectedAction.current = action;
+      onPress().catch(noop).finally(noop);
+    },
+    [onPress],
+  );
+
   const renderFooterButton = useCallback(() => {
     switch (step) {
       case 'Introduction':
         return (
-          <Button
-            icon={nextIcon}
-            onPress={() => {
-              dispatch(updatePasswordModalState(true));
-              dispatch(updateSelectedAction('migratePassword'));
-            }}>
+          <Button icon={nextIcon} onPress={() => onPressActionButton('migratePassword')}>
             {'Apply master password now'}
           </Button>
         );
@@ -258,7 +262,7 @@ const ApplyMasterPassword = () => {
     theme.colorTextLight5,
     theme.colorWhite,
     onSubmit,
-    dispatch,
+    onPressActionButton,
   ]);
 
   const _onPressBack = useCallback(() => {
@@ -326,6 +330,8 @@ const ApplyMasterPassword = () => {
         />
 
         <View style={_style.footerAreaStyle}>{renderFooterButton()}</View>
+
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </ContainerWithSubHeader>
   );
