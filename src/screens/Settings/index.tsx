@@ -5,7 +5,8 @@ import { Linking, ScrollView, StyleProp } from 'react-native';
 import Text from 'components/Text';
 import { ActionItem } from 'components/ActionItem';
 import {
-  BellRinging, Clock,
+  BellRinging,
+  Clock,
   Coin,
   DiscordLogo,
   FileText,

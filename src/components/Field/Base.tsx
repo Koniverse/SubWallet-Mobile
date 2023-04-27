@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View, ViewProps } from 'react-native';
+import { StyleProp, View, ViewProps, ViewStyle } from 'react-native';
 import Text from '../../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSize0 } from 'styles/sharedStyles';
@@ -7,7 +7,7 @@ import { FontMedium, FontSize0 } from 'styles/sharedStyles';
 export interface FieldBaseProps extends ViewProps {
   label?: string;
   fieldBgc?: string;
-  outerStyle?: StyleProp<any>;
+  outerStyle?: StyleProp<ViewStyle>;
 }
 
 function getWrapperStyle(backgroundColor: string): StyleProp<any> {

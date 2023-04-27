@@ -28,7 +28,7 @@ import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAp
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
-import { ExportAccount } from 'screens/ExportAccount';
+import { AccountExport } from 'screens/Account/AccountExport';
 import { CustomTokenSetting } from 'screens/Tokens';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
@@ -164,7 +164,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Security" component={Security} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} />
                 <Stack.Screen name="ChangePassword" component={ChangeMasterPassword} />
-                <Stack.Screen name="ExportAccount" component={ExportAccount} />
+                <Stack.Screen name="AccountExport" component={AccountExport} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                 <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                 <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />

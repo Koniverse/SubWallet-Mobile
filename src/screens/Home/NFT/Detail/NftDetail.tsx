@@ -293,9 +293,7 @@ const NftDetail = ({
 
         {canSend && (
           <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-            <Button onPress={handleClickTransfer}>
-              {i18n.common.send}
-            </Button>
+            <Button onPress={handleClickTransfer}>{i18n.common.send}</Button>
           </View>
         )}
       </>

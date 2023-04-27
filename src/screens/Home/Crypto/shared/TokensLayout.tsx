@@ -163,7 +163,6 @@ export const TokensLayout = ({
             },
             stickyHeaderInvisibleStyles,
           ]}>
-
           {!!stickyBackground && (
             <LinearGradient
               locations={[0, 0.5]}

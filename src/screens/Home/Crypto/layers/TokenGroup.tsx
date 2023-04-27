@@ -14,14 +14,14 @@ import { getTokenDisplayName } from 'utils/chainBalances';
 import { useRefresh } from 'hooks/useRefresh';
 import { restartSubscriptionServices, toggleBalancesVisibility } from 'messaging/index';
 import { Button, Icon, Typography } from 'components/design-system-ui';
-import {EyeSlash, FadersHorizontal, Heart, MagnifyingGlass} from 'phosphor-react-native';
+import { EyeSlash, FadersHorizontal, Heart, MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { TokenBalanceItemType } from 'types/balance';
 import { AccountBalanceHookType } from 'types/hook';
 import { TokenGroupBalance } from 'components/common/TokenGroupBalanceItem';
-import BackgroundIcon from "../../../../components/design-system-ui/background-icon";
+import BackgroundIcon from '../../../../components/design-system-ui/background-icon';
 
 interface Prop {
   tokenGroupBalances: TokenBalanceItemType[];

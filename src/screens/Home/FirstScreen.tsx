@@ -17,8 +17,8 @@ import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from
 import i18n from 'utils/i18n/i18n';
 import Text from 'components/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import AccountActionButton from 'components/common/AccountActionButton';
-import { AccountCreationArea } from 'components/common/AccountCreationArea';
+import AccountActionButton from 'components/common/Account/AccountActionButton';
+import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
 import { updateSelectedAction } from 'stores/PasswordModalState';
 import { useDispatch } from 'react-redux';

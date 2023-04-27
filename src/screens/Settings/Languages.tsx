@@ -13,7 +13,7 @@ import { updateLanguage } from 'stores/MobileSettings';
 import { RootState } from 'stores/index';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import moment from 'moment';
-import {Button} from "components/design-system-ui";
+import { Button } from 'components/design-system-ui';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,

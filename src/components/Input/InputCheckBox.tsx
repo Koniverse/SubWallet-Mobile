@@ -1,11 +1,11 @@
 import React from 'react';
-import {Image, StyleProp, TextStyle, View, ViewStyle} from 'react-native';
+import { Image, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import {Icon} from "components/design-system-ui";
-import {Check, CheckSquare} from "phosphor-react-native";
-import {SVGImages} from "assets/index";
+import { Icon } from 'components/design-system-ui';
+import { Check, CheckSquare } from 'phosphor-react-native';
+import { SVGImages } from 'assets/index';
 
 interface Props {
   checked: boolean;

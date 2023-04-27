@@ -1,7 +1,7 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import {FontMedium, FontSemiBold} from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { Book, CaretDown, CheckCircle, Lightning, Spinner } from 'phosphor-react-native';
 import { ActivityIndicator, Button, Icon, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -46,7 +46,13 @@ export const CancelUnstakeSelectorField = ({
               size="sm"
               weight="fill"
             />
-            <Number style={{ paddingLeft: 4 }} textStyle={{ ...FontMedium }} decimal={decimals} suffix={symbol} value={item.claimable} />
+            <Number
+              style={{ paddingLeft: 4 }}
+              textStyle={{ ...FontMedium }}
+              decimal={decimals}
+              suffix={symbol}
+              value={item.claimable}
+            />
           </View>
         ) : (
           <Text>{placeholder}</Text>

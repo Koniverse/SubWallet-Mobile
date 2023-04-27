@@ -20,7 +20,6 @@ import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
 import { SIGN_MODE } from 'types/signer';
-import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { deriveAccountV3, editAccount, forgetAccount } from 'messaging/index';
@@ -98,7 +97,7 @@ export const AccountDetail = ({
   const onCopy = useCopyClipboard(currentAddress);
 
   const onExportAccount = useCallback(() => {
-    navigation.navigate('ExportAccount', { address: currentAddress });
+    navigation.navigate('AccountExport', { address: currentAddress });
   }, [currentAddress, navigation]);
 
   const onChangeName = useCallback(
@@ -234,7 +233,7 @@ export const AccountDetail = ({
             contentAlign="left"
             type="secondary"
             loading={deriving}
-            onPress={() => onPressDerive().catch(noop)}>
+            onPress={onPressDerive}>
             Derive an account
           </Button>
           <Button
