@@ -1,6 +1,6 @@
 import { ConfirmationsQueueItem, EvmSendTransactionRequest } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
-import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/Confirmation';
+import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByChainId from 'hooks/chain/useGetChainInfoByChainId';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';

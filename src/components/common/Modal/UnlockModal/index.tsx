@@ -9,7 +9,7 @@ import useFormControl from 'hooks/screen/useFormControl';
 import { CheckCircle } from 'phosphor-react-native';
 import { keyringUnlock } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import createStyle from './style';
 
 interface Props {
   onPasswordComplete: VoidFunction;
@@ -20,6 +20,8 @@ interface Props {
 export const UnlockModal: React.FC<Props> = (props: Props) => {
   const { visible, onPasswordComplete, onHideModal } = props;
   const theme = useSubWalletTheme().swThemes;
+
+  const styles = useMemo(() => createStyle(theme), [theme]);
 
   const formConfig = {
     password: {
@@ -90,7 +92,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
       modalTitle={'Enter password'}
       footer={
         <>
-          <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
+          <View style={styles.footer}>
             <Button
               loading={loading}
               disabled={isDisabled}
@@ -109,7 +111,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
         </>
       }
       onChangeModalVisible={onHideModal}>
-      <View style={{ width: '100%' }}>
+      <View style={styles.field}>
         <PasswordField
           ref={formState.refs.password}
           label={formState.labels.password}

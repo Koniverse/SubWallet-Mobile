@@ -4,8 +4,8 @@
 import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson, ConfirmationRequestBase } from '@subwallet/extension-base/background/types';
 import AccountItemWithName from 'components/Account/Item/AccountItemWithName';
-import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/Confirmation';
-import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
+import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
+import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button } from 'components/design-system-ui';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useGetAccountTitleByAddress from 'hooks/account/useGetAccountTitleByAddress';

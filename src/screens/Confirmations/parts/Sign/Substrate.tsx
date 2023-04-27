@@ -1,5 +1,5 @@
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
+import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useMemo, useState } from 'react';

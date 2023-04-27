@@ -1,10 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
+import DeleteModal from 'components/common/Modal/DeleteModal';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ActivityIndicator, BackgroundIcon, Button, Icon } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
+import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -18,9 +20,10 @@ import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
 import { SIGN_MODE } from 'types/signer';
+import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { deriveAccountV3, editAccount } from 'messaging/index';
+import { deriveAccountV3, editAccount, forgetAccount } from 'messaging/index';
 import createStyle from './styles';
 
 export const AccountDetail = ({
@@ -36,8 +39,23 @@ export const AccountDetail = ({
   const SubIcon = useGetAvatarSubIcon(account, 32);
   const signMode = useGetAccountSignModeByAddress(currentAddress);
 
-  const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
+  const canDerive = useMemo((): boolean => {
+    if (account) {
+      if (account.isExternal) {
+        return false;
+      } else {
+        if (account.type === 'ethereum') {
+          return !!account.isMasterAccount;
+        } else {
+          return true;
+        }
+      }
+    } else {
+      return false;
+    }
+  }, [account]);
 
   const formConfig = useMemo(
     (): FormControlConfig => ({
@@ -83,10 +101,6 @@ export const AccountDetail = ({
     navigation.navigate('ExportAccount', { address: currentAddress });
   }, [currentAddress, navigation]);
 
-  const onRemoveAccount = useCallback(() => {
-    navigation.navigate('RemoveAccount', { address: currentAddress });
-  }, [currentAddress, navigation]);
-
   const onChangeName = useCallback(
     (value: string) => {
       onChangeValue('accountName')(value);
@@ -104,6 +118,8 @@ export const AccountDetail = ({
       return;
     }
 
+    setDeriving(true);
+
     setTimeout(() => {
       deriveAccountV3({
         address: account.address,
@@ -120,13 +136,35 @@ export const AccountDetail = ({
     }, 500);
   }, [account?.address, goHome, toast]);
 
-  const { onPress, onPasswordComplete, visible, onHideModal } = useUnlockModal(onDerive);
+  const onDelete = useCallback(() => {
+    if (account?.address) {
+      setDeleting(true);
+      forgetAccount(account.address)
+        .then(() => {
+          goHome();
+        })
+        .catch((e: Error) => {
+          toast.show(e.message, { type: 'danger' });
+        })
+        .finally(() => {
+          setDeleting(false);
+        });
+    }
+  }, [account?.address, goHome, toast]);
 
-  const onPressDerive = useCallback(() => {
-    setDeriving(true);
+  const {
+    onPress: onPressDerive,
+    onPasswordComplete,
+    visible: unlockVisible,
+    onHideModal: onHideUnlockModal,
+  } = useUnlockModal(onDerive);
 
-    onPress().catch(() => setDeriving(false));
-  }, [onPress]);
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+  } = useConfirmModal(onDelete);
 
   return (
     <SubScreenContainer
@@ -192,10 +230,11 @@ export const AccountDetail = ({
                 size="sm"
               />
             }
+            disabled={!canDerive}
             contentAlign="left"
             type="secondary"
             loading={deriving}
-            onPress={onPressDerive}>
+            onPress={() => onPressDerive().catch(noop)}>
             Derive an account
           </Button>
           <Button
@@ -228,11 +267,21 @@ export const AccountDetail = ({
             type="secondary"
             loading={deleting}
             externalTextStyle={{ color: theme.colorError }}
-            onPress={onRemoveAccount}>
+            onPress={onPressDelete}>
             Remove this account
           </Button>
         </View>
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideUnlockModal} />
+        <DeleteModal
+          confirmation={''}
+          title={'Detele this account?'}
+          visible={deleteVisible}
+          message={
+            'If you ever want to use this account again, you would need to import it again with seedphrase, private key, or JSON file'
+          }
+          onCancelModal={onCancelDelete}
+          onCompleteModal={onCompleteDeleteModal}
+        />
       </View>
     </SubScreenContainer>
   );

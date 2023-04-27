@@ -1,3 +1,4 @@
+import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
@@ -31,7 +32,7 @@ import { useToast } from 'react-native-toast-notifications';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { isUrl } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
-import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
+import DeleteModal from 'components/common/Modal/DeleteModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -61,7 +62,6 @@ export const NetworkSettingDetail = ({
 }: NetworkSettingDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
-  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const chainInfo = useFetchChainInfo(chainSlug);
   const chainState = useFetchChainState(chainSlug);
@@ -184,10 +184,6 @@ export const NetworkSettingDetail = ({
     onSubmitForm: onSubmit,
   });
 
-  const onPressDeleteBtn = () => {
-    setDeleteModalVisible(true);
-  };
-
   const handeDeleteCustomToken = () => {
     setIsDeleting(true);
     removeChain(chainInfo.slug)
@@ -253,13 +249,20 @@ export const NetworkSettingDetail = ({
     }
   };
 
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+  } = useConfirmModal(handeDeleteCustomToken);
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
       rightIcon={Trash}
       disableRightButton={!(_isCustomChain(chainInfo.slug) && !chainState.active)}
       onPressBack={() => navigation.goBack()}
-      onPressRightIcon={onPressDeleteBtn}
+      onPressRightIcon={onPressDelete}
       title={'Chain detail'}>
       <View style={ContainerStyle}>
         <ScrollView style={{ flex: 1 }}>
@@ -335,12 +338,11 @@ export const NetworkSettingDetail = ({
 
         <DeleteModal
           title={'Delete chain'}
-          visible={deleteModalVisible}
+          visible={deleteVisible}
           confirmation={'You are about to delete this chain'}
           message={'Confirm delete this chain'}
-          onDelete={handeDeleteCustomToken}
-          onChangeModalVisible={() => setDeleteModalVisible(false)}
-          loading={isDeleting}
+          onCompleteModal={onCompleteDeleteModal}
+          onCancelModal={onCancelDelete}
         />
 
         <RpcSelectorModal
