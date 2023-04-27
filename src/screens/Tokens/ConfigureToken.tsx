@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ConfigureTokenProps, RootNavigationProps } from 'routes/index';
@@ -6,15 +6,15 @@ import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
 import {
   _getContractAddressOfToken,
   _isCustomAsset,
   _isSmartContractToken,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { CopySimple, Trash } from 'phosphor-react-native';
+import { ContainerHorizontalPadding, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { CopySimple, Pencil, Sun, Trash } from 'phosphor-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import i18n from 'utils/i18n/i18n';
 import { useToast } from 'react-native-toast-notifications';
@@ -23,13 +23,20 @@ import { deleteCustomAssets, upsertCustomToken } from '../../messaging';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { _ChainAsset } from '@subwallet/chain-list/types';
-import { Button } from 'components/design-system-ui';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { TokenSelectField } from 'components/Field/TokenSelect';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { getTokenLogo } from 'utils/index';
+import Tag from '../../components/design-system-ui/tag';
 
 export const ConfigureToken = ({
   route: {
     params: { tokenDetail },
   },
 }: ConfigureTokenProps) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme), [theme]);
   const toast = useToast();
   const customTokenInfo = JSON.parse(tokenDetail) as _ChainAsset;
   const navigation = useNavigation<RootNavigationProps>();
@@ -114,6 +121,42 @@ export const ConfigureToken = ({
     toast.show(i18n.common.copiedToClipboard);
   };
 
+  const tagNode = useMemo(() => {
+    if (!tokenInfo) {
+      return null;
+    }
+
+    if (!tokenInfo.hasValue || _isCustomAsset(tokenInfo.slug || '')) {
+      let label;
+      let icon;
+      let color;
+
+      if (!tokenInfo.hasValue) {
+        label = 'Testnet';
+        icon = Sun;
+        color = 'lime';
+      } else {
+        label = 'Custom';
+        icon = Pencil;
+        color = 'cyan';
+      }
+
+      return (
+        <View style={{ paddingTop: theme.paddingXS, alignItems: 'center' }}>
+          <Tag
+            bgType={'default'}
+            closable={false}
+            color={color}
+            icon={<Icon phosphorIcon={icon} size={'xxs'} iconColor={theme[`${color}-7`]} />}>
+            {label}
+          </Tag>
+        </View>
+      );
+    }
+
+    return null;
+  }, [theme, tokenInfo]);
+
   return (
     <ContainerWithSubHeader
       onPressBack={() => navigation.goBack()}
@@ -122,18 +165,30 @@ export const ConfigureToken = ({
       rightIcon={Trash}
       onPressRightIcon={onDeleteTokens}
       disableRightButton={!tokenInfo || !(_isCustomAsset(tokenInfo?.slug || '') && _isSmartContractToken(tokenInfo))}>
-      <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
+      <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
+          <View style={styles.logoWrapper}>{getTokenLogo(tokenInfo?.symbol || '', undefined, 112)}</View>
+          {!!tokenInfo?.symbol && <Typography.Text style={styles.symbol}>{tokenInfo.symbol}</Typography.Text>}
+          {tagNode}
+          <View style={{ height: theme.sizeLG }} />
+
           {tokenInfo && _isSmartContractToken(tokenInfo) && (
             <AddressField
               label={i18n.importToken.contractAddress}
               address={_getContractAddressOfToken(tokenInfo)}
               rightIcon={CopySimple}
+              disableText
               onPressRightIcon={() => copyToClipboard(_getContractAddressOfToken(tokenInfo))}
+              outerStyle={{ marginBottom: theme.marginSM }}
             />
           )}
-          <NetworkField disabled={true} label={i18n.common.network} networkKey={tokenInfo?.originChain || ''} />
-          {tokenInfo && !tokenInfo.assetType && (
+          <NetworkField
+            disabled
+            label={i18n.common.network}
+            networkKey={tokenInfo?.originChain || ''}
+            outerStyle={{ marginBottom: theme.marginSM }}
+          />
+          {!!tokenInfo && !tokenInfo.assetType && (
             <InputText
               ref={formState.refs.tokenName}
               label={formState.labels.tokenName}
@@ -143,15 +198,22 @@ export const ConfigureToken = ({
             />
           )}
 
-          {tokenInfo && tokenInfo.symbol && (
-            <TextField disabled={true} label={i18n.common.symbol} text={tokenInfo.symbol} />
-          )}
+          <View style={styles.row}>
+            {tokenInfo && tokenInfo.symbol && (
+              <TokenSelectField
+                disabled
+                value={tokenInfo.symbol}
+                logoKey={tokenInfo.symbol}
+                outerStyle={{ flex: 1, marginBottom: 0 }}
+              />
+            )}
 
-          {tokenInfo && tokenInfo.decimals && (
-            <TextField disabled={true} label={i18n.common.decimals} text={tokenInfo.decimals.toString()} />
-          )}
+            {tokenInfo && tokenInfo.decimals && (
+              <TextField disabled text={tokenInfo.decimals.toString()} outerStyle={{ flex: 1, marginBottom: 0 }} />
+            )}
+          </View>
 
-          <TextField disabled={true} label={i18n.common.tokenType} text={tokenInfo?.assetType.toUpperCase() || ''} />
+          {!!tokenInfo?.priceId && <TextField disabled text={tokenInfo.priceId} />}
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
@@ -179,3 +241,25 @@ export const ConfigureToken = ({
     </ContainerWithSubHeader>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    logoWrapper: {
+      paddingTop: 28,
+      paddingBottom: 20,
+      alignItems: 'center',
+    },
+    symbol: {
+      ...FontSemiBold,
+      fontSize: theme.fontSizeHeading3,
+      lineHeight: theme.fontSizeHeading3 * theme.lineHeightHeading3,
+      color: theme.colorTextLight1,
+      textAlign: 'center',
+    },
+    row: {
+      flexDirection: 'row',
+      gap: theme.sizeSM,
+      marginBottom: theme.marginSM,
+    },
+  });
+}

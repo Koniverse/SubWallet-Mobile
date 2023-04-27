@@ -1,37 +1,42 @@
-import React from 'react';
-import { StyleProp, View, ViewProps } from 'react-native';
-import Text from '../../components/Text';
-import { ColorMap } from 'styles/color';
-import { FontMedium, FontSize0 } from 'styles/sharedStyles';
+import React, { useMemo } from 'react';
+import { StyleProp, StyleSheet, View, ViewProps } from 'react-native';
+import { FontMedium } from 'styles/sharedStyles';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Typography } from 'components/design-system-ui';
 
 export interface FieldBaseProps extends ViewProps {
   label?: string;
-  fieldBgc?: string;
   outerStyle?: StyleProp<any>;
 }
 
-function getWrapperStyle(backgroundColor: string): StyleProp<any> {
-  return {
-    backgroundColor,
-    borderRadius: 8,
-    marginBottom: 8,
-  };
-}
+export const FieldBase = ({ children, label, outerStyle, ...props }: FieldBaseProps) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme), [theme]);
 
-const labelStyle: StyleProp<any> = {
-  ...FontSize0,
-  ...FontMedium,
-  lineHeight: 22,
-  paddingHorizontal: 12,
-  paddingTop: 4,
-  color: ColorMap.disabled,
-};
-
-export const FieldBase = ({ children, label, fieldBgc, outerStyle, ...props }: FieldBaseProps) => {
   return (
-    <View style={[getWrapperStyle(fieldBgc || '#1A1A1A'), outerStyle]} {...props}>
-      {!!label && <Text style={labelStyle}>{label}</Text>}
+    <View style={[styles.container, outerStyle]} {...props}>
+      {!!label && <Typography.Text style={styles.label}>{label}</Typography.Text>}
       {children}
     </View>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    container: {
+      borderRadius: theme.borderRadiusLG,
+      marginBottom: theme.sizeXS,
+      backgroundColor: theme.colorBgSecondary,
+    },
+    label: {
+      ...FontMedium,
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+      color: theme.colorTextLight4,
+      paddingHorizontal: theme.sizeSM,
+      paddingTop: theme.sizeXS,
+      marginBottom: -4,
+    },
+  });
+}
