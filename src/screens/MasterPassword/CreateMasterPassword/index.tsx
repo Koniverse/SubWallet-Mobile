@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CreatePasswordProps, RootNavigationProps } from 'routes/index';
 import CreateMasterPasswordStyle from './style';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 const formConfig: FormControlConfig = {
   password: {
@@ -46,6 +47,7 @@ const CreateMasterPassword = ({
   const _style = CreateMasterPasswordStyle(theme);
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  useHandlerHardwareBackPress(true);
 
   const onComplete = async () => {
     if (pathName === 'CreateAccount') {
@@ -103,7 +105,7 @@ const CreateMasterPassword = ({
 
   return (
     <ContainerWithSubHeader
-      showLeftBtn={true}
+      showLeftBtn={false}
       onPressBack={() => navigation.goBack()}
       rightIcon={Info}
       title={'Create password'}

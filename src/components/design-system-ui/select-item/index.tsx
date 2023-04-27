@@ -1,10 +1,9 @@
-import { StyleProp, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CheckCircle, IconProps } from 'phosphor-react-native';
 import Text from 'components/Text';
 import React from 'react';
 import { BackgroundIcon, Icon } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 export interface SelectItemProps {
@@ -15,6 +14,9 @@ export interface SelectItemProps {
   label: string;
   leftItemIcon?: React.ReactNode;
   isSelected?: boolean;
+  rightIcon?: React.ReactNode;
+  disabled?: boolean;
+  textColor?: string;
 }
 
 const selectItemWrapperStyle: StyleProp<ViewStyle> = {
@@ -25,34 +27,50 @@ const selectItemWrapperStyle: StyleProp<ViewStyle> = {
   paddingVertical: 14,
   backgroundColor: '#1A1A1A',
   marginBottom: 8,
+  height: 52,
 };
 
-const selectItemTextStyle: StyleProp<TextStyle> = {
-  fontSize: 16,
-  lineHeight: 24,
-  ...FontSemiBold,
-  color: ColorMap.light,
-  flex: 1,
+const getSelectItemTextStyle = (disabled: boolean, textColor?: string) => {
+  return {
+    fontSize: 16,
+    lineHeight: 24,
+    ...FontSemiBold,
+    color: !disabled ? textColor || '#FFF' : 'rgba(255, 255, 255, 0.3)',
+    flex: 1,
+  };
 };
 
 const SelectItem = (props: SelectItemProps) => {
-  const { icon, iconColor = '#fff', isSelected, backgroundColor, label, leftItemIcon, onPress } = props;
+  const {
+    icon,
+    iconColor = '#fff',
+    isSelected,
+    backgroundColor,
+    label,
+    leftItemIcon,
+    onPress,
+    rightIcon,
+    disabled,
+    textColor,
+  } = props;
   const theme = useSubWalletTheme().swThemes;
   return (
-    <TouchableOpacity style={selectItemWrapperStyle} onPress={onPress}>
-      <View style={{ marginRight: 12 }}>
-        {leftItemIcon || (
-          <BackgroundIcon
-            shape={'circle'}
-            backgroundColor={backgroundColor}
-            iconColor={iconColor}
-            phosphorIcon={icon}
-            weight={'fill'}
-          />
-        )}
-      </View>
+    <TouchableOpacity style={selectItemWrapperStyle} onPress={onPress} disabled={disabled}>
+      {leftItemIcon ||
+        (icon && (
+          <View style={{ marginRight: 12 }}>
+            <BackgroundIcon
+              shape={'circle'}
+              backgroundColor={backgroundColor}
+              iconColor={iconColor}
+              phosphorIcon={icon}
+              weight={'fill'}
+              size={'sm'}
+            />
+          </View>
+        ))}
 
-      <Text numberOfLines={1} style={selectItemTextStyle}>
+      <Text numberOfLines={1} style={getSelectItemTextStyle(!!disabled, textColor)}>
         {label}
       </Text>
       {isSelected && (
@@ -60,6 +78,7 @@ const SelectItem = (props: SelectItemProps) => {
           <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />
         </View>
       )}
+      {rightIcon && <View style={{ paddingLeft: 10 }}>{rightIcon}</View>}
     </TouchableOpacity>
   );
 };

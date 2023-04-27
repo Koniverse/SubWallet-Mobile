@@ -18,11 +18,10 @@ import { forgetAccount, keyringMigrateMasterPassword } from 'messaging/index';
 import { Introduction } from 'screens/MasterPassword/ApplyMasterPassword/Introduction';
 import { ApplyDone } from 'screens/MasterPassword/ApplyMasterPassword/ApplyDone';
 import useGoHome from 'hooks/screen/useGoHome';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
 import { updatePasswordModalState, updateSelectedAction } from 'stores/PasswordModalState';
 import i18n from 'utils/i18n/i18n';
 import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -43,7 +42,6 @@ const formConfig: FormControlConfig = {
 const ApplyMasterPassword = () => {
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
-  const navigation = useNavigation<RootNavigationProps>();
   const _style = ApplyMasterPasswordStyle(theme);
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const [step, setStep] = useState<PageStep>('Introduction');
@@ -54,10 +52,19 @@ const ApplyMasterPassword = () => {
   const [isError, setIsError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
+  useHandlerHardwareBackPress(true);
+  const migrated = useMemo(
+    () => accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const canMigrate = useMemo(
-    () => accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal),
-    [accounts],
+    () =>
+      accounts
+        .filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal)
+        .filter(acc => !migrated.find(item => item.address === acc.address)),
+    [accounts, migrated],
   );
 
   const needMigrate = useMemo(() => {
@@ -164,8 +171,10 @@ const ApplyMasterPassword = () => {
         forgetAccount(migrateAccount.address)
           .then(() => {
             setIsError(false);
+            setModalVisible(false);
           })
           .catch((e: Error) => {
+            setModalVisible(false);
             onUpdateErrors('password')([e.message]);
           })
           .finally(() => {
@@ -184,7 +193,7 @@ const ApplyMasterPassword = () => {
   };
 
   const title = useMemo((): string => {
-    const migrated = canMigrate.length - needMigrate.length;
+    const _migrated = canMigrate.length - needMigrate.length;
 
     switch (step) {
       case 'Introduction':
@@ -192,7 +201,7 @@ const ApplyMasterPassword = () => {
       case 'Done':
         return 'Successful';
       case 'Migrate':
-        return `${String(migrated + 1).padStart(2, '0')}/${String(canMigrate.length).padStart(2, '0')}`;
+        return `${String(_migrated + 1).padStart(2, '0')}/${String(canMigrate.length).padStart(2, '0')}`;
       default:
         return '';
     }
@@ -252,11 +261,17 @@ const ApplyMasterPassword = () => {
     dispatch,
   ]);
 
+  const _onPressBack = useCallback(() => {
+    if (step === 'Migrate') {
+      setStep('Introduction');
+    }
+  }, [step]);
+
   return (
     <ContainerWithSubHeader
-      showLeftBtn={false}
+      showLeftBtn={step === 'Migrate'}
       disabled={loading}
-      onPressBack={() => navigation.canGoBack() && navigation.goBack()}
+      onPressBack={_onPressBack}
       title={title}
       showRightBtn={true}
       rightIcon={Info}>
@@ -303,6 +318,7 @@ const ApplyMasterPassword = () => {
           confirmation={''}
           title={'Detele this account?'}
           visible={modalVisible}
+          loading={deleting}
           message={
             'If you ever want to use this account again, you would need to import it again with seedphrase, private key, or JSON file'
           }

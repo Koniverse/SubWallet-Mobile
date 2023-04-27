@@ -1,11 +1,9 @@
 import React from 'react';
-import {Image, StyleProp, TextStyle, View, ViewStyle} from 'react-native';
+import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ColorMap } from 'styles/color';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import {Icon} from "components/design-system-ui";
-import {Check, CheckSquare} from "phosphor-react-native";
-import {SVGImages} from "assets/index";
+import { FontSemiBold } from 'styles/sharedStyles';
+import { SVGImages } from 'assets/index';
 
 interface Props {
   checked: boolean;
@@ -35,8 +33,8 @@ const ContainerProps: StyleProp<ViewStyle> = {
 const LabelStyle: StyleProp<TextStyle> = {
   fontSize: 14,
   lineHeight: 22,
-  ...FontMedium,
-  fontWeight: '600',
+  ...FontSemiBold,
+  fontWeight: '500',
   color: '#fff',
 };
 
