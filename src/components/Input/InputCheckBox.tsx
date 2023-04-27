@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { SVGImages } from 'assets/index';
 
 interface Props {
@@ -33,8 +33,8 @@ const ContainerProps: StyleProp<ViewStyle> = {
 const LabelStyle: StyleProp<TextStyle> = {
   fontSize: 14,
   lineHeight: 22,
-  ...FontSemiBold,
-  fontWeight: '500',
+  ...FontMedium,
+  fontWeight: '600',
   color: '#fff',
 };
 

@@ -1,5 +1,5 @@
 import { ConfirmationsQueueItem, EvmSignatureRequest } from '@subwallet/extension-base/background/KoniTypes';
-import AccountItemWithName from 'components/Account/Item/AccountItemWithName';
+import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';

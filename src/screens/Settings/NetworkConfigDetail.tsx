@@ -16,7 +16,7 @@ import { Plus, PushPinSlash } from 'phosphor-react-native';
 import { AddProviderModal } from 'screens/Settings/AddProviderModal';
 import { isValidProvider } from 'utils/index';
 import { EmptyList } from 'components/EmptyList';
-import {Button} from "components/design-system-ui";
+import { Button } from 'components/design-system-ui';
 
 function filterFunction(items: Record<string, string>[], searchString: string) {
   return items.filter(item => item.text.toLowerCase().includes(searchString.toLowerCase()));

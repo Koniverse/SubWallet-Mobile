@@ -22,7 +22,7 @@ import { Divider } from 'components/Divider';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { Button, Icon } from 'components/design-system-ui';
-import { AccountCreationArea } from 'components/common/AccountCreationArea';
+import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
 
 const accountsWrapper: StyleProp<any> = {

@@ -49,7 +49,7 @@ export type RootStackParamList = {
   Languages: undefined;
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
-  ExportAccount: { address: string };
+  AccountExport: { address: string };
   ExportJson: { address: string };
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
@@ -90,7 +90,7 @@ export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
-export type ExportAccountProps = NativeStackScreenProps<RootStackParamList, 'ExportAccount'>;
+export type AccountExportProps = NativeStackScreenProps<RootStackParamList, 'AccountExport'>;
 export type ExportJsonProps = NativeStackScreenProps<RootStackParamList, 'ExportJson'>;
 export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'RemoveAccount'>;
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;

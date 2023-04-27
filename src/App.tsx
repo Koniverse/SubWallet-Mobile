@@ -70,7 +70,7 @@ import useStoreCustomToken from 'hooks/store/useStoreCustomToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
-import { ExportAccount } from 'screens/ExportAccount';
+import { AccountExport } from 'screens/Account/AccountExport';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
@@ -305,7 +305,7 @@ export const App = () => {
                               <Stack.Screen name="Languages" component={Languages} />
                               <Stack.Screen name="Security" component={Security} />
                               <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                              <Stack.Screen name="ExportAccount" component={ExportAccount} />
+                              <Stack.Screen name="AccountExport" component={AccountExport} />
                               <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                               <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                               <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
