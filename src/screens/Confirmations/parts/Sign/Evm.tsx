@@ -1,6 +1,7 @@
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
-import useCheckLogin from 'hooks/useCheckLogin';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Button, Icon } from 'components/design-system-ui';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
@@ -49,7 +50,6 @@ export const EvmSignArea = (props: Props) => {
     payload: { account, canSign, hashPayload },
   } = payload;
   const signMode = useMemo(() => getSignMode(account), [account]);
-  const checkLogin = useCheckLogin();
   const [loading, setLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
@@ -83,8 +83,6 @@ export const EvmSignArea = (props: Props) => {
 
   const onApproveSignature = useCallback(
     (signature: SigData) => {
-      setLoading(true);
-
       setTimeout(() => {
         handleSignature(type, id, signature.signature)
           .catch(e => {
@@ -111,15 +109,20 @@ export const EvmSignArea = (props: Props) => {
     [onApproveSignature],
   );
 
+  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal(onApprovePassword);
+
   const onConfirm = useCallback(() => {
     switch (signMode) {
       case AccountSignMode.QR:
         onConfirmQr();
         break;
       default:
-        checkLogin(onApprovePassword)();
+        setLoading(true);
+        onConfirmPassword().catch(() => {
+          setLoading(false);
+        });
     }
-  }, [checkLogin, onApprovePassword, onConfirmQr, signMode]);
+  }, [onConfirmPassword, onConfirmQr, signMode]);
 
   const openScanning = useCallback(() => {
     setIsShowQr(false);
@@ -157,6 +160,7 @@ export const EvmSignArea = (props: Props) => {
           <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />
         </>
       )}
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </ConfirmationFooter>
   );
 };

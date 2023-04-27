@@ -1,6 +1,7 @@
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
-import useCheckLogin from 'hooks/useCheckLogin';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ExtrinsicPayload } from '@polkadot/types/interfaces';
@@ -41,7 +42,6 @@ export const SubstrateSignArea = (props: Props) => {
 
   const signMode = useMemo(() => getSignMode(account), [account]);
   const isMessage = isSubstrateMessage(payload);
-  const checkLogin = useCheckLogin();
 
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
@@ -70,8 +70,6 @@ export const SubstrateSignArea = (props: Props) => {
   }, [id]);
 
   const onApprovePassword = useCallback(() => {
-    setLoading(true);
-
     setTimeout(() => {
       handleConfirm(id)
         .catch(e => {
@@ -105,15 +103,20 @@ export const SubstrateSignArea = (props: Props) => {
     setIsScanning(false);
   }, []);
 
+  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal(onApprovePassword);
+
   const onConfirm = useCallback(() => {
     switch (signMode) {
       case AccountSignMode.QR:
         onConfirmQr();
         break;
       default:
-        checkLogin(onApprovePassword)();
+        setLoading(true);
+        onConfirmPassword().catch(() => {
+          setLoading(false);
+        });
     }
-  }, [checkLogin, onApprovePassword, onConfirmQr, signMode]);
+  }, [onConfirmPassword, onConfirmQr, signMode]);
 
   const onSuccess = useCallback(
     (sig: SigData) => {
@@ -159,6 +162,7 @@ export const SubstrateSignArea = (props: Props) => {
           <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />
         </>
       )}
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </ConfirmationFooter>
   );
 };

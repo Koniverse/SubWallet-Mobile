@@ -4,11 +4,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AccountAuthType, AccountJson, AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import AccountItemWithName from 'components/Account/Item/AccountItemWithName';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/Confirmation';
 import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
-import useCheckLogin from 'hooks/useCheckLogin';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -81,8 +82,6 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     [accountAuthType, accounts],
   );
 
-  const checkLogin = useCheckLogin();
-
   // Selected map with default values is map of all accounts
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
 
@@ -142,6 +141,8 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     }
     navigation.replace('CreateAccount', { keyTypes: types, isBack: true });
   }, [accountAuthType, navigation]);
+
+  const { onPress: onPressCreateOne, onPasswordComplete, visible, onHideModal } = useUnlockModal(onAddAccount);
 
   const onAccountSelect = useCallback(
     (address: string) => {
@@ -236,12 +237,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
-            <Button
-              block={true}
-              onPress={checkLogin(onAddAccount)}
-              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
+            <Button block={true} onPress={onPressCreateOne} icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
               Create one
             </Button>
+            <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
           </>
         )}
       </ConfirmationFooter>
