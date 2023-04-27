@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useGetBalance } from 'hooks/balance';
 import { Text, View } from 'react-native';
-import { Number } from 'components/design-system-ui';
+import {ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 
@@ -30,11 +30,17 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
   }
 
   return (
-    <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+    <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center' }}>
       <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
         {label || 'Sender available balance:'}
       </Text>
-      {!!nativeTokenSlug && (
+      {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}
+      {error && (
+        <Typography.Text size={'md'} ellipsis style={{ color: theme.colorError }}>
+          {error}
+        </Typography.Text>
+      )}
+      {!isLoading && !error && !!nativeTokenSlug && (
         <Number
           decimal={nativeTokenBalance.decimals || 18}
           decimalColor={theme.colorTextTertiary}
@@ -46,7 +52,7 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
           value={nativeTokenBalance.value}
         />
       )}
-      {!!(tokenSlug && tokenSlug !== nativeTokenSlug) && (
+      {!isLoading && !error && !!tokenSlug && tokenSlug !== nativeTokenSlug && (
         <>
           <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium }}>{' and '}</Text>
           <Number

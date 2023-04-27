@@ -7,11 +7,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
-import { submitStakeCancelWithdrawal } from '../../../messaging';
+import { submitStakeCancelWithdrawal } from 'messaging/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { ScreenContainer } from 'components/ScreenContainer';
-import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
-import { TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -24,6 +22,7 @@ import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSele
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -104,11 +103,9 @@ export const CancelUnstake = ({
   }, [chain, from, nominatorMetadata.unstakings, onError, onSuccess, unstakeIndex]);
 
   return (
-    <ScreenContainer backgroundColor={'#0C0C0C'}>
+    <TransactionLayout title={title}>
       <>
-        <TransactionHeader title={title} navigation={navigation} />
-
-        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
               <AccountSelectField
@@ -138,7 +135,7 @@ export const CancelUnstake = ({
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
           />
-        </View>
+        </ScrollView>
 
         <View style={{ padding: 16, flexDirection: 'row' }}>
           <Button
@@ -173,6 +170,6 @@ export const CancelUnstake = ({
           </Button>
         </View>
       </>
-    </ScreenContainer>
+    </TransactionLayout>
   );
 };

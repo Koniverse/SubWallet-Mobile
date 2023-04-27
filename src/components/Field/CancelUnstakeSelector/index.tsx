@@ -1,9 +1,9 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import {FontMedium, FontSemiBold} from 'styles/sharedStyles';
-import { Book, CaretDown, CheckCircle, Lightning, Spinner } from 'phosphor-react-native';
-import { ActivityIndicator, Button, Icon, Number } from 'components/design-system-ui';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { CaretDown, CheckCircle, Spinner } from 'phosphor-react-native';
+import { ActivityIndicator, Icon, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { UnstakingInfo, UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -25,12 +25,22 @@ const blockContentStyle: StyleProp<any> = {
   paddingBottom: 12,
 };
 
+const getPlaceholderStyle = (): StyleProp<any> => {
+  return {
+    fontSize: 14,
+    lineHeight: 22,
+    ...FontSemiBold,
+    paddingRight: 8,
+    color: '#FFF',
+  };
+};
+
 export const CancelUnstakeSelectorField = ({
   outerStyle,
   item,
   label,
   loading,
-  placeholder = 'Selected pool',
+  placeholder = 'Select unstake request',
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -46,10 +56,16 @@ export const CancelUnstakeSelectorField = ({
               size="sm"
               weight="fill"
             />
-            <Number style={{ paddingLeft: 4 }} textStyle={{ ...FontMedium }} decimal={decimals} suffix={symbol} value={item.claimable} />
+            <Number
+              style={{ paddingLeft: 4 }}
+              textStyle={{ ...FontMedium }}
+              decimal={decimals}
+              suffix={symbol}
+              value={item.claimable}
+            />
           </View>
         ) : (
-          <Text>{placeholder}</Text>
+          <Text style={getPlaceholderStyle()}>{placeholder}</Text>
         )}
 
         {loading ? (
