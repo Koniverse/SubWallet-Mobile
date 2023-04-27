@@ -5,8 +5,8 @@ import { AccountAuthType, AccountJson, AuthorizeRequest } from '@subwallet/exten
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import AccountItemWithName from 'components/Account/Item/AccountItemWithName';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/Confirmation';
-import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
+import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
+import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';

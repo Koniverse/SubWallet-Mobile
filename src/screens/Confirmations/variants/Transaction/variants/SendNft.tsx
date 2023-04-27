@@ -1,4 +1,4 @@
-import { ConfirmationContent } from 'components/Confirmation';
+import { ConfirmationContent } from 'components/common/Confirmation';
 import React from 'react';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { ExtrinsicDataTypeMap, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';

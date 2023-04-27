@@ -1,3 +1,4 @@
+import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -22,7 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { updatePasswordModalState, updateSelectedAction } from 'stores/PasswordModalState';
 import i18n from 'utils/i18n/i18n';
-import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
+import DeleteModal from 'components/common/Modal/DeleteModal';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -52,7 +53,6 @@ const ApplyMasterPassword = () => {
   const [isDisabled, setIsDisable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
 
   const canMigrate = useMemo(
@@ -175,6 +175,13 @@ const ApplyMasterPassword = () => {
     }
   }, [migrateAccount?.address, onUpdateErrors]);
 
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+  } = useConfirmModal(onDelete);
+
   const onChangePasswordValue = (currentValue: string) => {
     if (!currentValue) {
       onUpdateErrors('password')([i18n.warningMessage.requireMessage]);
@@ -286,12 +293,7 @@ const ApplyMasterPassword = () => {
             />
 
             {isError && (
-              <Button
-                style={{ marginTop: 4 }}
-                size={'xs'}
-                type={'ghost'}
-                icon={removeIcon}
-                onPress={() => setModalVisible(true)}>
+              <Button style={{ marginTop: 4 }} size={'xs'} type={'ghost'} icon={removeIcon} onPress={onPressDelete}>
                 {'Forget this account'}
               </Button>
             )}
@@ -302,11 +304,12 @@ const ApplyMasterPassword = () => {
         <DeleteModal
           confirmation={''}
           title={'Detele this account?'}
-          visible={modalVisible}
+          visible={deleteVisible}
           message={
             'If you ever want to use this account again, you would need to import it again with seedphrase, private key, or JSON file'
           }
-          onDelete={onDelete}
+          onCancelModal={onCancelDelete}
+          onCompleteModal={onCompleteDeleteModal}
         />
 
         <View style={_style.footerAreaStyle}>{renderFooterButton()}</View>

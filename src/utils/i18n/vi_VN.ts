@@ -227,6 +227,7 @@ export const vi = {
     originChain: 'Origin chain',
     destinationChain: 'Destination chain',
     viewOnExplorer: 'View on explorer',
+    delete: 'Delete',
   },
   title: {
     accountDetails: 'Account details',
