@@ -4,7 +4,7 @@ import Text from 'components/Text';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ColorMap } from 'styles/color';
-import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
 import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -17,28 +17,10 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { SelectAccountType } from 'components/common/SelectAccountType';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
-import { Button, Icon } from 'components/design-system-ui';
-import { FileArrowDown } from 'phosphor-react-native';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { FileArrowDown, X } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-
-const bodyAreaStyle: StyleProp<any> = {
-  flex: 1,
-  ...ScrollViewStyle,
-};
-
-const footerAreaStyle: StyleProp<any> = {
-  paddingTop: 12,
-  ...MarginBottomForSubmitButton,
-};
-
-const titleStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  color: ColorMap.disabled,
-  textAlign: 'center',
-  paddingHorizontal: 16,
-  ...FontMedium,
-  paddingBottom: 26,
-};
+import createStyle from './styles';
 
 const ViewStep = {
   ENTER_SEED: 1,
@@ -57,14 +39,19 @@ export const ImportSecretPhrase = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
+  const accountName = useGetDefaultAccountName();
+
+  const timeOutRef = useRef<NodeJS.Timer>();
+
+  const styles = useMemo(() => createStyle(theme), [theme]);
+
+  const [isBusy, setBusy] = useState(false);
+  useHandlerHardwareBackPress(isBusy);
+
   const [seedPhrase, setSeedPhrase] = useState('');
   const [validating, setValidating] = useState(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
-  const [isBusy, setBusy] = useState(false);
-  const accountName = useGetDefaultAccountName();
-  useHandlerHardwareBackPress(isBusy);
-  const timeOutRef = useRef<NodeJS.Timer>();
 
   const _onImportSeed = (): void => {
     setBusy(true);
@@ -146,14 +133,18 @@ export const ImportSecretPhrase = () => {
   );
 
   return (
-    <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.title.importBySecretPhrase} disabled={isBusy}>
-      <View style={sharedStyles.layoutContainer}>
-        <ScrollView style={bodyAreaStyle}>
-          <Text style={titleStyle}>{i18n.common.importSecretPhraseTitle}</Text>
-
+    <ContainerWithSubHeader
+      onPressBack={onPressBack}
+      title={i18n.title.importBySecretPhrase}
+      disabled={isBusy}
+      onPressRightIcon={goHome}
+      rightIcon={X}>
+      <View style={styles.wrapper}>
+        <ScrollView style={styles.container}>
+          <Typography.Text style={styles.title}>{i18n.common.importSecretPhraseTitle}</Typography.Text>
           <Textarea
             ref={formState.refs.seed}
-            style={{ marginBottom: 16, paddingTop: 16 }}
+            style={styles.textArea}
             value={formState.data.seed}
             onChangeText={(text: string) => {
               onChangeValue('seed')(text);
@@ -165,7 +156,7 @@ export const ImportSecretPhrase = () => {
 
           <SelectAccountType title={'Select account type'} selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
         </ScrollView>
-        <View style={footerAreaStyle}>
+        <View style={styles.footer}>
           <Button
             icon={
               <Icon

@@ -12,7 +12,7 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import loading from "components/Loading";
+import loading from 'components/Loading';
 
 interface Props {
   onSelectItem?: (value: string) => void;

@@ -1,4 +1,4 @@
-import { ConfirmationContent } from 'components/Confirmation';
+import { ConfirmationContent } from 'components/common/Confirmation';
 import React from 'react';
 import { View } from 'react-native';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';

@@ -15,7 +15,7 @@ import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-s
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import {
   _getChainNativeTokenBasicInfo,

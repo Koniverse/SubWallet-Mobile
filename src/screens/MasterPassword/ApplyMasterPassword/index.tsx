@@ -1,3 +1,4 @@
+import useConfirmModal from 'hooks/modal/useConfirmModal';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -19,7 +20,7 @@ import { Introduction } from 'screens/MasterPassword/ApplyMasterPassword/Introdu
 import { ApplyDone } from 'screens/MasterPassword/ApplyMasterPassword/ApplyDone';
 import useGoHome from 'hooks/screen/useGoHome';
 import i18n from 'utils/i18n/i18n';
-import DeleteModal from 'components/design-system-ui/modal/DeleteModal';
+import DeleteModal from 'components/common/Modal/DeleteModal';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -53,7 +54,6 @@ const ApplyMasterPassword = () => {
   const [isDisabled, setIsDisable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const selectedAction = useRef<SelectedActionType>();
   useHandlerHardwareBackPress(true);
   const migrated = useMemo(
@@ -164,10 +164,8 @@ const ApplyMasterPassword = () => {
         forgetAccount(migrateAccount.address)
           .then(() => {
             setIsError(false);
-            setModalVisible(false);
           })
           .catch((e: Error) => {
-            setModalVisible(false);
             onUpdateErrors('password')([e.message]);
           })
           .finally(() => {
@@ -176,6 +174,13 @@ const ApplyMasterPassword = () => {
       }, 500);
     }
   }, [migrateAccount?.address, onUpdateErrors]);
+
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+  } = useConfirmModal(onDelete);
 
   const onChangePasswordValue = (currentValue: string) => {
     if (!currentValue) {
@@ -305,12 +310,7 @@ const ApplyMasterPassword = () => {
             />
 
             {isError && (
-              <Button
-                style={{ marginTop: 4 }}
-                size={'xs'}
-                type={'ghost'}
-                icon={removeIcon}
-                onPress={() => setModalVisible(true)}>
+              <Button style={{ marginTop: 4 }} size={'xs'} type={'ghost'} icon={removeIcon} onPress={onPressDelete}>
                 {'Forget this account'}
               </Button>
             )}
@@ -321,12 +321,12 @@ const ApplyMasterPassword = () => {
         <DeleteModal
           confirmation={''}
           title={'Detele this account?'}
-          visible={modalVisible}
-          loading={deleting}
+          visible={deleteVisible}
           message={
             'If you ever want to use this account again, you would need to import it again with seedphrase, private key, or JSON file'
           }
-          onDelete={onDelete}
+          onCancelModal={onCancelDelete}
+          onCompleteModal={onCompleteDeleteModal}
         />
 
         <View style={_style.footerAreaStyle}>{renderFooterButton()}</View>

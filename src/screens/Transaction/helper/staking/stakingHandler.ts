@@ -36,7 +36,7 @@ const fetchChainValidator = (chain: string, unmount: boolean, setValidatorLoadin
     setValidatorLoading(true);
     getBondingOptions(chain, StakingType.NOMINATED)
       .then(result => {
-        console.log('123123')
+        console.log('123123');
         store.dispatch({ type: 'bonding/updateChainValidators', payload: { chain, validators: result } });
       })
       .catch((e: Error) => console.error(e.message))

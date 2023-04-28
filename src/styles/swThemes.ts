@@ -373,6 +373,8 @@ export default {
   motionUnit: 0.1,
   opacityImage: 1,
   opacityLoading: 0.65,
+  opacityDisable: 0.4,
+  opacityPress: 0.4,
   orange: '#ff8200',
   'orange-1': '#1b0c00',
   'orange-10': '#fadba0',
