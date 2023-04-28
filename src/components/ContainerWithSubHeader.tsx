@@ -24,7 +24,7 @@ const getContainerStyle: (backgroundColor?: string, needGapWithStatusBar?: boole
   return {
     ...sharedStyles.container,
     backgroundColor: backgroundColor || '#0C0C0C',
-    paddingTop: needGapWithStatusBar ? STATUS_BAR_HEIGHT + 13 : 16,
+    paddingTop: needGapWithStatusBar ? STATUS_BAR_HEIGHT : 16,
   };
 };
 

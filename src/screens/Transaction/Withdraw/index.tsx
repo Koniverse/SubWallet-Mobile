@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScreenContainer } from 'components/ScreenContainer';
-import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ClaimRewardScreenNavigationProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
-import { TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -32,7 +30,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { isActionFromValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-import { submitStakeWithdrawal } from '../../../messaging';
+import { submitStakeWithdrawal } from 'messaging/index';
+import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -132,11 +131,9 @@ export const Withdraw = ({
   }, [chain, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
 
   return (
-    <ScreenContainer backgroundColor={'#0C0C0C'}>
+    <TransactionLayout title={title}>
       <>
-        <TransactionHeader title={title} navigation={navigation} />
-
-        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
               <AccountSelectField
@@ -172,7 +169,7 @@ export const Withdraw = ({
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
           />
-        </View>
+        </ScrollView>
 
         <View style={{ padding: 16, flexDirection: 'row' }}>
           <Button
@@ -207,6 +204,6 @@ export const Withdraw = ({
           </Button>
         </View>
       </>
-    </ScreenContainer>
+    </TransactionLayout>
   );
 };

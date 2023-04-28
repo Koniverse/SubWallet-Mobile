@@ -91,16 +91,17 @@ export const AccountCreationArea = ({
         icon: ShareNetwork,
         label: 'Derive from another account',
         onClickBtn: () => {
-          onChangeCreateAccountModalVisible(false);
-          if (hasMasterPassword) {
-            navigation.navigate('CreateAccount', {});
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: '' });
-          }
+          show(i18n.common.comingSoon);
+          // onChangeCreateAccountModalVisible(false);
+          // if (hasMasterPassword) {
+          //   navigation.navigate('CreateAccount', {});
+          // } else {
+          //   navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: '' });
+          // }
         },
       },
     ];
-  }, [allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible]);
+  }, [allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible, show]);
 
   const importAccountActions = useMemo(
     () => [

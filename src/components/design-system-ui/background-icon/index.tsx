@@ -11,7 +11,7 @@ import { ImageShape } from '@subwallet/react-ui/es/image';
 interface BackgroundIconProps {
   shape?: ImageShape;
   type?: 'fontAwesome' | 'phosphor';
-  size?: 'xs' | 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   phosphorIcon?: React.ElementType<IconProps>;
   fontawesomeIcon?: IconProp;
   weight?: IconWeight;
@@ -39,6 +39,10 @@ const BackgroundIcon: React.FC<BackgroundIconProps> = ({
     }
     if (size === 'sm') {
       return 16;
+    }
+
+    if (size === 'md') {
+      return 20;
     }
 
     return 24;

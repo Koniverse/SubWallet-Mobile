@@ -55,7 +55,7 @@ const Image: React.FC<SWImageProps> = ({
           />
           {isLoading && (
             <View style={_style.loadingImage}>
-              <ActivityIndicator size={30} indicatorColor="#737373" />
+              <ActivityIndicator size={squircleSize ? squircleSize / 2 : 20} indicatorColor="#737373" />
             </View>
           )}
         </Squircle>
@@ -67,7 +67,7 @@ const Image: React.FC<SWImageProps> = ({
       <FastImage source={src} style={customImageStyle} onLoadStart={onLoadStart} onLoadEnd={onLoadEnd} {...restProps} />
       {isLoading && (
         <View style={[_style.loadingImage, _style[`${shape}Image`]]}>
-          <ActivityIndicator size={30} indicatorColor="#737373" />
+          <ActivityIndicator size={squircleSize ? squircleSize / 2 : 20} indicatorColor="#737373" />
         </View>
       )}
     </View>

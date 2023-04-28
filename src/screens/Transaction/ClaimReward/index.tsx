@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScreenContainer } from 'components/ScreenContainer';
-import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useNavigation } from '@react-navigation/native';
 import { ClaimRewardScreenNavigationProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
-import { TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { NominatorMetadata, StakingRewardItem, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootState } from 'stores/index';
@@ -34,6 +32,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import InputCheckBox from 'components/Input/InputCheckBox';
+import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -163,11 +162,9 @@ const ClaimReward = ({
   }, [accounts, allNominatorInfo, chainInfoMap, rewardList, stakingChain, stakingType]);
 
   return (
-    <ScreenContainer backgroundColor={'#0C0C0C'}>
+    <TransactionLayout title={title}>
       <>
-        <TransactionHeader title={title} navigation={navigation} />
-
-        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
               <AccountSelectField
@@ -216,7 +213,7 @@ const ClaimReward = ({
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
           />
-        </View>
+        </ScrollView>
 
         <View style={{ padding: 16, flexDirection: 'row' }}>
           <Button
@@ -251,7 +248,7 @@ const ClaimReward = ({
           </Button>
         </View>
       </>
-    </ScreenContainer>
+    </TransactionLayout>
   );
 };
 

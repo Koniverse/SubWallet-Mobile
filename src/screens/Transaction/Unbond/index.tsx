@@ -21,7 +21,7 @@ import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { Header } from 'components/Header';
-import { TouchableOpacity, View } from 'react-native';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import { SubHeader } from 'components/SubHeader';
 import { Info, MinusCircle } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -41,6 +41,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { submitPoolUnbonding, submitUnbonding } from 'messaging/index';
 import { FontMedium } from 'styles/sharedStyles';
+import {TransactionLayout} from "screens/Transaction/parts/TransactionLayout";
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -242,21 +243,9 @@ export const Unbond = ({
   );
 
   return (
-    <ScreenContainer backgroundColor={'#0C0C0C'}>
+    <TransactionLayout title={title}>
       <>
-        <Header />
-
-        <View style={{ marginTop: 16 }}>
-          <SubHeader
-            onPressBack={() => navigation.goBack()}
-            title={title}
-            showRightBtn
-            rightIcon={Info}
-            onPressRightIcon={() => {}}
-          />
-        </View>
-
-        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAll && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
               <AccountSelectField
@@ -307,7 +296,7 @@ export const Unbond = ({
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
           />
-        </View>
+        </ScrollView>
 
         <View style={{ padding: 16 }}>
           <Button
@@ -328,6 +317,93 @@ export const Unbond = ({
           </Button>
         </View>
       </>
-    </ScreenContainer>
+    </TransactionLayout>
+    // <ScreenContainer backgroundColor={'#0C0C0C'}>
+    //   <>
+    //     <Header />
+    //
+    //     <View style={{ marginTop: 16 }}>
+    //       <SubHeader
+    //         onPressBack={() => navigation.goBack()}
+    //         title={title}
+    //         showRightBtn
+    //         rightIcon={Info}
+    //         onPressRightIcon={() => {}}
+    //       />
+    //     </View>
+    //
+    //     <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+    //       {isAll && (
+    //         <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
+    //           <AccountSelectField
+    //             label={'Unstake from account'}
+    //             accountName={accountInfo?.name || ''}
+    //             value={from}
+    //             showIcon
+    //           />
+    //         </TouchableOpacity>
+    //       )}
+    //
+    //       <FreeBalance label={'Available balance:'} address={from} chain={chain} />
+    //
+    //       {mustChooseValidator && (
+    //         <>
+    //           <NominationSelector
+    //             selectedValue={currentValidator}
+    //             onSelectItem={onChangeValue('nomination')}
+    //             nominators={from ? nominatorMetadata?.nominations || [] : []}
+    //             disabled={!from}
+    //           />
+    //           {renderBounded()}
+    //         </>
+    //       )}
+    //
+    //       <InputAmount
+    //         value={currentValue}
+    //         maxValue={bondedValue}
+    //         onChangeValue={_onChangeAmount}
+    //         decimals={decimals}
+    //         errorMessages={formState.errors.value}
+    //       />
+    //
+    //       {!mustChooseValidator && renderBounded()}
+    //
+    //       <Typography.Text
+    //         style={{
+    //           color: theme.colorTextTertiary,
+    //           ...FontMedium,
+    //         }}>{`Once unbonded, your funds would be available after ${unBondedTime}.`}</Typography.Text>
+    //
+    //       <AccountSelector
+    //         modalVisible={accountSelectModalVisible}
+    //         onSelectItem={item => {
+    //           onChangeFromValue(item.address);
+    //           setAccountSelectModalVisible(false);
+    //         }}
+    //         items={accountList}
+    //         onCancel={() => setAccountSelectModalVisible(false)}
+    //       />
+    //     </View>
+    //
+    //     <View style={{ padding: 16 }}>
+    //       <Button
+    //         disabled={!formState.isValidated.value || !formState.data.value}
+    //         loading={loading}
+    //         icon={
+    //           <Icon
+    //             phosphorIcon={MinusCircle}
+    //             weight={'fill'}
+    //             size={'lg'}
+    //             iconColor={
+    //               !formState.isValidated.value || !formState.data.value ? theme.colorTextLight5 : theme.colorWhite
+    //             }
+    //           />
+    //         }
+    //         onPress={onPreCheckReadOnly(onSubmit)}>
+    //         Submit
+    //       </Button>
+    //     </View>
+    //   </>
+    // </ScreenContainer>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScreenContainer } from 'components/ScreenContainer';
-import { TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
@@ -12,7 +11,7 @@ import {
   StakingType,
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { StakeScreenNavigationProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { StakeScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -41,18 +40,16 @@ import { PlusCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { isAccountAll } from 'utils/accountAll';
-import { useNavigation } from '@react-navigation/native';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { BN_TEN } from 'utils/number';
-import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
+import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 
 export const Stake = ({
   route: {
-    params: { chain: stakingChain, type: _stakingType },
+    params: { chain: stakingChain = ALL_KEY, type: _stakingType = ALL_KEY },
   },
 }: StakeScreenNavigationProps) => {
-  const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -64,6 +61,7 @@ export const Stake = ({
   const [validatorLoading, setValidatorLoading] = useState(false);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const isEthAdr = isEthereumAddress(currentAccount?.address);
+  const [isBalanceReady, setIsBalanceReady] = useState(true);
 
   const defaultStakingType: StakingType = useMemo(() => {
     if (isEthAdr) {
@@ -119,6 +117,7 @@ export const Stake = ({
     stakingType: currentStakingType,
     value: currentValue,
   } = formState.data;
+
   const chainStakingMetadata = useGetChainStakingMetadata(chain);
   const nominatorMetadataList = useGetNominatorInfo(chain, currentStakingType as StakingType, from);
   const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
@@ -326,16 +325,12 @@ export const Stake = ({
   const onPreCheckReadOnly = usePreCheckReadOnly(from);
 
   return (
-    <ScreenContainer backgroundColor={'#0C0C0C'}>
+    <TransactionLayout
+      title={title}
+      showRightHeaderButton
+      onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
-        <TransactionHeader
-          title={title}
-          navigation={navigation}
-          showRightIcon
-          onPressRightIcon={() => setDetailNetworkModalVisible(true)}
-        />
-
-        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {!_stakingType && (
             <StakingTab
               selectedType={currentStakingType as StakingType}
@@ -349,7 +344,9 @@ export const Stake = ({
             </TouchableOpacity>
           )}
 
-          {!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain} />}
+          {!_stakingType && (
+            <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+          )}
 
           <TouchableOpacity
             disabled={stakingChain !== ALL_KEY || !from}
@@ -365,7 +362,9 @@ export const Stake = ({
             />
           </TouchableOpacity>
 
-          {!!_stakingType && <FreeBalance label={'Available balance:'} address={from} chain={chain} />}
+          {!!_stakingType && (
+            <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+          )}
 
           <InputAmount
             value={currentValue}
@@ -420,10 +419,10 @@ export const Stake = ({
             onCancel={() => setTokenSelectModalVisible(false)}
             onSelectItem={onSelectToken}
           />
-        </View>
+        </ScrollView>
         <View style={{ padding: 16 }}>
           <Button
-            disabled={!formState.isValidated.value || !formState.data.value}
+            disabled={!formState.isValidated.value || !formState.data.value || !isBalanceReady}
             loading={loading}
             icon={
               <Icon
@@ -450,6 +449,6 @@ export const Stake = ({
           />
         )}
       </>
-    </ScreenContainer>
+    </TransactionLayout>
   );
 };

@@ -45,8 +45,7 @@ const itemTextStyle: StyleProp<any> = {
 };
 
 const logoWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.light,
-  borderRadius: 28,
+  backgroundColor: 'transparent',
 };
 
 const CheckIcon = CircleWavyCheck;
@@ -65,7 +64,7 @@ export const TokenSelectItem = ({
     <TouchableOpacity onPress={onSelectNetwork}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
-          <View style={logoWrapperStyle}>{getTokenLogo(logoKey, subLogoKey, iconSize, defaultItemKey)}</View>
+          {getTokenLogo(logoKey, subLogoKey, iconSize, defaultItemKey)}
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 

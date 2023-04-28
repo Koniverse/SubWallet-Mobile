@@ -1,11 +1,13 @@
 import { IconButton } from 'components/IconButton';
 import { IconProps, Info } from 'phosphor-react-native';
-import React from 'react';
-import { StyleProp, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleProp, StyleSheet, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSize2 } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import Text from '../../components/Text';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Typography } from 'components/design-system-ui';
 
 interface Props extends FieldBaseProps {
   text: string;
@@ -16,23 +18,6 @@ interface Props extends FieldBaseProps {
   iconColor?: string;
   icon?: (props: IconProps) => JSX.Element;
 }
-
-const getTextStyle = (isDisabled: boolean, color?: string): StyleProp<any> => {
-  return {
-    ...FontSize2,
-    ...FontMedium,
-    lineHeight: 25,
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    color: color ? color : isDisabled ? ColorMap.disabled : ColorMap.light,
-  };
-};
-
-const blockContentStyle: StyleProp<any> = {
-  position: 'relative',
-  flexDirection: 'row',
-  alignItems: 'center',
-};
 
 const infoIconStyle: StyleProp<any> = {
   position: 'absolute',
@@ -51,10 +36,15 @@ export const TextField = ({
   iconColor,
   ...fieldBase
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme, textColor, disabled), [disabled, textColor, theme]);
+
   return (
     <FieldBase label={label} {...fieldBase}>
-      <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
-        <Text style={getTextStyle(!!disabled, textColor)}>{text}</Text>
+      <View style={styles.blockContent}>
+        <Typography.Text ellipsis style={styles.text}>
+          {text}
+        </Typography.Text>
         {(showRightIcon || icon) && (
           <IconButton
             color={iconColor ? iconColor : ColorMap.disabled}
@@ -67,3 +57,26 @@ export const TextField = ({
     </FieldBase>
   );
 };
+
+function createStyle(theme: ThemeTypes, textColor?: string, disabled?: boolean) {
+  return StyleSheet.create({
+    text: {
+      ...FontMedium,
+      color: textColor ? textColor : disabled ? theme.colorTextLight4 : theme.colorTextLight2,
+      paddingLeft: theme.paddingSM,
+      flex: 1,
+    },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    logoWrapper: {
+      paddingLeft: theme.sizeSM,
+      paddingRight: theme.sizeXS,
+    },
+    iconWrapper: {
+      height: 40,
+      width: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.sizeXXS,
+    },
+  });
+}

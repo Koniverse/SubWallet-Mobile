@@ -100,6 +100,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
           style={_style.inputTextStyle}
           autoCorrect={false}
           keyboardType={'decimal-pad'}
+          returnKeyType={'done'}
           placeholder={placeholder || 'Amount'}
           ref={ref}
           onChangeText={onChangeInput}

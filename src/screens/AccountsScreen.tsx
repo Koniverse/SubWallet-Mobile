@@ -130,7 +130,7 @@ export const AccountsScreen = () => {
   const onPressActionButton = useCallback(
     (action: SelectedActionType) => {
       selectedAction.current = action;
-      onPress().finally(noop);
+      onPress().catch(noop).finally(noop);
     },
     [onPress],
   );

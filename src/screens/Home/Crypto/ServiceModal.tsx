@@ -91,8 +91,8 @@ export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, 
     const params = {
       apiKey: '4b3bfb00-7f7c-44b3-844f-d4504f1065be',
       defaultCryptoCurrency: symbol,
-      cryptoCurrencyList: symbol,
       networks: transakNetwork,
+      cryptoCurrencyList: symbol,
       walletAddress: formatted,
     };
     const query = qs.stringify(params);

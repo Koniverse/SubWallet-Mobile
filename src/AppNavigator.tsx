@@ -147,11 +147,19 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="History" component={HistoryScreen} />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
-                <Stack.Screen name="CreatePassword" component={CreateMasterPassword} />
+                <Stack.Screen
+                  name="CreatePassword"
+                  component={CreateMasterPassword}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
                 <Stack.Screen name="ImportNetwork" component={ImportNetwork} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                <Stack.Screen name="MigratePassword" component={ApplyMasterPassword} />
+                <Stack.Screen
+                  name="MigratePassword"
+                  component={ApplyMasterPassword}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen name="AddProvider" component={AddProvider} />
                 <Stack.Screen name="EditAccount" component={AccountDetail} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} />

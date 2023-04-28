@@ -19,6 +19,8 @@ export interface SelectItemProps {
   showUnselect?: boolean;
   disabled?: boolean;
   rightItem?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  textColor?: string;
 }
 
 const SelectItem = (props: SelectItemProps) => {
@@ -33,6 +35,8 @@ const SelectItem = (props: SelectItemProps) => {
     onPress,
     showUnselect,
     rightItem,
+    rightIcon,
+    textColor,
   } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -53,10 +57,12 @@ const SelectItem = (props: SelectItemProps) => {
           />
         )}
       </View>
-      <Text numberOfLines={1} style={styles.text}>
+      <Text
+        numberOfLines={1}
+        style={[styles.text, { color: !disabled ? textColor || '#FFF' : 'rgba(255, 255, 255, 0.3)' }]}>
         {label}
       </Text>
-      {(rightItem || showUnselect || isSelected) && (
+      {(rightItem || rightIcon || showUnselect || isSelected) && (
         <View style={{ paddingLeft: 16, display: 'flex', flexDirection: 'row', gap: 8, alignItems: 'center' }}>
           {(showUnselect || isSelected) && (
             <Icon
@@ -67,6 +73,7 @@ const SelectItem = (props: SelectItemProps) => {
             />
           )}
           {rightItem}
+          {rightIcon && <View style={{ paddingLeft: 10 }}>{rightIcon}</View>}
         </View>
       )}
     </TouchableOpacity>

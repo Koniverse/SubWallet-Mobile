@@ -1,50 +1,21 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getTokenLogo } from 'utils/index';
-import { StyleProp, View } from 'react-native';
-import Text from '../../components/Text';
-import { FontSemiBold } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import { StyleProp, StyleSheet, View } from 'react-native';
+import { FontMedium } from 'styles/sharedStyles';
 import { CaretDown } from 'phosphor-react-native';
+import { ThemeTypes } from 'styles/themes';
+import { Typography } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props extends FieldBaseProps {
   logoKey: string;
-  subLogoKey: string;
+  subLogoKey?: string;
   disabled?: boolean;
   showIcon?: boolean;
   outerStyle?: StyleProp<any>;
   value?: string;
 }
-
-const getTextStyle = (disabled: boolean): StyleProp<any> => {
-  return {
-    fontSize: 14,
-    lineHeight: 22,
-    ...FontSemiBold,
-    paddingLeft: 8,
-    paddingRight: 8,
-    color: disabled ? ColorMap.disabled : ColorMap.light,
-  };
-};
-
-const getPlaceholderStyle = (disabled: boolean): StyleProp<any> => {
-  return {
-    fontSize: 14,
-    lineHeight: 22,
-    ...FontSemiBold,
-    color: disabled ? ColorMap.disabled : ColorMap.light,
-  };
-};
-
-const blockContentStyle: StyleProp<any> = {
-  position: 'relative',
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingBottom: 12,
-  justifyContent: 'space-between',
-  paddingHorizontal: 12,
-  height: 48,
-};
 
 export const TokenSelectField = ({
   logoKey,
@@ -56,17 +27,62 @@ export const TokenSelectField = ({
   label,
   ...fieldBase
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme, disabled), [disabled, theme]);
+
   return (
     <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
-      <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {!!value && getTokenLogo(logoKey, subLogoKey, 24)}
-          {!!value && <Text style={getTextStyle(!!disabled)}>{value}</Text>}
-          {!value && <Text style={getPlaceholderStyle(!!disabled)}>{'Select token'}</Text>}
-        </View>
+      <View style={styles.blockContent}>
+        {!!value && (
+          <>
+            <View style={styles.logoWrapper}>{getTokenLogo(logoKey, subLogoKey, label ? 20 : 24)}</View>
+            <Typography.Text ellipsis style={styles.text}>
+              {logoKey}
+            </Typography.Text>
+          </>
+        )}
 
-        {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}
+        {!value && (
+          <Typography.Text ellipsis style={styles.placeholder}>
+            {/* todo: i18n */}
+            {'Select token'}
+          </Typography.Text>
+        )}
+
+        {!!showIcon && (
+          <View style={styles.iconWrapper}>
+            <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />
+          </View>
+        )}
       </View>
     </FieldBase>
   );
 };
+
+function createStyle(theme: ThemeTypes, disabled?: boolean) {
+  return StyleSheet.create({
+    text: {
+      ...FontMedium,
+      color: disabled ? theme.colorTextLight4 : theme.colorTextLight2,
+      flex: 1,
+    },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    logoWrapper: {
+      paddingLeft: theme.sizeSM,
+      paddingRight: theme.sizeXS,
+    },
+    iconWrapper: {
+      height: 40,
+      width: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.sizeXXS,
+    },
+    placeholder: {
+      ...FontMedium,
+      color: disabled ? theme.colorTextLight4 : theme.colorTextLight2,
+      flex: 1,
+      paddingHorizontal: theme.paddingSM,
+    },
+  });
+}

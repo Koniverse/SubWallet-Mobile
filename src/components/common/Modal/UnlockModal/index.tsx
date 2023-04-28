@@ -101,7 +101,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
                   phosphorIcon={CheckCircle}
                   size={'lg'}
                   weight={'fill'}
-                  iconColor={loading || !formState.data.password ? theme.colorTextLight5 : theme.colorTextLight1}
+                  iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
                 />
               }
               onPress={onSubmit}>
