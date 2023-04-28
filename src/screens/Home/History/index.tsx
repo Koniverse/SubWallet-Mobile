@@ -29,13 +29,14 @@ import { HistoryItem } from 'components/common/HistoryItem';
 import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop, FontMedium } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { ListRenderItemInfo, View } from 'react-native';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
-import { ScreenContainer } from 'components/ScreenContainer';
+import { SortFunctionInterface } from 'types/ui-types';
+import { SectionItem } from 'components/LazySectionList';
 
 type Props = {};
 
@@ -102,9 +103,9 @@ function getDisplayData(
     if (item.direction === TransactionDirection.RECEIVED) {
       displayData = {
         className: `-receive -${item.status}`,
-        title: titleMap.received,
-        name: nameMap.received,
-        typeName: `${nameMap.received} ${displayStatus} - ${time}`,
+        title: titleMap.receive,
+        name: nameMap.receive,
+        typeName: `${nameMap.receive} ${displayStatus} - ${time}`,
         icon: IconMap.receive,
       };
     } else {
@@ -145,7 +146,7 @@ function getHistoryItemKey(item: Pick<TransactionHistoryItem, 'chain' | 'address
 const typeTitleMap: Record<string, string> = {
   default: i18n.historyScreen.title.transaction,
   send: i18n.historyScreen.title.sendTransaction,
-  received: i18n.historyScreen.title.receiveTransaction,
+  receive: i18n.historyScreen.title.receiveTransaction,
   [ExtrinsicType.SEND_NFT]: i18n.historyScreen.title.nftTransaction,
   [ExtrinsicType.CROWDLOAN]: i18n.historyScreen.title.crowdloanTransaction,
   [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.title.stakeTransaction,
@@ -342,13 +343,21 @@ function History(): React.ReactElement<Props> {
   );
 
   const searchFunc = useCallback((items: TransactionHistoryDisplayItem[], searchText: string) => {
+    if (!searchText) {
+      return items;
+    }
+
     const searchTextLowerCase = searchText.toLowerCase();
 
-    return items.filter(item => !!item.fromName && item.fromName.toLowerCase().includes(searchTextLowerCase));
+    return items.filter(
+      item =>
+        (!!item.fromName && item.fromName.toLowerCase().includes(searchTextLowerCase)) ||
+        (!!item.toName && item.toName.toLowerCase().includes(searchTextLowerCase)),
+    );
   }, []);
 
   const groupBy = useCallback((item: TransactionHistoryDisplayItem) => {
-    return customFormatDate(item.time, '#MMM# #DD#, #YYYY#');
+    return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + customFormatDate(item.time, '#MMM# #DD#, #YYYY#');
   }, []);
 
   const renderSectionHeader: (info: {
@@ -358,7 +367,7 @@ function History(): React.ReactElement<Props> {
       return (
         <View style={{ paddingTop: theme.sizeXS }}>
           <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3, ...FontMedium }}>
-            {info.section.title}
+            {info.section.title.split('|')[1]}
           </Typography.Text>
         </View>
       );
@@ -366,9 +375,13 @@ function History(): React.ReactElement<Props> {
     [theme.colorTextLight3, theme.sizeXS],
   );
 
+  const sortSection = useCallback<SortFunctionInterface<SectionItem<TransactionHistoryDisplayItem>>>((a, b) => {
+    return b.title.localeCompare(a.title);
+  }, []);
+
   const grouping = useMemo(() => {
-    return { groupBy, renderSectionHeader };
-  }, [groupBy, renderSectionHeader]);
+    return { groupBy, sortSection, renderSectionHeader };
+  }, [groupBy, renderSectionHeader, sortSection]);
 
   const sortFunction = useCallback((a: TransactionHistoryDisplayItem, b: TransactionHistoryDisplayItem) => {
     return b.time - a.time;
@@ -393,7 +406,7 @@ function History(): React.ReactElement<Props> {
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
         sortFunction={sortFunction}
-        flatListStyle={{ paddingHorizontal: theme.padding }}
+        flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}
       />
 
       <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
