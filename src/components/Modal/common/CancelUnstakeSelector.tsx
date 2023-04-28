@@ -58,7 +58,8 @@ export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue,
         onSelectItem && onSelectItem(items[0]?.key || '');
       }
     }
-  }, [items, selectedValue, onSelectItem]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.toString(), selectedValue]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<UnstakeItem>) => {
