@@ -8,7 +8,7 @@ import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { SVGImages } from 'assets/index';
 import { Logo } from 'components/design-system-ui';
-import { _ChainInfo, _ChainStatus } from '@subwallet/chain-list/types';
+import {_ChainInfo, _ChainStatus} from '@subwallet/chain-list/types';
 
 interface Props {
   item: _ChainInfo;

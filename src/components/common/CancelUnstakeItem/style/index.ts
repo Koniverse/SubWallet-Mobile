@@ -1,7 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
+import {UnstakingStatus} from "@subwallet/extension-base/background/KoniTypes";
 
 export interface CancelUnstakeItemStyle {
   container: ViewStyle;

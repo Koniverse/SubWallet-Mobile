@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontSemiBold } from 'styles/sharedStyles';
+import {FontSemiBold} from "styles/sharedStyles";
 export interface ButtonStyles {
   container: ViewStyle;
   blockButtonRaw: ViewStyle;

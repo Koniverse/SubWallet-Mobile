@@ -2,7 +2,7 @@ import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
 import { Icon, Tag, Number } from 'components/design-system-ui';
 import { StakingDataType } from 'hooks/types';
-import { CaretRight, User, Users } from 'phosphor-react-native';
+import {CaretRight, User, Users} from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';

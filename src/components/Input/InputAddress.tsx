@@ -5,6 +5,7 @@ import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedSty
 import { ColorMap } from 'styles/color';
 import { QrCode } from 'phosphor-react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
@@ -16,7 +17,6 @@ interface InputProps {
   value: string;
   containerStyle?: StyleProp<any>;
   onChange: (output: string | null, currentValue: string) => void;
-  onSubmitField?: () => void;
   onPressQrButton: () => void;
   isValidValue?: boolean;
   showAvatar?: boolean;
@@ -104,7 +104,6 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
     value,
     isValidValue = true,
     showAvatar = true,
-    onSubmitField,
   } = inputAddressProps;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
@@ -161,7 +160,6 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
               onBlur={onInputBlur}
               onChangeText={onChangeInputText}
               editable={!disable}
-              onSubmitEditing={onSubmitField}
             />
           ) : (
             <Text style={getFormattedTextInputStyle(isAddressValid)}>{toShort(address, 9, 9)}</Text>

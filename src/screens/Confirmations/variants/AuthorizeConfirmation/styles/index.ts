@@ -22,7 +22,7 @@ export default (theme: ThemeTypes) => {
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       width: '100%',
       textAlign: 'center',
-      paddingHorizontal: theme.padding,
+      paddingHorizontal: theme.padding
     },
     scroll: {
       maxHeight: 180,

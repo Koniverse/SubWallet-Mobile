@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ExtrinsicDataTypeMap, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
-import { ConfirmationContent } from 'components/common/Confirmation';
+import { ConfirmationContent } from 'components/Confirmation';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';

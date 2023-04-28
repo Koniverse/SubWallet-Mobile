@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
-import { useLazyList } from 'hooks/common/useLazyList';
+import { useLazyList } from 'hooks/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
 

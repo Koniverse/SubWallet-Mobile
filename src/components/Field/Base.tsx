@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewProps } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -7,7 +7,7 @@ import { Typography } from 'components/design-system-ui';
 
 export interface FieldBaseProps extends ViewProps {
   label?: string;
-  outerStyle?: StyleProp<ViewStyle>;
+  outerStyle?: StyleProp<any>;
 }
 
 export const FieldBase = ({ children, label, outerStyle, ...props }: FieldBaseProps) => {

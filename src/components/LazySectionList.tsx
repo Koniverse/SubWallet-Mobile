@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
 import { ActivityIndicator, ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
-import { useLazyList } from 'hooks/common/useLazyList';
+import { useLazyList } from 'hooks/useLazyList';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 

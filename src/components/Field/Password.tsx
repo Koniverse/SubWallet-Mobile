@@ -51,7 +51,6 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
     ...fieldBase
   } = passwordFieldProps;
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
-
   return (
     <>
       <FieldBase {...fieldBase}>

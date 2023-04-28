@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
+import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from 'messaging/index';
 import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from 'constants/index';
@@ -13,10 +14,15 @@ import { ColorMap } from 'styles/color';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
-import { Button, Icon, Typography } from 'components/design-system-ui';
-import { FileArrowDown, X } from 'phosphor-react-native';
+import { Button, Icon } from 'components/design-system-ui';
+import { FileArrowDown } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import createStyle from './styles';
+
+const footerAreaStyle: StyleProp<any> = {
+  marginTop: 8,
+  marginHorizontal: 16,
+  ...MarginBottomForSubmitButton,
+};
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.privateKey;
@@ -26,16 +32,10 @@ export const ImportPrivateKey = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
-  const accountName = useGetDefaultAccountName();
-
-  const timeOutRef = useRef<NodeJS.Timer>();
-
-  const styles = useMemo(() => createStyle(theme), [theme]);
-
   const [isBusy, setIsBusy] = useState(false);
-
   useHandlerHardwareBackPress(isBusy);
-
+  const accountName = useGetDefaultAccountName();
+  const timeOutRef = useRef<NodeJS.Timer>();
   const [privateKey, setPrivateKey] = useState('');
   const [validating, setValidating] = useState(false);
   const [autoCorrect, setAutoCorrect] = useState('');
@@ -84,7 +84,7 @@ export const ImportPrivateKey = () => {
 
         timeOutRef.current = setTimeout(() => {
           validateMetamaskPrivateKeyV2(privateKey, [EVM_ACCOUNT_TYPE])
-            .then(({ autoAddPrefix }) => {
+            .then(({ addressMap, autoAddPrefix }) => {
               if (amount) {
                 if (autoAddPrefix) {
                   setAutoCorrect(`0x${privateKey}`);
@@ -117,22 +117,14 @@ export const ImportPrivateKey = () => {
   }, [focus, navigation]);
 
   return (
-    <SubScreenContainer
-      title={i18n.title.importByPrivateKey}
-      navigation={navigation}
-      disabled={isBusy}
-      rightIcon={X}
-      onPressRightIcon={goHome}>
-      <View style={styles.wrapper}>
-        <ScrollView style={styles.container}>
-          <Typography.Text style={styles.title}>
-            To import an existing wallet, please enter the private key here
-          </Typography.Text>
+    <SubScreenContainer title={i18n.title.importByPrivateKey} navigation={navigation} disabled={isBusy}>
+      <View style={{ flex: 1 }}>
+        <ScrollView style={{ ...sharedStyles.layoutContainer }}>
           <Textarea
             placeholder={i18n.common.enterYourPrivateKey}
             placeholderTextColor={ColorMap.disabled}
             ref={formState.refs.privateKey}
-            style={styles.textArea}
+            style={{ height: 94, marginBottom: 8, paddingTop: 16 }}
             onChangeText={(text: string) => {
               onChangeValue('privateKey')(text);
               setAutoCorrect('');
@@ -143,7 +135,8 @@ export const ImportPrivateKey = () => {
             errorMessages={formState.errors.privateKey}
           />
         </ScrollView>
-        <View style={styles.footer}>
+
+        <View style={footerAreaStyle}>
           <Button
             icon={
               <Icon
