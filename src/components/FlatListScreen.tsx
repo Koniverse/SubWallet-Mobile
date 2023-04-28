@@ -14,7 +14,7 @@ import { NoInternetScreen } from 'components/NoInternetScreen';
 import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
-import { LazySectionList } from 'components/LazySectionList';
+import { LazySectionList, SectionItem } from 'components/LazySectionList';
 
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 export interface RightIconOpt {
@@ -57,6 +57,7 @@ interface Props<T> {
   grouping?: {
     renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
     groupBy: (item: T) => string;
+    sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   needGapWithStatusBar?: boolean;
 }
@@ -141,7 +142,8 @@ export function FlatListScreen<T>({
             searchFunction={searchFunction}
             filterFunction={filterFunction}
             selectedFilters={selectedFilters}
-            sortFunction={sortFunction}
+            sortItemFunction={sortFunction}
+            sortSectionFunction={grouping.sortSection}
             loading={loading}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
