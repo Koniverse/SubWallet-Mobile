@@ -80,7 +80,7 @@ export const Settings = () => {
           icon: Clock,
           title: i18n.title.history,
           hasRightArrow: true,
-          onPress: () => navigation.navigate('History'),
+          onPress: () => navigation.navigate('History', {}),
         },
         {
           icon: ShieldCheck,

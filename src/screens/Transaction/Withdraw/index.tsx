@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { ClaimRewardScreenNavigationProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
@@ -32,6 +32,8 @@ import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransac
 import { isActionFromValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { submitStakeWithdrawal } from 'messaging/index';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
+import { WithdrawProps } from 'routes/transaction/transactionAction';
+import {MarginBottomForSubmitButton} from "styles/sharedStyles";
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -54,7 +56,7 @@ export const Withdraw = ({
   route: {
     params: { chain: stakingChain, type: _stakingType },
   },
-}: ClaimRewardScreenNavigationProps) => {
+}: WithdrawProps) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const stakingType = _stakingType as StakingType;
@@ -171,7 +173,7 @@ export const Withdraw = ({
           />
         </ScrollView>
 
-        <View style={{ padding: 16, flexDirection: 'row' }}>
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', ...MarginBottomForSubmitButton }}>
           <Button
             disabled={loading}
             style={{ flex: 1, marginRight: 4 }}

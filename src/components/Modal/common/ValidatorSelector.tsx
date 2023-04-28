@@ -25,6 +25,7 @@ interface Props {
   isSingleSelect?: boolean;
   validatorLoading: boolean;
   selectedValidator?: string;
+  disabled?: boolean;
 }
 
 const searchFunction = (items: ValidatorDataType[], searchString: string) => {
@@ -51,6 +52,7 @@ export const ValidatorSelector = ({
   isSingleSelect: _isSingleSelect,
   validatorLoading,
   selectedValidator,
+  disabled,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const items = useGetValidatorList(chain, StakingType.NOMINATED) as ValidatorDataType[];
@@ -111,7 +113,7 @@ export const ValidatorSelector = ({
 
   return (
     <>
-      <TouchableOpacity onPress={() => setValidatorSelectModalVisible(true)} disabled={!chain || !from}>
+      <TouchableOpacity onPress={() => setValidatorSelectModalVisible(true)} disabled={!chain || !from || disabled}>
         <ValidatorSelectorField value={selectedValidator} label={'Select validator'} loading={validatorLoading} />
       </TouchableOpacity>
 

@@ -35,6 +35,7 @@ import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
+import { HistoryProps } from 'routes/index';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
 
@@ -227,13 +228,18 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
   return filteredChainList;
 };
 
-function History(): React.ReactElement<Props> {
+function History({
+  route: {
+    params: { extrinsicHash, chain },
+  },
+}: HistoryProps): React.ReactElement<Props> {
   // const dataContext = useContext(DataContext);
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((root: RootState) => root.accountState.accounts);
   const currentAccount = useSelector((root: RootState) => root.accountState.currentAccount);
   const rawHistoryList = useSelector((root: RootState) => root.transactionHistory.historyList);
-  const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
+  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+  const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
 
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
@@ -286,44 +292,33 @@ function History(): React.ReactElement<Props> {
   const onOpenDetail = useCallback((item: TransactionHistoryDisplayItem) => {
     return () => {
       setSelectedItem(item);
-      setIsOpenDetail(true);
+      setDetailModalVisible(true);
     };
   }, []);
 
   const onCloseDetail = useCallback(() => {
-    setIsOpenDetail(false);
+    setDetailModalVisible(false);
     setSelectedItem(null);
     // setOpenDetailLink(false);
   }, []);
 
-  // useEffect(() => {
-  //   if (extrinsicHash && chain && openDetailLink) {
-  //     const existed = historyList.find(item => item.chain === chain && item.extrinsicHash === extrinsicHash);
-  //
-  //     if (existed) {
-  //       setSelectedItem(existed);
-  //       setIsOpenDetail(true);
-  //     }
-  //   }
-  // }, [chain, extrinsicHash, openDetailLink, historyList]);
-
   useEffect(() => {
-    if (isOpenDetail) {
-      setSelectedItem(selected => {
-        if (selected) {
-          const key = getHistoryItemKey(selected);
+    if (extrinsicHash && chain && !isOpenByLink) {
+      const existed = historyList.find(item => item.chain === chain && item.extrinsicHash === extrinsicHash);
 
-          return historyMap[key] || null;
-        } else {
-          return selected;
+      setTimeout(() => {
+        if (existed) {
+          setSelectedItem(existed);
+          setIsOpenByLink(true);
+          setDetailModalVisible(true);
         }
-      });
+      }, 300);
     }
-  }, [isOpenDetail, historyMap]);
+  }, [chain, extrinsicHash, historyList, isOpenByLink]);
 
   useEffect(() => {
     if (currentAccount?.address !== curAdr) {
-      setIsOpenDetail(false);
+      setDetailModalVisible(false);
       setSelectedItem(null);
     }
   }, [curAdr, currentAccount?.address]);
@@ -392,6 +387,20 @@ function History(): React.ReactElement<Props> {
     return <EmptyList icon={Clock} title={'Your transactions history will appear here!'} />;
   }, []);
 
+  useEffect(() => {
+    if (detailModalVisible) {
+      setSelectedItem(selected => {
+        if (selected) {
+          const key = getHistoryItemKey(selected);
+
+          return historyMap[key] || null;
+        } else {
+          return selected;
+        }
+      });
+    }
+  }, [detailModalVisible, historyMap]);
+
   return (
     <>
       <FlatListScreen
@@ -409,7 +418,7 @@ function History(): React.ReactElement<Props> {
         flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}
       />
 
-      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
+      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={detailModalVisible} />
     </>
   );
 }

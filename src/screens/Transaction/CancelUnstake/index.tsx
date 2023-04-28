@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CancelUnstakeScreenNavigationProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { NominatorMetadata, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { useNavigation } from '@react-navigation/native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -23,6 +23,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
+import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -44,7 +45,7 @@ export const CancelUnstake = ({
   route: {
     params: { chain: stakingChain, type: _stakingType },
   },
-}: CancelUnstakeScreenNavigationProps) => {
+}: CancelUnstakeProps) => {
   const stakingType = _stakingType as StakingType;
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
