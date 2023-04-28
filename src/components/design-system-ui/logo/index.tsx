@@ -55,7 +55,7 @@ const Logo: React.FC<SWLogoProps> = ({
   return (
     <View>
       <Image
-        src={srcLogo || TokenLogoMap.subwallet}
+        src={srcLogo || TokenLogoMap.default}
         style={{ width: size, height: size, backgroundColor: 'transparent' }}
         squircleSize={size}
         shape={shape}
@@ -63,7 +63,7 @@ const Logo: React.FC<SWLogoProps> = ({
       {isShowSubIcon && !isShowSubLogo && <View style={_style.subLogoContainer}>{subIcon}</View>}
       {isShowSubLogo && (
         <Image
-          src={srcSubLogo || TokenLogoMap.subwallet}
+          src={srcSubLogo || TokenLogoMap.default}
           style={{ width: subLogoSize, height: subLogoSize }}
           squircleSize={subLogoSize}
           shape={subLogoShape}

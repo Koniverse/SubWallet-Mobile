@@ -1,13 +1,12 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import React from 'react';
+import React, { useMemo } from 'react';
 import reformatAddress, { toShort } from 'utils/index';
-import { StyleProp, View } from 'react-native';
-import Text from '../../components/Text';
-import { FontMedium, FontSize2 } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
+import { StyleSheet, View } from 'react-native';
+import { FontMedium } from 'styles/sharedStyles';
 import { IconProps, Info } from 'phosphor-react-native';
-import { IconButton } from 'components/IconButton';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 
 interface Props extends FieldBaseProps {
   address: string;
@@ -22,32 +21,6 @@ interface Props extends FieldBaseProps {
   disableText?: boolean;
 }
 
-const addressStyle: StyleProp<any> = {
-  ...FontSize2,
-  ...FontMedium,
-  lineHeight: 25,
-  color: ColorMap.disabled,
-};
-
-const blockContentStyle: StyleProp<any> = {
-  position: 'relative',
-  flexDirection: 'row',
-  paddingLeft: 12,
-  alignItems: 'center',
-  paddingBottom: 10,
-};
-
-const avatarStyle: StyleProp<any> = {
-  border: 0,
-  marginRight: 6,
-};
-
-const infoIconStyle: StyleProp<any> = {
-  position: 'absolute',
-  right: 6,
-  bottom: 3,
-};
-
 // todo: onPress infoIcon
 export const AddressField = ({
   address,
@@ -59,37 +32,47 @@ export const AddressField = ({
   rightIcon: RightIcon,
   placeholder,
   name,
+  label,
   disableRightIcon,
   ...fieldBase
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme), [theme]);
   const formattedAddress = networkPrefix !== undefined ? reformatAddress(address, networkPrefix) : address;
   const textLength = name ? 6 : 10;
-  const textColor = showRightIcon ? (disableText ? ColorMap.disabled : ColorMap.light) : ColorMap.disabled;
+  const textColor = showRightIcon
+    ? disableText
+      ? theme.colorTextLight4
+      : theme.colorTextLight2
+    : theme.colorTextLight4;
 
   return (
-    <FieldBase {...fieldBase}>
-      <View style={blockContentStyle}>
-        {!!showAvatar && <SubWalletAvatar address={address} size={18} style={avatarStyle} />}
-        {!!placeholder && <Text style={addressStyle}>{placeholder}</Text>}
+    <FieldBase {...fieldBase} label={label}>
+      <View style={styles.blockContent}>
+        {!!showAvatar && (
+          <View style={styles.logoWrapper}>
+            <Avatar value={address} size={label ? 20 : 24} />
+          </View>
+        )}
+        {!!placeholder && <Typography.Text style={styles.text}>{placeholder}</Typography.Text>}
         {!placeholder && (
           <View style={{ flexDirection: 'row', flex: 1, paddingRight: 16 }}>
-            {name && (
-              <Text numberOfLines={1} style={[addressStyle, { color: textColor, maxWidth: 100 }]}>
-                {name}
-              </Text>
+            {!!name && (
+              <Typography.Text style={{ ...styles.text, maxWidth: 100, color: textColor }}>{name}</Typography.Text>
             )}
-            {name && <Text style={[addressStyle, { color: textColor }]}> (</Text>}
-            <Text style={[addressStyle, { color: textColor }]}>
+            {!!name && <Typography.Text style={{ ...styles.text, color: textColor }}> (</Typography.Text>}
+            <Typography.Text style={{ ...styles.text, color: textColor }}>
               {toShort(formattedAddress, textLength, textLength)}
-            </Text>
-            {name && <Text style={[addressStyle, { color: textColor }]}>)</Text>}
+            </Typography.Text>
+            {!!name && <Typography.Text style={{ ...styles.text, color: textColor }}>)</Typography.Text>}
           </View>
         )}
         {showRightIcon && (
-          <IconButton
-            color={ColorMap.disabled}
-            style={infoIconStyle}
-            icon={RightIcon || Info}
+          <Button
+            size={'xs'}
+            style={styles.button}
+            type={'ghost'}
+            icon={<Icon size={'sm'} iconColor={theme.colorTextLight3} phosphorIcon={RightIcon || Info} />}
             onPress={onPressRightIcon}
             disabled={disableRightIcon}
           />
@@ -98,3 +81,19 @@ export const AddressField = ({
     </FieldBase>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    text: {
+      ...FontMedium,
+    },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    logoWrapper: {
+      paddingLeft: theme.sizeSM,
+      paddingRight: theme.sizeXS,
+    },
+    button: {
+      marginRight: theme.sizeXXS,
+    },
+  });
+}

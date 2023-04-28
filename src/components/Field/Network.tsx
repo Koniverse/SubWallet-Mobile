@@ -1,15 +1,15 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getNetworkLogo } from 'utils/index';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { StyleProp, View } from 'react-native';
-import Text from '../../components/Text';
-import { FontMedium, FontSize2 } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import { StyleSheet, View } from 'react-native';
+import { FontMedium } from 'styles/sharedStyles';
 import { CaretDown } from 'phosphor-react-native';
 import { _getChainName } from '@subwallet/extension-base/services/chain-service/utils';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Typography } from 'components/design-system-ui';
 
 interface Props extends FieldBaseProps {
   networkKey: string;
@@ -17,52 +17,46 @@ interface Props extends FieldBaseProps {
   showIcon?: boolean;
 }
 
-const getNetworkName = (networkKey: string, networkMap: Record<string, NetworkJson>) => {
-  if (!networkMap[networkKey]) {
-    return networkKey;
-  }
-
-  return networkMap[networkKey].chain;
-};
-
-const getTextStyle = (disabled: boolean): StyleProp<any> => {
-  return {
-    ...FontSize2,
-    ...FontMedium,
-    lineHeight: 25,
-    paddingLeft: 16,
-    paddingRight: 8,
-    paddingBottom: 10,
-    color: disabled ? ColorMap.disabled : ColorMap.light,
-  };
-};
-
-const blockContentStyle: StyleProp<any> = {
-  position: 'relative',
-  height: 34,
-};
-
-const logoWrapperStyle: StyleProp<any> = {
-  position: 'absolute',
-  right: 16,
-  bottom: 12,
-};
-
-export const NetworkField = ({ networkKey, disabled, showIcon, ...fieldBase }: Props) => {
+export const NetworkField = ({ networkKey, disabled, label, showIcon, ...fieldBase }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme, disabled), [disabled, theme]);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
 
   return (
-    <FieldBase {...fieldBase}>
-      <View style={blockContentStyle}>
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={getTextStyle(!!disabled)}>
-            {chainInfoMap[networkKey] ? _getChainName(chainInfoMap[networkKey]) : ''}
-          </Text>
-          {!!showIcon && <CaretDown size={16} color={ColorMap.disabled} weight={'bold'} style={{ marginTop: 4 }} />}
-        </View>
-
-        <View style={logoWrapperStyle}>{getNetworkLogo(networkKey, 20)}</View>
+    <FieldBase {...fieldBase} label={label}>
+      <View style={styles.blockContent}>
+        <View style={styles.logoWrapper}>{getNetworkLogo(networkKey, label ? 20 : 24)}</View>
+        <Typography.Text ellipsis style={styles.text}>
+          {chainInfoMap[networkKey] ? _getChainName(chainInfoMap[networkKey]) : ''}
+        </Typography.Text>
+        {!!showIcon && (
+          <View style={styles.iconWrapper}>
+            <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />
+          </View>
+        )}
       </View>
     </FieldBase>
   );
 };
+
+function createStyle(theme: ThemeTypes, disabled?: boolean) {
+  return StyleSheet.create({
+    text: {
+      ...FontMedium,
+      color: disabled ? theme.colorTextLight4 : theme.colorTextLight2,
+      flex: 1,
+    },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    logoWrapper: {
+      paddingLeft: theme.sizeSM,
+      paddingRight: theme.sizeXS,
+    },
+    iconWrapper: {
+      height: 40,
+      width: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: theme.sizeXXS,
+    },
+  });
+}
