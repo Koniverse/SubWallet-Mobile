@@ -1,49 +1,26 @@
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { EditAccountInputText } from 'components/EditAccountInputText';
 import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
+import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Eye, X } from 'phosphor-react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Keyboard, ScrollView, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
-import { useSelector } from 'react-redux';
 import { RootNavigationProps } from 'routes/index';
-import { RootState } from 'stores/index';
 import { QrAccount } from 'types/qr/attach';
 import { backToHome } from 'utils/navigation';
 import { readOnlyScan } from 'utils/scanner/attach';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { createAccountExternalV2 } from 'messaging/index';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import { sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
-import { Button } from 'components/design-system-ui';
-
-const WrapperStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-  ...ContainerHorizontalPadding,
-  paddingTop: 16,
-};
-
-const ScrollViewStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-  marginBottom: 16,
-};
-
-const WarningStyle: StyleProp<ViewStyle> = {
-  marginBottom: 8,
-};
-
-const ActionAreaStyle: StyleProp<ViewStyle> = {
-  ...MarginBottomForSubmitButton,
-  flexDirection: 'row',
-};
-
-const ButtonStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-};
+import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
+import createStyle from './styles';
 
 const validateAddress = (value: string) => {
   const qrAccount = readOnlyScan(value);
@@ -54,20 +31,13 @@ const validateAddress = (value: string) => {
   }
 };
 
-function checkValidateForm(formValidated: Record<string, boolean>) {
-  return formValidated.accountName && formValidated.address;
-}
-
 const AttachReadOnly = () => {
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
-
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
+  const defaultName = useGetDefaultAccountName();
 
-  const defaultName = useMemo(
-    (): string => `Account ${accounts.filter(acc => acc.address !== 'ALL').length + 1}`,
-    [accounts],
-  );
+  const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [account, setAccount] = useState<QrAccount | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
@@ -81,11 +51,6 @@ const AttachReadOnly = () => {
         value: '',
         require: true,
         validateFunc: validateAddress,
-      },
-      accountName: {
-        name: i18n.common.walletName,
-        value: '',
-        require: true,
       },
     };
   }, []);
@@ -151,13 +116,13 @@ const AttachReadOnly = () => {
 
   const onSubmitForm = useCallback(
     (formState: FormState) => {
-      if (checkValidateForm(formState.isValidated)) {
-        handleCreateAccount(formState.data.accountName);
+      if (formState.data.address) {
+        handleCreateAccount(defaultName);
       } else {
         Keyboard.dismiss();
       }
     },
-    [handleCreateAccount],
+    [defaultName, handleCreateAccount],
   );
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
@@ -208,49 +173,46 @@ const AttachReadOnly = () => {
     [formState.refs.address],
   );
 
-  useEffect(() => {
-    onChangeValue('accountName')(defaultName);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <ContainerWithSubHeader onPressBack={goBack} title={i18n.title.readonlyAccount} disabled={isBusy}>
-      <View style={WrapperStyle}>
-        <ScrollView style={[ScrollViewStyle]}>
+    <ContainerWithSubHeader
+      onPressBack={goBack}
+      title={i18n.title.readonlyAccount}
+      disabled={isBusy}
+      rightIcon={X}
+      onPressRightIcon={goHome}>
+      <View style={styles.wrapper}>
+        <ScrollView style={styles.container}>
+          <Typography.Text style={styles.title}>
+            Track the activity of any wallet without injecting your private key to SubWallet
+          </Typography.Text>
+          <View style={styles.pageIconContainer}>
+            <PageIcon icon={Eye} color={theme.colorSuccess} />
+          </View>
           <InputAddress
             value={formState.data.address}
             ref={formState.refs.address}
             label={formState.labels.address}
             isValidValue={formState.isValidated.address}
+            onSubmitField={onSubmitField('address')}
             onChange={onChangeAddress}
             onPressQrButton={onOpenScanner}
             containerStyle={sharedStyles.mb8}
-            showAvatar={false}
+            showAvatar={true}
             disable={isBusy}
           />
-          <EditAccountInputText
-            ref={formState.refs.accountName}
-            label={formState.labels.accountName}
-            onChangeText={onChangeValue('accountName')}
-            editAccountInputStyle={sharedStyles.mb8}
-            onSubmitField={onSubmitField('accountName')}
-            defaultValue={formState.data.accountName}
-            errorMessages={formState.errors.accountName}
-            isDisabled={isBusy}
-          />
+          {errors.length > 0 &&
+            errors.map((message, index) => <Warning isDanger message={message} key={index} style={styles.warning} />)}
+          <AddressScanner qrModalVisible={isScanning} onPressCancel={onCloseScanner} onChangeAddress={onScan} />
         </ScrollView>
-        {errors.length > 0 &&
-          errors.map((message, index) => <Warning isDanger message={message} key={index} style={WarningStyle} />)}
-        <View style={ActionAreaStyle}>
+        <View style={styles.footer}>
           <Button
-            style={ButtonStyle}
+            icon={<Icon phosphorIcon={Eye} weight="fill" />}
             loading={isBusy}
             onPress={handleSubmit}
-            disabled={errors.length > 0 || !checkValidateForm(formState.isValidated)}>
-            {i18n.common.attachAccount}
+            disabled={errors.length > 0 || !formState.data.address}>
+            {i18n.title.attachReadonlyAccount}
           </Button>
         </View>
-        <AddressScanner qrModalVisible={isScanning} onPressCancel={onCloseScanner} onChangeAddress={onScan} />
       </View>
     </ContainerWithSubHeader>
   );
