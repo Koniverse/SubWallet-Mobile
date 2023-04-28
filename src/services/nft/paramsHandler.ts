@@ -23,6 +23,7 @@ function rmrkParser(nftItem: NftItem) {
     return {};
   }
 
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const remark = `${RMRK_PREFIX}::${RMRK_OP_TYPE}::${nftItem.rmrk_ver}::${nftItem.id}::`;
 
   return {

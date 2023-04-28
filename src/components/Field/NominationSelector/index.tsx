@@ -7,7 +7,7 @@ import { ActivityIndicator, Avatar, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { toShort } from 'utils/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import {isEthereumAddress} from "@polkadot/util-crypto";
 
 interface Props extends FieldBaseProps {
   outerStyle?: StyleProp<any>;
@@ -53,11 +53,7 @@ export const NominationSelectorField = ({
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           {item && item.validatorAddress && (
             <View style={{ paddingRight: 8 }}>
-              <Avatar
-                value={item?.validatorAddress || ''}
-                size={24}
-                theme={isEthereumAddress(item?.validatorAddress) ? 'ethereum' : 'polkadot'}
-              />
+              <Avatar value={item?.validatorAddress || ''} size={24} theme={isEthereumAddress(item?.validatorAddress) ? 'ethereum' : 'polkadot'} />
             </View>
           )}
           <Text numberOfLines={1} style={accountNameTextStyle}>

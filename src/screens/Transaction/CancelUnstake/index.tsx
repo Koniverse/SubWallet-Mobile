@@ -21,7 +21,7 @@ import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSelector';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 
 const filterAccount = (

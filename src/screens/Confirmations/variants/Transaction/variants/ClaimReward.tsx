@@ -3,7 +3,7 @@
 
 import { RequestStakeClaimReward } from '@subwallet/extension-base/background/KoniTypes';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
-import { ConfirmationContent } from 'components/common/Confirmation';
+import { ConfirmationContent } from 'components/Confirmation';
 import MetaInfo from 'components/MetaInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';

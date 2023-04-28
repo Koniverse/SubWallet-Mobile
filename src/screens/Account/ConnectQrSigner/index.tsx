@@ -15,7 +15,7 @@ import useGoHome from 'hooks/screen/useGoHome';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountExternalV2 } from 'messaging/index';
-import { QrCode, X } from 'phosphor-react-native';
+import { QrCode } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ImageRequireSource, Text, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -94,7 +94,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSubmit);
 
   return (
-    <ContainerWithSubHeader title={title} onPressBack={onBack} rightIcon={X} onPressRightIcon={goHome}>
+    <ContainerWithSubHeader title={title} onPressBack={onBack}>
       <View style={styles.body}>
         <Text style={styles.subTitle}>{subTitle}</Text>
         <View>

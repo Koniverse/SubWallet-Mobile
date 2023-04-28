@@ -18,17 +18,17 @@ import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
 import { AccountsScreen } from 'screens/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/CreateAccount';
-import { AccountDetail } from 'screens/Account/AccountDetail';
+import { EditAccount } from 'screens/EditAccount';
 import { RestoreJson } from 'screens/RestoreJson';
 import { RemoveAccount } from 'screens/RemoveAccount';
-import { ImportSecretPhrase } from 'screens/Account/ImportSecretPhrase';
-import { ImportPrivateKey } from 'screens/Account/ImportPrivateKey';
+import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
+import { ImportPrivateKey } from 'screens/ImportPrivateKey';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
-import { AccountExport } from 'screens/Account/AccountExport';
+import { ExportAccount } from 'screens/ExportAccount';
 import { CustomTokenSetting } from 'screens/Tokens';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
@@ -161,7 +161,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   options={{ gestureEnabled: false }}
                 />
                 <Stack.Screen name="AddProvider" component={AddProvider} />
-                <Stack.Screen name="EditAccount" component={AccountDetail} />
+                <Stack.Screen name="EditAccount" component={EditAccount} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} />
                 <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                 <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
@@ -172,7 +172,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Security" component={Security} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} />
                 <Stack.Screen name="ChangePassword" component={ChangeMasterPassword} />
-                <Stack.Screen name="AccountExport" component={AccountExport} />
+                <Stack.Screen name="ExportAccount" component={ExportAccount} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                 <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                 <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />

@@ -1,4 +1,4 @@
-import { ConfirmationContent } from 'components/common/Confirmation';
+import { ConfirmationContent } from 'components/Confirmation';
 import React from 'react';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';

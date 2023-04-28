@@ -1,4 +1,4 @@
-import { ConfirmationContent } from 'components/common/Confirmation';
+import { ConfirmationContent } from 'components/Confirmation';
 import React from 'react';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { Text } from 'react-native';

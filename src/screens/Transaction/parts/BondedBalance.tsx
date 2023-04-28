@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import {Text, View} from 'react-native';
 import { Number } from 'components/design-system-ui';
 import BigN from 'bignumber.js';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { FontMedium } from 'styles/sharedStyles';
+import {FontMedium} from "styles/sharedStyles";
 
 interface Props {
   label?: string;

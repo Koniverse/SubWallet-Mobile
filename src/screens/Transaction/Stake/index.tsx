@@ -37,7 +37,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
 import { PlusCircle } from 'phosphor-react-native';
-import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { isAccountAll } from 'utils/accountAll';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';

@@ -26,8 +26,7 @@ import {
   subscribeStakingReward,
   subscribeTransactionRequests,
   subscribeTxHistory,
-  subscribeUiSettings,
-  subscribeXcmRefMap,
+  subscribeUiSettings, subscribeXcmRefMap,
 } from 'stores/utils';
 import React, { useContext, useEffect } from 'react';
 import { Provider } from 'react-redux';

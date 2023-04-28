@@ -5,7 +5,7 @@ import { RESULTS } from 'react-native-permissions';
 import { SpaceStyle } from 'styles/space';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { Button, Icon } from 'components/design-system-ui';
-import AccountSelectField from 'components/common/Account/AccountSelectField';
+import AccountSelectField from 'components/common/AccountSelectField';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
