@@ -81,8 +81,10 @@ export const TokensLayout = ({
   }, []);
   const stickyHeaderInvisibleStyles = useAnimatedStyle(() => {
     const opacity = interpolate(yOffset.value, [218, 220], [0, 1], Extrapolate.CLAMP);
+    const marginTop = interpolate(yOffset.value, [218, 220], [-60, 0], Extrapolate.CLAMP);
     return {
       opacity,
+      marginTop,
     };
   }, []);
 
@@ -147,40 +149,8 @@ export const TokensLayout = ({
   }
 
   return (
-    <View style={{ flex: 1, position: 'relative' }}>
-      {!!stickyNode && (
-        <Animated.View
-          style={[
-            {
-              paddingHorizontal: 16,
-              backgroundColor: theme.colorBgDefault,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              zIndex: 1000,
-              overflow: 'hidden',
-            },
-            stickyHeaderInvisibleStyles,
-          ]}>
-          {!!stickyBackground && (
-            <LinearGradient
-              locations={[0, 0.5]}
-              colors={stickyBackground}
-              style={{
-                flex: 1,
-                marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
-                height: 600,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-              }}
-            />
-          )}
-          {stickyNode}
-        </Animated.View>
-      )}
+    <View style={{ flex: 1 }}>
+      <Animated.View style={[{ paddingHorizontal: 16 }, stickyHeaderInvisibleStyles]}>{listActions}</Animated.View>
 
       <AnimatedFlatlist
         onScroll={onScrollHandler}

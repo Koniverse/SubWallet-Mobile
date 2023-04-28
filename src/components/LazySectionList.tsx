@@ -3,9 +3,10 @@ import { ActivityLoading } from 'components/ActivityLoading';
 import { ActivityIndicator, ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/common/useLazyList';
-import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+
+export type SectionItem<T> = { title: string; data: T[] };
 
 interface Props<T> {
   items: T[];
@@ -19,7 +20,8 @@ interface Props<T> {
   listStyle?: StyleProp<any>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
-  sortFunction?: SortFunctionInterface<T>;
+  sortItemFunction?: SortFunctionInterface<T>;
+  sortSectionFunction?: SortFunctionInterface<SectionItem<T>>;
   loading?: boolean;
 }
 
@@ -41,17 +43,18 @@ export function LazySectionList<T>({
   refreshControl,
   renderItem,
   loading,
-  sortFunction = defaultSortFunc,
+  sortItemFunction,
+  sortSectionFunction,
 }: Props<T>) {
   const sectionListRef = useRef<SectionList>(null);
   const filteredItems = useMemo(() => {
-    let searchItem = searchFunction ? searchFunction(items, searchString) : items;
+    let searchItems = searchFunction ? searchFunction(items, searchString) : items;
 
-    return filterFunction && selectedFilters ? filterFunction(searchItem, selectedFilters) : searchItem;
+    return filterFunction && selectedFilters ? filterFunction(searchItems, selectedFilters) : searchItems;
   }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
 
   const sections = useMemo(() => {
-    return filteredItems.reduce((groups: { title: string; data: T[] }[], item) => {
+    const _sections = filteredItems.reduce((groups: SectionItem<T>[], item) => {
       const groupTitle = groupBy(item);
       const group = groups.find(g => g.title === groupTitle);
       if (group) {
@@ -60,13 +63,21 @@ export function LazySectionList<T>({
         groups.push({ title: groupTitle, data: [item] });
       }
 
-      groups.forEach(g => {
-        g.data.sort(sortFunction);
-      });
+      if (sortItemFunction) {
+        groups.forEach(g => {
+          g.data.sort(sortItemFunction);
+        });
+      }
 
       return groups;
     }, []);
-  }, [filteredItems, groupBy, sortFunction]);
+
+    if (sortSectionFunction) {
+      _sections.sort(sortSectionFunction);
+    }
+
+    return _sections;
+  }, [filteredItems, groupBy, sortItemFunction, sortSectionFunction]);
 
   const {
     isLoading,
@@ -90,7 +101,7 @@ export function LazySectionList<T>({
     return () => {
       unmount = true;
     };
-  }, [setPageNumber, sortFunction]);
+  }, [setPageNumber]);
 
   useEffect(() => {
     // Reset page number on change search string => avoid render too many items
@@ -108,7 +119,7 @@ export function LazySectionList<T>({
   return (
     <>
       {lazySections.length ? (
-        <View>
+        <View style={{ flex: 1 }}>
           <SectionList
             ref={sectionListRef}
             style={{ ...ScrollViewStyle }}

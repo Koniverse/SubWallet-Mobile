@@ -4,7 +4,7 @@ import { RootNavigationProps } from 'routes/index';
 import { HomeStackParamList } from 'routes/home';
 
 export default function useGoHome(
-  params: NavigatorScreenParams<HomeStackParamList> = { screen: 'Crypto', params: { screen: 'TokenGroups' } },
+  params: NavigatorScreenParams<HomeStackParamList> = { screen: 'Tokens', params: { screen: 'TokenGroups' } },
 ) {
   const navigation = useNavigation<RootNavigationProps>();
 

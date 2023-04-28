@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
 import { Platform, TouchableOpacity, View } from 'react-native';
-import { Aperture, CurrencyCircleDollar, Database, GlobeSimple, Rocket } from 'phosphor-react-native';
+import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,7 +31,7 @@ const MainScreen = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName={'Crypto'}
+      initialRouteName={'Tokens'}
       screenOptions={{
         headerShown: false,
         tabBarButton: props => {
@@ -70,25 +70,25 @@ const MainScreen = () => {
           paddingRight: 16,
           height: BOTTOM_BAR_HEIGHT + (insets.bottom ? insets.bottom - 15 : insets.bottom),
         },
-        tabBarActiveTintColor: ColorMap.secondary,
-        tabBarInactiveTintColor: ColorMap.light,
+        tabBarActiveTintColor: ColorMap.light,
+        tabBarInactiveTintColor: '#777777',
       }}>
       <Tab.Screen
-        name={'Crypto'}
+        name={'Tokens'}
         component={CryptoScreen}
         options={{
           tabBarIcon: ({ color }) => {
-            return <CurrencyCircleDollar size={24} color={color} weight={'bold'} />;
+            return <Wallet size={24} color={color} weight={'fill'} />;
           },
         }}
       />
       <Tab.Screen
-        name={'NFT'}
+        name={'NFTs'}
         component={NFTStackScreen}
         options={{
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {
-            return <Aperture size={24} color={color} weight={'bold'} />;
+            return <Aperture size={24} color={color} weight={'fill'} />;
           },
         }}
       />
@@ -98,7 +98,7 @@ const MainScreen = () => {
         options={{
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {
-            return <Rocket size={24} color={color} weight={'bold'} />;
+            return <Rocket size={24} color={color} weight={'fill'} />;
           },
         }}
       />
@@ -108,7 +108,7 @@ const MainScreen = () => {
         options={{
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {
-            return <Database size={24} color={color} weight={'bold'} />;
+            return <Database size={24} color={color} weight={'fill'} />;
           },
         }}
       />
@@ -117,7 +117,7 @@ const MainScreen = () => {
         component={BrowserScreen}
         options={{
           tabBarIcon: ({ color }) => {
-            return <GlobeSimple size={24} color={color} weight={'bold'} />;
+            return <Globe size={24} color={color} weight={'fill'} />;
           },
         }}
       />

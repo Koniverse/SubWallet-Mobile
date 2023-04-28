@@ -7,20 +7,18 @@ import { ListRenderItemInfo, StyleProp, View } from 'react-native';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenGroupBalanceItem } from 'components/common/TokenGroupBalanceItem';
 import { LeftIconButton } from 'components/LeftIconButton';
-import { Eye, EyeSlash, FadersHorizontal, MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
+import { ClockCounterClockwise, FadersHorizontal, MagnifyingGlass, SlidersHorizontal } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { TokenGroupsUpperBlock } from 'screens/Home/Crypto/TokenGroupsUpperBlock';
 import { Header } from 'components/Header';
 import { GradientBackgroundColorSet, ScreenContainer } from 'components/ScreenContainer';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { toggleBalancesVisibility } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
-import { updateUiSettings } from 'stores/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
@@ -128,14 +126,6 @@ export const TokenGroups = () => {
     [isShowBalance, onPressItem, theme.colorBgSecondary],
   );
 
-  const _toggleBalances = useCallback(() => {
-    (async () => {
-      await toggleBalancesVisibility(v => {
-        updateUiSettings(v);
-      });
-    })();
-  }, []);
-
   const onCloseCustomizationModal = useCallback(() => {
     setCustomizationModalVisible(false);
   }, []);
@@ -148,6 +138,10 @@ export const TokenGroups = () => {
     setTokenSearchModalVisible(true);
   }, []);
 
+  const onOpenHistoryScreen = useCallback(() => {
+    navigation.navigate('History');
+  }, [navigation]);
+
   const actionsNode = useMemo(() => {
     return (
       <View style={renderActionsStyle}>
@@ -158,32 +152,25 @@ export const TokenGroups = () => {
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={isShowBalance ? EyeSlash : Eye} iconColor={theme.colorTextLight5} />}
-            onPress={_toggleBalances}
-          />
-          <Button
-            type="ghost"
-            size="xs"
-            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight5} />}
+            icon={<Icon size="md" phosphorIcon={MagnifyingGlass} iconColor={theme.colorTextLight3} />}
             onPress={onOpenTokenSearchModal}
           />
           <Button
             type="ghost"
             size="xs"
-            icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight5} />}
+            icon={<Icon size="md" phosphorIcon={FadersHorizontal} iconColor={theme.colorTextLight3} />}
             onPress={onOpenCustomizationModal}
+          />
+          <Button
+            type="ghost"
+            size="xs"
+            icon={<Icon size="md" phosphorIcon={ClockCounterClockwise} iconColor={theme.colorTextLight3} />}
+            onPress={onOpenHistoryScreen}
           />
         </View>
       </View>
     );
-  }, [
-    _toggleBalances,
-    isShowBalance,
-    onOpenCustomizationModal,
-    onOpenTokenSearchModal,
-    theme.colorTextLight1,
-    theme.colorTextLight5,
-  ]);
+  }, [onOpenHistoryScreen, onOpenCustomizationModal, onOpenTokenSearchModal, theme]);
 
   const _onOpenBuyTokens = useCallback(() => {
     setAccessBy('buy');
