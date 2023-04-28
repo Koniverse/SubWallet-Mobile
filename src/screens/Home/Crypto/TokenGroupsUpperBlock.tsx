@@ -2,14 +2,17 @@ import React from 'react';
 import { StyleProp, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
-import { ArrowFatLineDown, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
+import { ArrowFatLineDown, Eye, EyeSlash, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { BalancesVisibility } from 'components/BalancesVisibility';
-import { Number, Tag, Typography } from 'components/design-system-ui';
+import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { toggleBalancesVisibility } from 'messaging/index';
+import { updateUiSettings } from 'stores/utils';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -50,40 +53,27 @@ export const TokenGroupsUpperBlock = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const _toggleBalances = () => {
+    toggleBalancesVisibility(v => {
+      updateUiSettings(v);
+    });
+  };
 
   return (
     <View style={containerStyle} pointerEvents="box-none">
-      <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
+      <TouchableOpacity onPress={_toggleBalances}>
+        <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
-        {isShowBalance && (
-          <Number
-            textStyle={{ ...FontMedium }}
-            decimal={0}
-            value={totalChangeValue}
-            prefix={isPriceDecrease ? '- $' : '+ $'}
-          />
-        )}
-
-        {!isShowBalance && (
-          <Typography.Text
-            style={{
-              ...FontMedium,
-              color: theme.colorTextLight1,
-            }}>
-            {'******'}
-          </Typography.Text>
-        )}
-
-        <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
+          <View style={{ marginRight: 8 }}>
+            <Icon size="md" phosphorIcon={isShowBalance ? Eye : EyeSlash} iconColor={theme.colorTextLight1} />
+          </View>
           {isShowBalance && (
             <Number
-              textStyle={{ ...FontMedium, lineHeight: 18 }}
-              size={10}
-              value={totalChangePercent}
+              textStyle={{ ...FontMedium }}
               decimal={0}
-              prefix={isPriceDecrease ? '- ' : '+ '}
-              suffix={'%'}
+              value={totalChangeValue}
+              prefix={isPriceDecrease ? '- $' : '+ $'}
             />
           )}
 
@@ -91,15 +81,38 @@ export const TokenGroupsUpperBlock = ({
             <Typography.Text
               style={{
                 ...FontMedium,
-                lineHeight: 18,
-                fontSize: 10,
                 color: theme.colorTextLight1,
               }}>
               {'******'}
             </Typography.Text>
           )}
-        </Tag>
-      </View>
+
+          <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
+            {isShowBalance && (
+              <Number
+                textStyle={{ ...FontMedium, lineHeight: 18 }}
+                size={10}
+                value={totalChangePercent}
+                decimal={0}
+                prefix={isPriceDecrease ? '- ' : '+ '}
+                suffix={'%'}
+              />
+            )}
+
+            {!isShowBalance && (
+              <Typography.Text
+                style={{
+                  ...FontMedium,
+                  lineHeight: 18,
+                  fontSize: 10,
+                  color: theme.colorTextLight1,
+                }}>
+                {'******'}
+              </Typography.Text>
+            )}
+          </Tag>
+        </View>
+      </TouchableOpacity>
 
       <View style={[actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
