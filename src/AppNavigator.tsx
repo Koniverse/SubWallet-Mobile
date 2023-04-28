@@ -34,16 +34,11 @@ import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
-import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
-import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
-import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
-import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
-import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import { RootRouteProps, RootStackParamList } from './routes';
+import {RootRouteProps, RootStackParamList, TransactionActionProps} from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -60,6 +55,7 @@ import withPageWrapper from 'components/pageWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
+import TransactionScreen from "screens/Transaction/TransactionScreen";
 
 interface Props {
   isAppReady: boolean;
@@ -119,6 +115,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       if (currentRoute.name !== 'Confirmations') {
         if (currentRoute.name !== 'CreateAccount') {
           navigationRef.current?.navigate('Confirmations');
+          console.log(123123);
         }
       }
     }
@@ -178,35 +175,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                 <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                 <Stack.Screen name="ImportToken" component={ImportToken} />
-                <Stack.Screen name="StakeAction" component={StakeActionScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportNft" component={ImportNft} />
                 <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                <Stack.Screen
-                  name="UnStakeAction"
-                  component={UnStakeActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name="ClaimStakeAction"
-                  component={ClaimActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name="WithdrawStakeAction"
-                  component={WithdrawActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name="CompoundStakeAction"
-                  component={CompoundActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransactionDone" component={TransactionDone} />
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
+                <Stack.Screen name="TransactionAction" component={TransactionScreen} />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

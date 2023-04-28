@@ -59,14 +59,12 @@ export const TransactionConfirmation = (props: Props) => {
   const { id } = item;
 
   const { transactionRequest } = useSelector((state: RootState) => state.requestState);
-  console.log('transactionRequest', transactionRequest);
 
   const _transaction = useMemo(() => transactionRequest[id], [transactionRequest, id]);
 
   const substratePayload = useParseSubstrateRequestPayload(
     type === 'signingRequest' ? (item as SigningRequest).request : undefined,
   );
-  console.log('_transaction', _transaction);
 
   const renderContent = useCallback((transaction: SWTransactionResult): React.ReactNode => {
     const { extrinsicType } = transaction;

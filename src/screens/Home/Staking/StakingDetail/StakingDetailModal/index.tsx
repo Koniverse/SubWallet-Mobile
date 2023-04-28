@@ -24,7 +24,6 @@ import {
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { ALL_KEY, deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
-import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { StakingStatusUi } from 'constants/stakingStatusUi';
 import MetaInfo from 'components/MetaInfo';
 import { toShort } from 'utils/index';
@@ -36,6 +35,7 @@ import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { FontMedium } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { isAccountAll } from 'utils/accountAll';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props {
   nominatorMetadata: NominatorMetadata;
@@ -99,7 +99,7 @@ export const StakingDetailModal = ({
   const { decimals } = _getChainNativeTokenBasicInfo(chainInfo);
   const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
   const account = useGetAccountByAddress(staking.address);
-  const navigation = useNavigation<StakingScreenNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
   const stakingTypeNameMap: Record<string, string> = {
     nominated: 'Nominated',
     pooled: 'Pooled',
@@ -108,9 +108,12 @@ export const StakingDetailModal = ({
   const onClickStakeMoreBtn = useCallback(() => {
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(() => {
-      navigation.navigate('Stake', {
-        type: chainStakingMetadata?.type || ALL_KEY,
-        chain: nominatorMetadata?.chain || ALL_KEY,
+      navigation.navigate('TransactionAction', {
+        screen: 'Stake',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: nominatorMetadata?.chain || ALL_KEY,
+        },
       });
     }, 300);
   }, [chainStakingMetadata?.type, navigation, nominatorMetadata?.chain, onCloseDetailModal]);
@@ -119,9 +122,12 @@ export const StakingDetailModal = ({
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(
       () =>
-        navigation.navigate('Unbond', {
-          type: chainStakingMetadata?.type || ALL_KEY,
-          chain: chainStakingMetadata?.chain || ALL_KEY,
+        navigation.navigate('TransactionAction', {
+          screen: 'Unbond',
+          params: {
+            type: chainStakingMetadata?.type || ALL_KEY,
+            chain: chainStakingMetadata?.chain || ALL_KEY,
+          },
         }),
       300,
     );

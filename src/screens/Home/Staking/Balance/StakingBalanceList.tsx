@@ -21,6 +21,8 @@ import { Header } from 'components/Header';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import { RootNavigationProps } from 'routes/index';
+import { ALL_KEY } from 'constants/index';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -78,7 +80,7 @@ const StakingBalanceList = () => {
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
   const isCanSign = useCurrentAccountCanSign();
-  const stakingNavigation = useNavigation<StakingScreenNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
@@ -105,9 +107,14 @@ const StakingBalanceList = () => {
     [handleOnPress, priceMap],
   );
 
-  const handlePressStartStaking = useCallback(() => {
-    stakingNavigation.navigate('Stake', {});
-  }, [stakingNavigation]);
+  const handlePressStartStaking = useCallback(
+    () =>
+      navigation.navigate('TransactionAction', {
+        screen: 'Stake',
+        params: {},
+      }),
+    [navigation],
+  );
 
   const rightIconOption = useMemo(() => {
     return {
@@ -163,6 +170,7 @@ const StakingBalanceList = () => {
 
         <StakingActionModal
           closeModal={() => setMoreActionModalVisible(false)}
+          openModal={() => setMoreActionModalVisible(true)}
           visible={moreActionModalVisible}
           chainStakingMetadata={selectedItem?.chainStakingMetadata}
           nominatorMetadata={selectedItem?.nominatorMetadata}

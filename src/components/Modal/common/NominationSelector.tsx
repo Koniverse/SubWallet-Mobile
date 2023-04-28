@@ -19,7 +19,12 @@ interface Props {
 const searchFunction = (items: NominationInfo[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
 
-  return items.filter(({ validatorIdentity }) => validatorIdentity?.toLowerCase().includes(lowerCaseSearchString));
+  return items.filter(({ validatorIdentity, validatorAddress }) => {
+    return (
+      validatorIdentity?.toLowerCase().includes(lowerCaseSearchString) ||
+      validatorAddress?.toLowerCase().includes(lowerCaseSearchString)
+    );
+  });
 };
 
 const renderListEmptyComponent = () => {
@@ -33,8 +38,9 @@ const renderListEmptyComponent = () => {
   );
 };
 
-export const NominationSelector = ({ nominators, selectedValue, onSelectItem }: Props) => {
+export const NominationSelector = ({ nominators, selectedValue, onSelectItem, disabled }: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   const selectedCollator = useMemo(() => {
     return nominators.find(item => item.validatorAddress === selectedValue);
   }, [nominators, selectedValue]);
@@ -57,7 +63,7 @@ export const NominationSelector = ({ nominators, selectedValue, onSelectItem }: 
 
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
+      <TouchableOpacity onPress={() => setModalVisible(true)} disabled={disabled}>
         <NominationSelectorField label={'Select validator'} item={selectedCollator} />
       </TouchableOpacity>
 

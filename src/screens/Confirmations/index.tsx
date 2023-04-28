@@ -7,7 +7,6 @@ import {
   SigningRequest,
 } from '@subwallet/extension-base/background/types';
 import { ConfirmationHeader } from 'components/common/ConfirmationHeader';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { NEED_SIGN_CONFIRMATION } from 'constants/transaction';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -34,7 +33,7 @@ import {
 } from './variants';
 
 const confirmationPopupWrapper: StyleProp<any> = {
-  maxHeight: '90%',
+  maxHeight: '100%',
   width: '100%',
   backgroundColor: ColorMap.dark1,
   borderTopLeftRadius: 15,
@@ -217,13 +216,14 @@ export const Confirmations = () => {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
         <View style={confirmationPopupWrapper}>
-          <View style={subWalletModalSeparator} />
+          {(!confirmation || !confirmation.item.isInternal) && <View style={subWalletModalSeparator} />}
           <ConfirmationHeader
             index={index}
             numberOfConfirmations={numberOfConfirmations}
             title={headerTitle}
             onPressPrev={prevConfirmation}
             onPressNext={nextConfirmation}
+            isFullHeight={confirmation && confirmation.item.isInternal}
           />
           {content}
           <SafeAreaView />
