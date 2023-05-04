@@ -164,10 +164,10 @@ export const NetworkSettingDetail = ({
     upsertChain(params)
       .then(result => {
         setLoading(false);
-
         if (result) {
           toast.hideAll();
           toast.show('Updated chain successfully');
+          navigation.goBack();
         } else {
           toast.hideAll();
           toast.show('An error occurred, please try again');
@@ -272,7 +272,7 @@ export const NetworkSettingDetail = ({
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', width: '100%' }}>
-            <NetworkNameField outerStyle={{ flex: 2, marginRight: 12 }} chain={'polkadot'} />
+            <NetworkNameField outerStyle={{ flex: 2, marginRight: 12 }} chain={chainInfo.slug} />
 
             <TextField outerStyle={{ flex: 1 }} text={symbol} />
           </View>
