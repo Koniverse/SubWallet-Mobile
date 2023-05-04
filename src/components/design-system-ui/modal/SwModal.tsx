@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StyleProp, Text, View } from 'react-native';
+import { SafeAreaView, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -8,7 +8,7 @@ export interface SWModalProps {
   footer?: React.ReactNode;
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
-  modalStyle?: StyleProp<any>;
+  modalStyle?: StyleProp<ViewStyle>;
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   modalTitle?: string;

@@ -1,3 +1,4 @@
+import DeriveAccountModal from 'components/common/Modal/DeriveAccountModal';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import AccountActionSelectModal from 'components/Modal/AccountActionSelectModal';
 import {
@@ -43,6 +44,7 @@ export const AccountCreationArea = ({
   const navigation = useNavigation<RootNavigationProps>();
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
+  const [selectAccountDeriveVisible, setSelectAccountDeriveVisible] = useState<boolean>(false);
 
   const toastRef = useRef<ToastContainer>(null);
   const show = useCallback((text: string) => {
@@ -91,17 +93,12 @@ export const AccountCreationArea = ({
         icon: ShareNetwork,
         label: 'Derive from another account',
         onClickBtn: () => {
-          show(i18n.common.comingSoon);
-          // onChangeCreateAccountModalVisible(false);
-          // if (hasMasterPassword) {
-          //   navigation.navigate('CreateAccount', {});
-          // } else {
-          //   navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: '' });
-          // }
+          onChangeCreateAccountModalVisible(false);
+          setTimeout(() => setSelectAccountDeriveVisible(true), HIDE_MODAL_DURATION);
         },
       },
     ];
-  }, [allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible, show]);
+  }, [allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible]);
 
   const importAccountActions = useMemo(
     () => [
@@ -243,6 +240,12 @@ export const AccountCreationArea = ({
         modalVisible={selectTypeModalVisible}
         onChangeModalVisible={() => setSelectTypeModalVisible(false)}
         onConfirm={onSelectAccountTypes}
+      />
+
+      <DeriveAccountModal
+        modalVisible={selectAccountDeriveVisible}
+        onChangeModalVisible={() => setSelectAccountDeriveVisible(false)}
+        // onConfirm={onSelectAccountTypes}
       />
     </>
   );

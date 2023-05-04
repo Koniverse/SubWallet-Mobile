@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -35,7 +35,7 @@ interface Props<T> {
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   onPressBack?: () => void;
   showLeftBtn?: boolean;
-  style?: StyleProp<any>;
+  style?: StyleProp<ViewStyle>;
   rightIconOption?: RightIconOpt;
   beforeListItem?: JSX.Element;
   afterListItem?: JSX.Element;

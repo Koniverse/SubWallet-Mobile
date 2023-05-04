@@ -22,7 +22,7 @@ interface Props<T> {
   filterFunction?: (items: T[], filters: string[]) => T[];
   selectedFilters?: string[];
   numberColumns?: number;
-  flatListStyle?: StyleProp<any>;
+  flatListStyle?: StyleProp<ViewStyle>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortFunction?: SortFunctionInterface<T>;
