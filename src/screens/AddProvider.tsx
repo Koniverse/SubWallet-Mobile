@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Globe, Info, WifiHigh, WifiSlash } from 'phosphor-react-native';
-import { View } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import InputText from 'components/Input/InputText';
 import { AddProviderProps, RootNavigationProps } from 'routes/index';
@@ -242,53 +242,51 @@ export const AddProvider = ({
       rightIcon={Info}
       title={'Add new provider'}>
       <>
-        <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
-          <InputText
-            ref={formState.refs.provider}
-            value={formState.data.provider}
-            onChangeText={onChangeProvider}
-            errorMessages={formState.errors.provider}
-            rightIcon={providerSuffix()}
-            placeholder={formState.labels.provider}
-            onSubmitField={() => providerValidator(formState.data.provider)}
-          />
-
-          <View style={{ flexDirection: 'row' }}>
+        <TouchableWithoutFeedback style={{ backgroundColor: 'red' }} onPress={() => Keyboard.dismiss()}>
+          <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
             <InputText
-              outerStyle={{ flex: 2, marginRight: 6 }}
-              leftIcon={Globe}
-              placeholder={formState.labels.name}
-              ref={formState.refs.name}
-              value={formState.data.name}
-              onChangeText={onChangeValue('name')}
-              isBusy={true}
+              ref={formState.refs.provider}
+              value={formState.data.provider}
+              onChangeText={onChangeProvider}
+              errorMessages={formState.errors.provider}
+              rightIcon={providerSuffix()}
+              placeholder={formState.labels.provider}
+              onSubmitField={() => providerValidator(formState.data.provider)}
             />
 
+            <View style={{ flexDirection: 'row' }}>
+              <InputText
+                outerStyle={{ flex: 2, marginRight: 6 }}
+                leftIcon={Globe}
+                placeholder={formState.labels.name}
+                ref={formState.refs.name}
+                value={formState.data.name}
+                onChangeText={onChangeValue('name')}
+                isBusy={true}
+              />
+
+              <InputText
+                outerStyle={{ flex: 1, marginLeft: 6 }}
+                placeholder={formState.labels.symbol}
+                ref={formState.refs.symbol}
+                value={formState.data.symbol}
+                onChangeText={onChangeValue('symbol')}
+                isBusy={true}
+              />
+            </View>
+
             <InputText
-              outerStyle={{ flex: 1, marginLeft: 6 }}
-              placeholder={formState.labels.symbol}
-              ref={formState.refs.symbol}
-              value={formState.data.symbol}
-              onChangeText={onChangeValue('symbol')}
+              placeholder={formState.labels.chainType}
+              ref={formState.refs.chainType}
+              value={formState.data.chainType}
+              onChangeText={onChangeValue('chainType')}
               isBusy={true}
             />
           </View>
-
-          <InputText
-            placeholder={formState.labels.chainType}
-            ref={formState.refs.chainType}
-            value={formState.data.chainType}
-            onChangeText={onChangeValue('chainType')}
-            isBusy={true}
-          />
-        </View>
+        </TouchableWithoutFeedback>
 
         <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, flexDirection: 'row' }}>
-          <Button
-            type={'secondary'}
-            style={{ flex: 1, marginRight: 6 }}
-            disabled={isSubmitDisabled()}
-            onPress={() => navigation.goBack()}>
+          <Button type={'secondary'} style={{ flex: 1, marginRight: 6 }} onPress={() => navigation.goBack()}>
             {i18n.common.cancel}
           </Button>
           <Button style={{ flex: 1, marginLeft: 6 }} loading={loading} disabled={isSubmitDisabled()} onPress={onSubmit}>
