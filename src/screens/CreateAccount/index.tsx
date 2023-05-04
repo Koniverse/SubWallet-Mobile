@@ -71,7 +71,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
       createAccountSuriV2({
         name: accountName,
         suri: seed,
-        types: params && params.keyTypes ? [params.keyTypes] : defaultKeyTypes,
+        types: params?.keyTypes || defaultKeyTypes,
         isAllowed: true,
       })
         .then(() => {

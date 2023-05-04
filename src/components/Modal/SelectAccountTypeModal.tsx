@@ -1,20 +1,21 @@
-import React from 'react';
+import { KeypairType } from '@polkadot/util-crypto/types';
+import { SelectAccountType } from 'components/common/SelectAccountType';
+import { Button, Icon } from 'components/design-system-ui';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { CheckCircle } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { Image, StyleProp, View } from 'react-native';
+import { StyleProp, View } from 'react-native';
 import Text from '../Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { SecretTypeItem } from 'components/SecretTypeItem';
 import i18n from 'utils/i18n/i18n';
-import { AccountActionType } from 'types/ui-types';
-import { ImageLogosMap } from 'assets/logo';
 
 interface Props {
   modalVisible: boolean;
   onChangeModalVisible: () => void;
   onModalHide?: () => void;
-  onSelectSubstrateAccount: () => void;
-  onSelectEvmAccount: () => void;
+  onConfirm: (keyTypes: KeypairType[]) => void;
 }
 
 const modalTitle: StyleProp<any> = {
@@ -25,33 +26,34 @@ const modalTitle: StyleProp<any> = {
   textAlign: 'center',
 };
 
-export const SelectAccountTypeModal = ({
-  modalVisible,
-  onChangeModalVisible,
-  onModalHide,
-  onSelectSubstrateAccount,
-  onSelectEvmAccount,
-}: Props) => {
-  const ACCOUNT_TYPE: AccountActionType[] = [
-    {
-      icon: () => <Image source={ImageLogosMap.polkadot} style={{ width: 20, height: 20, borderRadius: 10 }} />,
-      title: i18n.common.substrateAccount,
-      onCLickButton: onSelectSubstrateAccount,
+const defaultKeyTypes: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
+
+export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onModalHide, onConfirm }: Props) => {
+  const [keyTypes, setKeyTypes] = useState<KeypairType[]>(defaultKeyTypes);
+
+  const _onConfirm = useCallback(
+    (_keyTypes: KeypairType[]) => {
+      return () => {
+        onConfirm(_keyTypes);
+      };
     },
-    {
-      icon: () => <Image source={ImageLogosMap.eth} style={{ width: 20, height: 20, borderRadius: 10 }} />,
-      title: i18n.common.evmAccount,
-      onCLickButton: onSelectEvmAccount,
-    },
-  ];
+    [onConfirm],
+  );
+
+  useEffect(() => {
+    if (!modalVisible) {
+      setKeyTypes(defaultKeyTypes);
+    }
+  }, [modalVisible]);
 
   return (
     <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitle}>{i18n.title.selectAccountType}</Text>
-        {ACCOUNT_TYPE.map(item => (
-          <SecretTypeItem key={item.title} title={item.title} icon={item.icon} onClickButton={item.onCLickButton} />
-        ))}
+        <SelectAccountType selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
+        <Button icon={<Icon phosphorIcon={CheckCircle} />} onPress={_onConfirm(keyTypes)}>
+          {i18n.common.confirm}
+        </Button>
       </View>
     </SubWalletModal>
   );

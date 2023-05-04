@@ -77,6 +77,7 @@ export const SelectAccountType = (props: SelectAccountTypeProps) => {
             leftItemIcon={<Logo size={28} network={item.icon} shape={'circle'} />}
             isSelected={!!_selected}
             onPress={item.onClick}
+            showUnselect={true}
           />
         );
       })}

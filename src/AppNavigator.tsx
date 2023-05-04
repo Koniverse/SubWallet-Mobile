@@ -20,7 +20,6 @@ import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AccountDetail } from 'screens/Account/AccountDetail';
 import { RestoreJson } from 'screens/Account/RestoreJson';
-import { RemoveAccount } from 'screens/RemoveAccount';
 import { ImportSecretPhrase } from 'screens/Account/ImportSecretPhrase';
 import { ImportPrivateKey } from 'screens/Account/ImportPrivateKey';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
@@ -160,7 +159,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="AddProvider" component={AddProvider} />
                 <Stack.Screen name="EditAccount" component={AccountDetail} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                 <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
                 <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
                 <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />

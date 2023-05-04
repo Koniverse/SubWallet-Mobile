@@ -11,7 +11,7 @@ import {
   Swatches,
   Wallet,
 } from 'phosphor-react-native';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -54,13 +54,13 @@ export const AccountCreationArea = ({
     }
   }, []);
 
-  const onSelectAccountType = useCallback(
-    (keyType: KeypairType) => {
+  const onSelectAccountTypes = useCallback(
+    (keyTypes: KeypairType[]) => {
       setSelectTypeModalVisible(false);
       if (hasMasterPassword) {
-        navigation.navigate('CreateAccount', { keyTypes: keyType });
+        navigation.navigate('CreateAccount', { keyTypes: keyTypes });
       } else {
-        navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: keyType });
+        navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: keyTypes });
       }
     },
     [hasMasterPassword, navigation],
@@ -81,7 +81,7 @@ export const AccountCreationArea = ({
             if (hasMasterPassword) {
               navigation.navigate('CreateAccount', {});
             } else {
-              navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: '' });
+              navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
             }
           }
         },
@@ -242,8 +242,7 @@ export const AccountCreationArea = ({
       <SelectAccountTypeModal
         modalVisible={selectTypeModalVisible}
         onChangeModalVisible={() => setSelectTypeModalVisible(false)}
-        onSelectSubstrateAccount={() => onSelectAccountType(SUBSTRATE_ACCOUNT_TYPE)}
-        onSelectEvmAccount={() => onSelectAccountType(EVM_ACCOUNT_TYPE)}
+        onConfirm={onSelectAccountTypes}
       />
     </>
   );
