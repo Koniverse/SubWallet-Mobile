@@ -51,11 +51,20 @@ const CreateMasterPassword = ({
 
   const onComplete = async () => {
     if (pathName === 'CreateAccount') {
-      navigation.replace(pathName, { keyTypes: state as KeypairType });
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Home' }, { name: pathName, params: { keyTypes: state as KeypairType } }],
+      });
     } else if (pathName === 'MigratePassword') {
-      navigation.replace(pathName);
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Home' }, { name: pathName }],
+      });
     } else {
-      navigation.replace(pathName);
+      navigation.reset({
+        index: 1,
+        routes: [{ name: 'Home' }, { name: pathName }],
+      });
     }
   };
 

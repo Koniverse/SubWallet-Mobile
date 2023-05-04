@@ -81,12 +81,7 @@ export const AccountsScreen = () => {
         }
       }
 
-      if (navigation.getState()?.routes.length >= 3) {
-        // back to previous 3rd screen
-        navigation.pop(2);
-      } else {
-        navigation.navigate('Home');
-      }
+      navigation.navigate('Home');
     },
     [currentAccountAddress, navigation, accounts],
   );
