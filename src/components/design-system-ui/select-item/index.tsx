@@ -45,6 +45,7 @@ const SelectItem = (props: SelectItemProps) => {
     <TouchableOpacity
       style={[styles.wrapper, disabled && styles.wrapperDisable]}
       onPress={onPress}
+      disabled={disabled}
       activeOpacity={disabled ? theme.opacityDisable : theme.opacityPress}>
       <View style={styles.left}>
         {leftItemIcon || (

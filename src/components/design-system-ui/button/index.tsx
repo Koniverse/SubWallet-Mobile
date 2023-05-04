@@ -116,7 +116,7 @@ const Button: React.FC<ButtonProps> = props => {
     }
 
     return icon || null;
-  }, [icon, indicatorColor, loading]);
+  }, [icon, indicatorColor, loading, disabled]);
   const buttonNode = (
     <TouchableHighlight
       accessibilityRole="button"

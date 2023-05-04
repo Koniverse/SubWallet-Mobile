@@ -19,7 +19,7 @@ import { AccountsScreen } from 'screens/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/CreateAccount';
 import { AccountDetail } from 'screens/Account/AccountDetail';
-import { RestoreJson } from 'screens/RestoreJson';
+import { RestoreJson } from 'screens/Account/RestoreJson';
 import { RemoveAccount } from 'screens/RemoveAccount';
 import { ImportSecretPhrase } from 'screens/Account/ImportSecretPhrase';
 import { ImportPrivateKey } from 'screens/Account/ImportPrivateKey';
