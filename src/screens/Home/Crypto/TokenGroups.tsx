@@ -253,8 +253,6 @@ export const TokenGroups = () => {
         <Header />
 
         <TokensLayout
-          stickyNode={actionsNode}
-          stickyBackground={isTotalBalanceDecrease ? GradientBackgroundColorSet[1] : GradientBackgroundColorSet[0]}
           items={tokenGroupBalanceItems}
           layoutHeader={listHeaderNode}
           listActions={actionsNode}

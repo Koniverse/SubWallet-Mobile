@@ -32,7 +32,7 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           prefix={startWithSymbol ? (symbol ? symbol : '$') : undefined}
           suffix={!startWithSymbol ? (symbol ? symbol : '$') : undefined}
           size={38}
-          textStyle={{ ...FontSemiBold, lineHeight: 46 }}
+          textStyle={{ ...FontSemiBold, lineHeight: 20, paddingTop: 28 }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}
         />

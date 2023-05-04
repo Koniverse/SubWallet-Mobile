@@ -1,5 +1,13 @@
 import React, { useMemo } from 'react';
-import { ListRenderItem, ListRenderItemInfo, RefreshControl, ScrollView, StyleProp, View } from 'react-native';
+import {
+  ListRenderItem,
+  ListRenderItemInfo,
+  RefreshControl,
+  ScrollView,
+  StyleProp,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { ColorMap } from 'styles/color';
 import { Coins } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
@@ -15,15 +23,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import LinearGradient from 'react-native-linear-gradient';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 interface Props {
   layoutHeader: React.ReactElement;
   listActions?: React.ReactElement;
-  stickyBackground?: [string, string];
-  stickyNode?: React.ReactElement;
+  style?: StyleProp<ViewStyle>;
   layoutFooter?: React.ReactElement;
   items: TokenBalanceItemType[];
   renderItem: ListRenderItem<TokenBalanceItemType>;
@@ -56,10 +60,8 @@ export const TokensLayout = ({
   renderItem,
   isRefreshing,
   refresh,
-  stickyBackground,
-  stickyNode,
+  style,
 }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
   const isAnimating = useSharedValue(0);
 
@@ -149,7 +151,7 @@ export const TokensLayout = ({
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={[{ flex: 1 }, style]}>
       <Animated.View style={[{ paddingHorizontal: 16 }, stickyHeaderInvisibleStyles]}>{listActions}</Animated.View>
 
       <AnimatedFlatlist
