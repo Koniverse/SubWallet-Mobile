@@ -16,7 +16,7 @@ import ActivityIndicatorStyles from './style';
 
 interface ActivityIndicatorProps {
   size: number;
-  indicatorColor: string;
+  indicatorColor?: string;
 }
 
 const ActivityIndicator: React.FC<ActivityIndicatorProps> = ({ size = 16, indicatorColor = '#fff' }) => {
