@@ -16,6 +16,8 @@ interface Props extends FieldBaseProps {
   autoFocus?: boolean;
   onSubmitField?: () => void;
   defaultValue?: string;
+  showEyeButton?: boolean;
+  placeholder?: string;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -48,6 +50,8 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
     isBusy,
     autoFocus,
     onSubmitField,
+    showEyeButton = true,
+    placeholder,
     ...fieldBase
   } = passwordFieldProps;
   const [isShowPassword, setShowPassword] = useState<boolean>(false);
@@ -73,22 +77,27 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
             textContentType="oneTimeCode"
             editable={!isBusy}
             selectTextOnFocus={!isBusy}
+            placeholder={placeholder}
           />
 
-          {isShowPassword ? (
-            <TouchableOpacity
-              disabled={isBusy}
-              activeOpacity={BUTTON_ACTIVE_OPACITY}
-              onPress={() => setShowPassword(false)}>
-              <EyeSlash color={isBusy ? ColorMap.disabled : ColorMap.light} weight={'bold'} size={20} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              disabled={isBusy}
-              activeOpacity={BUTTON_ACTIVE_OPACITY}
-              onPress={() => setShowPassword(true)}>
-              <Eye color={isBusy ? ColorMap.disabled : ColorMap.light} weight={'bold'} size={20} />
-            </TouchableOpacity>
+          {showEyeButton && (
+            <>
+              {isShowPassword ? (
+                <TouchableOpacity
+                  disabled={isBusy}
+                  activeOpacity={BUTTON_ACTIVE_OPACITY}
+                  onPress={() => setShowPassword(false)}>
+                  <EyeSlash color={isBusy ? ColorMap.disabled : ColorMap.light} weight={'bold'} size={20} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  disabled={isBusy}
+                  activeOpacity={BUTTON_ACTIVE_OPACITY}
+                  onPress={() => setShowPassword(true)}>
+                  <Eye color={isBusy ? ColorMap.disabled : ColorMap.light} weight={'bold'} size={20} />
+                </TouchableOpacity>
+              )}
+            </>
           )}
         </View>
       </FieldBase>

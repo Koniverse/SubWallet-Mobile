@@ -1,50 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, ListRenderItemInfo, Platform, StyleProp, Text, View } from 'react-native';
-import { InputFile } from 'components/InputFile';
+import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
+import AvatarGroup from 'components/common/AvatarGroup';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, ListRenderItemInfo, Platform, View } from 'react-native';
+import { InputFile } from 'components/common/Field/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
 import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
 import * as RNFS from 'react-native-fs';
-import { SubmitButton } from 'components/SubmitButton';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from 'messaging/index';
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
 import { useNavigation } from '@react-navigation/native';
-import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { RootNavigationProps } from 'routes/index';
 import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
-import { Account } from 'components/Account';
-import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { backToHome } from 'utils/navigation';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { toShort } from 'utils/index';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { Button } from 'components/design-system-ui';
+import { Button, Icon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
+import createStyles from './styles';
 
-const footerAreaStyle: StyleProp<any> = {
-  marginTop: 8,
-  marginHorizontal: 16,
-  ...MarginBottomForSubmitButton,
-};
-
-const itemWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  borderRadius: 5,
-  paddingHorizontal: 16,
-};
-
-const formConfig = {
+const formConfig: FormControlConfig = {
   file: {
-    name: '',
+    name: 'file',
     value: '',
   },
-  fileConfig: {
-    name: '',
+  fileName: {
+    name: 'fileName',
     value: '',
   },
   accountAddress: {
@@ -53,7 +41,7 @@ const formConfig = {
   },
   password: {
     require: true,
-    name: i18n.common.walletPassword,
+    name: i18n.common.currentPassword,
     value: '',
     validateFunc: validatePassword,
   },
@@ -84,18 +72,21 @@ function formatJsonFile(jsonFile: any) {
   }
 }
 
-const ViewStep = {
-  PASTE_JSON: 1,
-  ENTER_PW: 2,
-};
-
 export const RestoreJson = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
+  const theme = useSubWalletTheme().swThemes;
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const [isShowPasswordField, setIsShowPasswordField] = useState(false);
   const [isFileError, setFileError] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
-  const [currentViewStep, setCurrentViewStep] = useState<number>(1);
+  const [visible, setVisible] = useState(false);
+
+  const addresses = useMemo(() => accountsInfo.map(acc => acc.address), [accountsInfo]);
+
   useHandlerHardwareBackPress(isBusy);
   const _onRestore = (formState: FormState) => {
     const password = formState.data.password;
@@ -138,15 +129,10 @@ export const RestoreJson = () => {
         onUpdateErrors('password')([i18n.warningMessage.unableDecode]);
       });
   };
+
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: _onRestore,
   });
-
-  useEffect(() => {
-    if (currentViewStep === ViewStep.ENTER_PW) {
-      focus('password')();
-    }
-  }, [currentViewStep, focus]);
 
   const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
     try {
@@ -171,6 +157,7 @@ export const RestoreJson = () => {
             setFileError(true);
           });
       }
+      setIsShowPasswordField(true);
     } catch (e) {
       console.error(e);
       setFileError(true);
@@ -185,10 +172,11 @@ export const RestoreJson = () => {
     setFileError(false);
     onUpdateErrors('password')([]);
     setAccountsInfo(() => []);
+    setIsShowPasswordField(false);
 
     fileInfo = fileInfo as Array<DocumentPickerResponse>;
     const fileUri = Platform.OS === 'ios' ? decodeURIComponent(fileInfo[0].uri) : fileInfo[0].uri;
-    onChangeValue('fileConfig')(`${fileInfo[0].name} (${fileInfo[0].size} bytes)`);
+    onChangeValue('fileName')(`${fileInfo[0].name}`);
     RNFS.readFile(fileUri, 'ascii')
       .then(res => {
         onChangeValue('file')(res);
@@ -199,85 +187,130 @@ export const RestoreJson = () => {
       });
   };
 
-  const renderAccount = ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
-    return (
-      <View key={item.address} style={[itemWrapperStyle, { marginTop: 8 }]}>
-        <Account address={item.address} name={item.name} showCopyBtn={false} showSelectedIcon={false} isDisabled />
-      </View>
-    );
-  };
+  const renderAccount = useCallback(
+    ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
+      return (
+        <AccountItemWithName
+          key={item.address}
+          avatarSize={40}
+          address={item.address}
+          accountName={item.name}
+          direction="vertical"
+          customStyle={{
+            container: styles.accountItem,
+          }}
+        />
+      );
+    },
+    [styles.accountItem],
+  );
 
-  const _onPressBack = () => {
-    if (currentViewStep === ViewStep.PASTE_JSON) {
-      navigation.goBack();
-    } else {
-      setCurrentViewStep(ViewStep.PASTE_JSON);
-    }
-  };
+  const _onPressBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
   const onPressSubmitButton = () => {
-    if (currentViewStep === ViewStep.PASTE_JSON) {
-      setCurrentViewStep(ViewStep.ENTER_PW);
-    } else {
-      _onRestore(formState);
-    }
+    _onRestore(formState);
   };
 
-  return (
-    <ContainerWithSubHeader title={i18n.title.importFromJson} onPressBack={_onPressBack} disabled={isBusy}>
-      <View style={{ flex: 1 }}>
-        {currentViewStep === ViewStep.PASTE_JSON && (
-          <View style={{ ...ContainerHorizontalPadding, flex: 1, paddingTop: 26 }}>
-            <InputFile onChangeResult={_onChangeFile} />
-            {isFileError && (
-              <Warning
-                style={{ marginBottom: 8 }}
-                title={i18n.warningTitle.error}
-                message={i18n.warningMessage.invalidJsonFile}
-                isDanger
-              />
-            )}
-            {!!formState.data.fileConfig && (
-              <View style={[itemWrapperStyle, { paddingVertical: 16 }]}>
-                <Text style={{ ...sharedStyles.mainText, color: ColorMap.light, ...FontMedium }}>
-                  {toShort(formState.data.fileConfig, 10, 25)}
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
+  const openModal = useCallback(() => {
+    setVisible(true);
+  }, []);
 
-        {currentViewStep === ViewStep.ENTER_PW && (
-          <View style={{ flex: 1, paddingTop: 18 }}>
-            <View style={{ flexShrink: 1 }}>
-              <FlatList data={accountsInfo} renderItem={renderAccount} style={ContainerHorizontalPadding} />
-              <View style={{ paddingHorizontal: 16, marginTop: 8 }}>
+  const hideModal = useCallback(() => {
+    setVisible(false);
+  }, []);
+
+  useEffect(() => {
+    let amount = true;
+    if (isShowPasswordField) {
+      setTimeout(() => {
+        if (amount) {
+          focus('password')();
+        }
+      }, 300);
+    }
+
+    return () => {
+      amount = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShowPasswordField]);
+
+  return (
+    <ContainerWithSubHeader
+      title={i18n.title.importFromJson}
+      onPressBack={_onPressBack}
+      disabled={isBusy}
+      rightIcon={X}
+      onPressRightIcon={goHome}>
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <Typography.Text style={styles.title}>
+            Please upload the .json file you exported from Polkadot.js
+          </Typography.Text>
+          <InputFile onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
+          {isFileError && (
+            <Warning
+              style={styles.error}
+              title={i18n.warningTitle.error}
+              message={i18n.warningMessage.invalidJsonFile}
+              isDanger
+            />
+          )}
+          {!!accountsInfo.length && (
+            <View style={styles.accountPreview}>
+              {accountsInfo.length > 1 ? (
+                <SelectItem
+                  leftItemIcon={<AvatarGroup addresses={addresses} />}
+                  label={`Import ${String(accountsInfo.length).padStart(2, '0')} accounts`}
+                  onPress={openModal}
+                  rightIcon={<Icon phosphorIcon={DotsThree} size="sm" />}
+                />
+              ) : (
+                <SelectItem leftItemIcon={<AvatarGroup addresses={addresses} />} label={accountsInfo[0].name} />
+              )}
+            </View>
+          )}
+          {isShowPasswordField && (
+            <>
+              <Typography.Text style={styles.description}>
+                Please enter the password you set when creating your polkadot.js account
+              </Typography.Text>
+              <View style={styles.passwordContainer}>
                 <PasswordField
                   ref={formState.refs.password}
-                  label={formState.labels.password}
                   defaultValue={formState.data.password}
                   onChangeText={onChangeValue('password')}
                   errorMessages={formState.errors.password}
                   onSubmitField={onSubmitField('password')}
+                  showEyeButton={false}
+                  outerStyle={styles.passwordField}
+                  placeholder={'Current password'}
                 />
               </View>
-            </View>
-          </View>
-        )}
+            </>
+          )}
+        </View>
 
-        <View style={footerAreaStyle}>
+        <View style={styles.footer}>
           <Button
             loading={isBusy}
+            icon={<Icon phosphorIcon={FileArrowDown} weight="fill" />}
             onPress={onPressSubmitButton}
             disabled={
-              currentViewStep === ViewStep.PASTE_JSON
-                ? !formState.data.file || !formState.errors.file || isFileError
-                : isFileError || !formState.isValidated.password || !formState.data.password || !formState.data.file
+              !formState.data.file ||
+              isFileError ||
+              !formState.isValidated.password ||
+              !formState.data.password
             }>
-            {currentViewStep === ViewStep.PASTE_JSON ? i18n.common.continue : i18n.common.importAccount}
+            {i18n.common.importAccount}
           </Button>
         </View>
       </View>
+      <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={'Account import list'}>
+        <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
+      </SwModal>
     </ContainerWithSubHeader>
   );
 };

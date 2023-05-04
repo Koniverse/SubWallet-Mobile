@@ -84,7 +84,9 @@ export const en = {
     subscribing: '................... Subscribing .................',
     sendMessage: 'Send message',
     allAccounts: 'All accounts',
-    inputFileLabel: 'Paste your JSON file',
+    importJsonFile: 'Import from Polkadot.js',
+    importJsonDescription: 'Please upload the .json file you  exported  from Polkadot.js',
+    replaceJsonFile: 'Upload other to replace file',
     message: 'Message',
     input: 'Input',
     max: 'Max',
@@ -228,6 +230,7 @@ export const en = {
     destinationChain: 'Destination chain',
     viewOnExplorer: 'View on explorer',
     delete: 'Delete',
+    currentPassword: 'Current password',
   },
   title: {
     accountDetails: 'Account details',
