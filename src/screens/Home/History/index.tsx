@@ -360,14 +360,20 @@ function History({
   }) => React.ReactElement | null = useCallback(
     (info: { section: SectionListData<TransactionHistoryDisplayItem> }) => {
       return (
-        <View style={{ paddingTop: theme.sizeXS }}>
+        <View
+          style={{
+            paddingTop: theme.sizeXS,
+            backgroundColor: theme.colorBgDefault,
+            marginBottom: -theme.sizeXS,
+            paddingBottom: theme.sizeXS,
+          }}>
           <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3, ...FontMedium }}>
             {info.section.title.split('|')[1]}
           </Typography.Text>
         </View>
       );
     },
-    [theme.colorTextLight3, theme.sizeXS],
+    [theme.colorBgDefault, theme.colorTextLight3, theme.sizeXS],
   );
 
   const sortSection = useCallback<SortFunctionInterface<SectionItem<TransactionHistoryDisplayItem>>>((a, b) => {
@@ -404,6 +410,7 @@ function History({
   return (
     <>
       <FlatListScreen
+        autoFocus={false}
         showLeftBtn={true}
         items={historyList}
         title={i18n.title.history}

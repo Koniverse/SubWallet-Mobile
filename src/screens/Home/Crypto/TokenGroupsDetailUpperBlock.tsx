@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
-import { ArrowFatLineDown, CaretLeft, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
+import { ArrowFatLinesDown, CaretLeft, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import { Button, Icon, Typography } from 'components/design-system-ui';
@@ -81,18 +81,18 @@ export const TokenGroupsDetailUpperBlock = ({
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
-          icon={ArrowFatLineDown}
+          icon={<Icon weight="duotone" phosphorIcon={ArrowFatLinesDown} />}
           onPress={onOpenReceive}
           buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />
         <ActionButton
-          icon={PaperPlaneTilt}
+          icon={<Icon weight="duotone" phosphorIcon={PaperPlaneTilt} />}
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />
         <ActionButton
           disabled={!isSupportBuyTokens}
-          icon={ShoppingCartSimple}
+          icon={<Icon weight="duotone" phosphorIcon={ShoppingCartSimple} />}
           onPress={onOpenBuyTokens}
           buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />

@@ -24,10 +24,12 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { keyringLock } from '../../messaging';
 import { ActivityIndicator } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
+  const theme = useSubWalletTheme().swThemes;
 
   return (
     <Tab.Navigator
@@ -44,7 +46,7 @@ const MainScreen = () => {
               ...customStyle,
               // @ts-ignore
               borderTopWidth: 2,
-              borderTopColor: ColorMap.secondary,
+              borderTopColor: 'transparent',
               marginTop: -2,
             };
           }
@@ -64,10 +66,11 @@ const MainScreen = () => {
         tabBarStyle: {
           paddingTop: 0,
           paddingBottom: 0,
-          backgroundColor: ColorMap.dark1,
+          backgroundColor: theme.colorBgSecondary,
           borderTopWidth: 1,
           paddingLeft: 16,
           paddingRight: 16,
+          borderTopColor: theme.colorBgBorder,
           height: BOTTOM_BAR_HEIGHT + (insets.bottom ? insets.bottom - 15 : insets.bottom),
         },
         tabBarActiveTintColor: ColorMap.light,

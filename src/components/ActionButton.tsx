@@ -2,14 +2,13 @@ import React from 'react';
 import { StyleProp, TouchableOpacityProps, View, ViewStyle } from 'react-native';
 import Text from '../components/Text';
 import { FontMedium } from 'styles/sharedStyles';
-import { Button, Icon } from 'components/design-system-ui';
+import { Button } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { IconProps } from 'phosphor-react-native';
 
 interface Props extends TouchableOpacityProps {
   label?: string;
-  icon: React.ElementType<IconProps>;
+  icon: React.ReactNode;
   buttonWrapperStyle?: StyleProp<ViewStyle>;
 }
 
@@ -33,7 +32,7 @@ const ActionButton = (actionButtonProps: Props) => {
           shape={'squircle'}
           size={'sm'}
           disabled={!!disabled}
-          icon={<Icon phosphorIcon={icon} weight={'bold'} />}
+          icon={icon}
           // @ts-ignore
           onPress={() => onPress && onPress()}
         />

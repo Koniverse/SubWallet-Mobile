@@ -207,7 +207,12 @@ export const TokenGroupsDetail = ({
       <>
         <Header />
 
-        <TokensLayout items={tokenBalanceItems} layoutHeader={listHeaderNode} renderItem={renderItem} />
+        <TokensLayout
+          style={{ marginTop: 50 }}
+          items={tokenBalanceItems}
+          layoutHeader={listHeaderNode}
+          renderItem={renderItem}
+        />
 
         <TokenDetailModal
           currentTokenInfo={currentTokenInfo}

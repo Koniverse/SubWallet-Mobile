@@ -24,6 +24,7 @@ export default (theme: ThemeTypes) =>
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       paddingHorizontal: theme.paddingXS,
       color: theme.colorTextLight1,
+      maxWidth: 120,
       ...FontSemiBold,
     },
     accountAddressStyle: {
