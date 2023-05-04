@@ -28,7 +28,7 @@ interface Props {
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString));
+  return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
 };
 
 const renderListEmptyComponent = () => {
