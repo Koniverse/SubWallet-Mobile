@@ -23,7 +23,6 @@ import { RootStackParamList } from 'routes/index';
 import { Home } from 'screens/Home';
 import { AccountsScreen } from 'screens/AccountsScreen';
 import { AccountDetail } from 'screens/Account/AccountDetail';
-import { RemoveAccount } from 'screens/RemoveAccount';
 import { RestoreJson } from 'screens/Account/RestoreJson';
 import { ImportSecretPhrase } from 'screens/Account/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
@@ -297,7 +296,6 @@ export const App = () => {
                               <Stack.Screen name="CreateAccount" component={CreateAccount} />
                               <Stack.Screen name="EditAccount" component={AccountDetail} />
                               <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                              <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                               <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
                               <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
                               <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />

@@ -299,10 +299,7 @@ export const RestoreJson = () => {
             icon={<Icon phosphorIcon={FileArrowDown} weight="fill" />}
             onPress={onPressSubmitButton}
             disabled={
-              !formState.data.file ||
-              isFileError ||
-              !formState.isValidated.password ||
-              !formState.data.password
+              !formState.data.file || isFileError || !formState.isValidated.password || !formState.data.password
             }>
             {i18n.common.importAccount}
           </Button>

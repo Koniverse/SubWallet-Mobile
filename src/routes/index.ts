@@ -26,11 +26,11 @@ export type RootStackParamList = {
       | 'ConnectParitySigner'
       | 'ConnectKeystone'
       | 'AttachReadOnly';
-    state?: string;
+    state?: string[];
   };
   ChangePassword: undefined;
   MigratePassword: undefined;
-  CreateAccount: { keyTypes?: KeypairType; isBack?: boolean };
+  CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
   QrScanner: undefined;
   AccountsScreen: undefined;
   EditAccount: { address: string; name: string };

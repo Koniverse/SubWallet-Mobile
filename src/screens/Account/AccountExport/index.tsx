@@ -216,7 +216,7 @@ export const AccountExport = ({
   }, [currentViewStep, exportSingle, selectedTypes]);
 
   if (!account) {
-    return;
+    return null;
   }
 
   return (
