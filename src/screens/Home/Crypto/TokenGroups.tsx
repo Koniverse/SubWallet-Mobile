@@ -139,7 +139,7 @@ export const TokenGroups = () => {
   }, []);
 
   const onOpenHistoryScreen = useCallback(() => {
-    navigation.navigate('History');
+    navigation.navigate('History', {});
   }, [navigation]);
 
   const actionsNode = useMemo(() => {
