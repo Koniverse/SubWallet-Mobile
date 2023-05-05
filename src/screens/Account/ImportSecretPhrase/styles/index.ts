@@ -1,6 +1,5 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
-import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {

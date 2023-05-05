@@ -1,6 +1,5 @@
 import { ConfirmationContent } from 'components/common/Confirmation';
 import React from 'react';
-import { View } from 'react-native';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { RequestBondingSubmit, StakingType } from '@subwallet/extension-base/background/KoniTypes';

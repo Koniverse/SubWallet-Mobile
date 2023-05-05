@@ -37,7 +37,7 @@ import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import {RootRouteProps, RootStackParamList, TransactionActionProps} from './routes';
+import { RootRouteProps, RootStackParamList, TransactionActionProps } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -54,7 +54,7 @@ import withPageWrapper from 'components/pageWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
-import TransactionScreen from "screens/Transaction/TransactionScreen";
+import TransactionScreen from 'screens/Transaction/TransactionScreen';
 
 interface Props {
   isAppReady: boolean;

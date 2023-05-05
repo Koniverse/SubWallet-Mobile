@@ -1,5 +1,5 @@
 import React from 'react';
-import {KeyboardAvoidingView, Platform, SafeAreaView} from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import { ScreenContainer } from 'components/ScreenContainer';
 import TransactionHeader from 'screens/Transaction/parts/TransactionHeader';
 import { useNavigation } from '@react-navigation/native';

@@ -3,7 +3,6 @@ import { Image, SafeAreaView, View } from 'react-native';
 import Text from 'components/Text';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { PinCodeField } from 'components/PinCodeField';
-import { Warning } from 'components/Warning';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
