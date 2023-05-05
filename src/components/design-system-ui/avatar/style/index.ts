@@ -12,6 +12,7 @@ export default (theme: ThemeTypes) =>
       alignItems: 'center',
       borderWidth: 1,
       borderColor: theme.colorPrimary,
+      backgroundColor: theme.colorBgSecondary,
       padding: 2,
       borderRadius: 999,
     },

@@ -56,7 +56,7 @@ const Avatar: React.FC<SWLogoProps> = ({ theme, size = 40, value }) => {
     );
   }
   return (
-    <View style={[_style.container, { borderWidth: size / 20 }]}>
+    <View style={[_style.container, { borderWidth: size / 20, width: size, height: size }]}>
       <Identicon value={formattedAddress} size={size - 8} theme="polkadot" />
     </View>
   );
