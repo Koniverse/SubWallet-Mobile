@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { InitSecretPhrase } from 'screens/CreateAccount/InitSecretPhrase';
-import { VerifySecretPhrase } from 'screens/CreateAccount/VerifySecretPhrase';
+import { InitSecretPhrase } from 'screens/Account/CreateAccount/InitSecretPhrase';
+import { VerifySecretPhrase } from 'screens/Account/CreateAccount/VerifySecretPhrase';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { createAccountSuriV2, createSeedV2 } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
@@ -97,7 +97,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
               <InitSecretPhrase seed={seed} onPressSubmit={onPressSubmitInitSecretPhrase} />
             )}
             {currentViewStep === ViewStep.VERIFY_SP && (
-              <VerifySecretPhrase seed={seed} onPressSubmit={onCreateAccount} />
+              <VerifySecretPhrase seed={seed} onPressSubmit={onCreateAccount} isBusy={isBusy} />
             )}
           </>
         )}

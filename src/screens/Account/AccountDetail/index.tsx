@@ -156,7 +156,7 @@ export const AccountDetail = ({
     onPasswordComplete,
     visible: unlockVisible,
     onHideModal: onHideUnlockModal,
-  } = useUnlockModal(onDerive);
+  } = useUnlockModal();
 
   const {
     onPress: onPressDelete,
@@ -233,7 +233,7 @@ export const AccountDetail = ({
             contentAlign="left"
             type="secondary"
             loading={deriving}
-            onPress={onPressDerive}>
+            onPress={onPressDerive(onDerive)}>
             Derive an account
           </Button>
           <Button

@@ -1,5 +1,7 @@
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import AvatarGroup from 'components/common/AvatarGroup';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -221,6 +223,8 @@ export const RestoreJson = () => {
     setVisible(false);
   }, []);
 
+  const { visible: unlockVisible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+
   useEffect(() => {
     let amount = true;
     if (isShowPasswordField) {
@@ -297,7 +301,7 @@ export const RestoreJson = () => {
           <Button
             loading={isBusy}
             icon={<Icon phosphorIcon={FileArrowDown} weight="fill" />}
-            onPress={onPressSubmitButton}
+            onPress={onPressSubmit(onPressSubmitButton)}
             disabled={
               !formState.data.file || isFileError || !formState.isValidated.password || !formState.data.password
             }>
@@ -308,6 +312,7 @@ export const RestoreJson = () => {
       <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={'Account import list'}>
         <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
       </SwModal>
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideModal} />
     </ContainerWithSubHeader>
   );
 };

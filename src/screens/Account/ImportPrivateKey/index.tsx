@@ -1,3 +1,5 @@
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
@@ -70,6 +72,8 @@ export const ImportPrivateKey = () => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(privateKeyFormConfig, {
     onSubmitForm: _onImport,
   });
+
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
 
   useEffect(() => {
     let amount = true;
@@ -159,10 +163,11 @@ export const ImportPrivateKey = () => {
             }
             disabled={!checkValidateForm(formState.isValidated) || validating}
             loading={validating || isBusy}
-            onPress={_onImport}>
+            onPress={onPressSubmit(_onImport)}>
             {'Import account'}
           </Button>
         </View>
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </SubScreenContainer>
   );

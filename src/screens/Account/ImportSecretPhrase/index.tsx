@@ -1,10 +1,9 @@
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleProp, View } from 'react-native';
-import Text from 'components/Text';
+import { ScrollView, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { ColorMap } from 'styles/color';
-import { FontMedium, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { Textarea } from 'components/Textarea';
 import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -132,6 +131,8 @@ export const ImportSecretPhrase = () => {
     [formState.data.seed, formState.isValidated.seed, isBusy],
   );
 
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+
   return (
     <ContainerWithSubHeader
       onPressBack={onPressBack}
@@ -168,10 +169,11 @@ export const ImportSecretPhrase = () => {
             }
             disabled={disabled || validating}
             loading={validating || isBusy}
-            onPress={_onImportSeed}>
+            onPress={onPressSubmit(_onImportSeed)}>
             {'Import account'}
           </Button>
         </View>
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </ContainerWithSubHeader>
   );

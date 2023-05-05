@@ -10,7 +10,6 @@ export interface ComponentStyle {
   blockText: TextStyle;
   blockTitle: TextStyle;
   phraseBlock: ViewStyle;
-  seedWord: ViewStyle;
   introWarning: ViewStyle;
   rsWarning: ViewStyle;
   copyArea: ViewStyle;
@@ -56,15 +55,7 @@ export default (theme: ThemeTypes) => {
       textTransform: 'uppercase',
     },
     phraseBlock: {
-      paddingLeft: 14,
-      paddingRight: 14,
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      marginBottom: 16,
-      justifyContent: 'center',
-    },
-    seedWord: {
-      margin: 4,
+      gap: theme.size,
     },
     introWarning: {
       marginBottom: theme.margin,

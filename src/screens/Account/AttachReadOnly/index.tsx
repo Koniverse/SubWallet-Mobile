@@ -1,7 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
+import useCheckCamera from 'hooks/common/useCheckCamera';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
@@ -9,12 +12,10 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Eye, X } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, ScrollView, View } from 'react-native';
-import { RESULTS } from 'react-native-permissions';
 import { RootNavigationProps } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import { backToHome } from 'utils/navigation';
 import { readOnlyScan } from 'utils/scanner/attach';
-import { requestCameraPermission } from 'utils/permission/camera';
 import { createAccountExternalV2 } from 'messaging/index';
 import { sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -63,12 +64,10 @@ const AttachReadOnly = () => {
     backToHome(goHome, true);
   }, [goHome]);
 
-  const onOpenScanner = useCallback(async () => {
-    const result = await requestCameraPermission();
+  const checkCamera = useCheckCamera();
 
-    if (result === RESULTS.GRANTED) {
-      setIsScanning(true);
-    }
+  const onOpenScanner = useCallback(async () => {
+    setIsScanning(true);
   }, []);
 
   const onCloseScanner = useCallback(() => {
@@ -173,6 +172,8 @@ const AttachReadOnly = () => {
     [formState.refs.address],
   );
 
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
@@ -195,7 +196,7 @@ const AttachReadOnly = () => {
             isValidValue={formState.isValidated.address}
             onSubmitField={onSubmitField('address')}
             onChange={onChangeAddress}
-            onPressQrButton={onOpenScanner}
+            onPressQrButton={checkCamera(onOpenScanner)}
             containerStyle={sharedStyles.mb8}
             showAvatar={true}
             disable={isBusy}
@@ -208,12 +209,13 @@ const AttachReadOnly = () => {
           <Button
             icon={<Icon phosphorIcon={Eye} weight="fill" />}
             loading={isBusy}
-            onPress={handleSubmit}
+            onPress={onPressSubmit(handleSubmit)}
             disabled={errors.length > 0 || !formState.data.address}>
             {i18n.title.attachReadonlyAccount}
           </Button>
         </View>
       </View>
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </ContainerWithSubHeader>
   );
 };

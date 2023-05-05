@@ -211,14 +211,14 @@ const ApplyMasterPassword = () => {
     }
   }, []);
 
-  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal(onComplete);
+  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal();
 
   const onPressActionButton = useCallback(
     (action: SelectedActionType) => {
       selectedAction.current = action;
-      onPress().catch(noop).finally(noop);
+      onPress(onComplete)()?.catch(noop).finally(noop);
     },
-    [onPress],
+    [onComplete, onPress],
   );
 
   const renderFooterButton = useCallback(() => {

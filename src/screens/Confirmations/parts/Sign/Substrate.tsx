@@ -103,7 +103,7 @@ export const SubstrateSignArea = (props: Props) => {
     setIsScanning(false);
   }, []);
 
-  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal(onApprovePassword);
+  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal();
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -112,11 +112,11 @@ export const SubstrateSignArea = (props: Props) => {
         break;
       default:
         setLoading(true);
-        onConfirmPassword().catch(() => {
+        onConfirmPassword(onApprovePassword)()?.catch(() => {
           setLoading(false);
         });
     }
-  }, [onConfirmPassword, onConfirmQr, signMode]);
+  }, [onApprovePassword, onConfirmPassword, onConfirmQr, signMode]);
 
   const onSuccess = useCallback(
     (sig: SigData) => {
