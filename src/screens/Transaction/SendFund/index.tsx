@@ -477,8 +477,6 @@ export const SendFund = ({
     onError,
   ]);
 
-  const goHome = useGoHome();
-
   useEffect(() => {
     if (tokenItems.length) {
       if (!asset) {
