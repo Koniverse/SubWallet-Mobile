@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { ActivityIndicator, ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/useLazyList';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import { ActivityIndicator } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 export type SectionItem<T> = { title: string; data: T[] };
 
@@ -25,11 +27,6 @@ interface Props<T> {
   loading?: boolean;
 }
 
-const IndicatorStyle: StyleProp<any> = {
-  width: '100%',
-  height: '100%',
-};
-
 export function LazySectionList<T>({
   items,
   renderListEmptyComponent,
@@ -46,6 +43,7 @@ export function LazySectionList<T>({
   sortItemFunction,
   sortSectionFunction,
 }: Props<T>) {
+  const theme = useSubWalletTheme().swThemes;
   const sectionListRef = useRef<SectionList>(null);
   const filteredItems = useMemo(() => {
     let searchItems = searchFunction ? searchFunction(items, searchString) : items;
@@ -113,7 +111,11 @@ export function LazySectionList<T>({
   };
 
   if (loading) {
-    return <ActivityIndicator style={IndicatorStyle} size={'large'} animating={true} />;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
+      </View>
+    );
   }
 
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useGetBalance } from 'hooks/balance';
 import { Text, View } from 'react-native';
-import {ActivityIndicator, Number, Typography } from 'components/design-system-ui';
+import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 
@@ -36,7 +36,7 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
       </Text>
       {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}
       {error && (
-        <Typography.Text size={'md'} ellipsis style={{ color: theme.colorError }}>
+        <Typography.Text ellipsis style={{ fontSize: 14, lineHeight: 22, color: theme.colorError, ...FontMedium }}>
           {error}
         </Typography.Text>
       )}

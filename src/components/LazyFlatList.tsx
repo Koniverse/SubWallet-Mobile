@@ -1,18 +1,12 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import {
-  ActivityIndicator,
-  FlatList,
-  ListRenderItemInfo,
-  RefreshControlProps,
-  StyleProp,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, RefreshControlProps, StyleProp, View, ViewStyle } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/useLazyList';
 import { defaultSortFunc } from 'utils/function';
 import { SortFunctionInterface } from 'types/ui-types';
+import { ActivityIndicator } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props<T> {
   items: T[];
@@ -34,11 +28,6 @@ const ItemSeparatorStyle: StyleProp<ViewStyle> = {
   height: 16,
 };
 
-const IndicatorStyle: StyleProp<any> = {
-  width: '100%',
-  height: '100%',
-};
-
 const ColumnWrapperStyle: StyleProp<ViewStyle> = {
   justifyContent: 'space-between',
 };
@@ -58,6 +47,7 @@ export function LazyFlatList<T>({
   sortFunction = defaultSortFunc,
   isShowListWrapper,
 }: Props<T>) {
+  const theme = useSubWalletTheme().swThemes;
   const flatListRef = useRef<FlatList>(null);
   const filteredItems = useMemo(() => {
     let searchItem = searchFunction ? searchFunction(items, searchString) : items;
@@ -95,7 +85,11 @@ export function LazyFlatList<T>({
   };
 
   if (loading) {
-    return <ActivityIndicator style={IndicatorStyle} size={'large'} animating={true} />;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
+      </View>
+    );
   }
   return (
     <>
