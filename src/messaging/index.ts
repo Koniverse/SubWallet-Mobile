@@ -47,7 +47,6 @@ import {
   NftCollection,
   NftJson,
   NftTransactionRequest,
-  NftTransactionResponse,
   NftTransferExtra,
   NominationPoolInfo,
   NominatorMetadata,
@@ -94,7 +93,6 @@ import {
   RequestSubscribePrice,
   RequestSubscribeStaking,
   RequestSubscribeStakingReward,
-  RequestSubstrateNftSubmitTransaction,
   RequestTransfer,
   RequestTransferCheckReferenceCount,
   RequestTransferCheckSupporting,
@@ -1153,8 +1151,8 @@ export async function subscribeFreeBalance(
 }
 
 export async function substrateNftSubmitTransaction(
-  request: RequestSubstrateNftSubmitTransaction,
-): Promise<NftTransactionResponse> {
+  request: NftTransactionRequest,
+): Promise<SWTransactionResponse> {
   return sendMessage('pri(substrateNft.submitTransaction)', request);
 }
 
