@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StyleProp, Text, View } from 'react-native';
+import { SafeAreaView, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -8,7 +8,7 @@ export interface SWModalProps {
   footer?: React.ReactNode;
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
-  modalStyle?: StyleProp<any>;
+  modalStyle?: StyleProp<ViewStyle>;
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   modalTitle?: string;
@@ -72,9 +72,11 @@ const SwModal = ({
             flex: isFullHeight ? 1 : undefined,
           }}>
           <View style={subWalletModalSeparator} />
-          <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
-            <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
-          </View>
+          {modalTitle && (
+            <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
+            </View>
+          )}
 
           {children}
         </View>

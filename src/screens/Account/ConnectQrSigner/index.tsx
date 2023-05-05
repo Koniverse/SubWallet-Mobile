@@ -4,18 +4,20 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ImageLogosMap } from 'assets/logo';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Image } from 'components/design-system-ui';
 import { SWImageProps } from 'components/design-system-ui/image';
 import DualLogo from 'components/Logo/DualLogo';
 import QrAddressScanner from 'components/Scanner/QrAddressScanner';
 import { SCAN_TYPE } from 'constants/qr';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useModalScanner from 'hooks/qr/useModalScanner';
 import useGoHome from 'hooks/screen/useGoHome';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createAccountExternalV2 } from 'messaging/index';
-import { QrCode } from 'phosphor-react-native';
+import { QrCode, X } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ImageRequireSource, Text, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -92,9 +94,15 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   );
 
   const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSubmit);
+  const {
+    visible: unlockVisible,
+    onPasswordComplete,
+    onPress: onPressSubmit,
+    onHideModal: onHidePasswordModal,
+  } = useUnlockModal();
 
   return (
-    <ContainerWithSubHeader title={title} onPressBack={onBack}>
+    <ContainerWithSubHeader title={title} onPressBack={onBack} rightIcon={X} onPressRightIcon={goHome}>
       <View style={styles.body}>
         <Text style={styles.subTitle}>{subTitle}</Text>
         <View>
@@ -113,11 +121,15 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
         </View>
       </View>
       <View style={styles.footer}>
-        <Button icon={<Icon phosphorIcon={QrCode} weight="fill" />} onPress={onOpenModal} loading={loading}>
+        <Button
+          icon={<Icon phosphorIcon={QrCode} weight="fill" />}
+          onPress={onPressSubmit(onOpenModal)}
+          loading={loading}>
           {loading ? 'Creating' : 'Scan the QR code'}
         </Button>
       </View>
       <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.QR_SIGNER} />
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHidePasswordModal} />
     </ContainerWithSubHeader>
     // </Layout.WithSubHeaderOnly>
   );

@@ -1,6 +1,6 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React from 'react';
-import { Text as RNText, TextStyle } from 'react-native';
+import { StyleProp, Text as RNText, TextStyle } from 'react-native';
 import { TextSizeProps } from './PropsType';
 import TypographyStyles from './style';
 
@@ -8,7 +8,7 @@ export interface TextProps {
   ellipsis?: boolean;
   monospace?: boolean;
   size?: TextSizeProps;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
   children?: React.ReactNode;
 }
 

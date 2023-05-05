@@ -18,7 +18,7 @@ import { isActionFromValidator } from '@subwallet/extension-base/koni/api/stakin
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';

@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontMedium } from 'styles/sharedStyles';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 export interface SelectAccountTypeStyles {
   titleStyle: TextStyle;
@@ -12,7 +12,7 @@ export default (theme: ThemeTypes) =>
       fontSize: theme.fontSize,
       lineHeight: theme.lineHeight * theme.fontSize,
       color: theme.colorTextLight4,
-      ...FontMedium,
+      ...FontSemiBold,
       paddingBottom: theme.padding,
     },
   });

@@ -1,7 +1,7 @@
 import { PasswordField } from 'components/Field/Password';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { ColorMap } from 'styles/color';
@@ -34,7 +34,7 @@ const TitleTextStyle: StyleProp<TextStyle> = {
 };
 
 const PasswordContainerStyle: StyleProp<ViewStyle> = {
-  backgroundColor: ColorMap.dark1,
+  backgroundColor: '#1a1a1a',
   borderRadius: 5,
   marginBottom: 8,
 };
@@ -59,7 +59,9 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
     [onConfirm],
   );
 
-  const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, { onSubmitForm: onSubmit });
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
+    onSubmitForm: onSubmit,
+  });
 
   const handleChangePassword = useCallback(
     (val: string) => {
@@ -74,6 +76,17 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
     const password = formState.data.password;
     onConfirm(password);
   }, [formState.data.password, onConfirm]);
+
+  useEffect(() => {
+    if (!visible) {
+      setErrorArr([]);
+      onChangeValue('password')('');
+      onUpdateErrors('password')([]);
+    } else {
+      focus('password')();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   const errors = [...formState.errors.password, ...(errorArr && errorArr.length ? errorArr : [])];
 

@@ -3,7 +3,7 @@ import { Button, Divider, Icon, SwModal } from 'components/design-system-ui';
 import { Text, View } from 'react-native';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { FadersHorizontal } from 'phosphor-react-native';
-import {MarginBottomForSubmitButton} from "styles/sharedStyles";
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 export type OptionType = {
   label: string;

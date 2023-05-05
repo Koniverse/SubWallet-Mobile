@@ -1,0 +1,318 @@
+import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
+import AvatarGroup from 'components/common/AvatarGroup';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, ListRenderItemInfo, Platform, View } from 'react-native';
+import { InputFile } from 'components/common/Field/InputFile';
+import { KeyringPair$Json } from '@polkadot/keyring/types';
+import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
+import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
+import * as RNFS from 'react-native-fs';
+import { isKeyringPairs$Json } from 'types/typeGuards';
+import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from 'messaging/index';
+import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import { Warning } from 'components/Warning';
+import { PasswordField } from 'components/Field/Password';
+import i18n from 'utils/i18n/i18n';
+import { backToHome } from 'utils/navigation';
+import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import useGoHome from 'hooks/screen/useGoHome';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { Button, Icon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
+import createStyles from './styles';
+
+const formConfig: FormControlConfig = {
+  file: {
+    name: 'file',
+    value: '',
+  },
+  fileName: {
+    name: 'fileName',
+    value: '',
+  },
+  accountAddress: {
+    name: '',
+    value: '',
+  },
+  password: {
+    require: true,
+    name: i18n.common.currentPassword,
+    value: '',
+    validateFunc: validatePassword,
+  },
+};
+
+const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
+  let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
+  jsonFile.accounts.forEach(account => {
+    currentAccountsInfo.push({
+      address: account.address,
+      genesisHash: account.meta.genesisHash,
+      name: account.meta.name,
+    } as ResponseJsonGetAccountInfo);
+  });
+
+  return currentAccountsInfo;
+};
+
+function formatJsonFile(jsonFile: any) {
+  let newJsonFile = jsonFile;
+  if (isKeyringPairs$Json(jsonFile)) {
+    newJsonFile.accounts.forEach((acc: { meta: { genesisHash: string } }) => (acc.meta.genesisHash = ''));
+
+    return newJsonFile;
+  } else {
+    newJsonFile.meta.genesisHash = '';
+    return newJsonFile;
+  }
+}
+
+export const RestoreJson = () => {
+  const navigation = useNavigation<RootNavigationProps>();
+  const goHome = useGoHome();
+  const theme = useSubWalletTheme().swThemes;
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const [isShowPasswordField, setIsShowPasswordField] = useState(false);
+  const [isFileError, setFileError] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
+  const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
+  const [visible, setVisible] = useState(false);
+
+  const addresses = useMemo(() => accountsInfo.map(acc => acc.address), [accountsInfo]);
+
+  useHandlerHardwareBackPress(isBusy);
+  const _onRestore = (formState: FormState) => {
+    const password = formState.data.password;
+    const accountAddress = formState.data.accountAddress;
+    let jsonFile;
+    if (formState.data.file) {
+      jsonFile = JSON.parse(formState.data.file) as KeyringPair$Json | KeyringPairs$Json;
+    }
+
+    if (!jsonFile) {
+      return;
+    }
+    if (!password) {
+      return;
+    }
+
+    const formattedJsonFile = formatJsonFile(jsonFile);
+
+    setIsBusy(true);
+    (isKeyringPairs$Json(formattedJsonFile)
+      ? batchRestoreV2(formattedJsonFile, password, getAccountsInfo(formattedJsonFile), true)
+      : jsonRestoreV2({
+          file: formattedJsonFile,
+          password: password,
+          address: accountAddress,
+          isAllowed: true,
+          withMasterPassword: true,
+        })
+    )
+      .then(() => {
+        setFileError(false);
+        setIsBusy(false);
+        onUpdateErrors('password')([]);
+        setAccountsInfo(() => []);
+        backToHome(goHome);
+      })
+      .catch(e => {
+        setIsBusy(false);
+        console.log(e);
+        onUpdateErrors('password')([i18n.warningMessage.unableDecode]);
+      });
+  };
+
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
+    onSubmitForm: _onRestore,
+  });
+
+  const _onReadFile = (fileContent: KeyringPair$Json | KeyringPairs$Json) => {
+    try {
+      if (isKeyringPairs$Json(fileContent)) {
+        fileContent.accounts.forEach(account => {
+          setAccountsInfo(old => [
+            ...old,
+            {
+              address: account.address,
+              genesisHash: account.meta.genesisHash,
+              name: account.meta.name,
+            } as ResponseJsonGetAccountInfo,
+          ]);
+        });
+      } else {
+        jsonGetAccountInfo(fileContent)
+          .then(accountInfo => {
+            onChangeValue('accountAddress')(accountInfo.address);
+            setAccountsInfo(old => [...old, accountInfo]);
+          })
+          .catch(() => {
+            setFileError(true);
+          });
+      }
+      setIsShowPasswordField(true);
+    } catch (e) {
+      console.error(e);
+      setFileError(true);
+    }
+  };
+
+  const _onChangeFile = (fileInfo: Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null) => {
+    if (!fileInfo || !(fileInfo as Array<DocumentPickerResponse>).length) {
+      return;
+    }
+
+    setFileError(false);
+    onUpdateErrors('password')([]);
+    setAccountsInfo(() => []);
+    setIsShowPasswordField(false);
+
+    fileInfo = fileInfo as Array<DocumentPickerResponse>;
+    const fileUri = Platform.OS === 'ios' ? decodeURIComponent(fileInfo[0].uri) : fileInfo[0].uri;
+    onChangeValue('fileName')(`${fileInfo[0].name}`);
+    RNFS.readFile(fileUri, 'ascii')
+      .then(res => {
+        onChangeValue('file')(res);
+        _onReadFile(JSON.parse(res) as KeyringPair$Json | KeyringPairs$Json);
+      })
+      .catch(() => {
+        setFileError(true);
+      });
+  };
+
+  const renderAccount = useCallback(
+    ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
+      return (
+        <AccountItemWithName
+          key={item.address}
+          avatarSize={40}
+          address={item.address}
+          accountName={item.name}
+          direction="vertical"
+          customStyle={{
+            container: styles.accountItem,
+          }}
+        />
+      );
+    },
+    [styles.accountItem],
+  );
+
+  const _onPressBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const onPressSubmitButton = () => {
+    _onRestore(formState);
+  };
+
+  const openModal = useCallback(() => {
+    setVisible(true);
+  }, []);
+
+  const hideModal = useCallback(() => {
+    setVisible(false);
+  }, []);
+
+  const { visible: unlockVisible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+
+  useEffect(() => {
+    let amount = true;
+    if (isShowPasswordField) {
+      setTimeout(() => {
+        if (amount) {
+          focus('password')();
+        }
+      }, 300);
+    }
+
+    return () => {
+      amount = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShowPasswordField]);
+
+  return (
+    <ContainerWithSubHeader
+      title={i18n.title.importFromJson}
+      onPressBack={_onPressBack}
+      disabled={isBusy}
+      rightIcon={X}
+      onPressRightIcon={goHome}>
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <Typography.Text style={styles.title}>
+            Please upload the .json file you exported from Polkadot.js
+          </Typography.Text>
+          <InputFile onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
+          {isFileError && (
+            <Warning
+              style={styles.error}
+              title={i18n.warningTitle.error}
+              message={i18n.warningMessage.invalidJsonFile}
+              isDanger
+            />
+          )}
+          {!!accountsInfo.length && (
+            <View style={styles.accountPreview}>
+              {accountsInfo.length > 1 ? (
+                <SelectItem
+                  leftItemIcon={<AvatarGroup addresses={addresses} />}
+                  label={`Import ${String(accountsInfo.length).padStart(2, '0')} accounts`}
+                  onPress={openModal}
+                  rightIcon={<Icon phosphorIcon={DotsThree} size="sm" />}
+                />
+              ) : (
+                <SelectItem leftItemIcon={<AvatarGroup addresses={addresses} />} label={accountsInfo[0].name} />
+              )}
+            </View>
+          )}
+          {isShowPasswordField && (
+            <>
+              <Typography.Text style={styles.description}>
+                Please enter the password you set when creating your polkadot.js account
+              </Typography.Text>
+              <View style={styles.passwordContainer}>
+                <PasswordField
+                  ref={formState.refs.password}
+                  defaultValue={formState.data.password}
+                  onChangeText={onChangeValue('password')}
+                  errorMessages={formState.errors.password}
+                  onSubmitField={onSubmitField('password')}
+                  showEyeButton={false}
+                  outerStyle={styles.passwordField}
+                  placeholder={'Current password'}
+                />
+              </View>
+            </>
+          )}
+        </View>
+
+        <View style={styles.footer}>
+          <Button
+            loading={isBusy}
+            icon={<Icon phosphorIcon={FileArrowDown} weight="fill" />}
+            onPress={onPressSubmit(onPressSubmitButton)}
+            disabled={
+              !formState.data.file || isFileError || !formState.isValidated.password || !formState.data.password
+            }>
+            {i18n.common.importAccount}
+          </Button>
+        </View>
+      </View>
+      <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={'Account import list'}>
+        <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
+      </SwModal>
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideModal} />
+    </ContainerWithSubHeader>
+  );
+};
