@@ -6,7 +6,7 @@ const useHandleSubmitTransaction = (
   onDone: (extrinsicHash: string) => void,
   setIgnoreWarnings?: (value: boolean) => void,
 ) => {
-  const { show } = useToast();
+  const { show, hideAll } = useToast();
 
   const onSuccess = useCallback(
     (rs: SWTransactionResponse) => {
@@ -16,6 +16,7 @@ const useHandleSubmitTransaction = (
       console.log('warnings', warnings);
       if (errors.length || warnings.length) {
         if (errors[0]?.message !== 'User reject request') {
+          hideAll();
           show(errors[0]?.message || warnings[0]?.message);
         }
 
@@ -24,15 +25,16 @@ const useHandleSubmitTransaction = (
         onDone(extrinsicHash);
       }
     },
-    [onDone, setIgnoreWarnings, show],
+    [hideAll, onDone, setIgnoreWarnings, show],
   );
 
   const onError = useCallback(
     (error: Error) => {
       console.log('error', error);
+      hideAll();
       show(error.message);
     },
-    [show],
+    [hideAll, show],
   );
 
   return useMemo(
