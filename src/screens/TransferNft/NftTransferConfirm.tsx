@@ -95,7 +95,7 @@ const NftTransferConfirm = ({ route: { params: transferParams } }: NftTransferCo
 
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
-  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
+  const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
   const navigation = useNavigation<RootNavigationProps>();
 
   const network = useGetNetworkJson(networkKey);

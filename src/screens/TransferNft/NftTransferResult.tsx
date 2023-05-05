@@ -17,7 +17,7 @@ const NftTransferResult = ({
   useHandlerHardwareBackPress(true);
 
   const goHome = useGoHome({
-    screen: 'NFT',
+    screen: 'NFTs',
     params: {
       screen: 'CollectionList',
     },

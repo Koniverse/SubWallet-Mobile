@@ -14,7 +14,7 @@ import { ButtonPropsType } from './PropsType';
 import Squircle from 'components/design-system-ui/squircle';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ButtonStyles from './style';
-import {ActivityIndicator} from "components/design-system-ui";
+import { ActivityIndicator } from 'components/design-system-ui';
 
 export interface ButtonProps extends ButtonPropsType, TouchableHighlightProps {
   onPress?: (event?: GestureResponderEvent) => void;
@@ -105,6 +105,7 @@ const Button: React.FC<ButtonProps> = props => {
     .backgroundColor;
 
   const indicatorColor = (StyleSheet.flatten(_style[`${buttonType}RawText`]) as any).color;
+  const disableColor = (StyleSheet.flatten(_style[`${buttonType}DisabledRawText`]) as any).color;
 
   const iconNode = useMemo(() => {
     if (loading) {
@@ -112,11 +113,11 @@ const Button: React.FC<ButtonProps> = props => {
     }
 
     if (typeof icon === 'function') {
-      return icon(indicatorColor);
+      return icon(disabled ? disableColor : indicatorColor);
     }
 
     return icon || null;
-  }, [icon, indicatorColor, loading]);
+  }, [disableColor, disabled, icon, indicatorColor, loading]);
   const buttonNode = (
     <TouchableHighlight
       accessibilityRole="button"
