@@ -10,6 +10,8 @@ export interface QRCodeStyle {
 export default (theme: ThemeTypes) =>
   StyleSheet.create<QRCodeStyle>({
     container: {
+      alignItems: 'center',
+      justifyContent: 'center',
       borderRadius: theme.borderRadiusLG,
       backgroundColor: 'white',
       padding: theme.paddingSM,

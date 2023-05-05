@@ -270,7 +270,7 @@ export const AccountExport = ({
                     </Typography.Text>
                   )}
                   <View style={styles.qrArea}>
-                    <QRCode errorLevel={'Q'} value={qrData} />
+                    <QRCode errorLevel={'Q'} value={qrData} QRSize={4} outerEyesRadius={7} pieceBorderRadius={2} />
                   </View>
                   <View style={styles.copyArea}>
                     <Button
