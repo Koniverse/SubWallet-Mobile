@@ -1,3 +1,5 @@
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
@@ -12,6 +14,7 @@ import { Button } from 'components/design-system-ui';
 interface Props {
   onPressSubmit: () => void;
   seed: string;
+  isBusy: boolean;
 }
 
 const bodyAreaStyle: StyleProp<any> = {
@@ -55,7 +58,7 @@ const isCorrectWord = (selectedWords: SelectedWordType[], seed: string) => {
   return selectedWords.map(item => item.word).join(' ') === seed;
 };
 
-export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
+export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
   const [selectedWords, setSelectedWords] = useState<SelectedWordType[]>([]);
   const [shuffleWords, setShuffleWords] = useState<string[] | null>(null);
   const seedWords: string[] = seed.split(' ');
@@ -96,6 +99,8 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
     );
   };
 
+  const { visible, onPasswordComplete, onPress: onSubmit, onHideModal } = useUnlockModal();
+
   return (
     <View style={sharedStyles.layoutContainer}>
       <View style={bodyAreaStyle}>
@@ -111,10 +116,11 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed }: Props) => {
         <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
       </View>
       <View style={footerAreaStyle}>
-        <Button disabled={!isCorrectWord(selectedWords, seed)} onPress={onPressSubmit}>
+        <Button disabled={!isCorrectWord(selectedWords, seed)} onPress={onSubmit(onPressSubmit)} loading={isBusy}>
           {i18n.common.continue}
         </Button>
       </View>
+      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </View>
   );
 };

@@ -127,22 +127,22 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   }, [request, selectedMap]);
 
   const onAddAccount = useCallback(() => {
-    let types: KeypairType | undefined;
+    let types: KeypairType[];
 
     switch (accountAuthType) {
       case 'substrate':
-        types = SUBSTRATE_ACCOUNT_TYPE;
+        types = [SUBSTRATE_ACCOUNT_TYPE];
         break;
       case 'evm':
-        types = EVM_ACCOUNT_TYPE;
+        types = [EVM_ACCOUNT_TYPE];
         break;
       default:
-        types = undefined;
+        types = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
     }
     navigation.replace('CreateAccount', { keyTypes: types, isBack: true });
   }, [accountAuthType, navigation]);
 
-  const { onPress: onPressCreateOne, onPasswordComplete, visible, onHideModal } = useUnlockModal(onAddAccount);
+  const { onPress: onPressCreateOne, onPasswordComplete, visible, onHideModal } = useUnlockModal();
 
   const onAccountSelect = useCallback(
     (address: string) => {
@@ -237,7 +237,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
-            <Button block={true} onPress={onPressCreateOne} icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
+            <Button
+              block={true}
+              onPress={onPressCreateOne(onAddAccount)}
+              icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
               Create one
             </Button>
             <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />

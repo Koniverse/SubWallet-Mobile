@@ -72,9 +72,11 @@ const SwModal = ({
             flex: isFullHeight ? 1 : undefined,
           }}>
           <View style={subWalletModalSeparator} />
-          <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
-            <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
-          </View>
+          {modalTitle && (
+            <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
+            </View>
+          )}
 
           {children}
         </View>

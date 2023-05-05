@@ -245,7 +245,6 @@ export const AccountCreationArea = ({
       <DeriveAccountModal
         modalVisible={selectAccountDeriveVisible}
         onChangeModalVisible={() => setSelectAccountDeriveVisible(false)}
-        // onConfirm={onSelectAccountTypes}
       />
     </>
   );

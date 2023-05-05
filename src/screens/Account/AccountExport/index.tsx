@@ -1,3 +1,4 @@
+import WordPhrase from 'components/common/WordPhrase';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import useGoHome from 'hooks/screen/useGoHome';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -16,8 +17,6 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { KeyringPair$Json } from '@subwallet/keyring/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CheckCircle, CopySimple, X } from 'phosphor-react-native';
-import { SeedWordDataType } from 'screens/CreateAccount/types';
-import { SeedWord } from 'components/SeedWord';
 import createStyle from './styles';
 
 const ViewStep = {
@@ -62,15 +61,6 @@ export const AccountExport = ({
 
   useHandlerHardwareBackPress(isBusy);
   const account = useGetAccountByAddress(address);
-  const seedItems = useMemo<SeedWordDataType[]>(() => {
-    return seedPhrase.split(' ').map((word, index) => {
-      return {
-        key: `${index}-${word}`,
-        title: word,
-        prefixText: `${index + 1}`.padStart(2, '0'),
-      };
-    });
-  }, [seedPhrase]);
 
   const qrData = useMemo((): string => {
     const prefix = 'secret';
@@ -190,14 +180,9 @@ export const AccountExport = ({
     [account, address, selectedTypes],
   );
 
-  const copySeedPhrase = useCopyClipboard(seedPhrase);
   const copyPrivateKey = useCopyClipboard(privateKey);
   const copyQr = useCopyClipboard(qrData);
   const copyJSON = useCopyClipboard(jsonString);
-
-  const renderSeedWord = (item: SeedWordDataType) => {
-    return <SeedWord style={styles.seedWord} key={item.key} prefixText={item.prefixText} title={item.title} disabled />;
-  };
 
   const onPressDone = () => {
     navigation.goBack();
@@ -269,15 +254,8 @@ export const AccountExport = ({
                       {titleMap[ExportType.SEED_PHRASE]}
                     </Typography.Text>
                   )}
-                  <View style={styles.phraseBlock}>{seedItems.map(renderSeedWord)}</View>
-                  <View style={styles.copyArea}>
-                    <Button
-                      type="ghost"
-                      size="xs"
-                      onPress={copySeedPhrase}
-                      icon={<Icon phosphorIcon={CopySimple} size="md" iconColor={theme.colorTextLight4} />}>
-                      {i18n.common.copyToClipboard}
-                    </Button>
+                  <View style={styles.phraseBlock}>
+                    <WordPhrase seedPhrase={seedPhrase} />
                   </View>
                 </View>
               )}

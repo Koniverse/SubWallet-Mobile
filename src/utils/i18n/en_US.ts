@@ -665,7 +665,7 @@ export const en = {
   },
   warningTitle: {
     doNotSharePrivateKey: 'Do not share your private key!',
-    doNotShareSecretPhrase: 'Do not share your secret phrase!',
+    whatIfLoseRecoveryPhrase: 'What if I lose the recovery phrase?',
     doNotShareJsonFile: 'Do not share your JSON file!',
     warning: 'Warning',
     error: 'Error!',
@@ -678,7 +678,8 @@ export const en = {
     noServiceAvailable: 'No service available',
     noAccountText: "You currently don't have any accounts. Create your first account to get started.",
     privateKeyWarning: 'If someone has your private key they will have full control of your account',
-    secretPhraseWarning: 'If someone gets access to your secret phrase they will have full control of your account',
+    secretPhraseWarning:
+      'There is no way to get back your recovery phrase if you lose it. Make sure you store them at someplace safe which is accessible only to you.',
     unableDecode: 'Unable to decode using the supplied passphrase',
     invalidJsonFile: 'Invalid Json file',
     noPasswordMessage: 'Please fill repeat password',

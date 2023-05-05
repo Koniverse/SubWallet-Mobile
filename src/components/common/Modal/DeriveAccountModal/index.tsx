@@ -4,11 +4,13 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ActivityIndicator, SwModal } from 'components/design-system-ui';
 import { LazyFlatList } from 'components/LazyFlatList';
 import { Search } from 'components/Search';
 import { Warning } from 'components/Warning';
 import { deviceHeight, EVM_ACCOUNT_TYPE, TOAST_DURATION } from 'constants/index';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deriveAccountV3 } from 'messaging/index';
@@ -106,6 +108,8 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
     [goHome, onChangeModalVisible, toastError],
   );
 
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+
   const renderItem = useCallback(
     ({ item: account }: ListRenderItemInfo<AccountJson>): JSX.Element => {
       const disabled = !!selected;
@@ -117,7 +121,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
           accountName={account.name}
           address={account.address}
           avatarSize={theme.sizeLG}
-          onPress={disabled || isSelected ? undefined : onSelectAccount(account)}
+          onPress={disabled || isSelected ? undefined : onPressSubmit(onSelectAccount(account))}
           renderRightItem={isSelected ? renderLoaderIcon : undefined}
           customStyle={{
             container: [styles.accountItem, disabled && !isSelected && styles.accountDisable],
@@ -125,7 +129,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
         />
       );
     },
-    [onSelectAccount, selected, styles.accountDisable, styles.accountItem, theme.sizeLG],
+    [onPressSubmit, onSelectAccount, selected, styles.accountDisable, styles.accountItem, theme.sizeLG],
   );
 
   return (
@@ -139,7 +143,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
         <View style={styles.wrapper}>
           <View style={styles.container}>
             <Search
-              autoFocus={true}
+              autoFocus={false}
               placeholder={i18n.common.accountName}
               onClearSearchString={() => setSearchString('')}
               onSearch={setSearchString}
@@ -157,14 +161,15 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
             />
           </View>
         </View>
+        <Toast
+          duration={TOAST_DURATION}
+          normalColor={ColorMap.notification}
+          ref={toastRef}
+          placement={'bottom'}
+          offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
+        />
+        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </SwModal>
-      <Toast
-        duration={TOAST_DURATION}
-        normalColor={ColorMap.notification}
-        ref={toastRef}
-        placement={'bottom'}
-        offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
-      />
     </>
   );
 };
