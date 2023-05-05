@@ -1,9 +1,11 @@
 import { Images } from 'assets/index';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { StyleProp, View, ActivityIndicator, ViewStyle, Image, Platform } from 'react-native';
+import { StyleProp, View, ViewStyle, Image, Platform } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Video from 'react-native-video';
 import FastImage from 'react-native-fast-image';
+import { ActivityIndicator } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
@@ -47,12 +49,6 @@ const VideoStyle: StyleProp<any> = {
   height: '100%',
 };
 
-const IndicatorStyle: StyleProp<any> = {
-  width: '100%',
-  height: '100%',
-  position: 'absolute',
-};
-
 const handleReducer = (oldState: ImageState, action: ImageAction) => {
   switch (action.type) {
     case ImageActionType.INIT:
@@ -88,6 +84,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
     handleIntState,
   );
   const { url, showImage, imageError, loading } = imageState;
+  const theme = useSubWalletTheme().swThemes;
 
   const borderStyle = useMemo((): StyleProp<ViewStyle> => {
     if (borderRadius) {
@@ -192,7 +189,18 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
       ) : (
         <Image style={ImageStyle} source={Images.default} />
       )}
-      {loading && <ActivityIndicator style={IndicatorStyle} animating={true} />}
+      {loading && (
+        <View
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator indicatorColor={theme.colorWhite} size={30} />
+        </View>
+      )}
     </View>
   );
 };

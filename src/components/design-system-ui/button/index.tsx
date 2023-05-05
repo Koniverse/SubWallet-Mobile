@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   GestureResponderEvent,
   StyleProp,
   StyleSheet,
@@ -15,6 +14,7 @@ import { ButtonPropsType } from './PropsType';
 import Squircle from 'components/design-system-ui/squircle';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ButtonStyles from './style';
+import {ActivityIndicator} from "components/design-system-ui";
 
 export interface ButtonProps extends ButtonPropsType, TouchableHighlightProps {
   onPress?: (event?: GestureResponderEvent) => void;
@@ -108,7 +108,7 @@ const Button: React.FC<ButtonProps> = props => {
 
   const iconNode = useMemo(() => {
     if (loading) {
-      return <ActivityIndicator animating color={indicatorColor} size="small" />;
+      return <ActivityIndicator indicatorColor={indicatorColor} size={20} />;
     }
 
     if (typeof icon === 'function') {

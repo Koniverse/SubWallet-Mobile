@@ -1,5 +1,5 @@
 import { HistoryDetailModal } from './Detail';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Aperture,
   ArrowDownLeft,
@@ -240,7 +240,7 @@ function History({
   const rawHistoryList = useSelector((root: RootState) => root.transactionHistory.historyList);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -249,8 +249,10 @@ function History({
     }, {} as Record<string, string>);
   }, [accounts]);
 
+  const [historyMap, setHistoryMap] = useState<Record<string, TransactionHistoryDisplayItem>>({});
+
   // Fill display data to history list
-  const historyMap = useMemo(() => {
+  const getHistoryMap = useCallback(() => {
     const currentAddress = currentAccount?.address || '';
     const currentAddressLowerCase = currentAddress.toLowerCase();
     const isFilterByAddress = currentAccount?.address && !isAccountAll(currentAddress);
@@ -277,6 +279,15 @@ function History({
 
     return finalHistoryMap;
   }, [accountMap, rawHistoryList, currentAccount?.address]);
+
+  useEffect(() => {
+    setLoading(true);
+    const timeoutID = setTimeout(() => {
+      setHistoryMap(getHistoryMap());
+      setLoading(false);
+    });
+    return () => clearTimeout(timeoutID);
+  }, [getHistoryMap]);
 
   const historyList = useMemo<TransactionHistoryDisplayItem[]>(() => {
     return Object.values(historyMap);
@@ -422,6 +433,7 @@ function History({
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
         sortFunction={sortFunction}
+        loading={loading}
         flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}
       />
 
