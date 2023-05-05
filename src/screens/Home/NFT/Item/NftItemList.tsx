@@ -53,7 +53,7 @@ const NftItemList = ({
   }, [collection?.collectionId, nftItems]);
   const [isRefresh, refresh] = useRefresh();
 
-  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
+  const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
   useHandleGoHome({ goHome: goHome, networkKey: collection?.chain || '', networkFocusRedirect: false });
 
   const renderItem = useCallback(
@@ -61,7 +61,7 @@ const NftItemList = ({
       const key = `${item.collectionId}-${item.id}`;
       const onPress = () => {
         navigation.navigate('Home', {
-          screen: 'NFT',
+          screen: 'NFTs',
           params: {
             screen: 'NftDetail',
             params: { collectionId, nftId: key },

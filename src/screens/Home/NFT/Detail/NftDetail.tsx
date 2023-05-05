@@ -163,7 +163,7 @@ const NftDetail = ({
 
   const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
 
-  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
+  const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
   useHandleGoHome({ goHome: goHome, networkKey: data.chain || chain || '', networkFocusRedirect: false });
 
   const networkJson = useGetNetworkJson(data.chain as string);
@@ -205,7 +205,7 @@ const NftDetail = ({
     }
 
     navigation.navigate('Home', {
-      screen: 'NFT',
+      screen: 'NFTs',
       params: {
         screen: 'SendNFT',
         params: {

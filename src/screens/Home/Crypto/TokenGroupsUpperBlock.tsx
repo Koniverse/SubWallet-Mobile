@@ -6,7 +6,7 @@ import { ArrowFatLinesDown, Eye, EyeSlash, PaperPlaneTilt, ShoppingCartSimple } 
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
-import { FontMedium } from 'styles/sharedStyles';
+import { FontBold, FontMedium } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -69,7 +69,12 @@ export const TokenGroupsUpperBlock = ({
           </View>
           {isShowBalance && (
             <Number
-              textStyle={{ ...FontMedium }}
+              size={theme.fontSize}
+              textStyle={{
+                ...FontMedium,
+                lineHeight: theme.fontSize * theme.lineHeight,
+                paddingBottom: theme.paddingXXS / 2,
+              }}
               decimal={0}
               value={totalChangeValue}
               prefix={isPriceDecrease ? '- $' : '+ $'}
@@ -79,6 +84,8 @@ export const TokenGroupsUpperBlock = ({
           {!isShowBalance && (
             <Typography.Text
               style={{
+                fontSize: theme.fontSize,
+                lineHeight: theme.fontSize * theme.lineHeight,
                 ...FontMedium,
                 color: theme.colorTextLight1,
               }}>
@@ -87,28 +94,30 @@ export const TokenGroupsUpperBlock = ({
           )}
 
           <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
-            {isShowBalance && (
-              <Number
-                textStyle={{ ...FontMedium, marginTop: 2 }}
-                size={10}
-                value={totalChangePercent}
-                decimal={0}
-                prefix={isPriceDecrease ? '- ' : '+ '}
-                suffix={'%'}
-              />
-            )}
+            <>
+              {isShowBalance && (
+                <Number
+                  textStyle={{ ...FontBold, lineHeight: 18 }}
+                  size={10}
+                  value={totalChangePercent}
+                  decimal={0}
+                  prefix={isPriceDecrease ? '- ' : '+ '}
+                  suffix={'%'}
+                />
+              )}
 
-            {!isShowBalance && (
-              <Typography.Text
-                style={{
-                  ...FontMedium,
-                  lineHeight: 18,
-                  fontSize: 10,
-                  color: theme.colorTextLight1,
-                }}>
-                {'******'}
-              </Typography.Text>
-            )}
+              {!isShowBalance && (
+                <Typography.Text
+                  style={{
+                    ...FontMedium,
+                    lineHeight: 18,
+                    fontSize: 10,
+                    color: theme.colorTextLight1,
+                  }}>
+                  {'******'}
+                </Typography.Text>
+              )}
+            </>
           </Tag>
         </View>
       </TouchableOpacity>

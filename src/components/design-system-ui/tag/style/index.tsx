@@ -85,7 +85,7 @@ export default (theme: ThemeTypes) => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: theme.paddingXXS / 2,
+      paddingBottom: theme.paddingXXS / 2,
       paddingHorizontal: theme.paddingXS,
     },
     shapeDefaultStyle: {

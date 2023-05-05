@@ -32,12 +32,20 @@ export const BalancesVisibility = ({ value, symbol, startWithSymbol = true, subF
           prefix={startWithSymbol ? (symbol ? symbol : '$') : undefined}
           suffix={!startWithSymbol ? (symbol ? symbol : '$') : undefined}
           size={38}
-          textStyle={{ ...FontSemiBold, lineHeight: 20, paddingTop: 28 }}
+          textStyle={{ ...FontSemiBold, lineHeight: 38 }}
           subFloatNumber={subFloatNumber}
           decimalOpacity={0.45}
         />
       ) : (
-        <Text style={{ ...FontSemiBold, lineHeight: 46, fontSize: 38, color: theme.colorTextLight1 }}>******</Text>
+        <Text
+          style={{
+            ...FontSemiBold,
+            fontSize: 38,
+            lineHeight: 38,
+            color: theme.colorTextLight1,
+          }}>
+          ******
+        </Text>
       )}
     </View>
   );
