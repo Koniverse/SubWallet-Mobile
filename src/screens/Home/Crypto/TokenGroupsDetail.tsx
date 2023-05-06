@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
@@ -201,6 +201,12 @@ export const TokenGroupsDetail = ({
     setTokenDetailVisible(false);
     setCurrentTokenInfo(undefined);
   }, []);
+
+  useEffect(() => {
+    if (!tokenBalanceItems.length) {
+      navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
+    }
+  }, [navigation, tokenBalanceItems]);
 
   return (
     <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>

@@ -3,7 +3,6 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ListRenderItemInfo } from 'react-native';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
 import { NetworkConfigItem } from 'components/NetworkConfigItem';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';

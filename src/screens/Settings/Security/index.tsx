@@ -15,7 +15,7 @@ import {
   LockKeyOpen,
   Password,
   Scan,
-  ShieldCheck
+  ShieldCheck,
 } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -24,8 +24,8 @@ import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import {Icon, SelectItem} from "components/design-system-ui";
-import {useToast} from "react-native-toast-notifications";
+import { Icon, SelectItem } from 'components/design-system-ui';
+import { useToast } from 'react-native-toast-notifications';
 
 const modalTitle: StyleProp<any> = {
   ...sharedStyles.mediumText,

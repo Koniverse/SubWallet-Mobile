@@ -33,7 +33,7 @@ import { isActionFromValidator } from '@subwallet/extension-base/koni/api/stakin
 import { submitStakeWithdrawal } from 'messaging/index';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { WithdrawProps } from 'routes/transaction/transactionAction';
-import {MarginBottomForSubmitButton} from "styles/sharedStyles";
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,

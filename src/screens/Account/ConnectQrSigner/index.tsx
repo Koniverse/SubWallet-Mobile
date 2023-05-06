@@ -44,7 +44,7 @@ const imageProps: Omit<SWImageProps, 'src'> = {
 const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   // useAutoNavigateToCreatePassword();
 
-  const { description, instructionUrl, logoUrl, subTitle, title } = props;
+  const { description, logoUrl, subTitle, title } = props;
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useSubWalletTheme().swThemes;

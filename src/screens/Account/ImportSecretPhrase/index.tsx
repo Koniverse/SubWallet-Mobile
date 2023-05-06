@@ -1,24 +1,24 @@
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import useUnlockModal from 'hooks/modal/useUnlockModal';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
-import { Textarea } from 'components/Textarea';
-import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import i18n from 'utils/i18n/i18n';
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { backToHome } from 'utils/navigation';
+import { useNavigation } from '@react-navigation/native';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import { SelectAccountType } from 'components/common/SelectAccountType';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { Textarea } from 'components/Textarea';
+import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
+import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
-import { SelectAccountType } from 'components/common/SelectAccountType';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
-import { Button, Icon, Typography } from 'components/design-system-ui';
-import { FileArrowDown, X } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { createAccountSuriV2, validateSeedV2 } from 'messaging/index';
+import { FileArrowDown, X } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ScrollView, View } from 'react-native';
+import { RootNavigationProps } from 'routes/index';
+import i18n from 'utils/i18n/i18n';
+import { backToHome } from 'utils/navigation';
 import createStyle from './styles';
 
 const ViewStep = {
@@ -111,11 +111,9 @@ export const ImportSecretPhrase = () => {
   }, [seedPhrase, onUpdateErrors]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('transitionEnd', () => {
+    return navigation.addListener('transitionEnd', () => {
       focus('seed')();
     });
-
-    return unsubscribe;
   }, [focus, navigation]);
 
   const onPressBack = () => {
@@ -125,6 +123,10 @@ export const ImportSecretPhrase = () => {
       setCurrentViewStep(ViewStep.ENTER_SEED);
     }
   };
+
+  const renderIconButton = useCallback((iconColor: string) => {
+    return <Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} iconColor={iconColor} />;
+  }, []);
 
   const disabled = useMemo(
     () => !formState.data.seed || !formState.isValidated.seed || isBusy,
@@ -159,15 +161,8 @@ export const ImportSecretPhrase = () => {
         </ScrollView>
         <View style={styles.footer}>
           <Button
-            icon={
-              <Icon
-                phosphorIcon={FileArrowDown}
-                size={'lg'}
-                weight={'fill'}
-                iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight1}
-              />
-            }
-            disabled={disabled || validating}
+            icon={renderIconButton}
+            disabled={disabled || validating || !keyTypes.length}
             loading={validating || isBusy}
             onPress={onPressSubmit(_onImportSeed)}>
             {'Import account'}

@@ -19,11 +19,10 @@ import { RootState } from 'stores/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import i18n from 'utils/i18n/i18n';
 import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
-import { Keyboard, ScrollView, StyleProp, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, ScrollView, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { TokenSelectField } from 'components/Field/TokenSelect';
@@ -35,19 +34,19 @@ import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import { BN_TEN } from 'utils/number';
 import { getFreeBalance, makeCrossChainTransfer, makeTransfer } from '../../../messaging';
-import { Button, Icon, Typography } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { Warning } from 'components/Warning';
-import useGoHome from 'hooks/screen/useGoHome';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ContainerHorizontalPadding, FontMedium } from 'styles/sharedStyles';
-import { SendFundProps } from 'routes/index';
+import { ContainerHorizontalPadding } from 'styles/sharedStyles';
+import { RootStackParamList, SendFundProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ScreenContainer } from 'components/ScreenContainer';
+import { Header } from 'components/Header';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -215,10 +214,6 @@ const filterAccountFunc = (
       return isAssetTypeValid(chainAsset, chainInfoMap, isAccountEthereum) && isValidLedger;
     });
   };
-};
-
-const InputStyle: StyleProp<any> = {
-  marginBottom: 8,
 };
 
 export const SendFund = ({
@@ -546,139 +541,149 @@ export const SendFund = ({
   }, [amount, asset, assetRegistry, from, maxTransfer, validateAmount]);
 
   const buttonIcon = useCallback((color: string) => {
-    return <Icon phosphorIcon={PaperPlaneTilt} size={'lg'} iconColor={color} />;
+    return <Icon phosphorIcon={PaperPlaneTilt} weight={'fill'} size={'lg'} iconColor={color} />;
   }, []);
 
   return (
-    <ContainerWithSubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <>
-          <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: 10 }}>
-            <Typography.Text
-              style={{ ...FontMedium, color: theme.colorTextLight4, textAlign: 'center', marginBottom: theme.size }}>
-              {/*//todo: i18n*/}
-              {'You are doing a token transfer with the following information'}
-            </Typography.Text>
+    <ScreenContainer>
+      <Header />
 
-            {isAllAccount && (
-              <>
-                <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
-                  {/*//todo: i18n*/}
-                  <AccountSelectField
-                    label={'Send from account'}
-                    accountName={senderAccountName}
-                    value={from}
-                    showIcon
+      <ContainerWithSubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <>
+            <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: theme.size }}>
+              {isAllAccount && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => setAccountSelectModalVisible(true)}
+                    style={{ marginBottom: theme.sizeSM }}>
+                    {/*//todo: i18n*/}
+                    <AccountSelectField
+                      label={'Send from account'}
+                      accountName={senderAccountName}
+                      value={from}
+                      showIcon
+                      outerStyle={{ marginBottom: 0 }}
+                    />
+                  </TouchableOpacity>
+
+                  <AccountSelector
+                    modalVisible={accountSelectModalVisible}
+                    onSelectItem={item => {
+                      onChangeFromValue(item.address);
+                      setAccountSelectModalVisible(false);
+                    }}
+                    items={accountItems}
+                    onCancel={() => setAccountSelectModalVisible(false)}
                   />
-                </TouchableOpacity>
+                </>
+              )}
 
-                <AccountSelector
-                  modalVisible={accountSelectModalVisible}
-                  onSelectItem={item => {
-                    onChangeFromValue(item.address);
-                    setAccountSelectModalVisible(false);
-                  }}
-                  items={accountItems}
-                  onCancel={() => setAccountSelectModalVisible(false)}
-                />
-              </>
-            )}
+              <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingBottom: theme.sizeXXS }}>
+                <View style={{ flex: 1 }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTokenSelectModalVisible(true);
+                    }}>
+                    <TokenSelectField
+                      logoKey={currentChainAsset?.symbol || ''}
+                      subLogoKey={currentChainAsset?.originChain || ''}
+                      value={currentChainAsset?.symbol || ''}
+                      showIcon
+                    />
+                  </TouchableOpacity>
+                </View>
 
-            <TouchableOpacity
-              onPress={() => {
-                setTokenSelectModalVisible(true);
-              }}>
-              {/*//todo: i18n*/}
-              <TokenSelectField
-                label={'Token'}
-                logoKey={currentChainAsset?.symbol || ''}
-                subLogoKey={currentChainAsset?.originChain || ''}
-                value={currentChainAsset?.symbol || ''}
-                showIcon
-              />
-            </TouchableOpacity>
+                <View style={{ flex: 1 }}>
+                  <InputAmount
+                    value={amount}
+                    maxValue={maxTransfer}
+                    onChangeValue={_onChangeAmount}
+                    decimals={decimals}
+                    onSetMax={setIsTransferAll}
+                    showMaxButton={chain === destChain && assetRegistry[asset]?.assetType === _AssetType.NATIVE}
+                  />
+                </View>
+              </View>
 
-            <TokenSelector
-              modalVisible={tokenSelectModalVisible}
-              items={tokenItems}
-              onCancel={() => setTokenSelectModalVisible(false)}
-              onSelectItem={item => {
-                onChangeAssetValue(item.slug);
-                onChangeValue('destChain')(item.originChain);
-                setTokenSelectModalVisible(false);
-                setIsTransferAll(false);
-              }}
-            />
-
-            <InputAmount
-              value={amount}
-              maxValue={maxTransfer}
-              onChangeValue={_onChangeAmount}
-              decimals={decimals}
-              errorMessages={formState.errors.value}
-              onSetMax={setIsTransferAll}
-              showMaxButton={chain === destChain && assetRegistry[asset]?.assetType === _AssetType.NATIVE}
-            />
-
-            <InputAddress
-              ref={formState.refs.to}
-              onPressQrButton={onPressQrButton}
-              containerStyle={InputStyle}
-              label={formState.labels.to}
-              value={formState.data.to}
-              onChange={onChangeRecipientAddress}
-              isValidValue={formState.isValidated.recipientAddress}
-            />
-
-            {/*//todo: i18n*/}
-            <AddressScanner
-              qrModalVisible={isShowQrModalVisible}
-              onPressCancel={closeQrScan}
-              onChangeAddress={onUpdateReceiverInputAddress}
-              scanMessage={'to send fund'}
-            />
-
-            {!!(formState.errors.to && formState.errors.to.length) &&
-              formState.errors.to.map((message, index) => (
-                <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
-              ))}
-
-            <TouchableOpacity
-              onPress={() => {
-                setChainSelectModalVisible(true);
-              }}>
-              <NetworkField label={i18n.common.network} networkKey={destChain} />
-            </TouchableOpacity>
-
-            <ChainSelector
-              items={destChainItems}
-              modalVisible={chainSelectModalVisible}
-              onCancel={() => setChainSelectModalVisible(false)}
-              onSelectItem={item => {
-                onChangeValue('destChain')(item.slug);
-                setChainSelectModalVisible(false);
-                if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
+              <TokenSelector
+                modalVisible={tokenSelectModalVisible}
+                items={tokenItems}
+                onCancel={() => setTokenSelectModalVisible(false)}
+                onSelectItem={item => {
+                  onChangeAssetValue(item.slug);
+                  onChangeValue('destChain')(item.originChain);
+                  setTokenSelectModalVisible(false);
                   setIsTransferAll(false);
-                }
-              }}
-            />
+                }}
+              />
 
-            <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
-          </ScrollView>
+              {!!(formState.errors.value && formState.errors.value.length) &&
+                formState.errors.value.map((message, index) => (
+                  <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
+                ))}
 
-          <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-            {/*//todo: i18n*/}
-            <Button
-              disabled={!isBalanceReady}
-              icon={buttonIcon}
-              loading={loading}
-              type={isTransferAll ? 'warning' : undefined}
-              onPress={onSubmit}>
-              {isTransferAll ? 'Transfer the full account balance' : 'Transfer'}
-            </Button>
-          </View>
-        </>
-      </TouchableWithoutFeedback>
-    </ContainerWithSubHeader>
+              <InputAddress
+                ref={formState.refs.to}
+                onPressQrButton={onPressQrButton}
+                containerStyle={{ marginBottom: theme.sizeSM }}
+                label={formState.labels.to}
+                value={formState.data.to}
+                onChange={onChangeRecipientAddress}
+                isValidValue={formState.isValidated.recipientAddress}
+              />
+
+              {/*//todo: i18n*/}
+              <AddressScanner
+                qrModalVisible={isShowQrModalVisible}
+                onPressCancel={closeQrScan}
+                onChangeAddress={onUpdateReceiverInputAddress}
+                scanMessage={'to send fund'}
+              />
+
+              {!!(formState.errors.to && formState.errors.to.length) &&
+                formState.errors.to.map((message, index) => (
+                  <Warning key={index} isDanger message={message} style={{ marginBottom: theme.marginSM }} />
+                ))}
+
+              <TouchableOpacity
+                style={{ marginBottom: theme.marginSM }}
+                onPress={() => {
+                  setChainSelectModalVisible(true);
+                }}>
+                <NetworkField networkKey={destChain} outerStyle={{ marginBottom: 0 }} />
+              </TouchableOpacity>
+
+              <ChainSelector
+                items={destChainItems}
+                modalVisible={chainSelectModalVisible}
+                onCancel={() => setChainSelectModalVisible(false)}
+                onSelectItem={item => {
+                  onChangeValue('destChain')(item.slug);
+                  setChainSelectModalVisible(false);
+                  if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
+                    setIsTransferAll(false);
+                  }
+                }}
+              />
+
+              <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
+            </ScrollView>
+
+            <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
+              {/*//todo: i18n*/}
+              <Button
+                disabled={!isBalanceReady}
+                icon={buttonIcon}
+                loading={loading}
+                type={isTransferAll ? 'warning' : undefined}
+                onPress={onSubmit}>
+                {isTransferAll ? 'Transfer the full account balance' : 'Transfer'}
+              </Button>
+            </View>
+          </>
+        </TouchableWithoutFeedback>
+      </ContainerWithSubHeader>
+    </ScreenContainer>
   );
 };
