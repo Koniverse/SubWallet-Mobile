@@ -3,7 +3,7 @@ import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 import { CrowdloanItemType } from '@subwallet/extension-koni-ui/src/types/crowdloan';
-import { Rocket } from 'phosphor-react-native';
+import {Rocket, RocketLaunch} from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
@@ -23,7 +23,7 @@ const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
 };
 
 const renderListEmptyComponent = () => {
-  return <EmptyList title={i18n.common.emptyCrowdloanListMessage} icon={Rocket} />;
+  return <EmptyList title={'No crowdloan'} icon={RocketLaunch} message={'Your crowdloan will appear here!'} />;
 };
 
 enum FilterValue {

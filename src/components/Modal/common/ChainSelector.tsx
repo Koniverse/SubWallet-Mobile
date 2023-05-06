@@ -7,6 +7,8 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { ChainInfo } from 'types/index';
 import { NetworkSelectItem } from 'components/NetworkSelectItem';
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
 
 interface Props {
   modalVisible: boolean;
@@ -25,11 +27,10 @@ const filterFunction = (items: ChainInfo[], searchString: string) => {
 
 const renderListEmptyComponent = () => {
   return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.warningMessage.noTokenAvailable}
-      isDanger={false}
+    <EmptyList
+      title={'No results found'}
+      icon={MagnifyingGlass}
+      message={'Please change your search criteria try again'}
     />
   );
 };

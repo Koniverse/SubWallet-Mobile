@@ -332,7 +332,7 @@ export const Stake = ({
       onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
-          {!_stakingType && (
+          {_stakingType === ALL_KEY && (
             <StakingTab
               selectedType={currentStakingType as StakingType}
               onSelectType={type => onChangeValue('stakingType')(type)}
@@ -345,7 +345,7 @@ export const Stake = ({
             </TouchableOpacity>
           )}
 
-          {!_stakingType && (
+          {_stakingType === ALL_KEY && (
             <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
           )}
 
@@ -363,7 +363,7 @@ export const Stake = ({
             />
           </TouchableOpacity>
 
-          {!!_stakingType && (
+          {_stakingType !== ALL_KEY && (
             <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
           )}
 

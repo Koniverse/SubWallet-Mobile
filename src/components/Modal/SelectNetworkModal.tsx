@@ -53,7 +53,6 @@ const SelectNetworkModal = ({
           isSelected={item.value === selectedNetworkKey}
           onSelectNetwork={() => onChangeNetwork(item.value)}
           showSeparator={false}
-          iconSize={20}
         />
       );
     },

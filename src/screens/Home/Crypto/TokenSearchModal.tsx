@@ -9,6 +9,8 @@ import { TokenBalanceItemType } from 'types/balance';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenBalanceItem } from 'components/common/TokenBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import {EmptyList} from "components/EmptyList";
+import {Coins} from "phosphor-react-native";
 
 interface Props {
   modalVisible: boolean;
@@ -26,14 +28,7 @@ const filterFunction = (items: TokenBalanceItemType[], searchString: string) => 
 };
 
 const renderListEmptyComponent = () => {
-  return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.warningMessage.noTokenAvailable}
-      isDanger={false}
-    />
-  );
+  return <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started.'} />;
 };
 
 export const TokenSearchModal = ({ modalVisible, onCancel, onSelectItem, items, isShowBalance }: Props) => {

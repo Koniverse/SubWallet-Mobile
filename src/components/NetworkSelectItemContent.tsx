@@ -4,7 +4,9 @@ import Text from '../components/Text';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { CircleWavyCheck } from 'phosphor-react-native';
+import {CheckCircle, CircleWavyCheck} from 'phosphor-react-native';
+import {Icon} from "components/design-system-ui";
+import {useSubWalletTheme} from "hooks/useSubWalletTheme";
 interface Props {
   itemName: string;
   itemKey: string;
@@ -17,9 +19,11 @@ interface Props {
 const itemArea: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
-  paddingVertical: 12,
+  padding: 12,
   alignItems: 'center',
-  paddingHorizontal: 16,
+  marginHorizontal: 16,
+  backgroundColor: '#1A1A1A',
+  borderRadius: 8,
 };
 
 const itemBodyArea: StyleProp<any> = {
@@ -35,18 +39,17 @@ const itemSeparator: StyleProp<any> = {
 };
 
 const itemTextStyle: StyleProp<any> = {
-  paddingLeft: 20,
+  paddingLeft: 8,
   color: ColorMap.light,
-  ...sharedStyles.mediumText,
+  fontSize: 16,
+  lineHeight: 24,
   ...FontSemiBold,
 };
 
 const logoWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.light,
+  backgroundColor: 'transparent',
   borderRadius: 28,
 };
-
-const CheckIcon = CircleWavyCheck;
 
 export const NetworkSelectItemContent = ({
   itemKey,
@@ -56,6 +59,7 @@ export const NetworkSelectItemContent = ({
   showSeparator = true,
   iconSize = 28,
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   return (
     <View>
       <View style={itemArea}>
@@ -64,7 +68,7 @@ export const NetworkSelectItemContent = ({
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 
-        {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
+        {isSelected && <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />}
       </View>
 
       {showSeparator && <View style={itemSeparator} />}

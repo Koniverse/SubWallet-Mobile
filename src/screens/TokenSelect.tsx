@@ -8,6 +8,8 @@ import i18n from 'utils/i18n/i18n';
 import useTokenOptions from 'hooks/screen/TokenSelect/useTokenOptions';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
+import {EmptyList} from "components/EmptyList";
+import {Coins} from "phosphor-react-native";
 
 interface Props {
   address: string;
@@ -33,14 +35,7 @@ const filterFunction = (items: TokenItemType[], searchString: string) => {
 };
 
 const renderListEmptyComponent = () => {
-  return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.warningMessage.noTokenAvailable}
-      isDanger={false}
-    />
-  );
+  return <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started.'} />;
 };
 
 export const TokenSelect = ({

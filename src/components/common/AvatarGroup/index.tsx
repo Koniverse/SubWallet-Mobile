@@ -79,7 +79,6 @@ const AvatarGroup = ({ addresses: _addresses }: Props) => {
             color: theme.colorTextBase,
             ...FontBold,
             right: 0,
-            bottom: 1,
             // backgroundColor: 'red',
             width: theme.sizeMD,
             height: theme.sizeMD,
