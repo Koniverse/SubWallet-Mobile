@@ -1,5 +1,6 @@
 import { NavigationState } from '@react-navigation/routers';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
@@ -37,7 +38,7 @@ import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import {RootRouteProps, RootStackParamList, TransactionActionProps} from './routes';
+import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -54,7 +55,7 @@ import withPageWrapper from 'components/pageWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
-import TransactionScreen from "screens/Transaction/TransactionScreen";
+import TransactionScreen from 'screens/Transaction/TransactionScreen';
 
 interface Props {
   isAppReady: boolean;
@@ -95,6 +96,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
 
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
+  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length,
+    [accounts],
+  );
 
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: ['subwallet://'],
@@ -110,15 +119,31 @@ const AppNavigator = ({ isAppReady }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (hasConfirmations && currentRoute) {
-      if (currentRoute.name !== 'Confirmations') {
-        if (currentRoute.name !== 'CreateAccount') {
+    let amount = true;
+    if (hasConfirmations && currentRoute && amount) {
+      if (currentRoute.name !== 'Confirmations' && amount) {
+        if (currentRoute.name !== 'CreateAccount' && amount) {
           navigationRef.current?.navigate('Confirmations');
-          console.log(123123);
         }
       }
     }
+
+    return () => {
+      amount = false;
+    };
   }, [hasConfirmations, navigationRef, currentRoute]);
+
+  useEffect(() => {
+    let amount = true;
+    if (needMigrate && hasMasterPassword && currentRoute && amount) {
+      if (currentRoute.name !== 'MigratePassword' && amount) {
+        navigationRef.current?.navigate('MigratePassword');
+      }
+    }
+    return () => {
+      amount = false;
+    };
+  }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
 
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>

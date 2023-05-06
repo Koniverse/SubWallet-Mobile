@@ -106,9 +106,10 @@ export const RestoreJson = () => {
     }
 
     const formattedJsonFile = formatJsonFile(jsonFile);
+    const isMultiple = isKeyringPairs$Json(jsonFile);
 
     setIsBusy(true);
-    (isKeyringPairs$Json(formattedJsonFile)
+    (isMultiple
       ? batchRestoreV2(formattedJsonFile, password, getAccountsInfo(formattedJsonFile), true)
       : jsonRestoreV2({
           file: formattedJsonFile,
@@ -123,7 +124,11 @@ export const RestoreJson = () => {
         setIsBusy(false);
         onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
-        backToHome(goHome);
+        if (!isMultiple) {
+          backToHome(goHome);
+        } else {
+          navigation.navigate('MigratePassword');
+        }
       })
       .catch(e => {
         setIsBusy(false);
