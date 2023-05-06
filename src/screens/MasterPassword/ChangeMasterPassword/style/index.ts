@@ -5,6 +5,7 @@ import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 export interface ChangeMasterPasswordStyle {
   bodyWrapper: ViewStyle;
   footerAreaStyle: ViewStyle;
+  error: ViewStyle;
 }
 
 export default (theme: ThemeTypes) =>
@@ -14,5 +15,8 @@ export default (theme: ThemeTypes) =>
       marginTop: theme.marginXS,
       marginHorizontal: theme.margin,
       ...MarginBottomForSubmitButton,
+    },
+    error: {
+      marginBottom: theme.marginXS,
     },
   });
