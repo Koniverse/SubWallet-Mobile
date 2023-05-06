@@ -89,8 +89,10 @@ export const TokenGroups = () => {
   const onPressItem = useCallback(
     (item: TokenBalanceItemType) => {
       return () => {
-        navigation.navigate('TokenGroupsDetail', {
-          slug: item.slug,
+        requestAnimationFrame(() => {
+          navigation.navigate('TokenGroupsDetail', {
+            slug: item.slug,
+          });
         });
       };
     },

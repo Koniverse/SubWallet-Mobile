@@ -94,9 +94,12 @@ export const TokenGroupsDetail = ({
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   const chainsByAccountType = useGetChainSlugs();
-  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
-  const { tokenBalanceMap, tokenGroupBalanceMap } = useAccountBalance(tokenGroupMap);
-
+  const { tokenGroupMap, isComputing: isTokenGroupComputing } = useTokenGroup(chainsByAccountType, true);
+  const {
+    tokenBalanceMap,
+    tokenGroupBalanceMap,
+    isComputing: isAccountBalanceComputing,
+  } = useAccountBalance(tokenGroupMap, true);
   const tokenBalanceValue = useMemo<SwNumberProps['value']>(() => {
     if (tokenGroupSlug) {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
@@ -203,10 +206,10 @@ export const TokenGroupsDetail = ({
   }, []);
 
   useEffect(() => {
-    if (!tokenBalanceItems.length) {
+    if (!isTokenGroupComputing && !isAccountBalanceComputing && !tokenBalanceItems.length) {
       navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
     }
-  }, [navigation, tokenBalanceItems]);
+  }, [isAccountBalanceComputing, isTokenGroupComputing, navigation, tokenBalanceItems]);
 
   return (
     <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>
@@ -215,6 +218,7 @@ export const TokenGroupsDetail = ({
 
         <TokensLayout
           style={{ marginTop: 50 }}
+          loading={isTokenGroupComputing || isAccountBalanceComputing}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}
           renderItem={renderItem}

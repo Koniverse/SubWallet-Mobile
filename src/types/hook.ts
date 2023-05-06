@@ -5,6 +5,7 @@ export type TokenGroupHookType = {
   tokenGroupMap: Record<string, string[]>;
   sortedTokenGroups: string[];
   sortedTokenSlugs: string[];
+  isComputing?: boolean;
 };
 
 export type AccountBalanceHookType = {
@@ -19,4 +20,5 @@ export type AccountBalanceHookType = {
       percent: BigN;
     };
   };
+  isComputing?: boolean;
 };

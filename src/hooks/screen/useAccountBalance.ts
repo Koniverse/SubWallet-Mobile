@@ -19,6 +19,7 @@ import { RootState } from 'stores/index';
 import { AccountBalanceHookType } from 'types/hook';
 import { TokenBalanceItemType } from 'types/balance';
 import { AssetRegistryStore, BalanceStore, ChainStore, PriceStore } from 'stores/types';
+import { useEffect, useState } from 'react';
 
 const BN_0 = new BigN(0);
 const BN_10 = new BigN(10);
@@ -269,7 +270,24 @@ function getAccountBalance(
   };
 }
 
-export default function useAccountBalance(tokenGroupMap: Record<string, string[]>): AccountBalanceHookType {
+const DEFAULT_RESULT = {
+  tokenBalanceMap: {},
+  tokenGroupBalanceMap: {},
+  totalBalanceInfo: {
+    convertedValue: new BigN(0),
+    converted24hValue: new BigN(0),
+    change: {
+      value: new BigN(0),
+      percent: new BigN(0),
+    },
+  },
+  isComputing: true,
+} as AccountBalanceHookType;
+
+export default function useAccountBalance(
+  tokenGroupMap: Record<string, string[]>,
+  lazy?: boolean,
+): AccountBalanceHookType {
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
@@ -277,15 +295,47 @@ export default function useAccountBalance(tokenGroupMap: Record<string, string[]
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
   const isShowZeroBalance = useSelector((state: RootState) => state.settings.isShowZeroBalance);
+  const [result, setResult] = useState<AccountBalanceHookType>(
+    lazy
+      ? DEFAULT_RESULT
+      : getAccountBalance(
+          tokenGroupMap,
+          balanceMap,
+          priceMap,
+          price24hMap,
+          assetRegistryMap,
+          multiChainAssetMap,
+          chainInfoMap,
+          isShowZeroBalance,
+        ),
+  );
 
-  return getAccountBalance(
-    tokenGroupMap,
-    balanceMap,
-    priceMap,
-    price24hMap,
+  useEffect(() => {
+    const timeoutID = setTimeout(() => {
+      setResult(
+        getAccountBalance(
+          tokenGroupMap,
+          balanceMap,
+          priceMap,
+          price24hMap,
+          assetRegistryMap,
+          multiChainAssetMap,
+          chainInfoMap,
+          isShowZeroBalance,
+        ),
+      );
+    });
+    return () => clearTimeout(timeoutID);
+  }, [
     assetRegistryMap,
-    multiChainAssetMap,
+    balanceMap,
     chainInfoMap,
     isShowZeroBalance,
-  );
+    multiChainAssetMap,
+    price24hMap,
+    priceMap,
+    tokenGroupMap,
+  ]);
+
+  return result;
 }

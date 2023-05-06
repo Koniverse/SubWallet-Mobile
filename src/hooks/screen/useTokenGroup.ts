@@ -1,11 +1,10 @@
-import { _ChainAsset } from '@subwallet/chain-list/types';
 import { _getMultiChainAsset, _isNativeTokenBySlug } from '@subwallet/extension-base/services/chain-service/utils';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isTokenAvailable } from 'utils/chainAndAsset';
 import { TokenGroupHookType } from 'types/hook';
-import { AssetRegistryStore } from 'stores/types';
+import { AssetRegistryStore, ChainStore } from 'stores/types';
 
 function sortTokenSlugs(tokenSlugs: string[]) {
   tokenSlugs.sort((a, b) => {
@@ -49,6 +48,8 @@ function sortTokenGroups(tokenGroups: string[]) {
 
 function getTokenGroup(
   assetRegistryMap: AssetRegistryStore['assetRegistry'],
+  assetSettingMap: AssetRegistryStore['assetSettingMap'],
+  chainStateMap: ChainStore['chainStateMap'],
   filteredChains?: string[],
 ): TokenGroupHookType {
   const result: TokenGroupHookType = {
@@ -58,6 +59,10 @@ function getTokenGroup(
   };
 
   Object.values(assetRegistryMap).forEach(chainAsset => {
+    if (!isTokenAvailable(chainAsset, assetSettingMap, chainStateMap, true)) {
+      return;
+    }
+
     const chain = chainAsset.originChain;
 
     if (filteredChains && !filteredChains.includes(chain)) {
@@ -85,25 +90,27 @@ function getTokenGroup(
   return result;
 }
 
-export default function useTokenGroup(filteredChains?: string[]): TokenGroupHookType {
+const DEFAULT_RESULT = {
+  tokenGroupMap: {},
+  sortedTokenGroups: [],
+  sortedTokenSlugs: [],
+  isComputing: true,
+} as TokenGroupHookType;
+
+export default function useTokenGroup(filteredChains?: string[], lazy?: boolean): TokenGroupHookType {
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const assetSettingMap = useSelector((state: RootState) => state.assetRegistry.assetSettingMap);
   const chainStateMap = useSelector((state: RootState) => state.chainStore.chainStateMap);
+  const [result, setResult] = useState<TokenGroupHookType>(
+    lazy ? DEFAULT_RESULT : getTokenGroup(assetRegistryMap, assetSettingMap, chainStateMap, filteredChains),
+  );
 
-  // only get fungible tokens of active chains which has visibility = 0
-  const filteredAssetRegistryMap = useMemo(() => {
-    const _filteredAssetRegistryMap: Record<string, _ChainAsset> = {};
-
-    Object.values(assetRegistryMap).forEach(chainAsset => {
-      if (isTokenAvailable(chainAsset, assetSettingMap, chainStateMap, true)) {
-        _filteredAssetRegistryMap[chainAsset.slug] = chainAsset;
-      }
+  useEffect(() => {
+    const timeoutID = setTimeout(() => {
+      setResult(getTokenGroup(assetRegistryMap, assetSettingMap, chainStateMap, filteredChains));
     });
+    return () => clearTimeout(timeoutID);
+  }, [assetRegistryMap, assetSettingMap, chainStateMap, filteredChains]);
 
-    return _filteredAssetRegistryMap;
-  }, [assetRegistryMap, assetSettingMap, chainStateMap]);
-
-  return useMemo<TokenGroupHookType>(() => {
-    return getTokenGroup(filteredAssetRegistryMap, filteredChains);
-  }, [filteredAssetRegistryMap, filteredChains]);
+  return result;
 }
