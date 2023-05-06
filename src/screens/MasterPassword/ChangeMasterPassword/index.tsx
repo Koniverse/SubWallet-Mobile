@@ -1,3 +1,5 @@
+import { Warning } from 'components/Warning';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { View } from 'react-native';
@@ -49,6 +51,8 @@ const ChangeMasterPassword = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
+  useHandlerHardwareBackPress(isBusy);
+
   const _backToHome = useCallback(() => {
     backToHome(goHome, true);
   }, [goHome]);
@@ -85,12 +89,22 @@ const ChangeMasterPassword = () => {
     onSubmitForm: onSubmit,
   });
 
+  const onChangeField = useCallback(
+    (fieldName: string) => {
+      return (value: string) => {
+        setErrors([]);
+        onChangeValue(fieldName)(value);
+      };
+    },
+    [onChangeValue],
+  );
+
   const _onChangePasswordValue = (currentValue: string) => {
     if (formState.data.repeatPassword) {
-      onChangeValue('repeatPassword')('');
+      onChangeField('repeatPassword')('');
     }
 
-    onChangeValue('password')(currentValue);
+    onChangeField('password')(currentValue);
   };
 
   const isDisabled = useMemo(() => {
@@ -110,15 +124,18 @@ const ChangeMasterPassword = () => {
       onPressBack={() => navigation.goBack()}
       rightIcon={Info}
       title={'Change password'}
-      style={{ width: '100%' }}>
+      style={{ width: '100%' }}
+      disabled={isBusy}
+      disableRightButton={isBusy}>
       <View style={_style.bodyWrapper}>
         <PasswordField
           ref={formState.refs.curPassword}
           label={formState.labels.curPassword}
           defaultValue={formState.data.curPassword}
-          onChangeText={onChangeValue('curPassword')}
+          onChangeText={onChangeField('curPassword')}
           errorMessages={formState.errors.curPassword}
           onSubmitField={onSubmitField('curPassword')}
+          isBusy={isBusy}
         />
 
         <PasswordField
@@ -128,21 +145,26 @@ const ChangeMasterPassword = () => {
           onChangeText={_onChangePasswordValue}
           errorMessages={formState.errors.password}
           onSubmitField={onSubmitField('password')}
+          isBusy={isBusy}
         />
 
         <PasswordField
           ref={formState.refs.repeatPassword}
           label={formState.labels.repeatPassword}
           defaultValue={formState.data.repeatPassword}
-          onChangeText={onChangeValue('repeatPassword')}
+          onChangeText={onChangeField('repeatPassword')}
           errorMessages={formState.errors.repeatPassword}
           onSubmitField={onSubmitField('repeatPassword')}
+          isBusy={isBusy}
         />
+        {errors.length > 0 &&
+          errors.map((message, index) => <Warning isDanger message={message} key={index} style={_style.error} />)}
       </View>
 
       <View style={_style.footerAreaStyle}>
         <Button
           disabled={isDisabled}
+          loading={isBusy}
           icon={
             <Icon
               phosphorIcon={CheckCircle}
