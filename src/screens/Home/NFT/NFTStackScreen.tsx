@@ -6,7 +6,7 @@ import NftDetail from 'screens/Home/NFT/Detail/NftDetail';
 import { RootStackParamList } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
 import i18n from 'utils/i18n/i18n';
-import { Aperture } from 'phosphor-react-native';
+import { Aperture, Image } from 'phosphor-react-native';
 import withPageWrapper from 'components/pageWrapper';
 import SendNFT from 'screens/Transaction/NFT';
 
@@ -27,7 +27,9 @@ export type NFTCollectionProps = NativeStackScreenProps<NFTStackParamList, 'Coll
 export type NFTDetailProps = NativeStackScreenProps<NFTStackParamList, 'NftDetail'>;
 export type SendNFTProps = NativeStackScreenProps<NFTStackParamList, 'SendNFT'>;
 export const renderEmptyNFT = () => {
-  return <EmptyList title={i18n.nftScreen.nftAppearHere} icon={Aperture} />;
+  return (
+    <EmptyList title={'No NFTs found'} icon={Image} message={'Click [+] on the top right corner to import your NFT'} />
+  );
 };
 
 const NFTStackScreen = () => {

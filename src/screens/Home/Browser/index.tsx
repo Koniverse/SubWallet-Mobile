@@ -123,7 +123,7 @@ export const BrowserScreen = () => {
             )}
           </ScrollView>
         ) : (
-          <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
+          <EmptyList icon={GlobeSimple} title={'Recent search empty list'} message={'You have not searched any website before'} />
         )}
       </>
     </ScreenContainer>

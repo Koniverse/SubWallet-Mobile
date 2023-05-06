@@ -52,6 +52,9 @@ export const getUnstakingInfo = (unstakings: UnstakingInfo[], address: string) =
 };
 
 const renderAccountItemLabel = (theme: ThemeTypes, address: string, name?: string) => {
+  console.log('address', address);
+  console.log('name', name);
+
   return (
     <View
       style={{
@@ -69,6 +72,7 @@ const renderAccountItemLabel = (theme: ThemeTypes, address: string, name?: strin
             color: theme.colorWhite,
             ...FontMedium,
             marginLeft: 8,
+            maxWidth: 100,
           }}>
           {name || toShort(address)}
         </Typography.Text>
@@ -205,11 +209,27 @@ export const StakingDetailModal = ({
               label={'Unstaked'}
               labelAlign={unstakingData.status === UnstakingStatus.UNLOCKING.valueOf() ? 'top' : 'center'}>
               {() => (
-                <View>
-                  <Number decimal={decimals} suffix={staking.nativeToken} value={unstakingData.claimable} />
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Number
+                    size={14}
+                    intColor={theme.colorTextTertiary}
+                    decimalColor={theme.colorTextTertiary}
+                    unitColor={theme.colorTextTertiary}
+                    decimal={decimals}
+                    suffix={staking.nativeToken}
+                    value={unstakingData.claimable}
+                  />
 
                   {unstakingData.status === UnstakingStatus.UNLOCKING.valueOf() && (
-                    <Typography.Text>{getWaitingTime(unstakingData.waitingTime)}</Typography.Text>
+                    <Typography.Text
+                      style={{
+                        fontSize: theme.fontSizeSM,
+                        lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+                        color: theme.colorTextTertiary,
+                        ...FontMedium,
+                      }}>
+                      {getWaitingTime(unstakingData.waitingTime)}
+                    </Typography.Text>
                   )}
                 </View>
               )}
