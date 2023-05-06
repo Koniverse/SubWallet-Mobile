@@ -63,9 +63,14 @@ export const TokenGroupsUpperBlock = ({
       <TouchableOpacity style={{ alignItems: 'center' }} onPress={_toggleBalances}>
         <BalancesVisibility value={totalValue} startWithSymbol subFloatNumber />
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 3, height: 40 }}>
           <View style={{ marginRight: 8 }}>
-            <Icon size="md" phosphorIcon={isShowBalance ? Eye : EyeSlash} iconColor={theme.colorTextLight3} />
+            <Icon
+              size="md"
+              phosphorIcon={isShowBalance ? Eye : EyeSlash}
+              iconColor={theme.colorTextLight3}
+              weight={'bold'}
+            />
           </View>
           {isShowBalance && (
             <Number
@@ -93,7 +98,11 @@ export const TokenGroupsUpperBlock = ({
             </Typography.Text>
           )}
 
-          <Tag style={{ marginLeft: 8 }} color={isPriceDecrease ? 'error' : 'success'} shape={'round'} closable={false}>
+          <Tag
+            style={{ marginLeft: 8, height: 22 }}
+            color={isPriceDecrease ? 'error' : 'success'}
+            shape={'round'}
+            closable={false}>
             <>
               {isShowBalance && (
                 <Number

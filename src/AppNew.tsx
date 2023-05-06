@@ -23,6 +23,7 @@ import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
+import { keyringLock } from 'messaging/index';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -50,6 +51,11 @@ let timeout: NodeJS.Timeout | undefined;
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
   const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock } = autoLockParams;
+
+  if (state === 'background') {
+    keyringLock().catch((e: Error) => console.log(e));
+  }
+
   if (!pinCodeEnabled || autoLockTime === undefined) {
     return;
   }
@@ -86,6 +92,7 @@ export const AppNew = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
+  const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { isLocked, lock } = useAppLock();
 
   const isCryptoReady = useCryptoReady();
@@ -113,6 +120,13 @@ export const AppNew = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
+  }, []);
+
+  useEffect(() => {
+    if (hasMasterPassword) {
+      keyringLock().catch((e: Error) => console.log(e));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;

@@ -155,7 +155,9 @@ export const CustomTokenSetting = () => {
         filterFunction={filterFunction}
         searchFunction={searchFunction}
         renderItem={renderItem}
-        renderListEmptyComponent={() => <EmptyList icon={Coins} title={i18n.errorMessage.noTokenAvailable} />}
+        renderListEmptyComponent={() => (
+          <EmptyList icon={Coins} title={'No token'} message={'Your token will appear here.'} />
+        )}
         isShowListWrapper
       />
 
