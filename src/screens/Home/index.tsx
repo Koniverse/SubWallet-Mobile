@@ -146,13 +146,6 @@ export const Home = () => {
     }
   }, [hasMasterPassword, navigation, needMigrate]);
 
-  useEffect(() => {
-    if (hasMasterPassword) {
-      keyringLock().catch((e: Error) => console.log(e));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     if (isReady && isLoading) {

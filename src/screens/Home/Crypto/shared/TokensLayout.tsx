@@ -141,7 +141,7 @@ export const TokensLayout = ({
         <>
           <View style={{ height: '100%' }} />
           <View style={emptyListWrapperStyle}>
-            <EmptyList icon={Coins} title={i18n.common.emptyTokenListMessage} />
+            <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started'} />
             <View style={itemWrapperAppendixStyle} />
             {layoutFooter}
           </View>

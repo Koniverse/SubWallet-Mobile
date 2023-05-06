@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, StyleProp, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { DotsThree, PushPinSlash } from 'phosphor-react-native';
+import { DotsThree, Users } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
@@ -181,7 +181,11 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       items={accountItems}
       searchFunction={filterFunction}
       renderListEmptyComponent={() => (
-        <EmptyList icon={PushPinSlash} title={i18n.common.noAccountAvailableForThisDApp} />
+        <EmptyList
+          icon={Users}
+          title={'No accounts connected'}
+          message={'Your list of connected accounts will appear here.'}
+        />
       )}
       rightIconOption={rightIconOption}
       renderItem={renderItem}

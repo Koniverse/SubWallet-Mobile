@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
-import { DotsThree, PushPinSlash } from 'phosphor-react-native';
+import { DotsThree, GlobeHemisphereWest } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -87,7 +87,13 @@ export const DAppAccessScreen = () => {
       autoFocus={false}
       items={dAppItems}
       searchFunction={filterFunction}
-      renderListEmptyComponent={() => <EmptyList icon={PushPinSlash} title={i18n.common.noDAppAvailable} />}
+      renderListEmptyComponent={() => (
+        <EmptyList
+          icon={GlobeHemisphereWest}
+          title={'No dApps found'}
+          message={'Your list of approved dApps will appear here.'}
+        />
+      )}
       rightIconOption={rightIconOption}
       renderItem={renderItem}
       afterListItem={
