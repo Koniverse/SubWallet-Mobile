@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
@@ -19,10 +19,6 @@ import withPageWrapper from 'components/pageWrapper';
 import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
-import { keyringLock } from '../../messaging';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -130,21 +126,7 @@ const MainScreen = () => {
 
 export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
-  const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
-
-  const needMigrate = useMemo(
-    () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length,
-    [accounts],
-  );
-
-  useEffect(() => {
-    if (needMigrate && hasMasterPassword) {
-      navigation.navigate('MigratePassword');
-    }
-  }, [hasMasterPassword, navigation, needMigrate]);
+  const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
 
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {

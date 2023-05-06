@@ -1,4 +1,5 @@
 import WordPhrase from 'components/common/WordPhrase';
+import AlertBox from 'components/design-system-ui/alert-box';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import useGoHome from 'hooks/screen/useGoHome';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -9,7 +10,6 @@ import { AccountExportProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { ExportType, SelectExportType } from 'components/common/SelectExportType';
-import { Warning } from 'components/Warning';
 import { Button, Icon, QRCode, Typography } from 'components/design-system-ui';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { exportAccount, exportAccountPrivateKey, keyringExportMnemonic } from 'messaging/index';
@@ -208,11 +208,13 @@ export const AccountExport = ({
     <SubScreenContainer navigation={navigation} disabled={isBusy} title={title} rightIcon={X} onPressRightIcon={goHome}>
       <View style={styles.layoutContainer}>
         <ScrollView style={styles.bodyArea}>
-          <Warning
-            style={currentViewStep === ViewStep.SELECT_TYPES ? styles.introWarning : styles.rsWarning}
-            title={'Warning: Never disclose this key'}
-            message={'Anyone with your keys can steal any assets held in your account.'}
-          />
+          <View style={currentViewStep === ViewStep.SELECT_TYPES ? styles.introWarning : styles.rsWarning}>
+            <AlertBox
+              title={'Warning: Never disclose this key'}
+              description={'Anyone with your keys can steal any assets held in your account.'}
+              type="warning"
+            />
+          </View>
 
           {currentViewStep === ViewStep.SELECT_TYPES && (
             <SelectExportType
