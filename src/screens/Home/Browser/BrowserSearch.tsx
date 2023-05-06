@@ -1,3 +1,4 @@
+import { ScreenContainer } from 'components/ScreenContainer';
 import React, { useEffect, useState } from 'react';
 import { ColorMap } from 'styles/color';
 import { ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
@@ -15,8 +16,6 @@ import { SiteInfo } from 'stores/types';
 import { getHostName, getValidURL } from 'utils/browser';
 import { createNewTab } from 'stores/updater';
 import { LazyFlatList } from 'components/LazyFlatList';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { noop } from 'utils/function';
 
 function doFilter(searchString: string) {
   return predefinedDApps.dapps.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
@@ -87,7 +86,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   };
 
   return (
-    <ContainerWithSubHeader onPressBack={noop} showLeftBtn={false}>
+    <ScreenContainer>
       <>
         <View style={{ flexDirection: 'row', alignItems: 'center', ...ContainerHorizontalPadding }}>
           <Search
@@ -119,6 +118,6 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
           />
         </View>
       </>
-    </ContainerWithSubHeader>
+    </ScreenContainer>
   );
 };

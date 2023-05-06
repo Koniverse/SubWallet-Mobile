@@ -1,4 +1,3 @@
-import { ConfirmationContent } from 'components/common/Confirmation';
 import React, { useCallback, useMemo } from 'react';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { BaseTransactionConfirmation } from 'screens/Confirmations/variants/Transaction/variants/Base';
@@ -14,7 +13,6 @@ import { SigningRequest } from '@subwallet/extension-base/background/types';
 import useParseSubstrateRequestPayload from 'hooks/transaction/confirmation/useParseSubstrateRequestPayload';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { JoinPoolTransactionConfirmation, SendNftTransactionConfirmation } from './variants';
-import { View } from 'react-native';
 import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
 import LeavePoolTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/LeavePool';
