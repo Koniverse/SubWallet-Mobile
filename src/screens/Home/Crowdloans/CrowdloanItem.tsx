@@ -4,9 +4,9 @@ import { TagNativeProps } from 'components/design-system-ui/tag';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { Linking, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleProp, Text, TextStyle, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CrowdloanItemType } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 
@@ -22,14 +22,16 @@ const containerStyle: StyleProp<any> = {
 };
 
 const subTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
   ...FontMedium,
+  fontSize: 12,
+  lineHeight: 20,
   color: ColorMap.disabled,
 };
 
-const textStyle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontMedium,
+const textStyle: StyleProp<TextStyle> = {
+  ...FontSemiBold,
+  fontSize: 16,
+  lineHeight: 24,
   color: ColorMap.light,
 };
 
@@ -53,7 +55,7 @@ const crowdloanItemTopAreaStyle: StyleProp<any> = {
 
 const crowdloanItemMainArea: StyleProp<any> = {
   flexDirection: 'row',
-  paddingVertical: 19,
+  paddingVertical: 12,
   justifyContent: 'space-between',
 };
 
@@ -146,9 +148,10 @@ export const CrowdloanItem = ({ item }: Props) => {
             value={item.contribute}
             decimal={0}
             suffix={item.symbol}
-            intColor={textStyle.color}
+            intColor={textStyle.color as string}
             decimalColor={subTextStyle.color}
             size={textStyle.fontSize}
+            textStyle={{ lineHeight: textStyle.lineHeight }}
           />
           <Number
             value={item.convertedContribute}
@@ -158,6 +161,7 @@ export const CrowdloanItem = ({ item }: Props) => {
             intColor={subTextStyle.color}
             decimalColor={subTextStyle.color}
             size={subTextStyle.fontSize}
+            textStyle={{ lineHeight: subTextStyle.lineHeight }}
           />
         </View>
       </View>
