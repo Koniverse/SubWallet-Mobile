@@ -1,13 +1,14 @@
-import React from 'react';
-import { Linking, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { CrowdloanItemType } from 'types/index';
 import { CrowdloanParaState } from '@subwallet/extension-base/background/KoniTypes';
-import i18n from 'utils/i18n/i18n';
-import { ContainerHorizontalPadding, FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import { Logo, Number, Tag } from 'components/design-system-ui';
+import { TagNativeProps } from 'components/design-system-ui/tag';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { Logo, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import React, { useMemo } from 'react';
+import { Linking, StyleProp, Text, TextStyle, TouchableOpacity, View } from 'react-native';
+import { ColorMap } from 'styles/color';
+import { ContainerHorizontalPadding, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { CrowdloanItemType } from 'types/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   item: CrowdloanItemType;
@@ -21,14 +22,16 @@ const containerStyle: StyleProp<any> = {
 };
 
 const subTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
   ...FontMedium,
+  fontSize: 12,
+  lineHeight: 20,
   color: ColorMap.disabled,
 };
 
-const textStyle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontMedium,
+const textStyle: StyleProp<TextStyle> = {
+  ...FontSemiBold,
+  fontSize: 16,
+  lineHeight: 24,
   color: ColorMap.light,
 };
 
@@ -52,15 +55,11 @@ const crowdloanItemTopAreaStyle: StyleProp<any> = {
 
 const crowdloanItemMainArea: StyleProp<any> = {
   flexDirection: 'row',
-  paddingVertical: 19,
+  paddingVertical: 12,
   justifyContent: 'space-between',
 };
 
 const paraStateLabelWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.inputBackground,
-  borderRadius: 2,
-  paddingHorizontal: 8,
-  paddingVertical: 1,
   marginLeft: 8,
 };
 const crowdloanItemSeparator: StyleProp<any> = {
@@ -68,28 +67,6 @@ const crowdloanItemSeparator: StyleProp<any> = {
   borderBottomColor: ColorMap.dark2,
   marginLeft: 54,
 };
-
-function getParaStateLabelStyle(paraState: CrowdloanParaState): StyleProp<any> {
-  let color: string = ColorMap.light;
-  if (paraState.valueOf() === CrowdloanParaState.COMPLETED.valueOf()) {
-    color = ColorMap.primary;
-  }
-
-  if (paraState === CrowdloanParaState.FAILED.valueOf()) {
-    color = ColorMap.danger;
-  }
-
-  if (paraState === CrowdloanParaState.ONGOING.valueOf()) {
-    color = ColorMap.warning;
-  }
-
-  return {
-    ...FontSize0,
-    lineHeight: 16,
-    ...FontMedium,
-    color: color,
-  };
-}
 
 function getParaStateLabel(paraState: CrowdloanParaState) {
   if (paraState.valueOf() === CrowdloanParaState.COMPLETED.valueOf()) {
@@ -117,6 +94,20 @@ export function getGroupKey(groupDisplayName: string) {
 
 export const CrowdloanItem = ({ item }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+
+  const tagColor = useMemo((): TagNativeProps['color'] => {
+    switch (item.paraState) {
+      case CrowdloanParaState.COMPLETED:
+        return 'success';
+      case CrowdloanParaState.ONGOING:
+        return 'warning';
+      case CrowdloanParaState.FAILED:
+        return 'error';
+      default:
+        return 'default';
+    }
+  }, [item.paraState]);
+
   return (
     <TouchableOpacity
       style={{ ...ContainerHorizontalPadding, ...containerStyle, backgroundColor: theme.colorBgSecondary }}
@@ -143,7 +134,9 @@ export const CrowdloanItem = ({ item }: Props) => {
 
               {!!item.paraState && (
                 <View style={paraStateLabelWrapperStyle}>
-                  <Text style={getParaStateLabelStyle(item.paraState)}>{getParaStateLabel(item.paraState)}</Text>
+                  <Tag closable={false} color={tagColor} bgType="default">
+                    {getParaStateLabel(item.paraState)}
+                  </Tag>
                 </View>
               )}
             </View>
@@ -155,9 +148,10 @@ export const CrowdloanItem = ({ item }: Props) => {
             value={item.contribute}
             decimal={0}
             suffix={item.symbol}
-            intColor={textStyle.color}
+            intColor={textStyle.color as string}
             decimalColor={subTextStyle.color}
             size={textStyle.fontSize}
+            textStyle={{ lineHeight: textStyle.lineHeight }}
           />
           <Number
             value={item.convertedContribute}
@@ -167,6 +161,7 @@ export const CrowdloanItem = ({ item }: Props) => {
             intColor={subTextStyle.color}
             decimalColor={subTextStyle.color}
             size={subTextStyle.fontSize}
+            textStyle={{ lineHeight: subTextStyle.lineHeight }}
           />
         </View>
       </View>

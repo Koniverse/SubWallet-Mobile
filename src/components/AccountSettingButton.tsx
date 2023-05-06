@@ -13,19 +13,18 @@ interface Props {
 }
 
 export const AccountSettingButton = ({ navigation }: Props) => {
-  const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccountAddress);
-  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const isAccountWaiting = useSelector((state: RootState) => state.accountState.isWaiting);
-  const SubIcon = useGetAvatarSubIcon(currentAccount, 20);
+  const { currentAccount, isReady } = useSelector((state: RootState) => state.accountState);
+  const currentAccountAddress = currentAccount?.address;
+  const SubIcon = useGetAvatarSubIcon(currentAccount, 16);
 
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('Settings');
+        navigation.navigate('AccountsScreen');
       }}>
       <View>
         <SubWalletAvatar address={currentAccountAddress || ''} size={32} SubIcon={SubIcon} />
-        {!!isAccountWaiting && (
+        {!isReady && (
           <View
             style={{
               position: 'absolute',

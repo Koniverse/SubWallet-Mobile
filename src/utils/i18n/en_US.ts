@@ -455,8 +455,8 @@ export const en = {
     filter: {
       polkadotChain: 'Polkadot relay chain',
       kusamaChain: 'Kusama relay chain',
-      win: 'Winner projects',
-      fail: 'Failed project',
+      win: 'Win',
+      fail: 'Fail',
     },
   },
   stakingScreen: {
