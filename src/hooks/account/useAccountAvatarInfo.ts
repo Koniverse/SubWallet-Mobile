@@ -4,8 +4,6 @@
 import useAccountRecoded from './useAccountRecoded';
 import { useMemo } from 'react';
 
-import { KeypairType } from '@polkadot/util-crypto/types';
-
 interface Result {
   address: string;
   prefix: number;

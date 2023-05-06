@@ -38,7 +38,7 @@ import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import { RootRouteProps, RootStackParamList } from './routes';
+import { RootRouteProps, RootStackParamList  } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';

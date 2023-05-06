@@ -74,9 +74,9 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
 
   const onChangeInput = useCallback(
     (_value: string) => {
-      if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(_value)) {
-        return;
-      }
+      // if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(_value)) {
+      //   return;
+      // }
 
       let currentValue = _value;
       const maxLength = getMaxLengthText(_value);
