@@ -43,7 +43,7 @@ export const getStatusBarPlaceholderStyle = (backgroundColor = ColorMap.dark1): 
     position: 'absolute',
     left: 0,
     right: 0,
-    height: statusBarHeight + 13.5,
+    height: STATUS_BAR_HEIGHT,
     backgroundColor: backgroundColor,
     zIndex: 10,
   };

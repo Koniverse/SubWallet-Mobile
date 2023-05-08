@@ -60,6 +60,7 @@ interface Props<T> {
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   needGapWithStatusBar?: boolean;
+  isShowPlaceHolder?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -93,6 +94,7 @@ export function FlatListScreen<T>({
   beforeListItem,
   grouping,
   needGapWithStatusBar,
+  isShowPlaceHolder,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -201,7 +203,7 @@ export function FlatListScreen<T>({
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       rightIconColor={rightIconOption?.color}
-      isShowPlaceHolder={false}
+      isShowPlaceHolder={isShowPlaceHolder}
       needGapWithStatusBar={needGapWithStatusBar}>
       {renderContent()}
     </ContainerWithSubHeader>

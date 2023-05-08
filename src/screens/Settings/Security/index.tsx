@@ -6,17 +6,7 @@ import { ToggleItem } from 'components/ToggleItem';
 import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
-import { ActionItem } from 'components/ActionItem';
-import {
-  CaretRight,
-  Globe,
-  GlobeHemisphereWest,
-  Key,
-  LockKeyOpen,
-  Password,
-  Scan,
-  ShieldCheck,
-} from 'phosphor-react-native';
+import { CaretRight, Globe, Key, Password, Scan, ShieldCheck } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
@@ -185,7 +175,6 @@ export const Security = () => {
                 key={item.text}
                 isSelected={autoLockTime === item.value}
                 label={item.text}
-                showSeparator={false}
                 onPress={() => onChangeAutoLockTime(item.value)}
               />
             ))}

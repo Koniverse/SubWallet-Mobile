@@ -52,9 +52,6 @@ export const getUnstakingInfo = (unstakings: UnstakingInfo[], address: string) =
 };
 
 const renderAccountItemLabel = (theme: ThemeTypes, address: string, name?: string) => {
-  console.log('address', address);
-  console.log('name', name);
-
   return (
     <View
       style={{
@@ -245,7 +242,17 @@ export const StakingDetailModal = ({
         </MetaInfo>
       );
     },
-    [decimals, getStakingStatus, networkPrefix, showingOption, staking.nativeToken, unstakings],
+    [
+      decimals,
+      getStakingStatus,
+      networkPrefix,
+      showingOption,
+      staking.nativeToken,
+      theme.colorTextTertiary,
+      theme.fontSizeSM,
+      theme.lineHeightSM,
+      unstakings,
+    ],
   );
 
   const footer = () => {

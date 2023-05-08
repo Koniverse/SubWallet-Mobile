@@ -45,6 +45,7 @@ const NftCollectionList = () => {
       <>
         <Header />
         <FlatListScreen
+          style={{ marginTop: 16 }}
           autoFocus={false}
           showLeftBtn={false}
           title={i18n.title.nftCollections}
@@ -68,6 +69,7 @@ const NftCollectionList = () => {
           // }
           numberColumns={2}
           searchMarginBottom={16}
+          isShowPlaceHolder={false}
           needGapWithStatusBar={false}
         />
       </>

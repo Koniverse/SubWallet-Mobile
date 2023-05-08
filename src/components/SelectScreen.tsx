@@ -57,8 +57,7 @@ export const SelectScreen = ({
       style={[{ width: '100%' }, style]}
       showRightBtn={showRightBtn}
       rightIcon={rightIcon}
-      onPressRightIcon={onPressRightIcon}
-      isShowPlaceHolder={false}>
+      onPressRightIcon={onPressRightIcon}>
       <View style={{ ...sharedStyles.layoutContainer }}>
         <Search
           placeholder={i18n.common.search}
