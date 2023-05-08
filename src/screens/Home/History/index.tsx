@@ -1,10 +1,9 @@
 import { HistoryDetailModal } from './Detail';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Aperture,
   ArrowDownLeft,
   ArrowUpRight,
-  Clock,
   ClockCounterClockwise,
   Database,
   IconProps,
@@ -356,11 +355,25 @@ function History({
 
     const searchTextLowerCase = searchText.toLowerCase();
 
-    return items.filter(
-      item =>
-        (!!item.fromName && item.fromName.toLowerCase().includes(searchTextLowerCase)) ||
-        (!!item.toName && item.toName.toLowerCase().includes(searchTextLowerCase)),
-    );
+    return items.filter(item => {
+      if (
+        item.direction === TransactionDirection.SEND &&
+        !!item.fromName &&
+        item.fromName.toLowerCase().includes(searchTextLowerCase)
+      ) {
+        return true;
+      }
+
+      if (
+        item.direction === TransactionDirection.RECEIVED &&
+        !!item.toName &&
+        item.toName.toLowerCase().includes(searchTextLowerCase)
+      ) {
+        return true;
+      }
+
+      return false;
+    });
   }, []);
 
   const groupBy = useCallback((item: TransactionHistoryDisplayItem) => {
