@@ -1,7 +1,7 @@
-import { Images, Logo } from 'assets/index';
+import { Images, SVGImages } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { useCallback, useState } from 'react';
-import { Image, ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
+import React, { Suspense, useCallback, useState } from 'react';
+import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
@@ -114,7 +114,9 @@ export const FirstScreen = () => {
               paddingTop: 40,
               alignItems: 'center',
             }}>
-            <Image source={Logo.SubWallet} />
+            <Suspense>
+              <SVGImages.Logo width={66} height={100} />
+            </Suspense>
             <Text style={logoTextStyle}>SubWallet</Text>
             <Text style={logoSubTextStyle}>Polkadot, Substrate & Ethereum wallet</Text>
           </View>

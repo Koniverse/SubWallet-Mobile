@@ -9,6 +9,7 @@
 
     <style name="SplashTheme" parent="SplashScreen_SplashTheme">
         <item name="android:statusBarColor">@color/transparent</item>
-        <item name="android:windowBackground">@drawable/logo</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:colorBackground">#fff</item>
     </style>
 </resources>
