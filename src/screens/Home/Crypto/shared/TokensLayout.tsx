@@ -11,9 +11,7 @@ import {
 import { ColorMap } from 'styles/color';
 import { Coins } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
-import i18n from 'utils/i18n/i18n';
-import { itemWrapperAppendixStyle } from 'screens/Home/Crypto/layers/shared';
-import { AnimatedFlatlist } from 'components/design-system-ui';
+import { ActivityIndicator, AnimatedFlatlist } from 'components/design-system-ui';
 import Animated, {
   Extrapolate,
   interpolate,
@@ -23,6 +21,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   layoutHeader: React.ReactElement;
@@ -33,23 +32,13 @@ interface Props {
   renderItem: ListRenderItem<TokenBalanceItemType>;
   isRefreshing?: boolean;
   refresh?: () => void;
+  loading?: boolean;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark,
   flexGrow: 1,
   justifyContent: 'center',
   position: 'relative',
-};
-
-const emptyListWrapperStyle: StyleProp<any> = {
-  position: 'absolute',
-  marginVertical: 'auto',
-  alignItems: 'center',
-  left: 0,
-  right: 0,
-  paddingTop: 48,
-  backgroundColor: ColorMap.dark1,
 };
 
 export const TokensLayout = ({
@@ -57,11 +46,13 @@ export const TokensLayout = ({
   layoutFooter,
   listActions,
   items: tokenBalanceItems,
+  loading,
   renderItem,
   isRefreshing,
   refresh,
   style,
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
   const isAnimating = useSharedValue(0);
 
@@ -134,19 +125,25 @@ export const TokensLayout = ({
 
   if (!tokenBalanceItems.length) {
     return (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={flatListContentContainerStyle}
-        refreshControl={refreshControlNode}>
-        <>
-          <View style={{ height: '100%' }} />
-          <View style={emptyListWrapperStyle}>
-            <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started'} />
-            <View style={itemWrapperAppendixStyle} />
-            {layoutFooter}
+      <View style={[style, { flex: 1, marginTop: 0 }]}>
+        <View style={{ paddingHorizontal: 16 }}>{layoutHeader}</View>
+
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
           </View>
-        </>
-      </ScrollView>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={flatListContentContainerStyle}
+            refreshControl={refreshControlNode}>
+            <>
+              <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started'} />
+              {layoutFooter}
+            </>
+          </ScrollView>
+        )}
+      </View>
     );
   }
 
