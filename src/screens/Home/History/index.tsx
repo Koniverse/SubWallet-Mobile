@@ -7,7 +7,8 @@ import {
   Clock,
   ClockCounterClockwise,
   Database,
-  IconProps, ListBullets,
+  IconProps,
+  ListBullets,
   Rocket,
   Spinner,
 } from 'phosphor-react-native';
@@ -402,7 +403,11 @@ function History({
   const emptyList = useCallback(() => {
     //todo: i18n
     return (
-      <EmptyList icon={ListBullets} title={'No transactions yet'} message={'Your transactions history will appear here!'} />
+      <EmptyList
+        icon={ListBullets}
+        title={'No transactions yet'}
+        message={'Your transactions history will appear here!'}
+      />
     );
   }, []);
 

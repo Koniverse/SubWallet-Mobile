@@ -56,5 +56,5 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  contentContainer: { flex: 1, overflow: 'hidden' },
+  contentContainer: { flex: 1, overflow: 'hidden', marginTop: 8 },
 });

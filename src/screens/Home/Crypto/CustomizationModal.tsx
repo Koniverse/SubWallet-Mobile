@@ -164,6 +164,8 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         onPressBack={onCancel}
         renderListEmptyComponent={renderListEmptyComponent}
         isShowListWrapper
+        isShowPlaceHolder={false}
+        needGapWithStatusBar={false}
       />
     </SubWalletFullSizeModal>
   );

@@ -21,6 +21,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useAppLock from 'hooks/useAppLock';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
@@ -127,7 +128,7 @@ const MainScreen = () => {
 export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
-
+  const { isLocked } = useAppLock();
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     if (isReady && isLoading) {
@@ -146,7 +147,7 @@ export const Home = () => {
   return (
     <>
       {isEmptyAccounts ? <FirstScreen /> : <MainScreen />}
-      <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts} />
+      <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts && !isLocked} />
     </>
   );
 };

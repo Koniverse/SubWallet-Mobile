@@ -126,6 +126,7 @@ const StakingBalanceList = () => {
       <>
         <Header />
         <FlatListScreen
+          style={{ marginTop: 16 }}
           title={i18n.title.staking}
           items={data}
           showLeftBtn={false}
@@ -151,6 +152,7 @@ const StakingBalanceList = () => {
               }}
             />
           }
+          isShowPlaceHolder={false}
           needGapWithStatusBar={false}
         />
 

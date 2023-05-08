@@ -267,8 +267,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       onPressBack={onBack}
       disabled={loading}
       title={i18n.title.importNft}
-      style={ContainerHeaderStyle}
-      isShowPlaceHolder={false}>
+      style={ContainerHeaderStyle}>
       <View style={WrapperStyle}>
         <InputAddress
           containerStyle={{ marginBottom: 8 }}

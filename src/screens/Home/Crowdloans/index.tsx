@@ -87,6 +87,7 @@ export const CrowdloansScreen = () => {
         <Header />
         <FlatListScreen
           isShowFilterBtn
+          style={{ marginTop: 16 }}
           title={i18n.tabName.crowdloans}
           renderListEmptyComponent={renderListEmptyComponent}
           renderItem={renderItem}
@@ -96,6 +97,7 @@ export const CrowdloansScreen = () => {
           searchFunction={doFilterOptions}
           filterOptions={defaultFilterOpts}
           filterFunction={getListByFilterOpt}
+          isShowPlaceHolder={false}
           needGapWithStatusBar={false}
           // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
           refreshControl={

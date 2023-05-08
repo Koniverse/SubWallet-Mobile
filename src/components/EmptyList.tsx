@@ -15,29 +15,31 @@ interface Props {
 export const EmptyList = ({ icon, title, message }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
-    <View style={centerStyle}>
-      <PageIcon icon={icon} color={theme.colorTextTertiary} backgroundColor={'rgba(77, 77, 77, 0.1)'} />
-      <Text
-        style={{
-          fontSize: theme.fontSizeLG,
-          lineHeight: theme.fontSizeLG * theme.lineHeightLG,
-          ...FontSemiBold,
-          color: theme.colorTextLight2,
-          paddingTop: theme.padding,
-        }}>
-        {title}
-      </Text>
-      {message && (
+    <View style={[centerStyle, { justifyContent: 'center', alignItems: 'center', paddingBottom: 120 }]}>
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <PageIcon icon={icon} color={theme.colorTextTertiary} backgroundColor={'rgba(77, 77, 77, 0.1)'} />
         <Text
           style={{
-            fontSize: theme.fontSize,
-            lineHeight: theme.fontSize * theme.lineHeight,
-            color: theme.colorTextLight4,
-            ...FontMedium,
+            fontSize: theme.fontSizeLG,
+            lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+            ...FontSemiBold,
+            color: theme.colorTextLight2,
+            paddingTop: theme.padding,
           }}>
-          {message}
+          {title}
         </Text>
-      )}
+        {message && (
+          <Text
+            style={{
+              fontSize: theme.fontSize,
+              lineHeight: theme.fontSize * theme.lineHeight,
+              color: theme.colorTextLight4,
+              ...FontMedium,
+            }}>
+            {message}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };
