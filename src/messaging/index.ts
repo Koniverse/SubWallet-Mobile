@@ -376,6 +376,7 @@ export function lazySubscribeMessage<TMessageType extends MessageTypesWithSubscr
   const rs = {
     promise: handlePromise as Promise<ResponseTypes[TMessageType]>,
     start: () => {
+      console.log('start', id, message);
       postMessage({ id, message, request: request || {}, origin: undefined });
     },
     unsub: () => {
@@ -1150,9 +1151,7 @@ export async function subscribeFreeBalance(
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 
-export async function substrateNftSubmitTransaction(
-  request: NftTransactionRequest,
-): Promise<SWTransactionResponse> {
+export async function substrateNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {
   return sendMessage('pri(substrateNft.submitTransaction)', request);
 }
 

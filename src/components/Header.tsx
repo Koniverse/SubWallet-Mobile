@@ -1,5 +1,6 @@
 import { List, QrCode } from 'phosphor-react-native';
-import React, { useCallback } from 'react';
+import { WebRunnerContext } from 'providers/contexts';
+import React, { useCallback, useContext } from 'react';
 import { StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { SpaceStyle } from 'styles/space';
@@ -23,6 +24,7 @@ const headerWrapper: StyleProp<any> = {
 
 export const Header = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { reload } = useContext(WebRunnerContext);
 
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
@@ -56,7 +58,7 @@ export const Header = () => {
           size={'xs'}
           type={'ghost'}
           icon={<Icon phosphorIcon={QrCode} weight={'bold'} />}
-          onPress={onPressQrButton}
+          onPress={reload}
         />
       </View>
     </View>

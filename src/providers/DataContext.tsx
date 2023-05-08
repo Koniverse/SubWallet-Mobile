@@ -60,6 +60,7 @@ export interface DataContextType {
   removeHandler: (name: string) => void;
   awaitRequestsCache: Record<string, Promise<boolean>>;
   awaitStores: (storeNames: StoreName[], renew?: boolean) => Promise<boolean>;
+  clearHandlers: () => void;
 }
 
 const _DataContext: DataContextType = {
@@ -165,6 +166,12 @@ const _DataContext: DataContextType = {
 
     // Wait for all handlers to finish
     return this.awaitRequestsCache[key];
+  },
+  clearHandlers() {
+    const handlers = Object.keys(this.handlerMap);
+    for (const handler of handlers) {
+      this.removeHandler(handler);
+    }
   },
 };
 
@@ -300,6 +307,8 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         name: 'subscribeTxHistory',
         relatedStores: ['transactionHistory'],
       });
+    } else {
+      _DataContext.clearHandlers();
     }
   }, [isWebRunnerReady]);
 
