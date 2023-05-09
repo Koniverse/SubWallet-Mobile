@@ -346,7 +346,6 @@ export const subscribeStakingReward = lazySubscribeMessage(
 );
 
 export const updateChainStakingMetadata = (data: ChainStakingMetadata[]) => {
-  console.log('data-------------', data);
   store.dispatch({ type: 'staking/updateChainStakingMetadata', payload: data });
 };
 

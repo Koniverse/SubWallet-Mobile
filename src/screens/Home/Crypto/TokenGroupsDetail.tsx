@@ -217,7 +217,6 @@ export const TokenGroupsDetail = ({
         <Header />
 
         <TokensLayout
-          style={{ marginTop: 50 }}
           loading={isTokenGroupComputing || isAccountBalanceComputing}
           items={tokenBalanceItems}
           layoutHeader={listHeaderNode}

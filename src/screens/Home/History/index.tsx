@@ -233,7 +233,6 @@ function History({
     params: { extrinsicHash, chain },
   },
 }: HistoryProps): React.ReactElement<Props> {
-  // const dataContext = useContext(DataContext);
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((root: RootState) => root.accountState.accounts);
   const currentAccount = useSelector((root: RootState) => root.accountState.currentAccount);

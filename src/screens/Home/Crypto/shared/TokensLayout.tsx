@@ -22,9 +22,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import LinearGradient from 'react-native-linear-gradient';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 interface Props {
   layoutHeader: React.ReactElement;
+  stickyBackground?: [string, string];
   listActions?: React.ReactElement;
   style?: StyleProp<ViewStyle>;
   layoutFooter?: React.ReactElement;
@@ -43,6 +46,7 @@ const flatListContentContainerStyle: StyleProp<any> = {
 
 export const TokensLayout = ({
   layoutHeader,
+  stickyBackground,
   layoutFooter,
   listActions,
   items: tokenBalanceItems,
@@ -74,10 +78,10 @@ export const TokensLayout = ({
   }, []);
   const stickyHeaderInvisibleStyles = useAnimatedStyle(() => {
     const opacity = interpolate(yOffset.value, [218, 220], [0, 1], Extrapolate.CLAMP);
-    const marginTop = interpolate(yOffset.value, [218, 220], [-60, 0], Extrapolate.CLAMP);
+    const zIndex = interpolate(yOffset.value, [218, 220], [0, 100], Extrapolate.CLAMP);
     return {
       opacity,
-      marginTop,
+      zIndex,
     };
   }, []);
 
@@ -149,7 +153,38 @@ export const TokensLayout = ({
 
   return (
     <View style={[{ flex: 1 }, style]}>
-      <Animated.View style={[{ paddingHorizontal: 16 }, stickyHeaderInvisibleStyles]}>{listActions}</Animated.View>
+      {!!listActions && (
+        <Animated.View
+          style={[
+            {
+              paddingHorizontal: 16,
+              backgroundColor: theme.colorBgDefault,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              overflow: 'hidden',
+            },
+            stickyHeaderInvisibleStyles,
+          ]}>
+          {!!stickyBackground && (
+            <LinearGradient
+              locations={[0, 0.5]}
+              colors={stickyBackground}
+              style={{
+                flex: 1,
+                marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
+                height: 600,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+              }}
+            />
+          )}
+          {listActions}
+        </Animated.View>
+      )}
 
       <AnimatedFlatlist
         onScroll={onScrollHandler}

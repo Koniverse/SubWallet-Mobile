@@ -392,7 +392,6 @@ export function lazySubscribeMessage<TMessageType extends MessageTypesWithSubscr
 
   rs.promise
     .then(data => {
-      console.log('data', data);
       !cancel && callback(data);
     })
     .catch(console.error);

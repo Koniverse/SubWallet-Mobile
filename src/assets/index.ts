@@ -23,7 +23,6 @@ export const Images = {
   stackingEmptyList: require('./stacking-empty-list.png'),
   successStatusImg: require('./success-status.png'),
   failStatusImg: require('./fail-status.png'),
-  loadingScreen: require('./loading-background.jpg'),
   backgroundImg: require('./subwallet-background-img.png'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
   squircleBorder: require('./squircleBorder.png'),

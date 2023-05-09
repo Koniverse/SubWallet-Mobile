@@ -43,7 +43,6 @@ interface Props {
 }
 
 export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCodeRef }: Props) => {
-  console.log('isPinCodeValid', isPinCodeValid);
   const theme = useSubWalletTheme().swThemes;
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
@@ -74,6 +73,7 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
 
     return (
       <Squircle
+        key={index}
         customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         size={'sm'}
         backgroundColor={getBorderColor()}>
