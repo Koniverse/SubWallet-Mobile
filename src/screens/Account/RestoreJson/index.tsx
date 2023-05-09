@@ -5,7 +5,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, ListRenderItemInfo, Platform, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
@@ -256,7 +256,7 @@ export const RestoreJson = () => {
       rightIcon={X}
       onPressRightIcon={goHome}>
       <View style={styles.wrapper}>
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>
             Please upload the .json file you exported from Polkadot.js
           </Typography.Text>
@@ -302,7 +302,7 @@ export const RestoreJson = () => {
               </View>
             </>
           )}
-        </View>
+        </ScrollView>
 
         <View style={styles.footer}>
           <Button
