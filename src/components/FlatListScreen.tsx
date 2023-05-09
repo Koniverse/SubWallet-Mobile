@@ -100,7 +100,8 @@ export function FlatListScreen<T>({
   const [searchString, setSearchString] = useState<string>('');
   const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
   const searchRef = useRef<TextInput>(null);
-  const { filterSelectionMap, onApplyFilter, onChangeFilterOption, selectedFilters } = useFilterModal();
+  const { filterSelectionMap, onApplyFilter, onChangeFilterOption, selectedFilters, onCloseFilterModal } =
+    useFilterModal();
 
   useEffect(() => {
     setTimeout(() => {
@@ -179,7 +180,10 @@ export function FlatListScreen<T>({
           onChangeOption={onChangeFilterOption}
           optionSelectionMap={filterSelectionMap}
           onApplyFilter={onApplyFilter}
-          onChangeModalVisible={() => setFilterModalVisible(false)}
+          onChangeModalVisible={() => {
+            setFilterModalVisible(false);
+            onCloseFilterModal();
+          }}
         />
       )}
     </View>

@@ -45,6 +45,7 @@ import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { StakeProps } from 'routes/transaction/transactionAction';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { accountFilterFunc } from 'screens/Transaction/helper/base';
 
 export const Stake = ({
   route: {
@@ -52,6 +53,7 @@ export const Stake = ({
   },
 }: StakeProps) => {
   const theme = useSubWalletTheme().swThemes;
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
@@ -125,6 +127,11 @@ export const Stake = ({
   const nominatorMetadata: NominatorMetadata | undefined = useMemo(
     () => nominatorMetadataList[0],
     [nominatorMetadataList],
+  );
+
+  const accountSelectorList = useMemo(
+    () => accounts.filter(accountFilterFunc(chainInfoMap, currentStakingType as StakingType, chain)),
+    [accounts, chain, chainInfoMap, currentStakingType],
   );
 
   useEffect(() => {
@@ -329,6 +336,7 @@ export const Stake = ({
     <TransactionLayout
       title={title}
       showRightHeaderButton
+      disableRightButton={!chainStakingMetadata}
       onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
@@ -409,7 +417,7 @@ export const Stake = ({
               onChangeFromValue(item.address);
               setAccountSelectModalVisible(false);
             }}
-            items={accounts}
+            items={accountSelectorList}
             onCancel={() => setAccountSelectModalVisible(false)}
           />
 

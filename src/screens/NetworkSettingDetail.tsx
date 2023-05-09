@@ -337,10 +337,9 @@ export const NetworkSettingDetail = ({
         </View>
 
         <DeleteModal
-          title={'Delete chain'}
+          title={'Delete this network ?'}
           visible={deleteVisible}
-          confirmation={'You are about to delete this chain'}
-          message={'Confirm delete this chain'}
+          message={'You are about to delete this chain'}
           onCompleteModal={onCompleteDeleteModal}
           onCancelModal={onCancelDelete}
         />

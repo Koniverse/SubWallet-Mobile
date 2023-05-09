@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import { StakingDataType } from 'hooks/types';
-import {Plus, Trophy} from 'phosphor-react-native';
+import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
@@ -19,7 +18,7 @@ import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootNavigationProps } from 'routes/index';
-import {EmptyList} from "components/EmptyList";
+import { EmptyList } from 'components/EmptyList';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -68,7 +67,7 @@ const filterFunction = (items: StakingDataType[], filters: string[]) => {
   return filteredChainList;
 };
 
-const filteredFunction = (items: StakingDataType[], searchString: string) => {
+const searchFunction = (items: StakingDataType[], searchString: string) => {
   return items.filter(({ staking }) => {
     return staking.name.replace(' Relay Chain', '').toLowerCase().includes(searchString.toLowerCase());
   });
@@ -77,7 +76,6 @@ const filteredFunction = (items: StakingDataType[], searchString: string) => {
 const StakingBalanceList = () => {
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
-  const isCanSign = useCurrentAccountCanSign();
   const navigation = useNavigation<RootNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
@@ -132,11 +130,12 @@ const StakingBalanceList = () => {
           showLeftBtn={false}
           autoFocus={false}
           renderListEmptyComponent={renderEmpty}
-          searchFunction={filteredFunction}
+          searchFunction={searchFunction}
           filterOptions={FILTER_OPTIONS}
           filterFunction={filterFunction}
           renderItem={renderItem}
           rightIconOption={rightIconOption}
+          isShowFilterBtn
           refreshControl={
             <RefreshControl
               style={{ backgroundColor: ColorMap.dark1 }}

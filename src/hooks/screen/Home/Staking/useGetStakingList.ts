@@ -213,7 +213,6 @@ export default function useGetStakingList() {
     (state: RootState) => state.staking,
   );
 
-  console.log('chainStakingMetadataList', chainStakingMetadataList);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);

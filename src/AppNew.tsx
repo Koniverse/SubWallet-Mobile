@@ -9,7 +9,7 @@ import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import {FontMedium, STATUS_BAR_HEIGHT} from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useAppLock from 'hooks/useAppLock';
@@ -138,7 +138,7 @@ export const AppNew = () => {
           duration={TOAST_DURATION}
           placement="top"
           normalColor={theme.colors.notification}
-          textStyle={{ textAlign: 'center' }}
+          textStyle={{ textAlign: 'center', ...FontMedium }}
           successColor={theme.colors.primary}
           warningColor={theme.colors.notification_warning}
           offsetTop={STATUS_BAR_HEIGHT + 40}

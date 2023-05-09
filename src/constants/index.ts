@@ -25,7 +25,7 @@ export const EVM_ACCOUNT_TYPE: KeypairType = 'ethereum';
 const window = Dimensions.get('window');
 export const deviceWidth = window.width;
 export const deviceHeight = window.height;
-export const BOTTOM_BAR_HEIGHT = 65;
+export const BOTTOM_BAR_HEIGHT = 60;
 export const statusBarHeight = getStatusBarHeight();
 export enum BitLengthOption {
   CHAIN_SPEC = 128,

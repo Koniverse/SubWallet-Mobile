@@ -55,9 +55,10 @@ const MainScreen = () => {
           marginTop: 10,
         },
         tabBarLabelStyle: {
-          paddingBottom: insets.bottom && insets.bottom - 12,
+          paddingTop: 2,
+          paddingBottom: insets.bottom ? insets.bottom - 12 : 8,
           fontSize: 10,
-          lineHeight: 25,
+          lineHeight: 18,
           ...FontMedium,
         },
         tabBarStyle: {
