@@ -1,7 +1,13 @@
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
-import { ColorMap } from 'styles/color';
+import { ActivityIndicator } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { View } from 'react-native';
 
 export const ActivityLoading = () => {
-  return <ActivityIndicator size={'small'} color={ColorMap.light} style={{ marginVertical: 20 }} />;
+  const theme = useSubWalletTheme().swThemes;
+  return (
+    <View style={{ marginVertical: 20 }}>
+      <ActivityIndicator size={20} indicatorColor={theme.colorWhite} />
+    </View>
+  );
 };

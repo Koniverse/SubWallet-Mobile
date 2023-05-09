@@ -6,7 +6,6 @@ import { CaretRight } from 'phosphor-react-native';
 import { ScannerContext } from 'providers/ScannerContext';
 import React, { useCallback, useContext, useState } from 'react';
 import { ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
 import { RootNavigationProps } from 'routes/index';
 import ResultDetail from 'screens/Signing/Detail';
 import { ColorMap } from 'styles/color';
@@ -116,9 +115,7 @@ const SigningResult = () => {
         </Text>
         <View style={ContentContainerStyle}>
           <View style={QrContainerStyle}>
-            <View style={QrStyle}>
-              <QRCode value={signedData} size={QrSize - 2 * 2} />
-            </View>
+            <View style={QrStyle} />
           </View>
           <View style={ViewDetailContainerButtonStyle}>
             <TouchableOpacity style={ViewDetailButtonStyle} onPress={openModal}>
@@ -135,5 +132,5 @@ const SigningResult = () => {
     </ContainerWithSubHeader>
   );
 };
-
+// will delete
 export default React.memo(SigningResult);

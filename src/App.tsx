@@ -10,7 +10,7 @@ import { SigningContextProvider } from 'providers/SigningContext';
 import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { CreateAccount } from 'screens/CreateAccount';
+import { CreateAccount } from 'screens/Account/CreateAccount';
 import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import ImportNft from 'screens/ImportToken/ImportNft';
@@ -21,17 +21,16 @@ import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
 import { Home } from 'screens/Home';
-import { AccountsScreen } from 'screens/AccountsScreen';
-import { EditAccount } from 'screens/EditAccount';
-import { RemoveAccount } from 'screens/RemoveAccount';
-import { RestoreJson } from 'screens/RestoreJson';
-import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
+import { AccountsScreen } from 'screens/Account/AccountsScreen';
+import { AccountDetail } from 'screens/Account/AccountDetail';
+import { RestoreJson } from 'screens/Account/RestoreJson';
+import { ImportSecretPhrase } from 'screens/Account/ImportSecretPhrase';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { Settings } from 'screens/Settings';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
-import { ImportPrivateKey } from 'screens/ImportPrivateKey';
+import { ImportPrivateKey } from 'screens/Account/ImportPrivateKey';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import { StoreStatus } from 'stores/types';
@@ -70,7 +69,7 @@ import useStoreCustomToken from 'hooks/store/useStoreCustomToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
 import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
-import { ExportAccount } from 'screens/ExportAccount';
+import { AccountExport } from 'screens/Account/AccountExport';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
@@ -295,9 +294,8 @@ export const App = () => {
                             </Stack.Group>
                             <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                               <Stack.Screen name="CreateAccount" component={CreateAccount} />
-                              <Stack.Screen name="EditAccount" component={EditAccount} />
+                              <Stack.Screen name="EditAccount" component={AccountDetail} />
                               <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                              <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                               <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
                               <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
                               <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
@@ -305,7 +303,7 @@ export const App = () => {
                               <Stack.Screen name="Languages" component={Languages} />
                               <Stack.Screen name="Security" component={Security} />
                               <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                              <Stack.Screen name="ExportAccount" component={ExportAccount} />
+                              <Stack.Screen name="AccountExport" component={AccountExport} />
                               <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                               <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                               <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />

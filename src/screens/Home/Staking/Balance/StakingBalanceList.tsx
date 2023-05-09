@@ -2,25 +2,24 @@ import { useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useCurrentAccountCanSign from 'hooks/screen/useCurrentAccountCanSign';
 import { StakingDataType } from 'hooks/types';
-import { Plus } from 'phosphor-react-native';
+import {Plus, Trophy} from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ListRenderItemInfo, RefreshControl, View } from 'react-native';
-import { HomeNavigationProps } from 'routes/home';
+import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { restartCronAndSubscriptionServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
-import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { Header } from 'components/Header';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import { RootNavigationProps } from 'routes/index';
+import {EmptyList} from "components/EmptyList";
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -33,8 +32,9 @@ const FILTER_OPTIONS = [
 ];
 
 const renderEmpty = (val?: string) => {
+  console.log('val', val);
   if (val) {
-    return <EmptyStaking message={i18n.stakingScreen.balanceList.stakingAppearHere} />;
+    return <EmptyList title={'No staking'} icon={Trophy} message={'Your staking accounts will appear here!'} />;
   } else {
     return <EmptyStaking />;
   }
@@ -78,7 +78,7 @@ const StakingBalanceList = () => {
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
   const isCanSign = useCurrentAccountCanSign();
-  const stakingNavigation = useNavigation<StakingScreenNavigationProps>();
+  const navigation = useNavigation<RootNavigationProps>();
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
@@ -105,9 +105,14 @@ const StakingBalanceList = () => {
     [handleOnPress, priceMap],
   );
 
-  const handlePressStartStaking = useCallback(() => {
-    stakingNavigation.navigate('Stake', {});
-  }, [stakingNavigation]);
+  const handlePressStartStaking = useCallback(
+    () =>
+      navigation.navigate('TransactionAction', {
+        screen: 'Stake',
+        params: {},
+      }),
+    [navigation],
+  );
 
   const rightIconOption = useMemo(() => {
     return {
@@ -121,6 +126,7 @@ const StakingBalanceList = () => {
       <>
         <Header />
         <FlatListScreen
+          style={{ marginTop: 16 }}
           title={i18n.title.staking}
           items={data}
           showLeftBtn={false}
@@ -146,6 +152,7 @@ const StakingBalanceList = () => {
               }}
             />
           }
+          isShowPlaceHolder={false}
           needGapWithStatusBar={false}
         />
 
@@ -163,6 +170,7 @@ const StakingBalanceList = () => {
 
         <StakingActionModal
           closeModal={() => setMoreActionModalVisible(false)}
+          openModal={() => setMoreActionModalVisible(true)}
           visible={moreActionModalVisible}
           chainStakingMetadata={selectedItem?.chainStakingMetadata}
           nominatorMetadata={selectedItem?.nominatorMetadata}

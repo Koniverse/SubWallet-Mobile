@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
@@ -94,9 +94,12 @@ export const TokenGroupsDetail = ({
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
 
   const chainsByAccountType = useGetChainSlugs();
-  const { tokenGroupMap } = useTokenGroup(chainsByAccountType);
-  const { tokenBalanceMap, tokenGroupBalanceMap } = useAccountBalance(tokenGroupMap);
-
+  const { tokenGroupMap, isComputing: isTokenGroupComputing } = useTokenGroup(chainsByAccountType, true);
+  const {
+    tokenBalanceMap,
+    tokenGroupBalanceMap,
+    isComputing: isAccountBalanceComputing,
+  } = useAccountBalance(tokenGroupMap, true);
   const tokenBalanceValue = useMemo<SwNumberProps['value']>(() => {
     if (tokenGroupSlug) {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
@@ -202,12 +205,24 @@ export const TokenGroupsDetail = ({
     setCurrentTokenInfo(undefined);
   }, []);
 
+  useEffect(() => {
+    if (!isTokenGroupComputing && !isAccountBalanceComputing && !tokenBalanceItems.length) {
+      navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
+    }
+  }, [isAccountBalanceComputing, isTokenGroupComputing, navigation, tokenBalanceItems]);
+
   return (
     <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>
       <>
         <Header />
 
-        <TokensLayout items={tokenBalanceItems} layoutHeader={listHeaderNode} renderItem={renderItem} />
+        <TokensLayout
+          style={{ marginTop: 50 }}
+          loading={isTokenGroupComputing || isAccountBalanceComputing}
+          items={tokenBalanceItems}
+          layoutHeader={listHeaderNode}
+          renderItem={renderItem}
+        />
 
         <TokenDetailModal
           currentTokenInfo={currentTokenInfo}

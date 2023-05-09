@@ -1,7 +1,7 @@
 import React from 'react';
 import { Item } from 'react-native-picker-select';
 import { EmptyList } from 'components/EmptyList';
-import { Aperture } from 'phosphor-react-native';
+import { Aperture, MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import SelectNetworkModal from 'components/Modal/SelectNetworkModal';
 
@@ -13,7 +13,13 @@ interface Props {
   selectedItem: string;
 }
 
-const renderEmpty = () => <EmptyList title={i18n.common.noChainAvailable} icon={Aperture} />;
+const renderEmpty = () => (
+  <EmptyList
+    title={'No results found'}
+    message={'Please change your search criteria try again'}
+    icon={MagnifyingGlass}
+  />
+);
 
 export const ChainSelect = ({ modalVisible, onChangeModalVisible, items, onChangeValue, selectedItem }: Props) => {
   return (

@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleProp, View, ViewProps } from 'react-native';
 import Text from 'components/Text';
-import { sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 
 interface Props extends ViewProps {

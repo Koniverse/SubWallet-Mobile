@@ -1,6 +1,5 @@
-import { ConfirmationContent } from 'components/Confirmation';
+import { ConfirmationContent } from 'components/common/Confirmation';
 import React from 'react';
-import { View } from 'react-native';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
 import { RequestBondingSubmit, StakingType } from '@subwallet/extension-base/background/KoniTypes';
@@ -15,7 +14,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
   const addressList = data.selectedValidators.map(validator => validator.address);
 
   return (
-    <ConfirmationContent>
+    <ConfirmationContent isFullHeight>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>

@@ -6,7 +6,6 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import React, { createRef, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
 import ViewShot from 'react-native-view-shot';
 import { ColorMap } from 'styles/color';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -93,9 +92,7 @@ const ExportQrSignerModal = ({ modalVisible, onHideModal, address, networkKey }:
       <View style={WrapperStyle}>
         <Text style={TitleTextStyle}>{i18n.title.exportQrSigner}</Text>
         <Text style={GuideTextStyle}>{i18n.common.useNormalWalletScan}</Text>
-        <ViewShot style={QrStyle} ref={viewShotRef}>
-          <QRCode value={qrData} size={230} />
-        </ViewShot>
+        <ViewShot style={QrStyle} ref={viewShotRef} />
         <AccountInfoField address={formattedAddress} name={account?.name || ''} networkKey={networkKey} />
         <View style={ActionContainerStyle}>
           <SubmitButton
@@ -110,5 +107,5 @@ const ExportQrSignerModal = ({ modalVisible, onHideModal, address, networkKey }:
     </SubWalletModal>
   );
 };
-
+// will delete
 export default React.memo(ExportQrSignerModal);

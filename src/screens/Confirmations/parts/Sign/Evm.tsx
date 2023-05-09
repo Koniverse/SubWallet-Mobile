@@ -1,5 +1,5 @@
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import ConfirmationFooter from 'components/Confirmation/ConfirmationFooter';
+import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -109,7 +109,7 @@ export const EvmSignArea = (props: Props) => {
     [onApproveSignature],
   );
 
-  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal(onApprovePassword);
+  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal();
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -118,11 +118,11 @@ export const EvmSignArea = (props: Props) => {
         break;
       default:
         setLoading(true);
-        onConfirmPassword().catch(() => {
+        onConfirmPassword(onApprovePassword)()?.catch(() => {
           setLoading(false);
         });
     }
-  }, [onConfirmPassword, onConfirmQr, signMode]);
+  }, [onApprovePassword, onConfirmPassword, onConfirmQr, signMode]);
 
   const openScanning = useCallback(() => {
     setIsShowQr(false);

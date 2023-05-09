@@ -22,7 +22,7 @@ export const NetworkSelectItem = ({
   iconSize,
 }: Props) => {
   return (
-    <TouchableOpacity onPress={onSelectNetwork}>
+    <TouchableOpacity style={{ marginBottom: 8 }} onPress={onSelectNetwork}>
       <NetworkSelectItemContent
         itemName={itemName}
         itemKey={itemKey}

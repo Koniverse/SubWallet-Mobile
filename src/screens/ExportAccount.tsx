@@ -302,7 +302,7 @@ export const ExportAccount = ({
                     YOUR QR
                   </Typography.Text>
                   <View style={{ alignItems: 'center', marginBottom: 16 }}>
-                    <QRCode errorLevel={'Q'} value={qrData} />
+                    <QRCode errorLevel={'Q'} value={qrData} QRSize={4} outerEyesRadius={7} pieceBorderRadius={2} />
                   </View>
 
                   {renderCopyBtn()}

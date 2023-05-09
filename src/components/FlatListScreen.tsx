@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -14,7 +14,7 @@ import { NoInternetScreen } from 'components/NoInternetScreen';
 import FilterModal, { OptionType } from 'components/common/FilterModal';
 import { useFilterModal } from 'hooks/useFilterModal';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
-import { LazySectionList } from 'components/LazySectionList';
+import { LazySectionList, SectionItem } from 'components/LazySectionList';
 
 //TODO: split FlatList in FlatListScreen to new component, use ImperativeHandle to setPageNumber
 export interface RightIconOpt {
@@ -35,7 +35,7 @@ interface Props<T> {
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   onPressBack?: () => void;
   showLeftBtn?: boolean;
-  style?: StyleProp<any>;
+  style?: StyleProp<ViewStyle>;
   rightIconOption?: RightIconOpt;
   beforeListItem?: JSX.Element;
   afterListItem?: JSX.Element;
@@ -57,8 +57,10 @@ interface Props<T> {
   grouping?: {
     renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
     groupBy: (item: T) => string;
+    sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
   needGapWithStatusBar?: boolean;
+  isShowPlaceHolder?: boolean;
 }
 
 export function FlatListScreen<T>({
@@ -92,6 +94,7 @@ export function FlatListScreen<T>({
   beforeListItem,
   grouping,
   needGapWithStatusBar,
+  isShowPlaceHolder,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -141,7 +144,8 @@ export function FlatListScreen<T>({
             searchFunction={searchFunction}
             filterFunction={filterFunction}
             selectedFilters={selectedFilters}
-            sortFunction={sortFunction}
+            sortItemFunction={sortFunction}
+            sortSectionFunction={grouping.sortSection}
             loading={loading}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
@@ -199,7 +203,7 @@ export function FlatListScreen<T>({
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       rightIconColor={rightIconOption?.color}
-      isShowPlaceHolder={false}
+      isShowPlaceHolder={isShowPlaceHolder}
       needGapWithStatusBar={needGapWithStatusBar}>
       {renderContent()}
     </ContainerWithSubHeader>

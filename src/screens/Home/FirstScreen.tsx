@@ -1,18 +1,15 @@
-import { Images, Logo } from 'assets/index';
+import { Images, SVGImages } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { useCallback, useRef, useState } from 'react';
-import { Image, ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
+import React, { Suspense, useCallback, useState } from 'react';
+import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import Text from 'components/Text';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import AccountActionButton from 'components/common/AccountActionButton';
-import { AccountCreationArea } from 'components/common/AccountCreationArea';
+import AccountActionButton from 'components/common/Account/AccountActionButton';
+import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import useUnlockModal from 'hooks/modal/useUnlockModal';
-import { noop } from 'utils/function';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -62,31 +59,22 @@ export const FirstScreen = () => {
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
   const theme = useSubWalletTheme().swThemes;
-  const selectedAction = useRef<SelectedActionType>();
 
-  const onComplete = useCallback(() => {
-    switch (selectedAction.current) {
-      case 'createAcc':
-        setCreateAccountModalVisible(true);
-        break;
-      case 'attachAcc':
-        setAttachAccountModalVisible(true);
-        break;
-      case 'importAcc':
-        setImportAccountModalVisible(true);
-        break;
-    }
+  const onPressActionButton = useCallback((action: SelectedActionType) => {
+    return () => {
+      switch (action) {
+        case 'createAcc':
+          setCreateAccountModalVisible(true);
+          break;
+        case 'attachAcc':
+          setAttachAccountModalVisible(true);
+          break;
+        case 'importAcc':
+          setImportAccountModalVisible(true);
+          break;
+      }
+    };
   }, []);
-
-  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal(onComplete);
-
-  const onPressActionButton = useCallback(
-    (action: SelectedActionType) => {
-      selectedAction.current = action;
-      onPress().finally(noop);
-    },
-    [onPress],
-  );
 
   const actionList = [
     {
@@ -94,21 +82,21 @@ export const FirstScreen = () => {
       icon: PlusCircle,
       title: 'Create a new account',
       subTitle: 'Create a new account with SubWallet',
-      onPress: () => onPressActionButton('createAcc'),
+      onPress: onPressActionButton('createAcc'),
     },
     {
       key: 'import',
       icon: FileArrowDown,
       title: 'Import an account',
       subTitle: 'Import an existing account',
-      onPress: () => onPressActionButton('importAcc'),
+      onPress: onPressActionButton('importAcc'),
     },
     {
       key: 'attach',
       icon: Swatches,
       title: 'Attach an account',
       subTitle: 'Attach an account from external wallet',
-      onPress: () => onPressActionButton('attachAcc'),
+      onPress: onPressActionButton('attachAcc'),
     },
   ];
 
@@ -126,7 +114,9 @@ export const FirstScreen = () => {
               paddingTop: 40,
               alignItems: 'center',
             }}>
-            <Image source={Logo.SubWallet} />
+            <Suspense>
+              <SVGImages.Logo width={66} height={100} />
+            </Suspense>
             <Text style={logoTextStyle}>SubWallet</Text>
             <Text style={logoSubTextStyle}>Polkadot, Substrate & Ethereum wallet</Text>
           </View>
@@ -154,7 +144,6 @@ export const FirstScreen = () => {
           onChangeImportAccountModalVisible={setImportAccountModalVisible}
           onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
         />
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
         <SafeAreaView />
       </ImageBackground>
     </View>

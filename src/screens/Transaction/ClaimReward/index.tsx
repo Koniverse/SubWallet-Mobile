@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useNavigation } from '@react-navigation/native';
-import { ClaimRewardScreenNavigationProps, StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { NominatorMetadata, StakingRewardItem, StakingType } from '@subwallet/extension-base/background/KoniTypes';
@@ -10,8 +10,8 @@ import { useSelector } from 'react-redux';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { submitStakeClaimReward } from '../../../messaging';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
+import { submitStakeClaimReward } from 'messaging/index';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
@@ -33,6 +33,7 @@ import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
+import { ClaimRewardProps } from 'routes/transaction/transactionAction';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -89,7 +90,7 @@ const ClaimReward = ({
   route: {
     params: { chain: stakingChain, type: _stakingType },
   },
-}: ClaimRewardScreenNavigationProps) => {
+}: ClaimRewardProps) => {
   const stakingType = _stakingType as StakingType;
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;

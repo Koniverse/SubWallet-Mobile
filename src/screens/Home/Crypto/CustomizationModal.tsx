@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, Switch, View } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import i18n from 'utils/i18n/i18n';
-import { Warning } from 'components/Warning';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
 import { updateChainActiveState } from 'messaging/index';
@@ -14,6 +13,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateShowZeroBalanceState } from 'stores/utils';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
 
 interface Props {
   modalVisible: boolean;
@@ -119,14 +120,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
   };
 
   const renderListEmptyComponent = () => {
-    return (
-      <Warning
-        style={{ marginHorizontal: 16 }}
-        title={i18n.warningTitle.warning}
-        message={i18n.warningMessage.noNetworkAvailable}
-        isDanger={false}
-      />
-    );
+    return <EmptyList icon={MagnifyingGlass} title={'No chain'} message={'Your chain will appear here'} />;
   };
 
   const onChangeZeroBalance = useCallback((checked: boolean) => {
@@ -170,6 +164,8 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         onPressBack={onCancel}
         renderListEmptyComponent={renderListEmptyComponent}
         isShowListWrapper
+        isShowPlaceHolder={false}
+        needGapWithStatusBar={false}
       />
     </SubWalletFullSizeModal>
   );

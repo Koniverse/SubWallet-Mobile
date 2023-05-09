@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Image, SafeAreaView, View } from 'react-native';
+import React, { Suspense, useEffect, useState } from 'react';
+import { SafeAreaView, View } from 'react-native';
 import Text from 'components/Text';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { PinCodeField } from 'components/PinCodeField';
-import { Warning } from 'components/Warning';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
 import { useBlurOnFulfill } from 'react-native-confirmation-code-field';
@@ -12,7 +11,7 @@ import useAppLock from 'hooks/useAppLock';
 import TouchID from 'react-native-touch-id';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Logo } from 'assets/index';
+import { SVGImages } from 'assets/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { WarningText } from 'components/design-system-ui';
 
@@ -76,7 +75,9 @@ export const LockScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0C0C0C' }}>
       <View style={{ ...sharedStyles.layoutContainer, flex: 1, width: '100%', alignItems: 'center', paddingTop: 68 }}>
-        <Image source={Logo.SubWalletGray} />
+        <Suspense>
+          <SVGImages.Logo width={80} height={120} />
+        </Suspense>
 
         <Text
           style={{

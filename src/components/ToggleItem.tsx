@@ -3,37 +3,62 @@ import { StyleProp, Switch, View, ViewProps } from 'react-native';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { BackgroundIcon } from './design-system-ui';
+import { IconProps } from 'phosphor-react-native';
 
 interface Props extends ViewProps {
   label: string;
   isEnabled: boolean;
   onValueChange: () => void;
   disabled?: boolean;
+  backgroundIcon?: React.ElementType<IconProps>;
+  backgroundIconColor?: string;
 }
 
 const toggleItemWrapperStyle: StyleProp<any> = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
-  backgroundColor: ColorMap.dark2,
-  borderRadius: 5,
-  paddingHorizontal: 16,
+  backgroundColor: '#1A1A1A',
+  borderRadius: 8,
+  paddingHorizontal: 12,
   marginBottom: 8,
 };
 
 const toggleItemTextStyle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
+  fontSize: 16,
+  lineHeight: 24,
   color: ColorMap.light,
   ...FontSemiBold,
   paddingVertical: 14,
 };
 
-export const ToggleItem = ({ label, isEnabled, onValueChange, style, disabled }: Props) => {
+export const ToggleItem = ({
+  label,
+  isEnabled,
+  onValueChange,
+  style,
+  disabled,
+  backgroundIconColor,
+  backgroundIcon,
+}: Props) => {
   return (
     <View style={[toggleItemWrapperStyle, style]}>
-      <Text style={[toggleItemTextStyle, { color: disabled ? ColorMap.disabledTextColor : ColorMap.light }]}>
-        {label}
-      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        {backgroundIcon && (
+          <BackgroundIcon
+            phosphorIcon={backgroundIcon}
+            size={'sm'}
+            backgroundColor={backgroundIconColor}
+            weight={'fill'}
+            shape={'circle'}
+          />
+        )}
+        <Text style={[toggleItemTextStyle, { color: disabled ? ColorMap.disabledTextColor : ColorMap.light }]}>
+          {label}
+        </Text>
+      </View>
+
       <Switch
         ios_backgroundColor={ColorMap.switchInactiveButtonColor}
         value={isEnabled}

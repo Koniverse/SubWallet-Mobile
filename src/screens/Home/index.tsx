@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
@@ -19,15 +19,14 @@ import withPageWrapper from 'components/pageWrapper';
 import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
-import { keyringLock } from '../../messaging';
 import { ActivityIndicator } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useAppLock from 'hooks/useAppLock';
 
 const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
+  const theme = useSubWalletTheme().swThemes;
 
   return (
     <Tab.Navigator
@@ -44,7 +43,7 @@ const MainScreen = () => {
               ...customStyle,
               // @ts-ignore
               borderTopWidth: 2,
-              borderTopColor: ColorMap.secondary,
+              borderTopColor: 'transparent',
               marginTop: -2,
             };
           }
@@ -64,10 +63,11 @@ const MainScreen = () => {
         tabBarStyle: {
           paddingTop: 0,
           paddingBottom: 0,
-          backgroundColor: ColorMap.dark1,
+          backgroundColor: theme.colorBgSecondary,
           borderTopWidth: 1,
           paddingLeft: 16,
           paddingRight: 16,
+          borderTopColor: theme.colorBgBorder,
           height: BOTTOM_BAR_HEIGHT + (insets.bottom ? insets.bottom - 15 : insets.bottom),
         },
         tabBarActiveTintColor: ColorMap.light,
@@ -127,29 +127,8 @@ const MainScreen = () => {
 
 export const Home = () => {
   const isEmptyAccounts = useCheckEmptyAccounts();
-  const navigation = useNavigation<RootNavigationProps>();
-  const { accounts, hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
-
-  const needMigrate = useMemo(
-    () =>
-      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
-        .length,
-    [accounts],
-  );
-
-  useEffect(() => {
-    if (needMigrate && hasMasterPassword) {
-      navigation.navigate('MigratePassword');
-    }
-  }, [hasMasterPassword, navigation, needMigrate]);
-
-  useEffect(() => {
-    if (hasMasterPassword) {
-      keyringLock().catch((e: Error) => console.log(e));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
+  const { isLocked } = useAppLock();
   const [isLoading, setLoading] = useState(true);
   useEffect(() => {
     if (isReady && isLoading) {
@@ -168,7 +147,7 @@ export const Home = () => {
   return (
     <>
       {isEmptyAccounts ? <FirstScreen /> : <MainScreen />}
-      <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts} />
+      <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts && !isLocked} />
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Image, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
 import { Browsers, House, Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
@@ -71,7 +71,7 @@ const bottomTabBarWrapperStyle: StyleProp<any> = {
   borderTopWidth: 1,
   borderTopColor: ColorMap.dark2,
   paddingHorizontal: 16,
-  paddingVertical: 4,
+  paddingTop: 4,
 };
 
 const cancelButtonStyle: StyleProp<any> = { width: 40, height: 40, position: 'absolute', right: -4, top: -4 };
@@ -178,6 +178,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
             disabled={isEmptyTabs}
           />
         </View>
+        <SafeAreaView />
       </>
     </ScreenContainer>
   );

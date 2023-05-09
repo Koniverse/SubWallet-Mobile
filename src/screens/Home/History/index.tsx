@@ -4,10 +4,10 @@ import {
   Aperture,
   ArrowDownLeft,
   ArrowUpRight,
-  Clock,
   ClockCounterClockwise,
   Database,
   IconProps,
+  ListBullets,
   Rocket,
   Spinner,
 } from 'phosphor-react-native';
@@ -29,13 +29,15 @@ import { HistoryItem } from 'components/common/HistoryItem';
 import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop, FontMedium } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 import { ListRenderItemInfo, View } from 'react-native';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
-import { ScreenContainer } from 'components/ScreenContainer';
+import { HistoryProps } from 'routes/index';
+import { SortFunctionInterface } from 'types/ui-types';
+import { SectionItem } from 'components/LazySectionList';
 
 type Props = {};
 
@@ -102,9 +104,9 @@ function getDisplayData(
     if (item.direction === TransactionDirection.RECEIVED) {
       displayData = {
         className: `-receive -${item.status}`,
-        title: titleMap.received,
-        name: nameMap.received,
-        typeName: `${nameMap.received} ${displayStatus} - ${time}`,
+        title: titleMap.receive,
+        name: nameMap.receive,
+        typeName: `${nameMap.receive} ${displayStatus} - ${time}`,
         icon: IconMap.receive,
       };
     } else {
@@ -145,7 +147,7 @@ function getHistoryItemKey(item: Pick<TransactionHistoryItem, 'chain' | 'address
 const typeTitleMap: Record<string, string> = {
   default: i18n.historyScreen.title.transaction,
   send: i18n.historyScreen.title.sendTransaction,
-  received: i18n.historyScreen.title.receiveTransaction,
+  receive: i18n.historyScreen.title.receiveTransaction,
   [ExtrinsicType.SEND_NFT]: i18n.historyScreen.title.nftTransaction,
   [ExtrinsicType.CROWDLOAN]: i18n.historyScreen.title.crowdloanTransaction,
   [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.title.stakeTransaction,
@@ -226,14 +228,19 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
   return filteredChainList;
 };
 
-function History(): React.ReactElement<Props> {
+function History({
+  route: {
+    params: { extrinsicHash, chain },
+  },
+}: HistoryProps): React.ReactElement<Props> {
   // const dataContext = useContext(DataContext);
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((root: RootState) => root.accountState.accounts);
   const currentAccount = useSelector((root: RootState) => root.accountState.currentAccount);
   const rawHistoryList = useSelector((root: RootState) => root.transactionHistory.historyList);
-  const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
-
+  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+  const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -242,8 +249,10 @@ function History(): React.ReactElement<Props> {
     }, {} as Record<string, string>);
   }, [accounts]);
 
+  const [historyMap, setHistoryMap] = useState<Record<string, TransactionHistoryDisplayItem>>({});
+
   // Fill display data to history list
-  const historyMap = useMemo(() => {
+  const getHistoryMap = useCallback(() => {
     const currentAddress = currentAccount?.address || '';
     const currentAddressLowerCase = currentAddress.toLowerCase();
     const isFilterByAddress = currentAccount?.address && !isAccountAll(currentAddress);
@@ -271,6 +280,15 @@ function History(): React.ReactElement<Props> {
     return finalHistoryMap;
   }, [accountMap, rawHistoryList, currentAccount?.address]);
 
+  useEffect(() => {
+    setLoading(true);
+    const timeoutID = setTimeout(() => {
+      setHistoryMap(getHistoryMap());
+      setLoading(false);
+    });
+    return () => clearTimeout(timeoutID);
+  }, [getHistoryMap]);
+
   const historyList = useMemo<TransactionHistoryDisplayItem[]>(() => {
     return Object.values(historyMap);
   }, [historyMap]);
@@ -285,44 +303,33 @@ function History(): React.ReactElement<Props> {
   const onOpenDetail = useCallback((item: TransactionHistoryDisplayItem) => {
     return () => {
       setSelectedItem(item);
-      setIsOpenDetail(true);
+      setDetailModalVisible(true);
     };
   }, []);
 
   const onCloseDetail = useCallback(() => {
-    setIsOpenDetail(false);
+    setDetailModalVisible(false);
     setSelectedItem(null);
     // setOpenDetailLink(false);
   }, []);
 
-  // useEffect(() => {
-  //   if (extrinsicHash && chain && openDetailLink) {
-  //     const existed = historyList.find(item => item.chain === chain && item.extrinsicHash === extrinsicHash);
-  //
-  //     if (existed) {
-  //       setSelectedItem(existed);
-  //       setIsOpenDetail(true);
-  //     }
-  //   }
-  // }, [chain, extrinsicHash, openDetailLink, historyList]);
-
   useEffect(() => {
-    if (isOpenDetail) {
-      setSelectedItem(selected => {
-        if (selected) {
-          const key = getHistoryItemKey(selected);
+    if (extrinsicHash && chain && !isOpenByLink) {
+      const existed = historyList.find(item => item.chain === chain && item.extrinsicHash === extrinsicHash);
 
-          return historyMap[key] || null;
-        } else {
-          return selected;
+      setTimeout(() => {
+        if (existed) {
+          setSelectedItem(existed);
+          setIsOpenByLink(true);
+          setDetailModalVisible(true);
         }
-      });
+      }, 300);
     }
-  }, [isOpenDetail, historyMap]);
+  }, [chain, extrinsicHash, historyList, isOpenByLink]);
 
   useEffect(() => {
     if (currentAccount?.address !== curAdr) {
-      setIsOpenDetail(false);
+      setDetailModalVisible(false);
       setSelectedItem(null);
     }
   }, [curAdr, currentAccount?.address]);
@@ -342,13 +349,35 @@ function History(): React.ReactElement<Props> {
   );
 
   const searchFunc = useCallback((items: TransactionHistoryDisplayItem[], searchText: string) => {
+    if (!searchText) {
+      return items;
+    }
+
     const searchTextLowerCase = searchText.toLowerCase();
 
-    return items.filter(item => !!item.fromName && item.fromName.toLowerCase().includes(searchTextLowerCase));
+    return items.filter(item => {
+      if (
+        item.direction === TransactionDirection.SEND &&
+        !!item.fromName &&
+        item.fromName.toLowerCase().includes(searchTextLowerCase)
+      ) {
+        return true;
+      }
+
+      if (
+        item.direction === TransactionDirection.RECEIVED &&
+        !!item.toName &&
+        item.toName.toLowerCase().includes(searchTextLowerCase)
+      ) {
+        return true;
+      }
+
+      return false;
+    });
   }, []);
 
   const groupBy = useCallback((item: TransactionHistoryDisplayItem) => {
-    return customFormatDate(item.time, '#MMM# #DD#, #YYYY#');
+    return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + customFormatDate(item.time, '#MMM# #DD#, #YYYY#');
   }, []);
 
   const renderSectionHeader: (info: {
@@ -356,19 +385,29 @@ function History(): React.ReactElement<Props> {
   }) => React.ReactElement | null = useCallback(
     (info: { section: SectionListData<TransactionHistoryDisplayItem> }) => {
       return (
-        <View style={{ paddingTop: theme.sizeXS }}>
+        <View
+          style={{
+            paddingTop: theme.sizeXS,
+            backgroundColor: theme.colorBgDefault,
+            marginBottom: -theme.sizeXS,
+            paddingBottom: theme.sizeXS,
+          }}>
           <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3, ...FontMedium }}>
-            {info.section.title}
+            {info.section.title.split('|')[1]}
           </Typography.Text>
         </View>
       );
     },
-    [theme.colorTextLight3, theme.sizeXS],
+    [theme.colorBgDefault, theme.colorTextLight3, theme.sizeXS],
   );
 
+  const sortSection = useCallback<SortFunctionInterface<SectionItem<TransactionHistoryDisplayItem>>>((a, b) => {
+    return b.title.localeCompare(a.title);
+  }, []);
+
   const grouping = useMemo(() => {
-    return { groupBy, renderSectionHeader };
-  }, [groupBy, renderSectionHeader]);
+    return { groupBy, sortSection, renderSectionHeader };
+  }, [groupBy, renderSectionHeader, sortSection]);
 
   const sortFunction = useCallback((a: TransactionHistoryDisplayItem, b: TransactionHistoryDisplayItem) => {
     return b.time - a.time;
@@ -376,12 +415,33 @@ function History(): React.ReactElement<Props> {
 
   const emptyList = useCallback(() => {
     //todo: i18n
-    return <EmptyList icon={Clock} title={'Your transactions history will appear here!'} />;
+    return (
+      <EmptyList
+        icon={ListBullets}
+        title={'No transactions yet'}
+        message={'Your transactions history will appear here!'}
+      />
+    );
   }, []);
+
+  useEffect(() => {
+    if (detailModalVisible) {
+      setSelectedItem(selected => {
+        if (selected) {
+          const key = getHistoryItemKey(selected);
+
+          return historyMap[key] || null;
+        } else {
+          return selected;
+        }
+      });
+    }
+  }, [detailModalVisible, historyMap]);
 
   return (
     <>
       <FlatListScreen
+        autoFocus={false}
         showLeftBtn={true}
         items={historyList}
         title={i18n.title.history}
@@ -393,10 +453,11 @@ function History(): React.ReactElement<Props> {
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
         sortFunction={sortFunction}
-        flatListStyle={{ paddingHorizontal: theme.padding }}
+        loading={loading}
+        flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}
       />
 
-      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={isOpenDetail} />
+      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={detailModalVisible} />
     </>
   );
 }

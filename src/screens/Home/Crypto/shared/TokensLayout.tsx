@@ -1,11 +1,17 @@
 import React, { useMemo } from 'react';
-import { ListRenderItem, ListRenderItemInfo, RefreshControl, ScrollView, StyleProp, View } from 'react-native';
+import {
+  ListRenderItem,
+  ListRenderItemInfo,
+  RefreshControl,
+  ScrollView,
+  StyleProp,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { ColorMap } from 'styles/color';
 import { Coins } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
-import i18n from 'utils/i18n/i18n';
-import { itemWrapperAppendixStyle } from 'screens/Home/Crypto/layers/shared';
-import { AnimatedFlatlist } from 'components/design-system-ui';
+import { ActivityIndicator, AnimatedFlatlist } from 'components/design-system-ui';
 import Animated, {
   Extrapolate,
   interpolate,
@@ -16,36 +22,23 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import LinearGradient from 'react-native-linear-gradient';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 interface Props {
   layoutHeader: React.ReactElement;
   listActions?: React.ReactElement;
-  stickyBackground?: [string, string];
-  stickyNode?: React.ReactElement;
+  style?: StyleProp<ViewStyle>;
   layoutFooter?: React.ReactElement;
   items: TokenBalanceItemType[];
   renderItem: ListRenderItem<TokenBalanceItemType>;
   isRefreshing?: boolean;
   refresh?: () => void;
+  loading?: boolean;
 }
 
 const flatListContentContainerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark,
   flexGrow: 1,
   justifyContent: 'center',
   position: 'relative',
-};
-
-const emptyListWrapperStyle: StyleProp<any> = {
-  position: 'absolute',
-  marginVertical: 'auto',
-  alignItems: 'center',
-  left: 0,
-  right: 0,
-  paddingTop: 48,
-  backgroundColor: ColorMap.dark1,
 };
 
 export const TokensLayout = ({
@@ -53,11 +46,11 @@ export const TokensLayout = ({
   layoutFooter,
   listActions,
   items: tokenBalanceItems,
+  loading,
   renderItem,
   isRefreshing,
   refresh,
-  stickyBackground,
-  stickyNode,
+  style,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
@@ -132,24 +125,30 @@ export const TokensLayout = ({
 
   if (!tokenBalanceItems.length) {
     return (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={flatListContentContainerStyle}
-        refreshControl={refreshControlNode}>
-        <>
-          <View style={{ height: '100%' }} />
-          <View style={emptyListWrapperStyle}>
-            <EmptyList icon={Coins} title={i18n.common.emptyTokenListMessage} />
-            <View style={itemWrapperAppendixStyle} />
-            {layoutFooter}
+      <View style={[style, { flex: 1, marginTop: 0 }]}>
+        <View style={{ paddingHorizontal: 16 }}>{layoutHeader}</View>
+
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size={40} indicatorColor={theme.colorWhite} />
           </View>
-        </>
-      </ScrollView>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={flatListContentContainerStyle}
+            refreshControl={refreshControlNode}>
+            <>
+              <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started'} />
+              {layoutFooter}
+            </>
+          </ScrollView>
+        )}
+      </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={[{ flex: 1 }, style]}>
       <Animated.View style={[{ paddingHorizontal: 16 }, stickyHeaderInvisibleStyles]}>{listActions}</Animated.View>
 
       <AnimatedFlatlist

@@ -2,10 +2,8 @@ import { useNavigation } from '@react-navigation/native';
 import {
   ChainStakingMetadata,
   NominatorMetadata,
-  RequestStakeWithdrawal,
   StakingItem,
   StakingRewardItem,
-  StakingType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { ALL_KEY, deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ArrowArcLeft, ArrowCircleDown, IconProps, MinusCircle, PlusCircle, Wallet } from 'phosphor-react-native';
@@ -15,26 +13,19 @@ import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import {
   getStakingAvailableActionsByChain,
   getStakingAvailableActionsByNominator,
-  getWithdrawalInfo,
-  isActionFromValidator,
   StakingAction,
 } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
-import { submitStakeClaimReward, submitStakeWithdrawal } from '../../../../messaging';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { RootNavigationProps } from 'routes/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { ActivityIndicator, BackgroundIcon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   visible: boolean;
   closeModal: () => void;
+  openModal: () => void;
   staking?: StakingItem;
   reward?: StakingRewardItem;
   chainStakingMetadata?: ChainStakingMetadata;
@@ -53,43 +44,32 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { chainStakingMetadata, nominatorMetadata, closeModal, visible, reward } = props;
+  const { chainStakingMetadata, nominatorMetadata, closeModal, visible } = props;
   const toastRef = useRef<ToastContainer>(null);
-  const rootNavigation = useNavigation<RootNavigationProps>();
-  const stakingNavigation = useNavigation<StakingScreenNavigationProps>();
-  const { currentAccount, isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const navigation = useNavigation<RootNavigationProps>();
   const [selected, setSelected] = useState<StakingAction | undefined>();
-  const onDoneTransaction = useCallback(
-    (extrinsicHash: string) => {
-      const chainType = isEthereumAddress(currentAccount?.address) ? 'ethereum' : 'substrate';
-      if (chainStakingMetadata) {
-        rootNavigation.navigate('TransactionDone', {
-          chainType,
-          chain: chainStakingMetadata?.chain,
-          extrinsicHash: extrinsicHash,
-        });
-      }
-    },
-    [chainStakingMetadata, currentAccount?.address, rootNavigation],
-  );
-
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDoneTransaction);
 
   const unStakeAction = useCallback(() => {
     closeModal();
-    stakingNavigation.navigate('Unbond', {
-      type: chainStakingMetadata?.type || ALL_KEY,
-      chain: chainStakingMetadata?.chain || ALL_KEY,
+    navigation.navigate('TransactionAction', {
+      screen: 'Unbond',
+      params: {
+        type: chainStakingMetadata?.type || ALL_KEY,
+        chain: chainStakingMetadata?.chain || ALL_KEY,
+      },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, stakingNavigation]);
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation]);
 
   const stakeAction = useCallback(() => {
     closeModal();
-    stakingNavigation.navigate('Stake', {
-      type: chainStakingMetadata?.type || ALL_KEY,
-      chain: chainStakingMetadata?.chain || ALL_KEY,
+    navigation.navigate('TransactionAction', {
+      screen: 'Stake',
+      params: {
+        type: chainStakingMetadata?.type || ALL_KEY,
+        chain: nominatorMetadata?.chain || ALL_KEY,
+      },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, stakingNavigation]);
+  }, [chainStakingMetadata?.type, closeModal, navigation, nominatorMetadata?.chain]);
 
   const handleWithdrawalAction = useCallback(() => {
     if (!nominatorMetadata) {
@@ -98,57 +78,26 @@ const StakingActionModal = (props: Props) => {
       return;
     }
 
-    if (isAllAccount) {
-      setSelected(undefined);
-      stakingNavigation.navigate('Withdraw', {
+    setSelected(undefined);
+    navigation.navigate('TransactionAction', {
+      screen: 'Withdraw',
+      params: {
         type: chainStakingMetadata?.type || ALL_KEY,
         chain: chainStakingMetadata?.chain || ALL_KEY,
-      });
-
-      return;
-    }
-
-    const unstakingInfo = getWithdrawalInfo(nominatorMetadata);
-
-    if (!unstakingInfo) {
-      setSelected(undefined);
-
-      return;
-    }
-
-    const params: RequestStakeWithdrawal = {
-      unstakingInfo,
-      chain: nominatorMetadata.chain,
-      nominatorMetadata,
-    };
-
-    if (isActionFromValidator(nominatorMetadata.type, nominatorMetadata.chain)) {
-      params.validatorAddress = unstakingInfo.validatorAddress;
-    }
-
-    submitStakeWithdrawal(params)
-      .then(onSuccess)
-      .catch(onError)
-      .finally(() => {
-        setSelected(undefined);
-      });
-  }, [
-    chainStakingMetadata?.chain,
-    chainStakingMetadata?.type,
-    isAllAccount,
-    nominatorMetadata,
-    onError,
-    onSuccess,
-    stakingNavigation,
-  ]);
+      },
+    });
+  }, [nominatorMetadata, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
 
   const cancelUnstakeAction = useCallback(() => {
     closeModal();
-    stakingNavigation.navigate('CancelUnstake', {
-      type: chainStakingMetadata?.type || ALL_KEY,
-      chain: chainStakingMetadata?.chain || ALL_KEY,
+    navigation.navigate('TransactionAction', {
+      screen: 'CancelUnstake',
+      params: {
+        type: chainStakingMetadata?.type || ALL_KEY,
+        chain: chainStakingMetadata?.chain || ALL_KEY,
+      },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, stakingNavigation]);
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation]);
 
   const handleClaimRewardAction = useCallback(() => {
     if (!nominatorMetadata) {
@@ -157,39 +106,16 @@ const StakingActionModal = (props: Props) => {
       return;
     }
 
-    if (nominatorMetadata.type === StakingType.POOLED || isAllAccount) {
-      setSelected(undefined);
-      closeModal();
-      stakingNavigation.navigate('ClaimReward', {
+    setSelected(undefined);
+    closeModal();
+    navigation.navigate('TransactionAction', {
+      screen: 'ClaimReward',
+      params: {
         type: chainStakingMetadata?.type || ALL_KEY,
         chain: chainStakingMetadata?.chain || ALL_KEY,
-      });
-
-      return;
-    }
-
-    submitStakeClaimReward({
-      address: nominatorMetadata.address,
-      chain: nominatorMetadata.chain,
-      stakingType: nominatorMetadata.type,
-      unclaimedReward: reward?.unclaimedReward,
-    })
-      .then(onSuccess)
-      .catch(onError)
-      .finally(() => {
-        setSelected(undefined);
-      });
-  }, [
-    chainStakingMetadata?.chain,
-    chainStakingMetadata?.type,
-    closeModal,
-    isAllAccount,
-    nominatorMetadata,
-    onError,
-    onSuccess,
-    reward?.unclaimedReward,
-    stakingNavigation,
-  ]);
+      },
+    });
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, nominatorMetadata, navigation]);
 
   const availableActions = useMemo(() => {
     if (!nominatorMetadata) {

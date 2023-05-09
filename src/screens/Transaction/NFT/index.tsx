@@ -182,7 +182,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
 
   const onSubmitForm = useCallback(
     async (_formState: FormState) => {
-      const isEthereumInterface = isEthereumAddress(nftChain);
+      const isEthereumInterface = isEthereumAddress(owner);
       const recipientAddress = _formState.data.recipientAddress;
       const params = nftParamsHandler(nftItem, nftChain);
       let sendPromise: Promise<SWTransactionResponse>;
@@ -200,10 +200,12 @@ const SendNFT: React.FC<SendNFTProps> = ({
       } else {
         // Send NFT with substrate interface
         sendPromise = substrateNftSubmitTransaction({
+          networkKey: nftChain,
           recipientAddress,
           senderAddress: owner,
           nftItemName: nftItem?.name,
           params,
+          nftItem,
         });
       }
 

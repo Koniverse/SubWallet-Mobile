@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleProp, Text, View, ViewStyle} from 'react-native';
+import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import { toShort } from 'utils/index';
 import { ColorMap } from 'styles/color';

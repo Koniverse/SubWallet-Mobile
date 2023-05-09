@@ -8,6 +8,8 @@ import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenSelectItem } from 'components/TokenSelectItem';
+import {EmptyList} from "components/EmptyList";
+import {MagnifyingGlass} from "phosphor-react-native";
 
 export type TokenItemType = {
   name: string;
@@ -28,17 +30,12 @@ interface Props {
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString));
+  return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
 };
 
 const renderListEmptyComponent = () => {
   return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.warningMessage.noTokenAvailable}
-      isDanger={false}
-    />
+    <EmptyList icon={MagnifyingGlass} title={'No results found'} message={'Please change your search criteria try again'} />
   );
 };
 

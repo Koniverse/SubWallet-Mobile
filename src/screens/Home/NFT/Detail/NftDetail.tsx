@@ -4,8 +4,6 @@ import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import { TextField } from 'components/Field/Text';
 import ImagePreview from 'components/ImagePreview';
-import { SubmitButton } from 'components/SubmitButton';
-import useGetNetworkJson from 'hooks/screen/useGetNetworkJson';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
@@ -21,10 +19,12 @@ import { ContainerHorizontalPadding, FontMedium, FontSemiBold, sharedStyles } fr
 import { accountCanSign, findAccountByAddress, getAccountSignMode } from 'utils/account';
 import { noop } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
-import reformatAddress, { isNftTransferSupported } from 'utils/index';
+import reformatAddress from 'utils/index';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button } from 'components/design-system-ui';
+import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
+import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -120,10 +120,6 @@ const ResourceTitleStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
-const SendButtonStyle: StyleProp<ViewStyle> = {
-  marginTop: 16,
-};
-
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
   if (!valueDict.type || valueDict.type === 'string') {
     return (
@@ -163,11 +159,11 @@ const NftDetail = ({
 
   const { image: collectionImage, collectionId: collectionRawId, collectionName, chain } = collection as NftCollection;
 
-  const goHome = useGoHome({ screen: 'NFT', params: { screen: 'CollectionList' } });
+  const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
   useHandleGoHome({ goHome: goHome, networkKey: data.chain || chain || '', networkFocusRedirect: false });
 
-  const networkJson = useGetNetworkJson(data.chain as string);
-  const ownerUrl = useScanExplorerAddressUrl(networkJson.key || '', data.owner || '');
+  const originChainInfo = useFetchChainInfo(data.chain as string);
+  const ownerUrl = useScanExplorerAddressUrl(originChainInfo.slug || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
     if (data.owner) {
@@ -192,31 +188,29 @@ const NftDetail = ({
   }, [show]);
 
   const handleClickTransfer = useCallback(() => {
-    if (!networkJson || !canSend || !data.chain) {
+    if (!originChainInfo || !canSend || !data.chain) {
       show(i18n.common.anErrorHasOccurred);
 
       return;
     }
 
-    if (!isNftTransferSupported(data.chain, networkJson)) {
-      show(i18n.common.transferNotSupportedForNetwork);
-
-      return;
-    }
-
     navigation.navigate('Home', {
-      screen: 'NFT',
+      screen: 'NFTs',
       params: {
         screen: 'SendNFT',
         params: {
           itemId: data.id,
           chain: data.chain,
           collectionId: collectionRawId,
-          owner: reformatAddress(data.owner || currentAccount?.address || '', networkJson.ss58Format, false),
+          owner: reformatAddress(
+            data.owner || currentAccount?.address || '',
+            _getChainSubstrateAddressPrefix(originChainInfo),
+            false,
+          ),
         },
       },
     });
-  }, [canSend, data, networkJson, navigation, collectionRawId, currentAccount?.address, show]);
+  }, [canSend, data, originChainInfo, navigation, collectionRawId, currentAccount?.address, show]);
 
   const handleClickInfoIcon = useCallback((url?: string) => {
     if (!url) {
@@ -265,7 +259,7 @@ const NftDetail = ({
           {!!data.owner && (
             <AddressField
               address={data.owner}
-              networkPrefix={networkJson.ss58Format}
+              networkPrefix={_getChainSubstrateAddressPrefix(originChainInfo)}
               label={i18n.nftScreen.nftDetail.ownedBy}
               onPressRightIcon={handleClickInfoIcon(ownerUrl)}
             />
@@ -293,9 +287,7 @@ const NftDetail = ({
 
         {canSend && (
           <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-            <Button onPress={handleClickTransfer}>
-              {i18n.common.send}
-            </Button>
+            <Button onPress={handleClickTransfer}>{i18n.common.send}</Button>
           </View>
         )}
       </>

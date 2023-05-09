@@ -1,4 +1,4 @@
-import { TextStyle, View } from 'react-native';
+import { TextStyle } from 'react-native';
 import React from 'react';
 import Typography from '../design-system-ui/typography';
 import { SchemeColor } from 'components/MetaInfo/types';

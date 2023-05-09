@@ -7,7 +7,7 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
 import { Avatar } from 'components/design-system-ui';
-import {isEthereumAddress} from "@polkadot/util-crypto";
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props extends FieldBaseProps {
   disabled?: boolean;
@@ -74,7 +74,7 @@ export const AccountSelectField = ({
           <Avatar value={value} size={24} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
           {!!value && <Text style={accountNameTextStyle}>{accountName}</Text>}
           {!!value && <Text style={getTextStyle(!!disabled)}>{`(${toShort(value, 4, 4)})`}</Text>}
-          {!value && <Text style={getPlaceholderStyle()}>{`Select account`}</Text>}
+          {!value && <Text style={getPlaceholderStyle()}>{'Select account'}</Text>}
         </View>
 
         {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}

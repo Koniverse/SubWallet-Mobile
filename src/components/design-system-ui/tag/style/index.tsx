@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { convertHexColorToRGBA } from 'utils/color';
 
 export interface TagStyle {
   tag: ViewStyle;
@@ -59,7 +60,7 @@ export default (theme: ThemeTypes) => {
   const getTagStatusWrapStyle = (bgType: 'default' | 'gray' | 'filled', colorVariable: StatusVariableType) => {
     const tagBackgroundColor =
       bgType === 'default'
-        ? theme[`color${colorVariable}Bg`]
+        ? convertHexColorToRGBA(theme[`color${colorVariable}`], 0.1)
         : bgType === 'filled'
         ? theme[`color${colorVariable}`]
         : theme['gray-1'];

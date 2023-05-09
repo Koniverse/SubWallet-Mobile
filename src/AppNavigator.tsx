@@ -1,5 +1,6 @@
 import { NavigationState } from '@react-navigation/routers';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
@@ -15,35 +16,29 @@ import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
 import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
-import { AccountsScreen } from 'screens/AccountsScreen';
+import { AccountsScreen } from 'screens/Account/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
-import { CreateAccount } from 'screens/CreateAccount';
-import { EditAccount } from 'screens/EditAccount';
-import { RestoreJson } from 'screens/RestoreJson';
-import { RemoveAccount } from 'screens/RemoveAccount';
-import { ImportSecretPhrase } from 'screens/ImportSecretPhrase';
-import { ImportPrivateKey } from 'screens/ImportPrivateKey';
+import { CreateAccount } from 'screens/Account/CreateAccount';
+import { AccountDetail } from 'screens/Account/AccountDetail';
+import { RestoreJson } from 'screens/Account/RestoreJson';
+import { ImportSecretPhrase } from 'screens/Account/ImportSecretPhrase';
+import { ImportPrivateKey } from 'screens/Account/ImportPrivateKey';
 import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
 import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
-import { ExportAccount } from 'screens/ExportAccount';
+import { AccountExport } from 'screens/Account/AccountExport';
 import { CustomTokenSetting } from 'screens/Tokens';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
-import StakeActionScreen from 'screens/Staking/Stake/StakeActionScreen';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
-import UnStakeActionScreen from 'screens/Staking/UnStake/UnStakeActionScreen';
-import ClaimActionScreen from 'screens/Staking/Claim/ClaimActionScreen';
-import WithdrawActionScreen from 'screens/Staking/Withdraw/WithdrawActionScreen';
-import CompoundActionScreen from 'screens/Staking/Compound/CompoundActionScreen';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import { RootRouteProps, RootStackParamList } from './routes';
+import { RootRouteProps, RootStackParamList  } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -60,6 +55,7 @@ import withPageWrapper from 'components/pageWrapper';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
+import TransactionScreen from 'screens/Transaction/TransactionScreen';
 
 interface Props {
   isAppReady: boolean;
@@ -100,6 +96,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
 
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
+  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+
+  const needMigrate = useMemo(
+    () =>
+      !!accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal).filter(acc => !acc.isMasterPassword)
+        .length,
+    [accounts],
+  );
 
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: ['subwallet://'],
@@ -115,14 +119,31 @@ const AppNavigator = ({ isAppReady }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (hasConfirmations && currentRoute) {
-      if (currentRoute.name !== 'Confirmations') {
-        if (currentRoute.name !== 'CreateAccount') {
+    let amount = true;
+    if (hasConfirmations && currentRoute && amount) {
+      if (currentRoute.name !== 'Confirmations' && amount) {
+        if (currentRoute.name !== 'CreateAccount' && amount) {
           navigationRef.current?.navigate('Confirmations');
         }
       }
     }
+
+    return () => {
+      amount = false;
+    };
   }, [hasConfirmations, navigationRef, currentRoute]);
+
+  useEffect(() => {
+    let amount = true;
+    if (needMigrate && hasMasterPassword && currentRoute && amount) {
+      if (currentRoute.name !== 'MigratePassword' && amount) {
+        navigationRef.current?.navigate('MigratePassword');
+      }
+    }
+    return () => {
+      amount = false;
+    };
+  }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
 
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>
@@ -161,9 +182,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   options={{ gestureEnabled: false }}
                 />
                 <Stack.Screen name="AddProvider" component={AddProvider} />
-                <Stack.Screen name="EditAccount" component={EditAccount} />
+                <Stack.Screen name="EditAccount" component={AccountDetail} />
                 <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                <Stack.Screen name="RemoveAccount" component={RemoveAccount} />
                 <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
                 <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
                 <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
@@ -172,41 +192,21 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Security" component={Security} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} />
                 <Stack.Screen name="ChangePassword" component={ChangeMasterPassword} />
-                <Stack.Screen name="ExportAccount" component={ExportAccount} />
+                <Stack.Screen name="AccountExport" component={AccountExport} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                 <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                 <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                 <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                 <Stack.Screen name="ImportToken" component={ImportToken} />
-                <Stack.Screen name="StakeAction" component={StakeActionScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportNft" component={ImportNft} />
                 <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
-                <Stack.Screen
-                  name="UnStakeAction"
-                  component={UnStakeActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name="ClaimStakeAction"
-                  component={ClaimActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name="WithdrawStakeAction"
-                  component={WithdrawActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name="CompoundStakeAction"
-                  component={CompoundActionScreen}
-                  options={{ gestureEnabled: false }}
-                />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransactionDone" component={TransactionDone} />
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
+                <Stack.Screen name="TransactionAction" component={TransactionScreen} />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

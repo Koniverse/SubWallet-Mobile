@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StakingScreenNavigationProps, UnbondScreenNavigationProps } from 'routes/staking/stakingScreen';
+import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -18,12 +18,9 @@ import { isActionFromValidator } from '@subwallet/extension-base/koni/api/stakin
 import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
-import usePreCheckReadOnly from 'hooks/usePreCheckReadOnly';
-import { ScreenContainer } from 'components/ScreenContainer';
-import { Header } from 'components/Header';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
-import { SubHeader } from 'components/SubHeader';
-import { Info, MinusCircle } from 'phosphor-react-native';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { MinusCircle } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
@@ -40,8 +37,9 @@ import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { submitPoolUnbonding, submitUnbonding } from 'messaging/index';
-import { FontMedium } from 'styles/sharedStyles';
-import {TransactionLayout} from "screens/Transaction/parts/TransactionLayout";
+import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
+import { UnbondProps } from 'routes/transaction/transactionAction';
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -63,7 +61,7 @@ export const Unbond = ({
   route: {
     params: { chain: stakingChain, type: _stakingType },
   },
-}: UnbondScreenNavigationProps) => {
+}: UnbondProps) => {
   const theme = useSubWalletTheme().swThemes;
   const stakingType = _stakingType as StakingType;
   const navigation = useNavigation<StakingScreenNavigationProps>();
@@ -179,8 +177,6 @@ export const Unbond = ({
         params.validatorAddress = currentValidator || '';
       }
 
-      console.log('params', params);
-
       unbondingPromise = submitUnbonding(params);
     }
 
@@ -247,7 +243,7 @@ export const Unbond = ({
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAll && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
+            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField
                 label={'Unstake from account'}
                 accountName={accountInfo?.name || ''}
@@ -265,7 +261,7 @@ export const Unbond = ({
                 selectedValue={currentValidator}
                 onSelectItem={onChangeValue('nomination')}
                 nominators={from ? nominatorMetadata?.nominations || [] : []}
-                disabled={!from}
+                disabled={!from || loading}
               />
               {renderBounded()}
             </>
@@ -277,6 +273,7 @@ export const Unbond = ({
             onChangeValue={_onChangeAmount}
             decimals={decimals}
             errorMessages={formState.errors.value}
+            disable={loading}
           />
 
           {!mustChooseValidator && renderBounded()}
@@ -298,9 +295,9 @@ export const Unbond = ({
           />
         </ScrollView>
 
-        <View style={{ padding: 16 }}>
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button
-            disabled={!formState.isValidated.value || !formState.data.value}
+            disabled={!formState.isValidated.value || !formState.data.value || loading}
             loading={loading}
             icon={
               <Icon
@@ -318,92 +315,5 @@ export const Unbond = ({
         </View>
       </>
     </TransactionLayout>
-    // <ScreenContainer backgroundColor={'#0C0C0C'}>
-    //   <>
-    //     <Header />
-    //
-    //     <View style={{ marginTop: 16 }}>
-    //       <SubHeader
-    //         onPressBack={() => navigation.goBack()}
-    //         title={title}
-    //         showRightBtn
-    //         rightIcon={Info}
-    //         onPressRightIcon={() => {}}
-    //       />
-    //     </View>
-    //
-    //     <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
-    //       {isAll && (
-    //         <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
-    //           <AccountSelectField
-    //             label={'Unstake from account'}
-    //             accountName={accountInfo?.name || ''}
-    //             value={from}
-    //             showIcon
-    //           />
-    //         </TouchableOpacity>
-    //       )}
-    //
-    //       <FreeBalance label={'Available balance:'} address={from} chain={chain} />
-    //
-    //       {mustChooseValidator && (
-    //         <>
-    //           <NominationSelector
-    //             selectedValue={currentValidator}
-    //             onSelectItem={onChangeValue('nomination')}
-    //             nominators={from ? nominatorMetadata?.nominations || [] : []}
-    //             disabled={!from}
-    //           />
-    //           {renderBounded()}
-    //         </>
-    //       )}
-    //
-    //       <InputAmount
-    //         value={currentValue}
-    //         maxValue={bondedValue}
-    //         onChangeValue={_onChangeAmount}
-    //         decimals={decimals}
-    //         errorMessages={formState.errors.value}
-    //       />
-    //
-    //       {!mustChooseValidator && renderBounded()}
-    //
-    //       <Typography.Text
-    //         style={{
-    //           color: theme.colorTextTertiary,
-    //           ...FontMedium,
-    //         }}>{`Once unbonded, your funds would be available after ${unBondedTime}.`}</Typography.Text>
-    //
-    //       <AccountSelector
-    //         modalVisible={accountSelectModalVisible}
-    //         onSelectItem={item => {
-    //           onChangeFromValue(item.address);
-    //           setAccountSelectModalVisible(false);
-    //         }}
-    //         items={accountList}
-    //         onCancel={() => setAccountSelectModalVisible(false)}
-    //       />
-    //     </View>
-    //
-    //     <View style={{ padding: 16 }}>
-    //       <Button
-    //         disabled={!formState.isValidated.value || !formState.data.value}
-    //         loading={loading}
-    //         icon={
-    //           <Icon
-    //             phosphorIcon={MinusCircle}
-    //             weight={'fill'}
-    //             size={'lg'}
-    //             iconColor={
-    //               !formState.isValidated.value || !formState.data.value ? theme.colorTextLight5 : theme.colorWhite
-    //             }
-    //           />
-    //         }
-    //         onPress={onPreCheckReadOnly(onSubmit)}>
-    //         Submit
-    //       </Button>
-    //     </View>
-    //   </>
-    // </ScreenContainer>
   );
 };

@@ -1,4 +1,4 @@
-import { ConfirmationContent } from 'components/Confirmation';
+import { ConfirmationContent } from 'components/common/Confirmation';
 import React from 'react';
 import { CommonTransactionInfo } from 'components/common/Confirmation/CommonTransactionInfo';
 import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants/Transaction/variants/Base';
@@ -13,7 +13,7 @@ const LeavePoolTransactionConfirmation = ({ transaction }: Props) => {
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
 
   return (
-    <ConfirmationContent>
+    <ConfirmationContent isFullHeight>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>

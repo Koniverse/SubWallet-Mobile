@@ -21,10 +21,11 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { WebRunnerContext } from 'providers/contexts';
 import {
+  _getNftTypesSupportedByChain,
   _isChainTestNet,
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { _AssetType } from '@subwallet/chain-list/types';
+import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import { Button } from 'components/design-system-ui';
 
 const ContainerHeaderStyle: StyleProp<any> = {
@@ -35,6 +36,45 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   paddingHorizontal: 16,
   marginTop: 10,
 };
+
+interface NftTypeOption {
+  label: string;
+  value: _AssetType;
+}
+
+function getNftTypeSupported(chainInfo: _ChainInfo) {
+  if (!chainInfo) {
+    return [];
+  }
+
+  const nftTypes = _getNftTypesSupportedByChain(chainInfo);
+  const result: NftTypeOption[] = [];
+
+  nftTypes.forEach(nftType => {
+    result.push({
+      label: nftType.toString(),
+      value: nftType,
+    });
+  });
+
+  return result;
+}
+
+function getNftType(chain: string, chainInfoMap: Record<string, _ChainInfo>): string {
+  if (!chain || !chainInfoMap[chain]) {
+    return '';
+  }
+
+  const nftTypes = getNftTypeSupported(chainInfoMap[chain]);
+
+  if (nftTypes.length === 1) {
+    return nftTypes[0].value;
+  }
+
+  // todo: may handle case nftTypes.length > 1 in near future
+
+  return '';
+}
 
 const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -77,13 +117,14 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     },
     selectedNftType: {
       name: i18n.importEvmNft.nftType,
-      value: _AssetType.ERC721,
+      value: getNftType(nftInfo?.originChain || chainOptions[0]?.value || '', chainInfoMap),
     },
   };
   const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {});
 
   const { data: formData } = formState;
   const { chain, smartContract, collectionName, selectedNftType } = formData;
+
   const handleChangeValue = useCallback(
     (key: string) => {
       return (text: string) => {
@@ -123,6 +164,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       metadata: _parseMetadataForSmartContractAsset(smartContract),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
+      icon: '',
     })
       .then(resp => {
         if (resp) {
@@ -151,7 +193,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
         [_AssetType.PSP34].includes(selectedNftType as _AssetType) && isValidSubstrateAddress(smartContract);
 
       if (!(isValidEvmContract || isValidWasmContract)) {
-        onUpdateErrors('smartContract')([i18n.errorMessage.invalidEvmContractAddress]);
+        onUpdateErrors('smartContract')([i18n.errorMessage.invalidContractForSelectedChain]);
       } else {
         setChecking(true);
         validateCustomToken({
@@ -225,8 +267,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       onPressBack={onBack}
       disabled={loading}
       title={i18n.title.importNft}
-      style={ContainerHeaderStyle}
-      isShowPlaceHolder={false}>
+      style={ContainerHeaderStyle}>
       <View style={WrapperStyle}>
         <InputAddress
           containerStyle={{ marginBottom: 8 }}
@@ -255,6 +296,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChangeModalVisible={() => setShowChainModal(false)}
           onChangeValue={(text: string) => {
             handleChangeValue('chain')(text);
+            handleChangeValue('selectedNftType')(getNftType(chain, chainInfoMap));
             setShowChainModal(false);
           }}
           selectedItem={formState.data.chain}

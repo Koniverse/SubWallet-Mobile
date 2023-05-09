@@ -6,15 +6,16 @@ import { ToggleItem } from 'components/ToggleItem';
 import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
-import { ActionItem } from 'components/ActionItem';
-import { GlobeHemisphereWest, Key, LockKeyOpen } from 'phosphor-react-native';
+import { CaretRight, Globe, Key, Password, Scan, ShieldCheck } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
 import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
-import { SelectItem } from 'components/SelectItem';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Icon, SelectItem } from 'components/design-system-ui';
+import { useToast } from 'react-native-toast-notifications';
 
 const modalTitle: StyleProp<any> = {
   ...sharedStyles.mediumText,
@@ -64,6 +65,8 @@ const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
 ];
 
 export const Security = () => {
+  const theme = useSubWalletTheme().swThemes;
+  const toast = useToast();
   const { pinCode, pinCodeEnabled, autoLockTime, faceIdEnabled } = useSelector(
     (state: RootState) => state.mobileSettings,
   );
@@ -91,8 +94,16 @@ export const Security = () => {
   return (
     <SubScreenContainer title={i18n.title.security} navigation={navigation}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
-        <ToggleItem label={i18n.common.pinCode} isEnabled={pinCodeEnabled} onValueChange={onValueChangePinCode} />
         <ToggleItem
+          backgroundIcon={Password}
+          backgroundIconColor={theme['orange-7']}
+          label={i18n.common.pinCode}
+          isEnabled={pinCodeEnabled}
+          onValueChange={onValueChangePinCode}
+        />
+        <ToggleItem
+          backgroundIcon={Scan}
+          backgroundIconColor={theme['magenta-7']}
           style={{ marginBottom: 16 }}
           label={i18n.common.faceId}
           isEnabled={faceIdEnabled}
@@ -100,43 +111,62 @@ export const Security = () => {
           onValueChange={onValueChangeFaceId}
         />
 
-        <ActionItem
-          disabled={!pinCode}
-          style={{ marginBottom: 8 }}
-          color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
+        <SelectItem
           icon={Key}
-          title={i18n.common.changeYourPinCode}
-          hasRightArrow
+          backgroundColor={theme['gold-6']}
+          label={i18n.common.changeYourPinCode}
           onPress={() => navigation.navigate('PinCode', { screen: 'ChangePinCode' })}
-        />
-
-        <ActionItem
-          style={{ marginBottom: 8 }}
-          color={ColorMap.light}
-          icon={Key}
-          title={'Change password'}
-          hasRightArrow
-          onPress={() => navigation.navigate('ChangePassword')}
-        />
-
-        <ActionItem
-          style={{ marginBottom: 8 }}
-          color={ColorMap.light}
-          icon={GlobeHemisphereWest}
-          title={i18n.common.manageDAppAccess}
-          hasRightArrow
-          onPress={() => navigation.navigate('DAppAccess')}
-        />
-
-        <ActionItem
-          style={{ marginBottom: 4 }}
-          icon={LockKeyOpen}
-          title={i18n.common.appLock}
-          hasRightArrow
+          rightIcon={
+            <Icon
+              phosphorIcon={CaretRight}
+              size={'sm'}
+              iconColor={!pinCode ? theme.colorTextLight5 : theme.colorWhite}
+            />
+          }
           disabled={!pinCode}
-          color={!pinCode ? ColorMap.disabledTextColor : ColorMap.light}
-          onPress={() => setIsShowAutoLockModal(true)}
         />
+
+        <SelectItem
+          icon={Key}
+          backgroundColor={theme['gold-6']}
+          label={'Change password'}
+          onPress={() => navigation.navigate('ChangePassword')}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+        />
+
+        <SelectItem
+          icon={Globe}
+          backgroundColor={theme['blue-6']}
+          label={'Manage website access'}
+          onPress={() => navigation.navigate('DAppAccess')}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+        />
+
+        <SelectItem
+          icon={Globe}
+          backgroundColor={theme['geekblue-6']}
+          label={'Manage  WalletConnect Dapp'}
+          onPress={() => {
+            toast.hideAll();
+            toast.show('Coming soon');
+          }}
+          rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
+        />
+        <SelectItem
+          icon={ShieldCheck}
+          backgroundColor={theme['green-6']}
+          label={i18n.common.appLock}
+          onPress={() => setIsShowAutoLockModal(true)}
+          rightIcon={
+            <Icon
+              phosphorIcon={CaretRight}
+              size={'sm'}
+              iconColor={!pinCode ? theme.colorTextLight5 : theme.colorWhite}
+            />
+          }
+          disabled={!pinCode}
+        />
+
         <SubWalletModal modalVisible={iShowAutoLockModal} onChangeModalVisible={() => setIsShowAutoLockModal(false)}>
           <View style={{ width: '100%' }}>
             <Text style={modalTitle}>{i18n.common.autoLock}</Text>
@@ -145,7 +175,6 @@ export const Security = () => {
                 key={item.text}
                 isSelected={autoLockTime === item.value}
                 label={item.text}
-                showSeparator={false}
                 onPress={() => onChangeAutoLockTime(item.value)}
               />
             ))}

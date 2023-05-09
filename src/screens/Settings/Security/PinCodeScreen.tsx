@@ -69,7 +69,9 @@ export const PinCodeScreen = ({
             }}
             pinCode={validatePinCode}
             onChangePinCode={setValidatePinCode}
-            isPinCodeValid={validatePinCode.length === 6 && !!pinCode && bcrypt.compareSync(validatePinCode, pinCode)}
+            isPinCodeValid={
+              validatePinCode.length === 6 ? !!pinCode && bcrypt.compareSync(validatePinCode, pinCode) : true
+            }
           />
         )}
 
@@ -98,7 +100,7 @@ export const PinCodeScreen = ({
             onPressContinue={onSavePinCode}
             pinCode={repeatPinCode}
             onChangePinCode={setRepeatPinCode}
-            isPinCodeValid={repeatPinCode.length === 6 && newPinCode === repeatPinCode}
+            isPinCodeValid={repeatPinCode.length === 6 ? newPinCode === repeatPinCode : true}
           />
         )}
       </>

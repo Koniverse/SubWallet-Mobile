@@ -89,8 +89,10 @@ export const TokenGroups = () => {
   const onPressItem = useCallback(
     (item: TokenBalanceItemType) => {
       return () => {
-        navigation.navigate('TokenGroupsDetail', {
-          slug: item.slug,
+        requestAnimationFrame(() => {
+          navigation.navigate('TokenGroupsDetail', {
+            slug: item.slug,
+          });
         });
       };
     },
@@ -139,7 +141,7 @@ export const TokenGroups = () => {
   }, []);
 
   const onOpenHistoryScreen = useCallback(() => {
-    navigation.navigate('History');
+    navigation.navigate('History', {});
   }, [navigation]);
 
   const actionsNode = useMemo(() => {
@@ -253,8 +255,6 @@ export const TokenGroups = () => {
         <Header />
 
         <TokensLayout
-          stickyNode={actionsNode}
-          stickyBackground={isTotalBalanceDecrease ? GradientBackgroundColorSet[1] : GradientBackgroundColorSet[0]}
           items={tokenGroupBalanceItems}
           layoutHeader={listHeaderNode}
           listActions={actionsNode}

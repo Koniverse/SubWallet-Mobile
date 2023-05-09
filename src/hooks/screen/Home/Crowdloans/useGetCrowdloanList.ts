@@ -22,8 +22,8 @@ import BigN from 'bignumber.js';
 import { useMemo } from 'react';
 
 const GroupDisplayNameMap: Record<string, string> = {
-  POLKADOT_PARACHAIN: 'Polkadot parachain',
-  KUSAMA_PARACHAIN: 'Kusama parachain',
+  polkadot: 'Polkadot parachain',
+  kusama: 'Kusama parachain',
 };
 
 function getGroupDisplayName(key: string): string {

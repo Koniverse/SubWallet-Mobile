@@ -13,6 +13,7 @@ export default (theme: ThemeTypes) =>
     container: {
       flexDirection: 'row',
       position: 'relative',
+      alignItems: 'center',
     },
     avatarContent: {
       marginLeft: -12,

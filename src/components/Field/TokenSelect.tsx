@@ -37,7 +37,7 @@ export const TokenSelectField = ({
           <>
             <View style={styles.logoWrapper}>{getTokenLogo(logoKey, subLogoKey, label ? 20 : 24)}</View>
             <Typography.Text ellipsis style={styles.text}>
-              {logoKey}
+              {value}
             </Typography.Text>
           </>
         )}

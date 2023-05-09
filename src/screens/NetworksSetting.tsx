@@ -4,7 +4,7 @@ import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem'
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { Plus } from 'phosphor-react-native';
+import { ListChecks, Plus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
@@ -14,6 +14,7 @@ import {
   _isCustomChain,
   _isSubstrateChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
+import { EmptyList } from 'components/EmptyList';
 
 interface Props {}
 
@@ -176,21 +177,14 @@ export const NetworksSetting = ({}: Props) => {
   };
 
   const renderListEmptyComponent = () => {
-    return (
-      <Warning
-        style={{ marginHorizontal: 16 }}
-        title={i18n.warningTitle.warning}
-        message={i18n.warningMessage.noNetworkAvailable}
-        isDanger={false}
-      />
-    );
+    return <EmptyList icon={ListChecks} title={'No chain found'} message={'Your chain will appear here.'} />;
   };
 
   return (
     <FlatListScreen
       rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('ImportNetwork') }}
       items={currentChainList}
-      title={'Manage Chains'}
+      title={'Manage chains'}
       autoFocus={false}
       renderListEmptyComponent={renderListEmptyComponent}
       searchFunction={searchFunction}

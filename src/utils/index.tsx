@@ -12,7 +12,7 @@ import {
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { isAccountAll } from '@subwallet/extension-base/utils';
-import { decodeAddress, encodeAddress, ethereumEncode, isEthereumAddress } from '@polkadot/util-crypto';
+import { decodeAddress, encodeAddress, ethereumEncode, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { SiDef } from '@polkadot/util/types';
@@ -264,7 +264,11 @@ export function findAccountByAddress(accounts: AccountJson[], _address: string):
   return accounts.find(({ address }): boolean => address === _address) || null;
 }
 
-export default function reformatAddress(address: string, networkPrefix: number = 42, isEthereum = false): string {
+export default function reformatAddress(address: string, networkPrefix = 42, isEthereum = false): string {
+  if (!isAddress(address)) {
+    return address;
+  }
+
   if (isAccountAll(address)) {
     return address;
   }
@@ -273,17 +277,21 @@ export default function reformatAddress(address: string, networkPrefix: number =
     return address;
   }
 
-  const publicKey = decodeAddress(address);
+  try {
+    const publicKey = decodeAddress(address);
 
-  if (isEthereum) {
-    return ethereumEncode(publicKey);
-  }
+    if (isEthereum) {
+      return ethereumEncode(publicKey);
+    }
 
-  if (networkPrefix < 0) {
+    if (networkPrefix < 0) {
+      return address;
+    }
+
+    return encodeAddress(publicKey, networkPrefix);
+  } catch {
     return address;
   }
-
-  return encodeAddress(publicKey, networkPrefix);
 }
 
 export function recodeAddress(
