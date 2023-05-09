@@ -75,16 +75,14 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
   );
 
   useEffect(() => {
-    focus('password')();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (!visible) {
       onChangeValue('password')('');
       onUpdateErrors('password')([]);
+    } else {
+      focus('password')();
     }
-  }, [visible, onChangeValue, onUpdateErrors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   return (
     <SwModal
