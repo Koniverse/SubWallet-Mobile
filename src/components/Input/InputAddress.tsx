@@ -1,15 +1,13 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { StyleProp, TextInput, TouchableOpacity, View } from 'react-native';
-import Text from '../Text';
-import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import { QrCode } from 'phosphor-react-native';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import { StyleProp, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
+import { Scan } from 'phosphor-react-native';
 import reformatAddress, { toShort } from 'utils/index';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
-import { Avatar } from 'components/design-system-ui';
+import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ThemeTypes } from 'styles/themes';
 
 interface InputProps {
   label: string;
@@ -20,71 +18,10 @@ interface InputProps {
   onPressQrButton: () => void;
   isValidValue?: boolean;
   showAvatar?: boolean;
-  disable?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  placeholder?: string;
 }
-
-const getInputContainerStyle: StyleProp<any> = (style: StyleProp<any> = {}) => {
-  return {
-    borderRadius: 5,
-    backgroundColor: ColorMap.dark2,
-    width: '100%',
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    height: 64,
-    position: 'relative',
-    ...style,
-  };
-};
-
-const inputLabelStyle: StyleProp<any> = {
-  paddingTop: 2,
-  ...sharedStyles.smallText,
-  ...FontSize0,
-  ...FontMedium,
-  color: ColorMap.disabled,
-};
-
-const identiconPlaceholderStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.disabled,
-  borderRadius: 16,
-  width: 16,
-  height: 16,
-};
-
-const getTextInputStyle = (isAddressValid: boolean) => {
-  return {
-    ...FontSize2,
-    flex: 1,
-    paddingTop: 0,
-    paddingBottom: 0,
-    paddingHorizontal: 4,
-    paddingRight: 40,
-    height: 25,
-    ...FontMedium,
-    color: isAddressValid ? ColorMap.light : ColorMap.danger,
-  };
-};
-
-const getFormattedTextInputStyle = (isAddressValid: boolean) => {
-  return {
-    ...sharedStyles.mainText,
-    flex: 1,
-    paddingHorizontal: 4,
-    ...FontMedium,
-    height: 25,
-    color: isAddressValid ? ColorMap.light : ColorMap.danger,
-  };
-};
-
-const qrButtonStyle: StyleProp<any> = {
-  position: 'absolute',
-  right: 6,
-  bottom: 2,
-  width: 40,
-  height: 40,
-  justifyContent: 'center',
-  alignItems: 'center',
-};
 
 const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
   if (isEthereum) {
@@ -97,7 +34,8 @@ const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
 const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   const {
     containerStyle,
-    disable,
+    disabled,
+    readonly,
     label,
     onChange,
     onPressQrButton,
@@ -105,11 +43,18 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
     isValidValue = true,
     showAvatar = true,
     onSubmitField,
+    placeholder,
   } = inputAddressProps;
+  const theme = useSubWalletTheme().swThemes;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [address, setAddress] = useState<string>(value);
   const themes = useSubWalletTheme().swThemes;
   const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address)) && isValidValue;
+  const hasLabel = !!label;
+  const styles = useMemo(
+    () => createStyle(theme, hasLabel, isAddressValid, readonly),
+    [readonly, hasLabel, isAddressValid, theme],
+  );
   const onChangeInputText = (rawText: string) => {
     const text = rawText.trim();
     setAddress(text);
@@ -140,44 +85,110 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   }));
 
   return (
-    <View style={[getInputContainerStyle(containerStyle), { backgroundColor: themes.colorBgSecondary }]}>
-      <TouchableOpacity activeOpacity={1} onPress={onPressContainer} disabled={disable}>
-        <Text style={inputLabelStyle}>{label}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
+    <View
+      style={[
+        styles.inputContainer,
+        containerStyle,
+        { backgroundColor: themes.colorBgSecondary },
+        disabled && DisabledStyle,
+      ]}>
+      <TouchableOpacity activeOpacity={1} onPress={onPressContainer} disabled={disabled || readonly}>
+        <Typography.Text style={styles.inputLabel}>{label}</Typography.Text>
+        <View style={styles.blockContent}>
           {showAvatar && (
             <>
-              {isAddressValid ? <Avatar value={address || ''} size={24} /> : <View style={identiconPlaceholderStyle} />}
+              {isAddressValid ? (
+                <Avatar value={address || ''} size={hasLabel ? 20 : 24} />
+              ) : (
+                <View style={styles.identiconPlaceholder} />
+              )}
             </>
           )}
-          {!isInputBlur ? (
+          {!isInputBlur || !address ? (
             <TextInput
               autoCorrect={false}
               autoFocus={true}
-              style={getTextInputStyle(isAddressValid)}
-              placeholderTextColor={ColorMap.disabled}
-              selectionColor={ColorMap.disabled}
+              placeholder={placeholder}
+              style={styles.textInput}
+              placeholderTextColor={themes.colorTextLight4}
+              selectionColor={themes.colorTextLight4}
               blurOnSubmit={false}
               value={address}
               onBlur={onInputBlur}
               onChangeText={onChangeInputText}
-              editable={!disable}
+              editable={!disabled && !readonly}
               onSubmitEditing={onSubmitField}
             />
           ) : (
-            <Text style={getFormattedTextInputStyle(isAddressValid)}>{toShort(address, 9, 9)}</Text>
+            <Typography.Text style={styles.formattedTextInput}>{toShort(address, 9, 9)}</Typography.Text>
           )}
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        activeOpacity={BUTTON_ACTIVE_OPACITY}
-        style={qrButtonStyle}
+      <Button
+        style={styles.qrButton}
+        disabled={disabled || readonly}
+        size={'xs'}
+        type={'ghost'}
         onPress={onPressQrButton}
-        disabled={disable}>
-        <QrCode color={ColorMap.disabled} weight={'bold'} size={20} />
-      </TouchableOpacity>
+        icon={
+          <Icon phosphorIcon={Scan} size={'sm'} iconColor={readonly ? theme.colorTextLight5 : theme.colorTextLight3} />
+        }
+      />
     </View>
   );
 };
+
+function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, readonly?: boolean) {
+  return StyleSheet.create({
+    inputContainer: {
+      borderRadius: theme.borderRadiusLG,
+      backgroundColor: theme.colorBgSecondary,
+      width: '100%',
+      position: 'relative',
+    },
+    blockContent: {
+      flexDirection: 'row',
+      height: 48,
+      alignItems: 'center',
+      paddingRight: 44,
+      paddingLeft: theme.size,
+    },
+    inputLabel: {
+      ...FontMedium,
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+      marginBottom: -2,
+      paddingTop: theme.paddingXS,
+      paddingHorizontal: theme.size,
+      color: theme.colorTextLight4,
+    },
+    identiconPlaceholder: {
+      backgroundColor: theme.colorTextLight4,
+      borderRadius: hasLabel ? 20 : 24,
+      width: hasLabel ? 20 : 24,
+      height: hasLabel ? 20 : 24,
+    },
+    textInput: {
+      ...FontMedium,
+      flex: 1,
+      paddingTop: 0,
+      paddingBottom: 0,
+      paddingHorizontal: theme.paddingXS,
+      color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
+    },
+    formattedTextInput: {
+      ...FontMedium,
+      flex: 1,
+      paddingHorizontal: theme.paddingXS,
+      color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
+    },
+    qrButton: {
+      position: 'absolute',
+      right: 4,
+      bottom: 4,
+    },
+  });
+}
 
 export const InputAddress = forwardRef(Component);

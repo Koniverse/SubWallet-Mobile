@@ -199,7 +199,7 @@ const AttachReadOnly = () => {
             onPressQrButton={checkCamera(onOpenScanner)}
             containerStyle={sharedStyles.mb8}
             showAvatar={true}
-            disable={isBusy}
+            disabled={isBusy}
           />
           {errors.length > 0 &&
             errors.map((message, index) => <Warning isDanger message={message} key={index} style={styles.warning} />)}

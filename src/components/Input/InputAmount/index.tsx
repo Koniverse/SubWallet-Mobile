@@ -5,6 +5,7 @@ import { Button } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import InputAmountStyles from './style';
+import { DisabledStyle } from 'styles/sharedStyles';
 
 interface InputAmountProps {
   placeholder?: string;
@@ -95,7 +96,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
 
   return (
     <>
-      <View style={_style.container}>
+      <View style={[_style.container, disable && DisabledStyle]}>
         <TextInput
           style={_style.inputTextStyle}
           autoCorrect={false}
@@ -106,11 +107,16 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
           onChangeText={onChangeInput}
           defaultValue={inputValue}
           maxLength={getMaxLengthText(inputValue)}
-          placeholderTextColor={theme.colorTextTertiary}
+          placeholderTextColor={theme.colorTextLight4}
           editable={!disable}
         />
         {showMaxButton && (
-          <Button type={'ghost'} externalTextStyle={{ color: theme.colorSuccess }} size={'xs'} onPress={_onClickMaxBtn}>
+          <Button
+            disabled={disable}
+            type={'ghost'}
+            externalTextStyle={{ color: theme.colorSuccess }}
+            size={'xs'}
+            onPress={_onClickMaxBtn}>
             {'Max'}
           </Button>
         )}

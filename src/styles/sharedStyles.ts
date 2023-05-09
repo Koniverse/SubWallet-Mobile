@@ -7,6 +7,7 @@ export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';
 export const STATUS_BAR_DARK_CONTENT = 'dark-content';
 
+export const DisabledStyle = { opacity: 0.4 };
 export const FontLight = { fontFamily: 'PlusJakartaSans-Light' }; //300
 export const FontRegular = { fontFamily: 'PlusJakartaSans-Regular' }; //400
 export const FontMedium = { fontFamily: 'PlusJakartaSans-Medium' }; //500

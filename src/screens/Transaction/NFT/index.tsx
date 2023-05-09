@@ -253,6 +253,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
               value={formState.data.recipientAddress}
               onChange={onChangeReceiverAddress}
               isValidValue={formState.isValidated.recipientAddress}
+              placeholder={'Please type or paste an address'}
             />
             {!!formState.errors.recipientAddress.length && (
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />
