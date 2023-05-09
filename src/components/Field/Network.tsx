@@ -15,9 +15,10 @@ interface Props extends FieldBaseProps {
   networkKey: string;
   disabled?: boolean;
   showIcon?: boolean;
+  placeholder?: string;
 }
 
-export const NetworkField = ({ networkKey, disabled, label, showIcon, ...fieldBase }: Props) => {
+export const NetworkField = ({ networkKey, disabled, label, showIcon, placeholder = '', ...fieldBase }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme, disabled), [disabled, theme]);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -27,7 +28,7 @@ export const NetworkField = ({ networkKey, disabled, label, showIcon, ...fieldBa
       <View style={styles.blockContent}>
         <View style={styles.logoWrapper}>{getNetworkLogo(networkKey, label ? 20 : 24)}</View>
         <Typography.Text ellipsis style={styles.text}>
-          {chainInfoMap[networkKey] ? _getChainName(chainInfoMap[networkKey]) : ''}
+          {chainInfoMap[networkKey] ? _getChainName(chainInfoMap[networkKey]) : placeholder}
         </Typography.Text>
         {!!showIcon && (
           <View style={styles.iconWrapper}>

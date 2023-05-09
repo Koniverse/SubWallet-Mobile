@@ -22,7 +22,6 @@ export default (theme: ThemeTypes) =>
     },
     inputTextStyle: {
       padding: 0,
-      textAlignVertical: 'top',
       fontSize: theme.fontSize,
       ...FontMedium,
       color: theme.colorTextTertiary,

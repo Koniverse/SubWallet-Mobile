@@ -29,6 +29,7 @@ import {
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { Button } from 'components/design-system-ui';
+import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -77,7 +78,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     onUpdateErrors('contractAddress')(undefined);
 
     if (payload) {
-      completeConfirmation('addTokenRequest', { id: payload.id, isApproved: true }).catch(console.error);
+      completeConfirmation('addTokenRequest', {
+        id: payload.id,
+        isApproved: true,
+      } as ConfirmationResult<boolean>).catch(console.error);
     }
 
     if (!isNetConnected) {
@@ -97,6 +101,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       metadata: _parseMetadataForSmartContractAsset(contractAddress),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
+      icon: '',
     })
       .then(resp => {
         if (resp) {
@@ -183,7 +188,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
   const _goBack = () => {
     if (payload) {
-      completeConfirmation('addTokenRequest', { id: payload.id, isApproved: false }).catch(console.error);
+      completeConfirmation('addTokenRequest', {
+        id: payload.id,
+        isApproved: false,
+      } as ConfirmationResult<boolean>).catch(console.error);
     }
 
     navigation.canGoBack() && navigation.goBack();
@@ -217,6 +225,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onChange={(output: string | null, currentValue: string) => {
               onChangeValue('contractAddress')(currentValue);
             }}
+            placeholder={'Please type or paste an address'}
             onPressQrButton={onPressQrButton}
           />
 

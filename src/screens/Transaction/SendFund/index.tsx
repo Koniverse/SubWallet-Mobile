@@ -47,7 +47,7 @@ import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { Warning } from 'components/Warning';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { RootStackParamList, SendFundProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
@@ -569,7 +569,8 @@ export const SendFund = ({
                   <>
                     <TouchableOpacity
                       onPress={() => setAccountSelectModalVisible(true)}
-                      style={{ marginBottom: theme.sizeSM }}>
+                      disabled={loading}
+                      style={[{ marginBottom: theme.sizeSM }, loading && DisabledStyle]}>
                       {/*//todo: i18n*/}
                       <AccountSelectField
                         label={'Send from account'}
@@ -595,6 +596,8 @@ export const SendFund = ({
                 <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingBottom: theme.sizeXXS }}>
                   <View style={{ flex: 1 }}>
                     <TouchableOpacity
+                      style={[(!tokenItems.length || loading) && DisabledStyle]}
+                      disabled={!tokenItems.length || loading}
                       onPress={() => {
                         setTokenSelectModalVisible(true);
                       }}>
@@ -609,6 +612,7 @@ export const SendFund = ({
 
                   <View style={{ flex: 1 }}>
                     <InputAmount
+                      disable={loading}
                       value={amount}
                       maxValue={maxTransfer}
                       onChangeValue={_onChangeAmount}
@@ -644,6 +648,8 @@ export const SendFund = ({
                   value={formState.data.to}
                   onChange={onChangeRecipientAddress}
                   isValidValue={formState.isValidated.recipientAddress}
+                  placeholder={'Please type or paste an address'}
+                  disabled={loading}
                 />
 
                 {/*//todo: i18n*/}
@@ -660,11 +666,12 @@ export const SendFund = ({
                   ))}
 
                 <TouchableOpacity
-                  style={{ marginBottom: theme.marginSM }}
+                  style={[{ marginBottom: theme.marginSM }, (!destChainItems.length || loading) && DisabledStyle]}
+                  disabled={!destChainItems.length || loading}
                   onPress={() => {
                     setChainSelectModalVisible(true);
                   }}>
-                  <NetworkField networkKey={destChain} outerStyle={{ marginBottom: 0 }} />
+                  <NetworkField networkKey={destChain} outerStyle={{ marginBottom: 0 }} placeholder={'Select chain'} />
                 </TouchableOpacity>
 
                 <ChainSelector
