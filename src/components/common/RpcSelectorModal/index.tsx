@@ -52,6 +52,7 @@ export const RpcSelectorModal = ({
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfo = useFetchChainInfo(chainSlug);
+
   const providerList = useMemo(() => {
     return Object.entries(chainInfo.providers).map(([key, provider]) => {
       return {
@@ -68,9 +69,9 @@ export const RpcSelectorModal = ({
           icon={ShareNetwork}
           backgroundColor={theme.colorTextLight4}
           label={item.label}
-          isSelected={item.label === selectedValue}
+          isSelected={item.value === selectedValue}
           onPress={() => {
-            onSelectItem && onSelectItem(item.label);
+            onSelectItem && onSelectItem(item.value);
             onPressBack();
           }}
         />
