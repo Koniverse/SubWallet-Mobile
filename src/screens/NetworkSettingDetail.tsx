@@ -61,12 +61,14 @@ export const NetworkSettingDetail = ({
   },
 }: NetworkSettingDetailProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const chainInfo = useFetchChainInfo(chainSlug);
-  const chainState = useFetchChainState(chainSlug);
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
+
+  const chainInfo = useFetchChainInfo(chainSlug);
+  const chainState = useFetchChainState(chainSlug);
+
+  const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { decimals, symbol } = useMemo(() => {
     return _getChainNativeTokenBasicInfo(chainInfo);
@@ -87,10 +89,6 @@ export const NetworkSettingDetail = ({
   const isPureEvmChain = useMemo(() => {
     return chainInfo && _isPureEvmChain(chainInfo);
   }, [chainInfo]);
-
-  const currentProviderUrl = useMemo(() => {
-    return chainInfo.providers[chainState.currentProvider];
-  }, [chainInfo.providers, chainState.currentProvider]);
 
   const chainTypeString = useCallback(() => {
     let result = '';
@@ -123,7 +121,7 @@ export const NetworkSettingDetail = ({
     return {
       currentProvider: {
         name: 'provider',
-        value: currentProviderUrl,
+        value: chainState.currentProvider,
         require: true,
       },
       blockExplorer: {
@@ -141,7 +139,7 @@ export const NetworkSettingDetail = ({
         },
       },
     };
-  }, [_blockExplorer, _crowdloanUrl, currentProviderUrl]);
+  }, [_blockExplorer, _crowdloanUrl, chainState.currentProvider]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = () => {
@@ -224,14 +222,14 @@ export const NetworkSettingDetail = ({
       !!formState.errors.crowdloanUrl.length ||
       !!formState.errors.currentProvider.length ||
       isDeleting ||
-      (formState.data.currentProvider === currentProviderUrl &&
+      (formState.data.currentProvider === chainState.currentProvider &&
         formState.data.blockExplorer === _blockExplorer &&
         formState.data.crowdloanUrl === _crowdloanUrl)
     );
   }, [
     _blockExplorer,
     _crowdloanUrl,
-    currentProviderUrl,
+    chainState.currentProvider,
     formState.data.blockExplorer,
     formState.data.crowdloanUrl,
     formState.data.currentProvider,
@@ -269,7 +267,7 @@ export const NetworkSettingDetail = ({
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
             <RpcSelectField
               showRightIcon
-              value={formState.data.currentProvider}
+              value={chainInfo.providers[formState.data.currentProvider]}
               rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
             />
           </TouchableOpacity>
