@@ -43,11 +43,15 @@ const formConfig: FormControlConfig = {
   },
 };
 
+const intersectionArray = (array1: AccountJson[], array2: AccountJson[]): AccountJson[] => {
+  return array1.filter(account => array2.find(acc => acc.address === account.address));
+};
+
 const ApplyMasterPassword = () => {
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
   const _style = ApplyMasterPasswordStyle(theme);
-  const { accounts } = useSelector((state: RootState) => state.accountState);
+  const { accounts, isLocked } = useSelector((state: RootState) => state.accountState);
   const [step, setStep] = useState<PageStep>('Introduction');
   const [migrateAccount, setMigrateAccount] = useState<AccountJson | undefined>(undefined);
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -56,11 +60,20 @@ const ApplyMasterPassword = () => {
   const [isError, setIsError] = useState(false);
   const selectedAction = useRef<SelectedActionType>();
   useHandlerHardwareBackPress(true);
-  const migrated = useMemo(
-    () => accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+
+  const migratedRef = useRef<AccountJson[]>(
+    accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
   );
+
+  const migrated = useMemo(() => {
+    const oldVal = migratedRef.current;
+    const newVal = accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword);
+    const result = intersectionArray(oldVal, newVal);
+
+    migratedRef.current = result;
+
+    return result;
+  }, [accounts]);
 
   const canMigrate = useMemo(
     () =>
@@ -107,6 +120,12 @@ const ApplyMasterPassword = () => {
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
+
+  useEffect(() => {
+    if (isLocked) {
+      setStep('Introduction');
+    }
+  }, [isLocked]);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);
@@ -239,7 +258,7 @@ const ApplyMasterPassword = () => {
         return (
           <Button
             loading={loading}
-            disabled={isDisabled || deleting || !!formState.errors.password.length}
+            disabled={isDisabled || deleting || !!formState.errors.password.length || loading}
             icon={
               <Icon
                 phosphorIcon={ArrowCircleRight}
