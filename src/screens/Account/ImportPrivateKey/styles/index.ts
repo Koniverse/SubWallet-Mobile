@@ -31,7 +31,7 @@ export default (theme: ThemeTypes) => {
       paddingVertical: theme.paddingXS,
     },
     footer: {
-      marginTop: theme.marginXS,
+      marginTop: theme.margin,
       marginHorizontal: theme.margin,
       ...MarginBottomForSubmitButton,
     },

@@ -10,9 +10,10 @@ interface Props {
   navigation: NativeStackNavigationProp<any>;
   showRightIcon?: boolean;
   onPressRightIcon?: () => void;
+  disableRightButton?: boolean;
 }
 
-const TransactionHeader = ({ title, navigation, showRightIcon = false, onPressRightIcon }: Props) => {
+const TransactionHeader = ({ title, navigation, showRightIcon = false, onPressRightIcon, disableRightButton }: Props) => {
   return (
     <>
       <Header />
@@ -23,6 +24,7 @@ const TransactionHeader = ({ title, navigation, showRightIcon = false, onPressRi
           title={title}
           rightIcon={showRightIcon ? Info : undefined}
           onPressRightIcon={onPressRightIcon}
+          disableRightButton={disableRightButton}
         />
       </View>
     </>

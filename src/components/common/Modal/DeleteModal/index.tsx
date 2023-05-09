@@ -1,6 +1,6 @@
-import { Button, Icon, SwModal } from 'components/design-system-ui';
+import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { XCircle } from 'phosphor-react-native';
+import { Trash, XCircle } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
@@ -8,7 +8,6 @@ import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 
 interface Props {
-  confirmation: string;
   message: string;
   onCancelModal: VoidFunction;
   onCompleteModal: VoidFunction;
@@ -17,7 +16,7 @@ interface Props {
 }
 
 const DeleteModal: React.FC<Props> = (props: Props) => {
-  const { onCancelModal, onCompleteModal, visible, title, message, confirmation } = props;
+  const { onCancelModal, onCompleteModal, visible, title, message } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -38,8 +37,10 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
         </View>
       }
       onChangeModalVisible={onCancelModal}>
-      <View style={{ width: '100%' }}>
-        <Text style={styles.deleteModalConfirmationStyle}>{confirmation}</Text>
+      <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
+        <View style={{ paddingBottom: 20 }}>
+          <PageIcon icon={Trash} color={theme.colorError} />
+        </View>
         <Text style={styles.deleteModalMessageTextStyle}>{message}</Text>
       </View>
     </SwModal>

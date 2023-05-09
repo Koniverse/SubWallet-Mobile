@@ -32,7 +32,7 @@ import { ScrollView, TouchableHighlight, View } from 'react-native';
 import { Avatar, Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
 import { ArrowCircleUpRight, DotsThree } from 'phosphor-react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { FontMedium } from 'styles/sharedStyles';
+import {FontMedium, MarginBottomForSubmitButton} from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { isAccountAll } from 'utils/accountAll';
 import { RootNavigationProps } from 'routes/index';
@@ -257,7 +257,7 @@ export const StakingDetailModal = ({
 
   const footer = () => {
     return (
-      <View style={{ flexDirection: 'row', paddingTop: 16, paddingHorizontal: 16 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
         <Button
           style={{ marginRight: 6 }}
           type={'secondary'}
@@ -285,7 +285,10 @@ export const StakingDetailModal = ({
       footer={footer()}
       modalStyle={{ maxHeight: '90%' }}>
       <View style={{ width: '100%' }}>
-        <ScrollView style={{ maxHeight: deviceHeight * 0.6 }}>
+        <ScrollView
+          style={{ maxHeight: deviceHeight * 0.6 }}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}>
           <TouchableHighlight style={{ width: '100%' }}>
             <>
               <MetaInfo>

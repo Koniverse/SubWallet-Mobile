@@ -8,11 +8,12 @@ import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 interface Props {
   title: string;
   showRightHeaderButton?: boolean;
+  disableRightButton?: boolean;
   onPressRightHeaderBtn?: () => void;
   children: React.ReactNode;
 }
 
-export const TransactionLayout = ({ title, showRightHeaderButton = false, onPressRightHeaderBtn, children }: Props) => {
+export const TransactionLayout = ({ title, showRightHeaderButton = false, onPressRightHeaderBtn, children, disableRightButton }: Props) => {
   const navigation = useNavigation<StakingScreenNavigationProps>();
 
   return (
@@ -24,6 +25,7 @@ export const TransactionLayout = ({ title, showRightHeaderButton = false, onPres
             navigation={navigation}
             showRightIcon={showRightHeaderButton}
             onPressRightIcon={onPressRightHeaderBtn}
+            disableRightButton={disableRightButton}
           />
 
           {children}

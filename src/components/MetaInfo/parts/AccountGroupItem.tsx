@@ -36,7 +36,7 @@ const AccountGroupItem: React.FC<AccountGroupInfoItem> = ({
     <View style={_style.row}>
       <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
-        <View style={[_style.valueWrapper, { gap: theme.sizeXS }]}>
+        <View style={[_style.valueWrapper, { gap: theme.sizeXS, paddingLeft: theme.paddingXS }]}>
           <AvatarGroup addresses={addresses} />
           <Typography.Text ellipsis style={valueStyle}>
             {content}

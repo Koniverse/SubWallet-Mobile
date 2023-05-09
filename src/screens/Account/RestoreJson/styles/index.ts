@@ -29,7 +29,7 @@ const createStyles = (theme: ThemeTypes) => {
     title: {
       color: theme.colorTextDescription,
       paddingHorizontal: theme.padding,
-      marginVertical: theme.margin,
+      marginBottom: theme.margin,
       textAlign: 'center',
       fontWeight: theme.bodyFontWeight,
       width: '100%',
@@ -61,7 +61,7 @@ const createStyles = (theme: ThemeTypes) => {
       paddingBottom: theme.paddingXXS - 1,
     },
     footer: {
-      marginTop: theme.marginXS,
+      marginTop: theme.margin,
       ...MarginBottomForSubmitButton,
     },
   });

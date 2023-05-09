@@ -319,7 +319,6 @@ const ApplyMasterPassword = () => {
         {step === 'Done' && <ApplyDone accounts={canMigrate} />}
 
         <DeleteModal
-          confirmation={''}
           title={'Detele this account?'}
           visible={deleteVisible}
           message={

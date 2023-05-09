@@ -33,7 +33,7 @@ export default (theme: ThemeTypes) => {
       marginBottom: theme.controlHeightLG + theme.margin,
     },
     footer: {
-      marginTop: theme.marginXS,
+      marginTop: theme.margin,
       marginHorizontal: theme.margin,
       ...MarginBottomForSubmitButton,
     },
