@@ -1,7 +1,7 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { WebRunnerContext, WebRunnerState, WebRunnerStatus } from '../contexts';
 import WebView from 'react-native-webview';
-import { resetHandlerMaps, setupWebview } from 'messaging/index';
+import { restartAllHandlers, setupWebview } from 'messaging/index';
 import { WebRunner } from 'providers/WebRunnerProvider/WebRunner';
 import EventEmitter from 'eventemitter3';
 import { DelayBackgroundService } from 'types/background';
@@ -46,7 +46,7 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
   const reload = useCallback(() => {
     console.log('Reload web runner');
     eventEmitter.emit('update-status', 'reloading');
-    resetHandlerMaps();
+    restartAllHandlers();
     webRef?.current?.reload();
   }, [webRef]);
 

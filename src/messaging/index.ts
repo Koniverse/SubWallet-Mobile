@@ -164,9 +164,14 @@ type MessageType = 'PRI' | 'PUB' | 'EVM' | 'UNKNOWN';
 const handlers: Handlers = {};
 const handlerTypeMap: Record<string, MessageType> = {};
 const handlerMessageMap: Record<string, keyof RequestSignatures> = {};
+
 let webviewRef: RefObject<WebView | undefined>;
 let webviewEvents: EventEmitter;
 let status: WebRunnerStatus = 'init';
+
+// Support restart web-runner
+// @ts-ignore
+const restartHandlers: Record<string, { id; message; request; origin }> = {};
 
 export async function clearWebRunnerHandler(id: string): Promise<boolean> {
   const handlerTypeMapValue = handlerTypeMap[id];
@@ -198,14 +203,6 @@ export function getMessageType(message: string): MessageType {
   }
 
   return 'UNKNOWN';
-}
-
-export function resetHandlerMaps(): void {
-  Object.keys(handlerTypeMap).forEach(id => {
-    delete handlers[id];
-    delete handlerTypeMap[id];
-    delete handlerMessageMap[id];
-  });
 }
 
 export function getHandlerId(message: string, id?: string): string {
@@ -285,9 +282,13 @@ export const listenMessage = (
 };
 
 // @ts-ignore
-export const postMessage = ({ id, message, request, origin }) => {
+export const postMessage = ({ id, message, request, origin }, supportRestart = false) => {
   handlerTypeMap[id] = getMessageType(message);
   handlerMessageMap[id] = message;
+
+  if (supportRestart) {
+    restartHandlers[id] = { id, message, request, origin };
+  }
 
   const _post = () => {
     const injection = 'window.postMessage(' + JSON.stringify({ id, message, request, origin }) + ')';
@@ -311,6 +312,25 @@ export const postMessage = ({ id, message, request, origin }) => {
     webviewEvents.on('update-status', eventHandle);
   }
 };
+
+export function resetHandlerMaps(): void {
+  Object.keys(handlerTypeMap).forEach(id => {
+    delete handlers[id];
+    delete handlerTypeMap[id];
+    delete handlerMessageMap[id];
+  });
+}
+
+export function restartAllHandlers(): void {
+  const canRestartList = Object.values(restartHandlers).filter(h => !!handlerTypeMap[h.id]);
+
+  const numberHandlers = Object.keys(handlerTypeMap).length;
+  console.log(`Restart ${canRestartList.length}/${numberHandlers} handlers`);
+
+  canRestartList.forEach(({ id, message, request, origin }) => {
+    postMessage({ id, message, request, origin });
+  });
+}
 
 export function getMessageByHandleId(id: string): string | undefined {
   return handlerMessageMap[id];
@@ -340,7 +360,7 @@ export function sendMessage<TMessageType extends MessageTypes>(
 
     handlers[id] = { reject, resolve, subscriber };
 
-    postMessage({ id, message, request: request || {}, origin: undefined });
+    postMessage({ id, message, request: request || {}, origin: undefined }, !!subscriber);
   });
 }
 
@@ -376,7 +396,7 @@ export function lazySubscribeMessage<TMessageType extends MessageTypesWithSubscr
   const rs = {
     promise: handlePromise as Promise<ResponseTypes[TMessageType]>,
     start: () => {
-      postMessage({ id, message, request: request || {}, origin: undefined });
+      postMessage({ id, message, request: request || {}, origin: undefined }, true);
     },
     unsub: () => {
       const handler = handlers[id];
@@ -1149,9 +1169,7 @@ export async function subscribeFreeBalance(
   return sendMessage('pri(freeBalance.subscribe)', request, callback);
 }
 
-export async function substrateNftSubmitTransaction(
-  request: NftTransactionRequest,
-): Promise<SWTransactionResponse> {
+export async function substrateNftSubmitTransaction(request: NftTransactionRequest): Promise<SWTransactionResponse> {
   return sendMessage('pri(substrateNft.submitTransaction)', request);
 }
 

@@ -29,7 +29,7 @@ import {
   subscribeUiSettings,
   subscribeXcmRefMap,
 } from 'stores/utils';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WebRunnerContext } from 'providers/contexts';
@@ -170,137 +170,154 @@ const _DataContext: DataContextType = {
 
 export const DataContext = React.createContext(_DataContext);
 
+type WebRunnerFlagContext = {
+  isStart: boolean;
+  beforeWebRunnerReady?: boolean;
+};
+
 export const DataContextProvider = ({ children }: DataContextProviderProps) => {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;
+  const readyFlag = useRef<WebRunnerFlagContext>({ isStart: true, beforeWebRunnerReady: isWebRunnerReady });
 
   useEffect(() => {
     // Init subscription
     // Common
     if (isWebRunnerReady) {
-      _DataContext.addHandler({
-        ...subscribeAccountsData,
-        name: 'subscribeAccountsData',
-        relatedStores: ['accountState'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeKeyringState,
-        name: 'subscribeCurrentAccount',
-        relatedStores: ['accountState'],
-        isStartImmediately: true,
-      });
+      // Init subscription if start and restart them if WebRunner is reload
+      if (readyFlag.current.isStart) {
+        _DataContext.addHandler({
+          ...subscribeAccountsData,
+          name: 'subscribeAccountsData',
+          relatedStores: ['accountState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeKeyringState,
+          name: 'subscribeCurrentAccount',
+          relatedStores: ['accountState'],
+          isStartImmediately: true,
+        });
 
-      _DataContext.addHandler({
-        ...subscribeChainStateMap,
-        name: 'subscribeChainStateMap',
-        relatedStores: ['chainStore'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeChainInfoMap,
-        name: 'subscribeChainInfoMap',
-        relatedStores: ['chainStore'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeAssetRegistry,
-        name: 'subscribeAssetRegistry',
-        relatedStores: ['assetRegistry'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeMultiChainAssetMap,
-        name: 'subscribeMultiChainAssetMap',
-        relatedStores: ['assetRegistry'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeAssetSettings,
-        name: 'subscribeAssetSettings',
-        relatedStores: ['assetRegistry'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeXcmRefMap,
-        name: 'subscribeXcmRefMap',
-        relatedStores: ['assetRegistry'],
-        isStartImmediately: true,
-      });
+        _DataContext.addHandler({
+          ...subscribeChainStateMap,
+          name: 'subscribeChainStateMap',
+          relatedStores: ['chainStore'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeChainInfoMap,
+          name: 'subscribeChainInfoMap',
+          relatedStores: ['chainStore'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeAssetRegistry,
+          name: 'subscribeAssetRegistry',
+          relatedStores: ['assetRegistry'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeMultiChainAssetMap,
+          name: 'subscribeMultiChainAssetMap',
+          relatedStores: ['assetRegistry'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeAssetSettings,
+          name: 'subscribeAssetSettings',
+          relatedStores: ['assetRegistry'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeXcmRefMap,
+          name: 'subscribeXcmRefMap',
+          relatedStores: ['assetRegistry'],
+          isStartImmediately: true,
+        });
 
-      // Settings
-      _DataContext.addHandler({
-        ...subscribeUiSettings,
-        name: 'subscribeUiSettings',
-        relatedStores: ['settings'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeAuthUrls,
-        name: 'subscribeAuthUrls',
-        relatedStores: ['settings'],
-        isStartImmediately: true,
-      });
+        // Settings
+        _DataContext.addHandler({
+          ...subscribeUiSettings,
+          name: 'subscribeUiSettings',
+          relatedStores: ['settings'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeAuthUrls,
+          name: 'subscribeAuthUrls',
+          relatedStores: ['settings'],
+          isStartImmediately: true,
+        });
 
-      // Confirmations
-      _DataContext.addHandler({
-        ...subscribeAuthorizeRequests,
-        name: 'subscribeAuthorizeRequests',
-        relatedStores: ['requestState'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeMetadataRequests,
-        name: 'subscribeMetadataRequests',
-        relatedStores: ['requestState'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeSigningRequests,
-        name: 'subscribeSigningRequests',
-        relatedStores: ['requestState'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeConfirmationRequests,
-        name: 'subscribeConfirmationRequests',
-        relatedStores: ['requestState'],
-        isStartImmediately: true,
-      });
-      _DataContext.addHandler({
-        ...subscribeTransactionRequests,
-        name: 'subscribeTransactionRequests',
-        relatedStores: ['requestState'],
-        isStartImmediately: true,
-      });
+        // Confirmations
+        _DataContext.addHandler({
+          ...subscribeAuthorizeRequests,
+          name: 'subscribeAuthorizeRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeMetadataRequests,
+          name: 'subscribeMetadataRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeSigningRequests,
+          name: 'subscribeSigningRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeConfirmationRequests,
+          name: 'subscribeConfirmationRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeTransactionRequests,
+          name: 'subscribeTransactionRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
 
-      // Features
-      _DataContext.addHandler({ ...subscribePrice, name: 'subscribePrice', relatedStores: ['price'] });
-      _DataContext.addHandler({ ...subscribeBalance, name: 'subscribeBalance', relatedStores: ['balance'] });
-      _DataContext.addHandler({ ...subscribeCrowdloan, name: 'subscribeCrowdloan', relatedStores: ['crowdloan'] });
-      _DataContext.addHandler({ ...subscribeNftItems, name: 'subscribeNftItems', relatedStores: ['nft'] });
-      _DataContext.addHandler({ ...subscribeNftCollections, name: 'subscribeNftCollections', relatedStores: ['nft'] });
-      _DataContext.addHandler({ ...subscribeStaking, name: 'subscribeStaking', relatedStores: ['staking'] });
-      _DataContext.addHandler({
-        ...subscribeStakingReward,
-        name: 'subscribeStakingReward',
-        relatedStores: ['staking'],
-      });
-      _DataContext.addHandler({
-        ...subscribeChainStakingMetadata,
-        name: 'subscribeChainStakingMetadata',
-        relatedStores: ['staking'],
-      });
-      _DataContext.addHandler({
-        ...subscribeStakingNominatorMetadata,
-        name: 'subscribeStakingNominatorMetadata',
-        relatedStores: ['staking'],
-      });
-      _DataContext.addHandler({
-        ...subscribeTxHistory,
-        name: 'subscribeTxHistory',
-        relatedStores: ['transactionHistory'],
-      });
+        // Features
+        _DataContext.addHandler({ ...subscribePrice, name: 'subscribePrice', relatedStores: ['price'] });
+        _DataContext.addHandler({ ...subscribeBalance, name: 'subscribeBalance', relatedStores: ['balance'] });
+        _DataContext.addHandler({ ...subscribeCrowdloan, name: 'subscribeCrowdloan', relatedStores: ['crowdloan'] });
+        _DataContext.addHandler({ ...subscribeNftItems, name: 'subscribeNftItems', relatedStores: ['nft'] });
+        _DataContext.addHandler({
+          ...subscribeNftCollections,
+          name: 'subscribeNftCollections',
+          relatedStores: ['nft'],
+        });
+        _DataContext.addHandler({ ...subscribeStaking, name: 'subscribeStaking', relatedStores: ['staking'] });
+        _DataContext.addHandler({
+          ...subscribeStakingReward,
+          name: 'subscribeStakingReward',
+          relatedStores: ['staking'],
+        });
+        _DataContext.addHandler({
+          ...subscribeChainStakingMetadata,
+          name: 'subscribeChainStakingMetadata',
+          relatedStores: ['staking'],
+        });
+        _DataContext.addHandler({
+          ...subscribeStakingNominatorMetadata,
+          name: 'subscribeStakingNominatorMetadata',
+          relatedStores: ['staking'],
+        });
+        _DataContext.addHandler({
+          ...subscribeTxHistory,
+          name: 'subscribeTxHistory',
+          relatedStores: ['transactionHistory'],
+        });
+
+        readyFlag.current.isStart = false;
+      }
     }
+
+    readyFlag.current.beforeWebRunnerReady = isWebRunnerReady;
   }, [isWebRunnerReady]);
 
   return (

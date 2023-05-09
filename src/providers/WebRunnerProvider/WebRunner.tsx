@@ -7,9 +7,9 @@ import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 import StaticServer from 'react-native-static-server';
 import {
+  restartAllHandlers,
   initCronAndSubscription,
   listenMessage,
-  resetHandlerMaps,
   startCronAndSubscriptionServices,
   startCronServices,
   startSubscriptionServices,
@@ -151,12 +151,13 @@ class WebRunnerHandler {
   }
 
   reload() {
-    this.eventEmitter?.emit('update-status', 'reloading');
-    resetHandlerMaps();
     this.webRef?.current?.reload();
+    this.eventEmitter?.emit('update-status', 'reloading');
+    restartAllHandlers(); // Restart handlers with existed ids
+    console.warn('Reload the web-runner');
   }
 
-  pingCheck(timeCheck: number = 999, timeout = 6666, maxRetry = 3) {
+  pingCheck(timeCheck: number = 999, timeout = 9999, maxRetry = 3) {
     const flag = {
       retry: 0,
     };
@@ -173,7 +174,6 @@ class WebRunnerHandler {
             flag.retry += 1;
           } else {
             this.reload();
-            console.warn('Reload the web-runner!!!');
           }
         } else {
           flag.retry = 0;
@@ -184,7 +184,7 @@ class WebRunnerHandler {
     check();
   }
 
-  startPing(pingInterval: number = 9999, timeCheck: number = 999, pingTimeout: number = 6666) {
+  startPing(pingInterval: number = 12000, timeCheck: number = 999, pingTimeout: number = 9999) {
     this.stopPing();
     this.lastTimeResponse = undefined;
     this.pingInterval && clearInterval(this.pingInterval);
