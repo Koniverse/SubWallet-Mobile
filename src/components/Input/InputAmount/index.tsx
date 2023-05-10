@@ -11,7 +11,7 @@ interface InputAmountProps {
   placeholder?: string;
   decimals: number;
   value: string;
-  onChangeValue: (value: string) => void;
+  onChangeValue: (value: string, isInValid: boolean) => void;
   maxValue: string;
   disable?: boolean;
   errorMessages?: string[];
@@ -62,7 +62,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   const _onClickMaxBtn = useCallback(() => {
     const transformVal = getInputValuesFromString(maxValue, decimals);
     setInputValue(transformVal);
-    onChangeValue(maxValue);
+    onChangeValue(maxValue, true);
     onSetMax?.(true);
   }, [decimals, maxValue, onChangeValue, onSetMax]);
 
@@ -74,21 +74,35 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   );
 
   const onChangeInput = useCallback(
-    (_value: string) => {
+    (_rawValue: string) => {
       // if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(_value)) {
       //   return;
       // }
 
-      let currentValue = _value;
-      const maxLength = getMaxLengthText(_value);
-      if (_value.length > maxLength) {
-        currentValue = _value.slice(0, maxLength);
+      if (!_rawValue) {
+        onChangeValue('', true);
+        onSetMax?.(false);
+        return;
       }
 
-      setInputValue(currentValue);
+      const _value = _rawValue.replace(/,/g, '.');
 
-      const transformVal = getOutputValuesFromString(currentValue, decimals);
-      onChangeValue(transformVal);
+      if (isValidInput(_value)) {
+        let currentValue = _value;
+        const maxLength = getMaxLengthText(_value);
+        if (_value.length > maxLength) {
+          currentValue = _value.slice(0, maxLength);
+        }
+
+        setInputValue(currentValue);
+
+        const transformVal = getOutputValuesFromString(currentValue, decimals);
+
+        onChangeValue(transformVal, !!transformVal || !_rawValue);
+      } else {
+        onChangeValue('', false);
+      }
+
       onSetMax?.(false);
     },
     [decimals, getMaxLengthText, onChangeValue, onSetMax],
