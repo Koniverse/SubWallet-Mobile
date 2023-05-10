@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useCallback, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import BigN from 'bignumber.js';
 import { Button } from 'components/design-system-ui';
@@ -58,6 +58,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     onSetMax,
     showMaxButton = true,
   } = props;
+  const [preservedDecimals, setPreservedDecimals] = useState(decimals);
   const [inputValue, setInputValue] = useState(value);
   const _onClickMaxBtn = useCallback(() => {
     const transformVal = getInputValuesFromString(maxValue, decimals);
@@ -107,6 +108,13 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     },
     [decimals, getMaxLengthText, onChangeValue, onSetMax],
   );
+
+  useEffect(() => {
+    if (preservedDecimals !== decimals) {
+      onChangeInput(inputValue);
+      setPreservedDecimals(decimals);
+    }
+  }, [preservedDecimals, decimals, inputValue, onChangeInput]);
 
   return (
     <>
