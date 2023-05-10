@@ -279,7 +279,7 @@ export const SendFund = ({
   }, [assetRegistry, asset]);
 
   const decimals = useMemo(() => {
-    return currentChainAsset ? _getAssetDecimals(currentChainAsset) : 0;
+    return currentChainAsset ? _getAssetDecimals(currentChainAsset) : -1;
   }, [currentChainAsset]);
 
   const tokenItems = useMemo<TokenItemType[]>(() => {
@@ -378,7 +378,14 @@ export const SendFund = ({
   }, []);
 
   const validateAmount = useCallback(
-    (_amount: string, _maxTransfer: string) => {
+    (_amount: string, _maxTransfer: string, isValidInput?: boolean) => {
+      if (isValidInput === false) {
+        //todo: i18n
+        onUpdateErrors('value')(['Amount is invalid']);
+
+        return false;
+      }
+
       if (!_amount) {
         //todo: i18n
         onUpdateErrors('value')(['Amount is required']);
@@ -400,10 +407,10 @@ export const SendFund = ({
   );
 
   const _onChangeAmount = useCallback(
-    (_amount: string) => {
+    (_amount: string, isValidInput: boolean) => {
       onChangeValue('value')(_amount);
 
-      validateAmount(_amount, maxTransfer);
+      validateAmount(_amount, maxTransfer, isValidInput);
     },
     [maxTransfer, onChangeValue, validateAmount],
   );
