@@ -116,7 +116,10 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
         <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
       </View>
       <View style={footerAreaStyle}>
-        <Button disabled={!isCorrectWord(selectedWords, seed)} onPress={onSubmit(onPressSubmit)} loading={isBusy}>
+        <Button
+          disabled={!isCorrectWord(selectedWords, seed) || isBusy}
+          onPress={onSubmit(onPressSubmit)}
+          loading={isBusy}>
           {i18n.common.continue}
         </Button>
       </View>

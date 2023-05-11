@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { AddressField } from 'components/Field/Address';
 import { TextField } from 'components/Field/Text';
-import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
+import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import { PasswordField } from 'components/Field/Password';
 import { forgetAccount, keyringMigrateMasterPassword } from 'messaging/index';
@@ -60,6 +60,7 @@ const ApplyMasterPassword = () => {
   const [isError, setIsError] = useState(false);
   const selectedAction = useRef<SelectedActionType>();
   useHandlerHardwareBackPress(true);
+  const migrateAddressRef = useRef<string>('');
 
   const migratedRef = useRef<AccountJson[]>(
     accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
@@ -87,39 +88,47 @@ const ApplyMasterPassword = () => {
     return canMigrate.filter(acc => !acc.isMasterPassword);
   }, [canMigrate]);
 
-  const onSubmit = useCallback(() => {
-    const password = formState.data.password;
-    if (migrateAccount?.address && password) {
-      setLoading(true);
-      setTimeout(() => {
-        keyringMigrateMasterPassword({
-          address: migrateAccount.address,
-          password: password,
-        })
-          .then(res => {
-            if (!res.status) {
-              onUpdateErrors('password')([res.errors[0]]);
+  const onSubmit = useCallback(
+    (formState: FormState) => {
+      const password = formState.data.password;
+      const address = migrateAddressRef.current;
+      if (address && password) {
+        setLoading(true);
+        setTimeout(() => {
+          keyringMigrateMasterPassword({
+            address: address,
+            password: password,
+          })
+            .then(res => {
+              if (!res.status) {
+                onUpdateErrors('password')([res.errors[0]]);
+                setIsError(true);
+              } else {
+                setIsError(false);
+                onUpdateErrors('password')(undefined);
+              }
+            })
+            .catch((e: Error) => {
               setIsError(true);
-            } else {
-              setIsError(false);
-              onUpdateErrors('password')(undefined);
-            }
-          })
-          .catch((e: Error) => {
-            setIsError(true);
-            onUpdateErrors('password')([e.message]);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      }, 500);
-    }
+              onUpdateErrors('password')([e.message]);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }, 500);
+      }
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [migrateAccount?.address]);
+    [],
+  );
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
+
+  useEffect(() => {
+    migrateAddressRef.current = migrateAccount?.address || '';
+  }, [migrateAccount?.address]);
 
   useEffect(() => {
     if (isLocked) {
@@ -240,6 +249,10 @@ const ApplyMasterPassword = () => {
     [onComplete, onPress],
   );
 
+  const onPressSubmit = useCallback(() => {
+    onSubmit(formState);
+  }, [formState, onSubmit]);
+
   const renderFooterButton = useCallback(() => {
     switch (step) {
       case 'Introduction':
@@ -271,7 +284,7 @@ const ApplyMasterPassword = () => {
                 }
               />
             }
-            onPress={onSubmit}>
+            onPress={onPressSubmit}>
             {'Next'}
           </Button>
         );
@@ -285,7 +298,7 @@ const ApplyMasterPassword = () => {
     formState.errors.password.length,
     theme.colorTextLight5,
     theme.colorWhite,
-    onSubmit,
+    onPressSubmit,
     onPressActionButton,
   ]);
 

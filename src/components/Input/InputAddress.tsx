@@ -112,7 +112,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
               style={styles.textInput}
               placeholderTextColor={themes.colorTextLight4}
               selectionColor={themes.colorTextLight4}
-              blurOnSubmit={false}
+              blurOnSubmit={true}
               value={address}
               onBlur={onInputBlur}
               onChangeText={onChangeInputText}

@@ -26,6 +26,7 @@ export const Textarea = forwardRef((textAreaProps: Props, ref: React.Ref<TextInp
     errorMessages,
     placeholder,
     placeholderTextColor,
+    blurOnSubmit = true,
   } = textAreaProps;
   return (
     <>
@@ -36,7 +37,7 @@ export const Textarea = forwardRef((textAreaProps: Props, ref: React.Ref<TextInp
         autoCorrect={false}
         autoFocus={autoFocus}
         autoCapitalize="none"
-        blurOnSubmit={false}
+        blurOnSubmit={blurOnSubmit}
         style={[sharedStyles.inputAreaStyle, textAreaWrapper, style]}
         multiline={true}
         onChangeText={onChangeText}

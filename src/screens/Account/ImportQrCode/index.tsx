@@ -137,7 +137,8 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
         <Button
           icon={<Icon phosphorIcon={QrCode} weight="fill" />}
           onPress={onPressSubmit(onOpenModal)}
-          loading={loading}>
+          loading={loading}
+          disabled={loading}>
           {loading ? 'Creating' : 'Scan the QR code'}
         </Button>
       </View>
