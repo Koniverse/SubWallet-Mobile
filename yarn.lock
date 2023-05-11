@@ -4601,7 +4601,7 @@
     web3-eth-contract "^1.8.1"
     web3-utils "^1.8.1"
 
-"@subwallet/extension-koni-ui@^1.0.4-0":
+"@subwallet/extension-koni-ui@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-ui/-/extension-koni-ui-1.0.1.tgz#3bfa06ccbed268dbdbe957b2339a1a5d51cfec68"
   integrity sha512-vvWHe9I8B1S91Cw4fhJABN60733E8wQkp9mBWrtTUDKPPBstZVBjSbOWs6nPCxD4brBac0mOTFgDx+T0rDtl6Q==

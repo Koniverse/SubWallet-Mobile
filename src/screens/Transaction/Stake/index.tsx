@@ -338,9 +338,18 @@ export const Stake = ({
       !formState.data.value ||
       !isBalanceReady ||
       loading ||
-      !currentPool ||
-      !currentValidator,
-    [currentPool, currentValidator, formState.data.value, formState.isValidated.value, isBalanceReady, loading],
+      (currentStakingType === StakingType.POOLED ? !currentPool || poolLoading : !currentValidator || validatorLoading),
+    [
+      currentPool,
+      currentStakingType,
+      currentValidator,
+      formState.data.value,
+      formState.isValidated.value,
+      isBalanceReady,
+      loading,
+      poolLoading,
+      validatorLoading,
+    ],
   );
 
   return (
