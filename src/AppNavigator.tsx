@@ -38,7 +38,7 @@ import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import { RootRouteProps, RootStackParamList  } from './routes';
+import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -56,6 +56,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
+import SendNFT from 'screens/Transaction/NFT';
 
 interface Props {
   isAppReady: boolean;
@@ -159,6 +160,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen name="Settings" component={Settings} />
                 <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransferNft" component={TransferNftScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
