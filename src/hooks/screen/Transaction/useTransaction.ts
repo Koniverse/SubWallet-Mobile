@@ -42,23 +42,18 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
       case 'cancel-unstake':
       case 'claim-reward':
       case 'compound':
-        return 'StakingBalances';
+        return 'Staking';
       case 'send-nft':
-        return '';
+        return 'NFT';
       case 'send-fund':
       default:
-        return '';
+        return 'Token';
     }
   }, [action]);
 
   const title = useMemo(() => {
     return TRANSACTION_TITLE_MAP[transactionType];
   }, [transactionType]);
-
-  const goBack = useCallback(() => {
-    // @ts-ignore
-    navigation.navigate(homePath);
-  }, [homePath, navigation]);
 
   const transactionFormConfig: FormControlConfig = {
     from: {
@@ -87,9 +82,9 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     (id: string) => {
       const chainType = isEthereumAddress(formState.data.from) ? 'ethereum' : 'substrate';
 
-      navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, id });
+      navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, id, path: homePath });
     },
-    [formState.data.chain, formState.data.from, navigation],
+    [formState.data.chain, formState.data.from, homePath, navigation],
   );
 
   const onChangeFromValue = (value: string) => {
@@ -116,7 +111,6 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     onChangeAssetValue,
     onChangeAmountValue,
     onChangeValue,
-    goBack,
     onDone,
     onUpdateErrors,
   };

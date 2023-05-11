@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback } from 'react';
-import { ListRenderItemInfo, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Plus } from 'phosphor-react-native';
@@ -11,10 +11,6 @@ import { NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScr
 import { Header } from 'components/Header';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-
-const NftCollectionListStyle: StyleProp<any> = {
-  flex: 1,
-};
 
 const filteredCollection = (items: NftCollection[], searchString: string) => {
   return items.filter(collection => {

@@ -11,7 +11,7 @@ import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 export const TransactionDone = ({
   route: {
-    params: { chainType, chain, id },
+    params: { chain, id, path },
   },
 }: TransactionDoneProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -26,8 +26,20 @@ export const TransactionDone = ({
     }
   }, [chain, id, navigation]);
 
+  const goHome = useCallback(() => {
+    if (path === 'Staking') {
+      return navigation.navigate('Home', { screen: 'Staking', params: { screen: 'StakingBalances' } });
+    }
+
+    if (path === 'NFT') {
+      return navigation.navigate('Home', { screen: 'NFTs', params: { screen: 'CollectionList' } });
+    }
+
+    navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
+  }, [navigation, path]);
+
   return (
-    <ContainerWithSubHeader onPressBack={() => navigation.navigate('Home')} title={'Successful'}>
+    <ContainerWithSubHeader onPressBack={goHome} title={'Successful'}>
       <View style={_style.transactionDoneContainer}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <PageIcon icon={CheckCircle} color={theme.colorSuccess} />
@@ -43,7 +55,7 @@ export const TransactionDone = ({
             {'View transaction'}
           </Button>
 
-          <Button onPress={() => navigation.navigate('Home')}>{'Back to home'}</Button>
+          <Button onPress={goHome}>{'Back to home'}</Button>
         </View>
       </View>
     </ContainerWithSubHeader>

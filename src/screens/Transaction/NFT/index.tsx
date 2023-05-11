@@ -35,9 +35,8 @@ import { FormState } from 'hooks/screen/useFormControl';
 import { nftParamsHandler } from '../helper';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
-import { SendNFTProps } from 'screens/Home/NFT/NFTStackScreen';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootNavigationProps, SendNFTProps } from 'routes/index';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',

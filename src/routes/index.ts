@@ -60,7 +60,7 @@ export type RootStackParamList = {
   CustomTokenSetting: undefined;
   ConfigureToken: { tokenDetail: string };
   ImportToken: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
-  TransactionDone: { chainType: string; chain: string; id: string };
+  TransactionDone: { chainType: string; chain: string; id: string; path: string };
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
@@ -73,6 +73,12 @@ export type RootStackParamList = {
   AttachReadOnly: undefined;
   ImportQrCode: undefined;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
+  SendNFT: {
+    chain: string;
+    collectionId: string;
+    itemId: string;
+    owner: string;
+  };
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -102,3 +108,4 @@ export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'T
 export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddProvider'>;
 export type TransactionActionProps = NativeStackScreenProps<RootStackParamList, 'TransactionAction'>;
 export type HistoryProps = NativeStackScreenProps<RootStackParamList, 'History'>;
+export type SendNFTProps = NativeStackScreenProps<RootStackParamList, 'SendNFT'>;
