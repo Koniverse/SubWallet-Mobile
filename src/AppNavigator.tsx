@@ -38,7 +38,7 @@ import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
-import { RootRouteProps, RootStackParamList  } from './routes';
+import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getValidURL } from 'utils/browser';
@@ -56,6 +56,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
+import SendNFT from 'screens/Transaction/NFT';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import { Platform } from 'react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   isAppReady: boolean;
@@ -91,6 +95,7 @@ const HistoryScreen = (props: JSX.IntrinsicAttributes) => {
 const AppNavigator = ({ isAppReady }: Props) => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
+  const appTheme = useSubWalletTheme().swThemes;
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
@@ -111,7 +116,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   };
 
   const onError = (error: Error, stackTrace: string) => {
-    console.log('error boundary', error, stackTrace);
+    console.log('AppNavigator.tsx / Error boundary: ', error, stackTrace);
   };
 
   const onUpdateRoute = useCallback((state: NavigationState | undefined) => {
@@ -151,6 +156,17 @@ const AppNavigator = ({ isAppReady }: Props) => {
         <Stack.Navigator
           screenOptions={{
             animation: 'fade',
+          }}
+          screenListeners={{
+            focus: e => {
+              if (Platform.OS === 'android') {
+                if (e.target?.split('-')[0] === 'Home') {
+                  changeNavigationBarColor(appTheme.colorBgSecondary);
+                } else {
+                  changeNavigationBarColor(appTheme.colorBgDefault);
+                }
+              }
+            },
           }}>
           {isAppReady && (
             <>
@@ -159,6 +175,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen name="Settings" component={Settings} />
                 <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransferNft" component={TransferNftScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
