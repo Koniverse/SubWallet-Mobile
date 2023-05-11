@@ -39,6 +39,7 @@ export const ImportSecretPhrase = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const accountName = useGetDefaultAccountName();
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
 
   const timeOutRef = useRef<NodeJS.Timer>();
 
@@ -47,7 +48,6 @@ export const ImportSecretPhrase = () => {
   const [isBusy, setBusy] = useState(false);
   useHandlerHardwareBackPress(isBusy);
 
-  const [seedPhrase, setSeedPhrase] = useState('');
   const [validating, setValidating] = useState(false);
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.ENTER_SEED);
   const [keyTypes, setKeyTypes] = useState<KeypairType[]>([SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE]);
@@ -56,7 +56,7 @@ export const ImportSecretPhrase = () => {
     setBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: seedPhrase,
+      suri: formState.data.seed,
       isAllowed: true,
       types: keyTypes,
     })
@@ -69,7 +69,7 @@ export const ImportSecretPhrase = () => {
   };
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(secretPhraseFormConfig, {
-    onSubmitForm: _onImportSeed,
+    onSubmitForm: onPressSubmit(_onImportSeed),
   });
 
   useEffect(() => {
@@ -80,12 +80,12 @@ export const ImportSecretPhrase = () => {
     }
 
     if (amount) {
-      if (seedPhrase) {
+      if (formState.data.seed) {
         setValidating(true);
         onUpdateErrors('seed')([]);
 
         timeOutRef.current = setTimeout(() => {
-          validateSeedV2(seedPhrase, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
+          validateSeedV2(formState.data.seed, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
             .then(() => {
               if (amount) {
                 onUpdateErrors('seed')([]);
@@ -108,7 +108,7 @@ export const ImportSecretPhrase = () => {
     return () => {
       amount = false;
     };
-  }, [seedPhrase, onUpdateErrors]);
+  }, [formState.data.seed, onUpdateErrors]);
 
   useEffect(() => {
     return navigation.addListener('transitionEnd', () => {
@@ -133,8 +133,6 @@ export const ImportSecretPhrase = () => {
     [formState.data.seed, formState.isValidated.seed, isBusy],
   );
 
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
-
   return (
     <ContainerWithSubHeader
       onPressBack={onPressBack}
@@ -151,7 +149,6 @@ export const ImportSecretPhrase = () => {
             value={formState.data.seed}
             onChangeText={(text: string) => {
               onChangeValue('seed')(text);
-              setSeedPhrase(text);
             }}
             onSubmitEditing={onSubmitField('seed')}
             errorMessages={formState.errors.seed}

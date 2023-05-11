@@ -3,9 +3,9 @@ import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
-import useFormControl from 'hooks/screen/useFormControl';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
@@ -27,6 +27,7 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import { Button } from 'components/design-system-ui';
+import {ContainerHorizontalPadding, MarginBottomForSubmitButton} from "styles/sharedStyles";
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -35,6 +36,7 @@ const ContainerHeaderStyle: StyleProp<any> = {
 const WrapperStyle: StyleProp<ViewStyle> = {
   paddingHorizontal: 16,
   marginTop: 10,
+  flex: 1,
 };
 
 interface NftTypeOption {
@@ -99,6 +101,12 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   }, [chainInfoMap]);
   const [symbol, setSymbol] = useState<string>('');
 
+  const symbolRef = useRef<string>('');
+
+  useEffect(() => {
+    symbolRef.current = symbol;
+  }, [symbol]);
+
   const formConfig = {
     smartContract: {
       require: true,
@@ -110,40 +118,20 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       name: i18n.common.network,
       value: nftInfo?.originChain || chainOptions[0]?.value || '',
     },
+    selectedNftType: {
+      name: i18n.importEvmNft.nftType,
+      value: getNftType(nftInfo?.originChain || chainOptions[0]?.value || '', chainInfoMap),
+    },
     collectionName: {
       require: true,
       name: i18n.importEvmNft.nftCollectionName,
       value: nftInfo?.name || '',
     },
-    selectedNftType: {
-      name: i18n.importEvmNft.nftType,
-      value: getNftType(nftInfo?.originChain || chainOptions[0]?.value || '', chainInfoMap),
-    },
-  };
-  const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {});
-
-  const { data: formData } = formState;
-  const { chain, smartContract, collectionName, selectedNftType } = formData;
-
-  const handleChangeValue = useCallback(
-    (key: string) => {
-      return (text: string) => {
-        onUpdateErrors(key)(undefined);
-        onChangeValue(key)(text);
-      };
-    },
-    [onChangeValue, onUpdateErrors],
-  );
-
-  const onPressQrButton = async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setShowQrModalVisible(true);
-    }
   };
 
-  const handleAddToken = useCallback(() => {
+  const handleAddToken = (formState: FormState) => {
+    const { chain, smartContract, collectionName } = formState.data;
+    const _symbol = symbolRef.current;
     setLoading(true);
     if (!isNetConnected) {
       setLoading(false);
@@ -156,7 +144,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       originChain: chain,
       slug: '',
       name: collectionName,
-      symbol: symbol !== '' ? symbol : formattedCollectionName,
+      symbol: _symbol !== '' ? _symbol : formattedCollectionName,
       decimals: null,
       priceId: null,
       minAmount: null,
@@ -182,7 +170,32 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [chain, chainInfoMap, collectionName, isNetConnected, onBack, onUpdateErrors, smartContract, symbol]);
+  };
+
+  const { formState, onChangeValue, onUpdateErrors, onSubmitField } = useFormControl(formConfig, {
+    onSubmitForm: handleAddToken,
+  });
+
+  const { data: formData } = formState;
+  const { chain, smartContract, collectionName, selectedNftType } = formData;
+
+  const handleChangeValue = useCallback(
+    (key: string) => {
+      return (text: string) => {
+        onUpdateErrors(key)(undefined);
+        onChangeValue(key)(text);
+      };
+    },
+    [onChangeValue, onUpdateErrors],
+  );
+
+  const onPressQrButton = async () => {
+    const result = await requestCameraPermission();
+
+    if (result === RESULTS.GRANTED) {
+      setShowQrModalVisible(true);
+    }
+  };
 
   useEffect(() => {
     let unamount = false;
@@ -268,7 +281,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       disabled={loading}
       title={i18n.title.importNft}
       style={ContainerHeaderStyle}>
-      <View style={WrapperStyle}>
+      <ScrollView style={WrapperStyle}>
         <InputAddress
           containerStyle={{ marginBottom: 8 }}
           ref={formState.refs.smartContract}
@@ -309,6 +322,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChangeText={handleChangeValue('collectionName')}
           errorMessages={formState.errors.collectionName}
           value={collectionName}
+          onSubmitField={onSubmitField('collectionName')}
         />
 
         {!isNetConnected && (
@@ -319,10 +333,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
         )}
 
-        <Button loading={loading} onPress={handleAddToken} disabled={isDisableAddNFT || !isNetConnected || !isReady}>
-          {i18n.importEvmNft.importNft}
-        </Button>
-
         <AddressScanner
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
@@ -331,6 +341,15 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           token={'contract'}
           scanMessage={i18n.common.toImportNFT}
         />
+      </ScrollView>
+
+      <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
+        <Button
+          loading={loading}
+          onPress={() => handleAddToken(formState)}
+          disabled={isDisableAddNFT || !isNetConnected || !isReady || loading}>
+          {i18n.importEvmNft.importNft}
+        </Button>
       </View>
     </ContainerWithSubHeader>
   );

@@ -52,11 +52,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   }, [chainInfoMap]);
 
   const formConfig = {
-    contractAddress: {
-      require: true,
-      name: i18n.importToken.contractAddress,
-      value: tokenInfo?.contractAddress || '',
-    },
     chain: {
       name: i18n.common.network,
       value: tokenInfo?.originChain || chainOptions[0]?.value || '',
@@ -68,6 +63,11 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     decimals: {
       name: i18n.common.decimals,
       value: tokenInfo ? String(tokenInfo?.decimals) : '',
+    },
+    contractAddress: {
+      require: true,
+      name: i18n.importToken.contractAddress,
+      value: tokenInfo?.contractAddress || '',
     },
   };
 
@@ -117,7 +117,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       });
   };
 
-  const { formState, onChangeValue, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onUpdateErrors, onSubmitField } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
   useEffect(() => {
@@ -211,7 +211,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     !formState.data.symbol ||
     !formState.data.decimals ||
     !isNetConnected ||
-    !isReady;
+    !isReady ||
+    isBusy;
 
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
@@ -227,6 +228,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             }}
             placeholder={'Please type or paste an address'}
             onPressQrButton={onPressQrButton}
+            onSubmitField={onSubmitField('contractAddress')}
           />
 
           {isReady && !!formState.errors.contractAddress.length && (
@@ -258,6 +260,19 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             scanMessage={i18n.common.toImportToken}
           />
         </ScrollView>
+
+        <ChainSelect
+          items={chainOptions}
+          modalVisible={isShowChainModal}
+          onChangeModalVisible={() => setShowChainModal(false)}
+          onChangeValue={(text: string) => {
+            handleChangeValue('chain')(text);
+            setName('');
+            setShowChainModal(false);
+          }}
+          selectedItem={formState.data.chain}
+        />
+
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
           <Button disabled={isBusy} type={'secondary'} style={{ flex: 1, marginRight: 6 }} onPress={_goBack}>
             {i18n.common.cancel}
@@ -270,17 +285,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             {i18n.common.addToken}
           </Button>
         </View>
-        <ChainSelect
-          items={chainOptions}
-          modalVisible={isShowChainModal}
-          onChangeModalVisible={() => setShowChainModal(false)}
-          onChangeValue={(text: string) => {
-            handleChangeValue('chain')(text);
-            setName('');
-            setShowChainModal(false);
-          }}
-          selectedItem={formState.data.chain}
-        />
       </View>
     </ContainerWithSubHeader>
   );

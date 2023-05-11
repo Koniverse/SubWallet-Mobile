@@ -178,7 +178,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
     navigation.goBack();
   }, [navigation]);
 
-  const disableSubmit = !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected;
+  const disableSubmit = !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected || loading;
 
   const onSubmitForm = useCallback(
     async (_formState: FormState) => {
@@ -254,6 +254,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
               onChange={onChangeReceiverAddress}
               isValidValue={formState.isValidated.recipientAddress}
               placeholder={'Please type or paste an address'}
+              onSubmitField={handleSend}
             />
             {!!formState.errors.recipientAddress.length && (
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />

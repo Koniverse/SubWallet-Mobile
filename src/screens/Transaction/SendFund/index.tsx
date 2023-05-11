@@ -26,6 +26,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -569,7 +570,7 @@ export const SendFund = ({
             <SubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading} />
           </View>
 
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} style={{ flex: 1, backgroundColor: 'yellow' }}>
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} style={{ flex: 1 }}>
             <>
               <ScrollView style={{ ...ContainerHorizontalPadding, paddingTop: theme.size, flex: 1 }}>
                 {isAllAccount && (
@@ -657,6 +658,7 @@ export const SendFund = ({
                   isValidValue={formState.isValidated.recipientAddress}
                   placeholder={'Please type or paste an address'}
                   disabled={loading}
+                  onSubmitField={onSubmit}
                 />
 
                 {/*//todo: i18n*/}
@@ -699,13 +701,13 @@ export const SendFund = ({
 
               <View
                 style={{
-                  ...ContainerHorizontalPadding,
-                  marginTop: 16,
+                  paddingHorizontal: 16,
+                  paddingTop: 16,
                   ...MarginBottomForSubmitButton,
                 }}>
                 {/*//todo: i18n*/}
                 <Button
-                  disabled={!isBalanceReady}
+                  disabled={!isBalanceReady || !!formState.errors.to.length || !!formState.errors.value.length}
                   icon={buttonIcon}
                   loading={loading}
                   type={isTransferAll ? 'warning' : undefined}
@@ -713,6 +715,7 @@ export const SendFund = ({
                   {isTransferAll ? 'Transfer the full account balance' : 'Transfer'}
                 </Button>
               </View>
+              <SafeAreaView />
             </>
           </TouchableWithoutFeedback>
         </>

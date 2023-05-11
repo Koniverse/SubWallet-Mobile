@@ -5,12 +5,12 @@ import { InputAddress } from 'components/Input/InputAddress';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useCheckCamera from 'hooks/common/useCheckCamera';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
-import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
+import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Eye, X } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
@@ -44,6 +44,12 @@ const AttachReadOnly = () => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isBusy, setIsBusy] = useState<boolean>(false);
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+  const accountRef = useRef<QrAccount | null>(null);
+
+  useEffect(() => {
+    accountRef.current = account;
+  }, [account]);
 
   const formConfig = useMemo((): FormControlConfig => {
     return {
@@ -74,21 +80,20 @@ const AttachReadOnly = () => {
     setIsScanning(false);
   }, []);
 
-  const handleCreateAccount = useCallback(
-    (name: string): void => {
-      setIsBusy(true);
-
-      if (!account) {
+  const _onSubmitForm = (): void => {
+    setIsBusy(true);
+    const _account = accountRef.current;
+    if (formState.data.address) {
+      if (!_account) {
         setIsBusy(false);
         return;
       }
-
-      if (account.isAddress) {
+      if (_account.isAddress) {
         createAccountExternalV2({
-          name: name,
-          address: account.content,
-          genesisHash: account.genesisHash,
-          isEthereum: account.isEthereum,
+          name: defaultName,
+          address: _account.content,
+          genesisHash: _account.genesisHash,
+          isEthereum: _account.isEthereum,
           isAllowed: false,
           isReadOnly: true,
         })
@@ -109,28 +114,14 @@ const AttachReadOnly = () => {
       } else {
         setIsBusy(false);
       }
-    },
-    [account, onComplete],
-  );
-
-  const onSubmitForm = useCallback(
-    (formState: FormState) => {
-      if (formState.data.address) {
-        handleCreateAccount(defaultName);
-      } else {
-        Keyboard.dismiss();
-      }
-    },
-    [defaultName, handleCreateAccount],
-  );
+    } else {
+      Keyboard.dismiss();
+    }
+  };
 
   const { formState, onChangeValue, onSubmitField } = useFormControl(formConfig, {
-    onSubmitForm: onSubmitForm,
+    onSubmitForm: onPressSubmit(_onSubmitForm),
   });
-
-  const handleSubmit = useCallback(() => {
-    onSubmitForm(formState);
-  }, [formState, onSubmitForm]);
 
   const onChangeAddress = useCallback(
     (receiverAddress: string | null, currentTextValue: string) => {
@@ -172,8 +163,6 @@ const AttachReadOnly = () => {
     [formState.refs.address],
   );
 
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
-
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
@@ -209,8 +198,8 @@ const AttachReadOnly = () => {
           <Button
             icon={<Icon phosphorIcon={Eye} weight="fill" />}
             loading={isBusy}
-            onPress={onPressSubmit(handleSubmit)}
-            disabled={errors.length > 0 || !formState.data.address}>
+            onPress={onPressSubmit(_onSubmitForm)}
+            disabled={errors.length > 0 || !formState.data.address || isBusy}>
             {i18n.title.attachReadonlyAccount}
           </Button>
         </View>

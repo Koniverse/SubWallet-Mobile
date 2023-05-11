@@ -29,6 +29,18 @@ export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const accountName = useGetDefaultAccountName();
+  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+
+  const privateKeyFormConfig: FormControlConfig = {
+    privateKey: {
+      name: i18n.common.privateKey,
+      value: '',
+      require: true,
+      transformFunc: value => {
+        return value.trim();
+      },
+    },
+  };
 
   const timeOutRef = useRef<NodeJS.Timer>();
 
@@ -38,7 +50,6 @@ export const ImportPrivateKey = () => {
 
   useHandlerHardwareBackPress(isBusy);
 
-  const [privateKey, setPrivateKey] = useState('');
   const [validating, setValidating] = useState(false);
   const [autoCorrect, setAutoCorrect] = useState('');
 
@@ -46,7 +57,7 @@ export const ImportPrivateKey = () => {
     setIsBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: privateKey.trim(),
+      suri: formState.data.privateKey,
       isAllowed: true,
       types: [EVM_ACCOUNT_TYPE],
     })
@@ -59,39 +70,28 @@ export const ImportPrivateKey = () => {
       });
   };
 
-  const privateKeyFormConfig: FormControlConfig = {
-    privateKey: {
-      name: i18n.common.privateKey,
-      value: '',
-      require: true,
-      transformFunc: value => {
-        return value.trim();
-      },
-    },
-  };
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(privateKeyFormConfig, {
-    onSubmitForm: _onImport,
+    onSubmitForm: onPressSubmit(_onImport),
   });
-
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
 
   useEffect(() => {
     let amount = true;
+    const _privateKey = formState.data.privateKey;
 
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current);
     }
     if (amount) {
-      if (privateKey) {
+      if (_privateKey) {
         setValidating(true);
         onUpdateErrors('privateKey')([]);
 
         timeOutRef.current = setTimeout(() => {
-          validateMetamaskPrivateKeyV2(privateKey, [EVM_ACCOUNT_TYPE])
+          validateMetamaskPrivateKeyV2(_privateKey, [EVM_ACCOUNT_TYPE])
             .then(({ autoAddPrefix }) => {
               if (amount) {
                 if (autoAddPrefix) {
-                  setAutoCorrect(`0x${privateKey}`);
+                  setAutoCorrect(`0x${_privateKey}`);
                 }
 
                 onUpdateErrors('privateKey')([]);
@@ -110,7 +110,7 @@ export const ImportPrivateKey = () => {
         }, 300);
       }
     }
-  }, [onUpdateErrors, privateKey]);
+  }, [onUpdateErrors, formState.data.privateKey]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => {
@@ -140,7 +140,6 @@ export const ImportPrivateKey = () => {
             onChangeText={(text: string) => {
               onChangeValue('privateKey')(text);
               setAutoCorrect('');
-              setPrivateKey(text);
             }}
             value={autoCorrect || formState.data.privateKey}
             onSubmitEditing={onSubmitField('privateKey')}
@@ -161,7 +160,7 @@ export const ImportPrivateKey = () => {
                 }
               />
             }
-            disabled={!checkValidateForm(formState.isValidated) || validating}
+            disabled={!checkValidateForm(formState.isValidated) || validating || isBusy}
             loading={validating || isBusy}
             onPress={onPressSubmit(_onImport)}>
             {'Import account'}
