@@ -2,18 +2,12 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import { useCallback, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 
-const useHandleSubmitTransaction = (
-  onDone: (extrinsicHash: string) => void,
-  setIgnoreWarnings?: (value: boolean) => void,
-) => {
+const useHandleSubmitTransaction = (onDone: (id: string) => void, setIgnoreWarnings?: (value: boolean) => void) => {
   const { show, hideAll } = useToast();
 
   const onSuccess = useCallback(
     (rs: SWTransactionResponse) => {
-      const { errors, extrinsicHash, warnings } = rs;
-      console.log('errors', errors);
-      console.log('extrinsicHash', extrinsicHash);
-      console.log('warnings', warnings);
+      const { errors, id, warnings } = rs;
       if (errors.length || warnings.length) {
         if (errors[0]?.message !== 'User reject request') {
           hideAll();
@@ -21,8 +15,8 @@ const useHandleSubmitTransaction = (
         }
 
         warnings[0] && setIgnoreWarnings?.(true);
-      } else if (extrinsicHash) {
-        onDone(extrinsicHash);
+      } else if (id) {
+        onDone(id);
       }
     },
     [hideAll, onDone, setIgnoreWarnings, show],

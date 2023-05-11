@@ -11,7 +11,7 @@ import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 export const TransactionDone = ({
   route: {
-    params: { chainType, chain, extrinsicHash },
+    params: { chainType, chain, id },
   },
 }: TransactionDoneProps) => {
   const theme = useSubWalletTheme().swThemes;
@@ -19,12 +19,12 @@ export const TransactionDone = ({
   const _style = TransactionDoneStyle(theme);
 
   const viewInExplorer = useCallback(() => {
-    if (chain && extrinsicHash) {
-      navigation.navigate('History', { chain, extrinsicHash });
+    if (chain && id) {
+      navigation.navigate('History', { chain, transactionId: id });
     } else {
       navigation.navigate('History', {});
     }
-  }, [chain, extrinsicHash, navigation]);
+  }, [chain, id, navigation]);
 
   return (
     <ContainerWithSubHeader onPressBack={() => navigation.navigate('Home')} title={'Successful'}>

@@ -230,7 +230,7 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
 
 function History({
   route: {
-    params: { extrinsicHash, chain },
+    params: { extrinsicHash, chain, transactionId },
   },
 }: HistoryProps): React.ReactElement<Props> {
   const theme = useSubWalletTheme().swThemes;
@@ -313,8 +313,8 @@ function History({
   }, []);
 
   useEffect(() => {
-    if (extrinsicHash && chain && !isOpenByLink) {
-      const existed = historyList.find(item => item.chain === chain && item.extrinsicHash === extrinsicHash);
+    if (transactionId && chain && !isOpenByLink) {
+      const existed = historyList.find(item => item.chain === chain && item.transactionId === transactionId);
 
       setTimeout(() => {
         if (existed) {
@@ -324,7 +324,7 @@ function History({
         }
       }, 300);
     }
-  }, [chain, extrinsicHash, historyList, isOpenByLink]);
+  }, [chain, transactionId, historyList, isOpenByLink]);
 
   useEffect(() => {
     if (currentAccount?.address !== curAdr) {

@@ -1,7 +1,7 @@
 {
   "name": "SubWalletMobile",
-  "version": "0.2.6",
-  "build": "128",
+  "version": "1.0.1",
+  "build": "141",
   "private": true,
   "license": "Apache-2.0",
   "bin": {
@@ -128,8 +128,8 @@
     "@polkadot/types": "^9.9.4",
     "@react-native-community/eslint-config": "^3.2.0",
     "@subwallet/chain-list": "0.1.1",
-    "@subwallet/extension-base": "^1.0.2-3",
-    "@subwallet/extension-koni-ui": "^0.8.1-wr3",
+    "@subwallet/extension-base": "^1.0.4-0",
+    "@subwallet/extension-koni-ui": "^1.0.1",
     "@tsconfig/react-native": "^2.0.2",
     "@types/jest": "^29.2.3",
     "@types/react": "^18.0.25",
@@ -177,8 +177,8 @@
     "@polkadot/util": "^10.3.1",
     "@polkadot/api": "^9.9.4",
     "@polkadot/util-crypto": "^10.3.1",
-    "@subwallet/extension-base": "^1.0.2-1",
-    "@subwallet/chain-list": "0.1.1",
+    "@subwallet/extension-base": "^1.0.4-0",
+    "@subwallet/chain-list": "0.1.2",
     "react-native-svg": "^13.6.0"
   },
   "jest": {
