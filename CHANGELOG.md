@@ -1,5 +1,8 @@
-## 1.0.1 (132)
-- Upgrade Background from extension 1.0.x
+## 1.0.2 (143)
+- Upgrade UI
+
+## 1.0.1 (140)
+- Upgrade Background from extension 1.0.2-1
 - Upgrade UI
 
 ## 0.2.6 (129)
