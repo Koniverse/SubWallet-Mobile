@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Divider, Icon, SwModal } from 'components/design-system-ui';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { FadersHorizontal } from 'phosphor-react-native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
@@ -20,6 +20,11 @@ export interface FilterModalProps {
   optionSelectionMap: Record<string, boolean>;
 }
 
+const ButtonIcon = (color: string) => {
+  return <Icon phosphorIcon={FadersHorizontal} size={'lg'} iconColor={color} />;
+};
+
+// todo: i18n 'Filter', 'Apply filter'
 const FilterModal = ({
   modalVisible,
   onChangeModalVisible,
@@ -34,12 +39,7 @@ const FilterModal = ({
       <>
         <Divider style={{ paddingTop: 4, paddingBottom: 16 }} color={'#1A1A1A'} />
         <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
-          <Button
-            icon={<Icon phosphorIcon={FadersHorizontal} size={'lg'} />}
-            onPress={() => {
-              onChangeModalVisible && onChangeModalVisible();
-              onApplyFilter && onApplyFilter();
-            }}>
+          <Button icon={ButtonIcon} onPress={onApplyFilter}>
             {'Apply filter'}
           </Button>
         </View>
