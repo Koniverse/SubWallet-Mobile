@@ -24,7 +24,6 @@ const useHandleSubmitTransaction = (onDone: (id: string) => void, setIgnoreWarni
 
   const onError = useCallback(
     (error: Error) => {
-      console.log('error', error);
       hideAll();
       show(error.message);
     },

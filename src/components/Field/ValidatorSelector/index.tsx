@@ -13,6 +13,9 @@ interface Props extends FieldBaseProps {
   value?: string;
   placeholder?: string;
   loading?: boolean;
+  onPressBookBtn?: () => void;
+  onPressLightningBtn?: () => void;
+  disabled?: boolean;
 }
 
 const blockContentStyle: StyleProp<any> = {
@@ -32,7 +35,17 @@ const textStyle: StyleProp<any> = {
   color: 'rgba(255, 255, 255, 0.85)',
 };
 
-export const ValidatorSelectorField = ({ outerStyle, value, label, placeholder, loading, ...fieldBase }: Props) => {
+export const ValidatorSelectorField = ({
+  outerStyle,
+  value,
+  label,
+  placeholder,
+  loading,
+  onPressBookBtn,
+  onPressLightningBtn,
+  disabled,
+  ...fieldBase
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const addressList = useMemo(() => {
@@ -64,7 +77,7 @@ export const ValidatorSelectorField = ({ outerStyle, value, label, placeholder, 
   };
 
   return (
-    <FieldBase label={label} fieldBgc={theme.colorBgSecondary} {...fieldBase} outerStyle={outerStyle}>
+    <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           {!!addressList.length && (
@@ -85,12 +98,28 @@ export const ValidatorSelectorField = ({ outerStyle, value, label, placeholder, 
             <Button
               size={'xs'}
               type={'ghost'}
-              icon={<Icon phosphorIcon={Book} size={'sm'} iconColor={theme.colorTextLight3} />}
+              disabled={disabled}
+              icon={
+                <Icon
+                  phosphorIcon={Book}
+                  size={'sm'}
+                  iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
+                />
+              }
+              onPress={onPressBookBtn}
             />
             <Button
               size={'xs'}
               type={'ghost'}
-              icon={<Icon phosphorIcon={Lightning} size={'sm'} iconColor={theme.colorTextLight3} />}
+              disabled={disabled}
+              icon={
+                <Icon
+                  phosphorIcon={Lightning}
+                  size={'sm'}
+                  iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
+                />
+              }
+              onPress={onPressLightningBtn}
             />
           </View>
         )}
