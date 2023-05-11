@@ -1,8 +1,13 @@
 import { useCallback, useState } from 'react';
 
 export function useFilterModal() {
+  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [filterSelectionMap, setFilterSelectionMap] = useState<Record<string, boolean>>({});
+
+  const openFilterModal = useCallback(() => {
+    setFilterModalVisible(true);
+  }, []);
 
   const onCloseFilterModal = useCallback(() => {
     setFilterSelectionMap(
@@ -13,7 +18,7 @@ export function useFilterModal() {
       }, {} as Record<string, boolean>),
     );
 
-    //close modal
+    setFilterModalVisible(false);
   }, [selectedFilters]);
 
   const onChangeFilterOption = useCallback((value: string, isCheck: boolean) => {
@@ -23,16 +28,14 @@ export function useFilterModal() {
     }));
   }, []);
 
-  const onCancelFilter = () => {
-    setSelectedFilters([]);
-  };
-
   const onApplyFilter = useCallback(() => {
-    // inactiveModal(modalId); close modal
+    setFilterModalVisible(false);
     setSelectedFilters(Object.keys(filterSelectionMap).filter(o => filterSelectionMap[o]));
   }, [filterSelectionMap]);
 
   return {
+    openFilterModal,
+    filterModalVisible,
     onChangeFilterOption,
     onApplyFilter,
     onCloseFilterModal,

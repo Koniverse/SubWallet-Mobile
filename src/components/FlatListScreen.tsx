@@ -98,10 +98,16 @@ export function FlatListScreen<T>({
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
-  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
   const searchRef = useRef<TextInput>(null);
-  const { filterSelectionMap, onApplyFilter, onChangeFilterOption, selectedFilters, onCloseFilterModal } =
-    useFilterModal();
+  const {
+    filterSelectionMap,
+    filterModalVisible,
+    openFilterModal,
+    onApplyFilter,
+    onChangeFilterOption,
+    selectedFilters,
+    onCloseFilterModal,
+  } = useFilterModal();
 
   useEffect(() => {
     setTimeout(() => {
@@ -130,7 +136,7 @@ export function FlatListScreen<T>({
           style={{ marginBottom: searchMarginBottom, marginTop: 10, marginHorizontal: 16 }}
           searchRef={searchRef}
           isShowFilterBtn={isShowFilterBtn}
-          onPressFilterBtn={() => setFilterModalVisible(true)}
+          onPressFilterBtn={openFilterModal}
         />
       )}
       {isNetConnected ? (
@@ -180,10 +186,7 @@ export function FlatListScreen<T>({
           onChangeOption={onChangeFilterOption}
           optionSelectionMap={filterSelectionMap}
           onApplyFilter={onApplyFilter}
-          onChangeModalVisible={() => {
-            setFilterModalVisible(false);
-            onCloseFilterModal();
-          }}
+          onChangeModalVisible={onCloseFilterModal}
         />
       )}
     </View>
