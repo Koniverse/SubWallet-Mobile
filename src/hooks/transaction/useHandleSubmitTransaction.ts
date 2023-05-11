@@ -30,7 +30,6 @@ const useHandleSubmitTransaction = (
 
   const onError = useCallback(
     (error: Error) => {
-      console.log('error', error);
       hideAll();
       show(error.message);
     },

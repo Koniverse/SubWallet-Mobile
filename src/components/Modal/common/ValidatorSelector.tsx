@@ -6,7 +6,7 @@ import { FlatListScreenPaddingTop, MarginBottomForSubmitButton } from 'styles/sh
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
-import { ListRenderItemInfo, SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { ListRenderItemInfo, SafeAreaView, View } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
@@ -31,7 +31,11 @@ interface Props {
 const searchFunction = (items: ValidatorDataType[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
 
-  return items.filter(({ identity }) => identity?.toLowerCase().includes(lowerCaseSearchString));
+  return items.filter(
+    ({ identity, address }) =>
+      address.toLowerCase().includes(lowerCaseSearchString) ||
+      (identity ? identity.toLowerCase().includes(lowerCaseSearchString) : false),
+  );
 };
 
 const renderListEmptyComponent = () => {
@@ -113,9 +117,14 @@ export const ValidatorSelector = ({
 
   return (
     <>
-      <TouchableOpacity onPress={() => setValidatorSelectModalVisible(true)} disabled={!chain || !from || disabled}>
-        <ValidatorSelectorField value={selectedValidator} label={'Select validator'} loading={validatorLoading} />
-      </TouchableOpacity>
+      <ValidatorSelectorField
+        disabled={!chain || !from || disabled}
+        onPressLightningBtn={() => setValidatorSelectModalVisible(true)}
+        onPressBookBtn={() => setValidatorSelectModalVisible(true)}
+        value={selectedValidator}
+        label={'Select validator'}
+        loading={validatorLoading}
+      />
 
       <SwFullSizeModal modalVisible={validatorSelectModalVisible}>
         <FlatListScreen

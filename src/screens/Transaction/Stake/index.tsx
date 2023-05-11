@@ -130,8 +130,8 @@ export const Stake = ({
   );
 
   const accountSelectorList = useMemo(
-    () => accounts.filter(accountFilterFunc(chainInfoMap, currentStakingType as StakingType, chain)),
-    [accounts, chain, chainInfoMap, currentStakingType],
+    () => accounts.filter(accountFilterFunc(chainInfoMap, currentStakingType as StakingType, stakingChain)),
+    [accounts, stakingChain, chainInfoMap, currentStakingType],
   );
 
   useEffect(() => {
@@ -295,7 +295,7 @@ export const Stake = ({
 
     if (currentPool && currentStakingType === StakingType.POOLED) {
       bondingPromise = submitPoolBonding({
-        amount: '0',
+        amount: currentValue,
         chain: chain,
         nominatorMetadata: nominatorMetadata,
         selectedPool: selectedPool as NominationPoolInfo,
@@ -303,7 +303,7 @@ export const Stake = ({
       });
     } else {
       bondingPromise = submitBonding({
-        amount: '0',
+        amount: currentValue,
         chain: chain,
         nominatorMetadata: nominatorMetadata,
         selectedValidators,
@@ -331,6 +331,17 @@ export const Stake = ({
   );
 
   const onPreCheckReadOnly = usePreCheckReadOnly(from);
+
+  const isDisabledButton = useMemo(
+    () =>
+      !formState.isValidated.value ||
+      !formState.data.value ||
+      !isBalanceReady ||
+      loading ||
+      !currentPool ||
+      !currentValidator,
+    [currentPool, currentValidator, formState.data.value, formState.isValidated.value, isBalanceReady, loading],
+  );
 
   return (
     <TransactionLayout
@@ -432,16 +443,14 @@ export const Stake = ({
         </ScrollView>
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button
-            disabled={!formState.isValidated.value || !formState.data.value || !isBalanceReady || loading}
+            disabled={isDisabledButton}
             loading={loading}
             icon={
               <Icon
                 phosphorIcon={PlusCircle}
                 weight={'fill'}
                 size={'lg'}
-                iconColor={
-                  !formState.isValidated.value || !formState.data.value ? theme.colorTextLight5 : theme.colorWhite
-                }
+                iconColor={isDisabledButton ? theme.colorTextLight5 : theme.colorWhite}
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>

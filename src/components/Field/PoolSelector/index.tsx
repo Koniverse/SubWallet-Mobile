@@ -14,6 +14,8 @@ interface Props extends FieldBaseProps {
   loading?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  onPressBookBtn?: () => void;
+  onPressLightningBtn?: () => void;
 }
 
 const accountNameTextStyle: StyleProp<any> = {
@@ -41,12 +43,14 @@ export const PoolSelectorField = ({
   loading,
   placeholder = 'Selected pool',
   disabled,
+  onPressBookBtn,
+  onPressLightningBtn,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   return (
-    <FieldBase label={label} fieldBgc={theme.colorBgSecondary} {...fieldBase} outerStyle={outerStyle}>
+    <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           {item && item.address && (
@@ -76,6 +80,7 @@ export const PoolSelectorField = ({
                   iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
                 />
               }
+              onPress={onPressBookBtn}
             />
             <Button
               disabled={disabled}
@@ -88,6 +93,7 @@ export const PoolSelectorField = ({
                   iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
                 />
               }
+              onPress={onPressLightningBtn}
             />
           </View>
         )}

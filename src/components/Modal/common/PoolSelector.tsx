@@ -6,13 +6,12 @@ import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { NominationPoolInfo, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetValidatorList, { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
-import { ListRenderItemInfo, TouchableOpacity } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import loading from 'components/Loading';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -91,9 +90,14 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
 
   return (
     <>
-      <TouchableOpacity onPress={() => setPoolSelectModalVisible(true)} disabled={isDisabled || poolLoading}>
-        <PoolSelectorField disabled={isDisabled} item={selectedPool} label={'Select pool'} loading={poolLoading} />
-      </TouchableOpacity>
+      <PoolSelectorField
+        onPressBookBtn={() => setPoolSelectModalVisible(true)}
+        onPressLightningBtn={() => setPoolSelectModalVisible(true)}
+        disabled={isDisabled}
+        item={selectedPool}
+        label={'Select pool'}
+        loading={poolLoading}
+      />
 
       <SwFullSizeModal modalVisible={poolSelectModalVisible}>
         <FlatListScreen
@@ -112,7 +116,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
           <PoolSelectorDetailModal
             detailItem={selectedItem}
             detailModalVisible={detailModalVisible}
-            onCancel={() => setPoolSelectModalVisible(false)}
+            onCancel={() => setDetailModalVisible(false)}
           />
         )}
       </SwFullSizeModal>
