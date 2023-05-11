@@ -1,14 +1,14 @@
+import React from 'react';
 import { useCallback, useState } from 'react';
-import { useToast } from 'react-native-toast-notifications';
+import Toast from 'react-native-toast-notifications';
 
 export function useSelectValidators(
   maxCount: number,
   onChange?: (value: string) => void,
   isSingleSelect?: boolean,
   closeModal?: () => void,
+  toastRef?: React.RefObject<Toast>,
 ) {
-  const { show } = useToast();
-
   // Current nominated at init
   const [defaultSelected, setDefaultSelected] = useState<string[]>([]);
   // Current selected validators
@@ -25,7 +25,10 @@ export function useSelectValidators(
           if (isSingleSelect) {
             if (defaultSelected.length >= maxCount) {
               if (!defaultSelected.includes(changeVal)) {
-                show(`You can only choose ${maxCount} validators`);
+                if (toastRef && toastRef.current) {
+                  toastRef.current.hideAll();
+                  toastRef.current.show(`You can only choose ${maxCount} validators`);
+                }
 
                 return currentChangeValidators;
               }
@@ -34,7 +37,10 @@ export function useSelectValidators(
             result = [changeVal];
           } else {
             if (currentChangeValidators.length >= maxCount) {
-              show(`You can only choose ${maxCount} validators`);
+              if (toastRef && toastRef.current) {
+                toastRef.current.hideAll();
+                toastRef.current.show(`You can only choose ${maxCount} validators`);
+              }
 
               return currentChangeValidators;
             }
@@ -52,7 +58,7 @@ export function useSelectValidators(
         return result;
       });
     },
-    [defaultSelected, isSingleSelect, maxCount, show],
+    [defaultSelected, isSingleSelect, maxCount, toastRef],
   );
 
   const onApplyChangeValidators = useCallback(() => {
