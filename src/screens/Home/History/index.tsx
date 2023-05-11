@@ -140,8 +140,10 @@ function getDisplayData(
   return displayData;
 }
 
-function getHistoryItemKey(item: Pick<TransactionHistoryItem, 'chain' | 'address' | 'extrinsicHash'>) {
-  return `${item.chain}-${item.address}-${item.extrinsicHash}`;
+function getHistoryItemKey(
+  item: Pick<TransactionHistoryItem, 'chain' | 'address' | 'extrinsicHash' | 'transactionId'>,
+) {
+  return `${item.chain}-${item.address}-${item.transactionId || item.extrinsicHash}`;
 }
 
 const typeTitleMap: Record<string, string> = {
@@ -230,7 +232,7 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
 
 function History({
   route: {
-    params: { extrinsicHash, chain, transactionId },
+    params: { chain, transactionId },
   },
 }: HistoryProps): React.ReactElement<Props> {
   const theme = useSubWalletTheme().swThemes;
@@ -339,7 +341,7 @@ function History({
         <HistoryItem
           style={{ marginTop: theme.marginXS }}
           item={item}
-          key={`${item.extrinsicHash}-${item.address}`}
+          key={`${item.transactionId || item.extrinsicHash}-${item.address}`}
           onPress={onOpenDetail(item)}
         />
       );

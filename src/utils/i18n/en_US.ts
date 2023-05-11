@@ -370,8 +370,10 @@ export const en = {
     extrinsicStatus: {
       completed: 'Completed',
       failed: 'Failed',
+      queued: 'Queued',
+      submitting: 'Submitting',
       processing: 'Processing',
-      pending: 'Pending',
+      cancelled: 'Cancelled',
       unknown: 'Unknown',
     },
     label: {
