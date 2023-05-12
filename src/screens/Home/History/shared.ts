@@ -1,4 +1,4 @@
-import { CheckCircle, PaperPlaneTilt, ProhibitInset, Queue, Record, Spinner, StopCircle } from 'phosphor-react-native';
+import { CheckCircle, ProhibitInset, Record, Spinner, StopCircle } from 'phosphor-react-native';
 import { ExtrinsicStatus, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 import { StatusType } from 'screens/Home/History/Detail';
@@ -55,25 +55,15 @@ export const HistoryStatusMap: Record<string, StatusType> = {
     icon: ProhibitInset,
     name: i18n.historyScreen.extrinsicStatus.failed,
   },
-  [ExtrinsicStatus.QUEUED]: {
-    schema: 'light',
-    icon: Queue,
-    name: i18n.historyScreen.extrinsicStatus.queued,
-  },
-  [ExtrinsicStatus.SUBMITTING]: {
-    schema: 'gold',
-    icon: PaperPlaneTilt,
-    name: i18n.historyScreen.extrinsicStatus.submitting,
-  },
   [ExtrinsicStatus.PROCESSING]: {
     schema: 'gold',
     icon: Spinner,
     name: i18n.historyScreen.extrinsicStatus.processing,
   },
-  [ExtrinsicStatus.CANCELLED]: {
-    schema: 'gray',
-    icon: StopCircle,
-    name: i18n.historyScreen.extrinsicStatus.cancelled,
+  [ExtrinsicStatus.PENDING]: {
+    schema: 'gold',
+    icon: Spinner,
+    name: i18n.historyScreen.extrinsicStatus.pending,
   },
   [ExtrinsicStatus.UNKNOWN]: {
     schema: 'danger',

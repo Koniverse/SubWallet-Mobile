@@ -28,11 +28,9 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
         statusName={HistoryStatusMap[data.status].name}
         valueColorSchema={HistoryStatusMap[data.status].schema}
       />
-      {data.extrinsicHash && data.extrinsicHash.startsWith('0x') && (
-        <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>
-          {toShort(data.extrinsicHash, 8, 9)}
-        </MetaInfo.Default>
-      )}
+      <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>
+        {toShort(data.extrinsicHash, 8, 9)}
+      </MetaInfo.Default>
       <MetaInfo.Default label={i18n.historyScreen.label.transactionTime}>
         {customFormatDate(data.time, '#hhhh#:#mm# - #MMM# #DD#, #YYYY#')}
       </MetaInfo.Default>
