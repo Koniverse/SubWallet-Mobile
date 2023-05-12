@@ -28,14 +28,22 @@ export const TransactionDone = ({
 
   const goHome = useCallback(() => {
     if (path === 'Staking') {
-      return navigation.navigate('Home', { screen: 'Staking', params: { screen: 'StakingBalances' } });
+      return navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home', params: { screen: 'Staking', params: { screen: 'StakingBalances' } } }],
+      });
     }
 
     if (path === 'NFT') {
-      return navigation.navigate('Home', { screen: 'NFTs', params: { screen: 'CollectionList' } });
+      return navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home', params: { screen: 'NFTs', params: { screen: 'CollectionList' } } }],
+      });
     }
-
-    navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home', params: { screen: 'Tokens', params: { screen: 'TokenGroups' } } }],
+    });
   }, [navigation, path]);
 
   return (
