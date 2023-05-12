@@ -42,25 +42,23 @@ const renderEmpty = (val?: string) => {
 const filterFunction = (items: StakingDataType[], filters: string[]) => {
   const filteredChainList: StakingDataType[] = [];
 
-  items.forEach(item => {
-    let isValidationPassed = true;
+  if (!filters.length) {
+    return items;
+  }
 
+  items.forEach(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.NOMINATED:
-          isValidationPassed = isValidationPassed && item.staking.type === StakingType.NOMINATED;
+          if (item.staking.type === StakingType.NOMINATED) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.POOLED:
-          isValidationPassed = isValidationPassed && item.staking.type === StakingType.POOLED;
-          break;
-        default:
-          isValidationPassed = false;
-          break;
+          if (item.staking.type === StakingType.POOLED) {
+            filteredChainList.push(item);
+          }
       }
-    }
-
-    if (isValidationPassed) {
-      filteredChainList.push(item);
     }
   });
 
