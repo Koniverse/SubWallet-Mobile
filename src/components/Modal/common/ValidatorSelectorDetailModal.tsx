@@ -8,9 +8,10 @@ interface Props {
   detailModalVisible: boolean;
   detailItem: ValidatorDataType;
   onCancel: () => void;
+  networkPrefix?: number;
 }
 
-export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, onCancel }: Props) => {
+export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, onCancel, networkPrefix }: Props) => {
   const {
     address: validatorAddress,
     commission,
@@ -28,7 +29,12 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
     <SwModal modalVisible={detailModalVisible} modalTitle={'Validator details'} onChangeModalVisible={onCancel}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
-          <MetaInfo.Account label={'Validator'} address={validatorAddress} name={validatorName} />
+          <MetaInfo.Account
+            label={'Validator'}
+            address={validatorAddress}
+            name={validatorName}
+            networkPrefix={networkPrefix}
+          />
           <MetaInfo.Number
             decimals={decimals}
             label={'Min stake'}

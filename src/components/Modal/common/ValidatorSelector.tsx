@@ -21,6 +21,9 @@ import Toast from 'react-native-toast-notifications';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import ToastContainer from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -74,6 +77,9 @@ export const ValidatorSelector = ({
   const nominations = useMemo(() => nominatorMetadata[0]?.nominations, [nominatorMetadata]);
   const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
   const isSingleSelect = useMemo(() => _isSingleSelect || !isRelayChain, [_isSingleSelect, isRelayChain]);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const chainInfo = chainInfoMap[chain];
+  const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
   const {
     changeValidators,
     onApplyChangeValidators,
@@ -170,6 +176,7 @@ export const ValidatorSelector = ({
             detailModalVisible={detailModalVisible}
             detailItem={detailItem}
             onCancel={() => setDetailModalVisible(false)}
+            networkPrefix={networkPrefix}
           />
         )}
 

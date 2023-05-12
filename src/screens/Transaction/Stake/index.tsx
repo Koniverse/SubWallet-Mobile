@@ -30,7 +30,6 @@ import { fetchChainValidators } from 'screens/Transaction/helper/staking';
 import { ALL_KEY } from 'constants/index';
 import { ValidatorSelector } from 'components/Modal/common/ValidatorSelector';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import reformatAddress from 'utils/index';
 import { parseNominations } from 'utils/transaction/stake';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import MetaInfo from 'components/MetaInfo';
@@ -229,7 +228,7 @@ export const Stake = ({
     const result: ValidatorInfo[] = [];
 
     validatorList.forEach(validator => {
-      if (nominations.includes(reformatAddress(validator.address, 42))) {
+      if (nominations.includes(validator.address)) {
         // remember the format of the address
         result.push(validator);
       }

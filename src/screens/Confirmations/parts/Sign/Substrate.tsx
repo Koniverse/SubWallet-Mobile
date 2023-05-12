@@ -148,7 +148,7 @@ export const SubstrateSignArea = (props: Props) => {
       </Button>
       <Button
         block
-        disabled={isMessage && !modeCanSignMessage.includes(signMode)}
+        disabled={(isMessage && !modeCanSignMessage.includes(signMode)) || loading}
         icon={<Icon phosphorIcon={approveIcon} weight={'fill'} />}
         loading={loading}
         onPress={onConfirm}>
