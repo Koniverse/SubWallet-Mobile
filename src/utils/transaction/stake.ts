@@ -1,7 +1,5 @@
-import { reformatAddress } from '@subwallet/extension-base/utils';
-
 export const getValidatorKey = (address?: string, identity?: string) => {
-  return `${address ? reformatAddress(address, 42) : ''}___${identity || ''}`;
+  return `${address || ''}___${identity || ''}`;
 };
 
 export const parseNominations = (nomination: string) => {
