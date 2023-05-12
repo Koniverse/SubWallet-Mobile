@@ -60,12 +60,12 @@ export type RootStackParamList = {
   CustomTokenSetting: undefined;
   ConfigureToken: { tokenDetail: string };
   ImportToken: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
-  TransactionDone: { chainType: string; chain: string; id: string; path: string };
+  TransactionDone: { chainType: string; chain: string; extrinsicHash: string; path: string };
   NetworkConfig: undefined;
   NetworkConfigDetail: { key: string };
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
   WebViewModal: undefined;
-  History: { chain?: string; extrinsicHash?: string; transactionId?: string };
+  History: { chain?: string; extrinsicHash?: string };
   Login: undefined;
   AddProvider: { slug: string };
   ConnectParitySigner: undefined;

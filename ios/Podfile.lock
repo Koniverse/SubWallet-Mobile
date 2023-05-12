@@ -91,9 +91,9 @@ PODS:
   - libwebp/mux (1.2.4):
     - libwebp/demux
   - libwebp/webp (1.2.4)
-  - MMKV (1.2.16):
-    - MMKVCore (~> 1.2.16)
-  - MMKVCore (1.2.16)
+  - MMKV (1.2.15):
+    - MMKVCore (~> 1.2.15)
+  - MMKVCore (1.2.15)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -834,8 +834,8 @@ SPEC CHECKSUMS:
   hermes-engine: b434cea529ad0152c56c7cb6486b0c4c0b23b5de
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
-  MMKV: 784471ce430a2e2d16afef9053d63fab1b357d9e
-  MMKVCore: 9cfef4c48c6c46f66226fc2e4634d78490206a48
+  MMKV: 7f34558bbb5a33b0eaefae2de4b6a20a2ffdad6f
+  MMKVCore: ddf41b9d9262f058419f9ba7598719af56c02cd3
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5c6fd63b03abb06947d348dadac51c93e3485bd8
@@ -906,4 +906,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4a5643dbfb4bccf03b1a886003653271df733a29
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

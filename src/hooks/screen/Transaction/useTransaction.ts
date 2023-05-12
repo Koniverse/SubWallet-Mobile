@@ -79,10 +79,10 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(transactionFormConfig, {});
 
   const onDone = useCallback(
-    (id: string) => {
+    (extrinsicHash: string) => {
       const chainType = isEthereumAddress(formState.data.from) ? 'ethereum' : 'substrate';
 
-      navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, id, path: homePath });
+      navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, extrinsicHash: extrinsicHash, path: homePath  });
     },
     [formState.data.chain, formState.data.from, homePath, navigation],
   );
