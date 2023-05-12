@@ -45,38 +45,38 @@ const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
 const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
   const filteredChainList: ChainInfoWithState[] = [];
 
-  items.forEach(item => {
-    let isValidationPassed = true;
+  if (!filters.length) {
+    return items;
+  }
 
+  items.forEach(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.CUSTOM:
-          isValidationPassed = isValidationPassed && _isCustomChain(item.slug);
+          if (_isCustomChain(item.slug)) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.ENABLED:
-          isValidationPassed = isValidationPassed && item.active;
+          if (item.active) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.DISABLED:
-          isValidationPassed = isValidationPassed && !item.active;
+          if (!item.active) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.SUBSTRATE:
-          isValidationPassed = isValidationPassed && _isSubstrateChain(item);
+          if (_isSubstrateChain(item)) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.EVM:
-          isValidationPassed = isValidationPassed && _isChainEvmCompatible(item);
-          break;
-        default:
-          isValidationPassed = false;
-          break;
+          if (_isChainEvmCompatible(item)) {
+            filteredChainList.push(item);
+          }
       }
-
-      // if (isValidationPassed) {
-      //   break; // only need to satisfy 1 filter (OR)
-      // }
-    }
-
-    if (isValidationPassed) {
-      filteredChainList.push(item);
     }
   });
 

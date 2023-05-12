@@ -185,43 +185,53 @@ const FILTER_OPTIONS = [
 const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {
   const filteredChainList: TransactionHistoryDisplayItem[] = [];
 
-  items.forEach(item => {
-    let isValidationPassed = true;
+  if (!filters.length) {
+    return items;
+  }
 
+  items.forEach(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.SEND:
-          isValidationPassed = isTypeTransfer(item.type) && item.direction === TransactionDirection.SEND;
+          if (isTypeTransfer(item.type) && item.direction === TransactionDirection.SEND) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.RECEIVED:
-          isValidationPassed = isTypeTransfer(item.type) && item.direction === TransactionDirection.RECEIVED;
+          if (isTypeTransfer(item.type) && item.direction === TransactionDirection.RECEIVED) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.NFT:
-          isValidationPassed = item.type === ExtrinsicType.SEND_NFT;
+          if (item.type === ExtrinsicType.SEND_NFT) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.STAKE:
-          isValidationPassed = isTypeStaking(item.type);
+          if (isTypeStaking(item.type)) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.CLAIM:
-          isValidationPassed = item.type === ExtrinsicType.STAKING_CLAIM_REWARD;
+          if (item.type === ExtrinsicType.STAKING_CLAIM_REWARD) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.CROWDLOAN:
-          isValidationPassed = item.type === ExtrinsicType.CROWDLOAN;
+          if (item.type === ExtrinsicType.CROWDLOAN) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.SUCCESSFUL:
-          isValidationPassed = item.status === ExtrinsicStatus.SUCCESS;
+          if (item.status === ExtrinsicStatus.SUCCESS) {
+            filteredChainList.push(item);
+          }
           break;
         case FilterValue.FAILED:
-          isValidationPassed = item.status === ExtrinsicStatus.FAIL;
-          break;
-        default:
-          isValidationPassed = false;
-          break;
+          if (item.status === ExtrinsicStatus.FAIL) {
+            filteredChainList.push(item);
+          }
       }
-    }
-
-    if (isValidationPassed) {
-      filteredChainList.push(item);
     }
   });
 

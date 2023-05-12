@@ -53,28 +53,28 @@ export const CustomTokenSetting = () => {
   const filterFunction = (items: _ChainAsset[], filters: string[]) => {
     const filteredChainList: _ChainAsset[] = [];
 
-    items.forEach(item => {
-      let isValidationPassed = true;
+    if (!filters.length) {
+      return items;
+    }
 
+    items.forEach(item => {
       for (const filter of filters) {
         switch (filter) {
           case FilterValue.CUSTOM:
-            isValidationPassed = _isCustomAsset(item.slug);
+            if (_isCustomAsset(item.slug)) {
+              filteredChainList.push(item);
+            }
             break;
           case FilterValue.ENABLED:
-            isValidationPassed = assetSettingMap[item.slug] && assetSettingMap[item.slug].visible;
+            if (assetSettingMap[item.slug] && assetSettingMap[item.slug].visible) {
+              filteredChainList.push(item);
+            }
             break;
           case FilterValue.DISABLED:
-            isValidationPassed = !assetSettingMap[item.slug] || !assetSettingMap[item.slug].visible;
-            break;
-          default:
-            isValidationPassed = false;
-            break;
+            if (!assetSettingMap[item.slug] || !assetSettingMap[item.slug].visible) {
+              filteredChainList.push(item);
+            }
         }
-      }
-
-      if (isValidationPassed) {
-        filteredChainList.push(item);
       }
     });
 
