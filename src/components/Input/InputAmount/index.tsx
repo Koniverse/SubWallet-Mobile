@@ -58,9 +58,11 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     onSetMax,
     showMaxButton = true,
   } = props;
+  const [isDirty, setIsDirty] = useState<boolean>(false);
   const [preservedDecimals, setPreservedDecimals] = useState(decimals);
   const [inputValue, setInputValue] = useState(value);
   const _onClickMaxBtn = useCallback(() => {
+    setIsDirty(true);
     const transformVal = getInputValuesFromString(maxValue, decimals);
     setInputValue(transformVal);
     onChangeValue(maxValue, true);
@@ -76,6 +78,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
 
   const onChangeInput = useCallback(
     (_rawValue: string) => {
+      setIsDirty(true);
       // if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(_value)) {
       //   return;
       // }
@@ -110,11 +113,11 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
   );
 
   useEffect(() => {
-    if (preservedDecimals !== decimals) {
+    if (isDirty && preservedDecimals !== decimals) {
       onChangeInput(inputValue);
       setPreservedDecimals(decimals);
     }
-  }, [preservedDecimals, decimals, inputValue, onChangeInput]);
+  }, [preservedDecimals, decimals, inputValue, onChangeInput, isDirty]);
 
   return (
     <>
