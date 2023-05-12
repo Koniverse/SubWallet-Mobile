@@ -364,21 +364,30 @@ export function sendMessage<TMessageType extends MessageTypes>(
   });
 }
 
-export function lazySendMessage<TMessageType extends MessageTypesWithSubscriptions>(
+export function lazySendMessage<TMessageType extends MessageTypesWithNoSubscriptions>(
   message: TMessageType,
   request: RequestTypes[TMessageType],
+  callback: (data: ResponseTypes[TMessageType]) => void,
 ): { promise: Promise<ResponseTypes[TMessageType]>; start: () => void } {
   const id = getId();
   const handlePromise = new Promise((resolve, reject): void => {
     handlers[id] = { reject, resolve };
   });
 
-  return {
+  const rs = {
     promise: handlePromise as Promise<ResponseTypes[TMessageType]>,
     start: () => {
       postMessage({ id, message, request: request || {}, origin: undefined });
     },
   };
+
+  rs.promise
+    .then(data => {
+      callback(data);
+    })
+    .catch(console.error);
+
+  return rs;
 }
 
 export function lazySubscribeMessage<TMessageType extends MessageTypesWithSubscriptions>(

@@ -3,8 +3,9 @@ import React from 'react';
 import { View } from 'react-native';
 import LogoStyles from './style';
 import Image from '../image';
-import ChainLogoMap, { TokenLogoMap } from './LogoMap';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
 
 type IconShapeType = 'default' | 'circle' | 'squircle';
 
@@ -36,26 +37,27 @@ const Logo: React.FC<SWLogoProps> = ({
   token,
 }) => {
   const theme = useSubWalletTheme().swThemes;
+  const { chainLogoMap, assetLogoMap } = useSelector((state: RootState) => state.logoMaps);
   const _style = LogoStyles(theme);
   const subLogoSize = size / 2.5;
   let srcLogo;
   if (token) {
-    srcLogo = TokenLogoMap[token] || TokenLogoMap[defaultLogoKey];
+    srcLogo = assetLogoMap[token] || assetLogoMap[defaultLogoKey];
   } else if (network) {
-    srcLogo = ChainLogoMap[network] || ChainLogoMap[defaultLogoKey];
+    srcLogo = chainLogoMap[network] || chainLogoMap[defaultLogoKey];
   }
 
   let srcSubLogo;
   if (subToken) {
-    srcSubLogo = TokenLogoMap[subToken] || TokenLogoMap[defaultLogoKey];
+    srcSubLogo = assetLogoMap[subToken] || assetLogoMap[defaultLogoKey];
   } else if (subNetwork) {
-    srcSubLogo = ChainLogoMap[subNetwork] || ChainLogoMap[defaultLogoKey];
+    srcSubLogo = chainLogoMap[subNetwork] || chainLogoMap[defaultLogoKey];
   }
 
   return (
     <View>
       <Image
-        src={srcLogo || TokenLogoMap.default}
+        src={{ uri: srcLogo || chainLogoMap.default }}
         style={{ width: size, height: size, backgroundColor: 'transparent' }}
         squircleSize={size}
         shape={shape}
@@ -63,7 +65,7 @@ const Logo: React.FC<SWLogoProps> = ({
       {isShowSubIcon && !isShowSubLogo && <View style={_style.subLogoContainer}>{subIcon}</View>}
       {isShowSubLogo && (
         <Image
-          src={srcSubLogo || TokenLogoMap.default}
+          src={{ uri: srcSubLogo || chainLogoMap.default }}
           style={{ width: subLogoSize, height: subLogoSize }}
           squircleSize={subLogoSize}
           shape={subLogoShape}

@@ -32,7 +32,7 @@ import {
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { canDerive } from '@subwallet/extension-base/utils';
-import { lazySubscribeMessage } from 'messaging/index';
+import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
 import { buildHierarchy } from 'utils/buildHierarchy';
@@ -189,6 +189,12 @@ export const subscribeUiSettings = lazySubscribeMessage(
   updateUiSettings,
   updateUiSettings,
 );
+
+export const updateLogoMaps = (data: UiSettings) => {
+  store.dispatch({ type: 'logoMaps/updateLogoMaps', payload: data });
+};
+
+export const getLogoMaps = lazySendMessage('pri(settings.getLogoMaps)', null, updateLogoMaps);
 
 //
 // export const updateAppSettings = (data: AccountJson) => {
