@@ -3,6 +3,7 @@
 
 import { persistor, store, StoreName } from '../stores';
 import {
+  getLogoMaps,
   subscribeAccountsData,
   subscribeAssetRegistry,
   subscribeAssetSettings,
@@ -240,6 +241,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeUiSettings,
           name: 'subscribeUiSettings',
           relatedStores: ['settings'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...getLogoMaps,
+          name: 'getLogoMaps',
+          relatedStores: ['logoMaps'],
           isStartImmediately: true,
         });
         _DataContext.addHandler({

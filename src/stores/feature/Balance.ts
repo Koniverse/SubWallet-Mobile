@@ -17,6 +17,8 @@ const balanceSlice = createSlice({
     update(state, action: PayloadAction<Record<string, BalanceItem>>) {
       const payload = action.payload;
 
+      console.log('update balance', payload);
+
       return {
         balanceMap: payload,
         reduxStatus: ReduxStatus.READY,

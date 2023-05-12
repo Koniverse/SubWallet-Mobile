@@ -95,7 +95,7 @@ const MainScreen = () => {
       />
       <Tab.Screen
         name={'Crowdloans'}
-        component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore'])}
+        component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
         options={{
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {

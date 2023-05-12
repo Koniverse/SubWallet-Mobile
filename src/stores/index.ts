@@ -19,6 +19,7 @@ import PriceReducer from './feature/Price';
 import StakingReducer from './feature/Staking';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
+import LogoMap from 'stores/base/LogoMap';
 
 const persistConfig = {
   key: 'root',
@@ -52,6 +53,7 @@ const rootReducer = combineReducers({
   requestState: RequestStateReducer,
   settings: SettingsReducer,
   accountState: AccountStateReducer,
+  logoMaps: LogoMap,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
