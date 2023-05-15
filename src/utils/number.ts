@@ -1,4 +1,6 @@
 import BigNumber from 'bignumber.js';
+import BigN from 'bignumber.js';
+import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 
 // 1000.12345 -> 1,000; 1000,654321 -> 1,001
 export const formatLocaleNumber = (number: number, digits?: number): string => {
@@ -154,4 +156,19 @@ export const formatNumber = (
   const raw = new BigNumber(input).dividedBy(BN_TEN.pow(decimal)).toFixed();
 
   return formatter(raw, metadata);
+};
+
+export const formatBalance = (value: string | number | BigN, decimals: number) => {
+  return formatNumber(value, decimals, balanceFormatter);
+};
+
+export const formatAmount = (amountData?: AmountData): string => {
+  if (!amountData) {
+    return '';
+  }
+
+  const { decimals, symbol, value } = amountData;
+  const displayValue = formatBalance(value, decimals);
+
+  return `${displayValue} ${symbol}`;
 };
