@@ -230,7 +230,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ImportNft" component={ImportNft} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="TransactionDone" component={TransactionDone} />
+                <Stack.Screen name="TransactionDone" component={TransactionDone} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
