@@ -30,6 +30,7 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { Button } from 'components/design-system-ui';
 import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
+import { useToast } from 'react-native-toast-notifications';
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -38,6 +39,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
+  const toast = useToast();
   useHandlerHardwareBackPress(isBusy);
   const payload = routeParams?.payload;
   const tokenInfo = payload?.payload;
@@ -105,6 +107,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     })
       .then(resp => {
         if (resp) {
+          toast.show('Add token successfully');
           _goBack();
         } else {
           onUpdateErrors('contractAddress')([i18n.errorMessage.occurredError]);
