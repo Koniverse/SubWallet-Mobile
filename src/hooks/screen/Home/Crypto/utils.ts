@@ -12,9 +12,8 @@ export function getAccountTypeByTokenGroup(
   chainInfoMap: Record<string, _ChainInfo>,
 ): AccountType {
   // case tokenGroupSlug is token slug
-  const _assetRegistry = Object.values(assetRegistryMap).find(item => item.multiChainAsset === tokenGroupSlug);
-  if (_assetRegistry) {
-    const chainSlug = _assetRegistry.originChain;
+  if (assetRegistryMap[tokenGroupSlug]) {
+    const chainSlug = assetRegistryMap[tokenGroupSlug].originChain;
 
     if (_isChainEvmCompatible(chainInfoMap[chainSlug])) {
       return 'ETHEREUM';
