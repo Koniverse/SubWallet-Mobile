@@ -56,6 +56,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
+import { BN_ZERO } from 'utils/chainBalances';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -243,12 +244,18 @@ export const SendFund = ({
   const [loading, setLoading] = useState(false);
   const [isTransferAll, setIsTransferAll] = useState(false);
   const [isBalanceReady, setIsBalanceReady] = useState(true);
+  const [forceUpdateMaxValue, setForceUpdateMaxValue] = useState<object | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
   const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
   const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
+
+  const handleTransferAll = useCallback((value: boolean) => {
+    setForceUpdateMaxValue({});
+    setIsTransferAll(value);
+  }, []);
 
   //todo: i18n
   const formConfig = {
@@ -265,7 +272,7 @@ export const SendFund = ({
   const { title, formState, onChangeValue, onUpdateErrors, onDone, onChangeFromValue, onChangeAssetValue } =
     useTransaction('send-fund', formConfig);
   const { asset, chain, destChain, from, to, value: amount } = formState.data;
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setIsTransferAll);
+  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, handleTransferAll);
 
   const accountItems = useMemo(() => {
     return accounts.filter(filterAccountFunc(chainInfoMap, assetRegistry, multiChainAssetMap, tokenGroupSlug));
@@ -556,6 +563,15 @@ export const SendFund = ({
     };
   }, [amount, asset, assetRegistry, from, maxTransfer, validateAmount]);
 
+  useEffect(() => {
+    const bnTransferAmount = new BigN(amount || '0');
+    const bnMaxTransfer = new BigN(maxTransfer || '0');
+
+    if (bnTransferAmount.gt(BN_ZERO) && bnTransferAmount.eq(bnMaxTransfer)) {
+      setIsTransferAll(true);
+    }
+  }, [maxTransfer, amount]);
+
   const buttonIcon = useCallback((color: string) => {
     return <Icon phosphorIcon={PaperPlaneTilt} weight={'fill'} size={'lg'} iconColor={color} />;
   }, []);
@@ -593,6 +609,7 @@ export const SendFund = ({
                       modalVisible={accountSelectModalVisible}
                       onSelectItem={item => {
                         onChangeFromValue(item.address);
+                        setForceUpdateMaxValue(undefined);
                         setAccountSelectModalVisible(false);
                       }}
                       items={accountItems}
@@ -620,6 +637,7 @@ export const SendFund = ({
 
                   <View style={{ flex: 1 }}>
                     <InputAmount
+                      forceUpdateMaxValue={forceUpdateMaxValue}
                       disable={loading}
                       value={amount}
                       maxValue={maxTransfer}
@@ -640,6 +658,7 @@ export const SendFund = ({
                     onChangeValue('destChain')(item.originChain);
                     setTokenSelectModalVisible(false);
                     setIsTransferAll(false);
+                    setForceUpdateMaxValue(undefined);
                   }}
                 />
 

@@ -17,6 +17,7 @@ interface InputAmountProps {
   errorMessages?: string[];
   onSetMax?: (value: boolean) => void;
   showMaxButton?: boolean;
+  forceUpdateMaxValue?: object;
 }
 
 const isValidInput = (input: string) => {
@@ -56,6 +57,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     value,
     errorMessages,
     onSetMax,
+    forceUpdateMaxValue,
     showMaxButton = true,
   } = props;
   const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -118,6 +120,15 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
       setPreservedDecimals(decimals);
     }
   }, [preservedDecimals, decimals, inputValue, onChangeInput, isDirty]);
+
+  useEffect(() => {
+    if (forceUpdateMaxValue) {
+      const transformVal = getInputValuesFromString(maxValue, decimals);
+
+      setInputValue(transformVal);
+      onChangeValue(maxValue, true);
+    }
+  }, [decimals, forceUpdateMaxValue, maxValue, onChangeValue]);
 
   return (
     <>
