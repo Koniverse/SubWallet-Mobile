@@ -41,7 +41,6 @@ import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { BN_TEN } from 'utils/number';
 import { getFreeBalance, makeCrossChainTransfer, makeTransfer } from '../../../messaging';
 import { Button, Icon } from 'components/design-system-ui';
 import { PaperPlaneTilt } from 'phosphor-react-native';
@@ -57,6 +56,7 @@ import { ScreenContainer } from 'components/ScreenContainer';
 import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
 import { BN_ZERO } from 'utils/chainBalances';
+import { formatBalance } from 'utils/number';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -402,13 +402,14 @@ export const SendFund = ({
       }
 
       if (new BigN(_amount).gt(new BigN(_maxTransfer))) {
-        const maxString = new BigN(_maxTransfer).div(BN_TEN.pow(decimals)).toFixed(6);
+        const maxString = formatBalance(_maxTransfer, decimals);
         //todo: i18n
         onUpdateErrors('value')([`Amount must be equal or less than ${maxString}`]);
 
         return false;
       }
 
+      onUpdateErrors('value')(undefined);
       return true;
     },
     [decimals, onUpdateErrors],
@@ -550,7 +551,7 @@ export const SendFund = ({
 
             if (amount) {
               setTimeout(() => {
-                validateAmount(amount, maxTransfer);
+                validateAmount(amount, balance.value);
               }, 100);
             }
           }
@@ -561,7 +562,7 @@ export const SendFund = ({
     return () => {
       cancel = true;
     };
-  }, [amount, asset, assetRegistry, from, maxTransfer, validateAmount]);
+  }, [amount, asset, assetRegistry, from, validateAmount]);
 
   useEffect(() => {
     const bnTransferAmount = new BigN(amount || '0');

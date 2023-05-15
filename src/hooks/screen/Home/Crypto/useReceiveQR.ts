@@ -19,6 +19,7 @@ import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash'
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
+import { findAccountByAddress } from 'utils/account';
 
 type ReceiveSelectedResult = {
   selectedAccount?: string;
@@ -70,8 +71,16 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       }
 
       const isEvmAddress = isEthereumAddress(_selectedAccount);
+      const acc = findAccountByAddress(accounts, _selectedAccount);
 
       return Object.values(assetRegistryMap).filter(asset => {
+        if (
+          acc?.originGenesisHash &&
+          chainInfoMap[asset.originChain].substrateInfo?.genesisHash !== acc.originGenesisHash
+        ) {
+          return false;
+        }
+
         if (_isAssetFungibleToken(asset)) {
           if (_isChainEvmCompatible(chainInfoMap[asset.originChain]) === isEvmAddress) {
             if (tokenGroupSlug) {
@@ -85,7 +94,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         return false;
       });
     },
-    [tokenGroupSlug, assetRegistryMap, chainInfoMap],
+    [tokenGroupSlug, assetRegistryMap, accounts, chainInfoMap],
   );
 
   const actionWithSetTimeout = useCallback((action: () => void) => {
