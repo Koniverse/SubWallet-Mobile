@@ -133,11 +133,11 @@ export const Withdraw = ({
   }, [chain, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
 
   return (
-    <TransactionLayout title={title}>
+    <TransactionLayout title={title} disableLeftButton={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
+            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField
                 label={'Unstake from account'}
                 accountName={accountInfo?.name || ''}
@@ -191,7 +191,7 @@ export const Withdraw = ({
           </Button>
           <Button
             style={{ flex: 1, marginLeft: 4 }}
-            disabled={isDisabled}
+            disabled={isDisabled || loading}
             loading={loading}
             icon={
               <Icon

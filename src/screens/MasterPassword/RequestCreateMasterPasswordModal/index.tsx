@@ -11,7 +11,7 @@ interface Props {
   visible: boolean;
 }
 
-const MigrateMasterPasswordConfirmModal = ({ visible }: Props) => {
+const RequestCreateMasterPasswordModal = ({ visible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const _style = ModalStyle(theme);
@@ -41,4 +41,4 @@ const MigrateMasterPasswordConfirmModal = ({ visible }: Props) => {
   );
 };
 
-export default MigrateMasterPasswordConfirmModal;
+export default RequestCreateMasterPasswordModal;

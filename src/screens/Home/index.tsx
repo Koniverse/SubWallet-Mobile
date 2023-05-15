@@ -16,7 +16,7 @@ import { BrowserScreen } from 'screens/Home/Browser';
 import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 import withPageWrapper from 'components/pageWrapper';
-import MigrateMasterPasswordConfirmModal from 'screens/MasterPassword/MigrateMasterPasswordConfirmModal';
+import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
@@ -148,7 +148,7 @@ export const Home = () => {
   return (
     <>
       {isEmptyAccounts ? <FirstScreen /> : <MainScreen />}
-      <MigrateMasterPasswordConfirmModal visible={!hasMasterPassword && !isEmptyAccounts && !isLocked} />
+      {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
     </>
   );
 };

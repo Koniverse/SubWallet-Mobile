@@ -5,7 +5,7 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { ScrollView, View } from 'react-native';
+import { Keyboard, ScrollView, View } from 'react-native';
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from 'messaging/index';
 import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from 'constants/index';
@@ -54,6 +54,7 @@ export const ImportPrivateKey = () => {
   const [autoCorrect, setAutoCorrect] = useState('');
 
   const _onImport = () => {
+    Keyboard.dismiss();
     setIsBusy(true);
     createAccountSuriV2({
       name: accountName,
@@ -126,7 +127,8 @@ export const ImportPrivateKey = () => {
       navigation={navigation}
       disabled={isBusy}
       rightIcon={X}
-      onPressRightIcon={goHome}>
+      onPressRightIcon={goHome}
+      disableRightButton={isBusy}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>
@@ -144,6 +146,7 @@ export const ImportPrivateKey = () => {
             value={autoCorrect || formState.data.privateKey}
             onSubmitEditing={onSubmitField('privateKey')}
             errorMessages={formState.errors.privateKey}
+            editable={!isBusy}
           />
         </ScrollView>
         <View style={styles.footer}>

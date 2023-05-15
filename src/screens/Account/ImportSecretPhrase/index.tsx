@@ -139,7 +139,8 @@ export const ImportSecretPhrase = () => {
       title={i18n.title.importBySecretPhrase}
       disabled={isBusy}
       onPressRightIcon={goHome}
-      rightIcon={X}>
+      rightIcon={X}
+      disableRightButton={isBusy}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>{i18n.common.importSecretPhraseTitle}</Typography.Text>
@@ -150,11 +151,17 @@ export const ImportSecretPhrase = () => {
             onChangeText={(text: string) => {
               onChangeValue('seed')(text);
             }}
+            editable={!isBusy}
             onSubmitEditing={onSubmitField('seed')}
             errorMessages={formState.errors.seed}
           />
 
-          <SelectAccountType title={'Select account type'} selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
+          <SelectAccountType
+            title={'Select account type'}
+            selectedItems={keyTypes}
+            setSelectedItems={setKeyTypes}
+            disabled={isBusy}
+          />
         </ScrollView>
         <View style={styles.footer}>
           <Button

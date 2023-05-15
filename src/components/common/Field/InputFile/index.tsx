@@ -12,9 +12,10 @@ interface Props {
   onChangeResult: (value: Array<DocumentPickerResponse> | DirectoryPickerResponse | undefined | null) => void;
   fileName?: string;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 }
 
-export const InputFile = ({ onChangeResult, style, fileName }: Props) => {
+export const InputFile = ({ onChangeResult, style, fileName, disabled }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -34,7 +35,7 @@ export const InputFile = ({ onChangeResult, style, fileName }: Props) => {
   }, [onChangeResult]);
 
   return (
-    <TouchableOpacity style={[styles.wrapper, style]} onPress={onChangeFile} activeOpacity={theme.opacityPress}>
+    <TouchableOpacity style={[styles.wrapper, style]} onPress={onChangeFile} activeOpacity={theme.opacityPress} disabled={disabled}>
       <View style={styles.border} />
       <View style={styles.container}>
         <Icon

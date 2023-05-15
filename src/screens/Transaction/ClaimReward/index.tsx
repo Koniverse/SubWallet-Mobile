@@ -163,11 +163,11 @@ const ClaimReward = ({
   }, [accounts, allNominatorInfo, chainInfoMap, rewardList, stakingChain, stakingType]);
 
   return (
-    <TransactionLayout title={title}>
+    <TransactionLayout title={title} disableLeftButton={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
+            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField
                 label={'Unstake from account'}
                 accountName={accountInfo?.name || ''}
@@ -195,6 +195,7 @@ const ClaimReward = ({
           <InputCheckBox
             checked={!!bondReward}
             label={'Bond reward'}
+            disable={loading}
             onPress={() => {
               if (!bondReward) {
                 onChangeValue('bondReward')('1');
@@ -234,7 +235,7 @@ const ClaimReward = ({
           </Button>
           <Button
             style={{ flex: 1, marginLeft: 4 }}
-            disabled={isDisabled}
+            disabled={isDisabled || loading}
             loading={loading}
             icon={
               <Icon

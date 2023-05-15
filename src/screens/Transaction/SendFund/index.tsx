@@ -707,7 +707,9 @@ export const SendFund = ({
                 }}>
                 {/*//todo: i18n*/}
                 <Button
-                  disabled={!isBalanceReady || !!formState.errors.to.length || !!formState.errors.value.length}
+                  disabled={
+                    !isBalanceReady || !!formState.errors.to.length || !!formState.errors.value.length || loading
+                  }
                   icon={buttonIcon}
                   loading={loading}
                   type={isTransferAll ? 'warning' : undefined}

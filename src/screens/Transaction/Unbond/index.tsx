@@ -239,7 +239,7 @@ export const Unbond = ({
   );
 
   return (
-    <TransactionLayout title={title}>
+    <TransactionLayout title={title} disableLeftButton={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAll && (

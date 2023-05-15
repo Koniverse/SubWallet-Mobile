@@ -126,8 +126,6 @@ export const RestoreJson = () => {
         setAccountsInfo(() => []);
         if (!isMultiple) {
           backToHome(goHome);
-        } else {
-          navigation.navigate('MigratePassword');
         }
       })
       .catch(e => {
@@ -248,19 +246,25 @@ export const RestoreJson = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isShowPasswordField]);
 
+  const isDisabled = useMemo(
+    () => !formState.data.file || isFileError || !formState.isValidated.password || !formState.data.password || isBusy,
+    [formState.data.file, formState.data.password, formState.isValidated.password, isBusy, isFileError],
+  );
+
   return (
     <ContainerWithSubHeader
       title={i18n.title.importFromJson}
       onPressBack={_onPressBack}
       disabled={isBusy}
       rightIcon={X}
-      onPressRightIcon={goHome}>
+      onPressRightIcon={goHome}
+      disableRightButton={isBusy}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>
             Please upload the .json file you exported from Polkadot.js
           </Typography.Text>
-          <InputFile onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
+          <InputFile disabled={isBusy} onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
           {isFileError && (
             <Warning
               style={styles.error}
@@ -298,6 +302,7 @@ export const RestoreJson = () => {
                   showEyeButton={false}
                   outerStyle={styles.passwordField}
                   placeholder={'Current password'}
+                  isBusy={isBusy}
                 />
               </View>
             </>
@@ -307,15 +312,15 @@ export const RestoreJson = () => {
         <View style={styles.footer}>
           <Button
             loading={isBusy}
-            icon={<Icon phosphorIcon={FileArrowDown} weight="fill" />}
+            icon={
+              <Icon
+                phosphorIcon={FileArrowDown}
+                weight="fill"
+                iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
+              />
+            }
             onPress={onPressSubmit(onPressSubmitButton)}
-            disabled={
-              !formState.data.file ||
-              isFileError ||
-              !formState.isValidated.password ||
-              !formState.data.password ||
-              isBusy
-            }>
+            disabled={isDisabled}>
             {i18n.common.importAccount}
           </Button>
         </View>

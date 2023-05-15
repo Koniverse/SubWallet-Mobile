@@ -17,10 +17,11 @@ interface SelectAccountTypeProps {
   selectedItems: KeypairType[];
   setSelectedItems: React.Dispatch<React.SetStateAction<KeypairType[]>>;
   title?: string;
+  disabled?: boolean;
 }
 
 export const SelectAccountType = (props: SelectAccountTypeProps) => {
-  const { title, selectedItems, setSelectedItems } = props;
+  const { title, selectedItems, setSelectedItems, disabled } = props;
   const theme = useSubWalletTheme().swThemes;
   const _style = SelectAccountTypeStyles(theme);
 
@@ -72,6 +73,7 @@ export const SelectAccountType = (props: SelectAccountTypeProps) => {
 
         return (
           <SelectItem
+            disabled={disabled}
             key={item.label}
             label={item.label}
             leftItemIcon={<Logo size={28} network={item.icon} shape={'circle'} />}

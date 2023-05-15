@@ -116,7 +116,9 @@ const CreateMasterPassword = ({
     <ContainerWithSubHeader
       showLeftBtn={false}
       onPressBack={() => navigation.goBack()}
+      disabled={isBusy}
       rightIcon={Info}
+      disableRightButton={isBusy}
       title={'Create password'}
       style={{ width: '100%' }}>
       <View style={_style.bodyWrapper}>
@@ -129,6 +131,7 @@ const CreateMasterPassword = ({
           onChangeText={_onChangePasswordValue}
           errorMessages={formState.errors.password}
           onSubmitField={onSubmitField('password')}
+          isBusy={isBusy}
         />
 
         <PasswordField
@@ -138,6 +141,7 @@ const CreateMasterPassword = ({
           onChangeText={onChangeValue('repeatPassword')}
           errorMessages={formState.errors.repeatPassword}
           onSubmitField={onSubmitField('repeatPassword')}
+          isBusy={isBusy}
         />
 
         <Warning message={'Recommended security practice'} title={'Always choose a strong password!'} />

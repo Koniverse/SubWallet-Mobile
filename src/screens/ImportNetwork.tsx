@@ -300,6 +300,7 @@ export const ImportNetwork = () => {
           rightIcon={providerSuffix()}
           errorMessages={formState.errors.provider}
           onBlur={() => providerValidateFunc(formState.data.provider)}
+          isBusy={loading}
         />
 
         <View style={{ flexDirection: 'row' }}>
