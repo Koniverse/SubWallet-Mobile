@@ -28,6 +28,10 @@ const modalTitle: StyleProp<any> = {
 
 const defaultKeyTypes: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
 
+const ButtonIcon = (color: string) => {
+  return <Icon phosphorIcon={CheckCircle} size={'lg'} iconColor={color} />;
+};
+
 export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onModalHide, onConfirm }: Props) => {
   const [keyTypes, setKeyTypes] = useState<KeypairType[]>(defaultKeyTypes);
 
@@ -51,7 +55,7 @@ export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onM
       <View style={{ width: '100%' }}>
         <Text style={modalTitle}>{i18n.title.selectAccountType}</Text>
         <SelectAccountType selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
-        <Button icon={<Icon phosphorIcon={CheckCircle} />} onPress={_onConfirm(keyTypes)}>
+        <Button icon={ButtonIcon} disabled={!keyTypes.length} onPress={_onConfirm(keyTypes)}>
           {i18n.common.confirm}
         </Button>
       </View>
