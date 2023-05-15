@@ -11,9 +11,17 @@ interface Props {
   showRightIcon?: boolean;
   onPressRightIcon?: () => void;
   disableRightButton?: boolean;
+  disableLeftButton?: boolean;
 }
 
-const TransactionHeader = ({ title, navigation, showRightIcon = false, onPressRightIcon, disableRightButton }: Props) => {
+const TransactionHeader = ({
+  title,
+  navigation,
+  showRightIcon = false,
+  onPressRightIcon,
+  disableRightButton,
+  disableLeftButton,
+}: Props) => {
   return (
     <>
       <Header />
@@ -25,6 +33,7 @@ const TransactionHeader = ({ title, navigation, showRightIcon = false, onPressRi
           rightIcon={showRightIcon ? Info : undefined}
           onPressRightIcon={onPressRightIcon}
           disableRightButton={disableRightButton}
+          disabled={disableLeftButton}
         />
       </View>
     </>

@@ -9,11 +9,19 @@ interface Props {
   title: string;
   showRightHeaderButton?: boolean;
   disableRightButton?: boolean;
+  disableLeftButton?: boolean;
   onPressRightHeaderBtn?: () => void;
   children: React.ReactNode;
 }
 
-export const TransactionLayout = ({ title, showRightHeaderButton = false, onPressRightHeaderBtn, children, disableRightButton }: Props) => {
+export const TransactionLayout = ({
+  title,
+  showRightHeaderButton = false,
+  onPressRightHeaderBtn,
+  children,
+  disableLeftButton,
+  disableRightButton,
+}: Props) => {
   const navigation = useNavigation<StakingScreenNavigationProps>();
 
   return (
@@ -26,6 +34,7 @@ export const TransactionLayout = ({ title, showRightHeaderButton = false, onPres
             showRightIcon={showRightHeaderButton}
             onPressRightIcon={onPressRightHeaderBtn}
             disableRightButton={disableRightButton}
+            disableLeftButton={disableLeftButton}
           />
 
           {children}

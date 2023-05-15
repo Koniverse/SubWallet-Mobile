@@ -191,7 +191,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   options={{ gestureEnabled: false }}
                 />
                 <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
-                <Stack.Screen name="ImportNetwork" component={ImportNetwork} />
+                <Stack.Screen name="ImportNetwork" component={ImportNetwork} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
                 <Stack.Screen
                   name="MigratePassword"
@@ -200,30 +200,46 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 />
                 <Stack.Screen name="AddProvider" component={AddProvider} />
                 <Stack.Screen name="EditAccount" component={AccountDetail} />
-                <Stack.Screen name="RestoreJson" component={RestoreJson} />
-                <Stack.Screen name="ImportSecretPhrase" component={ImportSecretPhrase} />
-                <Stack.Screen name="ImportPrivateKey" component={ImportPrivateKey} />
+                <Stack.Screen name="RestoreJson" component={RestoreJson} options={{ gestureEnabled: false }} />
+                <Stack.Screen
+                  name="ImportSecretPhrase"
+                  component={ImportSecretPhrase}
+                  options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                  name="ImportPrivateKey"
+                  component={ImportPrivateKey}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen name="DAppAccess" component={DAppAccessScreen} />
                 <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                 <Stack.Screen name="Languages" component={Languages} />
                 <Stack.Screen name="Security" component={Security} />
                 <Stack.Screen name="PinCode" component={PinCodeScreen} />
-                <Stack.Screen name="ChangePassword" component={ChangeMasterPassword} />
+                <Stack.Screen
+                  name="ChangePassword"
+                  component={ChangeMasterPassword}
+                  options={{ gestureEnabled: false }}
+                />
                 <Stack.Screen name="AccountExport" component={AccountExport} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
                 <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
                 <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                 <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
-                <Stack.Screen name="ImportToken" component={ImportToken} />
-                <Stack.Screen name="ImportNft" component={ImportNft} />
+                <Stack.Screen name="ImportToken" component={ImportToken} options={{ gestureEnabled: false }} />
+                <Stack.Screen name="ImportNft" component={ImportNft} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransactionDone" component={TransactionDone} />
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
-                <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} />
+                <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
-                <Stack.Screen name="TransactionAction" component={TransactionScreen} />
+                <Stack.Screen
+                  name="TransactionAction"
+                  component={TransactionScreen}
+                  options={{ gestureEnabled: false }}
+                />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

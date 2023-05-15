@@ -12,11 +12,15 @@ const TransactionScreen = () => {
 
   return (
     <TransactionActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
-      <TransactionActionStack.Screen name="Stake" component={Stake} />
-      <TransactionActionStack.Screen name="Withdraw" component={Withdraw} />
-      <TransactionActionStack.Screen name="Unbond" component={Unbond} />
-      <TransactionActionStack.Screen name="ClaimReward" component={ClaimReward} />
-      <TransactionActionStack.Screen name="CancelUnstake" component={CancelUnstake} />
+      <TransactionActionStack.Screen name="Stake" component={Stake} options={{ gestureEnabled: false }} />
+      <TransactionActionStack.Screen name="Withdraw" component={Withdraw} options={{ gestureEnabled: false }} />
+      <TransactionActionStack.Screen name="Unbond" component={Unbond} options={{ gestureEnabled: false }} />
+      <TransactionActionStack.Screen name="ClaimReward" component={ClaimReward} options={{ gestureEnabled: false }} />
+      <TransactionActionStack.Screen
+        name="CancelUnstake"
+        component={CancelUnstake}
+        options={{ gestureEnabled: false }}
+      />
     </TransactionActionStack.Navigator>
   );
 };

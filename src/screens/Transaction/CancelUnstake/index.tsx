@@ -104,11 +104,11 @@ export const CancelUnstake = ({
   }, [chain, from, nominatorMetadata.unstakings, onError, onSuccess, unstakeIndex]);
 
   return (
-    <TransactionLayout title={title}>
+    <TransactionLayout title={title} disableLeftButton={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
+            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField
                 label={'Unstake from account'}
                 accountName={accountInfo?.name || ''}
@@ -125,6 +125,7 @@ export const CancelUnstake = ({
             nominators={from ? nominatorMetadata?.unstakings || [] : []}
             selectedValue={unstakeIndex}
             onSelectItem={onChangeValue('unstakeIndex')}
+            disabled={loading}
           />
 
           <AccountSelector
@@ -156,7 +157,7 @@ export const CancelUnstake = ({
           </Button>
           <Button
             style={{ flex: 1, marginLeft: 4 }}
-            disabled={!isBalanceReady}
+            disabled={!isBalanceReady || loading}
             loading={loading}
             icon={
               <Icon

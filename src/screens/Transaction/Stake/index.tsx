@@ -355,7 +355,8 @@ export const Stake = ({
     <TransactionLayout
       title={title}
       showRightHeaderButton
-      disableRightButton={!chainStakingMetadata}
+      disableLeftButton={loading}
+      disableRightButton={!chainStakingMetadata || loading}
       onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
@@ -367,7 +368,7 @@ export const Stake = ({
           )}
 
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)}>
+            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
             </TouchableOpacity>
           )}
@@ -377,12 +378,12 @@ export const Stake = ({
           )}
 
           <TouchableOpacity
-            disabled={stakingChain !== ALL_KEY || !from}
+            disabled={stakingChain !== ALL_KEY || !from || loading}
             onPress={() => {
               setTokenSelectModalVisible(true);
             }}>
             <TokenSelectField
-              disabled={stakingChain !== ALL_KEY || !from}
+              disabled={stakingChain !== ALL_KEY || !from || loading}
               logoKey={symbol.toLowerCase()}
               subLogoKey={chain}
               value={symbol}
@@ -400,6 +401,7 @@ export const Stake = ({
             onChangeValue={_onChangeAmount}
             decimals={decimals}
             errorMessages={formState.errors.value}
+            disable={loading}
           />
 
           {currentStakingType === StakingType.POOLED && (
@@ -409,6 +411,7 @@ export const Stake = ({
               onSelectItem={onChangeValue('pool')}
               poolLoading={poolLoading}
               selectedPool={selectedPool}
+              disabled={loading}
             />
           )}
 

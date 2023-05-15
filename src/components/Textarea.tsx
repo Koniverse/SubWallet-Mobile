@@ -27,6 +27,7 @@ export const Textarea = forwardRef((textAreaProps: Props, ref: React.Ref<TextInp
     placeholder,
     placeholderTextColor,
     blurOnSubmit = true,
+    editable,
   } = textAreaProps;
   return (
     <>
@@ -45,6 +46,7 @@ export const Textarea = forwardRef((textAreaProps: Props, ref: React.Ref<TextInp
         onEndEditing={onEndEditing}
         value={value}
         onSubmitEditing={onSubmitEditing}
+        editable={editable}
       />
 
       {!!(errorMessages && errorMessages.length) &&
