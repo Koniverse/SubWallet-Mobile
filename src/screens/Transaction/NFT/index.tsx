@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { NftCollection, NftItem } from '@subwallet/extension-base/background/KoniTypes';
@@ -142,7 +142,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const chainInfo = useMemo(() => chainInfoMap[nftChain], [chainInfoMap, nftChain]);
 
   const [loading, setLoading] = useState(false);
-  const { title, formState, onChangeValue, onDone } = useTransaction('send-nft', NFTFormConfig);
+  const { title, formState, onChangeValue, onChangeChainValue, onDone } = useTransaction('send-nft', NFTFormConfig);
   const isFormValid = Object.values(formState.isValidated).every(val => val);
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
@@ -231,6 +231,10 @@ const SendNFT: React.FC<SendNFTProps> = ({
       onSubmitForm(formState).then();
     }
   }, [formState, isFormValid, onSubmitForm]);
+
+  useEffect(() => {
+    onChangeChainValue(nftItem.chain);
+  }, [nftItem.chain, onChangeChainValue]);
 
   return (
     <ContainerWithSubHeader

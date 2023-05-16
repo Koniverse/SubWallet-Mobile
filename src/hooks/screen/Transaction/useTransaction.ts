@@ -87,19 +87,35 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     [formState.data.chain, formState.data.from, homePath, navigation],
   );
 
-  const onChangeFromValue = (value: string) => {
-    onChangeValue('from')(value);
-  };
+  const onChangeFromValue = useCallback(
+    (value: string) => {
+      onChangeValue('from')(value);
+    },
+    [onChangeValue],
+  );
 
-  const onChangeAssetValue = (value: string) => {
-    const chain = _getOriginChainOfAsset(value);
-    onChangeValue('asset')(value);
-    onChangeValue('chain')(chain);
-  };
+  const onChangeAssetValue = useCallback(
+    (value: string) => {
+      const chain = _getOriginChainOfAsset(value);
+      onChangeValue('asset')(value);
+      onChangeValue('chain')(chain);
+    },
+    [onChangeValue],
+  );
 
-  const onChangeAmountValue = (value: string) => {
-    onChangeValue('value')(value);
-  };
+  const onChangeChainValue = useCallback(
+    (value: string) => {
+      onChangeValue('chain')(value);
+    },
+    [onChangeValue],
+  );
+
+  const onChangeAmountValue = useCallback(
+    (value: string) => {
+      onChangeValue('value')(value);
+    },
+    [onChangeValue],
+  );
 
   return {
     title,
@@ -109,6 +125,7 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     focus,
     onChangeFromValue,
     onChangeAssetValue,
+    onChangeChainValue,
     onChangeAmountValue,
     onChangeValue,
     onDone,
