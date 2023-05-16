@@ -209,6 +209,10 @@ export const Stake = ({
     ],
   );
 
+  useEffect(() => {
+    validateAmountInput(formState.data.value);
+  }, [formState.data.value, validateAmountInput]);
+
   const _onChangeAmount = useCallback(
     (text: string) => {
       onChangeAmountValue(text);
