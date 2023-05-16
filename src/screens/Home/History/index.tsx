@@ -251,7 +251,7 @@ function History({
   const rawHistoryList = useSelector((root: RootState) => root.transactionHistory.historyList);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -292,7 +292,6 @@ function History({
   }, [accountMap, rawHistoryList, currentAccount?.address]);
 
   useEffect(() => {
-    setLoading(true);
     const timeoutID = setTimeout(() => {
       setHistoryMap(getHistoryMap());
       setLoading(false);

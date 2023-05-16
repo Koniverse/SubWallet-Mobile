@@ -49,35 +49,42 @@ export const HistoryStatusMap: Record<string, StatusType> = {
     schema: 'success',
     icon: CheckCircle,
     name: i18n.historyScreen.extrinsicStatus.completed,
+    color: 'colorSuccess',
   },
   [ExtrinsicStatus.FAIL]: {
     schema: 'danger',
     icon: ProhibitInset,
     name: i18n.historyScreen.extrinsicStatus.failed,
+    color: 'colorError',
   },
   [ExtrinsicStatus.QUEUED]: {
     schema: 'light',
     icon: Queue,
     name: i18n.historyScreen.extrinsicStatus.queued,
+    color: 'gray-6',
   },
   [ExtrinsicStatus.SUBMITTING]: {
     schema: 'gold',
     icon: PaperPlaneTilt,
     name: i18n.historyScreen.extrinsicStatus.submitting,
+    color: 'gold-6',
   },
   [ExtrinsicStatus.PROCESSING]: {
     schema: 'gold',
     icon: Spinner,
     name: i18n.historyScreen.extrinsicStatus.processing,
+    color: 'gold-6',
   },
   [ExtrinsicStatus.CANCELLED]: {
     schema: 'gray',
     icon: StopCircle,
     name: i18n.historyScreen.extrinsicStatus.cancelled,
+    color: 'gray-3',
   },
   [ExtrinsicStatus.UNKNOWN]: {
     schema: 'danger',
     icon: StopCircle,
     name: i18n.historyScreen.extrinsicStatus.unknown,
+    color: 'gray-6',
   },
 };

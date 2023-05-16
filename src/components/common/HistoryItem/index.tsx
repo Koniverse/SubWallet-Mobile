@@ -8,6 +8,7 @@ import { ExtrinsicStatus, TransactionDirection } from '@subwallet/extension-base
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import HistoryItemStyles from './style';
 import { ThemeTypes } from 'styles/themes';
+import { HistoryStatusMap } from 'screens/Home/History/shared';
 
 interface Props {
   item: TransactionHistoryDisplayItem;
@@ -16,19 +17,9 @@ interface Props {
 }
 
 function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | undefined {
-  if (status === ExtrinsicStatus.PROCESSING) {
-    return theme['gold-6'];
-  }
+  const color = HistoryStatusMap[status]?.color;
 
-  if (status === ExtrinsicStatus.SUCCESS) {
-    return theme.colorSuccess;
-  }
-
-  if (status === ExtrinsicStatus.FAIL) {
-    return theme.colorError;
-  }
-
-  return undefined;
+  return theme[color || ''];
 }
 
 export const HistoryItem = ({ item, onPress, style }: Props) => {

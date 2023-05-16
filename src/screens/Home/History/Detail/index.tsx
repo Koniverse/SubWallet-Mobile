@@ -23,6 +23,7 @@ export type StatusType = {
   schema: InfoItemBase['valueColorSchema'];
   icon: SWIconProps['phosphorIcon'];
   name: string;
+  color?: string;
 };
 
 export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }: Props): React.ReactElement<Props> {
