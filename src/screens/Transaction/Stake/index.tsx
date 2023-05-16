@@ -45,6 +45,7 @@ import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { StakeProps } from 'routes/transaction/transactionAction';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { accountFilterFunc } from 'screens/Transaction/helper/base';
+import useFetchChainState from 'hooks/screen/useFetchChainState';
 
 export const Stake = ({
   route: {
@@ -119,7 +120,7 @@ export const Stake = ({
     stakingType: currentStakingType,
     value: currentValue,
   } = formState.data;
-
+  const chainState = useFetchChainState(chain);
   const chainStakingMetadata = useGetChainStakingMetadata(chain);
   const nominatorMetadataList = useGetNominatorInfo(chain, currentStakingType as StakingType, from);
   const isRelayChain = useMemo(() => _STAKING_CHAIN_GROUP.relay.includes(chain), [chain]);
@@ -138,14 +139,14 @@ export const Stake = ({
 
     // fetch validators when change chain
     // _stakingType is predefined form start
-    if (!!chain && !!from) {
-      fetchChainValidators(chain, _stakingType || ALL_KEY, unmount, setPoolLoading, setValidatorLoading);
+    if (!!chain && !!from && chainState?.active) {
+      fetchChainValidators(chain, currentStakingType || ALL_KEY, unmount, setPoolLoading, setValidatorLoading);
     }
 
     return () => {
       unmount = true;
     };
-  }, [from, _stakingType, chain]);
+  }, [from, _stakingType, chain, chainState?.active, currentStakingType]);
 
   const tokenList = useGetSupportedStakingTokens(currentStakingType as StakingType, from, stakingChain);
   const accountInfo = useGetAccountByAddress(from);
@@ -355,6 +356,18 @@ export const Stake = ({
     ],
   );
 
+  const onChangeStakingType = useCallback(
+    (type: StakingType) => {
+      onChangeValue('stakingType')(type);
+
+      if (isEthereumAddress(from) && currentStakingType === StakingType.NOMINATED) {
+        onChangeFromValue('');
+        onChangeAssetValue('');
+      }
+    },
+    [currentStakingType, from, onChangeAssetValue, onChangeFromValue, onChangeValue],
+  );
+
   return (
     <TransactionLayout
       title={title}
@@ -365,10 +378,7 @@ export const Stake = ({
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {_stakingType === ALL_KEY && (
-            <StakingTab
-              selectedType={currentStakingType as StakingType}
-              onSelectType={type => onChangeValue('stakingType')(type)}
-            />
+            <StakingTab selectedType={currentStakingType as StakingType} onSelectType={onChangeStakingType} />
           )}
 
           {isAllAccount && (
