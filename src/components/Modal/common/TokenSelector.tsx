@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect } from 'react';
 import { ListRenderItemInfo } from 'react-native';
-import { Warning } from 'components/Warning';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
-import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenSelectItem } from 'components/TokenSelectItem';
-import {EmptyList} from "components/EmptyList";
-import {MagnifyingGlass} from "phosphor-react-native";
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
 
 export type TokenItemType = {
   name: string;
@@ -35,7 +33,11 @@ const filterFunction = (items: TokenItemType[], searchString: string) => {
 
 const renderListEmptyComponent = () => {
   return (
-    <EmptyList icon={MagnifyingGlass} title={'No results found'} message={'Please change your search criteria try again'} />
+    <EmptyList
+      icon={MagnifyingGlass}
+      title={'No results found'}
+      message={'Please change your search criteria try again'}
+    />
   );
 };
 
@@ -45,7 +47,7 @@ export const TokenSelector = ({
   onSelectItem,
   items,
   acceptDefaultValue,
-  title = i18n.title.token,
+  title = 'Select token',
   defaultValue,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -73,7 +75,8 @@ export const TokenSelector = ({
       return (
         <TokenSelectItem
           key={`${symbol}-${originChain}`}
-          itemName={`${symbol} (${chainInfoMap[originChain]?.name || ''})`}
+          symbol={symbol}
+          chain={`${chainInfoMap[originChain]?.name || ''}`}
           logoKey={symbol.toLowerCase()}
           subLogoKey={originChain}
           isSelected={false}

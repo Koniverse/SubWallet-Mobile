@@ -44,7 +44,7 @@ export const ChainSelector = ({ modalVisible, onCancel, onSelectItem, items, tit
           itemKey={item.slug}
           onSelectNetwork={() => onSelectItem(item)}
           showSeparator={false}
-          iconSize={20}
+          iconSize={28}
         />
       );
     },
