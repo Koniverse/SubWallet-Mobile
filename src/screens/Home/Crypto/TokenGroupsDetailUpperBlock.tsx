@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
-import { ArrowFatLinesDown, CaretLeft, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
+import { CaretLeft } from 'phosphor-react-native';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import { Button, Icon, Typography } from 'components/design-system-ui';
@@ -13,6 +13,7 @@ import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { ThemeTypes } from 'styles/themes';
+import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -81,18 +82,18 @@ export const TokenGroupsDetailUpperBlock = ({
 
       <View style={[_style.actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
-          icon={<Icon weight="duotone" phosphorIcon={ArrowFatLinesDown} />}
+          icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
           buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />
         <ActionButton
-          icon={<Icon weight="duotone" phosphorIcon={PaperPlaneTilt} />}
+          icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />
         <ActionButton
           disabled={!isSupportBuyTokens}
-          icon={<Icon weight="duotone" phosphorIcon={ShoppingCartSimple} />}
+          icon={ButtonIcon.Buy}
           onPress={onOpenBuyTokens}
           buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
         />
