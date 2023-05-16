@@ -1,13 +1,15 @@
 import React from 'react';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { TouchableOpacity, View } from 'react-native';
-import { Avatar, Icon, Typography } from 'components/design-system-ui';
+import { Avatar, Icon, Typography, Number } from 'components/design-system-ui';
 import { UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
 import { CheckCircle, Spinner } from 'phosphor-react-native';
 import { UnstakeItem } from 'components/Modal/common/CancelUnstakeSelector';
 import { toShort } from 'utils/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import CancelUnstakeItemStyle from './style';
+import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   item: UnstakeItem;
@@ -16,9 +18,11 @@ interface Props {
 }
 
 export const CancelUnstakeItem = ({ item, isSelected, onPress }: Props) => {
-  const { validatorAddress, status } = item;
+  const { validatorAddress, status, claimable, chain } = item;
   const theme = useSubWalletTheme().swThemes;
   const _style = CancelUnstakeItemStyle(theme);
+
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
 
   const subTextStyle = {
     ..._style.subTextStyle,
@@ -49,7 +53,17 @@ export const CancelUnstakeItem = ({ item, isSelected, onPress }: Props) => {
         </View>
       </View>
 
-      {isSelected && <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />}
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <Number
+          decimal={decimals}
+          decimalOpacity={0.45}
+          suffix={symbol}
+          value={claimable}
+          size={theme.fontSize}
+          textStyle={{ ...FontSemiBold }}
+        />
+        {isSelected && <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />}
+      </View>
     </TouchableOpacity>
   );
 };
