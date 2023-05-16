@@ -27,6 +27,7 @@ import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { Button, Icon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
 import createStyles from './styles';
+import { getButtonIcon } from 'utils/button';
 
 const formConfig: FormControlConfig = {
   file: {
@@ -312,13 +313,7 @@ export const RestoreJson = () => {
         <View style={styles.footer}>
           <Button
             loading={isBusy}
-            icon={
-              <Icon
-                phosphorIcon={FileArrowDown}
-                weight="fill"
-                iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }
+            icon={getButtonIcon(FileArrowDown)}
             onPress={onPressSubmit(onPressSubmitButton)}
             disabled={isDisabled}>
             {i18n.common.importAccount}

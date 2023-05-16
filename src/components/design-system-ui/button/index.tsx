@@ -78,14 +78,14 @@ const Button: React.FC<ButtonProps> = props => {
     onHideUnderlay && onHideUnderlay();
   };
 
-  const textStyle = [
-    _style.textStyle,
-    _style[`${size}RawText`],
-    _style[`${buttonType}RawText`],
-    externalTextStyle,
-    (loading || !!icon) && _style.buttonRawText,
-    disabled && _style[`${buttonType}DisabledRawText`],
-  ];
+  const textStyle = {
+    ..._style.textStyle,
+    ..._style[`${size}RawText`],
+    ..._style[`${type}RawText`],
+    ...externalTextStyle,
+    ...((loading || !!icon) && _style.buttonRawText),
+    ...(disabled && _style[`${type}DisabledRawText`]),
+  };
 
   const wrapperStyle = [
     _style.wrapperStyle,
@@ -104,20 +104,17 @@ const Button: React.FC<ButtonProps> = props => {
   const underlayColor = (StyleSheet.flatten(activeStyle ? activeStyle : _style[`${buttonType}Highlight`]) as any)
     .backgroundColor;
 
-  const indicatorColor = (StyleSheet.flatten(_style[`${buttonType}RawText`]) as any).color;
-  const disableColor = (StyleSheet.flatten(_style[`${buttonType}DisabledRawText`]) as any).color;
-
   const iconNode = useMemo(() => {
     if (loading) {
-      return <ActivityIndicator indicatorColor={indicatorColor} size={20} />;
+      return <ActivityIndicator indicatorColor={textStyle.color as string} size={20} />;
     }
 
     if (typeof icon === 'function') {
-      return icon(disabled ? disableColor : indicatorColor);
+      return icon(textStyle.color as string);
     }
 
     return icon || null;
-  }, [disableColor, disabled, icon, indicatorColor, loading]);
+  }, [icon, loading, textStyle.color]);
   const buttonNode = (
     <TouchableHighlight
       accessibilityRole="button"

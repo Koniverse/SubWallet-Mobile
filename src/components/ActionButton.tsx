@@ -5,10 +5,11 @@ import { FontMedium } from 'styles/sharedStyles';
 import { Button } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 
 interface Props extends TouchableOpacityProps {
   label?: string;
-  icon: React.ReactNode;
+  icon: ButtonPropsType['icon'];
   buttonWrapperStyle?: StyleProp<ViewStyle>;
 }
 

@@ -20,8 +20,9 @@ import { createAccountExternalV2 } from 'messaging/index';
 import { sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
-import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
+import { Button, PageIcon, Typography } from 'components/design-system-ui';
 import createStyle from './styles';
+import { getButtonIcon } from 'utils/button';
 
 const validateAddress = (value: string) => {
   const qrAccount = readOnlyScan(value);
@@ -196,7 +197,7 @@ const AttachReadOnly = () => {
         </ScrollView>
         <View style={styles.footer}>
           <Button
-            icon={<Icon phosphorIcon={Eye} weight="fill" />}
+            icon={getButtonIcon(Eye)}
             loading={isBusy}
             onPress={onPressSubmit(_onSubmitForm)}
             disabled={errors.length > 0 || !formState.data.address || isBusy}>
