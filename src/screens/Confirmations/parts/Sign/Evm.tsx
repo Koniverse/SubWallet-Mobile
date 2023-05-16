@@ -3,7 +3,7 @@ import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFoote
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Button, Icon } from 'components/design-system-ui';
+import { Button } from 'components/design-system-ui';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
 import { DisplayPayloadModal, EvmQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
 import { EvmSignatureSupportType } from 'types/confirmation';
@@ -14,6 +14,8 @@ import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/index';
 import { isEvmMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
+import { HIDE_MODAL_DURATION } from 'constants/index';
+import { getButtonIcon } from 'utils/button';
 
 interface Props {
   id: string;
@@ -98,7 +100,6 @@ export const EvmSignArea = (props: Props) => {
 
   const onConfirmQr = useCallback(() => {
     setIsShowQr(true);
-    setIsScanning(false);
   }, []);
 
   const onSuccess = useCallback(
@@ -126,7 +127,7 @@ export const EvmSignArea = (props: Props) => {
 
   const openScanning = useCallback(() => {
     setIsShowQr(false);
-    setIsScanning(true);
+    setTimeout(() => setIsScanning(true), HIDE_MODAL_DURATION);
   }, []);
 
   const hideScanning = useCallback(() => {
@@ -136,20 +137,10 @@ export const EvmSignArea = (props: Props) => {
 
   return (
     <ConfirmationFooter>
-      <Button
-        block={true}
-        disabled={loading}
-        icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
-        type={'secondary'}
-        onPress={onCancel}>
+      <Button block={true} disabled={loading} icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
         {i18n.common.cancel}
       </Button>
-      <Button
-        block={true}
-        disabled={!canSign}
-        icon={<Icon phosphorIcon={approveIcon} weight={'fill'} />}
-        loading={loading}
-        onPress={onConfirm}>
+      <Button block={true} disabled={!canSign} icon={getButtonIcon(approveIcon)} loading={loading} onPress={onConfirm}>
         {i18n.common.approve}
       </Button>
       {signMode === AccountSignMode.QR && (

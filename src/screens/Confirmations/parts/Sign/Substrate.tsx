@@ -14,8 +14,10 @@ import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
-import { Button, Icon } from 'components/design-system-ui';
+import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
+import { HIDE_MODAL_DURATION } from 'constants/index';
+import { getButtonIcon } from 'utils/button';
 
 interface Props {
   account: AccountJson;
@@ -100,7 +102,6 @@ export const SubstrateSignArea = (props: Props) => {
 
   const onConfirmQr = useCallback(() => {
     setIsShowQr(true);
-    setIsScanning(false);
   }, []);
 
   const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal();
@@ -128,7 +129,7 @@ export const SubstrateSignArea = (props: Props) => {
 
   const openScanning = useCallback(() => {
     setIsShowQr(false);
-    setIsScanning(true);
+    setTimeout(() => setIsScanning(true), HIDE_MODAL_DURATION);
   }, []);
 
   const hideScanning = useCallback(() => {
@@ -138,18 +139,13 @@ export const SubstrateSignArea = (props: Props) => {
 
   return (
     <ConfirmationFooter>
-      <Button
-        disabled={loading}
-        block
-        icon={<Icon phosphorIcon={XCircle} weight={'fill'} />}
-        type={'secondary'}
-        onPress={onCancel}>
+      <Button disabled={loading} block icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
         {i18n.common.cancel}
       </Button>
       <Button
         block
         disabled={(isMessage && !modeCanSignMessage.includes(signMode)) || loading}
-        icon={<Icon phosphorIcon={approveIcon} weight={'fill'} />}
+        icon={getButtonIcon(approveIcon)}
         loading={loading}
         onPress={onConfirm}>
         {i18n.common.approve}
