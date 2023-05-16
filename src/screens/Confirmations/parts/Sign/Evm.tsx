@@ -14,6 +14,7 @@ import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/index';
 import { isEvmMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 
 interface Props {
   id: string;
@@ -98,7 +99,6 @@ export const EvmSignArea = (props: Props) => {
 
   const onConfirmQr = useCallback(() => {
     setIsShowQr(true);
-    setIsScanning(false);
   }, []);
 
   const onSuccess = useCallback(
@@ -126,7 +126,7 @@ export const EvmSignArea = (props: Props) => {
 
   const openScanning = useCallback(() => {
     setIsShowQr(false);
-    setIsScanning(true);
+    setTimeout(() => setIsScanning(true), HIDE_MODAL_DURATION);
   }, []);
 
   const hideScanning = useCallback(() => {

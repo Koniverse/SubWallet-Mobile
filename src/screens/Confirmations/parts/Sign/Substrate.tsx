@@ -16,6 +16,7 @@ import { isSubstrateMessage } from 'utils/confirmation/confirmation';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
 import { Button, Icon } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 
 interface Props {
   account: AccountJson;
@@ -100,7 +101,6 @@ export const SubstrateSignArea = (props: Props) => {
 
   const onConfirmQr = useCallback(() => {
     setIsShowQr(true);
-    setIsScanning(false);
   }, []);
 
   const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal();
@@ -128,7 +128,7 @@ export const SubstrateSignArea = (props: Props) => {
 
   const openScanning = useCallback(() => {
     setIsShowQr(false);
-    setIsScanning(true);
+    setTimeout(() => setIsScanning(true), HIDE_MODAL_DURATION);
   }, []);
 
   const hideScanning = useCallback(() => {
