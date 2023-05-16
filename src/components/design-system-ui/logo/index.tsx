@@ -6,6 +6,7 @@ import Image from '../image';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
+import { ImageLogosMap } from 'assets/logo';
 
 type IconShapeType = 'default' | 'circle' | 'squircle';
 
@@ -24,7 +25,7 @@ export interface SWLogoProps {
 }
 
 const Logo: React.FC<SWLogoProps> = ({
-  defaultLogoKey,
+  defaultLogoKey = 'default',
   isShowSubLogo,
   isShowSubIcon,
   network,
@@ -57,7 +58,7 @@ const Logo: React.FC<SWLogoProps> = ({
   return (
     <View>
       <Image
-        src={{ uri: srcLogo || chainLogoMap.default }}
+        src={srcLogo ? { uri: srcLogo } : ImageLogosMap.default}
         style={{ width: size, height: size, backgroundColor: 'transparent' }}
         squircleSize={size}
         shape={shape}
@@ -65,7 +66,7 @@ const Logo: React.FC<SWLogoProps> = ({
       {isShowSubIcon && !isShowSubLogo && <View style={_style.subLogoContainer}>{subIcon}</View>}
       {isShowSubLogo && (
         <Image
-          src={{ uri: srcSubLogo || chainLogoMap.default }}
+          src={srcSubLogo ? { uri: srcSubLogo } : ImageLogosMap.default}
           style={{ width: subLogoSize, height: subLogoSize }}
           squircleSize={subLogoSize}
           shape={subLogoShape}
