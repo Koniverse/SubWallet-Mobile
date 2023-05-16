@@ -56,10 +56,6 @@ const CreateMasterPassword = ({
         routes: [{ name: 'Home' }, { name: pathName, params: { keyTypes: state as KeypairType[] } }],
       });
     } else if (pathName === 'MigratePassword') {
-      navigation.reset({
-        index: 1,
-        routes: [{ name: 'Home' }, { name: pathName }],
-      });
     } else {
       navigation.reset({
         index: 1,

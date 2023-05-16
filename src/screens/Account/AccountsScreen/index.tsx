@@ -1,13 +1,11 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import React, { useCallback, useState } from 'react';
-import { FlatList, ListRenderItemInfo, StyleProp, View } from 'react-native';
-import { SubScreenContainer } from 'components/SubScreenContainer';
+import { ListRenderItemInfo, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import { Warning } from 'components/Warning';
+import { FileArrowDown, MagnifyingGlass, PlusCircle, Swatches } from 'phosphor-react-native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
@@ -17,14 +15,25 @@ import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { Button, Icon } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
-
-const accountsWrapper: StyleProp<any> = {
-  flex: 1,
-  paddingTop: 16,
-};
+import { FlatListScreen } from 'components/FlatListScreen';
+import { EmptyList } from 'components/EmptyList';
 
 const renderListEmptyComponent = () => {
-  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountText} isDanger={false} />;
+  return (
+    <EmptyList
+      icon={MagnifyingGlass}
+      title={'No results found'}
+      message={'Please change your search criteria try again'}
+    />
+  );
+};
+
+const searchFunction = (items: AccountJson[], searchString: string) => {
+  return items.filter(account =>
+    account.name
+      ? account.name.toLowerCase().includes(searchString.toLowerCase())
+      : account.address.toLowerCase().includes(searchString.toLowerCase()),
+  );
 };
 
 export const AccountsScreen = () => {
@@ -121,28 +130,26 @@ export const AccountsScreen = () => {
   };
 
   return (
-    <SubScreenContainer navigation={navigation} title={i18n.title.accounts}>
-      <View style={accountsWrapper}>
-        <FlatList
-          style={{ flex: 1 }}
-          keyboardShouldPersistTaps={'handled'}
-          data={accounts}
-          renderItem={renderItem}
-          ListEmptyComponent={renderListEmptyComponent}
-          keyExtractor={item => item.address}
-        />
-        {renderFooterComponent()}
+    <>
+      <FlatListScreen
+        style={{ flex: 1 }}
+        title={i18n.title.accounts}
+        items={accounts}
+        renderItem={renderItem}
+        renderListEmptyComponent={renderListEmptyComponent}
+        searchFunction={searchFunction}
+        afterListItem={renderFooterComponent()}
+      />
 
-        <AccountCreationArea
-          allowToShowSelectType={true}
-          createAccountModalVisible={createAccountModalVisible}
-          importAccountModalVisible={importAccountModalVisible}
-          attachAccountModalVisible={attachAccountModalVisible}
-          onChangeCreateAccountModalVisible={setCreateAccountModalVisible}
-          onChangeImportAccountModalVisible={setImportAccountModalVisible}
-          onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
-        />
-      </View>
-    </SubScreenContainer>
+      <AccountCreationArea
+        allowToShowSelectType={true}
+        createAccountModalVisible={createAccountModalVisible}
+        importAccountModalVisible={importAccountModalVisible}
+        attachAccountModalVisible={attachAccountModalVisible}
+        onChangeCreateAccountModalVisible={setCreateAccountModalVisible}
+        onChangeImportAccountModalVisible={setImportAccountModalVisible}
+        onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
+      />
+    </>
   );
 };
