@@ -1,36 +1,36 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { useNavigation } from '@react-navigation/native';
-import { ImportTokenProps, RootNavigationProps } from 'routes/index';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {ContainerWithSubHeader} from 'components/ContainerWithSubHeader';
+import {useNavigation} from '@react-navigation/native';
+import {ImportTokenProps, RootNavigationProps} from 'routes/index';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {ContainerHorizontalPadding, MarginBottomForSubmitButton} from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { NetworkField } from 'components/Field/Network';
-import { ChainSelect } from 'screens/ImportToken/ChainSelect';
+import useFormControl, {FormState} from 'hooks/screen/useFormControl';
+import {BUTTON_ACTIVE_OPACITY} from 'constants/index';
+import {NetworkField} from 'components/Field/Network';
+import {ChainSelect} from 'screens/ImportToken/ChainSelect';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
-import { TextField } from 'components/Field/Text';
-import { isEthereumAddress } from '@polkadot/util-crypto';
-import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'messaging/index';
-import { Warning } from 'components/Warning';
-import { InputAddress } from 'components/Input/InputAddress';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
+import {TextField} from 'components/Field/Text';
+import {isEthereumAddress} from '@polkadot/util-crypto';
+import {completeConfirmation, upsertCustomToken, validateCustomToken} from 'messaging/index';
+import {Warning} from 'components/Warning';
+import {InputAddress} from 'components/Input/InputAddress';
+import {requestCameraPermission} from 'utils/permission/camera';
+import {RESULTS} from 'react-native-permissions';
+import {AddressScanner} from 'components/Scanner/AddressScanner';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { WebRunnerContext } from 'providers/contexts';
-import { _AssetType } from '@subwallet/chain-list/types';
+import {isValidSubstrateAddress} from '@subwallet/extension-base/utils';
+import {useSelector} from 'react-redux';
+import {RootState} from 'stores/index';
+import {WebRunnerContext} from 'providers/contexts';
+import {_AssetType} from '@subwallet/chain-list/types';
 import {
   _isChainTestNet,
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Button } from 'components/design-system-ui';
-import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
-import { useToast } from 'react-native-toast-notifications';
+import {Button} from 'components/design-system-ui';
+import {ConfirmationResult} from '@subwallet/extension-base/background/KoniTypes';
+import {useToast} from 'react-native-toast-notifications';
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -99,7 +99,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       decimals: parseInt(decimals),
       priceId: null,
       minAmount: null,
-      assetType: _AssetType.ERC20,
+      assetType: isEthereumAddress(contractAddress) ? _AssetType.ERC20 : _AssetType.PSP22,
       metadata: _parseMetadataForSmartContractAsset(contractAddress),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),

@@ -148,7 +148,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       decimals: null,
       priceId: null,
       minAmount: null,
-      assetType: _AssetType.ERC721,
+      assetType: isEthereumAddress(smartContract) ? _AssetType.ERC721 : _AssetType.PSP34,
       metadata: _parseMetadataForSmartContractAsset(smartContract),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
