@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TouchableOpacity, View } from 'react-native';
+import { StyleProp, View, TouchableOpacity, Platform } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { Eye, EyeSlash } from 'phosphor-react-native';
@@ -146,6 +146,7 @@ export const TokenGroupsUpperBlock = ({
           buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
         />
         <ActionButton
+          disabled={Platform.OS === 'ios'}
           label={i18n.cryptoScreen.buy}
           icon={ButtonIcon.Buy}
           onPress={onOpenBuyTokens}

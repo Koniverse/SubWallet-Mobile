@@ -51,6 +51,10 @@ export type AppStateSlice = {
   isDisplayConfirmation: boolean;
 };
 
+export type AppVersionSlice = {
+  buildNumber: string;
+};
+
 export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc' | 'migratePassword';
 
 export type PasswordModalSlice = {
