@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import mobileSettingsReducer from './MobileSettings';
 import appStateReducer from './AppState';
+import appVersionReducer from './AppVersion';
 import browserReducer from './Browser';
 import backgroundServiceReducer from './BackgroundService';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   browser: browserReducer,
   backgroundService: backgroundServiceReducer,
   passwordModalState: PasswordModalReducer,
+  // appVersion: appVersionReducer,
 
   // // Feature
   transactionHistory: TransactionHistoryReducer,

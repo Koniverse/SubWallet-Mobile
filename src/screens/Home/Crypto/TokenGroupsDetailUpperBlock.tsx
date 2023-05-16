@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { CaretLeft } from 'phosphor-react-native';
@@ -39,6 +39,9 @@ export const TokenGroupsDetailUpperBlock = ({
   const _style = createStyleSheet(theme);
 
   const isSupportBuyTokens = useMemo(() => {
+    if (Platform.OS === 'ios') {
+      return false;
+    }
     const transakInfoItems = Object.values(PREDEFINED_TRANSAK_TOKEN);
 
     for (const infoItem of transakInfoItems) {
