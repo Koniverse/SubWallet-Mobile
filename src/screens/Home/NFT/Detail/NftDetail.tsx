@@ -163,7 +163,7 @@ const NftDetail = ({
   useHandleGoHome({ goHome: goHome, networkKey: data.chain || chain || '', networkFocusRedirect: false });
 
   const originChainInfo = useFetchChainInfo(data.chain as string);
-  const ownerUrl = useScanExplorerAddressUrl(originChainInfo.slug || '', data.owner || '');
+  const ownerUrl = useScanExplorerAddressUrl(originChainInfo?.slug || '', data.owner || '');
 
   const canSend = useMemo((): boolean => {
     if (data.owner) {

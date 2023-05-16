@@ -316,7 +316,7 @@ export function recodeAddress(
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getNetworkLogo(logoKey: string, size: number, defaultLogoKey = 'default', outerStyle?: StyleProp<any>) {
-  return <SWLogo network={logoKey.toLowerCase()} defaultLogoKey={defaultLogoKey} size={size} />;
+  return <SWLogo network={logoKey} defaultLogoKey={defaultLogoKey} size={size} />;
 }
 export function getTokenLogo(
   logoKey: string,

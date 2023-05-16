@@ -6,9 +6,10 @@ import { RootState } from 'stores/index';
 import { getScanExplorerAddressInfoUrl } from 'utils/index';
 
 export default function useScanExplorerAddressUrl(networkKey: string, hash: string) {
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const chainMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const chainInfo = chainMap[networkKey];
 
-  const blockExplorer = networkMap[networkKey]?.blockExplorer;
+  const blockExplorer = chainInfo?.substrateInfo?.blockExplorer || chainInfo?.evmInfo?.blockExplorer;
 
   if (blockExplorer) {
     return `${blockExplorer}/account/${hash}`;
