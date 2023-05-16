@@ -24,6 +24,7 @@ import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { deriveAccountV3, editAccount, forgetAccount } from 'messaging/index';
 import createStyle from './styles';
+import { DisabledStyle } from 'styles/sharedStyles';
 
 export const AccountDetail = ({
   route: {
@@ -227,6 +228,7 @@ export const AccountDetail = ({
                 backgroundColor={theme['magenta-7']}
                 shape="circle"
                 size="sm"
+                style={!canDerive && DisabledStyle}
               />
             }
             disabled={!canDerive}
@@ -245,6 +247,7 @@ export const AccountDetail = ({
                 backgroundColor={theme.green}
                 shape="circle"
                 size="sm"
+                style={!canExport && DisabledStyle}
               />
             }
             contentAlign="left"

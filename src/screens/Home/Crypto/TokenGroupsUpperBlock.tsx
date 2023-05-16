@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleProp, View, TouchableOpacity } from 'react-native';
+import { StyleProp, TouchableOpacity, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
-import { ArrowFatLinesDown, Eye, EyeSlash, PaperPlaneTilt, ShoppingCartSimple } from 'phosphor-react-native';
+import { Eye, EyeSlash } from 'phosphor-react-native';
 import { SwNumberProps } from 'components/design-system-ui/number';
 import { BalancesVisibility } from 'components/BalancesVisibility';
 import { Icon, Number, Tag, Typography } from 'components/design-system-ui';
@@ -12,6 +12,7 @@ import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toggleBalancesVisibility } from 'messaging/index';
 import { updateUiSettings } from 'stores/utils';
+import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -134,19 +135,19 @@ export const TokenGroupsUpperBlock = ({
       <View style={[actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
           label={i18n.cryptoScreen.receive}
-          icon={<Icon weight="duotone" phosphorIcon={ArrowFatLinesDown} />}
+          icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
           buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
         />
         <ActionButton
           label={i18n.cryptoScreen.send}
-          icon={<Icon weight="duotone" phosphorIcon={PaperPlaneTilt} />}
+          icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
         />
         <ActionButton
           label={i18n.cryptoScreen.buy}
-          icon={<Icon weight="duotone" phosphorIcon={ShoppingCartSimple} />}
+          icon={ButtonIcon.Buy}
           onPress={onOpenBuyTokens}
           buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
         />
