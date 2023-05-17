@@ -1,24 +1,36 @@
-import { useCallback } from 'react';
+import { RefObject, useCallback } from 'react';
 import useIsReadOnlyAccount from '../useIsReadOnlyAccount';
-import { useToast } from 'react-native-toast-notifications';
+import ToastContainer, { useToast } from 'react-native-toast-notifications';
 
 type VoidFunction = () => void;
 
-const usePreCheckReadOnly = (address?: string, message?: string): ((onClick: VoidFunction) => VoidFunction) => {
-  const { show } = useToast();
+const usePreCheckReadOnly = (
+  toastRef?: RefObject<ToastContainer>,
+  address?: string,
+  message?: string,
+): ((onClick: VoidFunction) => VoidFunction) => {
+  const { show, hideAll } = useToast();
   const isReadOnlyAccount = useIsReadOnlyAccount(address);
 
   return useCallback(
     (onClick: VoidFunction) => {
       return () => {
         if (isReadOnlyAccount) {
-          show(message ?? 'The account you are using is read-only, you cannot use this feature with it');
+          if (toastRef && toastRef.current) {
+            toastRef.current.hideAll();
+            toastRef.current.show(
+              message ?? 'The account you are using is read-only, you cannot use this feature with it',
+            );
+          } else {
+            hideAll();
+            show(message ?? 'The account you are using is read-only, you cannot use this feature with it');
+          }
         } else {
           onClick();
         }
       };
     },
-    [isReadOnlyAccount, message, show],
+    [hideAll, isReadOnlyAccount, message, show, toastRef],
   );
 };
 
