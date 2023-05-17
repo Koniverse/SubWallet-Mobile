@@ -3,26 +3,30 @@ import { StyleProp, TouchableOpacity, TouchableOpacityProps, View } from 'react-
 import { getTokenLogo } from 'utils/index';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CircleWavyCheck } from 'phosphor-react-native';
 
 interface Props extends TouchableOpacityProps {
-  itemName: string;
+  symbol: string;
+  chain: string;
   logoKey: string;
   subLogoKey?: string;
   isSelected: boolean;
   onSelectNetwork: () => void;
   defaultItemKey?: string;
-  showSeparator?: boolean;
   iconSize?: number;
 }
 
 const itemArea: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
-  paddingVertical: 12,
+  paddingVertical: 14,
   alignItems: 'center',
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
+  backgroundColor: '#1A1A1A',
+  marginHorizontal: 16,
+  marginBottom: 8,
+  borderRadius: 8,
 };
 
 const itemBodyArea: StyleProp<any> = {
@@ -30,48 +34,47 @@ const itemBodyArea: StyleProp<any> = {
   alignItems: 'center',
 };
 
-const itemSeparator: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  height: 1,
-  marginLeft: 64,
-  marginRight: 16,
-};
-
 const itemTextStyle: StyleProp<any> = {
-  paddingLeft: 20,
+  paddingLeft: 8,
   color: ColorMap.light,
-  ...sharedStyles.mediumText,
+  fontSize: 16,
+  lineHeight: 24,
   ...FontSemiBold,
 };
 
-const logoWrapperStyle: StyleProp<any> = {
-  backgroundColor: 'transparent',
+const subTextStyle: StyleProp<any> = {
+  paddingLeft: 8,
+  color: 'rgba(255, 255, 255, 0.45)',
+  fontSize: 12,
+  lineHeight: 20,
+  ...FontMedium,
 };
 
 const CheckIcon = CircleWavyCheck;
 
 export const TokenSelectItem = ({
-  itemName,
+  symbol,
+  chain,
   logoKey,
   subLogoKey,
   isSelected,
   onSelectNetwork,
   defaultItemKey,
-  showSeparator = true,
-  iconSize = 28,
+  iconSize = 40,
 }: Props) => {
   return (
     <TouchableOpacity onPress={onSelectNetwork}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
           {getTokenLogo(logoKey, subLogoKey, iconSize, defaultItemKey)}
-          <Text style={itemTextStyle}>{itemName}</Text>
+          <View>
+            <Text style={itemTextStyle}>{symbol}</Text>
+            <Text style={subTextStyle}>{chain}</Text>
+          </View>
         </View>
 
         {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
       </View>
-
-      {showSeparator && <View style={itemSeparator} />}
     </TouchableOpacity>
   );
 };
