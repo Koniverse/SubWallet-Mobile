@@ -41,7 +41,7 @@ import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { getFreeBalance, makeCrossChainTransfer, makeTransfer } from '../../../messaging';
+import { getMaxTransfer, makeCrossChainTransfer, makeTransfer } from '../../../messaging';
 import { Button, Icon } from 'components/design-system-ui';
 import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
@@ -496,6 +496,17 @@ export const SendFund = ({
     onError,
   ]);
 
+  const onSetMaxTransferable = useCallback(
+    (value: boolean) => {
+      const bnMaxTransfer = new BigN(maxTransfer);
+
+      if (!bnMaxTransfer.isZero()) {
+        setIsTransferAll(value);
+      }
+    },
+    [maxTransfer],
+  );
+
   useEffect(() => {
     if (tokenItems.length) {
       if (!asset) {
@@ -540,29 +551,34 @@ export const SendFund = ({
     let cancel = false;
 
     if (from && asset) {
-      getFreeBalance({
+      getMaxTransfer({
         address: from,
         networkKey: assetRegistry[asset].originChain,
         token: asset,
+        isXcmTransfer: chain !== destChain,
+        destChain,
       })
         .then(balance => {
+          !cancel && setMaxTransfer(balance.value);
+        })
+        .catch(() => {
+          !cancel && setMaxTransfer('0');
+        })
+        .finally(() => {
           if (!cancel) {
-            setMaxTransfer(balance.value);
-
             if (amount) {
               setTimeout(() => {
-                validateAmount(amount, balance.value);
+                validateAmount(amount, maxTransfer);
               }, 100);
             }
           }
-        })
-        .catch(console.error);
+        });
     }
 
     return () => {
       cancel = true;
     };
-  }, [amount, asset, assetRegistry, from, validateAmount]);
+  }, [amount, asset, assetRegistry, assetSettingMap, chain, destChain, from, maxTransfer, validateAmount]);
 
   useEffect(() => {
     const bnTransferAmount = new BigN(amount || '0');
@@ -644,8 +660,8 @@ export const SendFund = ({
                       maxValue={maxTransfer}
                       onChangeValue={_onChangeAmount}
                       decimals={decimals}
-                      onSetMax={setIsTransferAll}
-                      showMaxButton={chain === destChain && assetRegistry[asset]?.assetType === _AssetType.NATIVE}
+                      onSetMax={onSetMaxTransferable}
+                      showMaxButton
                     />
                   </View>
                 </View>
