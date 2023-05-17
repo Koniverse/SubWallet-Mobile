@@ -73,6 +73,7 @@ import {
   RequestInitCronAndSubscription,
   RequestJsonRestoreV2,
   RequestKeyringExportMnemonic,
+  RequestMaxTransferable,
   RequestMigratePassword,
   RequestNftForceUpdate,
   RequestParseEvmContractInput,
@@ -1171,6 +1172,11 @@ export async function cancelSubscription(request: string): Promise<boolean> {
 export async function getFreeBalance(request: RequestFreeBalance): Promise<AmountData> {
   return sendMessage('pri(freeBalance.get)', request);
 }
+
+export async function getMaxTransfer(request: RequestMaxTransferable): Promise<AmountData> {
+  return sendMessage('pri(transfer.getMaxTransferable)', request);
+}
+
 export async function subscribeFreeBalance(
   request: RequestFreeBalance,
   callback: (balance: AmountData) => void,
