@@ -16,10 +16,7 @@ const gradient: GradientProps = {
     locations: [0, 1],
   },
 };
-const innerEyesOptions = {
-  borderRadius: 2,
-  scale: 0.85,
-};
+
 export interface SWQRCodeProps {
   icon?: ImageSourcePropType;
   errorLevel?: 'L' | 'M' | 'Q' | 'H';
@@ -28,6 +25,7 @@ export interface SWQRCodeProps {
   QRSize?: number;
   pieceBorderRadius?: number;
   outerEyesRadius?: number;
+  innerEyesRadius?: number;
   onRefresh?: () => void;
   qrRef?: Ref<Svg> | undefined;
 }
@@ -38,8 +36,9 @@ const QRCode: React.FC<SWQRCodeProps> = ({
   status,
   errorLevel = 'Q',
   value,
-  pieceBorderRadius = 4,
+  pieceBorderRadius = 3,
   outerEyesRadius = 20,
+  innerEyesRadius = 9,
   qrRef,
 }) => {
   const theme = useSubWalletTheme().swThemes;
@@ -54,6 +53,10 @@ const QRCode: React.FC<SWQRCodeProps> = ({
     bottomLeft: {
       borderRadius: [outerEyesRadius, 0, outerEyesRadius, outerEyesRadius],
     },
+  };
+  const innerEyesOptions = {
+    borderRadius: innerEyesRadius,
+    scale: 0.85,
   };
 
   return (
