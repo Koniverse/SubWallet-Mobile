@@ -21,6 +21,9 @@ import {
 import { RootNavigationProps } from 'routes/index';
 import { ActivityIndicator, BackgroundIcon, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   visible: boolean;
@@ -48,6 +51,8 @@ const StakingActionModal = (props: Props) => {
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
   const [selected, setSelected] = useState<StakingAction | undefined>();
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
+  const onClickButton = usePreCheckReadOnly(toastRef, currentAccount?.address);
 
   const unStakeAction = useCallback(() => {
     closeModal();
@@ -210,7 +215,7 @@ const StakingActionModal = (props: Props) => {
             ]}
             key={item.label}
             activeOpacity={0.5}
-            onPress={item.onPress}
+            onPress={onClickButton(item.onPress)}
             disabled={disabled}>
             <BackgroundIcon
               shape={'circle'}

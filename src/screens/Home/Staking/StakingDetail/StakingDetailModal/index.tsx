@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ChainStakingMetadata,
   NominationInfo,
@@ -22,7 +22,7 @@ import {
   _getChainSubstrateAddressPrefix,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { ALL_KEY, deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
+import { ALL_KEY, deviceHeight, HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import { useNavigation } from '@react-navigation/native';
 import { StakingStatusUi } from 'constants/stakingStatusUi';
 import MetaInfo from 'components/MetaInfo';
@@ -32,10 +32,13 @@ import { ScrollView, TouchableHighlight, View } from 'react-native';
 import { Avatar, Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
 import { ArrowCircleUpRight, DotsThree } from 'phosphor-react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import {FontMedium, MarginBottomForSubmitButton} from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { isAccountAll } from 'utils/accountAll';
 import { RootNavigationProps } from 'routes/index';
+import ToastContainer from 'react-native-toast-notifications';
+import Toast from 'react-native-toast-notifications';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   nominatorMetadata: NominatorMetadata;
@@ -69,14 +72,16 @@ const renderAccountItemLabel = (theme: ThemeTypes, address: string, name?: strin
             color: theme.colorWhite,
             ...FontMedium,
             marginLeft: 8,
-            maxWidth: 100,
+            maxWidth: 180,
           }}>
-          {name || toShort(address)}
+          {name || toShort(address, 8, 8)}
         </Typography.Text>
       </View>
     </View>
   );
 };
+
+const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 220;
 
 export const StakingDetailModal = ({
   modalVisible,
@@ -95,7 +100,8 @@ export const StakingDetailModal = ({
   const theme = useSubWalletTheme().swThemes;
   const [seeMore, setSeeMore] = useState<boolean>(false);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
-  const onClickFooterButton = usePreCheckReadOnly(currentAccount?.address);
+  const toastRef = useRef<ToastContainer>(null);
+  const onClickFooterButton = usePreCheckReadOnly(toastRef, currentAccount?.address);
   const chainInfo = useFetchChainInfo(staking.chain);
   const { decimals } = _getChainNativeTokenBasicInfo(chainInfo);
   const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
@@ -498,6 +504,15 @@ export const StakingDetailModal = ({
             </>
           </TouchableHighlight>
         </ScrollView>
+
+        <Toast
+          textStyle={{ textAlign: 'center' }}
+          duration={TOAST_DURATION}
+          normalColor={ColorMap.notification}
+          ref={toastRef}
+          placement={'bottom'}
+          offsetBottom={OFFSET_BOTTOM}
+        />
       </View>
     </SwModal>
   );
