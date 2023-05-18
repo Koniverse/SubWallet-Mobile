@@ -1,6 +1,6 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
@@ -38,8 +38,16 @@ const searchFunction = (items: AccountJson[], searchString: string) => {
 
 export const AccountsScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { accounts } = useSelector((state: RootState) => state.accountState);
+  const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
+
+  const accounts = useMemo(() => {
+    if (fullAccounts.length > 2) {
+      return fullAccounts;
+    }
+
+    return fullAccounts.filter(a => !isAccountAll(a.address));
+  }, [fullAccounts]);
 
   const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
