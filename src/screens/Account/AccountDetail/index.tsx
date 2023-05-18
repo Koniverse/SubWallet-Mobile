@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import { ActivityIndicator, BackgroundIcon, Button, Icon } from 'components/design-system-ui';
+import { ActivityIndicator, BackgroundIcon, Button, Icon, QRCode } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { SubWalletAvatar } from 'components/SubWalletAvatar';
@@ -173,8 +173,15 @@ export const AccountDetail = ({
       rightIcon={X}
       onPressRightIcon={goHome}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
-        <View style={{ paddingVertical: 36 }}>
-          <SubWalletAvatar address={currentAddress} size={76} SubIcon={SubIcon} hasBorder={false} />
+        <View style={{ paddingTop: 36, paddingBottom: 40 }}>
+          <QRCode
+            QRSize={4}
+            value={currentAddress}
+            errorLevel={'Q'}
+            outerEyesRadius={11}
+            innerEyesRadius={4}
+            pieceBorderRadius={2.3}
+          />
         </View>
 
         <EditAccountInputText
@@ -213,7 +220,7 @@ export const AccountDetail = ({
             <Button
               size="xs"
               type="ghost"
-              icon={<Icon phosphorIcon={CopySimple} iconColor={theme['gray-5']} />}
+              icon={<Icon phosphorIcon={CopySimple} iconColor={theme['gray-5']} size={'sm'} />}
               onPress={onCopy}
             />
           }

@@ -165,15 +165,22 @@ const NftDetail = ({
   const originChainInfo = useFetchChainInfo(data.chain as string);
   const ownerUrl = useScanExplorerAddressUrl(originChainInfo?.slug || '', data.owner || '');
 
-  const canSend = useMemo((): boolean => {
+  const ownerAccount = useMemo(() => {
     if (data.owner) {
-      const ownerAccount = findAccountByAddress(accounts, data.owner);
+      return findAccountByAddress(accounts, data.owner);
+    }
+
+    return undefined;
+  }, [accounts, data.owner]);
+
+  const canSend = useMemo((): boolean => {
+    if (ownerAccount) {
       const signMode = getAccountSignMode(ownerAccount);
       return accountCanSign(signMode);
     } else {
       return false;
     }
-  }, [accounts, data.owner]);
+  }, [ownerAccount]);
 
   const show = useCallback(
     (message: string) => {
@@ -252,6 +259,7 @@ const NftDetail = ({
           />
           {!!data.owner && (
             <AddressField
+              name={ownerAccount?.name}
               address={data.owner}
               networkPrefix={_getChainSubstrateAddressPrefix(originChainInfo)}
               label={i18n.nftScreen.nftDetail.ownedBy}

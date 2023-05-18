@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, Switch, View } from 'react-native';
+import { StyleProp, Switch, View, ViewStyle } from 'react-native';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
@@ -16,6 +16,7 @@ interface Props {
   connectionStatus?: _ChainConnectionStatus;
   onPressEditBtn?: () => void;
   showEditButton?: boolean;
+  style?: ViewStyle;
 }
 
 const itemArea: StyleProp<any> = {
@@ -60,9 +61,10 @@ export const NetworkAndTokenToggleItem = ({
   connectionStatus,
   onPressEditBtn,
   showEditButton,
+  style,
 }: Props) => {
   return (
-    <View style={{ marginBottom: 8 }}>
+    <View style={[{ marginBottom: 8 }, style]}>
       <View style={itemArea}>
         <View style={itemBodyArea}>
           <Logo

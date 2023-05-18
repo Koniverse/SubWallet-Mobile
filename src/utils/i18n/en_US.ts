@@ -85,7 +85,7 @@ export const en = {
     sendMessage: 'Send message',
     allAccounts: 'All accounts',
     importJsonFile: 'Import from Polkadot.js',
-    importJsonDescription: 'Please upload the .json file you  exported  from Polkadot.js',
+    importJsonDescription: 'Please upload the .json file you exported from Polkadot.js',
     replaceJsonFile: 'Upload other to replace file',
     message: 'Message',
     input: 'Input',
