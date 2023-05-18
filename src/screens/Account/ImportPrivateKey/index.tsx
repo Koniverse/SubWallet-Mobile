@@ -36,9 +36,6 @@ export const ImportPrivateKey = () => {
       name: i18n.common.privateKey,
       value: '',
       require: true,
-      transformFunc: value => {
-        return value.trim();
-      },
     },
   };
 
@@ -58,7 +55,7 @@ export const ImportPrivateKey = () => {
     setIsBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: formState.data.privateKey,
+      suri: formState.data.privateKey.trim(),
       isAllowed: true,
       types: [EVM_ACCOUNT_TYPE],
     })
@@ -77,22 +74,23 @@ export const ImportPrivateKey = () => {
 
   useEffect(() => {
     let amount = true;
-    const _privateKey = formState.data.privateKey;
 
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current);
     }
     if (amount) {
-      if (_privateKey) {
+      const trimPrivateKey = formState.data.privateKey.trim();
+
+      if (trimPrivateKey) {
         setValidating(true);
         onUpdateErrors('privateKey')([]);
 
         timeOutRef.current = setTimeout(() => {
-          validateMetamaskPrivateKeyV2(_privateKey, [EVM_ACCOUNT_TYPE])
+          validateMetamaskPrivateKeyV2(trimPrivateKey, [EVM_ACCOUNT_TYPE])
             .then(({ autoAddPrefix }) => {
               if (amount) {
                 if (autoAddPrefix) {
-                  setAutoCorrect(`0x${_privateKey}`);
+                  setAutoCorrect(`0x${trimPrivateKey}`);
                 }
 
                 onUpdateErrors('privateKey')([]);

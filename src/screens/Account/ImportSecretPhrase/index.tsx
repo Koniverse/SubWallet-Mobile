@@ -56,7 +56,7 @@ export const ImportSecretPhrase = () => {
     setBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: formState.data.seed,
+      suri: formState.data.seed.trim(),
       isAllowed: true,
       types: keyTypes,
     })
@@ -80,12 +80,14 @@ export const ImportSecretPhrase = () => {
     }
 
     if (amount) {
-      if (formState.data.seed) {
+      const trimSeed = formState.data.seed.trim();
+
+      if (trimSeed) {
         setValidating(true);
         onUpdateErrors('seed')([]);
 
         timeOutRef.current = setTimeout(() => {
-          validateSeedV2(formState.data.seed, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
+          validateSeedV2(trimSeed, [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE])
             .then(() => {
               if (amount) {
                 onUpdateErrors('seed')([]);
@@ -108,7 +110,7 @@ export const ImportSecretPhrase = () => {
     return () => {
       amount = false;
     };
-  }, [formState.data.seed, onUpdateErrors]);
+  }, [onUpdateErrors, formState.data.seed]);
 
   useEffect(() => {
     return navigation.addListener('transitionEnd', () => {
