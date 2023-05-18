@@ -1,30 +1,15 @@
 import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { WebRunnerContext, WebRunnerState, WebRunnerStatus } from '../contexts';
 import WebView from 'react-native-webview';
-import { restartAllHandlers, setupWebview } from 'messaging/index';
+import { setupWebview } from 'messaging/index';
 import { WebRunner } from 'providers/WebRunnerProvider/WebRunner';
 import EventEmitter from 'eventemitter3';
-import { DelayBackgroundService } from 'types/background';
 import NetInfo from '@react-native-community/netinfo';
 import { AppState } from 'react-native';
 
 interface WebRunnerProviderProps {
   children?: React.ReactNode;
   webRef?: MutableRefObject<WebView | undefined>;
-}
-
-const backgroundServiceTimeoutMap: Record<DelayBackgroundService, NodeJS.Timeout | undefined> = {
-  nft: undefined,
-  staking: undefined,
-  crowdloan: undefined,
-};
-
-function clearBackgroundServiceTimeout(service: DelayBackgroundService) {
-  clearTimeout(backgroundServiceTimeoutMap[service]);
-}
-
-function setBackgroundServiceTimeout(service: DelayBackgroundService, timeout: NodeJS.Timeout) {
-  backgroundServiceTimeoutMap[service] = timeout;
 }
 
 const eventEmitter = new EventEmitter();
@@ -46,7 +31,6 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
   const reload = useCallback(() => {
     console.log('Reload web runner');
     eventEmitter.emit('update-status', 'reloading');
-    restartAllHandlers();
     webRef?.current?.reload();
   }, [webRef]);
 
@@ -90,16 +74,8 @@ export const WebRunnerProvider = ({ children }: WebRunnerProviderProps): React.R
         eventEmitter,
         reload,
         isNetConnected,
-        clearBackgroundServiceTimeout,
-        setBackgroundServiceTimeout,
       }}>
-      <WebRunner
-        webRunnerRef={webRef}
-        webRunnerStateRef={webStateRef}
-        webRunnerEventEmitter={eventEmitter}
-        clearBackgroundServiceTimeout={clearBackgroundServiceTimeout}
-        setBackgroundServiceTimeout={setBackgroundServiceTimeout}
-      />
+      <WebRunner webRunnerRef={webRef} webRunnerStateRef={webStateRef} webRunnerEventEmitter={eventEmitter} />
       {children}
     </WebRunnerContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
@@ -9,11 +9,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
-import { restartSubscriptionServices, startSubscriptionServices } from 'messaging/index';
-import { WebRunnerContext } from 'providers/contexts';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { useIsFocused } from '@react-navigation/native';
+import { restartSubscriptionServices } from 'messaging/index';
 import { Header } from 'components/Header';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -44,11 +40,6 @@ export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   const [isRefresh, refresh] = useRefresh();
-  const { clearBackgroundServiceTimeout } = useContext(WebRunnerContext);
-  const isCrowdloanServiceActive = useSelector(
-    (state: RootState) => state.backgroundService.activeState.subscription.crowdloan,
-  );
-  const isFocused = useIsFocused();
 
   const doFilterOptions = useCallback((itemList: CrowdloanItemType[], searchKeyword: string) => {
     const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
@@ -73,13 +64,6 @@ export const CrowdloansScreen = () => {
 
     return result;
   }
-
-  useEffect(() => {
-    if (isFocused && !isCrowdloanServiceActive) {
-      clearBackgroundServiceTimeout('crowdloan');
-      startSubscriptionServices(['crowdloan']).catch(e => console.log('Start crowdloan service error:', e));
-    }
-  }, [clearBackgroundServiceTimeout, isFocused, isCrowdloanServiceActive]);
 
   return (
     <ScreenContainer backgroundColor={theme.colorBgDefault}>

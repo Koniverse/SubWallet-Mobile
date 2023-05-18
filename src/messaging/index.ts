@@ -170,6 +170,12 @@ let webviewRef: RefObject<WebView | undefined>;
 let webviewEvents: EventEmitter;
 let status: WebRunnerStatus = 'init';
 
+function isSubscription(key: keyof RequestSignatures): boolean {
+  const tuple = ({} as RequestSignatures)[key];
+
+  return Array.isArray(tuple) && tuple.length === 3;
+}
+
 // Support restart web-runner
 // @ts-ignore
 const restartHandlers: Record<string, { id; message; request; origin }> = {};
@@ -319,11 +325,20 @@ export function resetHandlerMaps(): void {
     delete handlers[id];
     delete handlerTypeMap[id];
     delete handlerMessageMap[id];
+    delete restartHandlers[id];
   });
 }
 
 export function restartAllHandlers(): void {
   const canRestartList = Object.values(restartHandlers).filter(h => !!handlerTypeMap[h.id]);
+  const removeList = Object.values(restartHandlers).filter(h => !handlerTypeMap[h.id]);
+
+  removeList.forEach(({ id }) => {
+    delete handlers[id];
+    delete handlerTypeMap[id];
+    delete handlerMessageMap[id];
+    delete restartHandlers[id];
+  });
 
   const numberHandlers = Object.keys(handlerTypeMap).length;
   console.log(`Restart ${canRestartList.length}/${numberHandlers} handlers`);
@@ -361,7 +376,7 @@ export function sendMessage<TMessageType extends MessageTypes>(
 
     handlers[id] = { reject, resolve, subscriber };
 
-    postMessage({ id, message, request: request || {}, origin: undefined }, !!subscriber);
+    postMessage({ id, message, request: request || {}, origin: undefined }, isSubscription(message));
   });
 }
 
@@ -518,8 +533,8 @@ export async function saveCurrentAccountAddress(
   return sendMessage('pri(currentAccount.saveAddress)', data, callback);
 }
 
-export async function toggleBalancesVisibility(callback: (data: RequestSettingsType) => void): Promise<boolean> {
-  return sendMessage('pri(settings.changeBalancesVisibility)', null, callback);
+export async function toggleBalancesVisibility(): Promise<boolean> {
+  return sendMessage('pri(settings.changeBalancesVisibility)', null, () => {});
 }
 
 export async function saveAccountAllLogo(

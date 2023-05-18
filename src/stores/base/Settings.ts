@@ -46,6 +46,12 @@ const settingsSlice = createSlice({
         reduxStatus: ReduxStatus.READY,
       };
     },
+    updateToggleBalance(state) {
+      return {
+        ...state,
+        isShowBalance: !state.isShowBalance,
+      };
+    },
     updateAppSettings(state, action: PayloadAction<any>) {
       const payload = action.payload;
 
@@ -104,5 +110,5 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { updateAppSettings, updateAuthUrls, updateUiSettings } = settingsSlice.actions;
+export const { updateAppSettings, updateAuthUrls, updateUiSettings, updateToggleBalance } = settingsSlice.actions;
 export default settingsSlice.reducer;

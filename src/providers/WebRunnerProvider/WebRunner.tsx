@@ -6,18 +6,10 @@ import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
 import StaticServer from 'react-native-static-server';
-import {
-  restartAllHandlers,
-  initCronAndSubscription,
-  listenMessage,
-  startCronAndSubscriptionServices,
-  startCronServices,
-  startSubscriptionServices,
-} from 'messaging/index';
+import { listenMessage, restartAllHandlers } from 'messaging/index';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
-import { DelayBackgroundService } from 'types/background';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
@@ -54,55 +46,6 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
-function setupBackgroundService(
-  clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void,
-  setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void,
-) {
-  initCronAndSubscription({
-    subscription: {
-      activeServices: ['chainRegistry', 'balance'],
-    },
-    cron: {
-      intervalMap: {
-        recoverApiMap: 20000,
-        checkApiMapStatus: 5000,
-        refreshHistory: 60000,
-        refreshNft: 60000,
-        refreshPrice: 30000,
-        refreshStakeUnlockingInfo: 60000,
-        refreshStakingReward: 60000,
-      },
-      activeServices: ['price', 'history', 'recoverApi', 'checkApiStatus'],
-    },
-  }).catch(e => {
-    console.log('Init background services error', e);
-  });
-
-  clearBackgroundServiceTimeout('crowdloan');
-  clearBackgroundServiceTimeout('staking');
-  clearBackgroundServiceTimeout('nft');
-  setBackgroundServiceTimeout(
-    'crowdloan',
-    setTimeout(() => {
-      startSubscriptionServices(['crowdloan']).catch(e => console.log('Init crowdloan service error', e));
-    }, 2000),
-  );
-  setBackgroundServiceTimeout(
-    'staking',
-    setTimeout(() => {
-      startCronAndSubscriptionServices({ cronServices: ['staking'], subscriptionServices: ['staking'] }).catch(e =>
-        console.log('Init staking services error', e),
-      );
-    }, 4000),
-  );
-  setBackgroundServiceTimeout(
-    'nft',
-    setTimeout(() => {
-      startCronServices(['nft']).catch(e => console.log('Init nft service error', e));
-    }, 6000),
-  );
-}
-
 function isWebRunnerAlive(eventData: NativeSyntheticEvent<WebViewMessage>): boolean {
   try {
     const data = JSON.parse(eventData.nativeEvent.data);
@@ -130,6 +73,7 @@ class WebRunnerHandler {
   pingInterval?: NodeJS.Timer;
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
+  shouldReloadHandler: boolean = false;
 
   update(globalState: WebRunnerGlobalState, dispatch: React.Dispatch<WebRunnerControlAction>) {
     this.state = globalState;
@@ -153,8 +97,7 @@ class WebRunnerHandler {
   reload() {
     this.webRef?.current?.reload();
     this.eventEmitter?.emit('update-status', 'reloading');
-    restartAllHandlers(); // Restart handlers with existed ids
-    console.warn('Reload the web-runner');
+    console.debug('Reload the web-runner');
   }
 
   pingCheck(timeCheck: number = 999, timeout = 9999, maxRetry = 3) {
@@ -184,7 +127,7 @@ class WebRunnerHandler {
     check();
   }
 
-  startPing(pingInterval: number = 12000, timeCheck: number = 999, pingTimeout: number = 9999) {
+  startPing(pingInterval: number = 30000, timeCheck: number = 3000, pingTimeout: number = 15000) {
     this.stopPing();
     this.lastTimeResponse = undefined;
     this.pingInterval && clearInterval(this.pingInterval);
@@ -241,11 +184,7 @@ class WebRunnerHandler {
     this.dispatch && this.dispatch({ type: 'rerender' });
   }
 
-  onRunnerMessage(
-    eventData: NativeSyntheticEvent<WebViewMessage>,
-    clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void,
-    setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void,
-  ) {
+  onRunnerMessage(eventData: NativeSyntheticEvent<WebViewMessage>) {
     if (isWebRunnerAlive(eventData)) {
       this.clearOutOfResponseTimeTimeout();
 
@@ -270,9 +209,13 @@ class WebRunnerHandler {
 
         this.runnerState.status = webViewStatus;
         this.eventEmitter?.emit('update-status', webViewStatus);
+
         console.debug(`### Web Runner Status: ${webViewStatus}`);
         if (webViewStatus === 'crypto_ready') {
-          setupBackgroundService(clearBackgroundServiceTimeout, setBackgroundServiceTimeout);
+          if (this.shouldReloadHandler) {
+            restartAllHandlers();
+          }
+          this.shouldReloadHandler = true;
           this.startPing();
         } else {
           this.stopPing();
@@ -340,14 +283,14 @@ class WebRunnerHandler {
           this.reload();
         } else if (this.runnerState.status === 'crypto_ready') {
           this.ping();
-          this.pingCheck(999, 6666, 0);
+          this.pingCheck(1000, 9000, 0);
           this.startPing();
         } else {
           setTimeout(() => {
             this.ping();
-            this.pingCheck(999, 6666, 0);
+            this.pingCheck(3000, 15000, 0);
             this.startPing();
-          }, 9999);
+          }, 15000);
         }
       } else {
         this.lastActiveTime = now;
@@ -413,51 +356,41 @@ interface Props {
   webRunnerRef: React.RefObject<WebView<{}>>;
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
-  clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void;
-  setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void;
 }
 
-export const WebRunner = React.memo(
-  ({
-    webRunnerRef,
-    webRunnerStateRef,
-    webRunnerEventEmitter,
-    clearBackgroundServiceTimeout,
-    setBackgroundServiceTimeout,
-  }: Props) => {
-    const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
-      injectScript: getJsInjectContent(),
-      runnerRef: webRunnerRef,
-      stateRef: webRunnerStateRef,
-      eventEmitter: webRunnerEventEmitter,
-    });
+export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
+  const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
+    injectScript: getJsInjectContent(),
+    runnerRef: webRunnerRef,
+    stateRef: webRunnerStateRef,
+    eventEmitter: webRunnerEventEmitter,
+  });
 
-    webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
-    webRunnerHandler.active();
+  webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
+  webRunnerHandler.active();
 
-    const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
-      webRunnerHandler.onRunnerMessage(eventData, clearBackgroundServiceTimeout, setBackgroundServiceTimeout);
-    };
+  const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+    webRunnerHandler.onRunnerMessage(eventData);
+  };
 
-    return (
-      <View style={{ height: 0 }}>
-        {runnerGlobalState.uri && (
-          <WebView
-            ref={webRunnerRef}
-            source={{ uri: runnerGlobalState.uri }}
-            onMessage={onMessage}
-            originWhitelist={['*']}
-            injectedJavaScript={runnerGlobalState.injectScript}
-            onError={e => console.debug('### WebRunner error', e)}
-            onHttpError={e => console.debug('### WebRunner HttpError', e)}
-            javaScriptEnabled={true}
-            allowFileAccess={true}
-            allowUniversalAccessFromFileURLs={true}
-            allowFileAccessFromFileURLs={true}
-            domStorageEnabled={true}
-          />
-        )}
-      </View>
-    );
-  },
-);
+  return (
+    <View style={{ height: 0 }}>
+      {runnerGlobalState.uri && (
+        <WebView
+          ref={webRunnerRef}
+          source={{ uri: runnerGlobalState.uri }}
+          onMessage={onMessage}
+          originWhitelist={['*']}
+          injectedJavaScript={runnerGlobalState.injectScript}
+          onError={e => console.debug('### WebRunner error', e)}
+          onHttpError={e => console.debug('### WebRunner HttpError', e)}
+          javaScriptEnabled={true}
+          allowFileAccess={true}
+          allowUniversalAccessFromFileURLs={true}
+          allowFileAccessFromFileURLs={true}
+          domStorageEnabled={true}
+        />
+      )}
+    </View>
+  );
+});

@@ -21,14 +21,10 @@ export interface WebviewElement {
   isReady?: boolean;
   isNetConnected?: boolean;
   eventEmitter?: EventEmitter;
-  clearBackgroundServiceTimeout: (service: DelayBackgroundService) => void;
-  setBackgroundServiceTimeout: (service: DelayBackgroundService, timeout: NodeJS.Timeout) => void;
 }
 
 const WebRunnerContext = React.createContext<WebviewElement>({
   webState: {},
-  clearBackgroundServiceTimeout: () => {},
-  setBackgroundServiceTimeout: () => {},
 });
 
 const QrScannerContext = React.createContext<{

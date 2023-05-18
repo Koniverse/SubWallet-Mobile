@@ -39,6 +39,10 @@ import { buildHierarchy } from 'utils/buildHierarchy';
 
 // Setup redux stores
 
+function voidFn() {
+  // do nothing
+}
+
 // Base
 // AccountState store
 export const updateAccountData = (data: AccountsWithCurrentAddress) => {
@@ -106,7 +110,7 @@ export const updateAuthorizeRequests = (data: AuthorizeRequest[]) => {
 export const subscribeAuthorizeRequests = lazySubscribeMessage(
   'pri(authorize.requestsV2)',
   null,
-  console.debug,
+  voidFn,
   updateAuthorizeRequests,
 );
 
@@ -120,7 +124,7 @@ export const updateMetadataRequests = (data: MetadataRequest[]) => {
 export const subscribeMetadataRequests = lazySubscribeMessage(
   'pri(metadata.requests)',
   null,
-  console.debug,
+  voidFn,
   updateMetadataRequests,
 );
 
@@ -134,7 +138,7 @@ export const updateSigningRequests = (data: SigningRequest[]) => {
 export const subscribeSigningRequests = lazySubscribeMessage(
   'pri(signing.requests)',
   null,
-  console.debug,
+  voidFn,
   updateSigningRequests,
 );
 

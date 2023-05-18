@@ -11,8 +11,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toggleBalancesVisibility } from 'messaging/index';
-import { updateUiSettings } from 'stores/utils';
 import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
+import { updateToggleBalance } from 'stores/base/Settings';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -54,9 +54,8 @@ export const TokenGroupsUpperBlock = ({
   const theme = useSubWalletTheme().swThemes;
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const _toggleBalances = () => {
-    toggleBalancesVisibility(v => {
-      updateUiSettings(v);
-    });
+    updateToggleBalance();
+    toggleBalancesVisibility().catch(console.log);
   };
 
   return (
