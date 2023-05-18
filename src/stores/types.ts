@@ -52,7 +52,7 @@ export type AppStateSlice = {
 };
 
 export type AppVersionSlice = {
-  buildNumber: string;
+  buildNumber: number;
 };
 
 export type SelectedActionType = 'createAcc' | 'importAcc' | 'attachAcc' | 'migratePassword';

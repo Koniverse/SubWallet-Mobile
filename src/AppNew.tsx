@@ -24,6 +24,9 @@ import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
 import { keyringLock } from 'messaging/index';
+import { updateShowZeroBalanceState } from 'stores/utils';
+import { setBuildNumber } from 'stores/AppVersion';
+import { getBuildNumber } from 'react-native-device-info';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -93,6 +96,7 @@ export const AppNew = () => {
 
   const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { buildNumber } = useSelector((state: RootState) => state.appVersion);
   const { isLocked, lock } = useAppLock();
 
   const isCryptoReady = useCryptoReady();
@@ -123,6 +127,10 @@ export const AppNew = () => {
   }, []);
 
   useEffect(() => {
+    if (buildNumber === 1) {
+      updateShowZeroBalanceState(true);
+      setBuildNumber(getBuildNumber());
+    }
     if (hasMasterPassword) {
       keyringLock().catch((e: Error) => console.log(e));
     }

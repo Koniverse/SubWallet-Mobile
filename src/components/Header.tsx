@@ -1,4 +1,4 @@
-import { List, QrCode } from 'phosphor-react-native';
+import { QrCode } from 'phosphor-react-native';
 import React, { useCallback } from 'react';
 import { StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
@@ -9,6 +9,7 @@ import AccountSelectField from 'components/common/Account/AccountSelectField';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SVGImages } from 'assets/index';
 
 export interface HeaderProps {}
 
@@ -41,7 +42,7 @@ export const Header = () => {
           style={{ marginLeft: -8 }}
           type={'ghost'}
           size={'xs'}
-          icon={<Icon phosphorIcon={List} size={'md'} />}
+          icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
             navigation.navigate('Settings');
           }}
