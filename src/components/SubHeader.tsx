@@ -20,6 +20,7 @@ export interface SubHeaderProps {
   backgroundColor?: string;
   showLeftBtn?: boolean;
   rightButtonTitle?: string;
+  icon?: React.ReactNode;
 }
 
 function getSubHeaderWrapperStyle(backgroundColor: string = '#0C0C0C'): StyleProp<any> {
@@ -66,6 +67,7 @@ export const SubHeader = ({
   rightButtonTitle = '',
   rightIconColor,
   showRightBtn,
+  icon,
 }: SubHeaderProps) => {
   const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
 
@@ -95,7 +97,9 @@ export const SubHeader = ({
             size={'xs'}
             type={'ghost'}
             icon={
-              <Icon phosphorIcon={CaretLeft} size={'md'} iconColor={disabled ? ColorMap.disabled : ColorMap.light} />
+              icon || (
+                <Icon phosphorIcon={CaretLeft} size={'md'} iconColor={disabled ? ColorMap.disabled : ColorMap.light} />
+              )
             }
           />
         </View>

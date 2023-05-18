@@ -31,7 +31,6 @@ const FILTER_OPTIONS = [
 ];
 
 const renderEmpty = (val?: string) => {
-  console.log('val', val);
   if (val) {
     return <EmptyList title={'No staking'} icon={Trophy} message={'Your staking accounts will appear here!'} />;
   } else {

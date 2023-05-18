@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   TelegramLogo,
   TwitterLogo,
+  X,
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
@@ -41,6 +42,7 @@ import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { SVGImages } from 'assets/index';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -193,7 +195,12 @@ export const Settings = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.settings} navigation={navigation}>
+    <SubScreenContainer
+      title={i18n.title.settings}
+      navigation={navigation}
+      icon={<SVGImages.Logo width={24} height={24} />}
+      rightIcon={X}
+      onPressRightIcon={() => navigation.goBack()}>
       <>
         <ScrollView
           style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}
