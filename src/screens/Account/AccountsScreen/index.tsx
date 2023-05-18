@@ -29,10 +29,10 @@ const renderListEmptyComponent = () => {
 };
 
 const searchFunction = (items: AccountJson[], searchString: string) => {
-  return items.filter(account =>
-    account.name
-      ? account.name.toLowerCase().includes(searchString.toLowerCase())
-      : account.address.toLowerCase().includes(searchString.toLowerCase()),
+  return items.filter(
+    account =>
+      account.name?.toLowerCase().includes(searchString.toLowerCase()) ||
+      account.address.toLowerCase().includes(searchString.toLowerCase()),
   );
 };
 

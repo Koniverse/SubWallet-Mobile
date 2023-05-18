@@ -13,6 +13,7 @@ type ActionItemType = {
   icon: React.ElementType<IconProps>;
   label: string;
   onClickBtn: () => void;
+  disabled?: boolean;
 };
 
 export interface AccountActionSelectModalProps {
@@ -40,6 +41,7 @@ const AccountActionSelectModal = ({
             backgroundColor={item.backgroundColor}
             icon={item.icon}
             onPress={item.onClickBtn}
+            disabled={item.disabled}
           />
         ))}
       </View>

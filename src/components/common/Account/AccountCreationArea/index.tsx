@@ -42,7 +42,7 @@ export const AccountCreationArea = ({
   onChangeAttachAccountModalVisible,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
   const [selectAccountDeriveVisible, setSelectAccountDeriveVisible] = useState<boolean>(false);
 
@@ -92,13 +92,14 @@ export const AccountCreationArea = ({
         backgroundColor: '#E6478E',
         icon: ShareNetwork,
         label: 'Derive from another account',
+        disabled: !accounts.length,
         onClickBtn: () => {
           onChangeCreateAccountModalVisible(false);
           setTimeout(() => setSelectAccountDeriveVisible(true), HIDE_MODAL_DURATION);
         },
       },
     ];
-  }, [allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible]);
+  }, [accounts.length, allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible]);
 
   const importAccountActions = useMemo(
     () => [
