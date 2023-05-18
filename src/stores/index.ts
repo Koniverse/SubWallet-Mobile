@@ -5,7 +5,6 @@ import appVersionReducer from './AppVersion';
 import browserReducer from './Browser';
 import backgroundServiceReducer from './BackgroundService';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import AccountStateReducer from './base/AccountState';
 import RequestStateReducer from './base/RequestState';
@@ -21,12 +20,13 @@ import StakingReducer from './feature/Staking';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import LogoMap from 'stores/base/LogoMap';
+import { reduxStorage } from 'utils/storage';
 
 const persistConfig = {
   key: 'root',
   version: 1,
-  storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'browser', 'settings'],
+  storage: reduxStorage,
+  whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion'],
 };
 
 const rootReducer = combineReducers({
@@ -36,7 +36,7 @@ const rootReducer = combineReducers({
   browser: browserReducer,
   backgroundService: backgroundServiceReducer,
   passwordModalState: PasswordModalReducer,
-  // appVersion: appVersionReducer,
+  appVersion: appVersionReducer,
 
   // // Feature
   transactionHistory: TransactionHistoryReducer,
