@@ -36,8 +36,8 @@ const confirmationPopupWrapper: StyleProp<any> = {
   maxHeight: '100%',
   width: '100%',
   backgroundColor: ColorMap.dark1,
-  borderTopLeftRadius: 15,
-  borderTopRightRadius: 15,
+  borderTopLeftRadius: 32,
+  borderTopRightRadius: 32,
   alignItems: 'center',
   paddingTop: 8,
 };

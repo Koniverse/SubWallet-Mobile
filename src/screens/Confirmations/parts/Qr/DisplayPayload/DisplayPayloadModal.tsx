@@ -7,7 +7,7 @@ import useCheckCamera from 'hooks/common/useCheckCamera';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { QrCode } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
@@ -30,16 +30,18 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
 
   return (
     <SwFullSizeModal modalVisible={visible}>
-      <View style={styles.container}>
-        <SubHeader title={i18n.common.confirm} onPressBack={onClose} />
-        <View style={styles.body}>{children}</View>
-        <Button
-          style={styles.footer}
-          onPress={checkCamera(onOpenScan)}
-          icon={<Icon phosphorIcon={QrCode} weight="fill" />}>
-          Scan QR
-        </Button>
-      </View>
+      <SafeAreaView style={{ flex: 1, width: '100%' }}>
+        <View style={styles.container}>
+          <SubHeader title={i18n.common.confirm} onPressBack={onClose} />
+          <View style={styles.body}>{children}</View>
+          <Button
+            style={styles.footer}
+            onPress={checkCamera(onOpenScan)}
+            icon={<Icon phosphorIcon={QrCode} weight="fill" />}>
+            Scan QR
+          </Button>
+        </View>
+      </SafeAreaView>
     </SwFullSizeModal>
   );
 };
