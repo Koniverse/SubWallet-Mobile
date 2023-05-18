@@ -9,7 +9,7 @@ const appVersion = createSlice({
   initialState,
   name: 'appVersion',
   reducers: {
-    setBuildNumber(state, action: PayloadAction<string>) {
+    setBuildNumber(state, action: PayloadAction<number>) {
       state.buildNumber = action.payload;
     },
   },
