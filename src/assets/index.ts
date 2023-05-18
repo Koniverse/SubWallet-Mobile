@@ -7,6 +7,7 @@ const SignalSplashIcon = React.lazy(() => import('./signal-splash.svg'));
 const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
 const NftIcon = React.lazy(() => import('./logo-nft.svg'));
 const Logo = React.lazy(() => import('./subwallet-logo.svg'));
+const MenuBarLogo = React.lazy(() => import('./menu-bar.svg'));
 
 export const SVGImages = {
   Logo,
@@ -15,6 +16,7 @@ export const SVGImages = {
   NftIcon: NftIcon,
   SignalIcon: SignalIcon,
   SignalSplashIcon: SignalSplashIcon,
+  MenuBarLogo: MenuBarLogo,
 };
 
 export const Images = {
