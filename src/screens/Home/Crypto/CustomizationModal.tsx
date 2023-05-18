@@ -110,6 +110,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         itemName={item.name}
         itemKey={item.slug}
         connectionStatus={item.connectionStatus}
+        style={{ paddingRight: theme.sizeXS }}
         // @ts-ignore
         isEnabled={
           Object.keys(pendingChainMap).includes(item.slug) ? pendingChainMap[item.slug] : chainInfoMap[item.slug].active
