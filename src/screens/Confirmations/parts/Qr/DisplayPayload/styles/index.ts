@@ -11,7 +11,8 @@ export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     container: {
       display: 'flex',
-      flexDirection: 'column',
+      width: '100%',
+      flex: 1,
     },
     body: {
       flex: 1,
@@ -22,7 +23,7 @@ export default (theme: ThemeTypes) => {
     },
     footer: {
       marginTop: theme.margin,
-      marginBottom: theme.marginXL,
+      marginBottom: theme.margin,
       marginHorizontal: theme.margin,
     },
   });
