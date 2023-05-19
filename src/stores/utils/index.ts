@@ -4,7 +4,7 @@
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
-  AccountsWithCurrentAddress,
+  AccountsWithCurrentAddress, AllLogoMap,
   AssetSetting,
   BalanceJson,
   ChainStakingMetadata,
@@ -194,7 +194,7 @@ export const subscribeUiSettings = lazySubscribeMessage(
   updateUiSettings,
 );
 
-export const updateLogoMaps = (data: UiSettings) => {
+export const updateLogoMaps = (data: AllLogoMap) => {
   store.dispatch({ type: 'logoMaps/updateLogoMaps', payload: data });
 };
 

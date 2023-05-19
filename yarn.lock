@@ -4579,7 +4579,7 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.40.0.tgz#2223409c496271df786c1ca8496898896595441e"
   integrity sha512-QuU2nBql3J4KCnOWtWDw4n1K4JU0T79j54ZZvm/9nhsX6AIar13FyhsaBfs6QkJ2ixTQAnd7TocJIoJRWbqMZA==
 
-"@subwallet/chain-list@0.1.3", "@subwallet/chain-list@^0.1.2":
+"@subwallet/chain-list@0.1.4", "@subwallet/chain-list@^0.1.2", "@subwallet/chain-list@^0.1.4":
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.1.4.tgz#c3daf9e6db0c5eace216e530290db0a986f0f6bb"
   integrity sha512-7324ssoZT8uJ9TbkiwN8+9uJC2TcUU5Nyf185YYO/xkDKMC7QxIAS8CWyNy26XtIkaYUGRbkirmAbhOLsX/3Fg==
