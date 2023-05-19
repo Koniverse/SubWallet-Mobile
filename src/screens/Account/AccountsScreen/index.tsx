@@ -9,7 +9,7 @@ import { FileArrowDown, MagnifyingGlass, PlusCircle, Swatches } from 'phosphor-r
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { saveCurrentAccountAddress, triggerAccountsSubscription } from 'messaging/index';
+import { saveCurrentAccountAddress } from 'messaging/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { findAccountByAddress } from 'utils/index';
 import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';

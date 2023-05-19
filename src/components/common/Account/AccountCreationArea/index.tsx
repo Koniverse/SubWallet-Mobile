@@ -12,7 +12,7 @@ import {
   Swatches,
   Wallet,
 } from 'phosphor-react-native';
-import { HIDE_MODAL_DURATION } from 'constants/index';
+import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -21,6 +21,7 @@ import { RootNavigationProps } from 'routes/index';
 import ToastContainer from 'react-native-toast-notifications';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import { KeypairType } from '@polkadot/util-crypto/types';
+import { canDerive } from '@subwallet/extension-base/utils';
 
 interface Props {
   createAccountModalVisible: boolean;
@@ -45,6 +46,17 @@ export const AccountCreationArea = ({
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
   const [selectAccountDeriveVisible, setSelectAccountDeriveVisible] = useState<boolean>(false);
+
+  const canDerivedAccounts = useMemo(
+    () =>
+      accounts
+        .filter(({ isExternal }) => !isExternal)
+        .filter(
+          ({ isMasterAccount, type }) =>
+            canDerive(type) && (type !== EVM_ACCOUNT_TYPE || (isMasterAccount && type === EVM_ACCOUNT_TYPE)),
+        ),
+    [accounts],
+  );
 
   const toastRef = useRef<ToastContainer>(null);
   const show = useCallback((text: string) => {
@@ -92,14 +104,20 @@ export const AccountCreationArea = ({
         backgroundColor: '#E6478E',
         icon: ShareNetwork,
         label: 'Derive from another account',
-        disabled: !accounts.length,
+        disabled: !canDerivedAccounts.length,
         onClickBtn: () => {
           onChangeCreateAccountModalVisible(false);
           setTimeout(() => setSelectAccountDeriveVisible(true), HIDE_MODAL_DURATION);
         },
       },
     ];
-  }, [accounts.length, allowToShowSelectType, hasMasterPassword, navigation, onChangeCreateAccountModalVisible]);
+  }, [
+    allowToShowSelectType,
+    canDerivedAccounts.length,
+    hasMasterPassword,
+    navigation,
+    onChangeCreateAccountModalVisible,
+  ]);
 
   const importAccountActions = useMemo(
     () => [

@@ -101,7 +101,7 @@ export const Withdraw = ({
 
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
 
   const onSubmit = useCallback(() => {
     setLoading(true);
