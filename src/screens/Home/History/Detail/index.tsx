@@ -1,4 +1,3 @@
-import { getTransactionLink } from '@subwallet/extension-base/services/transaction-service/utils';
 import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -12,6 +11,7 @@ import { ArrowSquareUpRight } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 
 type Props = {
   onChangeModalVisible: () => void;
@@ -43,7 +43,7 @@ export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }:
 
     const chainInfo = chainInfoMap[data.chain];
     const link =
-      chainInfo && data.extrinsicHash && data.extrinsicHash !== '' && getTransactionLink(chainInfo, data.extrinsicHash);
+      data.extrinsicHash && data.extrinsicHash !== '' && getExplorerLink(chainInfo, data.extrinsicHash, 'tx');
 
     if (link) {
       return (
