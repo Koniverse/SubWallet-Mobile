@@ -24,6 +24,7 @@ interface Props {
   title?: string;
   defaultValue?: string;
   acceptDefaultValue?: boolean;
+  selectedItem?: string;
 }
 
 const filterFunction = (items: TokenItemType[], searchString: string) => {
@@ -49,6 +50,7 @@ export const TokenSelector = ({
   acceptDefaultValue,
   title = 'Select token',
   defaultValue,
+  selectedItem,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   useEffect(() => {
@@ -79,12 +81,12 @@ export const TokenSelector = ({
           chain={`${chainInfoMap[originChain]?.name || ''}`}
           logoKey={symbol.toLowerCase()}
           subLogoKey={originChain}
-          isSelected={false}
+          isSelected={item.slug === selectedItem}
           onSelectNetwork={() => onSelectItem(item)}
         />
       );
     },
-    [chainInfoMap, onSelectItem],
+    [chainInfoMap, onSelectItem, selectedItem],
   );
 
   return (

@@ -455,6 +455,7 @@ export const Stake = ({
             }}
             items={accountSelectorList}
             onCancel={() => setAccountSelectModalVisible(false)}
+            selectedItem={from}
           />
 
           <TokenSelector
@@ -464,6 +465,7 @@ export const Stake = ({
             acceptDefaultValue
             onCancel={() => setTokenSelectModalVisible(false)}
             onSelectItem={onSelectToken}
+            selectedItem={asset}
           />
         </ScrollView>
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>

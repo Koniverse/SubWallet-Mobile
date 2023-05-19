@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { ListRenderItemInfo } from 'react-native';
-import { Warning } from 'components/Warning';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -16,8 +15,7 @@ interface Props {
   onSelectItem: (item: ChainInfo) => void;
   items: ChainInfo[];
   title?: string;
-  acceptDefaultValue?: boolean;
-  defaultValue?: string;
+  selectedItem?: string;
 }
 
 const filterFunction = (items: ChainInfo[], searchString: string) => {
@@ -35,7 +33,14 @@ const renderListEmptyComponent = () => {
   );
 };
 
-export const ChainSelector = ({ modalVisible, onCancel, onSelectItem, items, title = i18n.title.chain }: Props) => {
+export const ChainSelector = ({
+  modalVisible,
+  onCancel,
+  onSelectItem,
+  items,
+  selectedItem,
+  title = i18n.title.chain,
+}: Props) => {
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ChainInfo>) => {
       return (
@@ -45,10 +50,11 @@ export const ChainSelector = ({ modalVisible, onCancel, onSelectItem, items, tit
           onSelectNetwork={() => onSelectItem(item)}
           showSeparator={false}
           iconSize={28}
+          isSelected={item.slug === selectedItem}
         />
       );
     },
-    [onSelectItem],
+    [onSelectItem, selectedItem],
   );
 
   return (

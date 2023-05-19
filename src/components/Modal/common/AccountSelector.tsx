@@ -6,8 +6,8 @@ import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
-import { Avatar, Typography } from 'components/design-system-ui';
+import { CheckCircle, MagnifyingGlass } from 'phosphor-react-native';
+import { Avatar, Icon, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -16,6 +16,7 @@ interface Props {
   onCancel: () => void;
   onSelectItem: (item: AccountJson) => void;
   items: AccountJson[];
+  selectedItem?: string;
 }
 
 const renderListEmptyComponent = () => {
@@ -28,7 +29,7 @@ const renderListEmptyComponent = () => {
   );
 };
 
-export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items }: Props) => {
+export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, selectedItem }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const filteredAccounts = (_items: AccountJson[], searchString: string) => {
     return _items.filter(acc => acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase()));
@@ -39,7 +40,8 @@ export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items }:
       <TouchableOpacity onPress={() => onSelectItem(item)}>
         <View
           style={{
-            paddingVertical: theme.paddingSM + 2,
+            height: 52,
+            alignItems: 'center',
             flexDirection: 'row',
             backgroundColor: theme.colorBgSecondary,
             paddingHorizontal: theme.paddingSM,
@@ -68,6 +70,18 @@ export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items }:
                 color: theme.colorTextTertiary,
               }}>{` (${toShort(item.address, 4, 4)})`}</Text>
           </View>
+          {!!selectedItem && item.address === selectedItem && (
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: -theme.marginXXS,
+              }}>
+              <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />
+            </View>
+          )}
         </View>
       </TouchableOpacity>
     );

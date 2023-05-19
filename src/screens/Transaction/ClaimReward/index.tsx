@@ -214,6 +214,7 @@ const ClaimReward = ({
             }}
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
+            selectedItem={from}
           />
         </ScrollView>
 
