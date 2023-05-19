@@ -142,6 +142,7 @@ export const AccountsScreen = () => {
         renderItem={renderItem}
         renderListEmptyComponent={renderListEmptyComponent}
         searchFunction={searchFunction}
+        autoFocus={false}
         afterListItem={renderFooterComponent()}
       />
 

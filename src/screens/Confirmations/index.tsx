@@ -31,6 +31,7 @@ import {
   TransactionConfirmation,
   SignConfirmation,
 } from './variants';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 const confirmationPopupWrapper: StyleProp<any> = {
   maxHeight: '100%',
@@ -39,7 +40,7 @@ const confirmationPopupWrapper: StyleProp<any> = {
   borderTopLeftRadius: 32,
   borderTopRightRadius: 32,
   alignItems: 'center',
-  paddingTop: 8,
+  paddingTop: Platform.OS === 'ios' ? 8 : STATUS_BAR_HEIGHT + 8,
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
