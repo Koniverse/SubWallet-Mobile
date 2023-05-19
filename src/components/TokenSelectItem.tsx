@@ -4,7 +4,9 @@ import { getTokenLogo } from 'utils/index';
 import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { CircleWavyCheck } from 'phosphor-react-native';
+import { CheckCircle } from 'phosphor-react-native';
+import { Icon } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props extends TouchableOpacityProps {
   symbol: string;
@@ -50,8 +52,6 @@ const subTextStyle: StyleProp<any> = {
   ...FontMedium,
 };
 
-const CheckIcon = CircleWavyCheck;
-
 export const TokenSelectItem = ({
   symbol,
   chain,
@@ -62,6 +62,8 @@ export const TokenSelectItem = ({
   defaultItemKey,
   iconSize = 40,
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
+
   return (
     <TouchableOpacity onPress={onSelectNetwork}>
       <View style={itemArea}>
@@ -73,7 +75,18 @@ export const TokenSelectItem = ({
           </View>
         </View>
 
-        {isSelected && <CheckIcon color={ColorMap.primary} weight={'bold'} size={20} />}
+        {isSelected && (
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: -theme.marginXS,
+            }}>
+            <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );

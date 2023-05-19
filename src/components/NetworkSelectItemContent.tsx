@@ -3,10 +3,11 @@ import { StyleProp, View } from 'react-native';
 import Text from '../components/Text';
 import { getNetworkLogo } from 'utils/index';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import {CheckCircle, CircleWavyCheck} from 'phosphor-react-native';
-import {Icon} from "components/design-system-ui";
-import {useSubWalletTheme} from "hooks/useSubWalletTheme";
+import { FontSemiBold } from 'styles/sharedStyles';
+import { CheckCircle } from 'phosphor-react-native';
+import { Icon } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+
 interface Props {
   itemName: string;
   itemKey: string;
@@ -19,7 +20,9 @@ interface Props {
 const itemArea: StyleProp<any> = {
   flexDirection: 'row',
   justifyContent: 'space-between',
-  padding: 12,
+  height: 52,
+  paddingLeft: 12,
+  paddingRight: 12,
   alignItems: 'center',
   marginHorizontal: 16,
   backgroundColor: '#1A1A1A',
@@ -68,7 +71,11 @@ export const NetworkSelectItemContent = ({
           <Text style={itemTextStyle}>{itemName}</Text>
         </View>
 
-        {isSelected && <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />}
+        {isSelected && (
+          <View style={{ height: 40, width: 40, alignItems: 'center', justifyContent: 'center', marginRight: -8 }}>
+            <Icon phosphorIcon={CheckCircle} size={'sm'} weight={'fill'} iconColor={theme.colorSuccess} />
+          </View>
+        )}
       </View>
 
       {showSeparator && <View style={itemSeparator} />}

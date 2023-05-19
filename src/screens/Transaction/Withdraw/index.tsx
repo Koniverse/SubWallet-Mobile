@@ -170,6 +170,7 @@ export const Withdraw = ({
             }}
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
+            selectedItem={from}
           />
         </ScrollView>
 
