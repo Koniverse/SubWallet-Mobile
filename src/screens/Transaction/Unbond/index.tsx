@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -21,7 +20,6 @@ import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
-import { useNavigation } from '@react-navigation/native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
@@ -64,7 +62,6 @@ export const Unbond = ({
 }: UnbondProps) => {
   const theme = useSubWalletTheme().swThemes;
   const stakingType = _stakingType as StakingType;
-  const navigation = useNavigation<StakingScreenNavigationProps>();
   const unbondFormConfig = useMemo(
     () => ({
       nomination: {
@@ -153,7 +150,7 @@ export const Unbond = ({
     return <BondedBalance bondedBalance={bondedValue} decimals={decimals} symbol={symbol} />;
   }, [bondedValue, decimals, symbol]);
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
 
   const onSubmit = useCallback(() => {
     let unbondingPromise: Promise<SWTransactionResponse>;
@@ -297,7 +294,7 @@ export const Unbond = ({
 
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button
-            disabled={!formState.isValidated.value || !formState.data.value || loading}
+            disabled={!formState.isValidated.value || !formState.data.value || !formState.data.from || loading}
             loading={loading}
             icon={
               <Icon
@@ -305,7 +302,9 @@ export const Unbond = ({
                 weight={'fill'}
                 size={'lg'}
                 iconColor={
-                  !formState.isValidated.value || !formState.data.value ? theme.colorTextLight5 : theme.colorWhite
+                  !formState.isValidated.value || !formState.data.value || !formState.data.from
+                    ? theme.colorTextLight5
+                    : theme.colorWhite
                 }
               />
             }

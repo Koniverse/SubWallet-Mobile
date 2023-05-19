@@ -334,7 +334,7 @@ export const Stake = ({
     [onChangeAssetValue],
   );
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
 
   const isDisabledButton = useMemo(
     () =>

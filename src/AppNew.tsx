@@ -9,7 +9,7 @@ import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import {FontMedium, STATUS_BAR_HEIGHT} from 'styles/sharedStyles';
+import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useAppLock from 'hooks/useAppLock';

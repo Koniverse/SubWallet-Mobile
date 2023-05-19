@@ -143,7 +143,7 @@ const ClaimReward = ({
     }, 300);
   }, [bondReward, chain, from, onError, onSuccess, reward?.unclaimedReward, stakingType]);
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
 
   useEffect(() => {
     onChangeValue('chain')(stakingChain || '');
