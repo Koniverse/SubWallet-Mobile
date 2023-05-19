@@ -5,7 +5,7 @@ import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
 import React, { useEffect } from 'react';
-import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
+import { AppState, InteractionManager, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -25,8 +25,10 @@ import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
 import { keyringLock } from 'messaging/index';
 import { updateShowZeroBalanceState } from 'stores/utils';
-import { setBuildNumber } from 'stores/AppVersion';
+import { setBuildNumber } from './stores/AppVersion';
+import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
 import { getBuildNumber } from 'react-native-device-info';
+import { useDispatch } from 'react-redux';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -98,6 +100,7 @@ export const AppNew = () => {
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
   const { isLocked, lock } = useAppLock();
+  const dispatch = useDispatch();
 
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
@@ -127,15 +130,26 @@ export const AppNew = () => {
   }, []);
 
   useEffect(() => {
-    if (buildNumber === 1) {
-      updateShowZeroBalanceState(true);
-      setBuildNumber(getBuildNumber());
+    if (!hasMigratedFromAsyncStorage) {
+      InteractionManager.runAfterInteractions(async () => {
+        try {
+          await migrateFromAsyncStorage();
+          if (buildNumber === 1) {
+            updateShowZeroBalanceState(true);
+            const buildNumberInt = parseInt(getBuildNumber(), 10);
+            dispatch(setBuildNumber(buildNumberInt));
+          }
+        } catch (e) {
+          // TODO: fall back to AsyncStorage? Wipe storage clean and use MMKV? Crash app?
+        }
+      });
     }
     if (hasMasterPassword) {
       keyringLock().catch((e: Error) => console.log(e));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log('buildNumber', buildNumber);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
 
