@@ -44,8 +44,7 @@ const Image: React.FC<SWImageProps> = ({
       <View style={[{ position: 'relative' }, customStyle]}>
         <Squircle
           customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-          // backgroundColor={'transparent'}
-        >
+          backgroundColor={'transparent'}>
           <FastImage
             source={src}
             style={[customImageStyle, { position: 'absolute' }]}
