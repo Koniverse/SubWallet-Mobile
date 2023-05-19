@@ -84,20 +84,25 @@ export function getTokenNetworkKeyMap(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
 
   Object.entries({} as Record<string, _ChainInfo>).forEach(([networkKey, chainInfo]) => {
-    let token = chainInfo.substrateInfo?.symbol || chainInfo.evmInfo?.symbol;
+    try {
+      let token = chainInfo.substrateInfo?.symbol || chainInfo.evmInfo?.symbol;
 
-    if (!token) {
+      if (!token) {
+        return;
+      }
+
+      token = token.toLowerCase();
+
+      const tgKey = getTokenGroupKey(token, chainInfo.isTestnet);
+
+      if (!result[tgKey]) {
+        result[tgKey] = [networkKey];
+      } else {
+        result[tgKey].push(networkKey);
+      }
+    } catch (e) {
+      console.log(networkKey, chainInfo);
       return;
-    }
-
-    token = token.toLowerCase();
-
-    const tgKey = getTokenGroupKey(token, chainInfo.isTestnet);
-
-    if (!result[tgKey]) {
-      result[tgKey] = [networkKey];
-    } else {
-      result[tgKey].push(networkKey);
     }
   });
 

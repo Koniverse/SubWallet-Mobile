@@ -149,7 +149,6 @@ export const AppNew = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log('buildNumber', buildNumber);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
 
