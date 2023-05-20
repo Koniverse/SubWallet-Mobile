@@ -218,7 +218,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#2DA73F',
         icon: Eye,
-        label: 'Attach read-only account',
+        label: 'Attach watch-only account',
         onClickBtn: () => {
           onChangeAttachAccountModalVisible(false);
           if (hasMasterPassword) {

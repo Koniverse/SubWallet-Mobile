@@ -19,7 +19,7 @@ const useGetAccountTitleByAddress = (address?: string): string => {
       case SIGN_MODE.QR:
         return 'QR signer account';
       case SIGN_MODE.READ_ONLY:
-        return 'Read-only account';
+        return 'Watch-only account';
       case SIGN_MODE.UNKNOWN:
       default:
         return 'Unknown account';

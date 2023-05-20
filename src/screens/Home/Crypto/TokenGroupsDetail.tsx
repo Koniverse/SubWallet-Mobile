@@ -171,7 +171,7 @@ export const TokenGroupsDetail = ({
   const _onOpenSendFund = useCallback(() => {
     if (currentAccount && currentAccount.isReadOnly) {
       //todo: i18n
-      showNoti('The account you are using is read-only, you cannot send assets with it');
+      showNoti('The account you are using is watch-only, you cannot send assets with it');
       return;
     }
 
