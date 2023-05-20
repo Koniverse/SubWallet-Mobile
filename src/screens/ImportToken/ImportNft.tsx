@@ -27,7 +27,8 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import { Button } from 'components/design-system-ui';
-import {ContainerHorizontalPadding, MarginBottomForSubmitButton} from "styles/sharedStyles";
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -39,7 +40,7 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-interface NftTypeOption {
+export interface NftTypeOption {
   label: string;
   value: _AssetType;
 }
@@ -88,6 +89,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [isValidName, setIsValidName] = useState(true);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
+  const [isShowTokenTypeModal, setShowTokenTypeModal] = useState<boolean>(false);
   useHandlerHardwareBackPress(loading);
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
@@ -116,11 +118,11 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     chain: {
       require: true,
       name: i18n.common.network,
-      value: nftInfo?.originChain || chainOptions[0]?.value || '',
+      value: nftInfo?.originChain || '',
     },
     selectedNftType: {
       name: i18n.importEvmNft.nftType,
-      value: getNftType(nftInfo?.originChain || chainOptions[0]?.value || '', chainInfoMap),
+      value: getNftType(nftInfo?.originChain || '', chainInfoMap),
     },
     collectionName: {
       require: true,
@@ -130,7 +132,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   };
 
   const handleAddToken = (formState: FormState) => {
-    const { chain, smartContract, collectionName } = formState.data;
+    const { chain, smartContract, collectionName, selectedNftType } = formState.data;
     const _symbol = symbolRef.current;
     setLoading(true);
     if (!isNetConnected) {
@@ -148,7 +150,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       decimals: null,
       priceId: null,
       minAmount: null,
-      assetType: isEthereumAddress(smartContract) ? _AssetType.ERC721 : _AssetType.PSP34,
+      assetType: selectedNftType as _AssetType,
       metadata: _parseMetadataForSmartContractAsset(smartContract),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
@@ -178,6 +180,10 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
 
   const { data: formData } = formState;
   const { chain, smartContract, collectionName, selectedNftType } = formData;
+
+  const nftTypeOptions = useMemo(() => {
+    return getNftTypeSupported(chainInfoMap[chain]);
+  }, [chainInfoMap, chain]);
 
   const handleChangeValue = useCallback(
     (key: string) => {
@@ -224,7 +230,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
               if (resp.contractError) {
                 onUpdateErrors('smartContract')([i18n.errorMessage.invalidContractForSelectedChain]);
               } else {
-                onChangeValue('collectionName')(resp.name);
+                resp.name && onChangeValue('collectionName')(resp.name);
                 onUpdateErrors('smartContract')(undefined);
                 setSymbol(resp.symbol);
               }
@@ -282,6 +288,23 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       title={i18n.title.importNft}
       style={ContainerHeaderStyle}>
       <ScrollView style={WrapperStyle}>
+        <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
+          <NetworkField
+            networkKey={formState.data.chain}
+            label={formState.labels.chain}
+            placeholder={'Select network'}
+            showIcon
+          />
+        </TouchableOpacity>
+
+        <TokenTypeSelector
+          modalVisible={isShowTokenTypeModal}
+          items={nftTypeOptions}
+          selectedValue={selectedNftType}
+          onPress={() => setShowTokenTypeModal(true)}
+          onChangeModalVisible={() => setShowTokenTypeModal(false)}
+        />
+
         <InputAddress
           containerStyle={{ marginBottom: 8 }}
           ref={formState.refs.smartContract}
@@ -300,17 +323,13 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
             <Warning key={err} style={{ marginBottom: 8 }} isDanger message={err} />
           ))}
 
-        <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
-          <NetworkField networkKey={formState.data.chain} label={formState.labels.chain} />
-        </TouchableOpacity>
-
         <ChainSelect
           items={chainOptions}
           modalVisible={isShowChainModal}
           onChangeModalVisible={() => setShowChainModal(false)}
           onChangeValue={(text: string) => {
             handleChangeValue('chain')(text);
-            handleChangeValue('selectedNftType')(getNftType(chain, chainInfoMap));
+            handleChangeValue('selectedNftType')(getNftType(text, chainInfoMap));
             setShowChainModal(false);
           }}
           selectedItem={formState.data.chain}

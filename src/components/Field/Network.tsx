@@ -26,8 +26,8 @@ export const NetworkField = ({ networkKey, disabled, label, showIcon, placeholde
   return (
     <FieldBase {...fieldBase} label={label}>
       <View style={styles.blockContent}>
-        <View style={styles.logoWrapper}>{getNetworkLogo(networkKey, label ? 20 : 24)}</View>
-        <Typography.Text ellipsis style={styles.text}>
+        {networkKey && <View style={styles.logoWrapper}>{getNetworkLogo(networkKey, label ? 20 : 24)}</View>}
+        <Typography.Text ellipsis style={networkKey ? styles.text : styles.placeholderText}>
           {chainInfoMap[networkKey] ? _getChainName(chainInfoMap[networkKey]) : placeholder}
         </Typography.Text>
         {!!showIcon && (
@@ -47,9 +47,13 @@ function createStyle(theme: ThemeTypes, disabled?: boolean) {
       color: disabled ? theme.colorTextLight4 : theme.colorTextLight2,
       flex: 1,
     },
-    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    placeholderText: {
+      ...FontMedium,
+      color: theme.colorTextLight4,
+      flex: 1,
+    },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center', paddingLeft: theme.sizeSM },
     logoWrapper: {
-      paddingLeft: theme.sizeSM,
       paddingRight: theme.sizeXS,
     },
     iconWrapper: {

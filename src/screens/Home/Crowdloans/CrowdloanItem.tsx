@@ -6,7 +6,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
 import { Linking, StyleProp, Text, TextStyle, TouchableOpacity, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, FontBold, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CrowdloanItemType } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 
@@ -151,7 +151,7 @@ export const CrowdloanItem = ({ item }: Props) => {
             intColor={textStyle.color as string}
             decimalColor={subTextStyle.color}
             size={textStyle.fontSize}
-            textStyle={{ lineHeight: textStyle.lineHeight }}
+            textStyle={{ lineHeight: textStyle.lineHeight, ...FontBold }}
           />
           <Number
             value={item.convertedContribute}

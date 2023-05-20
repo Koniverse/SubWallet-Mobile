@@ -718,7 +718,12 @@ export const SendFund = ({
                   onPress={() => {
                     setChainSelectModalVisible(true);
                   }}>
-                  <NetworkField networkKey={destChain} outerStyle={{ marginBottom: 0 }} placeholder={'Select chain'} />
+                  <NetworkField
+                    networkKey={destChain}
+                    outerStyle={{ marginBottom: 0 }}
+                    placeholder={'Select chain'}
+                    showIcon
+                  />
                 </TouchableOpacity>
 
                 <ChainSelector
