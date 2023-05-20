@@ -190,7 +190,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#E6478E',
         icon: QrCode,
-        label: 'Attach QR-Signer account',
+        label: 'Attach a Polkadot Vault account',
         onClickBtn: async () => {
           if (hasMasterPassword) {
             onChangeAttachAccountModalVisible(false);
@@ -202,7 +202,7 @@ export const AccountCreationArea = ({
         },
       },
       {
-        backgroundColor: '#E6478E',
+        backgroundColor: '#2565E6',
         icon: DeviceTabletCamera,
         label: 'Attach Keystone account',
         onClickBtn: async () => {

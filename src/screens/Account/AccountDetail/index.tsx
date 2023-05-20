@@ -282,7 +282,6 @@ export const AccountDetail = ({
         </View>
         <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideUnlockModal} />
         <DeleteModal
-          confirmation={''}
           title={'Detele this account?'}
           visible={deleteVisible}
           message={

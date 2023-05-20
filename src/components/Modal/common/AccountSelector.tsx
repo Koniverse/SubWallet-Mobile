@@ -91,7 +91,7 @@ export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, s
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
       <FlatListScreen
         onPressBack={onCancel}
-        autoFocus={false}
+        autoFocus={true}
         items={items}
         style={FlatListScreenPaddingTop}
         title={i18n.title.selectAccount}

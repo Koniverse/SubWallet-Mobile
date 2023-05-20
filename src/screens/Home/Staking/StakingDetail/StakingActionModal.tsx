@@ -82,6 +82,7 @@ const StakingActionModal = (props: Props) => {
 
       return;
     }
+    closeModal();
 
     setSelected(undefined);
     navigation.navigate('TransactionAction', {
@@ -91,7 +92,7 @@ const StakingActionModal = (props: Props) => {
         chain: chainStakingMetadata?.chain || ALL_KEY,
       },
     });
-  }, [nominatorMetadata, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
+  }, [nominatorMetadata, closeModal, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
 
   const cancelUnstakeAction = useCallback(() => {
     closeModal();

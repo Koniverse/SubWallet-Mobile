@@ -1,36 +1,77 @@
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {ContainerWithSubHeader} from 'components/ContainerWithSubHeader';
-import {useNavigation} from '@react-navigation/native';
-import {ImportTokenProps, RootNavigationProps} from 'routes/index';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
-import {ContainerHorizontalPadding, MarginBottomForSubmitButton} from 'styles/sharedStyles';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { useNavigation } from '@react-navigation/native';
+import { ImportTokenProps, RootNavigationProps } from 'routes/index';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import useFormControl, {FormState} from 'hooks/screen/useFormControl';
-import {BUTTON_ACTIVE_OPACITY} from 'constants/index';
-import {NetworkField} from 'components/Field/Network';
-import {ChainSelect} from 'screens/ImportToken/ChainSelect';
+import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
+import { NetworkField } from 'components/Field/Network';
+import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
-import {TextField} from 'components/Field/Text';
-import {isEthereumAddress} from '@polkadot/util-crypto';
-import {completeConfirmation, upsertCustomToken, validateCustomToken} from 'messaging/index';
-import {Warning} from 'components/Warning';
-import {InputAddress} from 'components/Input/InputAddress';
-import {requestCameraPermission} from 'utils/permission/camera';
-import {RESULTS} from 'react-native-permissions';
-import {AddressScanner} from 'components/Scanner/AddressScanner';
+import { TextField } from 'components/Field/Text';
+import { isEthereumAddress } from '@polkadot/util-crypto';
+import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'messaging/index';
+import { Warning } from 'components/Warning';
+import { InputAddress } from 'components/Input/InputAddress';
+import { requestCameraPermission } from 'utils/permission/camera';
+import { RESULTS } from 'react-native-permissions';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import {isValidSubstrateAddress} from '@subwallet/extension-base/utils';
-import {useSelector} from 'react-redux';
-import {RootState} from 'stores/index';
-import {WebRunnerContext} from 'providers/contexts';
-import {_AssetType} from '@subwallet/chain-list/types';
+import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { WebRunnerContext } from 'providers/contexts';
+import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import {
+  _getTokenTypesSupportedByChain,
   _isChainTestNet,
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import {Button} from 'components/design-system-ui';
-import {ConfirmationResult} from '@subwallet/extension-base/background/KoniTypes';
-import {useToast} from 'react-native-toast-notifications';
+import { Button } from 'components/design-system-ui';
+import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
+import { useToast } from 'react-native-toast-notifications';
+import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
+
+interface TokenTypeOption {
+  label: string;
+  value: _AssetType;
+}
+
+function getTokenTypeSupported(chainInfo: _ChainInfo) {
+  if (!chainInfo) {
+    return [];
+  }
+
+  const tokenTypes = _getTokenTypesSupportedByChain(chainInfo);
+  const result: TokenTypeOption[] = [];
+
+  tokenTypes.forEach(tokenType => {
+    result.push({
+      label: tokenType.toString(),
+      value: tokenType,
+    });
+  });
+
+  return result;
+}
+
+function getTokenType(chain: string, chainInfoMap: Record<string, _ChainInfo>): string {
+  if (!chain || !chainInfoMap[chain]) {
+    return '';
+  }
+
+  const tokenTypes = getTokenTypeSupported(chainInfoMap[chain]);
+
+  if (tokenTypes.length === 1) {
+    return tokenTypes[0].value;
+  }
+
+  // todo: may handle case nftTypes.length > 1 in near future
+
+  return '';
+}
 
 export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
@@ -39,6 +80,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const [isBusy, setBusy] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
+  const [isShowTokenTypeModal, setShowTokenTypeModal] = useState<boolean>(false);
   const toast = useToast();
   useHandlerHardwareBackPress(isBusy);
   const payload = routeParams?.payload;
@@ -56,7 +98,11 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const formConfig = {
     chain: {
       name: i18n.common.network,
-      value: tokenInfo?.originChain || chainOptions[0]?.value || '',
+      value: tokenInfo?.originChain || '',
+    },
+    selectedTokenType: {
+      name: i18n.common.network,
+      value: getTokenType(tokenInfo?.originChain || '', chainInfoMap),
     },
     symbol: {
       name: i18n.common.symbol,
@@ -75,7 +121,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
   const onSubmit = (formState: FormState) => {
     setBusy(true);
-    const { contractAddress, chain, decimals, symbol } = formState.data;
+    const { contractAddress, chain, decimals, symbol, selectedTokenType } = formState.data;
 
     onUpdateErrors('contractAddress')(undefined);
 
@@ -99,7 +145,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       decimals: parseInt(decimals),
       priceId: null,
       minAmount: null,
-      assetType: isEthereumAddress(contractAddress) ? _AssetType.ERC20 : _AssetType.PSP22,
+      assetType: selectedTokenType as _AssetType,
       metadata: _parseMetadataForSmartContractAsset(contractAddress),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
@@ -123,6 +169,11 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const { formState, onChangeValue, onUpdateErrors, onSubmitField } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
+
+  const tokenTypeOptions = useMemo(() => {
+    return getTokenTypeSupported(chainInfoMap[formState.data.chain]);
+  }, [chainInfoMap, formState.data.chain]);
+
   useEffect(() => {
     const currentContractAddress = formState.data.contractAddress;
     const currentChain = formState.data.chain;
@@ -221,6 +272,23 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
+          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
+            <NetworkField
+              networkKey={formState.data.chain}
+              label={formState.labels.chain}
+              placeholder={'Select network'}
+              showIcon
+            />
+          </TouchableOpacity>
+
+          <TokenTypeSelector
+            modalVisible={isShowTokenTypeModal}
+            items={tokenTypeOptions}
+            selectedValue={formState.data.selectedTokenType}
+            onPress={() => setShowTokenTypeModal(true)}
+            onChangeModalVisible={() => setShowTokenTypeModal(false)}
+          />
+
           <InputAddress
             containerStyle={{ marginBottom: 8 }}
             ref={formState.refs.contractAddress}
@@ -237,10 +305,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           {isReady && !!formState.errors.contractAddress.length && (
             <Warning isDanger message={formState.errors.contractAddress[0]} style={{ marginBottom: 8 }} />
           )}
-
-          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
-            <NetworkField networkKey={formState.data.chain} label={formState.labels.chain} />
-          </TouchableOpacity>
 
           <TextField label={i18n.common.symbol} text={formState.data.symbol} />
 
@@ -270,6 +334,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           onChangeModalVisible={() => setShowChainModal(false)}
           onChangeValue={(text: string) => {
             handleChangeValue('chain')(text);
+            handleChangeValue('selectedTokenType')(getTokenType(text, chainInfoMap));
             setName('');
             setShowChainModal(false);
           }}

@@ -4,7 +4,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
-import { Linking, ListRenderItemInfo, Platform } from 'react-native';
+import { Image, Linking, ListRenderItemInfo, Platform } from 'react-native';
 import qs from 'querystring';
 import reformatAddress from 'utils/index';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import { deviceHeight, HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/ind
 import useAppLock from 'hooks/useAppLock';
 import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
+import { ImageLogosMap } from 'assets/logo';
 
 interface Props {
   modalVisible: boolean;
@@ -195,10 +196,20 @@ export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, 
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<{ label: string; value: string; url: string }>) => {
+    let logo = <Image source={ImageLogosMap.transak} style={{ width: 24, height: 24 }} />;
+
+    if (item.value === 'moonpay') {
+      logo = <Image source={ImageLogosMap.moonpay} style={{ width: 24, height: 24 }} />;
+    }
+
+    if (item.value === 'onramper') {
+      logo = <Image source={ImageLogosMap.onramper} style={{ width: 24, height: 24 }} />;
+    }
+
     return (
       <ServiceSelectItem
         url={item.url}
-        serviceKey={item.value}
+        logo={logo}
         serviceName={item.label}
         onPressItem={() => onPressItem(item.value, item.url)}
       />
