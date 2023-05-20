@@ -1,4 +1,5 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { FontMedium } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
@@ -29,12 +30,14 @@ export default (theme: ThemeTypes) => {
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       color: theme.colorTextDescription,
       textAlign: 'center',
+      ...FontMedium,
     },
     description: {
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       color: theme.colorTextDescription,
       textAlign: 'center',
+      ...FontMedium,
     },
     highLight: {
       color: theme.colorLink,

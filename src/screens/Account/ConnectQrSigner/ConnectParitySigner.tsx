@@ -10,10 +10,10 @@ type Props = {};
 const ConnectParitySigner: React.FC<Props> = () => {
   return (
     <ConnectQrSigner
-      description={'Parity Signer will provide you a QR code to scan.'}
+      description={'Polkadot Vault will provide you a QR code to scan.'}
       instructionUrl={'Connect your QR wallet'}
       logoUrl={ImageLogosMap.parity}
-      subTitle={'Open Parity Signer application on your smartphone to connect wallet'}
+      subTitle={'Open Polkadot Vault application on your smartphone to connect wallet'}
       title={'Connect your QR wallet'}
     />
   );
