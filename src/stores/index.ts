@@ -25,9 +25,23 @@ import LogoMap from 'stores/base/LogoMap';
 
 const persistConfig = {
   key: 'root',
-  version: 1,
+  version: 2,
   storage: AsyncStorage,
   whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion', 'price', 'chainStore', 'assetRegistry', 'balance'],
+  migrate: (state, currentVersion) => {
+    const beforeInfo = state._persist || {};
+    if ((beforeInfo.version || 0) < currentVersion) {
+      console.debug(`Purger persist data after migration from ${beforeInfo.version} to ${currentVersion}`);
+
+      ['price', 'chainStore', 'assetRegistry', 'balance'].forEach(k => {
+        if (state[k]) {
+          delete state[k];
+        }
+      });
+    }
+
+    return Promise.resolve({ ...state });
+  },
 };
 
 const rootReducer = combineReducers({
