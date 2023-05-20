@@ -1,3 +1,7 @@
+## 1.0.3 (156)
+- Fix import private key problems (#663)
+- Update 'read-only' to 'watch-only'
+
 ## 1.0.2 (143)
 - Upgrade UI
 
