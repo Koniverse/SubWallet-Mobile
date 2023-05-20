@@ -55,7 +55,7 @@ export const ImportPrivateKey = () => {
     setIsBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: formState.data.privateKey.trim(),
+      suri: autoCorrect.trim(),
       isAllowed: true,
       types: [EVM_ACCOUNT_TYPE],
     })
