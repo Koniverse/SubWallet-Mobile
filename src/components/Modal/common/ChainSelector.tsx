@@ -15,7 +15,7 @@ interface Props {
   onSelectItem: (item: ChainInfo) => void;
   items: ChainInfo[];
   title?: string;
-  selectedItem?: string;
+  selectedValue?: string;
 }
 
 const filterFunction = (items: ChainInfo[], searchString: string) => {
@@ -38,7 +38,7 @@ export const ChainSelector = ({
   onCancel,
   onSelectItem,
   items,
-  selectedItem,
+  selectedValue,
   title = i18n.title.chain,
 }: Props) => {
   const renderItem = useCallback(
@@ -50,11 +50,11 @@ export const ChainSelector = ({
           onSelectNetwork={() => onSelectItem(item)}
           showSeparator={false}
           iconSize={28}
-          isSelected={item.slug === selectedItem}
+          isSelected={item.slug === selectedValue}
         />
       );
     },
-    [onSelectItem, selectedItem],
+    [onSelectItem, selectedValue],
   );
 
   return (

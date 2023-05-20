@@ -136,7 +136,7 @@ export const CancelUnstake = ({
             }}
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
-            selectedItem={from}
+            selectedValue={from}
           />
         </ScrollView>
 

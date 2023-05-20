@@ -64,8 +64,10 @@ export const NetworkSettingDetail = ({
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
 
-  const chainInfo = useFetchChainInfo(chainSlug);
-  const chainState = useFetchChainState(chainSlug);
+  const _chainInfo = useFetchChainInfo(chainSlug);
+  const [chainInfo] = useState(_chainInfo);
+  const _chainState = useFetchChainState(chainSlug);
+  const [chainState] = useState(_chainState);
 
   const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState(false);

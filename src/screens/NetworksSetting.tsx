@@ -37,7 +37,11 @@ const FILTER_OPTIONS = [
 ];
 
 const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
-  return items.filter(network => network.name.toLowerCase().includes(searchString.toLowerCase()));
+  if (!searchString) {
+    return items;
+  }
+
+  return items.filter(network => network && network.name.toLowerCase().includes(searchString.toLowerCase()));
 };
 
 const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
