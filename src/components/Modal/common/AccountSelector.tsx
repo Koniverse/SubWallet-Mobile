@@ -16,7 +16,7 @@ interface Props {
   onCancel: () => void;
   onSelectItem: (item: AccountJson) => void;
   items: AccountJson[];
-  selectedItem?: string;
+  selectedValue?: string;
 }
 
 const renderListEmptyComponent = () => {
@@ -29,7 +29,7 @@ const renderListEmptyComponent = () => {
   );
 };
 
-export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, selectedItem }: Props) => {
+export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, selectedValue }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const filteredAccounts = (_items: AccountJson[], searchString: string) => {
     return _items.filter(acc => acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase()));
@@ -70,7 +70,7 @@ export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, s
                 color: theme.colorTextTertiary,
               }}>{` (${toShort(item.address, 4, 4)})`}</Text>
           </View>
-          {!!selectedItem && item.address === selectedItem && (
+          {!!selectedValue && item.address === selectedValue && (
             <View
               style={{
                 width: 40,

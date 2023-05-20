@@ -289,7 +289,7 @@ export const Unbond = ({
             }}
             items={accountList}
             onCancel={() => setAccountSelectModalVisible(false)}
-            selectedItem={from}
+            selectedValue={from}
           />
         </ScrollView>
 

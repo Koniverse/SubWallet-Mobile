@@ -631,7 +631,7 @@ export const SendFund = ({
                       }}
                       items={accountItems}
                       onCancel={() => setAccountSelectModalVisible(false)}
-                      selectedItem={from}
+                      selectedValue={from}
                     />
                   </>
                 )}
@@ -678,7 +678,7 @@ export const SendFund = ({
                     setIsTransferAll(false);
                     setForceUpdateMaxValue(undefined);
                   }}
-                  selectedItem={asset}
+                  selectedValue={asset}
                 />
 
                 {!!(formState.errors.value && formState.errors.value.length) &&
@@ -725,7 +725,7 @@ export const SendFund = ({
                   items={destChainItems}
                   modalVisible={chainSelectModalVisible}
                   onCancel={() => setChainSelectModalVisible(false)}
-                  selectedItem={destChain}
+                  selectedValue={destChain}
                   onSelectItem={item => {
                     onChangeValue('destChain')(item.slug);
                     setChainSelectModalVisible(false);

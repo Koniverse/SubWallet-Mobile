@@ -54,13 +54,17 @@ export const RpcSelectorModal = ({
   const chainInfo = useFetchChainInfo(chainSlug);
 
   const providerList = useMemo(() => {
+    if (!chainInfo) {
+      return [];
+    }
+
     return Object.entries(chainInfo.providers).map(([key, provider]) => {
       return {
         value: key,
         label: provider,
       } as ProviderItemType;
     });
-  }, [chainInfo.providers]);
+  }, [chainInfo]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<{ label: string; value: string }>) => (
@@ -98,7 +102,7 @@ export const RpcSelectorModal = ({
               icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
               onPress={() => {
                 onPressBack();
-                navigation.navigate('AddProvider', { slug: chainInfo.slug });
+                !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });
               }}>
               {'Add new provider'}
             </Button>
