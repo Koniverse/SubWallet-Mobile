@@ -48,14 +48,13 @@ export const ImportPrivateKey = () => {
   useHandlerHardwareBackPress(isBusy);
 
   const [validating, setValidating] = useState(false);
-  const [autoCorrect, setAutoCorrect] = useState('');
 
   const _onImport = () => {
     Keyboard.dismiss();
     setIsBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: autoCorrect.trim(),
+      suri: formState.data.privateKey.trim(),
       isAllowed: true,
       types: [EVM_ACCOUNT_TYPE],
     })
@@ -90,7 +89,7 @@ export const ImportPrivateKey = () => {
             .then(({ autoAddPrefix }) => {
               if (amount) {
                 if (autoAddPrefix) {
-                  setAutoCorrect(`0x${trimPrivateKey}`);
+                  onChangeValue('privateKey')(`0x${trimPrivateKey}`);
                 }
 
                 onUpdateErrors('privateKey')([]);
@@ -109,7 +108,7 @@ export const ImportPrivateKey = () => {
         }, 300);
       }
     }
-  }, [onUpdateErrors, formState.data.privateKey]);
+  }, [onUpdateErrors, formState.data.privateKey, onChangeValue]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => {
@@ -139,9 +138,8 @@ export const ImportPrivateKey = () => {
             style={styles.textArea}
             onChangeText={(text: string) => {
               onChangeValue('privateKey')(text);
-              setAutoCorrect('');
             }}
-            value={autoCorrect || formState.data.privateKey}
+            value={formState.data.privateKey}
             onSubmitEditing={onSubmitField('privateKey')}
             errorMessages={formState.errors.privateKey}
             editable={!isBusy}
