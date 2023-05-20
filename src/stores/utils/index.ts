@@ -4,7 +4,8 @@
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
-  AccountsWithCurrentAddress, AllLogoMap,
+  AccountsWithCurrentAddress,
+  AllLogoMap,
   AssetSetting,
   BalanceJson,
   ChainStakingMetadata,
@@ -36,6 +37,7 @@ import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
 import { buildHierarchy } from 'utils/buildHierarchy';
+import { addLazy } from 'utils/lazyUpdate';
 
 // Setup redux stores
 

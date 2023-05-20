@@ -27,7 +27,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion'],
+  whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion', 'price', 'chainStore', 'assetRegistry', 'balance'],
 };
 
 const rootReducer = combineReducers({

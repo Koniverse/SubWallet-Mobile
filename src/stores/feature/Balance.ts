@@ -15,10 +15,13 @@ const balanceSlice = createSlice({
   name: 'balance',
   reducers: {
     update(state, action: PayloadAction<Record<string, BalanceItem>>) {
-      const payload = action.payload;
+      const data = action.payload;
+      if (Object.values(data || {}).length === 0) {
+        return;
+      }
 
       return {
-        balanceMap: payload,
+        balanceMap: data,
         reduxStatus: ReduxStatus.READY,
       };
     },

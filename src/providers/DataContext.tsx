@@ -289,8 +289,18 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
         });
 
         // Features
-        _DataContext.addHandler({ ...subscribePrice, name: 'subscribePrice', relatedStores: ['price'] });
-        _DataContext.addHandler({ ...subscribeBalance, name: 'subscribeBalance', relatedStores: ['balance'] });
+        _DataContext.addHandler({
+          ...subscribePrice,
+          name: 'subscribePrice',
+          relatedStores: ['price'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeBalance,
+          name: 'subscribeBalance',
+          relatedStores: ['balance'],
+          isStartImmediately: true,
+        });
         _DataContext.addHandler({ ...subscribeCrowdloan, name: 'subscribeCrowdloan', relatedStores: ['crowdloan'] });
         _DataContext.addHandler({ ...subscribeNftItems, name: 'subscribeNftItems', relatedStores: ['nft'] });
         _DataContext.addHandler({

@@ -17,9 +17,12 @@ const priceSlice = createSlice({
   name: 'price',
   reducers: {
     updatePrice(state, action: PayloadAction<PriceJson>) {
-      return {
-        ...action.payload,
-      };
+      const data = action.payload;
+      if (Object.values(data?.priceMap || {}).length === 0) {
+        return;
+      }
+
+      return data;
     },
   },
 });
