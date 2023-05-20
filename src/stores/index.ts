@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import mobileSettingsReducer from './MobileSettings';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import appStateReducer from './AppState';
 import appVersionReducer from './AppVersion';
 import browserReducer from './Browser';
@@ -20,12 +21,12 @@ import StakingReducer from './feature/Staking';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import LogoMap from 'stores/base/LogoMap';
-import { reduxStorage } from 'utils/storage';
+// import { reduxStorage } from 'utils/storage';
 
 const persistConfig = {
   key: 'root',
   version: 1,
-  storage: reduxStorage,
+  storage: AsyncStorage,
   whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion'],
 };
 

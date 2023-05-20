@@ -131,18 +131,11 @@ export const AppNew = () => {
 
   useEffect(() => {
     if (!hasMigratedFromAsyncStorage) {
-      InteractionManager.runAfterInteractions(async () => {
-        try {
-          await migrateFromAsyncStorage();
-          if (buildNumber === 1) {
-            updateShowZeroBalanceState(true);
-            const buildNumberInt = parseInt(getBuildNumber(), 10);
-            dispatch(setBuildNumber(buildNumberInt));
-          }
-        } catch (e) {
-          // TODO: fall back to AsyncStorage? Wipe storage clean and use MMKV? Crash app?
-        }
-      });
+      if (buildNumber === 1) {
+        updateShowZeroBalanceState(true);
+        const buildNumberInt = parseInt(getBuildNumber(), 10);
+        dispatch(setBuildNumber(buildNumberInt));
+      }
     }
     if (hasMasterPassword) {
       keyringLock().catch((e: Error) => console.log(e));
