@@ -30,7 +30,7 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
   }
 
   return (
-    <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center' }}>
+    <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
       <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
         {label || 'Sender available balance:'}
       </Text>
