@@ -113,6 +113,11 @@ function getAccountBalance(
 
     tokenGroupMap[tokenGroupKey].forEach(tokenSlug => {
       const chainAsset = assetRegistryMap[tokenSlug];
+
+      if (!chainAsset) {
+        return;
+      }
+
       const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset);
       const originChain = _getAssetOriginChain(chainAsset);
       const balanceItem = balanceMap[tokenSlug];
