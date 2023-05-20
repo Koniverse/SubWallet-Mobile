@@ -24,6 +24,16 @@ function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.privateKey;
 }
 
+function autoFormatPrivateKey(privateKey: string) {
+  const key = privateKey.trim();
+
+  if (key.startsWith('0x')) {
+    return key;
+  } else {
+    return `0x${key}`;
+  }
+}
+
 export const ImportPrivateKey = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
@@ -54,7 +64,7 @@ export const ImportPrivateKey = () => {
     setIsBusy(true);
     createAccountSuriV2({
       name: accountName,
-      suri: formState.data.privateKey.trim(),
+      suri: autoFormatPrivateKey(formState.data.privateKey),
       isAllowed: true,
       types: [EVM_ACCOUNT_TYPE],
     })
@@ -78,20 +88,17 @@ export const ImportPrivateKey = () => {
       clearTimeout(timeOutRef.current);
     }
     if (amount) {
-      const trimPrivateKey = formState.data.privateKey.trim();
+      const key = autoFormatPrivateKey(formState.data.privateKey);
+      console.log(key);
 
-      if (trimPrivateKey) {
+      if (key) {
         setValidating(true);
         onUpdateErrors('privateKey')([]);
 
         timeOutRef.current = setTimeout(() => {
-          validateMetamaskPrivateKeyV2(trimPrivateKey, [EVM_ACCOUNT_TYPE])
-            .then(({ autoAddPrefix }) => {
+          validateMetamaskPrivateKeyV2(key, [EVM_ACCOUNT_TYPE])
+            .then(() => {
               if (amount) {
-                if (autoAddPrefix) {
-                  onChangeValue('privateKey')(`0x${trimPrivateKey}`);
-                }
-
                 onUpdateErrors('privateKey')([]);
               }
             })
