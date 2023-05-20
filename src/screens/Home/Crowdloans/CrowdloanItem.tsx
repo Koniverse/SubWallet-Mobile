@@ -151,7 +151,7 @@ export const CrowdloanItem = ({ item }: Props) => {
             intColor={textStyle.color as string}
             decimalColor={subTextStyle.color}
             size={textStyle.fontSize}
-            textStyle={{ lineHeight: textStyle.lineHeight, ...FontBold }}
+            textStyle={{ lineHeight: textStyle.lineHeight, ...FontSemiBold }}
           />
           <Number
             value={item.convertedContribute}
