@@ -107,7 +107,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
           {!isInputBlur || !address ? (
             <TextInput
               autoCorrect={false}
-              autoFocus={true}
+              autoFocus={false}
               placeholder={placeholder}
               style={styles.textInput}
               placeholderTextColor={themes.colorTextLight4}
