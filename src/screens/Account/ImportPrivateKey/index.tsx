@@ -54,6 +54,7 @@ export const ImportPrivateKey = () => {
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const [isBusy, setIsBusy] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(true);
 
   useHandlerHardwareBackPress(isBusy);
 
@@ -89,30 +90,36 @@ export const ImportPrivateKey = () => {
     }
     if (amount) {
       const key = autoFormatPrivateKey(formState.data.privateKey);
-      console.log(key);
 
       if (key) {
-        setValidating(true);
+        setValidating(false);
+        setIsEmpty(true);
         onUpdateErrors('privateKey')([]);
 
-        timeOutRef.current = setTimeout(() => {
-          validateMetamaskPrivateKeyV2(key, [EVM_ACCOUNT_TYPE])
-            .then(() => {
-              if (amount) {
-                onUpdateErrors('privateKey')([]);
-              }
-            })
-            .catch((e: Error) => {
-              if (amount) {
-                onUpdateErrors('privateKey')([e.message]);
-              }
-            })
-            .finally(() => {
-              if (amount) {
-                setValidating(false);
-              }
-            });
-        }, 300);
+        if (key !== '0x') {
+          timeOutRef.current = setTimeout(() => {
+            setValidating(true);
+            setIsEmpty(false);
+            validateMetamaskPrivateKeyV2(key, [EVM_ACCOUNT_TYPE])
+              .then(() => {
+                if (amount) {
+                  onUpdateErrors('privateKey')([]);
+                }
+              })
+              .catch((e: Error) => {
+                if (amount) {
+                  onUpdateErrors('privateKey')([e.message]);
+                }
+              })
+              .finally(() => {
+                if (amount) {
+                  setValidating(false);
+                }
+              });
+          }, 300);
+        } else {
+          setIsEmpty(true);
+        }
       }
     }
   }, [onUpdateErrors, formState.data.privateKey, onChangeValue]);
@@ -124,6 +131,8 @@ export const ImportPrivateKey = () => {
 
     return unsubscribe;
   }, [focus, navigation]);
+
+  const canSubmit = !checkValidateForm(formState.isValidated) || validating || isBusy || isEmpty;
 
   return (
     <SubScreenContainer
@@ -159,14 +168,10 @@ export const ImportPrivateKey = () => {
                 phosphorIcon={FileArrowDown}
                 size={'lg'}
                 weight={'fill'}
-                iconColor={
-                  !checkValidateForm(formState.isValidated) || validating
-                    ? theme.colorTextLight5
-                    : theme.colorTextLight1
-                }
+                iconColor={canSubmit ? theme.colorTextLight5 : theme.colorTextLight1}
               />
             }
-            disabled={!checkValidateForm(formState.isValidated) || validating || isBusy}
+            disabled={canSubmit}
             loading={validating || isBusy}
             onPress={onPressSubmit(_onImport)}>
             {'Import account'}
