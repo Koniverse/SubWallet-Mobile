@@ -52,7 +52,7 @@ export const StakingValidatorItem = ({
           <Text style={_style.subTextStyle}>{' - APY: '}</Text>
           <Number
             decimal={0}
-            suffix={symbol}
+            suffix="%"
             size={12}
             value={expectedReturn?.toString() || '0'}
             textStyle={{ ...FontMedium }}
