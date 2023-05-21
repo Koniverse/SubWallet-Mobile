@@ -280,18 +280,18 @@ export const Unbond = ({
               color: theme.colorTextTertiary,
               ...FontMedium,
             }}>{`Once unbonded, your funds would be available after ${unBondedTime}.`}</Typography.Text>
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={item => {
-              onChangeFromValue(item.address);
-              setAccountSelectModalVisible(false);
-            }}
-            items={accountList}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedValue={from}
-          />
         </ScrollView>
+
+        <AccountSelector
+          modalVisible={accountSelectModalVisible}
+          onSelectItem={item => {
+            onChangeFromValue(item.address);
+            setAccountSelectModalVisible(false);
+          }}
+          items={accountList}
+          onCancel={() => setAccountSelectModalVisible(false)}
+          selectedValue={from}
+        />
 
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button

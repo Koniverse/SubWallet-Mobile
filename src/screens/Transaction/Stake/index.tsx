@@ -446,28 +446,27 @@ export const Stake = ({
               {getMetaInfo()}
             </>
           )}
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={item => {
-              onChangeFromValue(item.address);
-              setAccountSelectModalVisible(false);
-            }}
-            items={accountSelectorList}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedItem={from}
-          />
-
-          <TokenSelector
-            modalVisible={tokenSelectModalVisible}
-            defaultValue={asset}
-            items={tokenList}
-            acceptDefaultValue
-            onCancel={() => setTokenSelectModalVisible(false)}
-            onSelectItem={onSelectToken}
-            selectedItem={asset}
-          />
         </ScrollView>
+        <AccountSelector
+          modalVisible={accountSelectModalVisible}
+          onSelectItem={item => {
+            onChangeFromValue(item.address);
+            setAccountSelectModalVisible(false);
+          }}
+          items={accountSelectorList}
+          onCancel={() => setAccountSelectModalVisible(false)}
+          selectedValue={from}
+        />
+
+        <TokenSelector
+          modalVisible={tokenSelectModalVisible}
+          defaultValue={asset}
+          items={tokenList}
+          acceptDefaultValue
+          onCancel={() => setTokenSelectModalVisible(false)}
+          onSelectItem={onSelectToken}
+          selectedValue={asset}
+        />
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button
             disabled={isDisabledButton}

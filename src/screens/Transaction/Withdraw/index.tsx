@@ -161,18 +161,18 @@ export const Withdraw = ({
               />
             )}
           </MetaInfo>
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={item => {
-              onChangeFromValue(item.address);
-              setAccountSelectModalVisible(false);
-            }}
-            items={accountList}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedValue={from}
-          />
         </ScrollView>
+
+        <AccountSelector
+          modalVisible={accountSelectModalVisible}
+          onSelectItem={item => {
+            onChangeFromValue(item.address);
+            setAccountSelectModalVisible(false);
+          }}
+          items={accountList}
+          onCancel={() => setAccountSelectModalVisible(false)}
+          selectedValue={from}
+        />
 
         <View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', ...MarginBottomForSubmitButton }}>
           <Button

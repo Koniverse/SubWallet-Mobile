@@ -127,18 +127,18 @@ export const CancelUnstake = ({
             onSelectItem={onChangeValue('unstakeIndex')}
             disabled={loading}
           />
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={item => {
-              onChangeFromValue(item.address);
-              setAccountSelectModalVisible(false);
-            }}
-            items={accountList}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedValue={from}
-          />
         </ScrollView>
+
+        <AccountSelector
+          modalVisible={accountSelectModalVisible}
+          onSelectItem={item => {
+            onChangeFromValue(item.address);
+            setAccountSelectModalVisible(false);
+          }}
+          items={accountList}
+          onCancel={() => setAccountSelectModalVisible(false)}
+          selectedValue={from}
+        />
 
         <View style={{ padding: 16, flexDirection: 'row' }}>
           <Button

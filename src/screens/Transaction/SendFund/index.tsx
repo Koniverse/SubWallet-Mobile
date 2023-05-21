@@ -621,18 +621,6 @@ export const SendFund = ({
                         outerStyle={{ marginBottom: 0 }}
                       />
                     </TouchableOpacity>
-
-                    <AccountSelector
-                      modalVisible={accountSelectModalVisible}
-                      onSelectItem={item => {
-                        onChangeFromValue(item.address);
-                        setForceUpdateMaxValue(undefined);
-                        setAccountSelectModalVisible(false);
-                      }}
-                      items={accountItems}
-                      onCancel={() => setAccountSelectModalVisible(false)}
-                      selectedValue={from}
-                    />
                   </>
                 )}
 
@@ -666,20 +654,6 @@ export const SendFund = ({
                     />
                   </View>
                 </View>
-
-                <TokenSelector
-                  modalVisible={tokenSelectModalVisible}
-                  items={tokenItems}
-                  onCancel={() => setTokenSelectModalVisible(false)}
-                  onSelectItem={item => {
-                    onChangeAssetValue(item.slug);
-                    onChangeValue('destChain')(item.originChain);
-                    setTokenSelectModalVisible(false);
-                    setIsTransferAll(false);
-                    setForceUpdateMaxValue(undefined);
-                  }}
-                  selectedValue={asset}
-                />
 
                 {!!(formState.errors.value && formState.errors.value.length) &&
                   formState.errors.value.map((message, index) => (
@@ -725,21 +699,6 @@ export const SendFund = ({
                     showIcon
                   />
                 </TouchableOpacity>
-
-                <ChainSelector
-                  items={destChainItems}
-                  modalVisible={chainSelectModalVisible}
-                  onCancel={() => setChainSelectModalVisible(false)}
-                  selectedValue={destChain}
-                  onSelectItem={item => {
-                    onChangeValue('destChain')(item.slug);
-                    setChainSelectModalVisible(false);
-                    if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
-                      setIsTransferAll(false);
-                    }
-                  }}
-                />
-
                 <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
               </ScrollView>
 
@@ -764,6 +723,44 @@ export const SendFund = ({
               <SafeAreaView />
             </>
           </TouchableWithoutFeedback>
+
+          <AccountSelector
+            modalVisible={accountSelectModalVisible}
+            onSelectItem={item => {
+              onChangeFromValue(item.address);
+              setForceUpdateMaxValue(undefined);
+              setAccountSelectModalVisible(false);
+            }}
+            items={accountItems}
+            onCancel={() => setAccountSelectModalVisible(false)}
+            selectedValue={from}
+          />
+          <TokenSelector
+            modalVisible={tokenSelectModalVisible}
+            items={tokenItems}
+            onCancel={() => setTokenSelectModalVisible(false)}
+            onSelectItem={item => {
+              onChangeAssetValue(item.slug);
+              onChangeValue('destChain')(item.originChain);
+              setTokenSelectModalVisible(false);
+              setIsTransferAll(false);
+              setForceUpdateMaxValue(undefined);
+            }}
+            selectedValue={asset}
+          />
+          <ChainSelector
+            items={destChainItems}
+            modalVisible={chainSelectModalVisible}
+            onCancel={() => setChainSelectModalVisible(false)}
+            selectedValue={destChain}
+            onSelectItem={item => {
+              onChangeValue('destChain')(item.slug);
+              setChainSelectModalVisible(false);
+              if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
+                setIsTransferAll(false);
+              }
+            }}
+          />
         </>
       </ScreenContainer>
     </KeyboardAvoidingView>
