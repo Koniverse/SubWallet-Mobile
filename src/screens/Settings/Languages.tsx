@@ -3,7 +3,6 @@ import { SelectScreen } from 'components/SelectScreen';
 import { FlatList, StyleProp, View } from 'react-native';
 import getLanguageOptions from 'utils/getLanguageOptions';
 import { SelectItem } from 'components/SelectItem';
-import { SubmitButton } from 'components/SubmitButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import RNRestart from 'react-native-restart';

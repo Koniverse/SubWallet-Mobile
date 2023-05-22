@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontMedium } from 'styles/sharedStyles';
 
 export interface InputAmountStyles {
   container: ViewStyle;

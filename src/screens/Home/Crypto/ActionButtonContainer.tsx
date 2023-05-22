@@ -12,9 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
-import { AccountSelect } from 'screens/AccountSelect';
 import { isEthereumAddress } from '@polkadot/util-crypto';
-import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import useShowedNetworks from 'hooks/screen/useShowedNetworks';
 import { useToast } from 'react-native-toast-notifications';
 

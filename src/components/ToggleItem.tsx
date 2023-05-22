@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, Switch, View, ViewProps } from 'react-native';
 import Text from '../components/Text';
 import { ColorMap } from 'styles/color';
-import { DisabledStyle, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { DisabledStyle, FontSemiBold } from 'styles/sharedStyles';
 import { BackgroundIcon } from './design-system-ui';
 import { IconProps } from 'phosphor-react-native';
 

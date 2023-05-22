@@ -3,7 +3,7 @@ import React from 'react';
 import { toShort } from 'utils/index';
 import { StyleProp, View } from 'react-native';
 import Text from '../../components/Text';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
 import { Avatar } from 'components/design-system-ui';

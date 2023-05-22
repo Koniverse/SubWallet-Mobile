@@ -1,7 +1,6 @@
 import React from 'react';
 import { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { SwModal } from 'components/design-system-ui';
-import { toShort } from 'utils/index';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
 import { StakingStatusUi } from 'constants/stakingStatusUi';

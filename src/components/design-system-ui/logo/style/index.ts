@@ -5,7 +5,7 @@ export interface LogoStyle {
   subLogoContainer: ViewStyle;
 }
 
-export default (theme: ThemeTypes) =>
+export default () =>
   StyleSheet.create<LogoStyle>({
     subLogoContainer: { position: 'absolute', bottom: -1, right: -1 },
   });

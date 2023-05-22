@@ -79,7 +79,7 @@ export function buildHierarchy(accounts: AccountJson[]): AccountWithChildren[] {
 
       return (
         !parentAddress || // it is a parent
-        !accounts.some(({ address }) => parentAddress === address)
+        !accounts.some(({ a }) => parentAddress === a)
       ); // we don't have a parent for this one
     })
     .map(accountWithChildren(accounts))

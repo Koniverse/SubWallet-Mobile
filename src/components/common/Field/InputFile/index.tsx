@@ -35,7 +35,11 @@ export const InputFile = ({ onChangeResult, style, fileName, disabled }: Props) 
   }, [onChangeResult]);
 
   return (
-    <TouchableOpacity style={[styles.wrapper, style]} onPress={onChangeFile} activeOpacity={theme.opacityPress} disabled={disabled}>
+    <TouchableOpacity
+      style={[styles.wrapper, style]}
+      onPress={onChangeFile}
+      activeOpacity={theme.opacityPress}
+      disabled={disabled}>
       <View style={styles.border} />
       <View style={styles.container}>
         <Icon

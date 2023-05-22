@@ -9,8 +9,8 @@ import { TokenBalanceItemType } from 'types/balance';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenBalanceItem } from 'components/common/TokenBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import {EmptyList} from "components/EmptyList";
-import {Coins} from "phosphor-react-native";
+import { EmptyList } from 'components/EmptyList';
+import { Coins } from 'phosphor-react-native';
 
 interface Props {
   modalVisible: boolean;

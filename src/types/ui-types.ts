@@ -2,7 +2,6 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import React from 'react';
 import { Icon, IconProps } from 'phosphor-react-native';
 import BigN from 'bignumber.js';
-import { SwNumberProps } from 'components/design-system-ui/number';
 
 export type AccountType = 'ALL' | 'ETHEREUM' | 'SUBSTRATE';
 export type BalanceFormatType = [number, string, string | undefined];

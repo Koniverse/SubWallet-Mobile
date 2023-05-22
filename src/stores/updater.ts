@@ -1,15 +1,6 @@
-import {
-  ActiveCronAndSubscriptionMap,
-  BalanceJson,
-  CrowdloanJson,
-  NetworkJson,
-  PriceJson,
-  UiSettings,
-  StakingJson,
-  StakingRewardJson,
-} from '@subwallet/extension-base/background/KoniTypes';
+import { ActiveCronAndSubscriptionMap, PriceJson, UiSettings } from '@subwallet/extension-base/background/KoniTypes';
 import { store } from 'stores/index';
-import { AccountsSlice, AuthUrlsSlice, BrowserSlice, BrowserSliceTab, SiteInfo } from 'stores/types';
+import { AuthUrlsSlice, BrowserSlice, BrowserSliceTab, SiteInfo } from 'stores/types';
 
 export function updateSettings(settings: UiSettings): void {
   store.dispatch({ type: 'settings/update', payload: { ...settings } });

@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
 import { DotsThree } from 'phosphor-react-native';
-import { NETWORK_STATUS } from '@subwallet/extension-base/background/KoniTypes';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';

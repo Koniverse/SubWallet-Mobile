@@ -1,7 +1,6 @@
 import { Platform, StyleProp, StyleSheet } from 'react-native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { ColorMap } from 'styles/color';
-import { statusBarHeight } from 'constants/index';
 
 export const STATUS_BAR_HEIGHT = getStatusBarHeight();
 export const STATUS_BAR_LIGHT_CONTENT = 'light-content';

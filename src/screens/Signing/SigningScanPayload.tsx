@@ -1,5 +1,4 @@
 import { useNavigation } from '@react-navigation/native';
-import { SubmitButton } from 'components/SubmitButton';
 import Text from 'components/Text';
 import { Warning } from 'components/Warning';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Item } from 'react-native-picker-select';
 import { EmptyList } from 'components/EmptyList';
-import { Aperture, MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import SelectNetworkModal from 'components/Modal/SelectNetworkModal';
 

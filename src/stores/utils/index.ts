@@ -37,8 +37,6 @@ import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
 import { buildHierarchy } from 'utils/buildHierarchy';
-import { addLazy } from 'utils/lazyUpdate';
-
 // Setup redux stores
 
 function voidFn() {

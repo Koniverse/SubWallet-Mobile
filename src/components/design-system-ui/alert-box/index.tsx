@@ -2,7 +2,7 @@ import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Info } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { convertHexColorToRGBA } from 'utils/color';
 import BackgroundIcon from '../background-icon';
 import createStyles from './styles';
