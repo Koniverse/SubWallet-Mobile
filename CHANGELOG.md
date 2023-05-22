@@ -1,4 +1,7 @@
-## 1.0.3 (156)
+## 1.0.3 (161)
+- Fix crash app on FlatlistScreen
+
+## 1.0.3 (160)
 - Fix Android splash screen
 - Update web runner
 - UI bug fixing

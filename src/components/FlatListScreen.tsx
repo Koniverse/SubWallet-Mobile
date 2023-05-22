@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
 import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
