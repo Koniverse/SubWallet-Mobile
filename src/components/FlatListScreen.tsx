@@ -109,13 +109,13 @@ export function FlatListScreen<T>({
     onCloseFilterModal,
   } = useFilterModal();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (autoFocus && searchRef && searchRef.current) {
-  //       searchRef.current.focus();
-  //     }
-  //   }, HIDE_MODAL_DURATION);
-  // }, [autoFocus, searchRef]);
+  useEffect(() => {
+    setTimeout(() => {
+      if (autoFocus && searchRef && searchRef.current) {
+        searchRef.current.focus();
+      }
+    }, 200);
+  }, [autoFocus, searchRef]);
 
   const _onPressBack = () => {
     searchRef && searchRef.current && searchRef.current.blur();
@@ -128,7 +128,7 @@ export function FlatListScreen<T>({
 
       {withSearchInput && (
         <Search
-          autoFocus={autoFocus}
+          autoFocus={false}
           placeholder={placeholder}
           onClearSearchString={() => setSearchString('')}
           onSearch={setSearchString}

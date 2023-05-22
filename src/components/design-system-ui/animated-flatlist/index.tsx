@@ -35,6 +35,7 @@ const ReanimatedFlatlist: ReanimatedFlatListFC = forwardRef(
   (props: ReanimatedFlatListProps<any>, ref: ForwardedRef<FlatList>) => {
     const { itemLayoutAnimation, ...restProps } = props;
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const cellRenderer = React.useMemo(() => createCellRenderer(itemLayoutAnimation), []);
 
     return <AnimatedFlatList ref={ref} {...restProps} CellRendererComponent={cellRenderer} />;

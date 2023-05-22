@@ -26,7 +26,7 @@ import AppNavigator from './AppNavigator';
 import { keyringLock } from 'messaging/index';
 import { updateShowZeroBalanceState } from 'stores/utils';
 import { setBuildNumber } from './stores/AppVersion';
-import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
+// import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
 import { getBuildNumber } from 'react-native-device-info';
 import { useDispatch } from 'react-redux';
 
@@ -130,12 +130,10 @@ export const AppNew = () => {
   }, []);
 
   useEffect(() => {
-    if (!hasMigratedFromAsyncStorage) {
-      if (buildNumber === 1) {
-        updateShowZeroBalanceState(true);
-        const buildNumberInt = parseInt(getBuildNumber(), 10);
-        dispatch(setBuildNumber(buildNumberInt));
-      }
+    if (buildNumber === 1) {
+      updateShowZeroBalanceState(true);
+      const buildNumberInt = parseInt(getBuildNumber(), 10);
+      dispatch(setBuildNumber(buildNumberInt));
     }
     if (hasMasterPassword) {
       keyringLock().catch((e: Error) => console.log(e));

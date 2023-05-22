@@ -221,11 +221,13 @@ export const AccountCreationArea = ({
         label: 'Attach watch-only account',
         onClickBtn: () => {
           onChangeAttachAccountModalVisible(false);
-          if (hasMasterPassword) {
-            navigation.navigate('AttachReadOnly');
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'AttachReadOnly' });
-          }
+          setTimeout(() => {
+            if (hasMasterPassword) {
+              navigation.navigate('AttachReadOnly');
+            } else {
+              navigation.navigate('CreatePassword', { pathName: 'AttachReadOnly' });
+            }
+          }, 200);
         },
       },
     ],
