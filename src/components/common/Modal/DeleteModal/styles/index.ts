@@ -27,5 +27,6 @@ export default (theme: ThemeTypes) =>
       color: theme.colorTextTertiary,
       ...FontMedium,
       textAlign: 'center',
+      paddingHorizontal: theme.padding,
     },
   });
