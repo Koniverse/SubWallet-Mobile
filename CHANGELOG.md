@@ -1,4 +1,9 @@
 ## 1.0.3 (156)
+- Fix Android splash screen
+- Update web runner
+- UI bug fixing
+
+## 1.0.3 (156)
 - Fix import private key problems (#663)
 - Update 'read-only' to 'watch-only'
 
