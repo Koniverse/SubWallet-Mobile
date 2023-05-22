@@ -2,7 +2,7 @@ import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTy
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import NftItem from './NftItem';
@@ -13,8 +13,14 @@ import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { restartCronServices } from 'messaging/index';
+import { deleteCustomAssets, restartCronServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
+import { Trash } from 'phosphor-react-native';
+import DeleteModal from 'components/common/Modal/DeleteModal';
+import useConfirmModal from 'hooks/modal/useConfirmModal';
+import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
+import { _isCustomAsset, _isSmartContractToken } from '@subwallet/extension-base/services/chain-service/utils';
+import { useToast } from 'react-native-toast-notifications';
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
@@ -40,13 +46,17 @@ const NftItemList = ({
   },
 }: NFTCollectionProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const toast = useToast();
 
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const collection = useMemo(() => {
     return nftCollections.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
   }, [collectionId, nftCollections]);
+
+  const originAssetInfo = useGetChainAssetInfo(collection?.originAsset);
 
   const _nftItems = useMemo(() => {
     return nftItems.filter(item => item.collectionId === (collection?.collectionId || '__'));
@@ -60,6 +70,10 @@ const NftItemList = ({
     ({ item }: ListRenderItemInfo<_NftItem>) => {
       const key = `${item.collectionId}-${item.id}`;
       const onPress = () => {
+        if (isDeleting) {
+          return;
+        }
+
         navigation.navigate('Home', {
           screen: 'NFTs',
           params: {
@@ -71,8 +85,35 @@ const NftItemList = ({
 
       return <NftItem key={key} nftItem={item} collectionImage={collection?.image} onPress={onPress} />;
     },
-    [collection?.image, collectionId, navigation],
+    [collection?.image, collectionId, isDeleting, navigation],
   );
+
+  const handeDelete = () => {
+    if (collection?.originAsset) {
+      setIsDeleting(true);
+      deleteCustomAssets(collection.originAsset)
+        .then(result => {
+          if (result) {
+            navigation.goBack();
+            toast.show('Deleted NFT collection successfully');
+          } else {
+            toast.show('Deleted NFT collection unsuccessfully');
+          }
+          setIsDeleting(false);
+        })
+        .catch(() => {
+          toast.show('Error. Please try again');
+          setIsDeleting(false);
+        });
+    }
+  };
+
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+  } = useConfirmModal(handeDelete);
 
   return (
     <View style={NftItemListStyle}>
@@ -92,6 +133,13 @@ const NftItemList = ({
         renderItem={renderItem}
         renderListEmptyComponent={renderEmptyNFT}
         searchFunction={filteredNftItem}
+        rightIconOption={{
+          icon: Trash,
+          disabled:
+            isDeleting ||
+            !(originAssetInfo && _isSmartContractToken(originAssetInfo) && _isCustomAsset(originAssetInfo.slug)),
+          onPress: onPressDelete,
+        }}
         items={_nftItems}
         numberColumns={2}
         searchMarginBottom={16}
@@ -103,6 +151,15 @@ const NftItemList = ({
             onRefresh={() => refresh(restartCronServices(['nft']))}
           />
         }
+      />
+
+      {/*todo: i18n*/}
+      <DeleteModal
+        title={'Delete this NFT ?'}
+        visible={deleteVisible}
+        message={'If you need to use this NFT you would need to manually import it again'}
+        onCompleteModal={onCompleteDeleteModal}
+        onCancelModal={onCancelDelete}
       />
     </View>
   );
