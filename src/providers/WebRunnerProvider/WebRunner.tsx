@@ -14,7 +14,7 @@ import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
 
 const WEB_SERVER_PORT = 9135;
-const LONG_TIMEOUT = 900000; //15*60*1000
+const LONG_TIMEOUT = 300000; //5*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 
 const getJsInjectContent = (showLog?: boolean) => {
