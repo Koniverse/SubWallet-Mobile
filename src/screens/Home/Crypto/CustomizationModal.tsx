@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ListRenderItemInfo, Switch, View } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -7,14 +7,14 @@ import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainI
 import { updateChainActiveState } from 'messaging/index';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
-import { Typography } from 'components/design-system-ui';
-import { ColorMap } from 'styles/color';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateShowZeroBalanceState } from 'stores/utils';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { MagnifyingGlass, Wallet } from 'phosphor-react-native';
+import { ToggleItem } from 'components/ToggleItem';
+import { Typography } from 'components/design-system-ui';
 
 interface Props {
   modalVisible: boolean;
@@ -124,33 +124,46 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
     return <EmptyList icon={MagnifyingGlass} title={'No chain'} message={'Your chain will appear here'} />;
   };
 
-  const onChangeZeroBalance = useCallback((checked: boolean) => {
-    updateShowZeroBalanceState(checked);
-  }, []);
+  const onChangeZeroBalance = useCallback(() => {
+    updateShowZeroBalanceState(!isShowZeroBalance);
+  }, [isShowZeroBalance]);
 
   const beforeList = useMemo(() => {
     return (
-      <View
-        style={{
-          flexDirection: 'row',
-          paddingTop: theme.paddingSM,
-          paddingBottom: theme.paddingXS,
-          paddingHorizontal: theme.padding,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-        <Typography.Text size={'md'} style={{ color: theme.colorTextLight1, ...FontSemiBold }}>
-          {i18n.cryptoScreen.showZeroBalance}
+      <>
+        <Typography.Text
+          style={{
+            fontSize: theme.fontSizeSM,
+            lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+            color: theme.colorTextLight3,
+            ...FontSemiBold,
+            paddingLeft: 16,
+            paddingTop: 8,
+            paddingBottom: 8,
+          }}>
+          {'BALANCE'}
         </Typography.Text>
-
-        <Switch
-          ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-          value={isShowZeroBalance}
+        <ToggleItem
+          backgroundIcon={Wallet}
+          backgroundIconColor={theme['green-7']}
+          style={{ marginHorizontal: 16 }}
+          label={i18n.cryptoScreen.showZeroBalance}
+          isEnabled={isShowZeroBalance}
           onValueChange={onChangeZeroBalance}
         />
-      </View>
+        <Typography.Text
+          style={{
+            fontSize: theme.fontSizeSM,
+            lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+            color: theme.colorTextLight3,
+            ...FontSemiBold,
+            paddingLeft: 16,
+          }}>
+          {'NETWORKS'}
+        </Typography.Text>
+      </>
     );
-  }, [isShowZeroBalance, onChangeZeroBalance, theme.colorTextLight1, theme.padding, theme.paddingSM, theme.paddingXS]);
+  }, [isShowZeroBalance, onChangeZeroBalance, theme]);
 
   return (
     <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
