@@ -730,6 +730,7 @@ export const SendFund = ({
               onChangeFromValue(item.address);
               setForceUpdateMaxValue(undefined);
               setAccountSelectModalVisible(false);
+              setIsTransferAll(false);
             }}
             items={accountItems}
             onCancel={() => setAccountSelectModalVisible(false)}
