@@ -130,6 +130,7 @@ const StakingBalanceList = () => {
           searchFunction={searchFunction}
           filterOptions={FILTER_OPTIONS}
           filterFunction={filterFunction}
+          flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS }}
           renderItem={renderItem}
           rightIconOption={rightIconOption}
           isShowFilterBtn

@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-nativ
 import { TokenBalanceItemType } from 'types/balance';
 import { BN_ZERO } from 'utils/chainBalances';
 import { Icon, Logo, Number, Typography } from 'components/design-system-ui';
-import { CaretRight } from 'phosphor-react-native';
+import { DotsThree } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import TokenBalanceItemStyles from './style';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
@@ -60,8 +60,8 @@ export const TokenBalanceItem = ({
                   unitOpacity={0.45}
                   decimalOpacity={0.45}
                   prefix={'$'}
-                  size={theme.fontSize}
-                  textStyle={{ ...FontMedium, lineHeight: theme.lineHeight * theme.fontSize }}
+                  size={theme.fontSizeSM}
+                  textStyle={{ ...FontMedium, lineHeight: theme.lineHeightSM * theme.fontSizeSM }}
                 />
               </>
             )}
@@ -77,11 +77,25 @@ export const TokenBalanceItem = ({
                   }}>
                   ******
                 </Typography.Text>
-                <Typography.Text style={{ ...FontMedium, color: theme.colorTextLight4 }}>******</Typography.Text>
+                <Typography.Text
+                  style={{
+                    ...FontMedium,
+                    fontSize: theme.fontSizeSM,
+                    color: theme.colorTextLight4,
+                    lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+                  }}>
+                  ******
+                </Typography.Text>
               </>
             )}
           </View>
-          <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
+          <Icon
+            type="phosphor"
+            weight={'bold'}
+            phosphorIcon={DotsThree}
+            size={'sm'}
+            iconColor={theme.colorTextLight3}
+          />
         </View>
       </View>
     </TouchableOpacity>

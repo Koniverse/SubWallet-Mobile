@@ -1,6 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { convertHexColorToRGBA } from 'utils/color';
+import { FontBold, FontSemiBold } from 'styles/sharedStyles';
 
 export interface TagStyle {
   tag: ViewStyle;
@@ -121,7 +122,7 @@ export default (theme: ThemeTypes) => {
       fontSize: theme.fontSizeXS,
       textAlign: 'center',
       lineHeight: tagHeight,
-      fontWeight: '700',
+      ...FontBold,
     },
     primaryDefaultText: getTagStatusTextStyle('default', 'Primary'),
     primaryGrayText: getTagStatusTextStyle('gray', 'Primary'),
