@@ -5,6 +5,7 @@ import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
 import { View, TouchableOpacity } from 'react-native';
 import { Coin } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { DisabledStyle } from 'styles/sharedStyles';
 
 interface Props {
   modalVisible: boolean;
@@ -12,13 +13,21 @@ interface Props {
   selectedValue?: string;
   onPress?: () => void;
   onChangeModalVisible?: () => void;
+  disabled?: boolean;
 }
 
-export const TokenTypeSelector = ({ modalVisible, items, selectedValue, onPress, onChangeModalVisible }: Props) => {
+export const TokenTypeSelector = ({
+  modalVisible,
+  items,
+  selectedValue,
+  onPress,
+  onChangeModalVisible,
+  disabled,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
     <>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} disabled={disabled} style={disabled && DisabledStyle}>
         <TokenTypeSelectField value={selectedValue} showIcon />
       </TouchableOpacity>
 
