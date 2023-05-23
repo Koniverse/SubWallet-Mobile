@@ -95,7 +95,9 @@ export const TokenGroupBalanceItem = ({
               </>
             )}
           </View>
-          <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
+          <View style={_style.iconWrapper}>
+            <Icon type="phosphor" phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />
+          </View>
         </View>
       </View>
     </TouchableOpacity>

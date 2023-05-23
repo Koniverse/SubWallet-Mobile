@@ -10,6 +10,7 @@ export interface TokenGroupBalanceItemStyles {
   chainBalanceMetaWrapper: ViewStyle;
   chainBalancePart2: ViewStyle;
   chainBalancePart2Wrapper: ViewStyle;
+  iconWrapper: ViewStyle;
 }
 
 export default (theme: ThemeTypes) =>
@@ -41,12 +42,18 @@ export default (theme: ThemeTypes) =>
     },
     chainBalancePart2: {
       alignItems: 'flex-end',
-      paddingRight: 10,
       paddingLeft: theme.sizeXXS,
     },
     chainBalancePart2Wrapper: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingRight: theme.size - 2,
+    },
+    iconWrapper: {
+      width: 40,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: theme.marginXXS,
+      marginRight: theme.marginXXS,
     },
   });
