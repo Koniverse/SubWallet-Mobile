@@ -29,10 +29,13 @@ export const StakingValidatorItem = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingValidatorItemStyle(theme);
-  const { address, identity, symbol, commission, expectedReturn } = validatorInfo;
+  const { address, identity, commission, expectedReturn } = validatorInfo;
   const onPressItem = useCallback(() => {
     onPress && onPress(getValidatorKey(address, identity));
   }, [address, identity, onPress]);
+
+  const expectedReturnValue = expectedReturn?.toString() || '0';
+
   return (
     <TouchableOpacity style={_style.container} onPress={onPressItem}>
       <View style={_style.avatarWrapper}>
@@ -49,17 +52,22 @@ export const StakingValidatorItem = ({
 
         <View style={_style.contentWrapper}>
           <Text style={_style.subTextStyle}>{`Commission: ${commission}%`}</Text>
-          <Text style={_style.subTextStyle}>{' - APY: '}</Text>
-          <Number
-            decimal={0}
-            suffix="%"
-            size={12}
-            value={expectedReturn?.toString() || '0'}
-            textStyle={{ ...FontMedium }}
-            decimalOpacity={0.45}
-            intOpacity={0.45}
-            unitOpacity={0.45}
-          />
+
+          {!!expectedReturnValue && expectedReturnValue !== '0' && (
+            <>
+              <Text style={_style.subTextStyle}>{' - APY: '}</Text>
+              <Number
+                decimal={0}
+                suffix="%"
+                size={12}
+                value={expectedReturn?.toString() || '0'}
+                textStyle={{ ...FontMedium }}
+                decimalOpacity={0.45}
+                intOpacity={0.45}
+                unitOpacity={0.45}
+              />
+            </>
+          )}
         </View>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
