@@ -300,6 +300,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
         <TokenTypeSelector
           modalVisible={isShowTokenTypeModal}
           items={nftTypeOptions}
+          disabled={!nftTypeOptions.length}
           selectedValue={selectedNftType}
           onPress={() => setShowTokenTypeModal(true)}
           onChangeModalVisible={() => setShowTokenTypeModal(false)}

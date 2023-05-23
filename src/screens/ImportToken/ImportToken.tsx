@@ -284,6 +284,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           <TokenTypeSelector
             modalVisible={isShowTokenTypeModal}
             items={tokenTypeOptions}
+            disabled={!tokenTypeOptions.length}
             selectedValue={formState.data.selectedTokenType}
             onPress={() => setShowTokenTypeModal(true)}
             onChangeModalVisible={() => setShowTokenTypeModal(false)}
