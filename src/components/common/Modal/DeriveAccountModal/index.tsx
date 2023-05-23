@@ -8,23 +8,24 @@ import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ActivityIndicator, SwModal } from 'components/design-system-ui';
 import { LazyFlatList } from 'components/LazyFlatList';
 import { Search } from 'components/Search';
-import { Warning } from 'components/Warning';
 import { deviceHeight, EVM_ACCOUNT_TYPE, TOAST_DURATION } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deriveAccountV3 } from 'messaging/index';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ListRenderItemInfo, TextInput, View } from 'react-native';
+import { ListRenderItemInfo, ScrollView, TextInput, View } from 'react-native';
 import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { ScrollViewStyle, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
 
 type Props = {
   modalVisible: boolean;
@@ -32,7 +33,17 @@ type Props = {
 };
 
 const renderListEmptyComponent = () => {
-  return <Warning title={i18n.warningTitle.warning} message={i18n.warningMessage.noAccountText} isDanger={false} />;
+  return (
+    <ScrollView
+      style={{ ...ScrollViewStyle }}
+      contentContainerStyle={{ alignItems: 'center', minHeight: '100%', justifyContent: 'center', paddingBottom: 50 }}>
+      <EmptyList
+        icon={MagnifyingGlass}
+        title={'No results found'}
+        message={'Please change your search criteria try again'}
+      />
+    </ScrollView>
+  );
 };
 
 const filteredAccounts = (_items: AccountJson[], searchString: string) => {
@@ -53,7 +64,7 @@ const renderLoaderIcon = (x: React.ReactNode): React.ReactNode => {
 };
 
 const DeriveAccountModal: React.FC<Props> = (props: Props) => {
-  const { modalVisible, onChangeModalVisible } = props;
+  const { modalVisible, onChangeModalVisible: _onChangeModalVisible } = props;
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
 
@@ -82,6 +93,11 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
     toastRef.current?.hideAll();
     toastRef.current?.show(message, { type: 'danger' });
   }, []);
+
+  const onChangeModalVisible = useCallback(() => {
+    _onChangeModalVisible();
+    setSearchString('');
+  }, [_onChangeModalVisible]);
 
   const onSelectAccount = useCallback(
     (account: AccountJson): (() => void) => {

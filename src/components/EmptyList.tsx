@@ -15,7 +15,7 @@ interface Props {
 export const EmptyList = ({ icon, title, message }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
-    <View style={[centerStyle, { justifyContent: 'center', alignItems: 'center', paddingBottom: 120 }]}>
+    <View style={[centerStyle, { justifyContent: 'center', alignItems: 'center' }]}>
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
         <PageIcon icon={icon} color={theme.colorTextTertiary} backgroundColor={'rgba(77, 77, 77, 0.1)'} />
         <Text
