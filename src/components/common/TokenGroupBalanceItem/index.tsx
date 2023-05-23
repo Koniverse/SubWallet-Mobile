@@ -43,8 +43,8 @@ export const TokenGroupBalanceItem = ({
             intColor={isTotalBalanceDecrease ? theme.colorError : theme.colorSuccess}
             decimalColor={isTotalBalanceDecrease ? theme.colorError : theme.colorSuccess}
             unitColor={isTotalBalanceDecrease ? theme.colorError : theme.colorSuccess}
-            size={theme.fontSize}
-            textStyle={{ ...FontMedium, lineHeight: theme.lineHeight * theme.fontSize }}
+            size={theme.fontSizeSM}
+            textStyle={{ ...FontMedium, lineHeight: theme.lineHeightSM * theme.fontSizeSM }}
           />
         </View>
 
@@ -66,8 +66,8 @@ export const TokenGroupBalanceItem = ({
                   unitOpacity={0.45}
                   decimalOpacity={0.45}
                   prefix={'$'}
-                  size={theme.fontSize}
-                  textStyle={{ ...FontMedium, lineHeight: theme.lineHeight * theme.fontSize }}
+                  size={theme.fontSizeSM}
+                  textStyle={{ ...FontMedium, lineHeight: theme.lineHeightSM * theme.fontSizeSM }}
                 />
               </>
             )}
@@ -83,7 +83,15 @@ export const TokenGroupBalanceItem = ({
                   }}>
                   ******
                 </Typography.Text>
-                <Typography.Text style={{ ...FontMedium, color: theme.colorTextLight4 }}>******</Typography.Text>
+                <Typography.Text
+                  style={{
+                    ...FontMedium,
+                    fontSize: theme.fontSizeSM,
+                    lineHeight: theme.lineHeightSM * theme.fontSizeSM,
+                    color: theme.colorTextLight4,
+                  }}>
+                  ******
+                </Typography.Text>
               </>
             )}
           </View>

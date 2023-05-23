@@ -1,15 +1,15 @@
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import BigN from 'bignumber.js';
-import { Icon, Tag, Number } from 'components/design-system-ui';
+import { Icon, Number, Tag } from 'components/design-system-ui';
 import { StakingDataType } from 'hooks/types';
 import { CaretRight, User, Users } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
-import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { getConvertedBalance } from 'utils/chainBalances';
 import { getNetworkLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ThemeTypes } from 'styles/themes';
 
 interface Props {
   stakingData: StakingDataType;
@@ -17,56 +17,10 @@ interface Props {
   onPress: (value: StakingDataType) => () => void;
 }
 
-const WrapperStyle: StyleProp<ViewStyle> = {
-  width: '100%',
-  paddingHorizontal: 16,
-};
-
-const InfoContainerStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  width: '100%',
-  paddingLeft: 12,
-  paddingRight: 12,
-  paddingTop: 11,
-  paddingBottom: 11,
-  backgroundColor: '#1A1A1A',
-  borderRadius: 8,
-  marginBottom: 8,
-  alignItems: 'center',
-};
-const NetworkInfoWrapperStyle: StyleProp<ViewStyle> = {
-  flexDirection: 'row',
-  alignItems: 'center',
-  overflow: 'hidden',
-  flex: 5,
-};
-
-const NetworkInfoContentStyle: StyleProp<ViewStyle> = {
-  paddingLeft: 8,
-  paddingRight: 8,
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const NetworkNameStyle: StyleProp<TextStyle> = {
-  fontSize: 16,
-  lineHeight: 24,
-  ...FontSemiBold,
-  color: ColorMap.light,
-};
-
-const BalanceInfoContainerStyle: StyleProp<ViewStyle> = {
-  alignItems: 'flex-end',
-  paddingLeft: 2,
-  paddingRight: 12,
-};
-
 const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
   const { staking, decimals } = stakingData;
   const theme = useSubWalletTheme().swThemes;
+  const styleSheet = createStyleSheet(theme);
 
   const networkDisplayName = useMemo((): string => {
     return staking.name.replace(' Relay Chain', '');
@@ -79,12 +33,12 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
   }, [priceMap, staking.balance, staking.chain]);
 
   return (
-    <TouchableOpacity style={WrapperStyle} activeOpacity={0.5} onPress={onPress(stakingData)}>
-      <View style={InfoContainerStyle}>
-        <View style={NetworkInfoWrapperStyle}>
+    <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={onPress(stakingData)}>
+      <View style={styleSheet.infoContainer}>
+        <View style={styleSheet.networkInfoWrapper}>
           {getNetworkLogo(staking.chain, 40)}
-          <View style={NetworkInfoContentStyle}>
-            <Text style={NetworkNameStyle} numberOfLines={1} ellipsizeMode={'tail'}>
+          <View style={styleSheet.networkInfoContent}>
+            <Text style={styleSheet.networkName} numberOfLines={1} ellipsizeMode={'tail'}>
               {networkDisplayName}
             </Text>
             <View style={{ alignItems: 'flex-start' }}>
@@ -105,7 +59,7 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
           </View>
         </View>
 
-        <View style={BalanceInfoContainerStyle}>
+        <View style={styleSheet.balanceInfoContainer}>
           <Number value={staking.balance || 0} decimal={decimals} suffix={symbol} textStyle={{ ...FontSemiBold }} />
 
           <Number
@@ -116,13 +70,68 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
             intOpacity={0.45}
             decimalOpacity={0.45}
             unitOpacity={0.45}
-            textStyle={{ ...FontMedium }}
+            textStyle={{ ...FontMedium, lineHeight: theme.fontSizeSM * theme.lineHeightSM }}
           />
         </View>
-        <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'md'} />
+        <View style={styleSheet.iconWrapper}>
+          <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
+        </View>
       </View>
     </TouchableOpacity>
   );
 };
+
+function createStyleSheet(theme: ThemeTypes) {
+  return StyleSheet.create({
+    wrapper: {},
+
+    infoContainer: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      paddingLeft: theme.paddingSM,
+      paddingTop: theme.paddingSM - 1,
+      paddingBottom: theme.paddingSM - 1,
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadiusLG,
+      alignItems: 'center',
+    },
+    networkInfoWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      overflow: 'hidden',
+      flex: 5,
+    },
+
+    networkInfoContent: {
+      paddingHorizontal: theme.paddingSM,
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+    },
+
+    networkName: {
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      ...FontSemiBold,
+      color: theme.colorTextLight1,
+    },
+
+    balanceInfoContainer: {
+      alignItems: 'flex-end',
+      paddingLeft: 2,
+    },
+
+    iconWrapper: {
+      width: 40,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: theme.marginXXS,
+      marginRight: theme.marginXXS,
+    },
+  });
+}
 
 export default React.memo(StakingBalanceItem);

@@ -73,6 +73,7 @@ export const CrowdloansScreen = () => {
           isShowFilterBtn
           style={{ marginTop: 16 }}
           title={i18n.tabName.crowdloans}
+          flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS }}
           renderListEmptyComponent={renderListEmptyComponent}
           renderItem={renderItem}
           autoFocus={false}

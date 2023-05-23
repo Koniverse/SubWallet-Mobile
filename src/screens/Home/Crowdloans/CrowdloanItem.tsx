@@ -4,69 +4,15 @@ import { TagNativeProps } from 'components/design-system-ui/tag';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { Linking, StyleProp, Text, TextStyle, TouchableOpacity, View } from 'react-native';
-import { ColorMap } from 'styles/color';
-import { ContainerHorizontalPadding, FontBold, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CrowdloanItemType } from 'types/index';
 import i18n from 'utils/i18n/i18n';
+import { ThemeTypes } from 'styles/themes';
 
 interface Props {
   item: CrowdloanItemType;
 }
-
-const containerStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  marginHorizontal: 16,
-  marginBottom: 8,
-  borderRadius: 8,
-};
-
-const subTextStyle: StyleProp<any> = {
-  ...FontMedium,
-  fontSize: 12,
-  lineHeight: 20,
-  color: ColorMap.disabled,
-};
-
-const textStyle: StyleProp<TextStyle> = {
-  ...FontSemiBold,
-  fontSize: 16,
-  lineHeight: 24,
-  color: ColorMap.light,
-};
-
-const crowdloanItemPart1Style: StyleProp<any> = {
-  flexDirection: 'row',
-  // alignItems: 'center',
-};
-
-const crowdloanItemPart2Style: StyleProp<any> = {
-  alignItems: 'flex-end',
-};
-
-const crowdloanItemMetaWrapperStyle: StyleProp<any> = {
-  paddingLeft: 14,
-};
-
-const crowdloanItemTopAreaStyle: StyleProp<any> = {
-  flexDirection: 'row',
-  alignItems: 'center',
-};
-
-const crowdloanItemMainArea: StyleProp<any> = {
-  flexDirection: 'row',
-  paddingVertical: 12,
-  justifyContent: 'space-between',
-};
-
-const paraStateLabelWrapperStyle: StyleProp<any> = {
-  marginLeft: 8,
-};
-const crowdloanItemSeparator: StyleProp<any> = {
-  borderBottomWidth: 1,
-  borderBottomColor: ColorMap.dark2,
-  marginLeft: 54,
-};
 
 function getParaStateLabel(paraState: CrowdloanParaState) {
   if (paraState.valueOf() === CrowdloanParaState.COMPLETED.valueOf()) {
@@ -94,6 +40,7 @@ export function getGroupKey(groupDisplayName: string) {
 
 export const CrowdloanItem = ({ item }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const styleSheet = createStyleSheet(theme);
 
   const tagColor = useMemo((): TagNativeProps['color'] => {
     switch (item.paraState) {
@@ -110,12 +57,12 @@ export const CrowdloanItem = ({ item }: Props) => {
 
   return (
     <TouchableOpacity
-      style={{ ...ContainerHorizontalPadding, ...containerStyle, backgroundColor: theme.colorBgSecondary }}
+      style={{ ...styleSheet.container, backgroundColor: theme.colorBgSecondary }}
       activeOpacity={BUTTON_ACTIVE_OPACITY}
       onPress={() => Linking.openURL(item.crowdloanUrl ? item.crowdloanUrl : '')}
       disabled={!item.crowdloanUrl}>
-      <View style={crowdloanItemMainArea}>
-        <View style={crowdloanItemPart1Style}>
+      <View style={styleSheet.crowdloanItemMainArea}>
+        <View style={styleSheet.crowdloanItemPart1}>
           <View style={{ position: 'relative' }}>
             <Logo
               size={40}
@@ -126,46 +73,97 @@ export const CrowdloanItem = ({ item }: Props) => {
             />
           </View>
 
-          <View style={crowdloanItemMetaWrapperStyle}>
-            <View style={crowdloanItemTopAreaStyle}>
-              <Text style={[textStyle, { maxWidth: 120 }]} numberOfLines={1}>
+          <View style={styleSheet.crowdloanItemMetaWrapper}>
+            <View style={styleSheet.crowdloanItemTopArea}>
+              <Text style={[styleSheet.text, { maxWidth: 120 }]} numberOfLines={1}>
                 {item.chainDisplayName}
               </Text>
 
               {!!item.paraState && (
-                <View style={paraStateLabelWrapperStyle}>
+                <View style={styleSheet.paraStateLabelWrapper}>
                   <Tag closable={false} color={tagColor} bgType="default">
                     {getParaStateLabel(item.paraState)}
                   </Tag>
                 </View>
               )}
             </View>
-            <Text style={subTextStyle}>{item.relayParentDisplayName}</Text>
+            <Text style={styleSheet.subText}>{item.relayParentDisplayName}</Text>
           </View>
         </View>
-        <View style={crowdloanItemPart2Style}>
+        <View style={styleSheet.crowdloanItemPart2}>
           <Number
             value={item.contribute}
             decimal={0}
             suffix={item.symbol}
-            intColor={textStyle.color as string}
-            decimalColor={subTextStyle.color}
-            size={textStyle.fontSize}
-            textStyle={{ lineHeight: textStyle.lineHeight, ...FontSemiBold }}
+            intColor={styleSheet.text.color as string}
+            decimalColor={styleSheet.subText.color}
+            size={styleSheet.text.fontSize}
+            textStyle={{ ...styleSheet.text }}
           />
           <Number
             value={item.convertedContribute}
             decimal={0}
             prefix={'$'}
-            unitColor={subTextStyle.color}
-            intColor={subTextStyle.color}
-            decimalColor={subTextStyle.color}
-            size={subTextStyle.fontSize}
-            textStyle={{ lineHeight: subTextStyle.lineHeight }}
+            unitColor={styleSheet.subText.color}
+            intColor={styleSheet.subText.color}
+            decimalColor={styleSheet.subText.color}
+            size={styleSheet.subText.fontSize}
+            textStyle={{ ...styleSheet.subText }}
           />
         </View>
       </View>
-      <View style={crowdloanItemSeparator} />
     </TouchableOpacity>
   );
 };
+
+function createStyleSheet(theme: ThemeTypes) {
+  return StyleSheet.create({
+    container: {
+      paddingHorizontal: theme.paddingSM,
+      backgroundColor: theme.colorBgSecondary,
+      borderRadius: theme.borderRadiusLG,
+    },
+
+    subText: {
+      ...FontMedium,
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+      color: theme.colorTextLight4,
+    },
+
+    text: {
+      ...FontSemiBold,
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      color: theme.colorTextLight1,
+    },
+
+    crowdloanItemPart1: {
+      flexDirection: 'row',
+      // alignItems: 'center',
+    },
+
+    crowdloanItemPart2: {
+      alignItems: 'flex-end',
+    },
+
+    crowdloanItemMetaWrapper: {
+      paddingLeft: theme.paddingSM,
+    },
+
+    crowdloanItemTopArea: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+
+    crowdloanItemMainArea: {
+      flexDirection: 'row',
+      paddingVertical: theme.paddingSM,
+      justifyContent: 'space-between',
+    },
+
+    paraStateLabelWrapper: {
+      marginLeft: theme.marginXS,
+    },
+  });
+}

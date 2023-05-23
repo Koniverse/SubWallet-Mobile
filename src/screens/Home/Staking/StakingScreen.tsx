@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import StakingBalanceList from 'screens/Home/Staking/Balance/StakingBalanceList';
 import withPageWrapper from 'components/pageWrapper';
 

@@ -39,8 +39,8 @@ export default (theme: ThemeTypes) =>
       overflow: 'hidden',
     },
     chainNameStyle: {
-      fontSize: theme.fontSize,
-      lineHeight: theme.fontSize * theme.lineHeight,
+      fontSize: theme.fontSizeSM,
+      lineHeight: theme.fontSizeSM * theme.lineHeightSM,
       ...FontMedium,
       color: theme.colorTextLight4,
       overflow: 'hidden',
