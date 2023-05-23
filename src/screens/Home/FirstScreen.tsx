@@ -10,6 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountActionButton from 'components/common/Account/AccountActionButton';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
+import { Linking } from 'react-native';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -76,6 +77,14 @@ export const FirstScreen = () => {
     };
   }, []);
 
+  const onPressTermsCondition = () => {
+    Linking.openURL('https://docs.subwallet.app/main/privacy-and-security/terms-of-service');
+  };
+
+  const onPressPolicy = () => {
+    Linking.openURL('https://docs.subwallet.app/main/privacy-and-security/privacy-policy');
+  };
+
   const actionList = [
     {
       key: 'create',
@@ -131,9 +140,13 @@ export const FirstScreen = () => {
         {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
         <Text style={firstScreenNotificationStyle}>
-          <Text style={{ color: theme.colorTextLight1 }}>{i18n.common.termAndConditions}</Text>
+          <Text onPress={onPressTermsCondition} style={{ color: theme.colorTextLight1 }}>
+            {i18n.common.termAndConditions}
+          </Text>
           <Text>{i18n.common.and}</Text>
-          <Text style={{ color: theme.colorTextLight1 }}>{i18n.common.privacyPolicy}</Text>
+          <Text onPress={onPressPolicy} style={{ color: theme.colorTextLight1 }}>
+            {i18n.common.privacyPolicy}
+          </Text>
         </Text>
 
         <AccountCreationArea
