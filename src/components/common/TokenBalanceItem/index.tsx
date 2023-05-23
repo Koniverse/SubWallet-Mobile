@@ -89,13 +89,15 @@ export const TokenBalanceItem = ({
               </>
             )}
           </View>
-          <Icon
-            type="phosphor"
-            weight={'bold'}
-            phosphorIcon={DotsThree}
-            size={'sm'}
-            iconColor={theme.colorTextLight3}
-          />
+          <View style={_style.iconWrapper}>
+            <Icon
+              type="phosphor"
+              weight={'bold'}
+              phosphorIcon={DotsThree}
+              size={'sm'}
+              iconColor={theme.colorTextLight3}
+            />
+          </View>
         </View>
       </View>
     </TouchableOpacity>
