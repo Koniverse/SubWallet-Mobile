@@ -1,3 +1,11 @@
+## 1.0.3 (162)
+- Add Term of service referrence
+- Can not search by address in case search account
+- Disable information APY in case validator/ colator no value
+- Update message in case search account no result when derive account
+- Display Token type in case do not select network when import token, import NFT
+- Update style balane in Token, Crowdloans screens
+
 ## 1.0.3 (161)
 - Fix crash app on FlatlistScreen
 
