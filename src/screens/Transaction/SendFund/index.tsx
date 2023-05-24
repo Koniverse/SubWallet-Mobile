@@ -304,7 +304,7 @@ export const SendFund = ({
   }, [accounts, assetRegistry, assetSettingMap, chainInfoMap, chainStateMap, from, multiChainAssetMap, tokenGroupSlug]);
 
   const validateRecipientAddress = useCallback(
-    (_recipientAddress: string) => {
+    (_recipientAddress: string, _from: string, _chain: string, _destChain: string) => {
       if (!_recipientAddress) {
         //todo: i18n
         onUpdateErrors('to')(['Recipient address is required']);
@@ -318,22 +318,22 @@ export const SendFund = ({
         return false;
       }
 
-      if (!from || !chain || !destChain) {
+      if (!_from || !_chain || !_destChain) {
         return false;
       }
 
-      const isOnChain = chain === destChain;
+      const isOnChain = _chain === _destChain;
 
       if (isOnChain) {
-        if (isSameAddress(from, _recipientAddress)) {
+        if (isSameAddress(_from, _recipientAddress)) {
           //todo: i18n
           onUpdateErrors('to')(['The recipient address can not be the same as the sender address']);
           return false;
         }
 
         const isNotSameAddressType =
-          (isEthereumAddress(from) && !!_recipientAddress && !isEthereumAddress(_recipientAddress)) ||
-          (!isEthereumAddress(from) && !!_recipientAddress && isEthereumAddress(_recipientAddress));
+          (isEthereumAddress(_from) && !!_recipientAddress && !isEthereumAddress(_recipientAddress)) ||
+          (!isEthereumAddress(_from) && !!_recipientAddress && isEthereumAddress(_recipientAddress));
 
         if (isNotSameAddressType) {
           //todo: i18n
@@ -341,7 +341,7 @@ export const SendFund = ({
           return false;
         }
       } else {
-        const isDestChainEvmCompatible = _isChainEvmCompatible(chainInfoMap[destChain]);
+        const isDestChainEvmCompatible = _isChainEvmCompatible(chainInfoMap[_destChain]);
 
         if (isDestChainEvmCompatible !== isEthereumAddress(_recipientAddress)) {
           onUpdateErrors('to')([
@@ -352,25 +352,26 @@ export const SendFund = ({
         }
       }
 
+      onUpdateErrors('to')(undefined);
       return true;
     },
-    [chain, chainInfoMap, destChain, from, onUpdateErrors],
+    [chainInfoMap, onUpdateErrors],
   );
 
   const onUpdateReceiverInputAddress = useCallback(
     (text: string) => {
       formState.refs.to.current?.onChange(text);
-      validateRecipientAddress(text);
+      validateRecipientAddress(text, from, chain, destChain);
     },
-    [formState.refs.to, validateRecipientAddress],
+    [chain, destChain, formState.refs.to, from, validateRecipientAddress],
   );
 
   const onChangeRecipientAddress = useCallback(
     (recipientAddress: string | null, currentTextValue: string) => {
       onChangeValue('to')(currentTextValue);
-      validateRecipientAddress(currentTextValue);
+      validateRecipientAddress(currentTextValue, from, chain, destChain);
     },
-    [onChangeValue, validateRecipientAddress],
+    [chain, destChain, from, onChangeValue, validateRecipientAddress],
   );
 
   const onPressQrButton = useCallback(async () => {
@@ -439,7 +440,7 @@ export const SendFund = ({
     setLoading(true);
 
     const isAmountValid = validateAmount(amount, maxTransfer);
-    const isRecipientAddressValid = validateRecipientAddress(to);
+    const isRecipientAddressValid = validateRecipientAddress(to, from, chain, destChain);
 
     const isFormValid = isAmountValid && isRecipientAddressValid;
 
@@ -717,7 +718,7 @@ export const SendFund = ({
                   loading={loading}
                   type={isTransferAll ? 'warning' : undefined}
                   onPress={onSubmit}>
-                  {isTransferAll ? 'Transfer the full account balance' : 'Transfer'}
+                  {isTransferAll ? 'Transfer all' : 'Transfer'}
                 </Button>
               </View>
               <SafeAreaView />
@@ -746,6 +747,7 @@ export const SendFund = ({
               setTokenSelectModalVisible(false);
               setIsTransferAll(false);
               setForceUpdateMaxValue(undefined);
+              validateRecipientAddress(to, from, item.originChain, item.originChain);
             }}
             selectedValue={asset}
           />
@@ -760,6 +762,7 @@ export const SendFund = ({
               if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
                 setIsTransferAll(false);
               }
+              validateRecipientAddress(to, from, chain, item.slug);
             }}
           />
         </>
