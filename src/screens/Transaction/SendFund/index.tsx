@@ -395,6 +395,13 @@ export const SendFund = ({
         return false;
       }
 
+      if (new BigN(_amount).eq(new BigN(0))) {
+        //todo: i18n
+        onUpdateErrors('value')(['Amount must be greater than 0']);
+
+        return false;
+      }
+
       if (!_amount) {
         //todo: i18n
         onUpdateErrors('value')(['Amount is required']);
