@@ -120,8 +120,13 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   };
 
   const onSubmit = (formState: FormState) => {
-    setBusy(true);
     const { contractAddress, chain, decimals, symbol, selectedTokenType } = formState.data;
+
+    if (!contractAddress || !chain || !decimals || !symbol || !selectedTokenType) {
+      return;
+    }
+
+    setBusy(true);
 
     onUpdateErrors('contractAddress')(undefined);
 
