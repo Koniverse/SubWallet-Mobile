@@ -252,6 +252,8 @@ export const SendFund = ({
   const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
   const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
 
+  const [isToAddressDirty, setToAddressDirty] = useState<boolean>(false);
+
   const handleTransferAll = useCallback((value: boolean) => {
     setForceUpdateMaxValue({});
     setIsTransferAll(value);
@@ -360,6 +362,7 @@ export const SendFund = ({
 
   const onUpdateReceiverInputAddress = useCallback(
     (text: string) => {
+      setToAddressDirty(true);
       formState.refs.to.current?.onChange(text);
       validateRecipientAddress(text, from, chain, destChain);
     },
@@ -368,6 +371,7 @@ export const SendFund = ({
 
   const onChangeRecipientAddress = useCallback(
     (recipientAddress: string | null, currentTextValue: string) => {
+      setToAddressDirty(true);
       onChangeValue('to')(currentTextValue);
       validateRecipientAddress(currentTextValue, from, chain, destChain);
     },
@@ -395,16 +399,16 @@ export const SendFund = ({
         return false;
       }
 
-      if (new BigN(_amount).eq(new BigN(0))) {
+      if (!_amount) {
         //todo: i18n
-        onUpdateErrors('value')(['Amount must be greater than 0']);
+        onUpdateErrors('value')(['Amount is required']);
 
         return false;
       }
 
-      if (!_amount) {
+      if (new BigN(_amount).eq(new BigN(0))) {
         //todo: i18n
-        onUpdateErrors('value')(['Amount is required']);
+        onUpdateErrors('value')(['Amount must be greater than 0']);
 
         return false;
       }
@@ -754,7 +758,7 @@ export const SendFund = ({
               setTokenSelectModalVisible(false);
               setIsTransferAll(false);
               setForceUpdateMaxValue(undefined);
-              validateRecipientAddress(to, from, item.originChain, item.originChain);
+              isToAddressDirty && validateRecipientAddress(to, from, item.originChain, item.originChain);
             }}
             selectedValue={asset}
           />
@@ -769,7 +773,7 @@ export const SendFund = ({
               if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
                 setIsTransferAll(false);
               }
-              validateRecipientAddress(to, from, chain, item.slug);
+              isToAddressDirty && validateRecipientAddress(to, from, chain, item.slug);
             }}
           />
         </>
