@@ -86,6 +86,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
       // }
 
       if (!_rawValue) {
+        setInputValue('');
         onChangeValue('', true);
         onSetMax?.(false);
         return;
