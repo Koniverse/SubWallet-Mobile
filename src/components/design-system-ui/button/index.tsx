@@ -39,7 +39,6 @@ const Button: React.FC<ButtonProps> = props => {
     children,
     onPressIn,
     onPressOut,
-    onLongPress,
     onShowUnderlay,
     onHideUnderlay,
     icon,

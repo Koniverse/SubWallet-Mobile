@@ -1,5 +1,4 @@
 import { StyleSheet, ViewStyle } from 'react-native';
-import { ThemeTypes } from 'styles/themes';
 
 export interface AvatarGroupStyle {
   container: ViewStyle;
@@ -8,7 +7,7 @@ export interface AvatarGroupStyle {
   avatarBlur: ViewStyle;
 }
 
-export default (theme: ThemeTypes) =>
+export default () =>
   StyleSheet.create<AvatarGroupStyle>({
     container: {
       flexDirection: 'row',

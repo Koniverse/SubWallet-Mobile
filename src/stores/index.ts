@@ -28,8 +28,8 @@ const persistConfig = {
   version: 2,
   storage: AsyncStorage,
   whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion', 'price', 'chainStore', 'assetRegistry', 'balance'],
-  migrate: (state) => {
-    const beforeInfo = state._persist || {};
+  migrate: (state: any) => {
+    const beforeInfo = state?._persist || {};
     if ((beforeInfo.version || 0) < 2) {
       console.debug(`Purger persist data after migration from ${beforeInfo.version} to 2`);
 

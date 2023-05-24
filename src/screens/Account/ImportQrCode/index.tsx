@@ -62,7 +62,7 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyle(theme), [theme]);
 
   const onComplete = useCallback(() => {
-    backToHome(goHome, true);
+    backToHome(goHome);
   }, [goHome]);
 
   const onBack = navigation.goBack;

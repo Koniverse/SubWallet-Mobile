@@ -1,8 +1,6 @@
 import React, { useCallback } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
-import { Warning } from 'components/Warning';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
-import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { TokenBalanceItemType } from 'types/balance';

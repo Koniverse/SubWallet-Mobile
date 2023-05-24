@@ -3,7 +3,6 @@ import WebView from 'react-native-webview';
 import { SWTheme, THEME_PRESET } from 'styles/themes';
 import { QrCallBackMap, QrValue } from 'types/QRScanner';
 import EventEmitter from 'eventemitter3';
-import { DelayBackgroundService } from 'types/background';
 
 const ThemeContext = React.createContext<SWTheme>(THEME_PRESET.dark);
 

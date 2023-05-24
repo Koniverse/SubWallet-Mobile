@@ -68,7 +68,7 @@ const AttachReadOnly = () => {
   }, [navigation]);
 
   const onComplete = useCallback(() => {
-    backToHome(goHome, true);
+    backToHome(goHome);
   }, [goHome]);
 
   const checkCamera = useCheckCamera();

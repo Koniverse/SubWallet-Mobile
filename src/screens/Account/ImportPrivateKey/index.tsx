@@ -70,7 +70,7 @@ export const ImportPrivateKey = () => {
       types: [EVM_ACCOUNT_TYPE],
     })
       .then(() => {
-        backToHome(goHome, true);
+        backToHome(goHome);
       })
       .catch((e: Error) => {
         setIsBusy(false);

@@ -1,5 +1,4 @@
 import { StyleSheet, ViewStyle } from 'react-native';
-import { ThemeTypes } from 'styles/themes';
 
 export interface LogoStyle {
   subLogoContainer: ViewStyle;

@@ -5,7 +5,6 @@ import { RootState } from 'stores/index';
 import { ListRenderItemInfo, View } from 'react-native';
 import { NetworkConfigDetailProps, RootNavigationProps } from 'routes/index';
 import { SelectItem } from 'components/SelectItem';
-import { SubmitButton } from 'components/SubmitButton';
 import i18n from 'utils/i18n/i18n';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { NETWORK_ERROR, NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
