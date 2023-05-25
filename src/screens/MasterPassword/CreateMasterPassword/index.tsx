@@ -110,7 +110,7 @@ const CreateMasterPassword = ({
 
   return (
     <ContainerWithSubHeader
-      showLeftBtn={false}
+      showLeftBtn={pathName !== 'MigratePassword'}
       onPressBack={() => navigation.goBack()}
       disabled={isBusy}
       rightIcon={Info}
