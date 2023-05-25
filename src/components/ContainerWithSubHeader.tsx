@@ -56,7 +56,7 @@ export const ContainerWithSubHeader = ({
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
       {isShowMainHeader && (
-        <View style={{ marginBottom: 16 }}>
+        <View style={{ marginTop: Platform.OS === 'ios' ? 8 : STATUS_BAR_HEIGHT + 8, marginBottom: 16 }}>
           <Header />
         </View>
       )}
