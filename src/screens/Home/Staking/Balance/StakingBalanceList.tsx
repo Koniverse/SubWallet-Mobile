@@ -3,7 +3,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { StakingDataType } from 'hooks/types';
 import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import {Keyboard, ListRenderItemInfo, RefreshControl} from 'react-native';
+import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
@@ -13,8 +13,6 @@ import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
-import { Header } from 'components/Header';
-import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootNavigationProps } from 'routes/index';
@@ -118,65 +116,63 @@ const StakingBalanceList = () => {
   }, [handlePressStartStaking]);
 
   return (
-    <ScreenContainer backgroundColor={theme.colorBgDefault}>
-      <>
-        <Header />
-        <FlatListScreen
-          style={{ marginTop: 16 }}
-          title={i18n.title.staking}
-          items={data}
-          showLeftBtn={false}
-          autoFocus={false}
-          renderListEmptyComponent={renderEmpty}
-          searchFunction={searchFunction}
-          filterOptions={FILTER_OPTIONS}
-          filterFunction={filterFunction}
-          flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS }}
-          renderItem={renderItem}
-          rightIconOption={rightIconOption}
-          isShowFilterBtn
-          refreshControl={
-            <RefreshControl
-              style={{ backgroundColor: ColorMap.dark1 }}
-              tintColor={ColorMap.light}
-              refreshing={isRefresh}
-              onRefresh={() => {
-                refresh(
-                  restartCronAndSubscriptionServices({
-                    cronServices: ['staking'],
-                    subscriptionServices: ['staking'],
-                  }),
-                );
-              }}
-            />
-          }
-          isShowPlaceHolder={false}
-          needGapWithStatusBar={false}
-        />
-
-        {!!(selectedItem && selectedItem.nominatorMetadata && selectedItem.chainStakingMetadata) && (
-          <StakingDetailModal
-            modalVisible={detailModalVisible}
-            onCloseDetailModal={() => setDetailModalVisible(false)}
-            onOpenMoreActionModal={() => setMoreActionModalVisible(true)}
-            chainStakingMetadata={selectedItem.chainStakingMetadata}
-            nominatorMetadata={selectedItem.nominatorMetadata}
-            rewardItem={selectedItem.reward}
-            staking={selectedItem.staking}
+    <>
+      <FlatListScreen
+        style={{ flex: 1, paddingBottom: 16 }}
+        title={i18n.title.staking}
+        items={data}
+        showLeftBtn={false}
+        autoFocus={false}
+        renderListEmptyComponent={renderEmpty}
+        searchFunction={searchFunction}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
+        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+        renderItem={renderItem}
+        rightIconOption={rightIconOption}
+        isShowFilterBtn
+        isShowMainHeader
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark1 }}
+            tintColor={ColorMap.light}
+            refreshing={isRefresh}
+            onRefresh={() => {
+              refresh(
+                restartCronAndSubscriptionServices({
+                  cronServices: ['staking'],
+                  subscriptionServices: ['staking'],
+                }),
+              );
+            }}
           />
-        )}
+        }
+        isShowPlaceHolder={false}
+        needGapWithStatusBar={false}
+      />
 
-        <StakingActionModal
-          closeModal={() => setMoreActionModalVisible(false)}
-          openModal={() => setMoreActionModalVisible(true)}
-          visible={moreActionModalVisible}
-          chainStakingMetadata={selectedItem?.chainStakingMetadata}
-          nominatorMetadata={selectedItem?.nominatorMetadata}
-          staking={selectedItem?.staking}
-          reward={selectedItem?.reward}
+      {!!(selectedItem && selectedItem.nominatorMetadata && selectedItem.chainStakingMetadata) && (
+        <StakingDetailModal
+          modalVisible={detailModalVisible}
+          onCloseDetailModal={() => setDetailModalVisible(false)}
+          onOpenMoreActionModal={() => setMoreActionModalVisible(true)}
+          chainStakingMetadata={selectedItem.chainStakingMetadata}
+          nominatorMetadata={selectedItem.nominatorMetadata}
+          rewardItem={selectedItem.reward}
+          staking={selectedItem.staking}
         />
-      </>
-    </ScreenContainer>
+      )}
+
+      <StakingActionModal
+        closeModal={() => setMoreActionModalVisible(false)}
+        openModal={() => setMoreActionModalVisible(true)}
+        visible={moreActionModalVisible}
+        chainStakingMetadata={selectedItem?.chainStakingMetadata}
+        nominatorMetadata={selectedItem?.nominatorMetadata}
+        staking={selectedItem?.staking}
+        reward={selectedItem?.reward}
+      />
+    </>
   );
 };
 

@@ -10,8 +10,6 @@ import { EmptyList } from 'components/EmptyList';
 import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
 import { restartSubscriptionServices } from 'messaging/index';
-import { Header } from 'components/Header';
-import { ScreenContainer } from 'components/ScreenContainer';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
@@ -66,35 +64,32 @@ export const CrowdloansScreen = () => {
   }
 
   return (
-    <ScreenContainer backgroundColor={theme.colorBgDefault}>
-      <>
-        <Header />
-        <FlatListScreen
-          isShowFilterBtn
-          style={{ marginTop: 16 }}
-          title={i18n.tabName.crowdloans}
-          flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS }}
-          renderListEmptyComponent={renderListEmptyComponent}
-          renderItem={renderItem}
-          autoFocus={false}
-          items={items}
-          showLeftBtn={false}
-          searchFunction={doFilterOptions}
-          filterOptions={defaultFilterOpts}
-          filterFunction={getListByFilterOpt}
-          isShowPlaceHolder={false}
-          needGapWithStatusBar={false}
-          // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
-          refreshControl={
-            <RefreshControl
-              style={{ backgroundColor: ColorMap.dark1 }}
-              tintColor={ColorMap.light}
-              refreshing={isRefresh}
-              onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
-            />
-          }
-        />
-      </>
-    </ScreenContainer>
+    <>
+      <FlatListScreen
+        isShowFilterBtn
+        title={i18n.tabName.crowdloans}
+        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+        renderListEmptyComponent={renderListEmptyComponent}
+        renderItem={renderItem}
+        autoFocus={false}
+        items={items}
+        showLeftBtn={false}
+        searchFunction={doFilterOptions}
+        filterOptions={defaultFilterOpts}
+        filterFunction={getListByFilterOpt}
+        isShowPlaceHolder={false}
+        isShowMainHeader
+        needGapWithStatusBar={false}
+        // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark1 }}
+            tintColor={ColorMap.light}
+            refreshing={isRefresh}
+            onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
+          />
+        }
+      />
+    </>
   );
 };
