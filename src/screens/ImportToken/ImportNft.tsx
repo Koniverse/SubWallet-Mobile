@@ -29,6 +29,7 @@ import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
 import { Button } from 'components/design-system-ui';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
+import { AssetTypeOption } from '../../types/asset';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -40,18 +41,13 @@ const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-export interface NftTypeOption {
-  label: string;
-  value: _AssetType;
-}
-
 function getNftTypeSupported(chainInfo: _ChainInfo) {
   if (!chainInfo) {
     return [];
   }
 
   const nftTypes = _getNftTypesSupportedByChain(chainInfo);
-  const result: NftTypeOption[] = [];
+  const result: AssetTypeOption[] = [];
 
   nftTypes.forEach(nftType => {
     result.push({
@@ -280,6 +276,14 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     }
   };
 
+  const onSelectNFTType = useCallback(
+    (item: AssetTypeOption) => {
+      onChangeValue('selectedNftType')(item.value);
+      setShowTokenTypeModal(false);
+    },
+    [onChangeValue],
+  );
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -301,6 +305,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           disabled={!formState.data.chain || !nftTypeOptions.length}
           modalVisible={isShowTokenTypeModal}
           items={nftTypeOptions}
+          onSelectItem={onSelectNFTType}
           selectedValue={selectedNftType}
           onPress={() => setShowTokenTypeModal(true)}
           onChangeModalVisible={() => setShowTokenTypeModal(false)}
