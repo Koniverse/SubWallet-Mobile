@@ -3,10 +3,12 @@ import { KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, StyleProp, Vie
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { getStatusBarPlaceholderStyle, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
+import { Header } from 'components/Header';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   children: JSX.Element | JSX.Element[];
   style?: StyleProp<any>;
+  isShowMainHeader?: boolean;
   isShowPlaceHolder?: boolean;
   statusBarColor?: string;
   needGapWithStatusBar?: boolean;
@@ -40,6 +42,7 @@ export const ContainerWithSubHeader = ({
   children,
   style,
   isShowPlaceHolder = true,
+  isShowMainHeader = false,
   statusBarColor = ColorMap.dark1,
   needGapWithStatusBar = true,
   ...subHeaderProps
@@ -52,6 +55,11 @@ export const ContainerWithSubHeader = ({
       <SafeAreaView>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
+      {isShowMainHeader && (
+        <View style={{ marginBottom: 16 }}>
+          <Header />
+        </View>
+      )}
       <SubHeader {...subHeaderProps} />
       {children}
       <SafeAreaView />
