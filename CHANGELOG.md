@@ -1,3 +1,6 @@
+## 1.0.3 (164)
+- Fix header style
+
 ## 1.0.3 (162)
 - Add Term of service referrence
 - Can not search by address in case search account
