@@ -27,11 +27,6 @@ interface Props {
   selectedValue?: string;
 }
 
-const filterFunction = (items: TokenItemType[], searchString: string) => {
-  const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
-};
-
 const renderListEmptyComponent = () => {
   return (
     <EmptyList
@@ -53,6 +48,18 @@ export const TokenSelector = ({
   selectedValue,
 }: Props) => {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+
+  const filterFunction = useCallback(
+    (rawItems: TokenItemType[], searchString: string) => {
+      const lowerCaseSearchString = searchString.toLowerCase();
+      return rawItems.filter(
+        ({ symbol, originChain }) =>
+          symbol.toLowerCase().includes(lowerCaseSearchString) ||
+          chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
+      );
+    },
+    [chainInfoMap],
+  );
   useEffect(() => {
     if (acceptDefaultValue) {
       if (!defaultValue) {
