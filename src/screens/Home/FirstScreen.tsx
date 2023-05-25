@@ -11,6 +11,10 @@ import AccountActionButton from 'components/common/Account/AccountActionButton';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { SelectedActionType } from 'stores/types';
 import { Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -56,6 +60,8 @@ const firstScreenNotificationStyle: StyleProp<any> = {
 };
 
 export const FirstScreen = () => {
+  const navigation = useNavigation<RootNavigationProps>();
+  const hasMasterPassword = useSelector((state: RootState) => state.accountState.hasMasterPassword);
   const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
   const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
   const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
@@ -85,13 +91,21 @@ export const FirstScreen = () => {
     Linking.openURL('https://docs.subwallet.app/main/privacy-and-security/privacy-policy');
   };
 
+  const onCreate = useCallback(() => {
+    if (hasMasterPassword) {
+      navigation.navigate('CreateAccount', {});
+    } else {
+      navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
+    }
+  }, [hasMasterPassword, navigation]);
+
   const actionList = [
     {
       key: 'create',
       icon: PlusCircle,
       title: 'Create a new account',
       subTitle: 'Create a new account with SubWallet',
-      onPress: onPressActionButton('createAcc'),
+      onPress: onCreate,
     },
     {
       key: 'import',
