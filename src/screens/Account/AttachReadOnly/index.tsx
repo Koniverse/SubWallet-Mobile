@@ -172,7 +172,7 @@ const AttachReadOnly = () => {
       rightIcon={X}
       onPressRightIcon={goHome}>
       <View style={styles.wrapper}>
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
           <Typography.Text style={styles.title}>
             Track the activity of any wallet without injecting your private key to SubWallet
           </Typography.Text>

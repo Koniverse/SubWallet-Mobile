@@ -287,7 +287,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       disabled={loading}
       title={i18n.title.importNft}
       style={ContainerHeaderStyle}>
-      <ScrollView style={WrapperStyle}>
+      <ScrollView style={WrapperStyle} keyboardShouldPersistTaps={'handled'}>
         <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
           <NetworkField
             networkKey={formState.data.chain}
@@ -298,15 +298,16 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
         </TouchableOpacity>
 
         <TokenTypeSelector
+          disabled={!formState.data.chain || !nftTypeOptions.length}
           modalVisible={isShowTokenTypeModal}
           items={nftTypeOptions}
-          disabled={!nftTypeOptions.length}
           selectedValue={selectedNftType}
           onPress={() => setShowTokenTypeModal(true)}
           onChangeModalVisible={() => setShowTokenTypeModal(false)}
         />
 
         <InputAddress
+          disabled={!formState.data.chain}
           containerStyle={{ marginBottom: 8 }}
           ref={formState.refs.smartContract}
           label={formState.labels.smartContract}

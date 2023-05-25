@@ -43,7 +43,7 @@ import { BN_TEN } from 'utils/number';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { StakeProps } from 'routes/transaction/transactionAction';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import {DisabledStyle, MarginBottomForSubmitButton} from 'styles/sharedStyles';
 import { accountFilterFunc } from 'screens/Transaction/helper/base';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
 
@@ -376,7 +376,7 @@ export const Stake = ({
       disableRightButton={!chainStakingMetadata || loading}
       onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps={'handled'}>
           {_stakingType === ALL_KEY && (
             <StakingTab selectedType={currentStakingType as StakingType} onSelectType={onChangeStakingType} />
           )}
@@ -402,6 +402,7 @@ export const Stake = ({
               subLogoKey={chain}
               value={symbol}
               showIcon
+              outerStyle={(stakingChain !== ALL_KEY || !from || loading) && DisabledStyle}
             />
           </TouchableOpacity>
 

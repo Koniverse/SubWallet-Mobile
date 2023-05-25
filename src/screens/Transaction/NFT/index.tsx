@@ -246,7 +246,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
       onPressRightIcon={handleSend}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <>
-          <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: 10 }}>
+          <ScrollView style={{ ...ContainerHorizontalPadding, marginTop: 10 }} keyboardShouldPersistTaps={'handled'}>
             <View style={ImageContainerStyle}>
               <ImagePreview style={ImageStyle} mainUrl={nftItem.image} backupUrl={collectionInfo.image} />
             </View>

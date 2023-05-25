@@ -276,7 +276,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   return (
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
-        <ScrollView style={{ width: '100%', flex: 1 }}>
+        <ScrollView style={{ width: '100%', flex: 1 }} keyboardShouldPersistTaps={'handled'}>
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
             <NetworkField
               networkKey={formState.data.chain}
@@ -287,6 +287,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           </TouchableOpacity>
 
           <TokenTypeSelector
+            disabled={!formState.data.chain}
             modalVisible={isShowTokenTypeModal}
             items={tokenTypeOptions}
             disabled={!tokenTypeOptions.length}
@@ -297,6 +298,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
           <InputAddress
             containerStyle={{ marginBottom: 8 }}
+            disabled={!formState.data.chain}
             ref={formState.refs.contractAddress}
             label={formState.labels.contractAddress}
             value={formState.data.contractAddress}
