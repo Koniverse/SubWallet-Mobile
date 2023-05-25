@@ -759,6 +759,7 @@ export const SendFund = ({
             selectedValue={destChain}
             onSelectItem={item => {
               onChangeValue('destChain')(item.slug);
+              setForceUpdateMaxValue(isTransferAll ? {} : undefined);
               setChainSelectModalVisible(false);
               if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
                 setIsTransferAll(false);
