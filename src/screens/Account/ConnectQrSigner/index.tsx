@@ -54,7 +54,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const goHome = useGoHome();
 
   const onComplete = useCallback(() => {
-    backToHome(goHome, true);
+    backToHome(goHome);
   }, [goHome]);
   const onBack = navigation.goBack;
 

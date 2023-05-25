@@ -8,6 +8,7 @@ import { Typography } from 'components/design-system-ui';
 export interface FieldBaseProps extends ViewProps {
   label?: string;
   outerStyle?: StyleProp<ViewStyle>;
+  fieldBgc?: string;
 }
 
 export const FieldBase = ({ children, label, outerStyle, ...props }: FieldBaseProps) => {

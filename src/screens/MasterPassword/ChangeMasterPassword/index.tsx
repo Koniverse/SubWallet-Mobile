@@ -54,7 +54,7 @@ const ChangeMasterPassword = () => {
   useHandlerHardwareBackPress(isBusy);
 
   const _backToHome = useCallback(() => {
-    backToHome(goHome, true);
+    backToHome(goHome);
   }, [goHome]);
 
   const onSubmit = () => {

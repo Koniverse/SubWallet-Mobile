@@ -86,7 +86,7 @@ const SigningResult = () => {
   const navigation = useNavigation<RootNavigationProps>();
 
   const { cleanup, state: scannerState } = useContext(ScannerContext);
-  const { signedData, type } = scannerState;
+  const { type } = scannerState;
 
   const [isVisible, setIsVisible] = useState(false);
 

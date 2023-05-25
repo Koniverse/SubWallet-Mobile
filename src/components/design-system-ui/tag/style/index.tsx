@@ -1,7 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { convertHexColorToRGBA } from 'utils/color';
-import { FontBold, FontSemiBold } from 'styles/sharedStyles';
+import { FontBold } from 'styles/sharedStyles';
 
 export interface TagStyle {
   tag: ViewStyle;

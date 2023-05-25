@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { StyleProp, Text, View } from 'react-native';
 import { IconButton } from 'components/IconButton';
 import { DotsThree } from 'phosphor-react-native';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { Divider } from 'components/Divider';
 import { SVGImages } from 'assets/index';
@@ -21,11 +21,11 @@ const textStyle: StyleProp<any> = {
   paddingRight: 8,
 };
 
-const subTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.disabled,
-};
+// const subTextStyle: StyleProp<any> = {
+//   ...sharedStyles.mainText,
+//   ...FontMedium,
+//   color: ColorMap.disabled,
+// };
 
 const NetworkConfigItemWrapper: StyleProp<any> = {
   flexDirection: 'row',

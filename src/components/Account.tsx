@@ -1,13 +1,7 @@
-import useGetAvatarSubIcon from 'hooks/screen/useGetAvatarSubIcon';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import Text from '../components/Text';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { accountAllRecoded, defaultRecoded, recodeAddress } from 'utils/index';
-import { RootState } from 'stores/index';
-import { NetworkJson } from '@subwallet/extension-base/background/KoniTypes';
-import { Recoded } from 'types/ui-types';
+import React, { useCallback } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FontBold, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { CircleWavyCheck, CopySimple } from 'phosphor-react-native';
@@ -75,61 +69,12 @@ const toShortAddress = (_address: string | null, halfLength?: number) => {
 export const Account = ({
   name,
   address,
-  genesisHash,
   isShowAddress = true,
   showCopyBtn = true,
   showSelectedIcon = true,
-  showSubIcon,
-  subIconSize = 20,
   isSelected,
-  type: givenType,
 }: AccountProps) => {
-  const accounts = useSelector((state: RootState) => state.accountState.accounts);
-  const networkMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const [{ genesisHash: recodedGenesis, account }, setRecoded] = useState<Recoded>(defaultRecoded);
-  const getNetworkInfoByGenesisHash = useCallback(
-    (hash?: string | null): NetworkJson | null => {
-      if (!hash) {
-        return null;
-      }
-
-      for (const n in networkMap) {
-        if (!Object.prototype.hasOwnProperty.call(networkMap, n)) {
-          continue;
-        }
-
-        const networkInfo = networkMap[n];
-
-        if (networkInfo.genesisHash === hash) {
-          return networkInfo;
-        }
-      }
-
-      return null;
-    },
-    [networkMap],
-  );
   const _isAccountAll = address && isAccountAll(address);
-  const networkInfo = getNetworkInfoByGenesisHash(genesisHash || recodedGenesis);
-
-  const SubIcon = useGetAvatarSubIcon(account, subIconSize);
-  // const [isSelected, setSelected] = useState(false);
-  useEffect((): void => {
-    if (!address) {
-      setRecoded(defaultRecoded);
-
-      return;
-    }
-
-    if (_isAccountAll) {
-      setRecoded(accountAllRecoded);
-
-      return;
-    }
-
-    setRecoded(recodeAddress(address, accounts, networkInfo, givenType));
-    //TODO: change recoded
-  }, [accounts, _isAccountAll, address, networkInfo, givenType]);
 
   const copyToClipboard = useCallback((text: string) => {
     Clipboard.setString(text);

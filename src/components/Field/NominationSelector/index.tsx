@@ -42,7 +42,6 @@ export const NominationSelectorField = ({
   label,
   loading,
   placeholder = 'Selected collator',
-  disabled,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;

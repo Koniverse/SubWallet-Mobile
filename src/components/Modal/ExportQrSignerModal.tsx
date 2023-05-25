@@ -69,23 +69,23 @@ const ExportQrSignerModal = ({ modalVisible, onHideModal, address, networkKey }:
     [account?.address, address, network.ss58Format, isEthereum],
   );
 
-  const qrData = useMemo(() => {
-    const genesisHash = network.genesisHash;
-    const accountType = isEthereum ? 'ethereum' : 'substrate';
-    const result: string[] = [accountType];
-
-    if (isEthereum) {
-      result.push(`${formattedAddress}@${network.evmChainId || '1'}`);
-    } else {
-      result.push(formattedAddress, genesisHash);
-    }
-
-    if (account?.name) {
-      result.push(account.name);
-    }
-
-    return result.join(':');
-  }, [network.genesisHash, network.evmChainId, isEthereum, account?.name, formattedAddress]);
+  // const qrData = useMemo(() => {
+  //   const genesisHash = network.genesisHash;
+  //   const accountType = isEthereum ? 'ethereum' : 'substrate';
+  //   const result: string[] = [accountType];
+  //
+  //   if (isEthereum) {
+  //     result.push(`${formattedAddress}@${network.evmChainId || '1'}`);
+  //   } else {
+  //     result.push(formattedAddress, genesisHash);
+  //   }
+  //
+  //   if (account?.name) {
+  //     result.push(account.name);
+  //   }
+  //
+  //   return result.join(':');
+  // }, [network.genesisHash, network.evmChainId, isEthereum, account?.name, formattedAddress]);
 
   return (
     <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onHideModal}>
