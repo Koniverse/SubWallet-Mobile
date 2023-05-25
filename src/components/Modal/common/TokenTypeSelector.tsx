@@ -1,15 +1,16 @@
 import React from 'react';
 import { SelectItem, SwModal } from 'components/design-system-ui';
-import { NftTypeOption } from 'screens/ImportToken/ImportNft';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
-import { View, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Coin } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { DisabledStyle } from 'styles/sharedStyles';
+import { AssetTypeOption } from '../../../types/asset';
 
 interface Props {
   modalVisible: boolean;
-  items: NftTypeOption[];
+  items: AssetTypeOption[];
+  onSelectItem: (item: AssetTypeOption) => void;
   selectedValue?: string;
   onPress?: () => void;
   onChangeModalVisible?: () => void;
@@ -23,6 +24,7 @@ export const TokenTypeSelector = ({
   onPress,
   onChangeModalVisible,
   disabled,
+  onSelectItem,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   return (
@@ -35,6 +37,7 @@ export const TokenTypeSelector = ({
         <View style={{ width: '100%' }}>
           {items.map(item => (
             <SelectItem
+              onPress={() => onSelectItem(item)}
               icon={Coin}
               key={item.value}
               label={item.label}

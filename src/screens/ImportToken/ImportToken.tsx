@@ -33,6 +33,7 @@ import { Button } from 'components/design-system-ui';
 import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { useToast } from 'react-native-toast-notifications';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
+import { AssetTypeOption } from '../../types/asset';
 
 interface TokenTypeOption {
   label: string;
@@ -245,6 +246,14 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     [onChangeValue, onUpdateErrors],
   );
 
+  const onSelectTokenType = useCallback(
+    (item: AssetTypeOption) => {
+      onChangeValue('selectedTokenType')(item.value);
+      setShowTokenTypeModal(false);
+    },
+    [onChangeValue],
+  );
+
   const _goBack = () => {
     if (payload) {
       completeConfirmation('addTokenRequest', {
@@ -287,12 +296,12 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           </TouchableOpacity>
 
           <TokenTypeSelector
-            disabled={!formState.data.chain}
+            disabled={!formState.data.chain || !tokenTypeOptions.length}
             modalVisible={isShowTokenTypeModal}
             items={tokenTypeOptions}
-            disabled={!tokenTypeOptions.length}
             selectedValue={formState.data.selectedTokenType}
             onPress={() => setShowTokenTypeModal(true)}
+            onSelectItem={onSelectTokenType}
             onChangeModalVisible={() => setShowTokenTypeModal(false)}
           />
 

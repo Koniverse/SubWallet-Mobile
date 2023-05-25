@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
-import { StyleProp, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleProp, StyleSheet, TextInput, View } from 'react-native';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { Scan } from 'phosphor-react-native';
 import reformatAddress, { toShort } from 'utils/index';
@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 
 interface InputProps {
-  label: string;
+  label?: string;
   value: string;
   containerStyle?: StyleProp<any>;
   onChange: (output: string | null, currentValue: string) => void;
@@ -52,8 +52,8 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   const isAddressValid = isValidCurrentAddress(address, isEthereumAddress(address)) && isValidValue;
   const hasLabel = !!label;
   const styles = useMemo(
-    () => createStyle(theme, hasLabel, isAddressValid, readonly),
-    [readonly, hasLabel, isAddressValid, theme],
+    () => createStyle(theme, hasLabel, isAddressValid, showAvatar, readonly),
+    [theme, hasLabel, isAddressValid, showAvatar, readonly],
   );
   const onChangeInputText = (rawText: string) => {
     const text = rawText.trim();
@@ -65,7 +65,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
       onChange(null, text);
     }
   };
-  const onPressContainer = () => {
+  const onInputFocus = () => {
     setInputBlur(false);
   };
   const onInputBlur = () => {
@@ -84,6 +84,8 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
     },
   }));
 
+  const isInputVisible = !address || !isInputBlur;
+
   return (
     <View
       style={[
@@ -92,38 +94,38 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
         { backgroundColor: themes.colorBgSecondary },
         disabled && DisabledStyle,
       ]}>
-      <TouchableOpacity activeOpacity={1} onPress={onPressContainer} disabled={disabled || readonly}>
-        <Typography.Text style={styles.inputLabel}>{label}</Typography.Text>
-        <View style={styles.blockContent}>
-          {showAvatar && (
-            <>
-              {isAddressValid ? (
-                <Avatar value={address || ''} size={hasLabel ? 20 : 24} />
-              ) : (
-                <View style={styles.identiconPlaceholder} />
-              )}
-            </>
-          )}
-          {!isInputBlur || !address ? (
-            <TextInput
-              autoCorrect={false}
-              autoFocus={false}
-              placeholder={placeholder}
-              style={styles.textInput}
-              placeholderTextColor={themes.colorTextLight4}
-              selectionColor={themes.colorTextLight4}
-              blurOnSubmit={true}
-              value={address}
-              onBlur={onInputBlur}
-              onChangeText={onChangeInputText}
-              editable={!disabled && !readonly}
-              onSubmitEditing={onSubmitField}
-            />
-          ) : (
-            <Typography.Text style={styles.formattedTextInput}>{toShort(address, 9, 9)}</Typography.Text>
-          )}
-        </View>
-      </TouchableOpacity>
+      {hasLabel && <Typography.Text style={styles.inputLabel}>{label}</Typography.Text>}
+      <View style={styles.blockContent}>
+        {showAvatar && (
+          <>
+            {isAddressValid ? (
+              <Avatar value={address || ''} size={hasLabel ? 20 : 24} />
+            ) : (
+              <View style={styles.identiconPlaceholder} />
+            )}
+          </>
+        )}
+
+        <Typography.Text style={{ ...styles.formattedTextInput, opacity: isInputVisible ? 0 : 1 }}>
+          {toShort(address, 9, 9)}
+        </Typography.Text>
+      </View>
+
+      <TextInput
+        autoCorrect={false}
+        autoFocus={false}
+        placeholder={placeholder}
+        style={[styles.textInput, { opacity: isInputVisible ? 1 : 0 }]}
+        placeholderTextColor={themes.colorTextLight4}
+        selectionColor={themes.colorTextLight4}
+        blurOnSubmit={true}
+        value={address}
+        onFocus={onInputFocus}
+        onBlur={onInputBlur}
+        onChangeText={onChangeInputText}
+        editable={!disabled && !readonly}
+        onSubmitEditing={onSubmitField}
+      />
 
       <Button
         style={styles.qrButton}
@@ -139,7 +141,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
   );
 };
 
-function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, readonly?: boolean) {
+function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, showAvatar?: boolean, readonly?: boolean) {
   return StyleSheet.create({
     inputContainer: {
       borderRadius: theme.borderRadiusLG,
@@ -152,15 +154,15 @@ function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, rea
       height: 48,
       alignItems: 'center',
       paddingRight: 44,
-      paddingLeft: theme.size,
+      paddingLeft: theme.sizeSM,
     },
     inputLabel: {
       ...FontMedium,
       fontSize: theme.fontSizeSM,
       lineHeight: theme.fontSizeSM * theme.lineHeightSM,
-      marginBottom: -2,
+      marginBottom: -4,
       paddingTop: theme.paddingXS,
-      paddingHorizontal: theme.size,
+      paddingHorizontal: theme.sizeSM,
       color: theme.colorTextLight4,
     },
     identiconPlaceholder: {
@@ -171,22 +173,33 @@ function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, rea
     },
     textInput: {
       ...FontMedium,
+      position: 'absolute',
       flex: 1,
-      paddingTop: 0,
-      paddingBottom: 0,
-      paddingHorizontal: theme.paddingXS,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      paddingLeft: (showAvatar ? (hasLabel ? 20 : 24) + theme.sizeXS : 0) + theme.sizeSM,
+      paddingRight: 52,
+      paddingTop: (hasLabel ? 24 : 0) + 13,
+      paddingBottom: 13,
       color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      zIndex: 1,
     },
     formattedTextInput: {
       ...FontMedium,
       flex: 1,
-      paddingHorizontal: theme.paddingXS,
+      opacity: 0,
+      paddingRight: theme.paddingXS,
+      paddingLeft: showAvatar ? theme.paddingXS : 0,
       color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
     },
     qrButton: {
       position: 'absolute',
       right: 4,
       bottom: 4,
+      zIndex: 2,
     },
   });
 }
