@@ -130,7 +130,10 @@ export const TokensLayout = ({
   if (!tokenBalanceItems.length) {
     return (
       <View style={[style, { flex: 1, marginTop: 0 }]}>
-        <View style={{ paddingHorizontal: 16 }}>{layoutHeader}</View>
+        <View style={{ paddingHorizontal: 16 }}>
+          {layoutHeader}
+          {listActions}
+        </View>
 
         {loading ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
