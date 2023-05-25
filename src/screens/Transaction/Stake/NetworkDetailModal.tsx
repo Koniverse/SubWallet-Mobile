@@ -4,6 +4,8 @@ import { Text, View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
 import { AmountData, ChainStakingMetadata, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { getUnstakingPeriod } from 'screens/Transaction/helper/staking';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { FontMedium } from 'styles/sharedStyles';
 
 interface Props {
   modalVisible: boolean;
@@ -23,10 +25,11 @@ export const NetworkDetailModal = ({
   const {
     maxValidatorPerNominator,
     nominatorCount: activeNominators,
-    estimatedEarning,
+    expectedReturn,
     inflation,
     unstakingPeriod,
   } = chainStakingMetadata;
+  const theme = useSubWalletTheme().swThemes;
   return (
     <SwModal modalVisible={modalVisible} modalTitle={'Network details'} onChangeModalVisible={onCloseModal}>
       <View style={{ width: '100%' }}>
@@ -39,18 +42,54 @@ export const NetworkDetailModal = ({
                 valueColorSchema={'even-odd'}
               />
 
-              {activeNominators && <MetaInfo.Number label={'Total nominators'} value={activeNominators} decimals={0} />}
+              {!!activeNominators && (
+                <MetaInfo.Number label={'Total nominators'} value={activeNominators} decimals={0} />
+              )}
             </>
           )}
 
-          {!!estimatedEarning && !!inflation && (
+          {!!expectedReturn && !!inflation && (
             <MetaInfo.Default label={'Estimated earning'}>
               {() => (
-                <View style={{ flexDirection: 'row' }}>
-                  <Number value={estimatedEarning} decimal={0} suffix={'%'} />
-                  <Text>/</Text>
-                  <Number value={inflation} decimal={0} suffix={'%'} />
-                  <Text>{'after inflation'}</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: 210 }}>
+                  <Number
+                    value={expectedReturn}
+                    decimal={0}
+                    suffix={'%'}
+                    size={14}
+                    textStyle={{
+                      ...FontMedium,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: theme.fontSize,
+                      lineHeight: theme.fontSize * theme.lineHeight,
+                      ...FontMedium,
+                      color: theme.colorWhite,
+                    }}>
+                    {' '}
+                    /{' '}
+                  </Text>
+                  <Number
+                    value={inflation}
+                    decimal={0}
+                    suffix={'%'}
+                    size={14}
+                    textStyle={{
+                      ...FontMedium,
+                      color: theme.colorTextTertiary,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: theme.fontSize,
+                      lineHeight: theme.fontSize * theme.lineHeight,
+                      ...FontMedium,
+                      color: theme.colorTextTertiary,
+                    }}>
+                    {' after inflation'}
+                  </Text>
                 </View>
               )}
             </MetaInfo.Default>
@@ -65,7 +104,7 @@ export const NetworkDetailModal = ({
           />
 
           {!!unstakingPeriod && (
-            <MetaInfo.Default label={'Unstaking period'}>{getUnstakingPeriod(unstakingPeriod)}</MetaInfo.Default>
+            <MetaInfo.Default valueColorSchema={'light'} label={'Unstaking period'}>{getUnstakingPeriod(unstakingPeriod)}</MetaInfo.Default>
           )}
         </MetaInfo>
       </View>

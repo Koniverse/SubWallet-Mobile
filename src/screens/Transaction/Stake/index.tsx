@@ -43,7 +43,7 @@ import { BN_TEN } from 'utils/number';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { StakeProps } from 'routes/transaction/transactionAction';
-import {DisabledStyle, MarginBottomForSubmitButton} from 'styles/sharedStyles';
+import { DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { accountFilterFunc } from 'screens/Transaction/helper/base';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
 
@@ -489,7 +489,7 @@ export const Stake = ({
           <NetworkDetailModal
             modalVisible={detailNetworkModalVisible}
             chainStakingMetadata={chainStakingMetadata}
-            stakingType={_stakingType as StakingType}
+            stakingType={currentStakingType as StakingType}
             minimumActive={{ decimals, value: minStake, symbol }}
             onCloseModal={() => setDetailNetworkModalVisible(false)}
           />
