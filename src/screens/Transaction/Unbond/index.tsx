@@ -189,6 +189,14 @@ export const Unbond = ({
     }, 300);
   }, [currentValidator, currentValue, mustChooseValidator, nominatorMetadata, onError, onSuccess]);
 
+  const nominators = useMemo(() => {
+    if (from && nominatorMetadata?.nominations && nominatorMetadata.nominations.length) {
+      return nominatorMetadata.nominations.filter(n => new BigN(n.activeStake || '0').gt(BN_ZERO));
+    }
+
+    return [];
+  }, [from, nominatorMetadata?.nominations]);
+
   useEffect(() => {
     onChangeValue('chain')(stakingChain || '');
   }, [onChangeValue, stakingChain]);
@@ -257,7 +265,7 @@ export const Unbond = ({
               <NominationSelector
                 selectedValue={currentValidator}
                 onSelectItem={onChangeValue('nomination')}
-                nominators={from ? nominatorMetadata?.nominations || [] : []}
+                nominators={nominators}
                 disabled={!from || loading}
               />
               {renderBounded()}
