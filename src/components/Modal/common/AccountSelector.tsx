@@ -32,7 +32,11 @@ const renderListEmptyComponent = () => {
 export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, selectedValue }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const filteredAccounts = (_items: AccountJson[], searchString: string) => {
-    return _items.filter(acc => acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase()));
+    return _items.filter(
+      acc =>
+        (acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase())) ||
+        acc.address.toLowerCase().includes(searchString.toLowerCase()),
+    );
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<AccountJson>) => {

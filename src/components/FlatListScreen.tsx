@@ -38,7 +38,7 @@ interface Props<T> {
   rightIconOption?: RightIconOpt;
   beforeListItem?: JSX.Element;
   afterListItem?: JSX.Element;
-  searchFunction: (items: T[], searchString: string) => T[];
+  searchFunction?: (items: T[], searchString: string) => T[];
   filterFunction?: (items: T[], filters: string[]) => T[];
   sortFunction?: SortFunctionInterface<T>;
   searchMarginBottom?: number;

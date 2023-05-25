@@ -22,16 +22,7 @@ import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { InputAddress } from 'components/Input/InputAddress';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { TokenSelectField } from 'components/Field/TokenSelect';
@@ -615,126 +606,124 @@ export const SendFund = ({
             <SubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading} />
           </View>
 
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} style={{ flex: 1 }}>
-            <>
-              <ScrollView style={{ ...ContainerHorizontalPadding, paddingTop: theme.size, flex: 1 }}>
-                {isAllAccount && (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => setAccountSelectModalVisible(true)}
-                      disabled={loading}
-                      style={[{ marginBottom: theme.sizeSM }, loading && DisabledStyle]}>
-                      {/*//todo: i18n*/}
-                      <AccountSelectField
-                        label={'Send from account'}
-                        accountName={senderAccountName}
-                        value={from}
-                        showIcon
-                        outerStyle={{ marginBottom: 0 }}
-                      />
-                    </TouchableOpacity>
-                  </>
-                )}
-
-                <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingBottom: theme.sizeXXS }}>
-                  <View style={{ flex: 1 }}>
-                    <TouchableOpacity
-                      style={[(!tokenItems.length || loading) && DisabledStyle]}
-                      disabled={!tokenItems.length || loading}
-                      onPress={() => {
-                        setTokenSelectModalVisible(true);
-                      }}>
-                      <TokenSelectField
-                        logoKey={currentChainAsset?.symbol || ''}
-                        subLogoKey={currentChainAsset?.originChain || ''}
-                        value={currentChainAsset?.symbol || ''}
-                        showIcon
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={{ flex: 1 }}>
-                    <InputAmount
-                      forceUpdateMaxValue={forceUpdateMaxValue}
-                      disable={loading}
-                      value={amount}
-                      maxValue={maxTransfer}
-                      onChangeValue={_onChangeAmount}
-                      decimals={decimals}
-                      onSetMax={onSetMaxTransferable}
-                      showMaxButton
+          <>
+            <ScrollView
+              style={{ ...ContainerHorizontalPadding, paddingTop: theme.size, flex: 1 }}
+              keyboardShouldPersistTaps={'handled'}>
+              {isAllAccount && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => setAccountSelectModalVisible(true)}
+                    disabled={loading}
+                    style={[{ marginBottom: theme.sizeSM }, loading && DisabledStyle]}>
+                    {/*//todo: i18n*/}
+                    <AccountSelectField
+                      label={'Send from account'}
+                      accountName={senderAccountName}
+                      value={from}
+                      showIcon
+                      outerStyle={{ marginBottom: 0 }}
                     />
-                  </View>
+                  </TouchableOpacity>
+                </>
+              )}
+
+              <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingBottom: theme.sizeXXS }}>
+                <View style={{ flex: 1 }}>
+                  <TouchableOpacity
+                    style={[(!tokenItems.length || loading) && DisabledStyle]}
+                    disabled={!tokenItems.length || loading}
+                    onPress={() => {
+                      setTokenSelectModalVisible(true);
+                    }}>
+                    <TokenSelectField
+                      logoKey={currentChainAsset?.symbol || ''}
+                      subLogoKey={currentChainAsset?.originChain || ''}
+                      value={currentChainAsset?.symbol || ''}
+                      showIcon
+                    />
+                  </TouchableOpacity>
                 </View>
 
-                {!!(formState.errors.value && formState.errors.value.length) &&
-                  formState.errors.value.map((message, index) => (
-                    <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
-                  ))}
-
-                <InputAddress
-                  ref={formState.refs.to}
-                  onPressQrButton={onPressQrButton}
-                  containerStyle={{ marginBottom: theme.sizeSM }}
-                  label={formState.labels.to}
-                  value={formState.data.to}
-                  onChange={onChangeRecipientAddress}
-                  isValidValue={formState.isValidated.recipientAddress}
-                  placeholder={'Please type or paste an address'}
-                  disabled={loading}
-                  onSubmitField={onSubmit}
-                />
-
-                {/*//todo: i18n*/}
-                <AddressScanner
-                  qrModalVisible={isShowQrModalVisible}
-                  onPressCancel={closeQrScan}
-                  onChangeAddress={onUpdateReceiverInputAddress}
-                  scanMessage={'to send fund'}
-                />
-
-                {!!(formState.errors.to && formState.errors.to.length) &&
-                  formState.errors.to.map((message, index) => (
-                    <Warning key={index} isDanger message={message} style={{ marginBottom: theme.marginSM }} />
-                  ))}
-
-                <TouchableOpacity
-                  style={[{ marginBottom: theme.marginSM }, (!destChainItems.length || loading) && DisabledStyle]}
-                  disabled={!destChainItems.length || loading}
-                  onPress={() => {
-                    setChainSelectModalVisible(true);
-                  }}>
-                  <NetworkField
-                    networkKey={destChain}
-                    outerStyle={{ marginBottom: 0 }}
-                    placeholder={'Select chain'}
-                    showIcon
+                <View style={{ flex: 1 }}>
+                  <InputAmount
+                    forceUpdateMaxValue={forceUpdateMaxValue}
+                    disable={loading}
+                    value={amount}
+                    maxValue={maxTransfer}
+                    onChangeValue={_onChangeAmount}
+                    decimals={decimals}
+                    onSetMax={onSetMaxTransferable}
+                    showMaxButton
                   />
-                </TouchableOpacity>
-                <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
-              </ScrollView>
-
-              <View
-                style={{
-                  paddingHorizontal: 16,
-                  paddingTop: 16,
-                  ...MarginBottomForSubmitButton,
-                }}>
-                {/*//todo: i18n*/}
-                <Button
-                  disabled={
-                    !isBalanceReady || !!formState.errors.to.length || !!formState.errors.value.length || loading
-                  }
-                  icon={buttonIcon}
-                  loading={loading}
-                  type={isTransferAll ? 'warning' : undefined}
-                  onPress={onSubmit}>
-                  {isTransferAll ? 'Transfer all' : 'Transfer'}
-                </Button>
+                </View>
               </View>
-              <SafeAreaView />
-            </>
-          </TouchableWithoutFeedback>
+
+              {!!(formState.errors.value && formState.errors.value.length) &&
+                formState.errors.value.map((message, index) => (
+                  <Warning key={index} isDanger message={message} style={{ marginBottom: 8 }} />
+                ))}
+
+              <InputAddress
+                ref={formState.refs.to}
+                onPressQrButton={onPressQrButton}
+                containerStyle={{ marginBottom: theme.sizeSM }}
+                label={formState.labels.to}
+                value={formState.data.to}
+                onChange={onChangeRecipientAddress}
+                isValidValue={formState.isValidated.recipientAddress}
+                placeholder={'Please type or paste an address'}
+                disabled={loading}
+                onSubmitField={onSubmit}
+              />
+
+              {/*//todo: i18n*/}
+              <AddressScanner
+                qrModalVisible={isShowQrModalVisible}
+                onPressCancel={closeQrScan}
+                onChangeAddress={onUpdateReceiverInputAddress}
+                scanMessage={'to send fund'}
+              />
+
+              {!!(formState.errors.to && formState.errors.to.length) &&
+                formState.errors.to.map((message, index) => (
+                  <Warning key={index} isDanger message={message} style={{ marginBottom: theme.marginSM }} />
+                ))}
+
+              <TouchableOpacity
+                style={[{ marginBottom: theme.marginSM }, (!destChainItems.length || loading) && DisabledStyle]}
+                disabled={!destChainItems.length || loading}
+                onPress={() => {
+                  setChainSelectModalVisible(true);
+                }}>
+                <NetworkField
+                  networkKey={destChain}
+                  outerStyle={{ marginBottom: 0 }}
+                  placeholder={'Select chain'}
+                  showIcon
+                />
+              </TouchableOpacity>
+              <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
+            </ScrollView>
+
+            <View
+              style={{
+                paddingHorizontal: 16,
+                paddingTop: 16,
+                ...MarginBottomForSubmitButton,
+              }}>
+              {/*//todo: i18n*/}
+              <Button
+                disabled={!isBalanceReady || !!formState.errors.to.length || !!formState.errors.value.length || loading}
+                icon={buttonIcon}
+                loading={loading}
+                type={isTransferAll ? 'warning' : undefined}
+                onPress={onSubmit}>
+                {isTransferAll ? 'Transfer all' : 'Transfer'}
+              </Button>
+            </View>
+            <SafeAreaView />
+          </>
 
           <AccountSelector
             modalVisible={accountSelectModalVisible}

@@ -3,7 +3,7 @@ import { FlatListScreen } from 'components/FlatListScreen';
 import { StakingDataType } from 'hooks/types';
 import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ListRenderItemInfo, RefreshControl } from 'react-native';
+import {Keyboard, ListRenderItemInfo, RefreshControl} from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
@@ -81,6 +81,7 @@ const StakingBalanceList = () => {
 
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
+      Keyboard.dismiss();
       setSelectedItem(stakingData);
       setDetailModalVisible(true);
     };
