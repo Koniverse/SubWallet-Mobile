@@ -1,6 +1,21 @@
 ## 1.0.3 (164)
 - Fix header style
 
+## 1.0.3 (163)
+- Can not search by address in case search account #655
+- Do not watch information in the end of list in case sroll #669
+- Solve problems related to the virtual keyboard #679
+- Do not reset criteria case closed modal select account then reopen modal when derive account #686
+- Navigate to Your Seed Phrase in case create new account when install app #687
+- Add privacy policy url into First screen #693
+- An error occurred page in case don't input the contract address then click Enter on the keyboard when import token #700
+- Hide collator not enough condition unstake #702
+- Incorrect validate when send token #707
+- Add more information for Network Staking information #712
+- UI bugs on the import token, import NFT screens #709
+- Show back button on create master password screen #710
+- Update UI for Token screen in case token group list is empty #727
+
 ## 1.0.3 (162)
 - Add Term of service referrence
 - Can not search by address in case search account
