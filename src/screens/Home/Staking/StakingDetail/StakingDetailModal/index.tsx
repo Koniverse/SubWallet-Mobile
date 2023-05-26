@@ -41,8 +41,8 @@ import Toast from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 
 interface Props {
-  nominatorMetadata: NominatorMetadata;
-  chainStakingMetadata: ChainStakingMetadata;
+  nominatorMetadata?: NominatorMetadata;
+  chainStakingMetadata?: ChainStakingMetadata;
   staking: StakingItem;
   rewardItem?: StakingRewardItem;
   onCloseDetailModal?: () => void;
@@ -92,11 +92,10 @@ export const StakingDetailModal = ({
   onCloseDetailModal,
   onOpenMoreActionModal,
 }: Props) => {
-  const { expectedReturn, minPoolBonding, minStake, unstakingPeriod } = chainStakingMetadata;
-  const { activeStake, address, chain, nominations, type, unstakings } = nominatorMetadata;
-  const showingOption = isShowNominationByValidator(chain);
-  const isRelayChain = _STAKING_CHAIN_GROUP.relay.includes(chain);
-  const modalTitle = type === StakingType.NOMINATED.valueOf() ? 'Nomination details' : 'Pooled details';
+  const showingOption = isShowNominationByValidator(nominatorMetadata?.chain || '');
+  const isRelayChain = _STAKING_CHAIN_GROUP.relay.includes(nominatorMetadata?.chain || '');
+  const modalTitle =
+    nominatorMetadata?.type === StakingType.NOMINATED.valueOf() ? 'Nomination details' : 'Pooled details';
   const theme = useSubWalletTheme().swThemes;
   const [seeMore, setSeeMore] = useState<boolean>(false);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -174,7 +173,7 @@ export const StakingDetailModal = ({
 
   const renderUnstakingInfo = useCallback(
     (item: NominationInfo, index: number) => {
-      const unstakingData = getUnstakingInfo(unstakings, item.validatorAddress);
+      const unstakingData = getUnstakingInfo(nominatorMetadata?.unstakings || [], item.validatorAddress);
 
       return (
         <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'sm'}>
@@ -252,12 +251,12 @@ export const StakingDetailModal = ({
       decimals,
       getStakingStatus,
       networkPrefix,
+      nominatorMetadata?.unstakings,
       showingOption,
       staking.nativeToken,
       theme.colorTextTertiary,
       theme.fontSizeSM,
       theme.lineHeightSM,
-      unstakings,
     ],
   );
 
@@ -298,23 +297,24 @@ export const StakingDetailModal = ({
           <TouchableHighlight style={{ width: '100%' }}>
             <>
               <MetaInfo>
-                {isAccountAll(address) ? (
+                {isAccountAll(nominatorMetadata?.address || '') ? (
                   <MetaInfo.AccountGroup
                     label={'Account'}
-                    content={address}
+                    content={nominatorMetadata?.address || ''}
                     addresses={accounts.map(acc => acc.address)}
                   />
                 ) : (
-                  <MetaInfo.Account address={address} label={'Account'} name={account?.name} />
+                  <MetaInfo.Account address={nominatorMetadata?.address || ''} label={'Account'} name={account?.name} />
                 )}
 
                 <MetaInfo.DisplayType label={'Staking type'} typeName={stakingTypeNameMap[staking.type]} />
 
                 <MetaInfo.Status
-                  label={type === StakingType.NOMINATED ? 'Nomination status' : 'Pooled status'}
-                  statusIcon={getStakingStatus(nominatorMetadata.status).icon}
-                  statusName={getStakingStatus(nominatorMetadata.status).name}
-                  valueColorSchema={getStakingStatus(nominatorMetadata.status).schema}
+                  label={nominatorMetadata?.type === StakingType.NOMINATED ? 'Nomination status' : 'Pooled status'}
+                  loading={!nominatorMetadata}
+                  statusIcon={nominatorMetadata && getStakingStatus(nominatorMetadata.status).icon}
+                  statusName={nominatorMetadata && getStakingStatus(nominatorMetadata.status).name}
+                  valueColorSchema={nominatorMetadata ? getStakingStatus(nominatorMetadata.status).schema : 'light'}
                 />
 
                 {!!rewardItem?.totalReward && parseFloat(rewardItem?.totalReward) > 0 && (
@@ -338,16 +338,20 @@ export const StakingDetailModal = ({
                 <MetaInfo.Number
                   decimals={decimals}
                   label={'Total staked'}
+                  loading={!nominatorMetadata}
                   suffix={staking.nativeToken}
-                  value={String(parseFloat(activeStake) + parseFloat(staking.unlockingBalance || '0'))}
+                  value={String(
+                    parseFloat(nominatorMetadata?.activeStake || '') + parseFloat(staking.unlockingBalance || '0'),
+                  )}
                 />
 
                 {
                   <MetaInfo.Number
                     decimals={decimals}
+                    loading={!nominatorMetadata}
                     label={'Active staked'}
                     suffix={staking.nativeToken}
-                    value={activeStake}
+                    value={nominatorMetadata?.activeStake || ''}
                   />
                 }
 
@@ -377,33 +381,41 @@ export const StakingDetailModal = ({
               {seeMore && (
                 <>
                   <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'xs'} valueColorScheme={'light'}>
-                    {!!expectedReturn && (
+                    {chainStakingMetadata?.expectedReturn && (
                       <MetaInfo.Number
                         label={'Estimated earning'}
                         suffix={'%'}
-                        value={expectedReturn}
+                        value={chainStakingMetadata?.expectedReturn || ''}
                         valueColorSchema={'even-odd'}
                       />
                     )}
 
                     <MetaInfo.Number
                       decimals={decimals}
+                      loading={!nominatorMetadata || !chainStakingMetadata}
                       label={'Minimum active'}
                       suffix={staking.nativeToken}
-                      value={nominatorMetadata.type === StakingType.NOMINATED ? minStake : minPoolBonding || '0'}
+                      value={
+                        nominatorMetadata?.type === StakingType.NOMINATED
+                          ? chainStakingMetadata?.minStake
+                          : chainStakingMetadata?.minPoolBonding || '0'
+                      }
                       valueColorSchema={'gray'}
                     />
 
-                    {!!unstakingPeriod && (
-                      <MetaInfo.Default label={'Unstaking period'} valueColorSchema={'gray'}>
-                        {getUnstakingPeriod(unstakingPeriod)}
+                    {!!chainStakingMetadata?.unstakingPeriod && (
+                      <MetaInfo.Default
+                        label={'Unstaking period'}
+                        valueColorSchema={'gray'}
+                        loading={!chainStakingMetadata}>
+                        {getUnstakingPeriod(chainStakingMetadata?.unstakingPeriod)}
                       </MetaInfo.Default>
                     )}
                   </MetaInfo>
 
                   {showingOption === 'showByValue' &&
-                    nominations &&
-                    nominations.length > 0 &&
+                    nominatorMetadata?.nominations &&
+                    nominatorMetadata?.nominations.length > 0 &&
                     currentAccount?.address !== ALL_ACCOUNT_KEY && (
                       <>
                         <MetaInfo style={{ marginTop: 8 }} valueColorScheme={'light'}>
@@ -411,7 +423,7 @@ export const StakingDetailModal = ({
                             decimals={decimals}
                             label={'Active staked'}
                             suffix={staking.nativeToken}
-                            value={activeStake}
+                            value={nominatorMetadata?.activeStake}
                           />
                         </MetaInfo>
                         <MetaInfo
@@ -420,8 +432,8 @@ export const StakingDetailModal = ({
                           spaceSize={'xs'}
                           valueColorScheme={'light'}>
                           <>
-                            {nominations.map(item => {
-                              if (isRelayChain && type === StakingType.NOMINATED) {
+                            {nominatorMetadata?.nominations.map(item => {
+                              if (isRelayChain && nominatorMetadata?.type === StakingType.NOMINATED) {
                                 return (
                                   <MetaInfo.Default
                                     valueAlign={'left'}
@@ -456,8 +468,8 @@ export const StakingDetailModal = ({
                     )}
 
                   {(showingOption === 'showByValue' || showingOption === 'mixed') &&
-                    unstakings &&
-                    unstakings.length > 0 &&
+                    nominatorMetadata?.unstakings &&
+                    nominatorMetadata?.unstakings.length > 0 &&
                     currentAccount?.address !== ALL_ACCOUNT_KEY && (
                       <>
                         <MetaInfo style={{ marginTop: 8 }} valueColorScheme={'light'}>
@@ -474,7 +486,7 @@ export const StakingDetailModal = ({
                           spaceSize={'xs'}
                           valueColorScheme={'light'}>
                           <>
-                            {unstakings.map((item, index) => (
+                            {nominatorMetadata?.unstakings.map((item, index) => (
                               <MetaInfo.Number
                                 decimals={decimals}
                                 key={`${item.validatorAddress || item.chain}-${item.status}-${item.claimable}-${index}`}
@@ -490,14 +502,10 @@ export const StakingDetailModal = ({
                     )}
 
                   {(showingOption === 'showByValidator' || showingOption === 'mixed') &&
-                    nominations &&
-                    nominations.length > 0 &&
+                    nominatorMetadata?.nominations &&
+                    nominatorMetadata?.nominations.length > 0 &&
                     currentAccount?.address !== ALL_ACCOUNT_KEY && (
-                      <>
-                        {nominations &&
-                          nominations.length &&
-                          nominations.map((item, index) => renderUnstakingInfo(item, index))}
-                      </>
+                      <>{nominatorMetadata.nominations.map((item, index) => renderUnstakingInfo(item, index))}</>
                     )}
                 </>
               )}

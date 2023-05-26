@@ -76,7 +76,6 @@ const StakingBalanceList = () => {
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [moreActionModalVisible, setMoreActionModalVisible] = useState<boolean>(false);
-
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
       Keyboard.dismiss();
@@ -151,7 +150,7 @@ const StakingBalanceList = () => {
         needGapWithStatusBar={false}
       />
 
-      {!!(selectedItem && selectedItem.nominatorMetadata && selectedItem.chainStakingMetadata) && (
+      {selectedItem && (
         <StakingDetailModal
           modalVisible={detailModalVisible}
           onCloseDetailModal={() => setDetailModalVisible(false)}

@@ -6,6 +6,7 @@ export type SchemeColor = 'light' | 'gray' | 'success' | 'gold' | 'danger' | 'wa
 export interface InfoItemBase {
   label?: string | ((labelStyle: TextStyle) => React.ReactNode);
   valueColorSchema?: SchemeColor;
+  loading?: boolean;
 }
 
 export interface InfoItemGeneralProps {
