@@ -77,7 +77,7 @@ export const LockScreen = () => {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ ...sharedStyles.layoutContainer, flex: 1, width: '100%', alignItems: 'center', paddingTop: 68 }}>
           <Suspense>
-            <SVGImages.Logo width={80} height={120} />
+            <SVGImages.LogoGradient width={80} height={120} />
           </Suspense>
 
           <Text

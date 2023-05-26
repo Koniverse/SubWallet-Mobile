@@ -12,7 +12,7 @@
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                    <view key="view" contentMode="center" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -32,29 +32,25 @@
                                 <color key="textColor" white="1" alpha="0.65000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="46M-VT-aqh">
-                                <rect key="frame" x="40.5" y="242.5" width="294" height="182"/>
-                                <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Icon" translatesAutoresizingMaskIntoConstraints="NO" id="XSa-wz-87n">
-                                        <rect key="frame" x="0.0" y="0.0" width="294" height="100"/>
-                                    </imageView>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Subtitle" translatesAutoresizingMaskIntoConstraints="NO" id="eo2-sJ-6f8">
-                                        <rect key="frame" x="0.0" y="100" width="294" height="82"/>
-                                    </imageView>
-                                </subviews>
-                            </stackView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XSa-wz-87n">
+                                <rect key="frame" x="145" y="217" width="80" height="119"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Subtitle" translatesAutoresizingMaskIntoConstraints="NO" id="eo2-sJ-6f8">
+                                <rect key="frame" x="40" y="322" width="294" height="82"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" red="0.049201481040000002" green="0.049201481040000002" blue="0.049201481040000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="KQC-xP-6w2" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="19f-jn-NUV"/>
                             <constraint firstItem="0S8-eq-ziu" firstAttribute="bottom" secondItem="0fm-Bb-h9X" secondAttribute="top" id="6Ms-eH-Nf8"/>
-                            <constraint firstItem="46M-VT-aqh" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="6cq-Vd-8CH"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="0fm-Bb-h9X" secondAttribute="bottom" constant="10" id="GNE-YP-vFQ"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="0fm-Bb-h9X" secondAttribute="trailing" id="GZH-ma-Fri"/>
                             <constraint firstItem="KQC-xP-6w2" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Jwh-qh-KbF"/>
                             <constraint firstItem="0S8-eq-ziu" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="K5x-IP-5lc"/>
-                            <constraint firstItem="46M-VT-aqh" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="KaL-2X-lzC"/>
                             <constraint firstItem="0fm-Bb-h9X" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" id="dAi-Q1-Pbz"/>
                             <constraint firstItem="0fm-Bb-h9X" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="bottom" constant="-37" id="wRK-K4-JxA"/>
                         </constraints>
@@ -67,7 +63,7 @@
     </scenes>
     <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
     <resources>
-        <image name="Icon" width="66" height="100"/>
+        <image name="Icon" width="384" height="576"/>
         <image name="Loading" width="390" height="844"/>
         <image name="Subtitle" width="294" height="82"/>
     </resources>
