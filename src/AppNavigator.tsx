@@ -10,6 +10,7 @@ import { Home } from 'screens/Home';
 import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { Settings } from 'screens/Settings';
+import { GeneralSettings } from 'screens/Settings/General';
 import { SendFund } from 'screens/Transaction/SendFund';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
@@ -174,6 +175,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen name="Settings" component={Settings} />
+                <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
                 <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="TransferNft" component={TransferNftScreen} options={{ gestureEnabled: false }} />

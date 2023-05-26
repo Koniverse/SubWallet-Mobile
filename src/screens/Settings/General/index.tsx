@@ -20,6 +20,10 @@ export const GeneralSettings = () => {
     toast.show(i18n.common.comingSoon);
   };
 
+  const openLanguageModal = () => {
+    navigation.navigate('Languages');
+  };
+
   return (
     <SubScreenContainer title={i18n.title.security} navigation={navigation}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
@@ -35,7 +39,7 @@ export const GeneralSettings = () => {
           icon={GlobeHemisphereWest}
           backgroundColor={theme['green-6']}
           label={'Language'}
-          onPress={showComingSoon}
+          onPress={openLanguageModal}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />
 

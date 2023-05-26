@@ -79,6 +79,7 @@ export const Settings = () => {
   const onPressComingSoonFeature = useCallback(() => {
     toast.hideAll();
     toast.show(i18n.common.comingSoon);
+    // navigation.navigate('GeneralSettings');
   }, [toast]);
   const [hiddenCount, setHiddenCount] = useState(0);
 

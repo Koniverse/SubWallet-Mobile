@@ -5,7 +5,6 @@ import getLanguageOptions from 'utils/getLanguageOptions';
 import { SelectItem } from 'components/SelectItem';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import RNRestart from 'react-native-restart';
 import i18n from 'utils/i18n/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateLanguage } from 'stores/MobileSettings';
@@ -35,9 +34,10 @@ export const Languages = () => {
       i18n.setLanguage(selectedLang);
       moment.locale(selectedLang);
       dispatch(updateLanguage(selectedLang));
-      setTimeout(() => {
-        RNRestart.Restart();
-      }, 500);
+      navigation.reset({
+        index: 2,
+        routes: [{ name: 'Home' }, { name: 'Settings' }, { name: 'GeneralSettings' }],
+      });
     }
   };
 

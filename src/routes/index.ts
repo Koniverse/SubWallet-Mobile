@@ -34,6 +34,7 @@ export type RootStackParamList = {
   RestoreJson: undefined;
   ExportPrivateKey: { address: string };
   Settings: undefined;
+  GeneralSettings: undefined;
   NetworkSelect: undefined;
   ImportSecretPhrase: undefined;
   ImportPrivateKey: undefined;
