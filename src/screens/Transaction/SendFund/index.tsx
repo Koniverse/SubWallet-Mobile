@@ -1,4 +1,4 @@
-import { _AssetRef, _AssetType, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
+import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import {
   _getAssetDecimals,
   _getOriginChainOfAsset,
@@ -48,6 +48,7 @@ import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
 import { BN_ZERO } from 'utils/chainBalances';
 import { formatBalance } from 'utils/number';
+import { useToast } from 'react-native-toast-notifications';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -223,6 +224,7 @@ export const SendFund = ({
   },
 }: SendFundProps): React.ReactElement<SendFundProps> => {
   const theme = useSubWalletTheme().swThemes;
+  const { show, hideAll } = useToast();
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const chainStateMap = useSelector((root: RootState) => root.chainStore.chainStateMap);
   const assetRegistry = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
@@ -464,6 +466,16 @@ export const SendFund = ({
         transferAll: isTransferAll,
       });
     } else {
+      const acc = findAccountByAddress(accounts, from);
+
+      if (acc?.isHardware) {
+        setLoading(false);
+        hideAll();
+        show('This feature is not available for Ledger account');
+
+        return;
+      }
+
       // Make cross chain transfer
       sendPromise = makeCrossChainTransfer({
         destinationNetworkKey: destChain,
@@ -472,6 +484,7 @@ export const SendFund = ({
         tokenSlug: asset,
         to,
         value: amount,
+        transferAll: isTransferAll,
       });
     }
 
@@ -490,11 +503,14 @@ export const SendFund = ({
     maxTransfer,
     validateRecipientAddress,
     to,
+    from,
     chain,
     destChain,
-    from,
     asset,
     isTransferAll,
+    accounts,
+    hideAll,
+    show,
     onSuccess,
     onError,
   ]);
@@ -761,9 +777,6 @@ export const SendFund = ({
               onChangeValue('destChain')(item.slug);
               setForceUpdateMaxValue(isTransferAll ? {} : undefined);
               setChainSelectModalVisible(false);
-              if (item.slug !== chain && assetRegistry[asset]?.assetType === _AssetType.NATIVE) {
-                setIsTransferAll(false);
-              }
               isToAddressDirty && validateRecipientAddress(to, from, chain, item.slug);
             }}
           />
