@@ -138,7 +138,7 @@ export const FirstScreen = () => {
               alignItems: 'center',
             }}>
             <Suspense>
-              <SVGImages.Logo width={66} height={100} />
+              <SVGImages.LogoGradient width={66} height={100} />
             </Suspense>
             <Text style={logoTextStyle}>SubWallet</Text>
             <Text style={logoSubTextStyle}>Polkadot, Substrate & Ethereum wallet</Text>
