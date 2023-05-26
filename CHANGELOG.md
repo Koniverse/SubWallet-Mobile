@@ -1,3 +1,11 @@
+## 1.0.3 (165)
+- Re-check get balance function in case send token cross-chain #706
+- Show incorrect Transfer Max in case change from send cross-chain to on-chain #724
+- Update new Logo and background for splash screen, first screen, pincode screen #735
+- Setup I18n (Temporary Disabled)
+- Update style confirmation screen in case delete token, network #739
+- Do not open the Staking detail screen #715
+
 ## 1.0.3 (164)
 - Fix header style
 
