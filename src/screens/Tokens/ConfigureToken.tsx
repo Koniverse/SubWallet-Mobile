@@ -6,7 +6,7 @@ import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
 import {
   _getContractAddressOfToken,
@@ -29,6 +29,8 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getTokenLogo } from 'utils/index';
 import Tag from '../../components/design-system-ui/tag';
+import useConfirmModal from 'hooks/modal/useConfirmModal';
+import DeleteModal from 'components/common/Modal/DeleteModal';
 
 export const ConfigureToken = ({
   route: {
@@ -72,18 +74,6 @@ export const ConfigureToken = ({
         showToast(i18n.errorMessage.occurredError);
       });
   }, [navigation, showToast, tokenInfo?.slug]);
-
-  const onDeleteTokens = () => {
-    Alert.alert('Delete tokens', 'Make sure you want to delete selected tokens', [
-      {
-        text: i18n.common.cancel,
-      },
-      {
-        text: i18n.common.ok,
-        onPress: () => handleDeleteToken(),
-      },
-    ]);
-  };
 
   const onSubmit = (formState: FormState) => {
     if (tokenInfo) {
@@ -157,13 +147,20 @@ export const ConfigureToken = ({
     return null;
   }, [theme, tokenInfo]);
 
+  const {
+    onPress: onPressDelete,
+    onCancelModal: onCancelDelete,
+    visible: deleteVisible,
+    onCompleteModal: onCompleteDeleteModal,
+  } = useConfirmModal(handleDeleteToken);
+
   return (
     <ContainerWithSubHeader
       onPressBack={() => navigation.goBack()}
       title={i18n.title.configureToken}
       disabled={isBusy}
       rightIcon={Trash}
-      onPressRightIcon={onDeleteTokens}
+      onPressRightIcon={onPressDelete}
       disableRightButton={!tokenInfo || !(_isCustomAsset(tokenInfo?.slug || '') && _isSmartContractToken(tokenInfo))}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding }}>
         <ScrollView style={{ width: '100%', flex: 1 }}>
@@ -238,6 +235,14 @@ export const ConfigureToken = ({
           </View>
         )}
       </View>
+
+      <DeleteModal
+        title={'Delete this token ?'}
+        visible={deleteVisible}
+        message={'You are about to delete this token'}
+        onCompleteModal={onCompleteDeleteModal}
+        onCancelModal={onCancelDelete}
+      />
     </ContainerWithSubHeader>
   );
 };
