@@ -339,7 +339,7 @@ export const NetworkSettingDetail = ({
         <DeleteModal
           title={'Delete this network ?'}
           visible={deleteVisible}
-          message={'You are about to delete this chain'}
+          message={'Are you sure you want to delete this chain?\n' + 'You could no longer manage assets on this chain'}
           onCompleteModal={onCompleteDeleteModal}
           onCancelModal={onCancelDelete}
         />
