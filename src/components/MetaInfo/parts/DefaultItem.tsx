@@ -5,6 +5,7 @@ import MetaInfoStyles from 'components/MetaInfo/style';
 import { TextStyle, View } from 'react-native';
 import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { getSchemaColor, renderColContent } from 'components/MetaInfo/shared';
+import { ActivityIndicator } from 'components/design-system-ui';
 
 export interface DefaultInfoItem extends InfoItemBase {
   children?: React.ReactNode | ((valueStyle: TextStyle) => React.ReactNode);
@@ -18,6 +19,7 @@ const DefaultItem: React.FC<DefaultInfoItem> = ({
   valueColorSchema,
   children,
   valueAlign = 'right',
+  loading,
 }: DefaultInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -38,7 +40,7 @@ const DefaultItem: React.FC<DefaultInfoItem> = ({
         {renderColContent(label, { ..._style.label, ...labelGeneralStyle })}
       </View>
       <View style={[_style.col, _style['col.grow'], valueAlign === 'right' && _style['col.to-right']]}>
-        {renderColContent(children, valueStyle)}
+        {loading ? <ActivityIndicator size={20} /> : renderColContent(children, valueStyle)}
       </View>
     </View>
   );
