@@ -4,6 +4,7 @@ import { FadersHorizontal, MagnifyingGlass, XCircle } from 'phosphor-react-nativ
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
 import { Button, Icon } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props extends TextInputProps {
   onSearch: (text: string) => void;
@@ -20,13 +21,11 @@ const searchContainerStyle: StyleProp<any> = {
   backgroundColor: '#1A1A1A',
   borderRadius: 8,
   alignItems: 'center',
-  paddingRight: 4,
-  paddingLeft: 12,
   flexDirection: 'row',
   height: 48,
+  position: 'relative',
 };
 
-const SearchIcon = MagnifyingGlass;
 const CancelIcon = XCircle;
 
 export const Search = (searchProps: Props) => {
@@ -42,20 +41,25 @@ export const Search = (searchProps: Props) => {
     isShowFilterBtn,
     onPressFilterBtn,
   } = searchProps;
+  const theme = useSubWalletTheme().swThemes;
 
   return (
     <View style={[searchContainerStyle, style]}>
-      <SearchIcon size={20} color={ColorMap.light} weight={'bold'} />
+      <View style={{ position: 'absolute', margin: 'auto', left: 12 }}>
+        <Icon phosphorIcon={MagnifyingGlass} iconColor={theme.colorWhite} size={'md'} />
+      </View>
       <TextInput
         ref={searchRef}
         style={{
-          marginHorizontal: 8,
           ...sharedStyles.mainText,
           lineHeight: 20,
           ...FontMedium,
           color: ColorMap.disabled,
           flexDirection: 'row',
           flex: 1,
+          paddingLeft: 44,
+          paddingRight: isShowFilterBtn ? 84 : 44,
+          height: '100%',
         }}
         placeholder={placeholder}
         autoCorrect={false}
@@ -67,6 +71,7 @@ export const Search = (searchProps: Props) => {
       />
       {!!searchText && (
         <Button
+          style={{ position: 'absolute', right: isShowFilterBtn ? 44 : 4 }}
           size={'xs'}
           type={'ghost'}
           icon={<Icon phosphorIcon={CancelIcon} size={'sm'} iconColor={'#A6A6A6'} />}
@@ -76,6 +81,7 @@ export const Search = (searchProps: Props) => {
 
       {isShowFilterBtn && (
         <Button
+          style={{ position: 'absolute', right: 4, marginVertical: 'auto' }}
           size={'xs'}
           type={'ghost'}
           icon={<Icon phosphorIcon={FadersHorizontal} size={'sm'} iconColor={'#A6A6A6'} />}

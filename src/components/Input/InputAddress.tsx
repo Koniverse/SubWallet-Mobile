@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
-import { StyleProp, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, StyleProp, StyleSheet, TextInput, View } from 'react-native';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { Scan } from 'phosphor-react-native';
 import reformatAddress, { toShort } from 'utils/index';
@@ -184,7 +184,7 @@ function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, sho
       paddingTop: (hasLabel ? 24 : 0) + 13,
       paddingBottom: 13,
       color: isValid ? (readonly ? theme.colorTextLight5 : theme.colorTextLight1) : theme.colorError,
-      lineHeight: theme.fontSize * theme.lineHeight,
+      lineHeight: Platform.OS === 'ios' ? 17 : theme.fontSize * theme.lineHeight,
       zIndex: 1,
     },
     formattedTextInput: {
