@@ -1,4 +1,7 @@
 ## 1.0.3 (167)
+- Update web-runner to fix staking issue
+
+## 1.0.3 (167)
 - Improve touchable area for all input #683
 - Show incorrect APR and Min stake of the some chains #733
 - Recheck staking infos on Android #743
