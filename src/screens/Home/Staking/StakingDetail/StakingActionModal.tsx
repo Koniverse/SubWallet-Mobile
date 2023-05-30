@@ -47,7 +47,7 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { chainStakingMetadata, nominatorMetadata, closeModal, visible } = props;
+  const { chainStakingMetadata, nominatorMetadata, closeModal, visible, reward } = props;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
   const [selected, setSelected] = useState<StakingAction | undefined>();
@@ -127,8 +127,8 @@ const StakingActionModal = (props: Props) => {
     if (!nominatorMetadata) {
       return [];
     }
-    return getStakingAvailableActionsByNominator(nominatorMetadata);
-  }, [nominatorMetadata]);
+    return getStakingAvailableActionsByNominator(nominatorMetadata, reward?.unclaimedReward);
+  }, [nominatorMetadata, reward?.unclaimedReward]);
 
   const actionList: ActionListType[] = useMemo(() => {
     if (!chainStakingMetadata) {

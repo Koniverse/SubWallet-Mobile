@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
-import {DisabledStyle, FlatListScreenPaddingTop} from 'styles/sharedStyles';
+import { DisabledStyle, FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { NominationPoolInfo, StakingType } from '@subwallet/extension-base/background/KoniTypes';

@@ -766,5 +766,6 @@ export const vi = {
     noSenderFound: 'There is no related account in the app',
     externalAccount: 'There is external account',
     framesToBig: 'Frames number is too big, the QR seems not to be a recognized extrinsic raw data',
+    networkDisconected: 'is disconnected',
   },
 };

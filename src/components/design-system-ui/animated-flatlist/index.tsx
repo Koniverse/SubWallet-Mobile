@@ -1,6 +1,5 @@
 import React, { ForwardedRef, forwardRef } from 'react';
-import { FlatListProps, LayoutChangeEvent } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, FlatListProps, LayoutChangeEvent } from 'react-native';
 import ReanimatedView from 'react-native-reanimated/src/reanimated2/component/View';
 import createAnimatedComponent from 'react-native-reanimated/src/createAnimatedComponent';
 import { ILayoutAnimationBuilder } from 'react-native-reanimated/src/reanimated2/layoutReanimation/animationBuilder/commonTypes';
