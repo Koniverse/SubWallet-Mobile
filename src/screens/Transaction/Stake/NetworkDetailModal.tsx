@@ -104,7 +104,9 @@ export const NetworkDetailModal = ({
           />
 
           {!!unstakingPeriod && (
-            <MetaInfo.Default valueColorSchema={'light'} label={'Unstaking period'}>{getUnstakingPeriod(unstakingPeriod)}</MetaInfo.Default>
+            <MetaInfo.Default valueColorSchema={'light'} label={'Unstaking period'}>
+              {getUnstakingPeriod(unstakingPeriod)}
+            </MetaInfo.Default>
           )}
         </MetaInfo>
       </View>

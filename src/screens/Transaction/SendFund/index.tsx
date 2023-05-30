@@ -6,7 +6,7 @@ import {
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { _ChainConnectionStatus, _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { AssetSetting } from '@subwallet/extension-base/background/KoniTypes';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
 import { findAccountByAddress } from 'utils/index';
@@ -49,6 +49,7 @@ import { SubHeader } from 'components/SubHeader';
 import { BN_ZERO } from 'utils/chainBalances';
 import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -268,6 +269,7 @@ export const SendFund = ({
     useTransaction('send-fund', formConfig);
   const { asset, chain, destChain, from, to, value: amount } = formState.data;
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, handleTransferAll);
+  const isDataNotReady = !to || !amount;
 
   const accountItems = useMemo(() => {
     return accounts.filter(filterAccountFunc(chainInfoMap, assetRegistry, multiChainAssetMap, tokenGroupSlug));
@@ -441,6 +443,14 @@ export const SendFund = ({
   }, [accounts, from]);
 
   const onSubmit = useCallback(() => {
+    if (
+      chainStateMap[destChain].connectionStatus === _ChainConnectionStatus.DISCONNECTED ||
+      chainStateMap[chain].connectionStatus === _ChainConnectionStatus.DISCONNECTED
+    ) {
+      show(`${destChain} ${i18n.errorMessage.networkDisconected}`);
+      return;
+    }
+
     setLoading(true);
 
     const isAmountValid = validateAmount(amount, maxTransfer);
@@ -498,6 +508,8 @@ export const SendFund = ({
         });
     }, 300);
   }, [
+    chainStateMap,
+    destChain,
     validateAmount,
     amount,
     maxTransfer,
@@ -505,12 +517,11 @@ export const SendFund = ({
     to,
     from,
     chain,
-    destChain,
+    show,
     asset,
     isTransferAll,
     accounts,
     hideAll,
-    show,
     onSuccess,
     onError,
   ]);
@@ -730,7 +741,13 @@ export const SendFund = ({
               }}>
               {/*//todo: i18n*/}
               <Button
-                disabled={!isBalanceReady || !!formState.errors.to.length || !!formState.errors.value.length || loading}
+                disabled={
+                  isDataNotReady ||
+                  !isBalanceReady ||
+                  !!formState.errors.to.length ||
+                  !!formState.errors.value.length ||
+                  loading
+                }
                 icon={buttonIcon}
                 loading={loading}
                 type={isTransferAll ? 'warning' : undefined}
