@@ -3,6 +3,7 @@ import { Storage } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const storage = new MMKV();
+export const mmkvStore = storage;
 
 export const reduxStorage: Storage = {
   setItem: (key, value) => {

@@ -12,6 +12,7 @@ import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
+import { mmkvStore } from 'utils/storage';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 300000; //5*60*1000
@@ -320,8 +321,10 @@ const now = new Date().getTime();
 const URI_PARAMS =
   '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
 
-const BASE_URI =
+const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
+const osWebRunnerURL =
   Platform.OS === 'android' ? 'file:///android_asset/Web.bundle/site' : `http://localhost:${WEB_SERVER_PORT}/site`;
+const BASE_URI = !devWebRunnerURL || devWebRunnerURL === '' ? osWebRunnerURL : devWebRunnerURL;
 
 const webRunnerReducer = (state: WebRunnerGlobalState, action: WebRunnerControlAction): WebRunnerGlobalState => {
   const { type } = action;

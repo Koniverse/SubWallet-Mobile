@@ -6,6 +6,7 @@ export enum SCAN_TYPE {
   SECRET = 'SECRET',
   QR_SIGNER = 'QR_SIGNER',
   READONLY = 'READONLY',
+  TEXT = 'TEXT',
 }
 
 export enum SCANNER_QR_STEP {
