@@ -32,14 +32,17 @@
                                 <color key="textColor" white="1" alpha="0.65000000000000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XSa-wz-87n">
-                                <rect key="frame" x="145" y="217" width="80" height="119"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Icon" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XSa-wz-87n">
+                                <rect key="frame" x="148" y="214" width="80" height="119"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="6lz-Py-PML"/>
+                                    <constraint firstAttribute="height" constant="119" id="nX1-jd-dNa"/>
+                                    <constraint firstAttribute="width" secondItem="XSa-wz-87n" secondAttribute="height" multiplier="80:119" id="nYx-Vt-XM2"/>
+                                </constraints>
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Subtitle" translatesAutoresizingMaskIntoConstraints="NO" id="eo2-sJ-6f8">
-                                <rect key="frame" x="40" y="322" width="294" height="82"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Subtitle" translatesAutoresizingMaskIntoConstraints="NO" id="eo2-sJ-6f8">
+                                <rect key="frame" x="41" y="341" width="294" height="82"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
@@ -51,7 +54,11 @@
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="0fm-Bb-h9X" secondAttribute="trailing" id="GZH-ma-Fri"/>
                             <constraint firstItem="KQC-xP-6w2" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Jwh-qh-KbF"/>
                             <constraint firstItem="0S8-eq-ziu" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="K5x-IP-5lc"/>
+                            <constraint firstItem="XSa-wz-87n" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-60" id="M1M-4h-QGq"/>
+                            <constraint firstItem="XSa-wz-87n" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="O1p-Vf-ZhR"/>
                             <constraint firstItem="0fm-Bb-h9X" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" id="dAi-Q1-Pbz"/>
+                            <constraint firstItem="eo2-sJ-6f8" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="e8f-Kq-pBl"/>
+                            <constraint firstItem="eo2-sJ-6f8" firstAttribute="top" secondItem="XSa-wz-87n" secondAttribute="bottom" constant="8" id="l4m-wl-aoL"/>
                             <constraint firstItem="0fm-Bb-h9X" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="bottom" constant="-37" id="wRK-K4-JxA"/>
                         </constraints>
                     </view>

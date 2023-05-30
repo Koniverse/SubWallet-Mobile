@@ -1,3 +1,12 @@
+## 1.0.3 (167)
+- Improve touchable area for all input #683
+- Show incorrect APR and Min stake of the some chains #733
+- Recheck staking infos on Android #743
+- Claim reward button (in pooled) is disabled even though the unclaimed value > 0 #749
+
+## 1.0.3 (166)
+- Update web runner
+
 ## 1.0.3 (165)
 - Re-check get balance function in case send token cross-chain #706
 - Show incorrect Transfer Max in case change from send cross-chain to on-chain #724
