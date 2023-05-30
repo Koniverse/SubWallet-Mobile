@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
+  APIItemState,
   ChainStakingMetadata,
   NominationInfo,
   NominatorMetadata,
@@ -383,7 +384,7 @@ export const StakingDetailModal = ({
                   <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'xs'} valueColorScheme={'light'}>
                     {chainStakingMetadata?.expectedReturn && (
                       <MetaInfo.Number
-                        label={'Estimated earning'}
+                        label={'Estimated annual earnings'}
                         suffix={'%'}
                         value={chainStakingMetadata?.expectedReturn || ''}
                         valueColorSchema={'even-odd'}
@@ -396,9 +397,9 @@ export const StakingDetailModal = ({
                       label={'Minimum active'}
                       suffix={staking.nativeToken}
                       value={
-                        nominatorMetadata?.type === StakingType.NOMINATED
+                        (nominatorMetadata?.type === StakingType.NOMINATED
                           ? chainStakingMetadata?.minStake
-                          : chainStakingMetadata?.minPoolBonding || '0'
+                          : chainStakingMetadata?.minJoinNominationPool) || '0'
                       }
                       valueColorSchema={'gray'}
                     />
