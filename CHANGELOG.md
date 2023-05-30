@@ -1,4 +1,7 @@
-## 1.0.3 (167)
+## 1.0.3 (169)
+- Update web-runner with latest @subwallet/chain-list
+
+## 1.0.3 (168)
 - Update web-runner to fix staking issue
 
 ## 1.0.3 (167)
