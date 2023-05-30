@@ -6,6 +6,7 @@ import { AmountData, ChainStakingMetadata, StakingType } from '@subwallet/extens
 import { getUnstakingPeriod } from 'screens/Transaction/helper/staking';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
+import BigN from 'bignumber.js';
 
 interface Props {
   modalVisible: boolean;
@@ -72,7 +73,7 @@ export const NetworkDetailModal = ({
                     /{' '}
                   </Text>
                   <Number
-                    value={inflation}
+                    value={new BigN(expectedReturn).minus(inflation)}
                     decimal={0}
                     suffix={'%'}
                     size={14}
@@ -104,7 +105,9 @@ export const NetworkDetailModal = ({
           />
 
           {!!unstakingPeriod && (
-            <MetaInfo.Default valueColorSchema={'light'} label={'Unstaking period'}>{getUnstakingPeriod(unstakingPeriod)}</MetaInfo.Default>
+            <MetaInfo.Default valueColorSchema={'light'} label={'Unstaking period'}>
+              {getUnstakingPeriod(unstakingPeriod)}
+            </MetaInfo.Default>
           )}
         </MetaInfo>
       </View>

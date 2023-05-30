@@ -259,10 +259,10 @@ export const Stake = ({
 
   const minStake = useMemo(
     () =>
-      currentStakingType === StakingType.POOLED
-        ? chainStakingMetadata?.minPoolBonding || '0'
-        : chainStakingMetadata?.minStake || '0',
-    [chainStakingMetadata?.minPoolBonding, chainStakingMetadata?.minStake, currentStakingType],
+      (currentStakingType === StakingType.POOLED
+        ? chainStakingMetadata?.minJoinNominationPool
+        : chainStakingMetadata?.minStake) || '0',
+    [chainStakingMetadata?.minJoinNominationPool, chainStakingMetadata?.minStake, currentStakingType],
   );
 
   const getMetaInfo = useCallback(() => {
