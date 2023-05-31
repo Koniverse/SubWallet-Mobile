@@ -4536,10 +4536,10 @@
     "@polkadot/util" "^10.2.1"
     eventemitter3 "^4.0.7"
 
-"@subwallet/extension-base@^0.8.1-wr", "@subwallet/extension-base@^1.0.7-0":
-  version "1.0.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.0.7-0.tgz#9f4b04704a7a300a692022b6a58d0d1ee914c842"
-  integrity sha512-NdxCsoH8fQVMf8NLIXauBGmW060PVEYSxHhf0w8aGfumugqykiMKr4rGTiSv/3JLhPhMM/ZN2m2JY0W1ywUxqw==
+"@subwallet/extension-base@^0.8.1-wr", "@subwallet/extension-base@^1.0.7-1":
+  version "1.0.7-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.0.7-1.tgz#c9b2165fee8213b2a848ce1e3e163ad72afe1788"
+  integrity sha512-03Jhfk0oPfgrp6LGWuxE5tJSVR+mctpUiNJGUj1xZ60FWtibA7lF+T8HdZb7U1s4H2wfqq/ouM8Z7Rj2bA8wzA==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@acala-network/type-definitions" "^5.0.2"
@@ -4592,10 +4592,10 @@
     "@subsocial/types" "^0.6.8"
     "@substrate/connect" "^0.7.26"
     "@subwallet/chain-list" "^0.1.9"
-    "@subwallet/extension-base" "^1.0.7-0"
-    "@subwallet/extension-chains" "^1.0.7-0"
-    "@subwallet/extension-dapp" "^1.0.7-0"
-    "@subwallet/extension-inject" "^1.0.7-0"
+    "@subwallet/extension-base" "^1.0.7-1"
+    "@subwallet/extension-chains" "^1.0.7-1"
+    "@subwallet/extension-dapp" "^1.0.7-1"
+    "@subwallet/extension-inject" "^1.0.7-1"
     "@subwallet/keyring" "^0.0.9"
     "@subwallet/ui-keyring" "^0.0.9"
     "@unique-nft/types" "^0.6.0-4"
@@ -4644,16 +4644,16 @@
     "@polkadot/util-crypto" "^10.2.1"
     "@subwallet/extension-inject" "^0.8.1"
 
-"@subwallet/extension-chains@^1.0.7-0":
-  version "1.0.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.0.7-0.tgz#594bdbea37c64fde98d5e470da565f81e40c1abe"
-  integrity sha512-Xe7U9MLKkH2PJmIoTGD/My9b9fpx93p5Jat1WJFaGbgeXS/QS2GrVdUFGYd+d2/xq9wpck4UW+IcRDsIlhLQzw==
+"@subwallet/extension-chains@^1.0.7-1":
+  version "1.0.7-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.0.7-1.tgz#badb02c4f7a556ce01c4811eac0e9900be0a437f"
+  integrity sha512-CrF59y4rmb9lCU+sfugLzQSLV4FpBbNo3ZIq9korN7p3RYQNnbcjAuUuJy03Pv5Nyb/FoMLaeifyb+DjBzxO/g==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/networks" "^12.2.1"
     "@polkadot/util" "^12.2.1"
     "@polkadot/util-crypto" "^12.2.1"
-    "@subwallet/extension-inject" "^1.0.7-0"
+    "@subwallet/extension-inject" "^1.0.7-1"
 
 "@subwallet/extension-dapp@^0.8.1":
   version "0.8.1"
@@ -4665,15 +4665,15 @@
     "@polkadot/util-crypto" "^10.2.1"
     "@subwallet/extension-inject" "^0.8.1"
 
-"@subwallet/extension-dapp@^1.0.7-0":
-  version "1.0.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.0.7-0.tgz#1eaf9620f9d6e881a5dcf420d854323a1d556c01"
-  integrity sha512-zOLqIgMfwyAuif751a2sXZv4Sjoz9VMaDCAVUBwAt97KORwKa1pB0EL7OUcfXhcPEaOZQNbhrZ8PgPRAFEWwog==
+"@subwallet/extension-dapp@^1.0.7-1":
+  version "1.0.7-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.0.7-1.tgz#151551a001cabe7abb77b88fb8b40c66af725813"
+  integrity sha512-lqGuD57l3Rx+YlhL3ptDqQQwC5d8weqKXOAxvifEbu6Xlzl7gAKU8aMFXZW4NTI2Xip0Au/8oteqgx7VgTjkQw==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/util" "^12.2.1"
     "@polkadot/util-crypto" "^12.2.1"
-    "@subwallet/extension-inject" "^1.0.7-0"
+    "@subwallet/extension-inject" "^1.0.7-1"
 
 "@subwallet/extension-inject@^0.8.1":
   version "0.8.1"
@@ -4688,10 +4688,10 @@
     "@polkadot/x-global" "^10.2.1"
     web3-core "^1.8.1"
 
-"@subwallet/extension-inject@^1.0.7-0":
-  version "1.0.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.0.7-0.tgz#8c54e90e1b383217dca7c797853bd0af58e9836c"
-  integrity sha512-0JkJA1Kp+AiHiSCgR2dNADVgUM2qRKNq43QWsTJBrw7DCdl6tP2IIvm6CcjSKQmxDR46fvjr/dcCo1mlSAZZlQ==
+"@subwallet/extension-inject@^1.0.7-1":
+  version "1.0.7-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.0.7-1.tgz#3dcbd27a6d37bbff9c678e7eb42488a1a7c089fc"
+  integrity sha512-51tQ/D1kxtxphLDjMvUNXrTGQLt4waSEDhaMqcfVe8T/e69qtWOqPmcGgkyv3Sg7Sunmq6FY10pLizqj1MbryQ==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^10.7.1"
@@ -4778,10 +4778,10 @@
     web3-eth-contract "^1.8.1"
     web3-utils "^1.8.1"
 
-"@subwallet/extension-koni-ui@^1.0.7-0":
-  version "1.0.7-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-ui/-/extension-koni-ui-1.0.7-0.tgz#b48ae093a895fa7b2ad801a1e511ebb79a03b6ea"
-  integrity sha512-MbwH54iMNE8t/VJ2zENQ4/uEktKgrQaKHO8o6v/9f+och14p54sH7IbdvS8/17NaXSsjEPGlSZXJZKg2U8UnRQ==
+"@subwallet/extension-koni-ui@^1.0.7-1":
+  version "1.0.7-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-koni-ui/-/extension-koni-ui-1.0.7-1.tgz#cd4bd2de2d581c3fc1545b1abf14dee624ef7b01"
+  integrity sha512-hsDYaRQoXnT4OS35zHWdimx/UftWgQD30vVOYFzcMoLvZ0tCjQdZ2VUza575irameCNRjyHWwX1z48zPkwkEoA==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@ethereumjs/common" "^2.6.5"
@@ -4804,10 +4804,10 @@
     "@ramonak/react-progress-bar" "^5.0.3"
     "@reduxjs/toolkit" "^1.9.1"
     "@subwallet/chain-list" "^0.1.9"
-    "@subwallet/extension-base" "^1.0.7-0"
-    "@subwallet/extension-chains" "^1.0.7-0"
-    "@subwallet/extension-dapp" "^1.0.7-0"
-    "@subwallet/extension-inject" "^1.0.7-0"
+    "@subwallet/extension-base" "^1.0.7-1"
+    "@subwallet/extension-chains" "^1.0.7-1"
+    "@subwallet/extension-dapp" "^1.0.7-1"
+    "@subwallet/extension-inject" "^1.0.7-1"
     "@subwallet/keyring" "^0.0.9"
     "@subwallet/react-ui" "5.1.2-b56"
     "@subwallet/ui-keyring" "^0.0.9"
@@ -6740,9 +6740,9 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"
