@@ -251,7 +251,8 @@ export const AddProvider = ({
               errorMessages={formState.errors.provider}
               rightIcon={<View style={{ position: 'absolute', right: 12, top: 14 }}>{providerSuffix()}</View>}
               placeholder={formState.labels.provider}
-              onSubmitField={() => providerValidator(formState.data.provider)}
+              onSubmitField={Keyboard.dismiss}
+              onBlur={() => providerValidator(formState.data.provider)}
             />
 
             <View style={{ flexDirection: 'row' }}>

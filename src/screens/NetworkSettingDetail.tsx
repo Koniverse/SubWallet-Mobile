@@ -1,5 +1,5 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
 import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -65,9 +65,9 @@ export const NetworkSettingDetail = ({
   const theme = useSubWalletTheme().swThemes;
 
   const _chainInfo = useFetchChainInfo(chainSlug);
-  const [chainInfo] = useState(_chainInfo);
+  const [chainInfo, setChainInfo] = useState(_chainInfo);
   const _chainState = useFetchChainState(chainSlug);
-  const [chainState] = useState(_chainState);
+  const [chainState, setChainState] = useState(_chainState);
 
   const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -255,6 +255,18 @@ export const NetworkSettingDetail = ({
     visible: deleteVisible,
     onCompleteModal: onCompleteDeleteModal,
   } = useConfirmModal(handeDeleteCustomToken);
+
+  useEffect(() => {
+    if (_chainState) {
+      setChainState(_chainState);
+    }
+  }, [_chainState]);
+
+  useEffect(() => {
+    if (_chainInfo) {
+      setChainInfo(_chainInfo);
+    }
+  }, [_chainInfo]);
 
   return (
     <ContainerWithSubHeader
