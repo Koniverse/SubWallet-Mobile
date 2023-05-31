@@ -112,6 +112,9 @@ export const DAppTitleMap: Record<string, string> = {
   'blur.io': 'Blur: NFT Marketplace for Pro Traders',
   'app.1inch.io': '1inch - DeFi / DEX aggregator on Ethereum, Binance Smart Chain, Optimism, Polygon, Arbitrum',
   'chainlist.org': 'Chainlist',
+  'app.multichain.org': 'Multichain - Cross Chain Router Protocol',
+  'www.portalbridge.com': 'Wormhole Bridge',
+  'verse.bitcoin.com': 'Verse DEX',
 };
 
 export const predefinedDApps: PredefinedDApps = {
@@ -501,7 +504,7 @@ export const predefinedDApps: PredefinedDApps = {
       isSupportEthereumAccount: true,
     },
     {
-      name: 'cBRIDGE',
+      name: 'The Best Crypto & Binance Bridge | cBridge',
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/dapps/color/cBRIDGE.png',
       url: 'https://cbridge.celer.network/#/transfer',
       categories: ['defi', 'evm'],
@@ -945,6 +948,27 @@ export const predefinedDApps: PredefinedDApps = {
       icon: 'https://chainlist.org/favicon.ico',
       url: 'https://chainlist.org/',
       categories: ['defi'],
+    },
+    {
+      name: 'Multichain',
+      icon: 'https://app.multichain.org/favicon.ico',
+      url: 'https://app.multichain.org/#/router',
+      categories: ['defi'],
+      isSupportSubstrateAccount: true,
+    },
+    {
+      name: 'Portal Token Bridge',
+      icon: 'https://www.portalbridge.com/favicon.ico',
+      url: 'https://www.portalbridge.com/',
+      categories: ['defi'],
+      isSupportSubstrateAccount: true,
+    },
+    {
+      name: 'Verse DEX | Bitcoin.com’s official decentralized exchange',
+      icon: 'https://verse.bitcoin.com/images/favicon.png',
+      url: 'https://verse.bitcoin.com/#/',
+      categories: ['defi'],
+      isSupportSubstrateAccount: true,
     },
   ],
 };
