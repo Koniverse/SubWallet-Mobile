@@ -1,3 +1,8 @@
+## 1.0.4 (172)
+- Update web-runner
+- Optimize get staking data speed
+
+
 ## 1.0.4 (170)
 - Fix Send USDt (Polygon) #722
 - Fix Stake max and Unstake Max #746
