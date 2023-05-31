@@ -417,6 +417,7 @@ export const Stake = ({
             decimals={decimals}
             errorMessages={formState.errors.value}
             disable={loading}
+            showMaxButton={false}
           />
 
           {currentStakingType === StakingType.POOLED && (

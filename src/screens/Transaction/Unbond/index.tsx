@@ -279,6 +279,7 @@ export const Unbond = ({
             decimals={decimals}
             errorMessages={formState.errors.value}
             disable={loading}
+            showMaxButton={false}
           />
 
           {!mustChooseValidator && renderBounded()}

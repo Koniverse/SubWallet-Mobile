@@ -44,7 +44,7 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
   const theme = useSubWalletTheme().swThemes;
   const hasLabel = !!label;
   const styles = useMemo(
-    () => createStyle(theme, hasLabel, !!(errorMessages && errorMessages.length)),
+    () => createStyle(theme, hasLabel, !(errorMessages && errorMessages.length)),
     [theme, hasLabel, errorMessages],
   );
 
