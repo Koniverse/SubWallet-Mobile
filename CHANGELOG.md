@@ -1,3 +1,12 @@
+## 1.0.4 (170)
+- Fix Send USDt (Polygon) #722
+- Fix Stake max and Unstake Max #746
+- Fix APR and Min stake information when stake #733
+- Fix Claim reward on pooled #749
+- Add predefined dApp #713
+- Fix master password mask charactors from red to white
+- Update chainlist
+
 ## 1.0.3 (169)
 - Update web-runner with latest @subwallet/chain-list
 

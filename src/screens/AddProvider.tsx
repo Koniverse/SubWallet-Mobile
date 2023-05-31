@@ -249,14 +249,14 @@ export const AddProvider = ({
               value={formState.data.provider}
               onChangeText={onChangeProvider}
               errorMessages={formState.errors.provider}
-              rightIcon={providerSuffix()}
+              rightIcon={<View style={{ position: 'absolute', right: 12, top: 14 }}>{providerSuffix()}</View>}
               placeholder={formState.labels.provider}
               onSubmitField={() => providerValidator(formState.data.provider)}
             />
 
             <View style={{ flexDirection: 'row' }}>
               <InputText
-                outerStyle={{ flex: 2, marginRight: 6 }}
+                containerStyle={{ flex: 2, marginRight: 6 }}
                 leftIcon={Globe}
                 placeholder={formState.labels.name}
                 ref={formState.refs.name}
@@ -266,7 +266,7 @@ export const AddProvider = ({
               />
 
               <InputText
-                outerStyle={{ flex: 1, marginLeft: 6 }}
+                containerStyle={{ flex: 1, marginLeft: 6 }}
                 placeholder={formState.labels.symbol}
                 ref={formState.refs.symbol}
                 value={formState.data.symbol}

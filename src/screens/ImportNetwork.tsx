@@ -273,7 +273,9 @@ export const ImportNetwork = () => {
     }
 
     if (providerValidation.status === 'success') {
-      return <Icon iconColor={theme.colorSuccess} phosphorIcon={WifiHigh} type={'phosphor'} weight={'bold'} />;
+      return (
+        <Icon size={'sm'} iconColor={theme.colorSuccess} phosphorIcon={WifiHigh} type={'phosphor'} weight={'bold'} />
+      );
     }
 
     if (isValidating) {
@@ -281,7 +283,7 @@ export const ImportNetwork = () => {
     }
 
     if (providerValidation.status === 'error') {
-      return <Icon iconColor={theme['gray-4']} phosphorIcon={WifiSlash} type={'phosphor'} weight={'bold'} />;
+      return <Icon size="sm" iconColor={theme['gray-4']} phosphorIcon={WifiSlash} type={'phosphor'} weight={'bold'} />;
     }
 
     return <></>;
@@ -297,7 +299,7 @@ export const ImportNetwork = () => {
           value={formState.data.provider}
           onSubmitField={onSubmitField('provider')}
           onChangeText={onChangeValue('provider')}
-          rightIcon={providerSuffix()}
+          rightIcon={<View style={{ position: 'absolute', right: 12, top: 14 }}>{providerSuffix()}</View>}
           errorMessages={formState.errors.provider}
           onBlur={() => providerValidateFunc(formState.data.provider)}
           isBusy={loading}
@@ -305,7 +307,7 @@ export const ImportNetwork = () => {
 
         <View style={{ flexDirection: 'row' }}>
           <InputText
-            outerStyle={{ flex: 2, marginRight: 6 }}
+            containerStyle={{ flex: 2, marginRight: 6 }}
             leftIcon={Globe}
             placeholder={formState.labels.name}
             ref={formState.refs.name}
@@ -316,7 +318,7 @@ export const ImportNetwork = () => {
           />
 
           <InputText
-            outerStyle={{ flex: 1, marginLeft: 6 }}
+            containerStyle={{ flex: 1, marginLeft: 6 }}
             placeholder={formState.labels.symbol}
             ref={formState.refs.symbol}
             value={formState.data.symbol}
@@ -328,7 +330,7 @@ export const ImportNetwork = () => {
 
         <View style={{ flexDirection: 'row' }}>
           <InputText
-            outerStyle={{ flex: 1, marginRight: 6 }}
+            containerStyle={{ flex: 1, marginRight: 6 }}
             placeholder={formState.labels.priceId}
             ref={formState.refs.priceId}
             value={formState.data.priceId}
@@ -337,7 +339,7 @@ export const ImportNetwork = () => {
           />
 
           <InputText
-            outerStyle={{ flex: 1, marginLeft: 6 }}
+            containerStyle={{ flex: 1, marginLeft: 6 }}
             placeholder={formState.labels.type}
             ref={formState.refs.type}
             value={formState.data.type}

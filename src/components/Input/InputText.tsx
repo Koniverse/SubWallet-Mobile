@@ -47,7 +47,7 @@ const InputText = forwardRef((passwordFieldProps: Props, ref: React.Ref<TextInpu
   } = passwordFieldProps;
   const hasLabel = !!label;
   const styles = useMemo(
-    () => createStyle(theme, hasLabel, !!(errorMessages && errorMessages.length), !!leftIcon),
+    () => createStyle(theme, hasLabel, !(errorMessages && errorMessages.length), !!leftIcon),
     [theme, hasLabel, errorMessages, leftIcon],
   );
 
