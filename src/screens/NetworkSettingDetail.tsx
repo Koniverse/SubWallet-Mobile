@@ -145,6 +145,18 @@ export const NetworkSettingDetail = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const onSubmit = () => {
+    if (
+      !!formState.errors.blockExplorer.length ||
+      !!formState.errors.crowdloanUrl.length ||
+      !!formState.errors.currentProvider.length ||
+      isDeleting ||
+      (formState.data.currentProvider === chainState.currentProvider &&
+        formState.data.blockExplorer === _blockExplorer &&
+        formState.data.crowdloanUrl === _crowdloanUrl)
+    ) {
+      return;
+    }
+
     setLoading(true);
     const currentProvider = formState.data.currentProvider;
     const blockExplorer = formState.data.blockExplorer;
