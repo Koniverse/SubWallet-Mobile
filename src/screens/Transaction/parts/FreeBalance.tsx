@@ -31,9 +31,11 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
 
   return (
     <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-      <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
-        {label || 'Sender available balance:'}
-      </Text>
+      {!error && (
+        <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
+          {label || 'Sender available balance:'}
+        </Text>
+      )}
       {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}
       {error && (
         <Typography.Text ellipsis style={{ fontSize: 14, lineHeight: 22, color: theme.colorError, ...FontMedium }}>
