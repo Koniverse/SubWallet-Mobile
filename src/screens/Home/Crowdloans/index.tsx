@@ -17,7 +17,13 @@ const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
 };
 
 const renderListEmptyComponent = () => {
-  return <EmptyList title={'No crowdloan'} icon={RocketLaunch} message={'Your crowdloan will appear here!'} />;
+  return (
+    <EmptyList
+      title={i18n.emptyScreen.crowdloanEmptyTitle}
+      icon={RocketLaunch}
+      message={i18n.emptyScreen.crowdloanEmptyMessage}
+    />
+  );
 };
 
 enum FilterValue {
@@ -28,10 +34,10 @@ enum FilterValue {
 }
 
 const defaultFilterOpts = [
-  { label: i18n.crowdloanScreen.filter.polkadotChain, value: FilterValue.POLKADOT_PARACHAIN },
-  { label: i18n.crowdloanScreen.filter.kusamaChain, value: FilterValue.KUSAMA_PARACHAIN },
-  { label: i18n.crowdloanScreen.filter.win, value: FilterValue.WINNER },
-  { label: i18n.crowdloanScreen.filter.fail, value: FilterValue.FAIL },
+  { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
+  { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
+  { label: i18n.filterOptions.win, value: FilterValue.WINNER },
+  { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
 ];
 
 export const CrowdloansScreen = () => {
@@ -67,7 +73,7 @@ export const CrowdloansScreen = () => {
     <>
       <FlatListScreen
         isShowFilterBtn
-        title={i18n.tabName.crowdloans}
+        title={i18n.header.crowdloans}
         flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
         renderListEmptyComponent={renderListEmptyComponent}
         renderItem={renderItem}
@@ -79,6 +85,7 @@ export const CrowdloansScreen = () => {
         filterFunction={getListByFilterOpt}
         isShowPlaceHolder={false}
         isShowMainHeader
+        placeholder={i18n.placeholder.searchProject}
         needGapWithStatusBar={false}
         // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
         refreshControl={

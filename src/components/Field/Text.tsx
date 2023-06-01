@@ -17,6 +17,7 @@ interface Props extends FieldBaseProps {
   textColor?: string;
   iconColor?: string;
   icon?: (props: IconProps) => JSX.Element;
+  placeholder?: string;
 }
 
 const infoIconStyle: StyleProp<any> = {
@@ -34,16 +35,20 @@ export const TextField = ({
   disabled,
   textColor,
   iconColor,
+  placeholder,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const styles = useMemo(() => createStyle(theme, textColor, disabled), [disabled, textColor, theme]);
+  const styles = useMemo(
+    () => createStyle(theme, textColor, disabled, !!placeholder),
+    [disabled, placeholder, textColor, theme],
+  );
 
   return (
     <FieldBase label={label} {...fieldBase}>
       <View style={styles.blockContent}>
         <Typography.Text ellipsis style={styles.text}>
-          {text}
+          {text || placeholder}
         </Typography.Text>
         {(showRightIcon || icon) && (
           <IconButton
@@ -58,11 +63,17 @@ export const TextField = ({
   );
 };
 
-function createStyle(theme: ThemeTypes, textColor?: string, disabled?: boolean) {
+function createStyle(theme: ThemeTypes, textColor?: string, disabled?: boolean, placeholder?: boolean) {
   return StyleSheet.create({
     text: {
       ...FontMedium,
-      color: textColor ? textColor : disabled ? theme.colorTextLight4 : theme.colorTextLight2,
+      color: placeholder
+        ? theme.colorTextLight4
+        : textColor
+        ? textColor
+        : disabled
+        ? theme.colorTextLight4
+        : theme.colorWhite,
       paddingLeft: theme.paddingSM,
       flex: 1,
     },

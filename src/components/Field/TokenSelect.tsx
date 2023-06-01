@@ -7,6 +7,7 @@ import { CaretDown } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
 import { Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   logoKey: string;
@@ -44,8 +45,7 @@ export const TokenSelectField = ({
 
         {!value && (
           <Typography.Text ellipsis style={styles.placeholder}>
-            {/* todo: i18n */}
-            {'Select token'}
+            {i18n.placeholder.selectToken}
           </Typography.Text>
         )}
 

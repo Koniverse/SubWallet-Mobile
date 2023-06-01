@@ -136,7 +136,7 @@ export const ImportPrivateKey = () => {
 
   return (
     <SubScreenContainer
-      title={i18n.title.importByPrivateKey}
+      title={i18n.header.importByPrivateKey}
       navigation={navigation}
       disabled={isBusy}
       rightIcon={X}
@@ -144,9 +144,7 @@ export const ImportPrivateKey = () => {
       disableRightButton={isBusy}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
-          <Typography.Text style={styles.title}>
-            To import an existing wallet, please enter the private key here
-          </Typography.Text>
+          <Typography.Text style={styles.title}>{i18n.importAccount.importPrivateKeyMessage}</Typography.Text>
           <Textarea
             placeholder={i18n.common.enterYourPrivateKey}
             placeholderTextColor={ColorMap.disabled}
@@ -174,7 +172,7 @@ export const ImportPrivateKey = () => {
             disabled={canSubmit}
             loading={validating || isBusy}
             onPress={onPressSubmit(_onImport)}>
-            {'Import account'}
+            {i18n.buttonTitles.importAccount}
           </Button>
         </View>
         <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />

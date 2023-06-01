@@ -9,6 +9,7 @@ import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { toShort } from 'utils/index';
 import { getValidatorKey } from 'utils/transaction/stake';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   validatorInfo: ValidatorDataType;
@@ -51,11 +52,11 @@ export const StakingValidatorItem = ({
         </View>
 
         <View style={_style.contentWrapper}>
-          <Text style={_style.subTextStyle}>{`Commission: ${commission}%`}</Text>
+          <Text style={_style.subTextStyle}>{i18n.message.commission(commission)}</Text>
 
           {!!expectedReturnValue && expectedReturnValue !== '0' && (
             <>
-              <Text style={_style.subTextStyle}>{' - APY: '}</Text>
+              <Text style={_style.subTextStyle}>{i18n.message.apy}</Text>
               <Number
                 decimal={0}
                 suffix="%"

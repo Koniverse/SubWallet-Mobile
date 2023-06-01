@@ -134,7 +134,7 @@ export const SubstrateSignConfirmation = ({
       detailModalContent={detailModalContent}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
-        submitButtonTitle: i18n.common.approve,
+        submitButtonTitle: i18n.buttonTitles.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
         onScanSignature: onScanSignature,

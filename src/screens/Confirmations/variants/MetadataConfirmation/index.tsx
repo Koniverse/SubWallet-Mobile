@@ -47,21 +47,19 @@ const MetadataConfirmation: React.FC<Props> = (props: Props) => {
     <React.Fragment>
       <ConfirmationContent>
         <ConfirmationGeneralInfo request={request} />
-        <Text style={styles.text}>Your metadata is out of date</Text>
-        <Text style={styles.description}>
-          Approving this update will sync your metadata for {chain} chain from &nbsp; {request.url}
-        </Text>
+        <Text style={styles.text}>{i18n.confirmation.yourMetadataIsOutOfDate}</Text>
+        <Text style={styles.description}>{i18n.confirmation.metadataDescription(chain, request.url)}</Text>
         <View>
           <View style={styles.detailContainer}>
-            <Text style={styles.detailName}>Symbol</Text>
+            <Text style={styles.detailName}>{i18n.common.symbol}</Text>
             <Text style={styles.detailValue}>{tokenSymbol}</Text>
           </View>
           <View style={styles.detailContainer}>
-            <Text style={styles.detailName}>Decimals</Text>
+            <Text style={styles.detailName}>{i18n.common.decimals}</Text>
             <Text style={styles.detailValue}>{tokenDecimals}</Text>
           </View>
           <View style={styles.detailContainer}>
-            <Text style={styles.detailName}>Spec version</Text>
+            <Text style={styles.detailName}>{i18n.common.specVersion}</Text>
             <Text style={styles.detailValue}>{specVersion}</Text>
           </View>
         </View>

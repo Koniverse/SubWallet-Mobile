@@ -6,6 +6,7 @@ import BigN from 'bignumber.js';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 type ItemType = {
   symbol: string;
@@ -35,20 +36,23 @@ export const TokenDetailModal = ({ modalVisible, onChangeModalVisible, currentTo
       {
         key: 'transferable',
         symbol,
-        label: 'Transferable',
+        label: i18n.tokenDetail.transferable,
         value: balanceInfo ? balanceInfo.free.value : new BigN(0),
       },
       {
         key: 'locked',
         symbol,
-        label: 'Locked',
+        label: i18n.tokenDetail.locked,
         value: balanceInfo ? balanceInfo.locked.value : new BigN(0),
       },
     ];
   }, [currentTokenInfo, tokenBalanceMap]);
 
   return (
-    <SwModal modalVisible={modalVisible} modalTitle={'Token details'} onChangeModalVisible={onChangeModalVisible}>
+    <SwModal
+      modalVisible={modalVisible}
+      modalTitle={i18n.header.tokenDetails}
+      onChangeModalVisible={onChangeModalVisible}>
       <View style={_style.blockContainer}>
         {items.map(item => (
           <View key={item.key} style={_style.row}>

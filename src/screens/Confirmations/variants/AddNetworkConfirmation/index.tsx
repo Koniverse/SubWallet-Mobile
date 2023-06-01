@@ -128,7 +128,7 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
           disabled={mode === 'update'}
           onPress={onApprove}
           loading={loading}>
-          {i18n.common.approve}
+          {i18n.buttonTitles.approve}
         </Button>
       </ConfirmationFooter>
     </React.Fragment>

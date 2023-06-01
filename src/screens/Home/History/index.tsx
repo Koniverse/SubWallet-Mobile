@@ -424,12 +424,11 @@ function History({
   }, []);
 
   const emptyList = useCallback(() => {
-    //todo: i18n
     return (
       <EmptyList
         icon={ListBullets}
-        title={'No transactions yet'}
-        message={'Your transactions history will appear here!'}
+        title={i18n.emptyScreen.historyEmptyTitle}
+        message={i18n.emptyScreen.historyEmptyMessage}
       />
     );
   }, []);
@@ -454,7 +453,8 @@ function History({
         autoFocus={false}
         showLeftBtn={true}
         items={historyList}
-        title={i18n.title.history}
+        title={i18n.header.history}
+        placeholder={i18n.placeholder.searchHistory}
         searchFunction={searchFunc}
         renderItem={renderItem}
         isShowFilterBtn

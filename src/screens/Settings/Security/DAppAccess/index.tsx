@@ -83,15 +83,16 @@ export const DAppAccessScreen = () => {
 
   return (
     <FlatListScreen
-      title={i18n.title.manageDAppAccess}
+      title={i18n.header.manageWebsiteAccess}
       autoFocus={false}
       items={dAppItems}
       searchFunction={filterFunction}
+      placeholder={i18n.placeholder.searchOrEnterWebsite}
       renderListEmptyComponent={() => (
         <EmptyList
           icon={GlobeHemisphereWest}
-          title={'No dApps found'}
-          message={'Your list of approved dApps will appear here.'}
+          title={i18n.emptyScreen.manageDAppEmptyTitle}
+          message={i18n.emptyScreen.manageDAppEmptyMessage}
         />
       )}
       rightIconOption={rightIconOption}

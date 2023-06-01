@@ -34,6 +34,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { ClaimRewardProps } from 'routes/transaction/transactionAction';
+import i18n from 'utils/i18n/i18n';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -168,24 +169,19 @@ const ClaimReward = ({
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField
-                label={'Unstake from account'}
-                accountName={accountInfo?.name || ''}
-                value={from}
-                showIcon
-              />
+              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
             </TouchableOpacity>
           )}
 
-          <FreeBalance label={'Available balance:'} address={from} chain={chain} />
+          <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
 
           <MetaInfo hasBackgroundWrapper>
-            <MetaInfo.Chain chain={chain} label={'Network'} />
+            <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} />
 
             {reward?.unclaimedReward && (
               <MetaInfo.Number
                 decimals={decimals}
-                label={'Reward claiming'}
+                label={i18n.inputLabel.rewardAmount}
                 suffix={symbol}
                 value={reward.unclaimedReward}
               />
@@ -194,7 +190,7 @@ const ClaimReward = ({
 
           <InputCheckBox
             checked={!!bondReward}
-            label={'Bond reward'}
+            label={i18n.inputLabel.bondRewardAfterClaim}
             disable={loading}
             onPress={() => {
               if (!bondReward) {
@@ -232,7 +228,7 @@ const ClaimReward = ({
                 iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
               />
             }>
-            Cancel
+            {i18n.buttonTitles.cancel}
           </Button>
           <Button
             style={{ flex: 1, marginLeft: 4 }}
@@ -247,7 +243,7 @@ const ClaimReward = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            Continue
+            {i18n.buttonTitles.continue}
           </Button>
         </View>
       </>

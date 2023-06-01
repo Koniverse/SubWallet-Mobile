@@ -48,7 +48,7 @@ const UnknownRequest = ({ baseProps: { onCancel, cancelText, buttonText } }: Pro
         <SubmitButton
           style={getButtonStyle(!!onCancel)}
           disabled={true}
-          title={buttonText ? buttonText : i18n.common.approve}
+          title={buttonText ? buttonText : i18n.buttonTitles.approve}
         />
       </View>
     </>

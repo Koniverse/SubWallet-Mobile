@@ -6,6 +6,7 @@ import AccountInfoField from 'components/common/Field/AccountInfo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ApplyMasterPasswordStyle from './style';
 import { AccountJson } from '@subwallet/extension-base/background/types';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   accounts: AccountJson[];
@@ -18,11 +19,9 @@ export const ApplyDone = ({ accounts }: Props) => {
   return (
     <View style={_style.applyDoneContainer}>
       <PageIcon icon={CheckCircle} color={theme.colorSuccess} />
-      <Typography.Title style={_style.applyDoneTitle}>{'You’re all done!'}</Typography.Title>
+      <Typography.Title style={_style.applyDoneTitle}>{i18n.message.applyDoneTitle}</Typography.Title>
 
-      <Typography.Text style={_style.applyDoneMessage}>
-        {'You have successfully updated master password to all accounts'}
-      </Typography.Text>
+      <Typography.Text style={_style.applyDoneMessage}>{i18n.message.applyDoneMessage}</Typography.Text>
 
       {accounts.slice(0, 2).map(acc => (
         <AccountInfoField

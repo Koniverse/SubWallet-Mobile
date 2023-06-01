@@ -159,7 +159,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     })
       .then(resp => {
         if (resp) {
-          toast.show('Add token successfully');
+          toast.show(i18n.notificationMessage.addTokenSuccessfully);
           _goBack();
         } else {
           onUpdateErrors('contractAddress')([i18n.errorMessage.occurredError]);
@@ -283,14 +283,14 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     isBusy;
 
   return (
-    <ContainerWithSubHeader onPressBack={_goBack} title={i18n.title.importToken} disabled={isBusy}>
+    <ContainerWithSubHeader onPressBack={_goBack} title={i18n.header.importToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }} keyboardShouldPersistTaps={'handled'}>
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
             <NetworkField
               networkKey={formState.data.chain}
               label={formState.labels.chain}
-              placeholder={'Select network'}
+              placeholder={i18n.placeholder.searchNetwork}
               showIcon
             />
           </TouchableOpacity>
@@ -314,7 +314,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onChange={(output: string | null, currentValue: string) => {
               onChangeValue('contractAddress')(currentValue);
             }}
-            placeholder={'Please type or paste an address'}
+            placeholder={i18n.placeholder.typeOrPasteContractAddress}
             onPressQrButton={onPressQrButton}
             onSubmitField={onSubmitField('contractAddress')}
           />
@@ -323,9 +323,9 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             <Warning isDanger message={formState.errors.contractAddress[0]} style={{ marginBottom: 8 }} />
           )}
 
-          <TextField label={i18n.common.symbol} text={formState.data.symbol} />
+          <TextField placeholder={i18n.placeholder.symbol} text={formState.data.symbol} />
 
-          <TextField disabled={true} label={i18n.common.decimals} text={formState.data.decimals} />
+          <TextField placeholder={i18n.placeholder.decimals} disabled={true} text={formState.data.decimals} />
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />

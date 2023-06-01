@@ -9,7 +9,9 @@ import { ContainerHorizontalPadding, FontMedium, MarginBottomForSubmitButton, sh
 import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhraseArea';
 import { shuffleArray } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
-import { Button } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
+import { ArrowCircleRight } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   onPressSubmit: () => void;
@@ -62,6 +64,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
   const [selectedWords, setSelectedWords] = useState<SelectedWordType[]>([]);
   const [shuffleWords, setShuffleWords] = useState<string[] | null>(null);
   const seedWords: string[] = seed.split(' ');
+  const theme = useSubWalletTheme().swThemes;
 
   useEffect((): void => {
     const words = seed.split(' ');
@@ -101,6 +104,10 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
 
   const { visible, onPasswordComplete, onPress: onSubmit, onHideModal } = useUnlockModal();
 
+  const getCreateAccBtn = (color: string) => {
+    return <Icon phosphorIcon={ArrowCircleRight} size={'lg'} iconColor={color} />;
+  };
+
   return (
     <View style={sharedStyles.layoutContainer}>
       <View style={bodyAreaStyle}>
@@ -117,6 +124,9 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
       </View>
       <View style={footerAreaStyle}>
         <Button
+          icon={getCreateAccBtn(
+            !isCorrectWord(selectedWords, seed) || isBusy ? theme.colorTextLight5 : theme.colorWhite,
+          )}
           disabled={!isCorrectWord(selectedWords, seed) || isBusy}
           onPress={onSubmit(onPressSubmit)}
           loading={isBusy}>

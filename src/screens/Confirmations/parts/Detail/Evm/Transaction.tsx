@@ -9,6 +9,7 @@ import useGetChainInfoByChainId from 'hooks/chain/useGetChainInfoByChainId';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   request: EvmSendTransactionRequest;
@@ -59,10 +60,10 @@ const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
 
     return (
       <>
-        <MetaInfo.Default label={'Method'} labelAlign="top">
+        <MetaInfo.Default label={i18n.inputLabel.method} labelAlign="top">
           {data.methodName}
         </MetaInfo.Default>
-        <MetaInfo.Data label={'Arguments'}>
+        <MetaInfo.Data label={i18n.inputLabel.arguments}>
           <View style={{ marginLeft: 8 }}>{data.args.map(value => handlerRenderArg(value, ''))}</View>
         </MetaInfo.Data>
       </>
@@ -72,34 +73,36 @@ const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
   return (
     <MetaInfo>
       {chainInfo ? (
-        <MetaInfo.Chain chain={chainInfo.slug} label={'Network'} />
+        <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.network} />
       ) : chainId !== undefined ? (
-        <MetaInfo.Default label={'Chain id'}>{chainId}</MetaInfo.Default>
+        <MetaInfo.Default label={i18n.inputLabel.chainId}>{chainId}</MetaInfo.Default>
       ) : null}
       <MetaInfo.Transfer
         recipientAddress={recipient?.address || request.to || ''}
-        recipientLabel={'To'}
+        recipientLabel={i18n.inputLabel.to}
         recipientName={recipient?.name || ''}
         senderAddress={account.address}
-        senderLabel={'From'}
+        senderLabel={i18n.inputLabel.from}
         senderName={account.name}
       />
       {(!request.isToContract || amount !== 0) && (
         <MetaInfo.Number
           decimals={chainInfo?.evmInfo?.decimals}
-          label={'Amount'}
+          label={i18n.inputLabel.amount}
           suffix={chainInfo?.evmInfo?.symbol}
           value={amount}
         />
       )}
       <MetaInfo.Number
         decimals={chainInfo?.evmInfo?.decimals}
-        label={'Estimate gas'}
+        label={i18n.inputLabel.estimatedFee}
         suffix={chainInfo?.evmInfo?.symbol}
         value={request.estimateGas}
       />
       {renderInputInfo()}
-      {request.data && request.data !== '0x' && <MetaInfo.Data label={'Hex data'}>{request.data}</MetaInfo.Data>}
+      {request.data && request.data !== '0x' && (
+        <MetaInfo.Data label={i18n.inputLabel.hexData}>{request.data}</MetaInfo.Data>
+      )}
     </MetaInfo>
   );
 };

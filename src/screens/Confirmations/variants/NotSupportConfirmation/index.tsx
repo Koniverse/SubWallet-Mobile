@@ -15,6 +15,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Text } from 'react-native';
 import { EvmSignatureSupportType } from 'types/confirmation';
 import createStyle from './styles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   request: ConfirmationRequestBase;
@@ -71,11 +72,13 @@ const NotSupportConfirmation: React.FC<Props> = (props: Props) => {
     <>
       <ConfirmationContent>
         <ConfirmationGeneralInfo request={request} />
-        <Text style={styles.text}>{isMessage ? 'Signature request' : 'Approve request'}</Text>
+        <Text style={styles.text}>
+          {isMessage ? i18n.confirmation.signatureRequest : i18n.confirmation.approveRequest}
+        </Text>
         <Text style={styles.description}>
-          <Text>This feature is not available for</Text>
+          <Text>{i18n.confirmation.notSpMessagePart1}</Text>
           <Text style={styles.highlight}>&nbsp;"{accountTitle}"</Text>
-          <Text>.&nbsp;Please click choose another account.</Text>
+          <Text>{`. ${i18n.confirmation.notSpMessagePart2}.`}</Text>
         </Text>
         <AccountItemWithName
           accountName={account?.name}
@@ -87,7 +90,7 @@ const NotSupportConfirmation: React.FC<Props> = (props: Props) => {
       </ConfirmationContent>
       <ConfirmationFooter>
         <Button block={true} loading={loading} onPress={handleCancel}>
-          Back to home
+          {i18n.buttonTitles.backToHome}
         </Button>
       </ConfirmationFooter>
     </>

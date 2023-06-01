@@ -157,7 +157,7 @@ export const ConfigureToken = ({
   return (
     <ContainerWithSubHeader
       onPressBack={() => navigation.goBack()}
-      title={i18n.title.configureToken}
+      title={i18n.header.tokenDetails}
       disabled={isBusy}
       rightIcon={Trash}
       onPressRightIcon={onPressDelete}
@@ -181,7 +181,7 @@ export const ConfigureToken = ({
           )}
           <NetworkField
             disabled
-            label={i18n.common.network}
+            label={i18n.inputLabel.network}
             networkKey={tokenInfo?.originChain || ''}
             outerStyle={{ marginBottom: theme.marginSM }}
           />
@@ -237,9 +237,9 @@ export const ConfigureToken = ({
       </View>
 
       <DeleteModal
-        title={'Delete this token ?'}
+        title={i18n.header.deleteToken}
         visible={deleteVisible}
-        message={'You are about to delete this token'}
+        message={i18n.message.deleteTokenMessage}
         onCompleteModal={onCompleteDeleteModal}
         onCancelModal={onCancelDelete}
       />

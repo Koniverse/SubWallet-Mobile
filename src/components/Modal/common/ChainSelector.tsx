@@ -26,9 +26,9 @@ const filterFunction = (items: ChainInfo[], searchString: string) => {
 const renderListEmptyComponent = () => {
   return (
     <EmptyList
-      title={'No results found'}
+      title={i18n.emptyScreen.selectorEmptyTitle}
+      message={i18n.emptyScreen.selectorEmptyMessage}
       icon={MagnifyingGlass}
-      message={'Please change your search criteria try again'}
     />
   );
 };

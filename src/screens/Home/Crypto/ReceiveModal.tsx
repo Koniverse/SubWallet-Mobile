@@ -101,8 +101,7 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
             color: theme.colorWhite,
             ...FontSemiBold,
           }}>
-          {/* todo: i18n */}
-          {'Your QR code'}
+          {i18n.header.yourQrCode}
         </Typography.Text>
         <View style={{ paddingTop: 38 }}>
           <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} errorLevel={'Q'} />

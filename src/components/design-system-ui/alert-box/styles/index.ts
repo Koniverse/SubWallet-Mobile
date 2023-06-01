@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMedium } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   wrapper: ViewStyle;
@@ -28,13 +29,15 @@ const createStyles = (theme: ThemeTypes) => {
       flex: 1,
     },
     title: {
-      fontSize: theme.fontSizeHeading5,
-      lineHeight: theme.lineHeightHeading5 * theme.fontSizeHeading5,
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      ...FontMedium,
     },
     description: {
-      fontSize: theme.fontSizeHeading6,
-      lineHeight: theme.lineHeightHeading6 * theme.fontSizeHeading6,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
       color: theme.colorTextDescription,
+      ...FontMedium,
     },
   });
 };

@@ -22,8 +22,8 @@ const renderListEmptyComponent = () => {
   return (
     <EmptyList
       icon={MagnifyingGlass}
-      title={'No results found'}
-      message={'Please change your search criteria try again'}
+      title={i18n.emptyScreen.selectorEmptyTitle}
+      message={i18n.emptyScreen.selectorEmptyMessage}
     />
   );
 };
@@ -112,7 +112,7 @@ export const AccountsScreen = () => {
           onPress={() => {
             setCreateAccountModalVisible(true);
           }}>
-          {'Create new account'}
+          {i18n.buttonTitles.createANewAcc}
         </Button>
         <Button
           style={{ marginRight: 12 }}
@@ -137,7 +137,7 @@ export const AccountsScreen = () => {
     <>
       <FlatListScreen
         style={{ flex: 1 }}
-        title={i18n.title.accounts}
+        title={i18n.header.selectAccount}
         items={accounts}
         renderItem={renderItem}
         renderListEmptyComponent={renderListEmptyComponent}

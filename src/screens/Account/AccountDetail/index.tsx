@@ -169,7 +169,7 @@ export const AccountDetail = ({
   return (
     <SubScreenContainer
       navigation={navigation}
-      title={i18n.title.accountDetails}
+      title={i18n.header.accountDetails}
       rightIcon={X}
       onPressRightIcon={goHome}>
       <View style={{ paddingHorizontal: 16, alignItems: 'center' }}>
@@ -243,7 +243,7 @@ export const AccountDetail = ({
             type="secondary"
             loading={deriving}
             onPress={onPressDerive(onDerive)}>
-            Derive an account
+            {i18n.buttonTitles.deriveAnAcc}
           </Button>
           <Button
             disabled={!canExport}
@@ -260,7 +260,7 @@ export const AccountDetail = ({
             contentAlign="left"
             type="secondary"
             onPress={onExportAccount}>
-            Export this account
+            {i18n.buttonTitles.exportThisAcc}
           </Button>
           <Button
             icon={
@@ -277,16 +277,14 @@ export const AccountDetail = ({
             loading={deleting}
             externalTextStyle={{ color: theme.colorError }}
             onPress={onPressDelete}>
-            Remove this account
+            {i18n.buttonTitles.removeThisAcc}
           </Button>
         </View>
         <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideUnlockModal} />
         <DeleteModal
-          title={'Detele this account?'}
+          title={i18n.header.removeThisAcc}
           visible={deleteVisible}
-          message={
-            'If you ever want to use this account again, you would need to import it again with seedphrase, private key, or JSON file'
-          }
+          message={i18n.removeAccount.removeAccountMessage}
           onCancelModal={onCancelDelete}
           onCompleteModal={onCompleteDeleteModal}
         />

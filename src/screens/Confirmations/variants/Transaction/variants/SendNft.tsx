@@ -18,22 +18,22 @@ const SendNftTransactionConfirmation = ({ transaction }: Props) => {
   return (
     <ConfirmationContent>
       <MetaInfo hasBackgroundWrapper>
-        <MetaInfo.Account address={data.senderAddress} label={i18n.common.sender} networkPrefix={networkPrefix} />
+        <MetaInfo.Account address={data.senderAddress} label={i18n.inputLabel.sendFrom} networkPrefix={networkPrefix} />
 
-        <MetaInfo.Account address={data.recipientAddress} label={i18n.common.recipient} />
+        <MetaInfo.Account address={data.recipientAddress} label={i18n.inputLabel.sendTo} />
 
-        <MetaInfo.Chain chain={transaction.chain} label={i18n.common.network} />
+        <MetaInfo.Chain chain={transaction.chain} label={i18n.inputLabel.network} />
       </MetaInfo>
 
       <MetaInfo hasBackgroundWrapper style={{ marginTop: theme.sizeSM }}>
         {(data.nftItemName || data.nftItem) && (
-          <MetaInfo.Default label={'NFT'}>
+          <MetaInfo.Default label={i18n.inputLabel.nft}>
             {data.nftItemName || data.nftItem.name || `${data.nftItem.collectionId}_${data.nftItem.id}`}
           </MetaInfo.Default>
         )}
         <MetaInfo.Number
           decimals={decimals}
-          label={'Estimated fee'}
+          label={i18n.inputLabel.estimateFee}
           suffix={symbol}
           value={transaction.estimateFee?.value || 0}
         />

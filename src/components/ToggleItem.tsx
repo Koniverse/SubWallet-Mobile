@@ -31,6 +31,7 @@ const toggleItemTextStyle: StyleProp<any> = {
   color: ColorMap.light,
   ...FontSemiBold,
   paddingVertical: 14,
+  maxWidth: 240,
 };
 
 export const ToggleItem = ({
@@ -54,7 +55,7 @@ export const ToggleItem = ({
             shape={'circle'}
           />
         )}
-        <Text style={[toggleItemTextStyle, { color: ColorMap.light }]}>{label}</Text>
+        <Text numberOfLines={1} style={[toggleItemTextStyle, { color: ColorMap.light }]}>{label}</Text>
       </View>
 
       <Switch

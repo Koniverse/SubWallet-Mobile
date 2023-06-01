@@ -34,6 +34,7 @@ import { submitStakeWithdrawal } from 'messaging/index';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { WithdrawProps } from 'routes/transaction/transactionAction';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -138,24 +139,19 @@ export const Withdraw = ({
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField
-                label={'Unstake from account'}
-                accountName={accountInfo?.name || ''}
-                value={from}
-                showIcon
-              />
+              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
             </TouchableOpacity>
           )}
 
-          <FreeBalance label={'Available balance:'} address={from} chain={chain} />
+          <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
 
           <MetaInfo hasBackgroundWrapper>
-            <MetaInfo.Chain chain={chain} label={'Network'} />
+            <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} />
 
             {unstakingInfo && (
               <MetaInfo.Number
                 decimals={decimals}
-                label={'Withdraw amount'}
+                label={i18n.inputLabel.amount}
                 suffix={symbol}
                 value={unstakingInfo.claimable}
               />
@@ -188,7 +184,7 @@ export const Withdraw = ({
                 iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
               />
             }>
-            Cancel
+            {i18n.buttonTitles.cancel}
           </Button>
           <Button
             style={{ flex: 1, marginLeft: 4 }}
@@ -203,7 +199,7 @@ export const Withdraw = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            Continue
+            {i18n.buttonTitles.continue}
           </Button>
         </View>
       </>

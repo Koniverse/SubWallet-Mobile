@@ -32,6 +32,7 @@ import {
   SignConfirmation,
 } from './variants';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 const confirmationPopupWrapper: StyleProp<any> = {
   maxHeight: '100%',
@@ -51,14 +52,14 @@ const subWalletModalSeparator: StyleProp<any> = {
 };
 
 const titleMap: Record<ConfirmationType, string> = {
-  addNetworkRequest: 'Add Network Request',
-  addTokenRequest: 'Add Token Request',
-  authorizeRequest: 'Connect to SubWallet',
-  evmSendTransactionRequest: 'Transaction Request',
-  evmSignatureRequest: 'Signature request',
-  metadataRequest: 'Update Metadata',
-  signingRequest: 'Signature request',
-  switchNetworkRequest: 'Add Network Request',
+  addNetworkRequest: i18n.header.addNetworkRequest,
+  addTokenRequest: i18n.header.addTokenRequest,
+  authorizeRequest: i18n.header.connectWithSubwallet,
+  evmSendTransactionRequest: i18n.header.transactionRequest,
+  evmSignatureRequest: i18n.header.signatureRequest,
+  metadataRequest: i18n.header.updateMetadata,
+  signingRequest: i18n.header.signatureRequest,
+  switchNetworkRequest: i18n.header.addNetworkRequest,
 } as Record<ConfirmationType, string>;
 
 export const Confirmations = () => {
@@ -79,7 +80,6 @@ export const Confirmations = () => {
   }, []);
 
   const headerTitle = useMemo((): string => {
-    // TODO: i18n
     if (!confirmation) {
       return '';
     }
@@ -95,21 +95,21 @@ export const Confirmations = () => {
         case ExtrinsicType.TRANSFER_BALANCE:
         case ExtrinsicType.TRANSFER_TOKEN:
         case ExtrinsicType.TRANSFER_XCM:
-          return 'Transfer confirmation';
+          return i18n.header.transferConfirmation;
         case ExtrinsicType.SEND_NFT:
-          return 'NFT Transfer confirmation';
+          return i18n.header.nftTransferConfirmation;
         case ExtrinsicType.STAKING_JOIN_POOL:
         case ExtrinsicType.STAKING_BOND:
-          return 'Add to bond confirm';
+          return i18n.header.addToBondConfirm;
         case ExtrinsicType.STAKING_LEAVE_POOL:
         case ExtrinsicType.STAKING_UNBOND:
-          return 'Unbond confirmation';
+          return i18n.header.unbondConfirmation;
         case ExtrinsicType.STAKING_WITHDRAW:
-          return 'Withdraw confirm';
+          return i18n.header.withdrawalConfirm;
         case ExtrinsicType.STAKING_CLAIM_REWARD:
-          return 'Claim reward confirm';
+          return i18n.header.claimRewardsConfirmation;
         case ExtrinsicType.STAKING_CANCEL_UNSTAKE:
-          return 'Cancel unstake confirm';
+          return i18n.header.cancelUnstakeConfirmation;
         default:
           return 'Transaction confirm';
       }

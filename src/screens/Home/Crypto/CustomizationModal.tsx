@@ -121,7 +121,13 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
   };
 
   const renderListEmptyComponent = () => {
-    return <EmptyList icon={MagnifyingGlass} title={'No chain'} message={'Your chain will appear here'} />;
+    return (
+      <EmptyList
+        icon={MagnifyingGlass}
+        title={i18n.emptyScreen.networkSettingsTitle}
+        message={i18n.emptyScreen.networkSettingsMessage}
+      />
+    );
   };
 
   const onChangeZeroBalance = useCallback(() => {
@@ -141,13 +147,13 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
             paddingTop: 8,
             paddingBottom: 8,
           }}>
-          {'BALANCE'}
+          {i18n.customization.balance}
         </Typography.Text>
         <ToggleItem
           backgroundIcon={Wallet}
           backgroundIconColor={theme['green-7']}
           style={{ marginHorizontal: 16 }}
-          label={i18n.cryptoScreen.showZeroBalance}
+          label={i18n.customization.showTokensWithZeroBalance}
           isEnabled={isShowZeroBalance}
           onValueChange={onChangeZeroBalance}
         />
@@ -159,7 +165,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
             ...FontSemiBold,
             paddingLeft: 16,
           }}>
-          {'NETWORKS'}
+          {i18n.customization.networks}
         </Typography.Text>
       </>
     );
@@ -172,7 +178,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         items={currentChainList}
         isShowFilterBtn={false}
         style={FlatListScreenPaddingTop}
-        title={i18n.title.customization}
+        title={i18n.header.customizeAssetDisplay}
         searchFunction={searchFunction}
         renderItem={renderItem}
         onPressBack={onCancel}
@@ -180,6 +186,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         isShowListWrapper
         isShowPlaceHolder={false}
         needGapWithStatusBar={false}
+        placeholder={i18n.placeholder.networkName}
       />
     </SubWalletFullSizeModal>
   );

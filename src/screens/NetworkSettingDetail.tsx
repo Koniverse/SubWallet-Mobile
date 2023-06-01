@@ -34,6 +34,7 @@ import { isUrl } from 'utils/index';
 import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import i18n from 'utils/i18n/i18n';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...sharedStyles.layoutContainer,
@@ -41,7 +42,7 @@ const ContainerStyle: StyleProp<ViewStyle> = {
 
 const validateCrowdloanUrl = (value: string): string[] => {
   if (value.length !== 0 && !isUrl(value)) {
-    return ['Crowdloan URL must be a valid URL'];
+    return [i18n.errorMessage.crowdloanUrlMustBeAValidUrl];
   } else {
     return [];
   }
@@ -49,7 +50,7 @@ const validateCrowdloanUrl = (value: string): string[] => {
 
 const validateBlockExplorer = (value: string): string[] => {
   if (value.length !== 0 && !isUrl(value)) {
-    return ['Block explorer must be a valid URL'];
+    return [i18n.errorMessage.blockExplorerMustBeAValidUrl];
   } else {
     return [];
   }
@@ -178,17 +179,17 @@ export const NetworkSettingDetail = ({
         setLoading(false);
         if (result) {
           toast.hideAll();
-          toast.show('Updated chain successfully');
+          toast.show(i18n.notificationMessage.updatedChainSuccessfully);
           navigation.goBack();
         } else {
           toast.hideAll();
-          toast.show('An error occurred, please try again');
+          toast.show(i18n.notificationMessage.pleaseTryAgain);
         }
       })
       .catch(() => {
         setLoading(false);
         toast.hideAll();
-        toast.show('An error occurred, please try again');
+        toast.show(i18n.notificationMessage.pleaseTryAgain);
       });
   };
 
@@ -201,15 +202,15 @@ export const NetworkSettingDetail = ({
     removeChain(chainInfo.slug)
       .then(result => {
         if (result) {
-          toast.show('Deleted chain successfully');
+          toast.show(i18n.notificationMessage.deleteChainSuccessfully);
           navigation.goBack();
         } else {
-          toast.show('Error. Please try again');
+          toast.show(i18n.notificationMessage.pleaseTryAgain);
         }
         setIsDeleting(false);
       })
       .catch(() => {
-        toast.show('Error. Please try again');
+        toast.show(i18n.notificationMessage.pleaseTryAgain);
         setIsDeleting(false);
       });
   };
@@ -287,7 +288,7 @@ export const NetworkSettingDetail = ({
       disableRightButton={!(_isCustomChain(chainInfo.slug) && !chainState.active)}
       onPressBack={() => navigation.goBack()}
       onPressRightIcon={onPressDelete}
-      title={'Chain detail'}>
+      title={i18n.header.networkDetails}>
       <View style={ContainerStyle}>
         <ScrollView style={{ flex: 1 }}>
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
@@ -356,14 +357,14 @@ export const NetworkSettingDetail = ({
               />
             }
             onPress={onSubmit}>
-            {'Save'}
+            {i18n.buttonTitles.save}
           </Button>
         </View>
 
         <DeleteModal
-          title={'Delete this network ?'}
+          title={i18n.header.deleteNetwork}
           visible={deleteVisible}
-          message={'Are you sure you want to delete this chain?\n' + 'You could no longer manage assets on this chain'}
+          message={i18n.message.deleteNetworkMessage}
           onCompleteModal={onCompleteDeleteModal}
           onCancelModal={onCancelDelete}
         />

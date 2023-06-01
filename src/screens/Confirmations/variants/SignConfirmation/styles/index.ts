@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   title: TextStyle;
@@ -17,6 +18,7 @@ export default (theme: ThemeTypes) => {
       width: '100%',
       fontSize: theme.fontSizeHeading4,
       lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+      ...FontSemiBold,
     },
     description: {
       color: theme.colorTextTertiary,
@@ -24,6 +26,7 @@ export default (theme: ThemeTypes) => {
       width: '100%',
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      ...FontMedium,
     },
     detailContainer: {
       display: 'flex',
@@ -37,6 +40,7 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextTertiary,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      ...FontMedium,
     },
     detailValue: {
       flex: 1,
@@ -44,6 +48,7 @@ export default (theme: ThemeTypes) => {
       color: theme.colorText,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      ...FontMedium,
     },
   });
 };

@@ -8,6 +8,7 @@ import { RootState } from 'stores/index';
 import { TokenSelectItem } from 'components/TokenSelectItem';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
 
 export type TokenItemType = {
   name: string;
@@ -31,8 +32,8 @@ const renderListEmptyComponent = () => {
   return (
     <EmptyList
       icon={MagnifyingGlass}
-      title={'No results found'}
-      message={'Please change your search criteria try again'}
+      title={i18n.emptyScreen.selectorEmptyTitle}
+      message={i18n.emptyScreen.selectorEmptyMessage}
     />
   );
 };
@@ -43,7 +44,7 @@ export const TokenSelector = ({
   onSelectItem,
   items,
   acceptDefaultValue,
-  title = 'Select token',
+  title = i18n.header.selectToken,
   defaultValue,
   selectedValue,
 }: Props) => {
@@ -101,6 +102,7 @@ export const TokenSelector = ({
       <FlatListScreen
         autoFocus={true}
         items={items}
+        placeholder={i18n.placeholder.searchToken}
         style={FlatListScreenPaddingTop}
         title={title}
         searchFunction={filterFunction}

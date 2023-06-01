@@ -15,22 +15,23 @@ import { RootNavigationProps } from 'routes/index';
 import ChangeMasterPasswordStyle from './style';
 import { backToHome } from 'utils/navigation';
 import useGoHome from 'hooks/screen/useGoHome';
+import i18n from 'utils/i18n/i18n';
 
 const formConfig = {
   curPassword: {
-    name: 'Current password',
+    name: i18n.inputLabel.currentPassword,
     value: '',
     validateFunc: validatePassword,
     require: true,
   },
   password: {
-    name: 'New password',
+    name: i18n.inputLabel.newPassword,
     value: '',
     validateFunc: validatePassword,
     require: true,
   },
   repeatPassword: {
-    name: 'Confirm new password',
+    name: i18n.inputLabel.confirmNewPassword,
     value: '',
     validateFunc: (value: string, formValue: Record<string, string>) => {
       return validatePasswordMatched(value, formValue.password);
@@ -123,7 +124,7 @@ const ChangeMasterPassword = () => {
       showLeftBtn={true}
       onPressBack={() => navigation.goBack()}
       rightIcon={Info}
-      title={'Change password'}
+      title={i18n.header.changePassword}
       style={{ width: '100%' }}
       disabled={isBusy}
       disableRightButton={isBusy}>
@@ -173,7 +174,7 @@ const ChangeMasterPassword = () => {
             />
           }
           onPress={onSubmit}>
-          {'Finish'}
+          {i18n.buttonTitles.finish}
         </Button>
       </View>
     </ContainerWithSubHeader>

@@ -7,6 +7,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toShort } from 'utils/index';
 import AvatarGroup from 'components/common/AvatarGroup';
 import { FontSemiBold } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   outerStyle?: StyleProp<any>;
@@ -70,7 +71,7 @@ export const ValidatorSelectorField = ({
     const valueList = value.split(',');
 
     if (valueList.length > 1) {
-      return <Text style={textStyle}>{`Selected ${valueList.length} validator`}</Text>;
+      return <Text style={textStyle}>{i18n.message.selectedXValidator(valueList.length)}</Text>;
     }
 
     return <Text style={textStyle}>{valueList[0].split('___')[1] || toShort(valueList[0].split('___')[0])}</Text>;

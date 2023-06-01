@@ -18,6 +18,7 @@ interface Props {
   isAllAccount?: boolean;
   onPressDetailBtn?: () => void;
   onSelectAccount?: (selectAccount: string) => void;
+  isShowEditBtn?: boolean;
 }
 
 export const SelectAccountItem = ({
@@ -27,6 +28,7 @@ export const SelectAccountItem = ({
   isAllAccount,
   onPressDetailBtn,
   onSelectAccount,
+  isShowEditBtn = true,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const signMode = useGetAccountSignModeByAddress(address);
@@ -105,7 +107,7 @@ export const SelectAccountItem = ({
           </View>
         )}
 
-        {!isAllAccount && (
+        {!isAllAccount && isShowEditBtn && (
           <Button
             type={'ghost'}
             size={'xs'}

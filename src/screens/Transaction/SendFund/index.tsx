@@ -253,10 +253,9 @@ export const SendFund = ({
     setIsTransferAll(value);
   }, []);
 
-  //todo: i18n
   const formConfig = {
     to: {
-      name: 'Send to account',
+      name: i18n.inputLabel.sendTo,
       value: '',
     },
     destChain: {
@@ -303,14 +302,12 @@ export const SendFund = ({
   const validateRecipientAddress = useCallback(
     (_recipientAddress: string, _from: string, _chain: string, _destChain: string) => {
       if (!_recipientAddress) {
-        //todo: i18n
-        onUpdateErrors('to')(['Recipient address is required']);
+        onUpdateErrors('to')([i18n.errorMessage.recipientAddressIsRequired]);
         return false;
       }
 
       if (!isAddress(_recipientAddress)) {
-        //todo: i18n
-        onUpdateErrors('to')(['Invalid Recipient address']);
+        onUpdateErrors('to')([i18n.errorMessage.invalidRecipientAddress]);
 
         return false;
       }
@@ -323,8 +320,7 @@ export const SendFund = ({
 
       if (isOnChain) {
         if (isSameAddress(_from, _recipientAddress)) {
-          //todo: i18n
-          onUpdateErrors('to')(['The recipient address can not be the same as the sender address']);
+          onUpdateErrors('to')([i18n.errorMessage.sameAddressError]);
           return false;
         }
 
@@ -333,8 +329,7 @@ export const SendFund = ({
           (!isEthereumAddress(_from) && !!_recipientAddress && isEthereumAddress(_recipientAddress));
 
         if (isNotSameAddressType) {
-          //todo: i18n
-          onUpdateErrors('to')(['The recipient address must be same type as the current account address.']);
+          onUpdateErrors('to')([i18n.errorMessage.notSameAddressTypeError]);
           return false;
         }
       } else {
@@ -342,8 +337,7 @@ export const SendFund = ({
 
         if (isDestChainEvmCompatible !== isEthereumAddress(_recipientAddress)) {
           onUpdateErrors('to')([
-            //todo: i18n
-            `The recipient address must be ${isDestChainEvmCompatible ? 'EVM' : 'substrate'} type`,
+            i18n.errorMessage.recipientAddressMustBeType(isDestChainEvmCompatible ? 'EVM' : 'substrate'),
           ]);
           return false;
         }
@@ -388,30 +382,26 @@ export const SendFund = ({
   const validateAmount = useCallback(
     (_amount: string, _maxTransfer: string, isValidInput?: boolean) => {
       if (isValidInput === false) {
-        //todo: i18n
-        onUpdateErrors('value')(['Amount is invalid']);
+        onUpdateErrors('value')([i18n.errorMessage.invalidAmount]);
 
         return false;
       }
 
       if (!_amount) {
-        //todo: i18n
-        onUpdateErrors('value')(['Amount is required']);
+        onUpdateErrors('value')([i18n.errorMessage.amountRequiredError]);
 
         return false;
       }
 
       if (new BigN(_amount).eq(new BigN(0))) {
-        //todo: i18n
-        onUpdateErrors('value')(['Amount must be greater than 0']);
+        onUpdateErrors('value')([i18n.errorMessage.amountMustBeGreaterThanZero]);
 
         return false;
       }
 
       if (new BigN(_amount).gt(new BigN(_maxTransfer))) {
         const maxString = formatBalance(_maxTransfer, decimals);
-        //todo: i18n
-        onUpdateErrors('value')([`Amount must be equal or less than ${maxString}`]);
+        onUpdateErrors('value')([i18n.errorMessage.amountMustBeEqualOrLessThan(maxString)]);
 
         return false;
       }
@@ -433,8 +423,7 @@ export const SendFund = ({
 
   const senderAccountName = useMemo(() => {
     if (!from) {
-      //todo: i18n
-      return 'Select account';
+      return i18n.inputLabel.selectAcc;
     }
 
     const targetAccount = accounts.find(a => a.address === from);
@@ -640,9 +629,8 @@ export const SendFund = ({
                     onPress={() => setAccountSelectModalVisible(true)}
                     disabled={loading}
                     style={[{ marginBottom: theme.sizeSM }, loading && DisabledStyle]}>
-                    {/*//todo: i18n*/}
                     <AccountSelectField
-                      label={'Send from account'}
+                      label={i18n.inputLabel.sendFrom}
                       accountName={senderAccountName}
                       value={from}
                       showIcon
@@ -696,17 +684,16 @@ export const SendFund = ({
                 value={formState.data.to}
                 onChange={onChangeRecipientAddress}
                 isValidValue={formState.isValidated.recipientAddress}
-                placeholder={'Please type or paste an address'}
+                placeholder={i18n.placeholder.enterOrPasteAnAddress}
                 disabled={loading}
                 onSubmitField={onSubmit}
               />
 
-              {/*//todo: i18n*/}
               <AddressScanner
                 qrModalVisible={isShowQrModalVisible}
                 onPressCancel={closeQrScan}
                 onChangeAddress={onUpdateReceiverInputAddress}
-                scanMessage={'to send fund'}
+                scanMessage={i18n.common.toSendFund}
               />
 
               {!!(formState.errors.to && formState.errors.to.length) &&
@@ -723,7 +710,7 @@ export const SendFund = ({
                 <NetworkField
                   networkKey={destChain}
                   outerStyle={{ marginBottom: 0 }}
-                  placeholder={'Select chain'}
+                  placeholder={i18n.placeholder.selectChain}
                   showIcon
                 />
               </TouchableOpacity>
@@ -736,7 +723,6 @@ export const SendFund = ({
                 paddingTop: 16,
                 ...MarginBottomForSubmitButton,
               }}>
-              {/*//todo: i18n*/}
               <Button
                 disabled={
                   isDataNotReady ||
@@ -749,7 +735,7 @@ export const SendFund = ({
                 loading={loading}
                 type={isTransferAll ? 'warning' : undefined}
                 onPress={onSubmit}>
-                {isTransferAll ? 'Transfer all' : 'Transfer'}
+                {isTransferAll ? i18n.buttonTitles.transferAll : i18n.buttonTitles.transfer}
               </Button>
             </View>
             <SafeAreaView />

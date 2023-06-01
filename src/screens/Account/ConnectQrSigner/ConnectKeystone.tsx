@@ -4,17 +4,18 @@
 import { ImageLogosMap } from 'assets/logo';
 import React from 'react';
 import ConnectQrSigner from './index';
+import i18n from 'utils/i18n/i18n';
 
 type Props = {};
 
 const ConnectKeystone: React.FC<Props> = () => {
   return (
     <ConnectQrSigner
-      description={'Keystone will provide you QR code to scan'}
+      description={i18n.attachAccount.connectKeystoneMessage2}
       instructionUrl={'Connect your QR wallet'}
       logoUrl={ImageLogosMap.keystone}
-      subTitle={'Select the SubWallet option in the “Software Wallet” menu available in your Keystone'}
-      title={'Connect your Keystone'}
+      subTitle={i18n.attachAccount.connectKeystoneMessage1}
+      title={i18n.header.connectKeystoneDevice}
     />
   );
 };

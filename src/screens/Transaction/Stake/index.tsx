@@ -46,6 +46,7 @@ import { StakeProps } from 'routes/transaction/transactionAction';
 import { DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { accountFilterFunc } from 'screens/Transaction/helper/base';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
+import i18n from 'utils/i18n/i18n';
 
 export const Stake = ({
   route: {
@@ -271,7 +272,7 @@ export const Stake = ({
         <MetaInfo labelColorScheme={'gray'} spaceSize={'xs'} valueColorScheme={'light'}>
           {chainStakingMetadata.expectedReturn && (
             <MetaInfo.Number
-              label={'Estimated earnings:'}
+              label={`${i18n.inputLabel.estimatedEarnings}:`}
               suffix={'% / year'}
               value={chainStakingMetadata.expectedReturn}
             />
@@ -280,7 +281,7 @@ export const Stake = ({
           {chainStakingMetadata.minStake && (
             <MetaInfo.Number
               decimals={decimals}
-              label={'Minimum active:'}
+              label={`${i18n.inputLabel.minimumActive}:`}
               suffix={symbol}
               value={minStake}
               valueColorSchema={'success'}
@@ -388,7 +389,12 @@ export const Stake = ({
           )}
 
           {_stakingType === ALL_KEY && (
-            <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+            <FreeBalance
+              label={`${i18n.inputLabel.availableBalance}:`}
+              address={from}
+              chain={chain}
+              onBalanceReady={setIsBalanceReady}
+            />
           )}
 
           <TouchableOpacity
@@ -407,7 +413,12 @@ export const Stake = ({
           </TouchableOpacity>
 
           {_stakingType !== ALL_KEY && (
-            <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+            <FreeBalance
+              label={`${i18n.inputLabel.availableBalance}:`}
+              address={from}
+              chain={chain}
+              onBalanceReady={setIsBalanceReady}
+            />
           )}
 
           <InputAmount

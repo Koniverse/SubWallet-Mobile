@@ -26,6 +26,7 @@ import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import { backToHome } from 'utils/navigation';
 import createStyle from './styles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   title: string;
@@ -113,11 +114,11 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
         </View>
         <View>
           <Text style={styles.description}>{description}</Text>
-          <Text style={styles.description}>
-            <Text>&nbsp;Follow&nbsp;</Text>
-            <Text style={styles.highLight}>this instructions</Text>
-            <Text>&nbsp; for more details</Text>
-          </Text>
+          {/*<Text style={styles.description}>*/}
+          {/*  <Text>&nbsp;Follow&nbsp;</Text>*/}
+          {/*  <Text style={styles.highLight}>this instructions</Text>*/}
+          {/*  <Text>&nbsp; for more details</Text>*/}
+          {/*</Text>*/}
         </View>
       </View>
       <View style={styles.footer}>
@@ -125,7 +126,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
           icon={<Icon phosphorIcon={QrCode} weight="fill" />}
           onPress={onPressSubmit(onOpenModal)}
           loading={loading}>
-          {loading ? 'Creating' : 'Scan the QR code'}
+          {loading ? i18n.buttonTitles.creating : i18n.buttonTitles.scanQrCode}
         </Button>
       </View>
       <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.QR_SIGNER} />

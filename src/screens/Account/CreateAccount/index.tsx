@@ -20,9 +20,9 @@ const ViewStep = {
 
 function getHeaderTitle(viewStep: number) {
   if (viewStep === ViewStep.INIT_SP) {
-    return i18n.title.yourSeedPhrase;
+    return i18n.header.yourSeedPhrase;
   } else if (viewStep === ViewStep.VERIFY_SP) {
-    return i18n.title.verifyRecoveryPhrase;
+    return i18n.header.verifySeedPhrase;
   }
   return i18n.title.nameYourWallet;
 }

@@ -24,6 +24,7 @@ import { TokenBalanceItemType } from 'types/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   layoutHeader: React.ReactElement;
@@ -145,7 +146,11 @@ export const TokensLayout = ({
             contentContainerStyle={flatListContentContainerStyle}
             refreshControl={refreshControlNode}>
             <>
-              <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started'} />
+              <EmptyList
+                icon={Coins}
+                title={i18n.emptyScreen.tokenEmptyTitle}
+                message={i18n.emptyScreen.tokenEmptyMessage}
+              />
               {layoutFooter}
             </>
           </ScrollView>

@@ -32,7 +32,7 @@ const CancelUnstakeTransactionConfirmation: React.FC<Props> = (props: Props) => 
 
         <MetaInfo.Number
           decimals={decimals}
-          label={'Cancel unstake fee'}
+          label={i18n.inputLabel.cancelUnstakeFee}
           suffix={symbol}
           value={transaction.estimateFee?.value || 0}
         />

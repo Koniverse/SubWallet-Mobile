@@ -148,7 +148,7 @@ export const SubstrateSignArea = (props: Props) => {
         icon={getButtonIcon(approveIcon)}
         loading={loading}
         onPress={onConfirm}>
-        {i18n.common.approve}
+        {i18n.buttonTitles.approve}
       </Button>
       {signMode === AccountSignMode.QR && (
         <>

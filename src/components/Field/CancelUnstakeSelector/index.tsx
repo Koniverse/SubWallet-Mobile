@@ -21,7 +21,7 @@ const blockContentStyle: StyleProp<any> = {
   alignItems: 'center',
   justifyContent: 'space-between',
   paddingTop: 10,
-  paddingHorizontal: 16,
+  paddingHorizontal: 12,
   paddingBottom: 12,
 };
 

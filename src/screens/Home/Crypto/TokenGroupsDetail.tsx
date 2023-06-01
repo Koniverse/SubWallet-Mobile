@@ -24,6 +24,7 @@ import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { useToast } from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -170,8 +171,7 @@ export const TokenGroupsDetail = ({
 
   const _onOpenSendFund = useCallback(() => {
     if (currentAccount && currentAccount.isReadOnly) {
-      //todo: i18n
-      showNoti('The account you are using is watch-only, you cannot send assets with it');
+      showNoti(i18n.notificationMessage.watchOnlyNoti);
       return;
     }
 

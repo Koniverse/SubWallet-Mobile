@@ -215,7 +215,7 @@ export const EvmSignConfirmation = ({
       isNeedSignature={true}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
-        submitButtonTitle: i18n.common.approve,
+        submitButtonTitle: i18n.buttonTitles.approve,
         onScanSignature: onScanSignature,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,

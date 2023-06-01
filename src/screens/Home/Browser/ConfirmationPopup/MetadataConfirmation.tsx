@@ -76,13 +76,13 @@ export const MetadataConfirmation = ({
   return (
     <ConfirmationBase
       headerProps={{
-        title: i18n.common.metadataIsOutOfDate,
+        title: i18n.confirmation.yourMetadataIsOutOfDate,
         url,
       }}
       isShowViewDetailButton={false}
       footerProps={{
         cancelButtonTitle: i18n.common.reject,
-        submitButtonTitle: i18n.common.approve,
+        submitButtonTitle: i18n.buttonTitles.approve,
         onPressCancelButton: onPressCancelButton,
         onPressSubmitButton: onPressSubmitButton,
       }}>

@@ -138,7 +138,7 @@ export const ImportSecretPhrase = () => {
   return (
     <ContainerWithSubHeader
       onPressBack={onPressBack}
-      title={i18n.title.importBySecretPhrase}
+      title={i18n.header.importFromSeedPhrase}
       disabled={isBusy}
       onPressRightIcon={goHome}
       rightIcon={X}
@@ -159,7 +159,7 @@ export const ImportSecretPhrase = () => {
           />
 
           <SelectAccountType
-            title={'Select account type'}
+            title={i18n.importAccount.selectAccountType}
             selectedItems={keyTypes}
             setSelectedItems={setKeyTypes}
             disabled={isBusy}
@@ -171,7 +171,7 @@ export const ImportSecretPhrase = () => {
             disabled={disabled || validating || !keyTypes.length}
             loading={validating || isBusy}
             onPress={onPressSubmit(_onImportSeed)}>
-            {'Import account'}
+            {i18n.buttonTitles.importAccount}
           </Button>
         </View>
         <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />

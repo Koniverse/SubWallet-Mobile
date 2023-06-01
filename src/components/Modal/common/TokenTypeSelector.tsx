@@ -6,6 +6,7 @@ import { Coin } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { DisabledStyle } from 'styles/sharedStyles';
 import { AssetTypeOption } from '../../../types/asset';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -33,7 +34,10 @@ export const TokenTypeSelector = ({
         <TokenTypeSelectField value={selectedValue} showIcon />
       </TouchableOpacity>
 
-      <SwModal modalVisible={modalVisible} modalTitle={'Select token type'} onChangeModalVisible={onChangeModalVisible}>
+      <SwModal
+        modalVisible={modalVisible}
+        modalTitle={i18n.header.selectTokenType}
+        onChangeModalVisible={onChangeModalVisible}>
         <View style={{ width: '100%' }}>
           {items.map(item => (
             <SelectItem

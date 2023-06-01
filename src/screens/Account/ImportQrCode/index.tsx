@@ -25,6 +25,7 @@ import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
 import { backToHome } from 'utils/navigation';
 import createStyle from './styles';
+import i18n from 'utils/i18n/i18n';
 
 type Props = {};
 
@@ -115,11 +116,9 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
   } = useUnlockModal();
 
   return (
-    <ContainerWithSubHeader title="Import your wallet by QR" onPressBack={onBack}>
+    <ContainerWithSubHeader title={i18n.header.importByQRCode} onPressBack={onBack}>
       <View style={styles.body}>
-        <Text style={styles.subTitle}>
-          Please make sure that you have granted SubWallet the access to your device's camera.
-        </Text>
+        <Text style={styles.subTitle}>{i18n.importAccount.importQrCodeMessage1}</Text>
         <View>
           <DualLogo
             leftLogo={<Image {...imageProps} src={ImageLogosMap.subwallet} />}
@@ -128,9 +127,7 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
           />
         </View>
         <View>
-          <Text style={styles.description}>
-            Click the "Scan the QR code" button, or read this instruction for more details.
-          </Text>
+          <Text style={styles.description}>{i18n.importAccount.importQrCodeMessage2}</Text>
         </View>
       </View>
       <View style={styles.footer}>
@@ -139,7 +136,7 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
           onPress={onPressSubmit(onOpenModal)}
           loading={loading}
           disabled={loading}>
-          {loading ? 'Creating' : 'Scan the QR code'}
+          {loading ? i18n.buttonTitles.creating : i18n.buttonTitles.scanQrCode}
         </Button>
       </View>
       <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />

@@ -139,7 +139,7 @@ export const ValidatorSelector = ({
         onPressLightningBtn={() => setValidatorSelectModalVisible(true)}
         onPressBookBtn={() => setValidatorSelectModalVisible(true)}
         value={selectedValidator}
-        label={'Select validator'}
+        label={i18n.inputLabel.selectValidator}
         loading={validatorLoading}
       />
 

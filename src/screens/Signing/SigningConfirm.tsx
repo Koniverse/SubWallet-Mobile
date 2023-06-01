@@ -115,7 +115,7 @@ const SigningConfirm = () => {
             {i18n.common.cancel}
           </Button>
           <Button style={ButtonStyle} loading={isBusy} onPress={() => setVisible(true)}>
-            {i18n.common.approve}
+            {i18n.buttonTitles.approve}
           </Button>
         </View>
 

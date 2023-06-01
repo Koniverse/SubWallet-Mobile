@@ -183,14 +183,14 @@ export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, 
     setSelectedService({ selectedService: currentValue, isOpenInAppBrowser: true });
     if (currentUrl) {
       if (currentValue !== 'transak') {
-        show(i18n.common.comingSoon);
+        show(i18n.notificationMessage.comingSoon);
       }
       await openLink(currentUrl);
     } else {
       if (currentValue === 'transak') {
         show(i18n.common.unsupportedToken);
       } else {
-        show(i18n.common.comingSoon);
+        show(i18n.notificationMessage.comingSoon);
       }
     }
   };

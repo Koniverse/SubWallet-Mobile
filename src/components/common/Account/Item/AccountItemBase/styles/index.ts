@@ -21,7 +21,7 @@ export default (theme: ThemeTypes) => {
       overflow: 'hidden',
     },
     right: {
-      marginRight: theme.marginXS + 2,
+      marginRight: 2,
     },
   });
 };

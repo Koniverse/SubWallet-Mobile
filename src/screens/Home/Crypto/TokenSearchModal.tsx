@@ -9,6 +9,7 @@ import { TokenBalanceItem } from 'components/common/TokenBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
 import { Coins } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -26,7 +27,9 @@ const filterFunction = (items: TokenBalanceItemType[], searchString: string) => 
 };
 
 const renderListEmptyComponent = () => {
-  return <EmptyList icon={Coins} title={'No tokens found'} message={'Add tokens to get started.'} />;
+  return (
+    <EmptyList icon={Coins} title={i18n.emptyScreen.tokenEmptyTitle} message={i18n.emptyScreen.tokenEmptyMessage} />
+  );
 };
 
 export const TokenSearchModal = ({ modalVisible, onCancel, onSelectItem, items, isShowBalance }: Props) => {
@@ -60,7 +63,7 @@ export const TokenSearchModal = ({ modalVisible, onCancel, onSelectItem, items, 
         isShowFilterBtn={false}
         flatListStyle={listStyle}
         style={FlatListScreenPaddingTop}
-        title={'Select token'}
+        title={i18n.header.selectToken}
         searchFunction={filterFunction}
         renderItem={renderItem}
         onPressBack={onCancel}

@@ -6,6 +6,7 @@ import { DotsThree } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingPoolItemStyle from './style';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   address: string;
@@ -38,10 +39,10 @@ export const StakingPoolItem = ({
 
       <View style={{ flex: 1 }}>
         <Text numberOfLines={1} style={_style.poolNameTextStyle}>
-          {name || `Pool #${id}`}
+          {name || i18n.message.poolId(id)}
         </Text>
         <View style={_style.contentWrapper}>
-          <Text style={_style.bondedAmountLabelTextStyle}>{'Bonded: '}</Text>
+          <Text style={_style.bondedAmountLabelTextStyle}>{i18n.message.bonded}</Text>
           <Number
             decimal={decimals}
             suffix={symbol}

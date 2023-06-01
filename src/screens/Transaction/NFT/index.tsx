@@ -94,17 +94,15 @@ const SendNFT: React.FC<SendNFTProps> = ({
     try {
       reformatAddress(recipientAddress);
     } catch (e) {
-      return ['Invalid recipient address'];
+      return [i18n.errorMessage.invalidRecipientAddress];
     }
 
     if (isSameAddress(recipientAddress, owner)) {
-      return ['The recipient address can not be the same as the sender address'];
+      return [i18n.errorMessage.sameAddressError];
     }
 
     if (isEthereumAddress(recipientAddress) !== isEthereumAddress(owner)) {
-      const message = isEthereumAddress(owner)
-        ? 'Receive address must be of evm account.'
-        : 'Receive address must be of substrate account.';
+      const message = i18n.errorMessage.recipientAddressMustBeType(isEthereumAddress(owner) ? 'evm' : 'substrate');
 
       return [message];
     }
@@ -115,7 +113,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const NFTFormConfig = {
     recipientAddress: {
       require: true,
-      name: 'Recipient Address',
+      name: i18n.inputLabel.sendTo,
       value: '',
       validateFunc: validateRecipientAddress,
     },
@@ -259,14 +257,14 @@ const SendNFT: React.FC<SendNFTProps> = ({
               value={formState.data.recipientAddress}
               onChange={onChangeReceiverAddress}
               isValidValue={formState.isValidated.recipientAddress}
-              placeholder={'Please type or paste an address'}
+              placeholder={i18n.placeholder.accountAddress}
               onSubmitField={handleSend}
               disabled={loading}
             />
             {!!formState.errors.recipientAddress.length && (
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />
             )}
-            <NetworkField label={i18n.common.network} networkKey={nftItem.chain || ''} />
+            <NetworkField label={i18n.inputLabel.network} networkKey={nftItem.chain || ''} />
             {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
           </ScrollView>
 

@@ -97,7 +97,7 @@ export const Security = () => {
         <ToggleItem
           backgroundIcon={Password}
           backgroundIconColor={theme['orange-7']}
-          label={i18n.common.pinCode}
+          label={i18n.settings.pinCode}
           isEnabled={pinCodeEnabled}
           onValueChange={onValueChangePinCode}
         />
@@ -105,7 +105,7 @@ export const Security = () => {
           backgroundIcon={Scan}
           backgroundIconColor={theme['magenta-7']}
           style={{ marginBottom: 16 }}
-          label={i18n.common.faceId}
+          label={i18n.settings.faceId}
           isEnabled={faceIdEnabled}
           disabled={!pinCodeEnabled}
           onValueChange={onValueChangeFaceId}
@@ -114,7 +114,7 @@ export const Security = () => {
         <SelectItem
           icon={Key}
           backgroundColor={theme['gold-6']}
-          label={i18n.common.changeYourPinCode}
+          label={i18n.settings.changeYourPinCode}
           onPress={() => navigation.navigate('PinCode', { screen: 'ChangePinCode' })}
           rightIcon={
             <Icon
@@ -129,7 +129,7 @@ export const Security = () => {
         <SelectItem
           icon={Key}
           backgroundColor={theme['gold-6']}
-          label={'Change password'}
+          label={i18n.settings.changePassword}
           onPress={() => navigation.navigate('ChangePassword')}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />
@@ -137,7 +137,7 @@ export const Security = () => {
         <SelectItem
           icon={Globe}
           backgroundColor={theme['blue-6']}
-          label={'Manage website access'}
+          label={i18n.settings.manageWebsiteAccess}
           onPress={() => navigation.navigate('DAppAccess')}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />
@@ -145,17 +145,17 @@ export const Security = () => {
         <SelectItem
           icon={Globe}
           backgroundColor={theme['geekblue-6']}
-          label={'Manage  WalletConnect Dapp'}
+          label={i18n.settings.manageWalletConnectDapp}
           onPress={() => {
             toast.hideAll();
-            toast.show('Coming soon');
+            toast.show(i18n.notificationMessage.comingSoon);
           }}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />
         <SelectItem
           icon={ShieldCheck}
           backgroundColor={theme['green-6']}
-          label={i18n.common.appLock}
+          label={i18n.settings.appLock}
           onPress={() => setIsShowAutoLockModal(true)}
           rightIcon={
             <Icon

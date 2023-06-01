@@ -39,8 +39,8 @@ const renderListEmptyComponent = () => {
       contentContainerStyle={{ alignItems: 'center', minHeight: '100%', justifyContent: 'center', paddingBottom: 50 }}>
       <EmptyList
         icon={MagnifyingGlass}
-        title={'No results found'}
-        message={'Please change your search criteria try again'}
+        title={i18n.emptyScreen.selectorEmptyTitle}
+        message={i18n.emptyScreen.selectorEmptyMessage}
       />
     </ScrollView>
   );
@@ -154,7 +154,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
         modalVisible={modalVisible}
         onChangeModalVisible={selected ? undefined : onChangeModalVisible}
         isFullHeight={true}
-        modalTitle={'Select account'}
+        modalTitle={i18n.header.selectAccount}
         modalStyle={styles.modal}>
         <View style={styles.wrapper}>
           <View style={styles.container}>

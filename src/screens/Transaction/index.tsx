@@ -8,6 +8,7 @@ import TransactionDoneStyle from './TransactionDone/style';
 import { RootNavigationProps, TransactionDoneProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 export const TransactionDone = ({
   route: {
@@ -47,23 +48,21 @@ export const TransactionDone = ({
   }, [navigation, path]);
 
   return (
-    <ContainerWithSubHeader onPressBack={goHome} title={'Successful'}>
+    <ContainerWithSubHeader onPressBack={goHome} title={i18n.header.successful}>
       <View style={_style.transactionDoneContainer}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <PageIcon icon={CheckCircle} color={theme.colorSuccess} />
-          <Typography.Title style={_style.transactionDoneTitle}>{'You’re all done!'}</Typography.Title>
+          <Typography.Title style={_style.transactionDoneTitle}>{i18n.message.applyDoneTitle}</Typography.Title>
 
-          <Typography.Text style={_style.transactionDoneMessage}>
-            {'Your request has been sent. You can track its progress on the Transaction History page.'}
-          </Typography.Text>
+          <Typography.Text style={_style.transactionDoneMessage}>{i18n.message.transactionDoneMessage}</Typography.Text>
         </View>
 
         <View style={{ width: '100%', ...MarginBottomForSubmitButton }}>
           <Button onPress={viewInExplorer} style={{ marginBottom: 16 }} type={'secondary'}>
-            {'View transaction'}
+            {i18n.buttonTitles.viewTransaction}
           </Button>
 
-          <Button onPress={goHome}>{'Back to home'}</Button>
+          <Button onPress={goHome}>{i18n.buttonTitles.backToHome}</Button>
         </View>
       </View>
     </ContainerWithSubHeader>

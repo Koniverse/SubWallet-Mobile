@@ -4,17 +4,18 @@
 import { ImageLogosMap } from 'assets/logo';
 import React from 'react';
 import ConnectQrSigner from './index';
+import i18n from 'utils/i18n/i18n';
 
 type Props = {};
 
 const ConnectParitySigner: React.FC<Props> = () => {
   return (
     <ConnectQrSigner
-      description={'Polkadot Vault will provide you a QR code to scan.'}
+      description={i18n.attachAccount.connectPolkadotVaultMessage2}
       instructionUrl={'Connect your QR wallet'}
       logoUrl={ImageLogosMap.parity}
-      subTitle={'Open Polkadot Vault application on your smartphone to connect wallet'}
-      title={'Connect your QR wallet'}
+      subTitle={i18n.attachAccount.connectPolkadotVaultMessage1}
+      title={i18n.header.connectPolkadotVault}
     />
   );
 };

@@ -139,7 +139,7 @@ const PasswordRequest = ({
             style={getButtonStyle(!!onCancel)}
             disabled={extraLoading}
             isBusy={isCreating}
-            title={buttonText ? buttonText : i18n.common.approve}
+            title={buttonText ? buttonText : i18n.buttonTitles.approve}
             onPress={openModal}
           />
         )}

@@ -102,7 +102,7 @@ const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
           value={tip.toNumber()}
         />
       )}
-      <MetaInfo.Data label={'Method data'}>{method}</MetaInfo.Data>
+      <MetaInfo.Data label={i18n.inputLabel.methodData}>{method}</MetaInfo.Data>
       <MetaInfo.Data label={i18n.common.lifetime}>{mortalityAsString(era, blockNumber)}</MetaInfo.Data>
     </MetaInfo>
   );

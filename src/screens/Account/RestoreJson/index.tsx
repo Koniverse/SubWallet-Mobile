@@ -1,4 +1,3 @@
-import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import AvatarGroup from 'components/common/AvatarGroup';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -28,6 +27,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import { Button, Icon, SelectItem, SwModal, Typography } from 'components/design-system-ui';
 import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
+import { SelectAccountItem } from 'components/common/SelectAccountItem';
 
 const formConfig: FormControlConfig = {
   file: {
@@ -198,19 +198,12 @@ export const RestoreJson = () => {
   const renderAccount = useCallback(
     ({ item }: ListRenderItemInfo<ResponseJsonGetAccountInfo>) => {
       return (
-        <AccountItemWithName
-          key={item.address}
-          avatarSize={40}
-          address={item.address}
-          accountName={item.name}
-          direction="vertical"
-          customStyle={{
-            container: styles.accountItem,
-          }}
-        />
+        <View style={{ marginLeft: -theme.margin, marginRight: -theme.margin }}>
+          <SelectAccountItem isShowEditBtn={false} key={item.address} address={item.address} accountName={item.name} />
+        </View>
       );
     },
-    [styles.accountItem],
+    [theme.margin],
   );
 
   const _onPressBack = useCallback(() => {
@@ -254,7 +247,7 @@ export const RestoreJson = () => {
 
   return (
     <ContainerWithSubHeader
-      title={i18n.title.importFromJson}
+      title={i18n.header.importFromJson}
       onPressBack={_onPressBack}
       disabled={isBusy}
       rightIcon={X}
@@ -262,9 +255,7 @@ export const RestoreJson = () => {
       disableRightButton={isBusy}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
-          <Typography.Text style={styles.title}>
-            Please upload the .json file you exported from Polkadot.js
-          </Typography.Text>
+          <Typography.Text style={styles.title}>{i18n.importAccount.importJsonSubtitle}</Typography.Text>
           <InputFile disabled={isBusy} onChangeResult={_onChangeFile} fileName={formState.data.fileName} />
           {isFileError && (
             <Warning
@@ -290,9 +281,7 @@ export const RestoreJson = () => {
           )}
           {isShowPasswordField && (
             <>
-              <Typography.Text style={styles.description}>
-                Please enter the password you set when creating your polkadot.js account
-              </Typography.Text>
+              <Typography.Text style={styles.description}>{i18n.importAccount.importJsonMessage}</Typography.Text>
               <View style={styles.passwordContainer}>
                 <PasswordField
                   ref={formState.refs.password}
@@ -302,7 +291,7 @@ export const RestoreJson = () => {
                   onSubmitField={onSubmitField('password')}
                   showEyeButton={false}
                   outerStyle={styles.passwordField}
-                  placeholder={'Current password'}
+                  placeholder={i18n.placeholder.currentPassword}
                   isBusy={isBusy}
                 />
               </View>
@@ -316,11 +305,11 @@ export const RestoreJson = () => {
             icon={getButtonIcon(FileArrowDown)}
             onPress={onPressSubmit(onPressSubmitButton)}
             disabled={isDisabled}>
-            {i18n.common.importAccount}
+            {i18n.buttonTitles.importAccount}
           </Button>
         </View>
       </View>
-      <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={'Account import list'}>
+      <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={i18n.header.accounts}>
         <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
       </SwModal>
       <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideModal} />

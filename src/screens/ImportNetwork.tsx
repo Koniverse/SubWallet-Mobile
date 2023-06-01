@@ -25,6 +25,7 @@ import { _generateCustomProviderKey } from '@subwallet/extension-base/services/c
 import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-service/types';
 import { useToast } from 'react-native-toast-notifications';
 import { HIDE_MODAL_DURATION } from 'constants/index';
+import i18n from 'utils/i18n/i18n';
 
 interface ValidationInfo {
   status: ValidateStatus;
@@ -46,13 +47,13 @@ export const ImportNetwork = () => {
   const handleErrorMessage = useCallback((errorCode: _CHAIN_VALIDATION_ERROR) => {
     switch (errorCode) {
       case _CHAIN_VALIDATION_ERROR.CONNECTION_FAILURE:
-        return ['Cannot connect to this provider'];
+        return [i18n.errorMessage.cannotConnectToThisProvider];
       case _CHAIN_VALIDATION_ERROR.EXISTED_PROVIDER:
-        return ['This chain has already been added'];
+        return [i18n.errorMessage.thisChainHasAlreadyBeenAdded];
       case _CHAIN_VALIDATION_ERROR.EXISTED_CHAIN:
-        return ['This chain has already been added'];
+        return [i18n.errorMessage.thisChainHasAlreadyBeenAdded];
       default:
-        return ['Error validating this provider'];
+        return [i18n.errorMessage.validateProviderError];
     }
   }, []);
 
@@ -60,7 +61,7 @@ export const ImportNetwork = () => {
     if (value.length === 0 || isUrl(value)) {
       return [];
     } else {
-      return ['Block explorer must be a valid URL'];
+      return [i18n.errorMessage.blockExplorerMustBeAValidUrl];
     }
   }, []);
 
@@ -68,7 +69,7 @@ export const ImportNetwork = () => {
     if (value.length === 0 || isUrl(value)) {
       return [];
     } else {
-      return ['Crowdloan URL must be a valid URL'];
+      return [i18n.errorMessage.crowdloanUrlMustBeAValidUrl];
     }
   }, []);
 
@@ -170,15 +171,15 @@ export const ImportNetwork = () => {
       .then(result => {
         setLoading(false);
         if (result) {
-          toast.show('Imported chain successfully');
+          toast.show(i18n.notificationMessage.importedChainSuccessfully);
           navigation.goBack();
         } else {
-          toast.show('An error occurred, please try again');
+          toast.show(i18n.notificationMessage.pleaseTryAgain);
         }
       })
       .catch(() => {
         setLoading(false);
-        toast.show('An error occurred, please try again');
+        toast.show(i18n.notificationMessage.pleaseTryAgain);
       });
   };
 
@@ -255,13 +256,13 @@ export const ImportNetwork = () => {
           })
           .catch(() => {
             setIsValidating(false);
-            setProviderValidation({ status: 'error', message: ['Error validating this provider'] });
-            onUpdateErrors('provider')(['Error validating this provider']);
+            setProviderValidation({ status: 'error', message: [i18n.errorMessage.validateProviderError] });
+            onUpdateErrors('provider')([i18n.errorMessage.validateProviderError]);
           });
       } else {
         setProviderValidation({ status: '' });
         setIsShowConnectionStatus(false);
-        onUpdateErrors('provider')(['Provider URL is not valid']);
+        onUpdateErrors('provider')([i18n.errorMessage.invalidProviderUrl]);
       }
     },
     [handleErrorMessage, onChangeValue, onUpdateErrors],
@@ -290,7 +291,7 @@ export const ImportNetwork = () => {
   }, [isShowConnectionStatus, isValidating, providerValidation.status, theme]);
 
   return (
-    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={'Import Chain'}>
+    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={i18n.header.importNetwork}>
       <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
         <InputText
           leftIcon={ShareNetwork}
@@ -381,7 +382,7 @@ export const ImportNetwork = () => {
               iconColor={isSubmitDisabled() ? theme.colorTextLight5 : theme.colorWhite}
             />
           }>
-          {'Add network'}
+          {i18n.buttonTitles.save}
         </Button>
       </View>
     </ContainerWithSubHeader>

@@ -23,8 +23,8 @@ const renderListEmptyComponent = () => {
   return (
     <EmptyList
       icon={MagnifyingGlass}
-      title={'No results found'}
-      message={'Please change your search criteria try again'}
+      title={i18n.emptyScreen.selectorEmptyTitle}
+      message={i18n.emptyScreen.selectorEmptyMessage}
     />
   );
 };

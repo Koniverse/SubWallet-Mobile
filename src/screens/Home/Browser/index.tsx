@@ -125,8 +125,8 @@ export const BrowserScreen = () => {
         ) : (
           <EmptyList
             icon={GlobeSimple}
-            title={'Recent search empty list'}
-            message={'You have not searched any website before'}
+            title={i18n.emptyScreen.browserEmptyTitle}
+            message={i18n.emptyScreen.browserEmptyMessage}
           />
         )}
       </>

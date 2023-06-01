@@ -42,7 +42,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
       })
         .then(data => {
           if (!data.status) {
-            onUpdateErrors('password')(['Invalid password']);
+            onUpdateErrors('password')([i18n.errorMessage.invalidMasterPassword]);
           } else {
             onPasswordComplete();
           }
@@ -87,7 +87,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
   return (
     <SwModal
       modalVisible={visible}
-      modalTitle={'Enter password'}
+      modalTitle={i18n.header.enterPassword}
       footer={
         <>
           <View style={styles.footer}>
@@ -103,7 +103,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
                 />
               }
               onPress={onSubmit}>
-              {'Apply'}
+              {i18n.buttonTitles.apply}
             </Button>
           </View>
         </>

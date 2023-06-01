@@ -8,13 +8,13 @@ import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
-import { Warning } from 'components/Warning';
 import { keyringChangeMasterPassword } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { CreatePasswordProps, RootNavigationProps } from 'routes/index';
 import CreateMasterPasswordStyle from './style';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import AlertBox from 'components/design-system-ui/alert-box';
 
 const formConfig: FormControlConfig = {
   password: {
@@ -115,10 +115,12 @@ const CreateMasterPassword = ({
       disabled={isBusy}
       rightIcon={Info}
       disableRightButton={isBusy}
-      title={'Create password'}
+      title={i18n.header.createAPassword}
       style={{ width: '100%' }}>
       <View style={_style.bodyWrapper}>
-        <Typography.Text style={_style.instructionTextStyle}>Use this password to unlock your account.</Typography.Text>
+        <Typography.Text style={_style.instructionTextStyle}>
+          {i18n.createPassword.createPasswordMessage}
+        </Typography.Text>
 
         <PasswordField
           ref={formState.refs.password}
@@ -127,6 +129,7 @@ const CreateMasterPassword = ({
           onChangeText={_onChangePasswordValue}
           errorMessages={formState.errors.password}
           onSubmitField={onSubmitField('password')}
+          placeholder={i18n.placeholder.enterPassword}
           isBusy={isBusy}
         />
 
@@ -137,10 +140,15 @@ const CreateMasterPassword = ({
           onChangeText={onChangeValue('repeatPassword')}
           errorMessages={formState.errors.repeatPassword}
           onSubmitField={onSubmitField('repeatPassword')}
+          placeholder={i18n.placeholder.confirmPassword}
           isBusy={isBusy}
         />
 
-        <Warning message={'Recommended security practice'} title={'Always choose a strong password!'} />
+        <AlertBox
+          type={'warning'}
+          description={i18n.warning.warningPasswordMessage}
+          title={i18n.warning.warningPasswordTitle}
+        />
       </View>
 
       <View style={_style.footerAreaStyle}>
@@ -150,11 +158,12 @@ const CreateMasterPassword = ({
             <Icon
               phosphorIcon={CheckCircle}
               size={'lg'}
+              weight={'fill'}
               iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
             />
           }
           onPress={onSubmit}>
-          {'Finish'}
+          {i18n.buttonTitles.continue}
         </Button>
       </View>
     </ContainerWithSubHeader>

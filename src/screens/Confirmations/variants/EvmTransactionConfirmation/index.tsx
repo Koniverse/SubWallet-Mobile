@@ -65,7 +65,7 @@ const EvmTransactionConfirmation: React.FC<Props> = (props: Props) => {
           {request.payload.estimateGas && (
             <MetaInfo.Number
               decimals={chainInfo?.evmInfo?.decimals}
-              label={i18n.common.estimateGas}
+              label={i18n.inputLabel.estimatedFee}
               suffix={chainInfo?.evmInfo?.symbol}
               value={request.payload.estimateGas || '0'}
             />

@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { ShieldPlus } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   visible: boolean;
@@ -23,17 +24,13 @@ const RequestCreateMasterPasswordModal = ({ visible }: Props) => {
   };
 
   return (
-    <SwModal modalVisible={modalVisible} modalTitle={'Create master password'}>
+    <SwModal modalVisible={modalVisible} modalTitle={i18n.header.createMasterPassword}>
       <View style={{ width: '100%' }}>
-        <Typography.Text style={_style.textStyle}>
-          {
-            'Your master password is the password that allows access to multiple accounts. Once a master password is confirmed, you will not need to manually type your password with every transaction.'
-          }
-        </Typography.Text>
+        <Typography.Text style={_style.textStyle}>{i18n.message.requestCreateMasterPassword}</Typography.Text>
 
         <View style={_style.footerAreaStyle}>
           <Button icon={<Icon phosphorIcon={ShieldPlus} size={'lg'} weight={'fill'} />} onPress={onPressButton}>
-            {'Create master password'}
+            {i18n.buttonTitles.createMasterPassword}
           </Button>
         </View>
       </View>

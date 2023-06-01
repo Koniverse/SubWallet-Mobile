@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMedium } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   text: TextStyle;
@@ -15,6 +16,7 @@ export default (theme: ThemeTypes) => {
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       width: '100%',
+      ...FontMedium,
     },
     textCenter: {
       color: theme.colorTextTertiary,
@@ -23,6 +25,7 @@ export default (theme: ThemeTypes) => {
       width: '100%',
       textAlign: 'center',
       paddingHorizontal: theme.padding,
+      ...FontMedium,
     },
     scroll: {
       maxHeight: 180,
