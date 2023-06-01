@@ -12,7 +12,7 @@ export default function useScanExplorerAddressUrl(networkKey: string, hash: stri
   const blockExplorer = chainInfo?.substrateInfo?.blockExplorer || chainInfo?.evmInfo?.blockExplorer;
 
   if (blockExplorer) {
-    return `${blockExplorer}/account/${hash}`;
+    return `${blockExplorer}account/${hash}`;
   } else {
     return getScanExplorerAddressInfoUrl(networkKey, hash);
   }

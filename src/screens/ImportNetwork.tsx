@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useFormControl from 'hooks/screen/useFormControl';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import InputText from 'components/Input/InputText';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import {
@@ -297,7 +297,7 @@ export const ImportNetwork = () => {
           placeholder={formState.labels.provider}
           ref={formState.refs.provider}
           value={formState.data.provider}
-          onSubmitField={onSubmitField('provider')}
+          onSubmitField={Keyboard.dismiss}
           onChangeText={onChangeValue('provider')}
           rightIcon={<View style={{ position: 'absolute', right: 12, top: 14 }}>{providerSuffix()}</View>}
           errorMessages={formState.errors.provider}

@@ -71,7 +71,7 @@ export const CustomTokenSetting = () => {
             }
             break;
           case FilterValue.DISABLED:
-            if (!assetSettingMap[item.slug] || !assetSettingMap[item.slug].visible) {
+            if (!assetSettingMap[item.slug] || !assetSettingMap[item.slug]?.visible) {
               filteredChainList.push(item);
             }
         }
@@ -84,7 +84,7 @@ export const CustomTokenSetting = () => {
   useEffect(() => {
     setPendingAssetMap(prePendingAssetMap => {
       Object.entries(prePendingAssetMap).forEach(([key, val]) => {
-        if (assetSettingMap[key].visible === val) {
+        if (assetSettingMap[key]?.visible === val) {
           delete prePendingAssetMap[key];
         }
       });
