@@ -92,7 +92,7 @@ export const Security = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.security} navigation={navigation}>
+    <SubScreenContainer title={i18n.header.securitySettings} navigation={navigation}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <ToggleItem
           backgroundIcon={Password}

@@ -98,8 +98,9 @@ export const AccountSelector = ({ modalVisible, onCancel, onSelectItem, items, s
         autoFocus={true}
         items={items}
         style={FlatListScreenPaddingTop}
-        title={i18n.title.selectAccount}
+        title={i18n.header.selectAccount}
         renderItem={renderItem}
+        placeholder={i18n.placeholder.selectAccount}
         searchFunction={filteredAccounts}
         renderListEmptyComponent={renderListEmptyComponent}
       />

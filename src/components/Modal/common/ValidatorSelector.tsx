@@ -24,6 +24,7 @@ import ToastContainer from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -139,8 +140,9 @@ export const ValidatorSelector = ({
         onPressLightningBtn={() => setValidatorSelectModalVisible(true)}
         onPressBookBtn={() => setValidatorSelectModalVisible(true)}
         value={selectedValidator}
-        label={i18n.inputLabel.selectValidator}
+        label={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
         loading={validatorLoading}
+        placeholder={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
       />
 
       <SwFullSizeModal modalVisible={validatorSelectModalVisible}>
@@ -148,12 +150,13 @@ export const ValidatorSelector = ({
           autoFocus={true}
           items={items}
           style={[FlatListScreenPaddingTop, { flex: 1 }]}
-          title={'Select validator'}
+          title={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
           searchFunction={searchFunction}
           renderItem={renderItem}
           onPressBack={onCancelSelectValidator}
           renderListEmptyComponent={renderListEmptyComponent}
           isShowFilterBtn={false}
+          placeholder={i18n.common.searchStakingValidator(getValidatorLabel(chain).toLowerCase())}
         />
         <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button

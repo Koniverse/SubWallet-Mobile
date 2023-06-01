@@ -201,7 +201,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       if (!tokenType) {
         onChangeValue('symbol')('');
         onChangeValue('decimals')('');
-        onUpdateErrors('contractAddress')([i18n.errorMessage.invalidEvmContractAddress]);
+        onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
       } else {
         validateCustomToken({
           contractAddress: currentContractAddress,

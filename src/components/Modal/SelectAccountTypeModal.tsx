@@ -53,7 +53,7 @@ export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onM
   return (
     <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.title.selectAccountType}</Text>
+        <Text style={modalTitle}>{i18n.header.selectAccType}</Text>
         <SelectAccountType selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
         <Button icon={ButtonIcon} disabled={!keyTypes.length} onPress={_onConfirm(keyTypes)}>
           {i18n.common.confirm}

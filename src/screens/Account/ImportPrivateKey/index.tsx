@@ -11,7 +11,6 @@ import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
-import { ColorMap } from 'styles/color';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
@@ -146,8 +145,8 @@ export const ImportPrivateKey = () => {
         <ScrollView style={styles.container}>
           <Typography.Text style={styles.title}>{i18n.importAccount.importPrivateKeyMessage}</Typography.Text>
           <Textarea
-            placeholder={i18n.common.enterYourPrivateKey}
-            placeholderTextColor={ColorMap.disabled}
+            placeholder={i18n.placeholder.enterPrivateKey}
+            placeholderTextColor={theme.colorTextTertiary}
             ref={formState.refs.privateKey}
             style={styles.textArea}
             onChangeText={(text: string) => {

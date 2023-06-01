@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import { ActivityIndicator, BackgroundIcon, Button, Icon, QRCode } from 'components/design-system-ui';
+import { ActivityIndicator, Avatar, BackgroundIcon, Button, Icon, QRCode } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -215,7 +214,7 @@ export const AccountDetail = ({
           value={toShort(currentAddress)}
           isDisabled
           editAccountInputStyle={[styles.inputContainer, styles.addressContainer]}
-          prefix={<SubWalletAvatar address={currentAddress} size={theme.sizeMD} />}
+          prefix={<Avatar value={currentAddress} size={theme.sizeMD} />}
           suffix={
             <Button
               size="xs"

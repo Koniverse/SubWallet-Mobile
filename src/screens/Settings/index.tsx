@@ -197,7 +197,7 @@ export const Settings = () => {
 
   return (
     <SubScreenContainer
-      title={i18n.title.settings}
+      title={i18n.header.settings}
       navigation={navigation}
       icon={<SVGImages.Logo width={24} height={24} />}
       rightIcon={X}

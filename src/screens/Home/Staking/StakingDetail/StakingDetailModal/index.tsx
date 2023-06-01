@@ -318,11 +318,7 @@ export const StakingDetailModal = ({
                 <MetaInfo.DisplayType label={i18n.inputLabel.stakingType} typeName={stakingTypeNameMap[staking.type]} />
 
                 <MetaInfo.Status
-                  label={
-                    nominatorMetadata?.type === StakingType.NOMINATED
-                      ? i18n.inputLabel.nominationStatus
-                      : i18n.inputLabel.pooledStatus
-                  }
+                  label={i18n.inputLabel.stakingStatus}
                   loading={!nominatorMetadata}
                   statusIcon={nominatorMetadata && getStakingStatus(nominatorMetadata.status).icon}
                   statusName={nominatorMetadata && getStakingStatus(nominatorMetadata.status).name}

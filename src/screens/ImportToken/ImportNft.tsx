@@ -342,7 +342,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChange={(output: string | null, currentValue: string) => {
             handleChangeValue('smartContract')(currentValue);
           }}
-          placeholder={i18n.placeholder.typeOrPasteContractAddress}
+          placeholder={i18n.placeholder.enterOrPasteAnAddress}
         />
 
         {isReady &&

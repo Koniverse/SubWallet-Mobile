@@ -56,7 +56,7 @@ export const Languages = () => {
   return (
     <SelectScreen
       style={{ paddingTop: 0 }}
-      title={i18n.title.language}
+      title={i18n.header.language}
       searchString={searchString}
       onChangeSearchText={setSearchString}
       onPressBack={() => navigation.goBack()}>
