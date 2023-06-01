@@ -47,7 +47,6 @@ import {
   NftCollection,
   NftJson,
   NftTransactionRequest,
-  NftTransferExtra,
   NominationPoolInfo,
   NominatorMetadata,
   OptionInputAddress,
@@ -75,7 +74,6 @@ import {
   RequestKeyringExportMnemonic,
   RequestMaxTransferable,
   RequestMigratePassword,
-  RequestNftForceUpdate,
   RequestParseEvmContractInput,
   RequestParseTransactionSubstrate,
   RequestQrSignEvm,
@@ -139,7 +137,6 @@ import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 import { MetadataDef } from '@subwallet/extension-inject/types';
-import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 import {
   SWTransactionResponse,
   SWTransactionResult,
@@ -153,6 +150,7 @@ import {
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { _getKnownHashes } from 'utils/defaultChains';
+import { KeyringAddress } from '@subwallet/ui-keyring/types';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -527,14 +525,13 @@ export async function showAccount(address: string, isShowing: boolean): Promise<
 }
 
 export async function saveCurrentAccountAddress(
-  data: RequestCurrentAccountAddress,
-  callback: (data: CurrentAccountInfo) => void,
-): Promise<boolean> {
-  return sendMessage('pri(currentAccount.saveAddress)', data, callback);
+  data: RequestCurrentAccountAddress
+): Promise<CurrentAccountInfo> {
+  return sendMessage('pri(currentAccount.saveAddress)', data);
 }
 
 export async function toggleBalancesVisibility(): Promise<boolean> {
-  return sendMessage('pri(settings.changeBalancesVisibility)', null, () => {});
+  return sendMessage('pri(settings.changeBalancesVisibility)', null);
 }
 
 export async function saveAccountAllLogo(
@@ -815,12 +812,8 @@ export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddres
   return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
 }
 
-export async function saveRecentAccountId(accountId: string): Promise<SingleAddress> {
+export async function saveRecentAccountId(accountId: string): Promise<KeyringAddress> {
   return sendMessage('pri(accounts.saveRecent)', { accountId });
-}
-
-export async function triggerAccountsSubscription(): Promise<boolean> {
-  return sendMessage('pri(accounts.triggerSubscription)');
 }
 
 export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
@@ -1053,22 +1046,6 @@ export async function subscribeStakingReward(
   callback: (stakingRewardData: StakingRewardJson) => void,
 ): Promise<StakingRewardJson> {
   return sendMessage('pri(stakingReward.getSubscription)', request, callback);
-}
-
-export async function nftForceUpdate(request: RequestNftForceUpdate): Promise<boolean> {
-  return sendMessage('pri(nft.forceUpdate)', request);
-}
-
-export async function getNftTransfer(): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getNftTransfer)', null);
-}
-
-export async function subscribeNftTransfer(callback: (data: NftTransferExtra) => void): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
-}
-
-export async function setNftTransfer(request: NftTransferExtra): Promise<boolean> {
-  return sendMessage('pri(nftTransfer.setNftTransfer)', request);
 }
 
 export async function makeTransfer(request: RequestTransfer): Promise<SWTransactionResponse> {

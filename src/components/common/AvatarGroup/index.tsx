@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import { Avatar } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -21,7 +21,7 @@ const sizeAva = {
 const AvatarGroup = ({ addresses: _addresses }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
-  const _style = AvatarGroupStyle(theme);
+  const _style = AvatarGroupStyle();
   const noAllAccount: string[] = useMemo((): string[] => {
     if (_addresses) {
       return _addresses.filter(a => !isAccountAll(a));

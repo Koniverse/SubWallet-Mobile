@@ -63,7 +63,7 @@ export const AccountsScreen = () => {
             address: accAddress,
           } as CurrentAccountInfo;
 
-          saveCurrentAccountAddress(accountInfo, () => {}).catch(e => {
+          saveCurrentAccountAddress(accountInfo).catch(e => {
             console.error('There is a problem when set Current Account', e);
           });
         }
