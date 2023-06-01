@@ -9,10 +9,13 @@ export default function useScanExplorerAddressUrl(networkKey: string, hash: stri
   const chainMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const chainInfo = chainMap[networkKey];
 
-  const blockExplorer = chainInfo?.substrateInfo?.blockExplorer || chainInfo?.evmInfo?.blockExplorer;
+  let blockExplorer = chainInfo?.substrateInfo?.blockExplorer || chainInfo?.evmInfo?.blockExplorer;
 
   if (blockExplorer) {
-    return `${blockExplorer}account/${hash}`;
+    if (blockExplorer.endsWith('/')) {
+      blockExplorer = blockExplorer.slice(0, -1);
+    }
+    return `${blockExplorer}/account/${hash}`;
   } else {
     return getScanExplorerAddressInfoUrl(networkKey, hash);
   }
