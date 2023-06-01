@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
+  APIItemState,
   ChainStakingMetadata,
   NominationInfo,
   NominatorMetadata,
@@ -326,9 +327,10 @@ export const StakingDetailModal = ({
                   />
                 )}
 
-                {!!rewardItem?.unclaimedReward && parseFloat(rewardItem?.unclaimedReward) > 0 && (
+                {staking.type === StakingType.POOLED && (
                   <MetaInfo.Number
                     decimals={decimals}
+                    loading={!rewardItem || rewardItem.state !== APIItemState.READY}
                     label={'Unclaimed reward'}
                     suffix={staking.nativeToken}
                     value={rewardItem?.unclaimedReward || '0'}
