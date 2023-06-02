@@ -1,3 +1,6 @@
+## 1.0.4 (174)
+- Fix issue require turn on destination chain in XCM transaction (#758)
+
 ## 1.0.4 (173)
 - Add loading animation for staking reward (#744)
 - Fix the issue causing an error screen when enabling many tokens consecutively (#726)
