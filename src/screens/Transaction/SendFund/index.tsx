@@ -443,10 +443,7 @@ export const SendFund = ({
   }, [accounts, from]);
 
   const onSubmit = useCallback(() => {
-    if (
-      chainStateMap[destChain].connectionStatus === _ChainConnectionStatus.DISCONNECTED ||
-      chainStateMap[chain].connectionStatus === _ChainConnectionStatus.DISCONNECTED
-    ) {
+    if (chainStateMap[chain].connectionStatus === _ChainConnectionStatus.DISCONNECTED) {
       show(`${destChain} ${i18n.errorMessage.networkDisconected}`);
       return;
     }
