@@ -1,3 +1,13 @@
+## 1.0.4 (173)
+- Add loading animation for staking reward (#744)
+- Fix the issue causing an error screen when enabling many tokens consecutively (#726)
+- Update submit logic for chain detail (#748)
+- Fix the issue related to custom provider display (#748)
+- Hide keyboard after the user presses the submit button on the keyboard (#730)
+- Fix the issue where the user cannot view the account after pressing the info icon on the NFT detail screen (#750)
+- Update web-runner
+- Update @subwallet/libraries
+
 ## 1.0.4 (172)
 - Update web-runner
 - Optimize get staking data speed

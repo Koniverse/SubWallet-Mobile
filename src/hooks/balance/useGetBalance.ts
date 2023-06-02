@@ -4,13 +4,13 @@ import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/cha
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { getFreeBalance } from 'messaging/index';
+import { getFreeBalance, updateAssetSetting } from 'messaging/index';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 
 const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const assetSettingMap = useSelector((state: RootState) => state.assetRegistry.assetSettingMap);
+  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
+  const { assetSettingMap, assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
 
   const chainInfo = useMemo((): _ChainInfo | undefined => chainInfoMap[chain], [chainInfoMap, chain]);
   const nativeTokenSlug = useMemo(() => (chainInfo ? _getChainNativeTokenSlug(chainInfo) : undefined), [chainInfo]);
@@ -33,13 +33,36 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
 
     if (address && chain) {
       const promiseList = [] as Promise<any>[];
-      let tokenIsActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
+      const isChainActive = chainStateMap[chain]?.active;
+      const nativeTokenActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
+      let childTokenActive = true;
 
       if (tokenSlug && tokenSlug !== nativeTokenSlug && !assetSettingMap[tokenSlug]?.visible) {
-        tokenIsActive = false;
+        childTokenActive = false;
       }
 
-      if (tokenIsActive) {
+      if (isChainActive) {
+        if (!childTokenActive) {
+          promiseList.push(
+            updateAssetSetting({
+              tokenSlug,
+              assetSetting: {
+                visible: true,
+              },
+              autoEnableNativeToken: true,
+            }),
+          );
+        } else if (nativeTokenSlug && !nativeTokenActive) {
+          promiseList.push(
+            updateAssetSetting({
+              tokenSlug: nativeTokenSlug,
+              assetSetting: {
+                visible: true,
+              },
+            }),
+          );
+        }
+
         promiseList.push(
           getFreeBalance({ address, networkKey: chain })
             .then(balance => {
@@ -68,8 +91,20 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
           !cancel && setIsLoading(false);
         });
       } else {
+        const tokenNames = [];
+
+        if (!isChainActive && nativeTokenSlug && assetRegistry[nativeTokenSlug]) {
+          tokenNames.push(assetRegistry[nativeTokenSlug].symbol);
+        }
+
+        if (!isChainActive && tokenSlug && tokenSlug !== nativeTokenSlug && assetRegistry[tokenSlug]) {
+          tokenNames.push(assetRegistry[tokenSlug].symbol);
+        }
+
+        !cancel && setNativeTokenBalance(DEFAULT_BALANCE);
+        !cancel && setTokenBalance(DEFAULT_BALANCE);
         !cancel && setIsLoading(false);
-        !cancel && setError('Chain or token is inactive');
+        !cancel && setError(`Please enable ${tokenNames.join(', ')} on ${chainInfo?.name}`);
       }
     }
 
@@ -78,7 +113,17 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
       setIsLoading(true);
       setError(null);
     };
-  }, [address, chain, nativeTokenSlug, tokenSlug, isRefresh, assetSettingMap]);
+  }, [
+    address,
+    chain,
+    nativeTokenSlug,
+    tokenSlug,
+    isRefresh,
+    assetSettingMap,
+    chainStateMap,
+    assetRegistry,
+    chainInfo?.name,
+  ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error };
 };
