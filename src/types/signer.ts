@@ -1,4 +1,4 @@
-export enum SIGN_MODE {
+export enum AccountSignMode {
   PASSWORD = 'password',
   QR = 'qr',
   LEDGER = 'ledger',

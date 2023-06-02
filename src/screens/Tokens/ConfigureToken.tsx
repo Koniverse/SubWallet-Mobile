@@ -7,7 +7,6 @@ import { NetworkField } from 'components/Field/Network';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
 import {
   _getContractAddressOfToken,
   _isCustomAsset,
@@ -31,6 +30,7 @@ import { getTokenLogo } from 'utils/index';
 import Tag from '../../components/design-system-ui/tag';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import DeleteModal from 'components/common/Modal/DeleteModal';
+import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 
 export const ConfigureToken = ({
   route: {

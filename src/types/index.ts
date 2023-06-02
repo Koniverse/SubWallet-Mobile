@@ -57,15 +57,6 @@ export enum AccountAddressType {
   UNKNOWN = 'unknown',
 }
 
-export enum AccountSignMode {
-  PASSWORD = 'password',
-  QR = 'qr',
-  LEDGER = 'ledger',
-  READ_ONLY = 'readonly',
-  ALL_ACCOUNT = 'all',
-  UNKNOWN = 'unknown',
-}
-
 export type ChainInfo = {
   slug: string;
   name: string;

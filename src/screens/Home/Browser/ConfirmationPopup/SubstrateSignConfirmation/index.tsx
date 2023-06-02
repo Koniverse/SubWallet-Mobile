@@ -17,7 +17,7 @@ import { Extrinsic } from 'screens/Home/Browser/ConfirmationPopup/SubstrateSignC
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { HashPayloadProps, SIGN_MODE } from 'types/signer';
+import { HashPayloadProps, AccountSignMode } from 'types/signer';
 import { getAccountSignMode } from 'utils/account';
 import i18n from 'utils/i18n/i18n';
 import { getNetworkJsonByGenesisHash } from 'utils/index';
@@ -58,7 +58,7 @@ export const SubstrateSignConfirmation = ({
 
   const externalInfo = useMemo((): HashPayloadProps | undefined => {
     const signMode = getAccountSignMode(account);
-    if (signMode === SIGN_MODE.QR) {
+    if (signMode === AccountSignMode.QR) {
       if (payload) {
         return {
           address: account.address,

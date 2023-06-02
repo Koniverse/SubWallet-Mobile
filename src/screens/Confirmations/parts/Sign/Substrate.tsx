@@ -9,7 +9,7 @@ import { approveSignPasswordV2, approveSignSignature, cancelSignRequest } from '
 import { useSelector } from 'react-redux';
 import { DisplayPayloadModal, SubstrateQr } from 'screens/Confirmations/parts/Qr/DisplayPayload';
 import { RootState } from 'stores/index';
-import { AccountSignMode } from 'types/index';
+import { AccountSignMode } from 'types/signer';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
 import { isSubstrateMessage } from 'utils/confirmation/confirmation';

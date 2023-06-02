@@ -11,7 +11,7 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { SIGN_MODE } from 'types/signer';
+import { AccountSignMode } from 'types/signer';
 import { toShort } from 'utils/index';
 import { FontMedium, FontSize0, FontSize2, sharedStyles } from 'styles/sharedStyles';
 import { IconButton } from 'components/IconButton';
@@ -275,7 +275,7 @@ export const EvmSendTransactionConfirmation = ({
             paddingVertical: 16,
             textAlign: 'center',
           }}>
-          {signMode === SIGN_MODE.QR ? i18n.common.useHardWalletToScan : i18n.common.approveTransactionMessage}
+          {signMode === AccountSignMode.QR ? i18n.common.useHardWalletToScan : i18n.common.approveTransactionMessage}
         </Text>
         <AccountInfoField
           name={senderAccount?.name || ''}

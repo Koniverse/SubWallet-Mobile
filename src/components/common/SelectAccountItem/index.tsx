@@ -6,7 +6,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CheckCircle, Eye, IconProps, PencilSimpleLine, QrCode, Swatches } from 'phosphor-react-native';
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
-import { AccountSignMode } from 'types/index';
+import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import AvatarGroup from 'components/common/AvatarGroup';

@@ -13,7 +13,7 @@ import { ScrollView, StyleProp, Text, View } from 'react-native';
 import { ConfirmationBase } from 'screens/Home/Browser/ConfirmationPopup/ConfirmationBase';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { SIGN_MODE } from 'types/signer';
+import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 
@@ -234,10 +234,10 @@ export const EvmSignConfirmation = ({
             paddingVertical: 16,
             textAlign: 'center',
           }}>
-          {signMode === SIGN_MODE.QR ? i18n.common.useHardWalletToScan : i18n.common.approveRequestMessage}
+          {signMode === AccountSignMode.QR ? i18n.common.useHardWalletToScan : i18n.common.approveRequestMessage}
         </Text>
         <AccountInfoField name={account?.name || ''} address={account?.address || ''} />
-        {signMode === SIGN_MODE.QR && !hashPayload && (
+        {signMode === AccountSignMode.QR && !hashPayload && (
           <Warning
             style={{ marginTop: 8, paddingHorizontal: 62 }}
             message={i18n.warningMessage.featureIsNotAvailable}

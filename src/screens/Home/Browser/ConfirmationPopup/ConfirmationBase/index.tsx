@@ -17,7 +17,7 @@ import {
 import { DetailModal } from 'screens/Home/Browser/ConfirmationPopup/Shared/DetailModal';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { SIGN_MODE } from 'types/signer';
+import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -163,7 +163,7 @@ export const ConfirmationBase = ({
         <ConfirmationHeader {...headerProps} />
         {children}
 
-        {isNeedSignature && signMode === SIGN_MODE.PASSWORD && (
+        {isNeedSignature && signMode === AccountSignMode.PASSWORD && (
           <View style={{ width: '100%', paddingTop: 8, paddingHorizontal: 16, marginBottom: -4 }}>
             <PasswordField
               label={formState.labels.password}
@@ -176,7 +176,7 @@ export const ConfirmationBase = ({
             />
           </View>
         )}
-        {isNeedSignature && signMode === SIGN_MODE.QR && externalInfo && (
+        {isNeedSignature && signMode === AccountSignMode.QR && externalInfo && (
           <View style={{ width: '100%', paddingTop: 24, paddingHorizontal: 16, marginBottom: 0 }}>
             <DisplayPayload
               address={externalInfo.address}
@@ -217,8 +217,8 @@ export const ConfirmationBase = ({
         isCancelButtonDisabled={isCancelButtonDisabled || isBusy}
         isSubmitButtonBusy={isSubmitButtonBusy || (isBusy && busyKey === 'SUBMIT')}
         isSubmitButtonDisabled={isSubmitButtonDisabled || isBusy || (isNeedSignature && !formState.data.password)}
-        isScanQrButton={isNeedSignature && signMode === SIGN_MODE.QR && !!externalInfo}
-        isShowBackButton={signMode === SIGN_MODE.QR && !externalInfo}
+        isScanQrButton={isNeedSignature && signMode === AccountSignMode.QR && !!externalInfo}
+        isShowBackButton={signMode === AccountSignMode.QR && !externalInfo}
       />
 
       <DetailModal

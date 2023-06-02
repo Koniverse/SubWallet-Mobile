@@ -7,8 +7,8 @@ import {
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { isAccountAll, reformatAddress } from '@subwallet/extension-base/utils';
 import { MODE_CAN_SIGN } from 'constants/signer';
-import { SIGN_MODE } from 'types/signer';
-import { AccountAddressType, AccountSignMode } from 'types/index';
+import { AccountSignMode } from 'types/signer';
+import { AccountAddressType } from 'types/index';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { Recoded } from 'types/ui-types';
 
@@ -35,29 +35,29 @@ export const findAccountByAddress = (accounts: AccountJson[], address?: string):
   }
 };
 
-export const getAccountSignMode = (account: AccountJson | null | undefined): SIGN_MODE => {
+export const getAccountSignMode = (account: AccountJson | null | undefined): AccountSignMode => {
   if (!account) {
-    return SIGN_MODE.UNKNOWN;
+    return AccountSignMode.UNKNOWN;
   } else {
     if (account.address === ALL_ACCOUNT_KEY) {
-      return SIGN_MODE.ALL_ACCOUNT;
+      return AccountSignMode.ALL_ACCOUNT;
     } else {
       if (account.isExternal) {
         if (account.isHardware) {
-          return SIGN_MODE.LEDGER;
+          return AccountSignMode.LEDGER;
         } else if (account.isReadOnly) {
-          return SIGN_MODE.READ_ONLY;
+          return AccountSignMode.READ_ONLY;
         } else {
-          return SIGN_MODE.QR;
+          return AccountSignMode.QR;
         }
       } else {
-        return SIGN_MODE.PASSWORD;
+        return AccountSignMode.PASSWORD;
       }
     }
   }
 };
 
-export const accountCanSign = (signMode: SIGN_MODE): boolean => {
+export const accountCanSign = (signMode: AccountSignMode): boolean => {
   return MODE_CAN_SIGN.includes(signMode);
 };
 
