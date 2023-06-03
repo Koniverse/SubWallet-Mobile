@@ -28,6 +28,7 @@ import { updateShowZeroBalanceState } from 'stores/utils';
 import { setBuildNumber } from './stores/AppVersion';
 // import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
 import { getBuildNumber } from 'react-native-device-info';
+import { AppModalContextProvider } from './providers/AppModalContext';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -159,9 +160,9 @@ export const AppNew = () => {
               <ExternalRequestContextProvider>
                 <QrSignerContextProvider>
                   <ScannerContextProvider>
-                    <>
+                    <AppModalContextProvider>
                       <AppNavigator isAppReady={isAppReady} />
-                    </>
+                    </AppModalContextProvider>
                   </ScannerContextProvider>
                 </QrSignerContextProvider>
               </ExternalRequestContextProvider>

@@ -13,7 +13,7 @@ import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
@@ -50,6 +50,8 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import useChainChecker from 'hooks/chain/useChainChecker';
+import { AppModalContext } from 'providers/AppModalContext';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -247,6 +249,9 @@ export const SendFund = ({
   const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
 
   const [isToAddressDirty, setToAddressDirty] = useState<boolean>(false);
+
+  const { turnOnChain, checkChainConnected } = useChainChecker();
+  const appModalContext = useContext(AppModalContext);
 
   const handleTransferAll = useCallback((value: boolean) => {
     setForceUpdateMaxValue({});
@@ -573,6 +578,12 @@ export const SendFund = ({
     }
   }, [accounts, tokenItems, assetRegistry, chainInfoMap, asset, from, onChangeValue]);
 
+  useEffect(() => {
+    if (chain) {
+      checkChainConnected(chain);
+    }
+  }, [chain, checkChainConnected]);
+
   // Get max transfer value
   useEffect(() => {
     let cancel = false;
@@ -775,6 +786,28 @@ export const SendFund = ({
             onSelectItem={item => {
               onChangeAssetValue(item.slug);
               onChangeValue('destChain')(item.originChain);
+              const isConnected = checkChainConnected(item.originChain);
+              if (!isConnected) {
+                setTimeout(
+                  () =>
+                    appModalContext.setConfirmModal({
+                      visible: true,
+                      message: `Your selected chain (${
+                        chainInfoMap[item.originChain].name
+                      }) is currently disabled, you need to turn it on`,
+                      title: 'Enable chain?',
+                      onCancelModal: () => {
+                        appModalContext.hideConfirmModal();
+                      },
+                      onCompleteModal: () => {
+                        appModalContext.hideConfirmModal();
+                        setTimeout(() => turnOnChain(item.originChain), 200);
+                      },
+                      messageIcon: item.originChain,
+                    }),
+                  700,
+                );
+              }
               setTokenSelectModalVisible(false);
               setIsTransferAll(false);
               setForceUpdateMaxValue(undefined);
