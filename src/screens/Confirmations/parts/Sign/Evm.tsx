@@ -141,7 +141,7 @@ export const EvmSignArea = (props: Props) => {
         {i18n.common.cancel}
       </Button>
       <Button block={true} disabled={!canSign} icon={getButtonIcon(approveIcon)} loading={loading} onPress={onConfirm}>
-        {i18n.common.approve}
+        {i18n.buttonTitles.approve}
       </Button>
       {signMode === AccountSignMode.QR && (
         <>

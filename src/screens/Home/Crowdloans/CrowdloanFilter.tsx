@@ -124,7 +124,11 @@ export const CrowdloanFilter = ({ modalVisible, onChangeModalVisible, filterOpts
             ))}
           </View>
 
-          <SubmitButton title={i18n.common.apply} style={{ ...MarginBottomForSubmitButton }} onPress={onApplyChange} />
+          <SubmitButton
+            title={i18n.buttonTitles.apply}
+            style={{ ...MarginBottomForSubmitButton }}
+            onPress={onApplyChange}
+          />
         </View>
       </ContainerWithSubHeader>
     </SubWalletFullSizeModal>

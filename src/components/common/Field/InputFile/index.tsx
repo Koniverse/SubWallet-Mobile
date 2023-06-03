@@ -48,10 +48,10 @@ export const InputFile = ({ onChangeResult, style, fileName, disabled }: Props) 
           iconColor={!fileName ? theme['gray-6'] : theme.colorWarning}
         />
         <Typography.Text style={styles.title}>
-          {fileName ? i18n.common.replaceJsonFile : i18n.common.importJsonFile}
+          {fileName ? i18n.importAccount.importJsonInputTitle2 : i18n.importAccount.importJsonInputTitle1}
         </Typography.Text>
         <Typography.Text style={styles.description}>
-          {fileName ? fileName : i18n.common.importJsonDescription}
+          {fileName ? fileName : i18n.importAccount.importJsonSubtitle}
         </Typography.Text>
       </View>
     </TouchableOpacity>

@@ -7,6 +7,7 @@ import { getUnstakingPeriod } from 'screens/Transaction/helper/staking';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -32,25 +33,25 @@ export const NetworkDetailModal = ({
   } = chainStakingMetadata;
   const theme = useSubWalletTheme().swThemes;
   return (
-    <SwModal modalVisible={modalVisible} modalTitle={'Network details'} onChangeModalVisible={onCloseModal}>
+    <SwModal modalVisible={modalVisible} modalTitle={i18n.header.networkDetails} onChangeModalVisible={onCloseModal}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
           {stakingType === StakingType.NOMINATED && (
             <>
               <MetaInfo.Number
-                label={'Max nomination'}
+                label={i18n.inputLabel.maxNomination}
                 value={maxValidatorPerNominator}
                 valueColorSchema={'even-odd'}
               />
 
               {!!activeNominators && (
-                <MetaInfo.Number label={'Total nominators'} value={activeNominators} decimals={0} />
+                <MetaInfo.Number label={i18n.inputLabel.totalNominators} value={activeNominators} decimals={0} />
               )}
             </>
           )}
 
           {!!expectedReturn && !!inflation && (
-            <MetaInfo.Default label={'Estimated earning'}>
+            <MetaInfo.Default label={i18n.inputLabel.estimatedEarnings}>
               {() => (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: 210 }}>
                   <Number
@@ -98,14 +99,14 @@ export const NetworkDetailModal = ({
 
           <MetaInfo.Number
             decimals={minimumActive.decimals}
-            label={'Minimum active'}
+            label={i18n.inputLabel.minimumActive}
             suffix={minimumActive.symbol}
             value={minimumActive.value}
             valueColorSchema={'success'}
           />
 
           {!!unstakingPeriod && (
-            <MetaInfo.Default valueColorSchema={'light'} label={'Unstaking period'}>
+            <MetaInfo.Default valueColorSchema={'light'} label={i18n.inputLabel.unstakingPeriod}>
               {getUnstakingPeriod(unstakingPeriod)}
             </MetaInfo.Default>
           )}

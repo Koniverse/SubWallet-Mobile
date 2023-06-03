@@ -24,11 +24,10 @@ enum FilterValue {
   NATIVE = 'native',
 }
 
-//todo: i18n
 const FILTER_OPTIONS = [
-  { label: 'Enabled tokens', value: FilterValue.ENABLED },
-  { label: 'Disabled tokens', value: FilterValue.DISABLED },
-  { label: 'Custom tokens', value: FilterValue.CUSTOM },
+  { label: i18n.filterOptions.enabledTokens, value: FilterValue.ENABLED },
+  { label: i18n.filterOptions.disabledTokens, value: FilterValue.DISABLED },
+  { label: i18n.filterOptions.customTokens, value: FilterValue.CUSTOM },
 ];
 
 let cachePendingAssetMap: Record<string, boolean> = {};
@@ -148,7 +147,7 @@ export const CustomTokenSetting = () => {
           onPress: () => navigation.navigate('ImportToken'),
         }}
         isShowFilterBtn
-        title={i18n.settings.tokens}
+        title={i18n.header.manageTokens}
         items={assetItems}
         autoFocus={false}
         filterOptions={FILTER_OPTIONS}
@@ -156,7 +155,11 @@ export const CustomTokenSetting = () => {
         searchFunction={searchFunction}
         renderItem={renderItem}
         renderListEmptyComponent={() => (
-          <EmptyList icon={Coins} title={'No token'} message={'Your token will appear here.'} />
+          <EmptyList
+            icon={Coins}
+            title={i18n.emptyScreen.tokenEmptyTitle}
+            message={i18n.emptyScreen.tokenEmptyMessage}
+          />
         )}
         isShowListWrapper
       />

@@ -80,7 +80,7 @@ export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue,
   return (
     <>
       <TouchableOpacity onPress={() => setSelectModalVisible(true)} disabled={disabled}>
-        <CancelUnstakeSelectorField item={selectedItem} label={'Select unstake request'} />
+        <CancelUnstakeSelectorField item={selectedItem} label={i18n.inputLabel.selectAnUnstakeRequest} />
       </TouchableOpacity>
 
       <SwFullSizeModal modalVisible={selectModalVisible}>
@@ -88,7 +88,7 @@ export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue,
           autoFocus={true}
           items={items}
           style={FlatListScreenPaddingTop}
-          title={'Unstake request'}
+          title={i18n.header.unstakeRequest}
           searchFunction={searchFunction}
           renderItem={renderItem}
           onPressBack={() => setSelectModalVisible(false)}

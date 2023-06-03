@@ -7,6 +7,7 @@ import { SelectItem } from '../../design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import SelectExportTypeStyles from './style';
 import { FileJs, IconProps, Leaf, QrCode, Wallet } from 'phosphor-react-native';
+import i18n from 'utils/i18n/i18n';
 
 export enum ExportType {
   JSON_FILE = 'json-file',
@@ -62,7 +63,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
       {
         icon: Leaf,
         key: ExportType.SEED_PHRASE,
-        label: 'Export Seed Phrase',
+        label: i18n.exportAccount.exportSeedPhrase,
         onClick: onClickItem(ExportType.SEED_PHRASE),
         bgColor: theme['orange-7'],
         disable: !account || account.isExternal || !account.isMasterAccount,
@@ -71,7 +72,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
       {
         icon: FileJs,
         key: ExportType.JSON_FILE,
-        label: 'Export JSON file',
+        label: i18n.exportAccount.exportJsonFile,
         onClick: onClickItem(ExportType.JSON_FILE),
         bgColor: theme['geekblue-7'],
         disable: !account || !!account.isExternal,
@@ -80,7 +81,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
       {
         icon: Wallet,
         key: ExportType.PRIVATE_KEY,
-        label: 'Export Private key',
+        label: i18n.exportAccount.exportPrivateKey,
         onClick: onClickItem(ExportType.PRIVATE_KEY),
         bgColor: theme['magenta-7'],
         disable: !account || account.isExternal || !isEthereumAddress(account.address),
@@ -89,7 +90,7 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
       {
         icon: QrCode,
         key: ExportType.QR_CODE,
-        label: 'Export QR Code',
+        label: i18n.exportAccount.exportQRCode,
         onClick: onClickItem(ExportType.QR_CODE),
         bgColor: theme['green-7'],
         disable: !account || !!account?.isExternal,

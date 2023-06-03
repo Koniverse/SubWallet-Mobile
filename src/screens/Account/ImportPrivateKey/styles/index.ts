@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
@@ -14,16 +14,19 @@ export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
     wrapper: {
       flex: 1,
+      paddingTop: theme.padding,
     },
     container: {
-      ...sharedStyles.layoutContainer,
+      flex: 1,
+      paddingHorizontal: theme.padding,
     },
     title: {
       color: theme.colorTextDescription,
       paddingHorizontal: theme.padding,
-      marginVertical: theme.margin,
+      marginBottom: theme.margin,
       textAlign: 'center',
       fontWeight: theme.bodyFontWeight,
+      ...FontMedium,
     },
     textArea: {
       height: 6 * theme.sizeLG,

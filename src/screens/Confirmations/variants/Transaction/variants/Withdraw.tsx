@@ -9,6 +9,7 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import React from 'react';
 
 import { BaseTransactionConfirmationProps } from './Base';
+import i18n from 'utils/i18n/i18n';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -24,14 +25,14 @@ const WithdrawTransactionConfirmation: React.FC<Props> = (props: Props) => {
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number
           decimals={decimals}
-          label={'Withdrawal amount'}
+          label={i18n.inputLabel.amount}
           suffix={symbol}
           value={data.unstakingInfo.claimable}
         />
 
         <MetaInfo.Number
           decimals={decimals}
-          label={'Withdrawal fee'}
+          label={i18n.inputLabel.estimatedFee}
           suffix={symbol}
           value={transaction.estimateFee?.value || 0}
         />

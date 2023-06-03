@@ -103,22 +103,22 @@ export const FirstScreen = () => {
     {
       key: 'create',
       icon: PlusCircle,
-      title: 'Create a new account',
-      subTitle: 'Create a new account with SubWallet',
+      title: i18n.welcomeScreen.createAccLabel,
+      subTitle: i18n.welcomeScreen.createAccMessage,
       onPress: onCreate,
     },
     {
       key: 'import',
       icon: FileArrowDown,
-      title: 'Import an account',
-      subTitle: 'Import an existing account',
+      title: i18n.welcomeScreen.importAccLabel,
+      subTitle: i18n.welcomeScreen.importAccMessage,
       onPress: onPressActionButton('importAcc'),
     },
     {
       key: 'attach',
       icon: Swatches,
-      title: 'Attach an account',
-      subTitle: 'Attach an account from external wallet',
+      title: i18n.welcomeScreen.attachAccLabel,
+      subTitle: i18n.welcomeScreen.attachAccMessage,
       onPress: onPressActionButton('attachAcc'),
     },
   ];

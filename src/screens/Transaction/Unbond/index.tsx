@@ -38,6 +38,7 @@ import { submitPoolUnbonding, submitUnbonding } from 'messaging/index';
 import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
+import i18n from 'utils/i18n/i18n';
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -207,26 +208,25 @@ export const Unbond = ({
       const _maxValue = new BigN(max);
       const _middleValue = _maxValue.minus(_minValue);
       const _maxString = _maxValue.div(BN_TEN.pow(_decimals)).toString();
-      const _middleString = _middleValue.div(BN_TEN.pow(_decimals)).toString();
       const val = new BigN(value);
 
       if (val.gt(_maxValue)) {
-        onUpdateErrors('value')([`${name || 'Value'} must be equal or lesser than ${_maxString}`]);
+        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqualOrLessThan(_maxString, name)]);
         return;
       }
 
       if (val.lte(BN_ZERO)) {
-        onUpdateErrors('value')([`${name || 'Value'} must be greater than 0`]);
+        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeGreaterThanZero(name)]);
         return;
       }
 
       if (_middleValue.lt(BN_ZERO) && !val.eq(_maxString)) {
-        onUpdateErrors('value')([`${name || 'Value'} must be equal ${_maxString}`]);
+        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqual(_maxString, name)]);
         return;
       }
 
       if (val.gt(_middleValue) && val.lt(_maxValue)) {
-        onUpdateErrors('value')([`${name || 'Value'} must be between 0 and ${_middleString} or equal ${_maxString}`]);
+        onUpdateErrors('value')([i18n.errorMessage.unbondInvalidAmount]);
         return;
       }
 
@@ -250,7 +250,7 @@ export const Unbond = ({
           {isAll && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField
-                label={'Unstake from account'}
+                label={i18n.inputLabel.unstakeFromAcc}
                 accountName={accountInfo?.name || ''}
                 value={from}
                 showIcon
@@ -258,7 +258,7 @@ export const Unbond = ({
             </TouchableOpacity>
           )}
 
-          <FreeBalance label={'Available balance:'} address={from} chain={chain} />
+          <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
 
           {mustChooseValidator && (
             <>
@@ -288,7 +288,9 @@ export const Unbond = ({
             style={{
               color: theme.colorTextTertiary,
               ...FontMedium,
-            }}>{`Once unbonded, your funds would be available after ${unBondedTime}.`}</Typography.Text>
+            }}>
+            {i18n.message.unBondMessage(unBondedTime)}
+          </Typography.Text>
         </ScrollView>
 
         <AccountSelector
@@ -319,7 +321,7 @@ export const Unbond = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            Submit
+            {i18n.buttonTitles.unstake}
           </Button>
         </View>
       </>

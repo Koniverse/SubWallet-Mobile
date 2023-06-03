@@ -12,7 +12,8 @@ import {
 } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
-import { Button } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
+import { CheckCircle } from 'phosphor-react-native';
 interface Props {
   onPressSubmit: () => void;
   seed: string;
@@ -58,7 +59,9 @@ export const InitSecretPhrase = ({ seed, onPressSubmit }: Props) => {
         />
       </View>
       <View style={footerAreaStyle}>
-        <Button onPress={onPressSubmit}>{i18n.common.continue}</Button>
+        <Button icon={<Icon size={'lg'} phosphorIcon={CheckCircle} weight={'fill'} />} onPress={onPressSubmit}>
+          {i18n.buttonTitles.saveItSomeWhereSafe}
+        </Button>
       </View>
     </View>
   );

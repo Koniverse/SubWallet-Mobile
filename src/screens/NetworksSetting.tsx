@@ -13,6 +13,7 @@ import {
   _isSubstrateChain,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { EmptyList } from 'components/EmptyList';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {}
 
@@ -29,11 +30,11 @@ enum FilterValue {
 }
 
 const FILTER_OPTIONS = [
-  { label: 'EVM chains', value: FilterValue.EVM },
-  { label: 'Substrate chains', value: FilterValue.SUBSTRATE },
-  { label: 'Custom chains', value: FilterValue.CUSTOM },
-  { label: 'Enabled chains', value: FilterValue.ENABLED },
-  { label: 'Disabled chains', value: FilterValue.DISABLED },
+  { label: i18n.filterOptions.evmChains, value: FilterValue.EVM },
+  { label: i18n.filterOptions.substrateChains, value: FilterValue.SUBSTRATE },
+  { label: i18n.filterOptions.customChains, value: FilterValue.CUSTOM },
+  { label: i18n.filterOptions.enabledChains, value: FilterValue.ENABLED },
+  { label: i18n.filterOptions.disabledChains, value: FilterValue.DISABLED },
 ];
 
 const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
@@ -179,14 +180,21 @@ export const NetworksSetting = ({}: Props) => {
   };
 
   const renderListEmptyComponent = () => {
-    return <EmptyList icon={ListChecks} title={'No chain found'} message={'Your chain will appear here.'} />;
+    return (
+      <EmptyList
+        icon={ListChecks}
+        title={i18n.emptyScreen.networkSettingsTitle}
+        message={i18n.emptyScreen.networkSettingsMessage}
+      />
+    );
   };
 
   return (
     <FlatListScreen
       rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('ImportNetwork') }}
       items={currentChainList}
-      title={'Manage chains'}
+      title={i18n.header.manageNetworks}
+      placeholder={i18n.placeholder.searchNetwork}
       autoFocus={false}
       renderListEmptyComponent={renderListEmptyComponent}
       searchFunction={searchFunction}

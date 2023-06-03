@@ -7,6 +7,7 @@ import { RootStackParamList } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
 import { Image } from 'phosphor-react-native';
 import withPageWrapper from 'components/pageWrapper';
+import i18n from 'utils/i18n/i18n';
 
 export type NFTStackParamList = {
   CollectionList: undefined;
@@ -19,9 +20,7 @@ export type NFTCollectionProps = NativeStackScreenProps<NFTStackParamList, 'Coll
 export type NFTDetailProps = NativeStackScreenProps<NFTStackParamList, 'NftDetail'>;
 
 export const renderEmptyNFT = () => {
-  return (
-    <EmptyList title={'No NFTs found'} icon={Image} message={'Click [+] on the top right corner to import your NFT'} />
-  );
+  return <EmptyList title={i18n.emptyScreen.nftEmptyTitle} icon={Image} message={i18n.emptyScreen.nftEmptyMessage} />;
 };
 
 const NFTStackScreen = () => {

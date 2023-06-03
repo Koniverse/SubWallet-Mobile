@@ -183,8 +183,8 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       renderListEmptyComponent={() => (
         <EmptyList
           icon={Users}
-          title={'No accounts connected'}
-          message={'Your list of connected accounts will appear here.'}
+          title={i18n.emptyScreen.manageDAppDetailEmptyTitle}
+          message={i18n.emptyScreen.manageDAppDetailEmptyMessage}
         />
       )}
       rightIconOption={rightIconOption}

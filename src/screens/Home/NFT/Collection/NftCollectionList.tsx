@@ -37,11 +37,12 @@ const NftCollectionList = () => {
       <FlatListScreen
         autoFocus={false}
         showLeftBtn={false}
-        title={i18n.title.nftCollections}
+        title={i18n.header.yourCollections}
         renderItem={renderItem}
         renderListEmptyComponent={renderEmptyNFT}
         searchFunction={filteredCollection}
         items={nftCollections}
+        placeholder={i18n.placeholder.searchCollectionName}
         rightIconOption={{
           icon: Plus,
           onPress: () => {

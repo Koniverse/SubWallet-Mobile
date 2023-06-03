@@ -5,6 +5,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { Logo, SelectItem } from '../../design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import SelectAccountTypeStyles from './style';
+import i18n from 'utils/i18n/i18n';
 
 interface AccountTypeItem {
   label: string;
@@ -48,13 +49,13 @@ export const SelectAccountType = (props: SelectAccountTypeProps) => {
       {
         icon: 'polkadot',
         key: SUBSTRATE_ACCOUNT_TYPE,
-        label: 'Substrate account',
+        label: i18n.createAccount.substrate,
         onClick: onClickItem(SUBSTRATE_ACCOUNT_TYPE),
       },
       {
         icon: 'ethereum',
         key: EVM_ACCOUNT_TYPE,
-        label: 'Ethereum account',
+        label: i18n.createAccount.ethereum,
         onClick: onClickItem(EVM_ACCOUNT_TYPE),
       },
     ],

@@ -95,14 +95,14 @@ const NftItemList = ({
         .then(result => {
           if (result) {
             navigation.goBack();
-            toast.show('Deleted NFT collection successfully');
+            toast.show(i18n.notificationMessage.deleteNftCollectionSuccessfully);
           } else {
-            toast.show('Deleted NFT collection unsuccessfully');
+            toast.show(i18n.notificationMessage.deleteNftCollectionUnsuccessfully);
           }
           setIsDeleting(false);
         })
         .catch(() => {
-          toast.show('Error. Please try again');
+          toast.show(i18n.notificationMessage.pleaseTryAgain);
           setIsDeleting(false);
         });
     }
@@ -131,6 +131,7 @@ const NftItemList = ({
         autoFocus={false}
         showLeftBtn={true}
         renderItem={renderItem}
+        placeholder={i18n.placeholder.searchNftNameOrId}
         renderListEmptyComponent={renderEmptyNFT}
         searchFunction={filteredNftItem}
         rightIconOption={{
@@ -153,11 +154,10 @@ const NftItemList = ({
         }
       />
 
-      {/*todo: i18n*/}
       <DeleteModal
-        title={'Delete this NFT ?'}
+        title={i18n.header.deleteNft}
         visible={deleteVisible}
-        message={'If you need to use this NFT you would need to manually import it again'}
+        message={i18n.message.deleteNftMessage}
         onCompleteModal={onCompleteDeleteModal}
         onCancelModal={onCancelDelete}
       />

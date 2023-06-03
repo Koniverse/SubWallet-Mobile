@@ -196,7 +196,7 @@ const QrRequest = ({
             style={getButtonStyle(!!onCancel)}
             disabled={!isSupport || !isNetConnected || extraLoading}
             isBusy={isLoading}
-            title={buttonText ? buttonText : i18n.common.approve}
+            title={buttonText ? buttonText : i18n.buttonTitles.approve}
             onPress={handlerStart}
           />
         )}

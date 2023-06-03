@@ -17,7 +17,7 @@ export const GeneralSettings = () => {
 
   const showComingSoon = () => {
     toast.hideAll();
-    toast.show(i18n.common.comingSoon);
+    toast.show(i18n.notificationMessage.comingSoon);
   };
 
   const openLanguageModal = () => {
@@ -30,7 +30,7 @@ export const GeneralSettings = () => {
         <SelectItem
           icon={Image}
           backgroundColor={theme['geekblue-6']}
-          label={'Wallet theme'}
+          label={i18n.settings.walletTheme}
           onPress={showComingSoon}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />
@@ -38,7 +38,7 @@ export const GeneralSettings = () => {
         <SelectItem
           icon={GlobeHemisphereWest}
           backgroundColor={theme['green-6']}
-          label={'Language'}
+          label={i18n.settings.language}
           onPress={openLanguageModal}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />
@@ -46,7 +46,7 @@ export const GeneralSettings = () => {
         <SelectItem
           icon={BellSimpleRinging}
           backgroundColor={theme['volcano-6']}
-          label={'Notifications'}
+          label={i18n.settings.notifications}
           onPress={showComingSoon}
           rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
         />

@@ -26,10 +26,13 @@ import {
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { _AssetType, _ChainInfo } from '@subwallet/chain-list/types';
-import { Button } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
-import { AssetTypeOption } from '../../types/asset';
+import { AssetTypeOption } from 'types/asset';
+import { PlusCircle } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useToast } from 'react-native-toast-notifications';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -87,6 +90,8 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowTokenTypeModal, setShowTokenTypeModal] = useState<boolean>(false);
   useHandlerHardwareBackPress(loading);
+  const theme = useSubWalletTheme().swThemes;
+  const toast = useToast();
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const onBack = useCallback(() => {
     navigation.navigate('Home');
@@ -108,12 +113,12 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const formConfig = {
     smartContract: {
       require: true,
-      name: i18n.importEvmNft.smartContract,
+      name: i18n.inputLabel.contractAddress,
       value: nftInfo?.contractAddress || '',
     },
     chain: {
       require: true,
-      name: i18n.common.network,
+      name: i18n.inputLabel.network,
       value: nftInfo?.originChain || '',
     },
     selectedNftType: {
@@ -122,7 +127,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     },
     collectionName: {
       require: true,
-      name: i18n.importEvmNft.nftCollectionName,
+      name: i18n.inputLabel.nftCollectionName,
       value: nftInfo?.name || '',
     },
   };
@@ -154,15 +159,18 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     })
       .then(resp => {
         if (resp) {
-          onUpdateErrors('smartContract')([i18n.common.addNftSuccess]);
+          toast.hideAll();
+          toast.show(i18n.common.addNftSuccess);
           onBack();
         } else {
-          onUpdateErrors('smartContract')([i18n.errorMessage.occurredError]);
+          toast.hideAll();
+          toast.show(i18n.errorMessage.occurredError);
         }
         setLoading(false);
       })
       .catch(() => {
-        onUpdateErrors('smartContract')([i18n.errorMessage.occurredError]);
+        toast.hideAll();
+        toast.show(i18n.errorMessage.occurredError);
         setLoading(false);
       })
       .finally(() => {
@@ -284,6 +292,10 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     [onChangeValue],
   );
 
+  const getSubmitIconBtn = (color: string) => {
+    return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
+  };
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -296,7 +308,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           <NetworkField
             networkKey={formState.data.chain}
             label={formState.labels.chain}
-            placeholder={'Select network'}
+            placeholder={i18n.placeholder.selectNetwork}
             showIcon
           />
         </TouchableOpacity>
@@ -321,7 +333,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChange={(output: string | null, currentValue: string) => {
             handleChangeValue('smartContract')(currentValue);
           }}
-          placeholder={'Please type or paste an address'}
+          placeholder={i18n.placeholder.typeOrPasteContractAddress}
         />
 
         {isReady &&
@@ -371,6 +383,9 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
 
       <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
         <Button
+          icon={getSubmitIconBtn(
+            isDisableAddNFT || !isNetConnected || !isReady || loading ? theme.colorTextLight5 : theme.colorWhite,
+          )}
           loading={loading}
           onPress={() => handleAddToken(formState)}
           disabled={isDisableAddNFT || !isNetConnected || !isReady || loading}>

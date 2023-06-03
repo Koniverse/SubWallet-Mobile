@@ -65,7 +65,7 @@ export const Search = (searchProps: Props) => {
         autoCorrect={false}
         autoFocus={autoFocus}
         onChangeText={text => onSearch(text)}
-        placeholderTextColor={ColorMap.disabled}
+        placeholderTextColor={theme.colorTextTertiary}
         value={searchText}
         onSubmitEditing={onSubmitEditing}
       />

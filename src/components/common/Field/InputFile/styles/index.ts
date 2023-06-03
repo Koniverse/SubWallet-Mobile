@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   wrapper: ViewStyle;
@@ -41,12 +42,14 @@ const createStyles = (theme: ThemeTypes) => {
       textAlign: 'center',
       fontWeight: theme.headingFontWeight,
       width: '100%',
+      ...FontSemiBold,
     },
     description: {
       color: theme.colorTextTertiary,
       textAlign: 'center',
       fontWeight: theme.bodyFontWeight,
       width: '100%',
+      ...FontMedium,
     },
   });
 };

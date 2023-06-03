@@ -167,15 +167,13 @@ const AttachReadOnly = () => {
   return (
     <ContainerWithSubHeader
       onPressBack={goBack}
-      title={i18n.title.readonlyAccount}
+      title={i18n.header.attachReadOnlyAcc}
       disabled={isBusy}
       rightIcon={X}
       onPressRightIcon={goHome}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container} keyboardShouldPersistTaps={'handled'}>
-          <Typography.Text style={styles.title}>
-            Track the activity of any wallet without injecting your private key to SubWallet
-          </Typography.Text>
+          <Typography.Text style={styles.title}>{i18n.attachAccount.attachWatchOnlyAccMessage}</Typography.Text>
           <View style={styles.pageIconContainer}>
             <PageIcon icon={Eye} color={theme.colorSuccess} />
           </View>
@@ -201,7 +199,7 @@ const AttachReadOnly = () => {
             loading={isBusy}
             onPress={onPressSubmit(_onSubmitForm)}
             disabled={errors.length > 0 || !formState.data.address || isBusy}>
-            {i18n.title.attachReadonlyAccount}
+            {i18n.buttonTitles.attachWatchOnlyAcc}
           </Button>
         </View>
       </View>

@@ -95,7 +95,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
         onPressLightningBtn={() => setPoolSelectModalVisible(true)}
         disabled={isDisabled}
         item={selectedPool}
-        label={'Select pool'}
+        label={i18n.inputLabel.selectPool}
         loading={poolLoading}
         outerStyle={isDisabled && DisabledStyle}
       />

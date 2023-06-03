@@ -24,13 +24,19 @@ enum FilterValue {
 }
 
 const FILTER_OPTIONS = [
-  { label: 'Nominated', value: FilterValue.NOMINATED },
-  { label: 'Pooled', value: FilterValue.POOLED },
+  { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
+  { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
 ];
 
 const renderEmpty = (val?: string) => {
   if (val) {
-    return <EmptyList title={'No staking'} icon={Trophy} message={'Your staking accounts will appear here!'} />;
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.stakingEmptyTitle}
+        icon={Trophy}
+        message={i18n.emptyScreen.stakingEmptyMessage}
+      />
+    );
   } else {
     return <EmptyStaking />;
   }
@@ -118,9 +124,10 @@ const StakingBalanceList = () => {
     <>
       <FlatListScreen
         style={{ flex: 1, paddingBottom: 16 }}
-        title={i18n.title.staking}
+        title={i18n.header.staking}
         items={data}
         showLeftBtn={false}
+        placeholder={i18n.placeholder.searchToken}
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}

@@ -30,7 +30,7 @@ const defaultRenderListEmptyComponent = () => {
     <Warning
       style={{ marginHorizontal: 16 }}
       title={i18n.warningTitle.warning}
-      message={'No provider available'}
+      message={i18n.errorMessage.noProviderAvailable}
       isDanger={false}
     />
   );
@@ -90,7 +90,7 @@ export const RpcSelectorModal = ({
         autoFocus={true}
         items={providerList}
         style={FlatListScreenPaddingTop}
-        title={'Providers'}
+        title={i18n.header.providers}
         searchFunction={searchFunction}
         renderItem={renderItem}
         onPressBack={onPressBack}
@@ -104,7 +104,7 @@ export const RpcSelectorModal = ({
                 onPressBack();
                 !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });
               }}>
-              {'Add new provider'}
+              {i18n.buttonTitles.addNewProvider}
             </Button>
           </View>
         }

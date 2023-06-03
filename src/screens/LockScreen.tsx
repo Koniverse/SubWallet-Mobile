@@ -89,7 +89,7 @@ export const LockScreen = () => {
               paddingTop: 32,
               paddingBottom: 8,
             }}>
-            {i18n.common.welcomeBack}
+            {i18n.welcomeScreen.welcomeBackTitle}
           </Text>
           {authMethod === 'pinCode' && (
             <>

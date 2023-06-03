@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
+import i18n from 'utils/i18n/i18n';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -30,34 +31,34 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
   return (
     <ConfirmationContent>
       <MetaInfo hasBackgroundWrapper>
-        <MetaInfo.Account address={data.from} label={'Sender'} networkPrefix={senderPrefix} />
+        <MetaInfo.Account address={data.from} label={i18n.inputLabel.sendFrom} networkPrefix={senderPrefix} />
 
         {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
-          <MetaInfo.Chain chain={chainInfo.slug} label={'Sender Network'} />
+          <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.senderNetwork} />
         )}
 
-        <MetaInfo.Account address={data.to} label={'Recipient'} />
+        <MetaInfo.Account address={data.to} label={i18n.inputLabel.sendTo} />
 
         {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && chainInfo && (
-          <MetaInfo.Chain chain={xcmData.destinationNetworkKey} label={'Recipient Network'} />
+          <MetaInfo.Chain chain={xcmData.destinationNetworkKey} label={i18n.inputLabel.destinationNetwork} />
         )}
 
         {transaction.extrinsicType !== ExtrinsicType.TRANSFER_XCM && chainInfo && (
-          <MetaInfo.Chain chain={chainInfo.slug} label={'Network'} />
+          <MetaInfo.Chain chain={chainInfo.slug} label={i18n.inputLabel.network} />
         )}
       </MetaInfo>
 
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Number
           decimals={tokenInfo.decimals || 0}
-          label={'Amount'}
+          label={i18n.inputLabel.amount}
           suffix={tokenInfo.symbol}
           value={data.value || 0}
         />
 
         <MetaInfo.Number
           decimals={chainDecimals}
-          label={'Estimated fee'}
+          label={i18n.inputLabel.estimatedFee}
           suffix={chainSymbol}
           value={transaction.estimateFee?.value || 0}
         />

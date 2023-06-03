@@ -32,7 +32,7 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
             icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}
             type="danger"
             onPress={onCompleteModal}>
-            {i18n.common.delete}
+            {i18n.buttonTitles.delete}
           </Button>
         </View>
       }

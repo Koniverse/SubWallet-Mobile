@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   contentWrapper: ViewStyle;
@@ -26,6 +27,7 @@ export default (theme: ThemeTypes) => {
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       color: theme.colorTextDescription,
+      ...FontSemiBold,
     },
     accountAddressHorizontal: {
       marginLeft: theme.marginXXS,
@@ -36,6 +38,7 @@ export default (theme: ThemeTypes) => {
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       color: theme.colorTextBase,
       marginLeft: theme.marginXXS,
+      ...FontSemiBold,
     },
   });
 };

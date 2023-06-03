@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { FadersHorizontal } from 'phosphor-react-native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 export type OptionType = {
   label: string;
@@ -24,12 +25,11 @@ const ButtonIcon = (color: string) => {
   return <Icon phosphorIcon={FadersHorizontal} size={'lg'} iconColor={color} />;
 };
 
-// todo: i18n 'Filter', 'Apply filter'
 const FilterModal = ({
   modalVisible,
   onChangeModalVisible,
   options,
-  modalTitle = 'Filter',
+  modalTitle = i18n.header.filter,
   onChangeOption,
   onApplyFilter,
   optionSelectionMap,
@@ -40,7 +40,7 @@ const FilterModal = ({
         <Divider style={{ paddingTop: 4, paddingBottom: 16 }} color={'#1A1A1A'} />
         <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
           <Button icon={ButtonIcon} onPress={onApplyFilter}>
-            {'Apply filter'}
+            {i18n.buttonTitles.applyFilter}
           </Button>
         </View>
       </>

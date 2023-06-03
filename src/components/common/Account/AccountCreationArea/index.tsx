@@ -85,7 +85,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#51BC5E',
         icon: PlusCircle,
-        label: 'Create with new Seed Phrase',
+        label: i18n.createAccount.createWithNewSeedPhrase,
         onClickBtn: () => {
           onChangeCreateAccountModalVisible(false);
 
@@ -103,7 +103,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#E6478E',
         icon: ShareNetwork,
-        label: 'Derive from another account',
+        label: i18n.createAccount.deriveFromAnExistingAcc,
         disabled: !canDerivedAccounts.length,
         onClickBtn: () => {
           onChangeCreateAccountModalVisible(false);
@@ -124,7 +124,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#51BC5E',
         icon: Leaf,
-        label: 'Import from Seed Phrase',
+        label: i18n.importAccount.importFromSeedPhrase,
         onClickBtn: () => {
           onChangeImportAccountModalVisible(false);
           if (hasMasterPassword) {
@@ -137,7 +137,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#E68F25',
         icon: FileJs,
-        label: 'Restore from Polkadot {.js}',
+        label: i18n.importAccount.importFromJson,
         onClickBtn: () => {
           onChangeImportAccountModalVisible(false);
           if (hasMasterPassword) {
@@ -150,7 +150,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#4D4D4D',
         icon: Wallet,
-        label: 'Import from MetaMask',
+        label: i18n.importAccount.importByMetaMaskPrivateKey,
         onClickBtn: () => {
           onChangeImportAccountModalVisible(false);
           if (hasMasterPassword) {
@@ -163,7 +163,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#2565E6',
         icon: QrCode,
-        label: 'Import by QR Code',
+        label: i18n.importAccount.importByQRCode,
         onClickBtn: async () => {
           onChangeImportAccountModalVisible(false);
           if (hasMasterPassword) {
@@ -182,15 +182,15 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#E68F25',
         icon: Swatches,
-        label: 'Connect Ledger device',
+        label: i18n.attachAccount.connectALedgerDevice,
         onClickBtn: () => {
-          show(i18n.common.comingSoon);
+          show(i18n.notificationMessage.comingSoon);
         },
       },
       {
         backgroundColor: '#E6478E',
         icon: QrCode,
-        label: 'Attach a Polkadot Vault account',
+        label: i18n.attachAccount.connectAPolkadotVaultAcc,
         onClickBtn: async () => {
           if (hasMasterPassword) {
             onChangeAttachAccountModalVisible(false);
@@ -204,7 +204,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#2565E6',
         icon: DeviceTabletCamera,
-        label: 'Attach Keystone account',
+        label: i18n.attachAccount.connectAKeystoneDevice,
         onClickBtn: async () => {
           if (hasMasterPassword) {
             onChangeAttachAccountModalVisible(false);
@@ -218,7 +218,7 @@ export const AccountCreationArea = ({
       {
         backgroundColor: '#2DA73F',
         icon: Eye,
-        label: 'Attach watch-only account',
+        label: i18n.attachAccount.attachAWatchOnlyAccount,
         onClickBtn: () => {
           onChangeAttachAccountModalVisible(false);
           setTimeout(() => {
@@ -236,21 +236,21 @@ export const AccountCreationArea = ({
   return (
     <>
       <AccountActionSelectModal
-        modalTitle={'Create new account'}
+        modalTitle={i18n.header.createNewAcc}
         modalVisible={createAccountModalVisible}
         onChangeModalVisible={() => onChangeCreateAccountModalVisible(false)}
         items={createAccountAction}
       />
 
       <AccountActionSelectModal
-        modalTitle={'Import account'}
+        modalTitle={i18n.header.importAcc}
         modalVisible={importAccountModalVisible}
         onChangeModalVisible={() => onChangeImportAccountModalVisible(false)}
         items={importAccountActions}
       />
 
       <AccountActionSelectModal
-        modalTitle={'Attach account'}
+        modalTitle={i18n.header.attachAnAcc}
         modalVisible={attachAccountModalVisible}
         onChangeModalVisible={() => onChangeAttachAccountModalVisible(false)}
         items={attachAccountActions}

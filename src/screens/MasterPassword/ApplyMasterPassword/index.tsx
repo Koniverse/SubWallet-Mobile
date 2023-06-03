@@ -37,7 +37,7 @@ const nextIcon = <Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill
 
 const formConfig: FormControlConfig = {
   password: {
-    name: 'Current password',
+    name: i18n.inputLabel.currentPassword,
     value: '',
     validateFunc: validatePassword,
   },
@@ -223,9 +223,9 @@ const ApplyMasterPassword = () => {
 
     switch (step) {
       case 'Introduction':
-        return 'Apply master password';
+        return i18n.header.applyMasterPassword;
       case 'Done':
-        return 'Successful';
+        return i18n.header.successful;
       case 'Migrate':
         return `${String(_migrated + 1).padStart(2, '0')}/${String(canMigrate.length).padStart(2, '0')}`;
       default:
@@ -258,13 +258,13 @@ const ApplyMasterPassword = () => {
       case 'Introduction':
         return (
           <Button icon={nextIcon} onPress={() => onPressActionButton('migratePassword')}>
-            {'Apply master password now'}
+            {i18n.buttonTitles.applyMasterPassword}
           </Button>
         );
       case 'Done':
         return (
           <Button icon={finishIcon} onPress={goHome}>
-            {'Finish'}
+            {i18n.buttonTitles.finish}
           </Button>
         );
       case 'Migrate':
@@ -285,7 +285,7 @@ const ApplyMasterPassword = () => {
               />
             }
             onPress={onPressSubmit}>
-            {'Next'}
+            {i18n.buttonTitles.next}
           </Button>
         );
     }
@@ -328,9 +328,9 @@ const ApplyMasterPassword = () => {
               />
             </View>
 
-            <TextField text={migrateAccount.name || ''} label={'Account name'} />
+            <TextField text={migrateAccount.name || ''} label={i18n.inputLabel.accountName} />
 
-            <AddressField address={migrateAccount.address} label={'Account address'} />
+            <AddressField address={migrateAccount.address} label={i18n.inputLabel.accountAddress} />
 
             <PasswordField
               ref={formState.refs.password}
@@ -343,7 +343,7 @@ const ApplyMasterPassword = () => {
 
             {isError && (
               <Button style={{ marginTop: 4 }} size={'xs'} type={'ghost'} icon={removeIcon} onPress={onPressDelete}>
-                {'Forget this account'}
+                {i18n.buttonTitles.forgetThisAccount}
               </Button>
             )}
           </ScrollView>
@@ -351,11 +351,9 @@ const ApplyMasterPassword = () => {
         {step === 'Done' && <ApplyDone accounts={canMigrate} />}
 
         <DeleteModal
-          title={'Detele this account?'}
+          title={i18n.removeAccount.removeAccountTitle}
           visible={deleteVisible}
-          message={
-            'If you ever want to use this account again, you would need to import it again with seedphrase, private key, or JSON file'
-          }
+          message={i18n.removeAccount.removeAccountMessage}
           onCancelModal={onCancelDelete}
           onCompleteModal={onCompleteDeleteModal}
         />

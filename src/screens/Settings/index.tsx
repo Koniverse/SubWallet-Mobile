@@ -78,7 +78,7 @@ export const Settings = () => {
   const { lock } = useAppLock();
   const onPressComingSoonFeature = useCallback(() => {
     toast.hideAll();
-    toast.show(i18n.common.comingSoon);
+    toast.show(i18n.notificationMessage.comingSoon);
     // navigation.navigate('GeneralSettings');
   }, [toast]);
   const [hiddenCount, setHiddenCount] = useState(0);
@@ -88,21 +88,21 @@ export const Settings = () => {
       [
         {
           icon: GlobeHemisphereWest,
-          title: 'General settings',
+          title: i18n.settings.generalSettings,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: onPressComingSoonFeature,
           backgroundColor: '#D92079',
         },
         {
           icon: ShieldCheck,
-          title: 'Security settings',
+          title: i18n.settings.securitySettings,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => navigation.navigate('Security'),
           backgroundColor: '#2DA73F',
         },
         {
           icon: BookBookmark,
-          title: 'Manage address book',
+          title: i18n.settings.manageAddressBook,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: onPressComingSoonFeature,
           backgroundColor: '#0078D9',
@@ -118,7 +118,7 @@ export const Settings = () => {
       [
         {
           icon: ShareNetwork,
-          title: 'Manage chains',
+          title: i18n.settings.manageNetworks,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => navigation.navigate('NetworksSetting'),
           backgroundColor: '#9224E1',
@@ -164,7 +164,7 @@ export const Settings = () => {
         },
         {
           icon: Book,
-          title: 'User manual',
+          title: i18n.settings.userGuide,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => Linking.openURL(WIKI_URL),
           backgroundColor: '#2DA73F',
@@ -217,7 +217,7 @@ export const Settings = () => {
             />
           ))}
 
-          <Text style={settingTitleStyle}>{'NETWORKS & TOKENS'}</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.networksAndTokens.toUpperCase()}</Text>
 
           {settingList[1].map(setting => (
             <SelectItem
@@ -243,7 +243,7 @@ export const Settings = () => {
             />
           ))}
 
-          <Text style={settingTitleStyle}>{'ABOUT SUBWALLET'}</Text>
+          <Text style={settingTitleStyle}>{i18n.settings.aboutSubwallet.toUpperCase()}</Text>
 
           {settingList[3].map(setting => (
             <SelectItem

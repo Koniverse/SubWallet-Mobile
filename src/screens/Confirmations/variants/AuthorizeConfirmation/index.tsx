@@ -181,7 +181,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         {visibleAccounts.length > 0 ? (
           <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         ) : (
-          <Text style={styles.textCenter}>You don't have any accounts to connect. Please create a new account</Text>
+          <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc}</Text>
         )}
         <ScrollView
           style={styles.scroll}

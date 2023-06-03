@@ -260,8 +260,8 @@ export const ExportAccount = ({
         <ScrollView style={bodyAreaStyle}>
           <Warning
             style={{ marginTop: 16 }}
-            title={'Warning: Never disclose this key'}
-            message={'Anyone with your keys can steal any assets held in your account.'}
+            title={i18n.warning.warningAccTitle}
+            message={i18n.warning.warningAccMessage}
           />
 
           {currentViewStep === ViewStep.SELECT_TYPES && (

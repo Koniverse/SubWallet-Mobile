@@ -3,6 +3,7 @@ import MetaInfo from 'components/MetaInfo';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { toShort } from 'utils/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   address: string;
@@ -18,15 +19,15 @@ export const CommonTransactionInfo = ({ address, network }: Props) => {
       <MetaInfo hasBackgroundWrapper>
         <MetaInfo.Account
           address={account?.address || address}
-          label={'Wallet name'}
+          label={i18n.inputLabel.accountName}
           name={account?.name}
           networkPrefix={networkPrefix}
         />
-        <MetaInfo.Default label={'Address'} valueAlign={'right'}>
+        <MetaInfo.Default label={i18n.inputLabel.address} valueAlign={'right'}>
           {toShort(address)}
         </MetaInfo.Default>
 
-        <MetaInfo.Chain chain={network} label={'Network'} />
+        <MetaInfo.Chain chain={network} label={i18n.inputLabel.network} />
       </MetaInfo>
     </>
   );

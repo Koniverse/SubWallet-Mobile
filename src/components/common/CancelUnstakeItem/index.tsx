@@ -10,6 +10,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import CancelUnstakeItemStyle from './style';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { FontSemiBold } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   item: UnstakeItem;
@@ -48,7 +49,7 @@ export const CancelUnstakeItem = ({ item, isSelected, onPress }: Props) => {
             weight="fill"
           />
           <Typography.Text style={subTextStyle}>
-            {status === UnstakingStatus.CLAIMABLE ? 'Withdraw now' : 'Waiting'}
+            {status === UnstakingStatus.CLAIMABLE ? i18n.inputLabel.withdrawalReady : i18n.inputLabel.waiting}
           </Typography.Text>
         </View>
       </View>

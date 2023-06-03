@@ -191,7 +191,7 @@ const NftDetail = ({
   );
 
   const handleClickComingSoon = useCallback(() => {
-    show(i18n.common.comingSoon);
+    show(i18n.notificationMessage.comingSoon);
   }, [show]);
 
   const handleClickTransfer = useCallback(() => {
@@ -241,7 +241,7 @@ const NftDetail = ({
           </View>
           {!!data.description && (
             <View>
-              <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.description}</Text>
+              <Text style={AttTitleStyle}>{i18n.inputLabel.nftDetails}</Text>
               <Text style={AttValueStyle}>{data?.description}</Text>
             </View>
           )}
@@ -253,7 +253,7 @@ const NftDetail = ({
           </TouchableOpacity>
           <TextField
             text={collectionName || ''}
-            label={i18n.nftScreen.nftDetail.collectionName}
+            label={i18n.inputLabel.nftCollectionName}
             showRightIcon={!!data.externalUrl}
             onPressRightIcon={handleClickInfoIcon(data.externalUrl)}
           />
@@ -262,12 +262,12 @@ const NftDetail = ({
               name={ownerAccount?.name}
               address={data.owner}
               networkPrefix={_getChainSubstrateAddressPrefix(originChainInfo)}
-              label={i18n.nftScreen.nftDetail.ownedBy}
+              label={i18n.inputLabel.ownedBy}
               onPressRightIcon={handleClickInfoIcon(ownerUrl)}
             />
           )}
           {/*<AddressField address={currentAccount?.address || ''} label={i18n.nftScreen.nftDetail.createdBy} />*/}
-          <NetworkField networkKey={data.chain || chain || ''} label={i18n.common.network} />
+          <NetworkField networkKey={data.chain || chain || ''} label={i18n.inputLabel.network} />
           {!!data.rarity && (
             <View>
               <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.rarity}</Text>
@@ -289,7 +289,7 @@ const NftDetail = ({
 
         {canSend && (
           <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>
-            <Button onPress={handleClickTransfer}>{i18n.common.send}</Button>
+            <Button onPress={handleClickTransfer}>{i18n.buttonTitles.send}</Button>
           </View>
         )}
       </>

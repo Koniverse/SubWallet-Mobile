@@ -24,6 +24,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   visible: boolean;
@@ -143,7 +144,7 @@ const StakingActionModal = (props: Props) => {
           action: StakingAction.UNSTAKE,
           backgroundIconColor: 'magenta-6',
           icon: MinusCircle,
-          label: 'Unstake funds',
+          label: i18n.buttonTitles.unstake,
           onPress: unStakeAction,
         };
       } else if (action === StakingAction.WITHDRAW) {
@@ -151,7 +152,7 @@ const StakingActionModal = (props: Props) => {
           action: StakingAction.WITHDRAW,
           backgroundIconColor: 'geekblue-6',
           icon: ArrowCircleDown,
-          label: 'Withdraw',
+          label: i18n.buttonTitles.withDrawUnstakedFunds,
           onPress: handleWithdrawalAction,
         };
       } else if (action === StakingAction.CLAIM_REWARD) {
@@ -159,7 +160,7 @@ const StakingActionModal = (props: Props) => {
           action: StakingAction.CLAIM_REWARD,
           backgroundIconColor: 'green-7',
           icon: Wallet,
-          label: 'Claim rewards',
+          label: i18n.buttonTitles.claimRewards,
           onPress: handleClaimRewardAction,
         };
       } else if (action === StakingAction.CANCEL_UNSTAKE) {
@@ -167,7 +168,7 @@ const StakingActionModal = (props: Props) => {
           action: StakingAction.CANCEL_UNSTAKE,
           backgroundIconColor: 'purple-8',
           icon: ArrowArcLeft,
-          label: 'Cancel unstake',
+          label: i18n.buttonTitles.cancelUnstaking,
           onPress: cancelUnstakeAction,
         };
       }
@@ -176,7 +177,7 @@ const StakingActionModal = (props: Props) => {
         action: StakingAction.STAKE,
         backgroundIconColor: 'green-6',
         icon: PlusCircle,
-        label: 'Stake more',
+        label: i18n.buttonTitles.stakeMore,
         onPress: stakeAction,
       };
     });
@@ -190,7 +191,7 @@ const StakingActionModal = (props: Props) => {
   ]);
 
   return (
-    <SwModal modalVisible={visible} modalTitle={'Actions'} onChangeModalVisible={closeModal}>
+    <SwModal modalVisible={visible} modalTitle={i18n.header.actions} onChangeModalVisible={closeModal}>
       {actionList.map(item => {
         const actionDisable = !availableActions.includes(item.action);
         const hasAnAction = !!selected;

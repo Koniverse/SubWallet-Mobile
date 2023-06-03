@@ -40,6 +40,7 @@ import { RootNavigationProps } from 'routes/index';
 import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -96,7 +97,9 @@ export const StakingDetailModal = ({
   const showingOption = isShowNominationByValidator(nominatorMetadata?.chain || '');
   const isRelayChain = _STAKING_CHAIN_GROUP.relay.includes(nominatorMetadata?.chain || '');
   const modalTitle =
-    nominatorMetadata?.type === StakingType.NOMINATED.valueOf() ? 'Nomination details' : 'Pooled details';
+    nominatorMetadata?.type === StakingType.NOMINATED.valueOf()
+      ? i18n.header.nominationDetails
+      : i18n.header.poolDetails;
   const theme = useSubWalletTheme().swThemes;
   const [seeMore, setSeeMore] = useState<boolean>(false);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -180,7 +183,7 @@ export const StakingDetailModal = ({
         <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'sm'}>
           <MetaInfo.Account
             address={item.validatorAddress}
-            label={'Validator'}
+            label={i18n.inputLabel.validator}
             name={item.validatorIdentity || toShort(item.validatorAddress)}
             networkPrefix={networkPrefix}
           />
@@ -190,7 +193,7 @@ export const StakingDetailModal = ({
             key={`${item.validatorAddress}-${item.activeStake}-${
               item.validatorIdentity || item.validatorMinStake || item.chain
             }-${index}-active-stake`}
-            label={'Active staked'}
+            label={i18n.inputLabel.activeStaked}
             suffix={staking.nativeToken}
             value={item.activeStake || ''}
             valueColorSchema={'gray'}
@@ -201,7 +204,7 @@ export const StakingDetailModal = ({
             key={`${item.validatorAddress}-${item.activeStake}-${
               item.validatorIdentity || item.validatorMinStake || item.chain
             }-${index}-min-stake`}
-            label={'Min stake'}
+            label={i18n.inputLabel.minimumStaked}
             suffix={staking.nativeToken}
             value={item.validatorMinStake || '0'}
             valueColorSchema={'gray'}
@@ -209,7 +212,7 @@ export const StakingDetailModal = ({
 
           {!!unstakingData && showingOption === 'showByValidator' && (
             <MetaInfo.Default
-              label={'Unstaked'}
+              label={i18n.inputLabel.unstaked}
               labelAlign={unstakingData.status === UnstakingStatus.UNLOCKING.valueOf() ? 'top' : 'center'}>
               {() => (
                 <View style={{ alignItems: 'flex-end' }}>
@@ -240,7 +243,7 @@ export const StakingDetailModal = ({
           )}
 
           <MetaInfo.Status
-            label={'Staking status'}
+            label={i18n.inputLabel.stakingStatus}
             statusIcon={getStakingStatus(item.status).icon}
             statusName={getStakingStatus(item.status).name}
             valueColorSchema={getStakingStatus(item.status).schema}
@@ -274,10 +277,10 @@ export const StakingDetailModal = ({
           style={{ flex: 1, marginHorizontal: 6 }}
           type={'secondary'}
           onPress={onClickFooterButton(onClickUnstakeBtn)}>
-          {'Unstake'}
+          {i18n.buttonTitles.unstake}
         </Button>
         <Button style={{ flex: 1, marginLeft: 6 }} type={'primary'} onPress={onClickFooterButton(onClickStakeMoreBtn)}>
-          {'Stake more'}
+          {i18n.buttonTitles.stakeMore}
         </Button>
       </View>
     );
@@ -300,18 +303,26 @@ export const StakingDetailModal = ({
               <MetaInfo>
                 {isAccountAll(nominatorMetadata?.address || '') ? (
                   <MetaInfo.AccountGroup
-                    label={'Account'}
+                    label={i18n.inputLabel.account}
                     content={nominatorMetadata?.address || ''}
                     addresses={accounts.map(acc => acc.address)}
                   />
                 ) : (
-                  <MetaInfo.Account address={nominatorMetadata?.address || ''} label={'Account'} name={account?.name} />
+                  <MetaInfo.Account
+                    address={nominatorMetadata?.address || ''}
+                    label={i18n.inputLabel.account}
+                    name={account?.name}
+                  />
                 )}
 
-                <MetaInfo.DisplayType label={'Staking type'} typeName={stakingTypeNameMap[staking.type]} />
+                <MetaInfo.DisplayType label={i18n.inputLabel.stakingType} typeName={stakingTypeNameMap[staking.type]} />
 
                 <MetaInfo.Status
-                  label={nominatorMetadata?.type === StakingType.NOMINATED ? 'Nomination status' : 'Pooled status'}
+                  label={
+                    nominatorMetadata?.type === StakingType.NOMINATED
+                      ? i18n.inputLabel.nominationStatus
+                      : i18n.inputLabel.pooledStatus
+                  }
                   loading={!nominatorMetadata}
                   statusIcon={nominatorMetadata && getStakingStatus(nominatorMetadata.status).icon}
                   statusName={nominatorMetadata && getStakingStatus(nominatorMetadata.status).name}
@@ -321,7 +332,7 @@ export const StakingDetailModal = ({
                 {!!rewardItem?.totalReward && parseFloat(rewardItem?.totalReward) > 0 && (
                   <MetaInfo.Number
                     decimals={decimals}
-                    label={'Total reward'}
+                    label={i18n.inputLabel.totalReward}
                     suffix={staking.nativeToken}
                     value={rewardItem?.totalReward || '0'}
                   />
@@ -331,7 +342,7 @@ export const StakingDetailModal = ({
                   <MetaInfo.Number
                     decimals={decimals}
                     loading={!rewardItem || rewardItem.state !== APIItemState.READY}
-                    label={'Unclaimed reward'}
+                    label={i18n.inputLabel.unclaimedRewards}
                     suffix={staking.nativeToken}
                     value={rewardItem?.unclaimedReward || '0'}
                   />
@@ -339,7 +350,7 @@ export const StakingDetailModal = ({
 
                 <MetaInfo.Number
                   decimals={decimals}
-                  label={'Total staked'}
+                  label={i18n.inputLabel.totalStaked}
                   loading={!nominatorMetadata}
                   suffix={staking.nativeToken}
                   value={String(
@@ -351,7 +362,7 @@ export const StakingDetailModal = ({
                   <MetaInfo.Number
                     decimals={decimals}
                     loading={!nominatorMetadata}
-                    label={'Active staked'}
+                    label={i18n.inputLabel.activeStaked}
                     suffix={staking.nativeToken}
                     value={nominatorMetadata?.activeStake || ''}
                   />
@@ -360,13 +371,13 @@ export const StakingDetailModal = ({
                 {
                   <MetaInfo.Number
                     decimals={decimals}
-                    label={'Unstaked'}
+                    label={i18n.inputLabel.unstaked}
                     suffix={staking.nativeToken}
                     value={staking.unlockingBalance || '0'}
                   />
                 }
 
-                <MetaInfo.Chain chain={staking.chain} label={'Network'} />
+                <MetaInfo.Chain chain={staking.chain} label={i18n.inputLabel.network} />
               </MetaInfo>
 
               {!seeMore && (
@@ -376,7 +387,7 @@ export const StakingDetailModal = ({
                   onPress={onClickSeeMoreBtn}
                   size={'xs'}
                   type={'ghost'}>
-                  {'See more'}
+                  {i18n.buttonTitles.seeMore}
                 </Button>
               )}
 
@@ -385,7 +396,7 @@ export const StakingDetailModal = ({
                   <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'xs'} valueColorScheme={'light'}>
                     {chainStakingMetadata?.expectedReturn && (
                       <MetaInfo.Number
-                        label={'Estimated annual earnings'}
+                        label={i18n.inputLabel.estimatedAnnualEarnings}
                         suffix={'%'}
                         value={chainStakingMetadata?.expectedReturn || ''}
                         valueColorSchema={'even-odd'}
@@ -395,7 +406,7 @@ export const StakingDetailModal = ({
                     <MetaInfo.Number
                       decimals={decimals}
                       loading={!nominatorMetadata || !chainStakingMetadata}
-                      label={'Minimum active'}
+                      label={i18n.inputLabel.minimumActive}
                       suffix={staking.nativeToken}
                       value={
                         (nominatorMetadata?.type === StakingType.NOMINATED
@@ -407,7 +418,7 @@ export const StakingDetailModal = ({
 
                     {!!chainStakingMetadata?.unstakingPeriod && (
                       <MetaInfo.Default
-                        label={'Unstaking period'}
+                        label={i18n.inputLabel.unstakingPeriod}
                         valueColorSchema={'gray'}
                         loading={!chainStakingMetadata}>
                         {getUnstakingPeriod(chainStakingMetadata?.unstakingPeriod)}
@@ -423,7 +434,7 @@ export const StakingDetailModal = ({
                         <MetaInfo style={{ marginTop: 8 }} valueColorScheme={'light'}>
                           <MetaInfo.Number
                             decimals={decimals}
-                            label={'Active staked'}
+                            label={i18n.inputLabel.activeStaked}
                             suffix={staking.nativeToken}
                             value={nominatorMetadata?.activeStake}
                           />
@@ -477,7 +488,7 @@ export const StakingDetailModal = ({
                         <MetaInfo style={{ marginTop: 8 }} valueColorScheme={'light'}>
                           <MetaInfo.Number
                             decimals={decimals}
-                            label={'Unstaked'}
+                            label={i18n.inputLabel.unstaked}
                             suffix={staking.nativeToken}
                             value={staking.unlockingBalance || '0'}
                           />

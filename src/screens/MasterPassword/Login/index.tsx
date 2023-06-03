@@ -36,7 +36,7 @@ const Login: React.FC<Props> = (props: Props) => {
       })
         .then(data => {
           if (!data.status) {
-            onUpdateErrors('password')(['Invalid password']);
+            onUpdateErrors('password')([i18n.errorMessage.invalidMasterPassword]);
           }
         })
         .catch((e: Error) => {
@@ -84,7 +84,7 @@ const Login: React.FC<Props> = (props: Props) => {
             />
           }
           onPress={onSubmit}>
-          {'Apply'}
+          {i18n.buttonTitles.apply}
         </Button>
       </View>
     </ContainerWithSubHeader>

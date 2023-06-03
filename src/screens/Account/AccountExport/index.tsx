@@ -25,10 +25,10 @@ const ViewStep = {
 };
 
 const titleMap: Record<ExportType, string> = {
-  [ExportType.JSON_FILE]: 'Successful',
-  [ExportType.QR_CODE]: 'Your QR code',
-  [ExportType.PRIVATE_KEY]: 'Your private key',
-  [ExportType.SEED_PHRASE]: 'Your recovery phrase',
+  [ExportType.JSON_FILE]: i18n.header.successful,
+  [ExportType.QR_CODE]: i18n.header.yourQrCode,
+  [ExportType.PRIVATE_KEY]: i18n.header.yourPrivateKey,
+  [ExportType.SEED_PHRASE]: i18n.header.yourSeedPhrase,
 };
 
 export const AccountExport = ({
@@ -210,8 +210,8 @@ export const AccountExport = ({
         <ScrollView style={styles.bodyArea}>
           <View style={currentViewStep === ViewStep.SELECT_TYPES ? styles.introWarning : styles.rsWarning}>
             <AlertBox
-              title={'Warning: Never disclose this key'}
-              description={'Anyone with your keys can steal any assets held in your account.'}
+              title={i18n.warning.warningAccTitle}
+              description={i18n.warning.warningAccMessage}
               type="warning"
             />
           </View>

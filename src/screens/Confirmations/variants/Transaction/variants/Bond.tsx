@@ -5,6 +5,7 @@ import { BaseTransactionConfirmationProps } from 'screens/Confirmations/variants
 import { RequestBondingSubmit, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import MetaInfo from 'components/MetaInfo';
+import i18n from 'utils/i18n/i18n';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -20,14 +21,14 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
         <MetaInfo.AccountGroup
           addresses={addressList}
-          content={`${data.selectedValidators.length} selected validators`}
-          label={data.type === StakingType.POOLED ? 'Pool' : 'Validators'}
+          content={`${data.selectedValidators.length} ${i18n.common.selectedValidators}`}
+          label={data.type === StakingType.POOLED ? i18n.inputLabel.pool : i18n.inputLabel.validators}
         />
 
-        <MetaInfo.Number decimals={decimals} label={'Amount'} suffix={symbol} value={data.amount} />
+        <MetaInfo.Number decimals={decimals} label={i18n.inputLabel.amount} suffix={symbol} value={data.amount} />
         <MetaInfo.Number
           decimals={decimals}
-          label={'Estimated fee'}
+          label={i18n.inputLabel.estimatedFee}
           suffix={symbol}
           value={transaction.estimateFee?.value || 0}
         />

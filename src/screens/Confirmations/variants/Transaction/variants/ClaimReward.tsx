@@ -11,6 +11,7 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { BaseTransactionConfirmationProps } from './Base';
+import i18n from 'utils/i18n/i18n';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -29,7 +30,7 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
         {data.unclaimedReward && (
           <MetaInfo.Number
             decimals={decimals}
-            label={'Unclaimed reward'}
+            label={i18n.inputLabel.availableRewards}
             suffix={symbol}
             value={data.unclaimedReward}
           />
@@ -37,16 +38,14 @@ const ClaimRewardTransactionConfirmation: React.FC<Props> = (props: Props) => {
 
         <MetaInfo.Number
           decimals={decimals}
-          label={'Transaction fee'}
+          label={i18n.inputLabel.estimatedFee}
           suffix={symbol}
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
 
       <Text style={{ color: theme.colorTextLight4 }}>
-        {data.bondReward
-          ? 'Your rewards will be bonded back into the pool'
-          : 'Claimed rewards would be immediately added to your account as transferable balance'}
+        {data.bondReward ? i18n.message.claimRewardMessage1 : i18n.message.claimRewardMessage2}
       </Text>
     </ConfirmationContent>
   );

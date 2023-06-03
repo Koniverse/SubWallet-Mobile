@@ -9,6 +9,7 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import StakingNominationItemStyle from './style';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   nominationInfo: NominationInfo;
@@ -42,7 +43,7 @@ export const StakingNominationItem = ({ nominationInfo, isSelected, onSelectItem
         </Text>
 
         <View style={_style.contentWrapper}>
-          <Text style={_style.bondedAmountLabelTextStyle}>{'Bonded: '}</Text>
+          <Text style={_style.bondedAmountLabelTextStyle}>{i18n.message.bonded}</Text>
           <Number
             decimal={decimals}
             suffix={symbol}

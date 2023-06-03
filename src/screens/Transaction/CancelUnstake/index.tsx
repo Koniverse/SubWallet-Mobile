@@ -24,6 +24,7 @@ import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
+import i18n from 'utils/i18n/i18n';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -109,16 +110,16 @@ export const CancelUnstake = ({
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField
-                label={'Unstake from account'}
-                accountName={accountInfo?.name || ''}
-                value={from}
-                showIcon
-              />
+              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
             </TouchableOpacity>
           )}
 
-          <FreeBalance label={'Available balance:'} address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
+          <FreeBalance
+            label={`${i18n.inputLabel.availableBalance}:`}
+            address={from}
+            chain={chain}
+            onBalanceReady={setIsBalanceReady}
+          />
 
           <CancelUnstakeSelector
             chain={chain}

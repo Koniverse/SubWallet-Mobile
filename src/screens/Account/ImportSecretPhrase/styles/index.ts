@@ -1,5 +1,5 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, MarginBottomForSubmitButton, ScrollViewStyle, sharedStyles } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
@@ -25,6 +25,7 @@ export default (theme: ThemeTypes) => {
       marginVertical: theme.margin,
       textAlign: 'center',
       fontWeight: theme.bodyFontWeight,
+      ...FontMedium,
     },
     textArea: {
       height: 4 * theme.sizeLG,

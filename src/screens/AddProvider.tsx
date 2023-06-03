@@ -131,15 +131,15 @@ export const AddProvider = ({
         setLoading(false);
 
         if (result) {
-          toast.show('Added a provider successfully');
+          toast.show(i18n.notificationMessage.addProviderSuccessfully);
           navigation.goBack();
         } else {
-          toast.show('An error occurred, please try again');
+          toast.show(i18n.notificationMessage.pleaseTryAgain);
         }
       })
       .catch(() => {
         setLoading(false);
-        toast.show('An error occurred, please try again');
+        toast.show(i18n.notificationMessage.pleaseTryAgain);
       });
   };
 
@@ -162,13 +162,13 @@ export const AddProvider = ({
   const handleErrorMessage = useCallback((errorCode: _CHAIN_VALIDATION_ERROR) => {
     switch (errorCode) {
       case _CHAIN_VALIDATION_ERROR.CONNECTION_FAILURE:
-        return ['Cannot connect to this provider'];
+        return [i18n.errorMessage.cannotConnectToThisProvider];
       case _CHAIN_VALIDATION_ERROR.EXISTED_PROVIDER:
-        return ['This provider has already been added'];
+        return [i18n.errorMessage.thisChainHasAlreadyBeenAdded];
       case _CHAIN_VALIDATION_ERROR.PROVIDER_NOT_SAME_CHAIN:
-        return ['This provider is not for this chain'];
+        return [i18n.errorMessage.thisChainHasAlreadyBeenAdded];
       default:
-        return ['Error validating this provider'];
+        return [i18n.errorMessage.validateProviderError];
     }
   }, []);
 
@@ -222,8 +222,8 @@ export const AddProvider = ({
           })
           .catch(() => {
             setIsValidating(false);
-            onUpdateErrors('provider')(['Error validating this provider']);
-            setProviderValidation({ status: 'error', message: ['Error validating this provider'] });
+            onUpdateErrors('provider')([i18n.errorMessage.validateProviderError]);
+            setProviderValidation({ status: 'error', message: [i18n.errorMessage.validateProviderError] });
           });
       }
     },
@@ -240,9 +240,9 @@ export const AddProvider = ({
       showLeftBtn
       onPressBack={() => navigation.goBack()}
       rightIcon={Info}
-      title={'Add new provider'}>
+      title={i18n.header.addNewProvider}>
       <>
-        <TouchableWithoutFeedback style={{ backgroundColor: 'red' }} onPress={() => Keyboard.dismiss()}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
             <InputText
               ref={formState.refs.provider}
