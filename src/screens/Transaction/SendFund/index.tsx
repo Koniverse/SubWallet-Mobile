@@ -250,9 +250,6 @@ export const SendFund = ({
 
   const [isToAddressDirty, setToAddressDirty] = useState<boolean>(false);
 
-  const { turnOnChain, checkChainConnected } = useChainChecker();
-  const appModalContext = useContext(AppModalContext);
-
   const handleTransferAll = useCallback((value: boolean) => {
     setForceUpdateMaxValue({});
     setIsTransferAll(value);
@@ -567,12 +564,6 @@ export const SendFund = ({
     }
   }, [accounts, tokenItems, assetRegistry, chainInfoMap, asset, from, onChangeValue]);
 
-  useEffect(() => {
-    if (chain) {
-      checkChainConnected(chain);
-    }
-  }, [chain, checkChainConnected]);
-
   // Get max transfer value
   useEffect(() => {
     let cancel = false;
@@ -772,28 +763,6 @@ export const SendFund = ({
             onSelectItem={item => {
               onChangeAssetValue(item.slug);
               onChangeValue('destChain')(item.originChain);
-              const isConnected = checkChainConnected(item.originChain);
-              if (!isConnected) {
-                setTimeout(
-                  () =>
-                    appModalContext.setConfirmModal({
-                      visible: true,
-                      message: `Your selected chain (${
-                        chainInfoMap[item.originChain].name
-                      }) is currently disabled, you need to turn it on`,
-                      title: 'Enable chain?',
-                      onCancelModal: () => {
-                        appModalContext.hideConfirmModal();
-                      },
-                      onCompleteModal: () => {
-                        appModalContext.hideConfirmModal();
-                        setTimeout(() => turnOnChain(item.originChain), 200);
-                      },
-                      messageIcon: item.originChain,
-                    }),
-                  700,
-                );
-              }
               setTokenSelectModalVisible(false);
               setIsTransferAll(false);
               setForceUpdateMaxValue(undefined);

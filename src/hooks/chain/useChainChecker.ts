@@ -57,7 +57,7 @@ export default function useChainChecker() {
   }
 
   function turnOnChain(chain: string) {
-    enableChain(chain)
+    enableChain(chain, false)
       .then(() => {
         setChainStatus(ChainStatus.CONNECTING);
         connectingChain.current = chain;

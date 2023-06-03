@@ -499,7 +499,7 @@ PODS:
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.10.1):
+  - RNGestureHandler (2.10.2):
     - React-Core
   - RNInAppBrowser (3.7.0):
     - React-Core
@@ -890,7 +890,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 475a4c447168d0ad4c807e48ef5e0963a0f4eb1b
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 42ec7c28dd02d540ed6c9159c57a98ff016492dc
+  RNGestureHandler: f75d81410b40aaa99e71ae8f8bb7a88620c95042
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNPermissions: 1dfb875ac567cecc421d7d5e636f71eb889edc53
   RNReanimated: f186e85d9f28c9383d05ca39e11dd194f59093ec
@@ -906,4 +906,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4a5643dbfb4bccf03b1a886003653271df733a29
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
