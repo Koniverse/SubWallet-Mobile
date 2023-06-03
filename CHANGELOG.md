@@ -1,3 +1,8 @@
+## 1.0.4 (175)
+- Standardization word and sentence entire the app (#696)
+- Apply Max for unstake (#746)
+- Popup turn on chain when transfer (#757)
+
 ## 1.0.4 (174)
 - Fix issue require turn on destination chain in XCM transaction (#758)
 
