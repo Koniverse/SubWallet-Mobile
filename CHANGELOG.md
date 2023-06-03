@@ -1,3 +1,6 @@
+## 1.0.4 (176)
+- Fix issue undefined ChainInfo in transaction screen from update in build 175
+
 ## 1.0.4 (175)
 - Standardization word and sentence entire the app (#696)
 - Apply Max for unstake (#746)
