@@ -124,6 +124,9 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
 
   useEffect(() => {
     const chain = formState.data.chain;
+    if (!chainInfoMap[chain]) {
+      return;
+    }
     const isConnected = checkChainConnected(chain);
     let timeout: NodeJS.Timeout;
     if (!isConnected) {
