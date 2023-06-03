@@ -246,7 +246,7 @@ export const Unbond = ({
   return (
     <TransactionLayout title={title} disableLeftButton={loading}>
       <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps="handled">
           {isAll && (
             <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
               <AccountSelectField
@@ -279,7 +279,7 @@ export const Unbond = ({
             decimals={decimals}
             errorMessages={formState.errors.value}
             disable={loading}
-            showMaxButton={false}
+            showMaxButton={!!from}
           />
 
           {!mustChooseValidator && renderBounded()}
