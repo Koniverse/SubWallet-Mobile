@@ -55,7 +55,9 @@ export const ToggleItem = ({
             shape={'circle'}
           />
         )}
-        <Text numberOfLines={1} style={[toggleItemTextStyle, { color: ColorMap.light }]}>{label}</Text>
+        <Text numberOfLines={1} style={[toggleItemTextStyle, { color: ColorMap.light }]}>
+          {label}
+        </Text>
       </View>
 
       <Switch

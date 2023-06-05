@@ -13,7 +13,7 @@ import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
@@ -32,7 +32,7 @@ import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { getMaxTransfer, makeCrossChainTransfer, makeTransfer } from '../../../messaging';
+import { getMaxTransfer, makeCrossChainTransfer, makeTransfer } from 'messaging/index';
 import { Button, Icon } from 'components/design-system-ui';
 import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
@@ -50,8 +50,6 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
-import useChainChecker from 'hooks/chain/useChainChecker';
-import { AppModalContext } from 'providers/AppModalContext';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -223,7 +221,7 @@ const filterAccountFunc = (
 
 export const SendFund = ({
   route: {
-    params: { slug: tokenGroupSlug },
+    params: { slug: tokenGroupSlug, recipient: scanRecipient },
   },
 }: SendFundProps): React.ReactElement<SendFundProps> => {
   const theme = useSubWalletTheme().swThemes;
@@ -368,6 +366,17 @@ export const SendFund = ({
     },
     [chain, destChain, from, onChangeValue, validateRecipientAddress],
   );
+
+  useEffect(() => {
+    if (scanRecipient) {
+      setTimeout(() => {
+        setToAddressDirty(true);
+        formState.refs.to.current?.onChange(scanRecipient);
+        validateRecipientAddress(scanRecipient, from, chain, destChain);
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
