@@ -41,7 +41,7 @@ export type RootStackParamList = {
   NetworksSetting: undefined;
   NetworkSettingDetail: { chainSlug: string };
   ImportNetwork: undefined;
-  SendFund: { slug?: string };
+  SendFund: { slug?: string; recipient?: string };
   Languages: undefined;
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };

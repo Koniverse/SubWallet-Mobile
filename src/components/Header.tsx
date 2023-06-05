@@ -1,5 +1,5 @@
 import { QrCode } from 'phosphor-react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { SpaceStyle } from 'styles/space';
@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SVGImages } from 'assets/index';
+import { AddressScanner } from 'components/Scanner/AddressScanner';
 
 export interface HeaderProps {}
 
@@ -23,17 +24,15 @@ const headerWrapper: StyleProp<any> = {
 };
 
 export const Header = () => {
+  const [isScanning, setIsScanning] = useState<boolean>(false);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
 
     if (result === RESULTS.GRANTED) {
-      navigation.navigate('SigningAction', {
-        screen: 'SigningScanPayload',
-      });
+      setIsScanning(true);
     }
-  }, [navigation]);
+  }, []);
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
@@ -60,6 +59,12 @@ export const Header = () => {
           onPress={onPressQrButton}
         />
       </View>
+
+      <AddressScanner
+        qrModalVisible={isScanning}
+        onPressCancel={() => setIsScanning(false)}
+        onChangeAddress={data => navigation.navigate('SendFund', { recipient: data })}
+      />
     </View>
   );
 };
