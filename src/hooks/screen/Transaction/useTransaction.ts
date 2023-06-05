@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { TRANSACTION_TITLE_MAP } from 'constants/transaction';
 import { useNavigation } from '@react-navigation/native';
@@ -9,8 +9,6 @@ import { RootState } from 'stores/index';
 import { _getOriginChainOfAsset } from '@subwallet/extension-base/services/chain-service/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
-import useChainChecker from 'hooks/chain/useChainChecker';
-import { AppModalContext } from 'providers/AppModalContext';
 
 export const useTransaction = (action: string, extraFormConfig: FormControlConfig) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
@@ -79,9 +77,6 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
   };
 
   const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(transactionFormConfig, {});
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { turnOnChain, checkChainConnected } = useChainChecker();
-  const appModalContext = useContext(AppModalContext);
 
   const onDone = useCallback(
     (id: string) => {
@@ -105,7 +100,7 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
       onChangeValue('asset')(value);
       onChangeValue('chain')(chain);
     },
-    [appModalContext, chainInfoMap, checkChainConnected, onChangeValue, turnOnChain],
+    [onChangeValue],
   );
 
   const onChangeChainValue = useCallback(
@@ -121,38 +116,6 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     },
     [onChangeValue],
   );
-
-  useEffect(() => {
-    const chain = formState.data.chain;
-    if (!chainInfoMap[chain]) {
-      return;
-    }
-    const isConnected = checkChainConnected(chain);
-    let timeout: NodeJS.Timeout;
-    if (!isConnected) {
-      timeout = setTimeout(
-        () =>
-          appModalContext.setConfirmModal({
-            visible: true,
-            message: `Your selected chain (${chainInfoMap[chain].name}) is currently disabled, you need to turn it on`,
-            title: 'Enable chain?',
-            onCancelModal: () => {
-              appModalContext.hideConfirmModal();
-            },
-            onCompleteModal: () => {
-              appModalContext.hideConfirmModal();
-              setTimeout(() => turnOnChain(chain), 200);
-            },
-            messageIcon: chain,
-          }),
-        700,
-      );
-    }
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [appModalContext, chainInfoMap, checkChainConnected, formState.data.chain, turnOnChain]);
 
   return {
     title,
