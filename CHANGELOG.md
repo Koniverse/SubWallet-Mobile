@@ -1,3 +1,7 @@
+## 1.0.5 (177)
+- Popup turn on chain when transfer, staking, import nft, import token
+- Fix bug can not approve transaction via QR code (#765)
+
 ## 1.0.4 (176)
 - Fix issue undefined ChainInfo in transaction screen from update in build 175
 
