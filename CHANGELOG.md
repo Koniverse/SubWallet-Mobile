@@ -1,3 +1,8 @@
+## 1.0.5 (178)
+- Bug UI Confirmation screen on Android (#742)
+- Error page in case import token, import NFT when chain is turn off (#767)
+- Can't perform any actions with the application after pressing the Unstake, Cancel Unstake, Withdraw button (#766)
+
 ## 1.0.5 (177)
 - Popup turn on chain when transfer, staking, import nft, import token
 - Fix bug can not approve transaction via QR code (#765)

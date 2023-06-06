@@ -110,7 +110,7 @@ export const Stake = ({
     onChangeAmountValue,
     onDone,
     onUpdateErrors,
-  } = useTransaction('stake', stakeFormConfig);
+  } = useTransaction('stake', stakeFormConfig, {});
 
   const {
     asset,
