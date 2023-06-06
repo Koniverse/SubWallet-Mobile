@@ -1,10 +1,6 @@
-import { RefObject, useCallback, useContext, useReducer, useRef } from 'react';
+import { RefObject, useCallback, useReducer, useRef } from 'react';
 import { Keyboard } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import useChainChecker from 'hooks/chain/useChainChecker';
-import { AppModalContext } from 'providers/AppModalContext';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 
 type FormItemKey = string;
 
@@ -35,7 +31,7 @@ interface FormControlAction {
   payload: { fieldName: string; value?: string; errors?: string[] };
 }
 
-interface FormControlOption {
+export interface FormControlOption {
   onSubmitForm?: (formState: FormState) => void;
 }
 
@@ -178,42 +174,12 @@ export type FormControlConfig = Record<FormItemKey, FormControlItem>;
 
 export default function useFormControl(formConfig: FormControlConfig, formControlOption: FormControlOption) {
   const [formState, dispatchForm] = useReducer(formReducer, initForm(formConfig, formControlOption));
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { turnOnChain, checkChainConnected } = useChainChecker();
-  const appModalContext = useContext(AppModalContext);
 
-  const onChangeValue = useCallback(
-    (fieldName: string) => {
-      return (currentValue: string) => {
-        dispatchForm({ type: 'change_value', payload: { fieldName, value: currentValue } });
-
-        if (fieldName === 'chain') {
-          if (!chainInfoMap[currentValue]) {
-            return;
-          }
-          const isConnected = checkChainConnected(currentValue);
-          if (!isConnected) {
-            setTimeout(() => {
-              appModalContext.setConfirmModal({
-                visible: true,
-                message: `Your selected chain (${chainInfoMap[currentValue].name}) is currently disabled, you need to turn it on`,
-                title: 'Enable chain?',
-                onCancelModal: () => {
-                  appModalContext.hideConfirmModal();
-                },
-                onCompleteModal: () => {
-                  appModalContext.hideConfirmModal();
-                  setTimeout(() => turnOnChain(currentValue), 200);
-                },
-                messageIcon: currentValue,
-              });
-            }, 700);
-          }
-        }
-      };
-    },
-    [appModalContext, chainInfoMap, checkChainConnected, turnOnChain],
-  );
+  const onChangeValue = useCallback((fieldName: string) => {
+    return (currentValue: string) => {
+      dispatchForm({ type: 'change_value', payload: { fieldName, value: currentValue } });
+    };
+  }, []);
 
   const onUpdateErrors = useCallback((fieldName: string) => {
     return (errors?: string[]) => {

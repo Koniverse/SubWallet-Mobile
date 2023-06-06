@@ -5,7 +5,7 @@ import { ImportTokenProps, RootNavigationProps } from 'routes/index';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import { FormState } from 'hooks/screen/useFormControl';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { NetworkField } from 'components/Field/Network';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
@@ -34,6 +34,7 @@ import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTyp
 import { useToast } from 'react-native-toast-notifications';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from '../../types/asset';
+import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 
 interface TokenTypeOption {
   label: string;
@@ -172,9 +173,13 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       });
   };
 
-  const { formState, onChangeValue, onUpdateErrors, onSubmitField } = useFormControl(formConfig, {
-    onSubmitForm: onSubmit,
-  });
+  const { formState, onChangeValue, onChangeChainValue, onUpdateErrors, onSubmitField } = useTransaction(
+    'import-token',
+    formConfig,
+    {
+      onSubmitForm: onSubmit,
+    },
+  );
 
   const tokenTypeOptions = useMemo(() => {
     return getTokenTypeSupported(chainInfoMap[formState.data.chain]);
@@ -240,10 +245,14 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     (key: string) => {
       return (text: string) => {
         onUpdateErrors(key)(undefined);
+        if (key === 'chain') {
+          onChangeChainValue(text);
+          return;
+        }
         onChangeValue(key)(text);
       };
     },
-    [onChangeValue, onUpdateErrors],
+    [onChangeChainValue, onChangeValue, onUpdateErrors],
   );
 
   const onSelectTokenType = useCallback(
@@ -316,7 +325,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             }}
             placeholder={i18n.placeholder.typeOrPasteContractAddress}
             onPressQrButton={onPressQrButton}
-            onSubmitField={onSubmitField('contractAddress')}
+            onSubmitField={addTokenButtonDisabled ? undefined : onSubmitField('contractAddress')}
           />
 
           {isReady && !!formState.errors.contractAddress.length && (
