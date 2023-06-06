@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
-import useFormControl, { FormState } from 'hooks/screen/useFormControl';
+import { FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from 'messaging/index';
@@ -33,6 +33,7 @@ import { AssetTypeOption } from 'types/asset';
 import { PlusCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
+import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -178,9 +179,13 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       });
   };
 
-  const { formState, onChangeValue, onUpdateErrors, onSubmitField } = useFormControl(formConfig, {
-    onSubmitForm: handleAddToken,
-  });
+  const { formState, onChangeValue, onChangeChainValue, onUpdateErrors, onSubmitField } = useTransaction(
+    'import-nft',
+    formConfig,
+    {
+      onSubmitForm: handleAddToken,
+    },
+  );
 
   const { data: formData } = formState;
   const { chain, smartContract, collectionName, selectedNftType } = formData;
@@ -193,10 +198,14 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     (key: string) => {
       return (text: string) => {
         onUpdateErrors(key)(undefined);
+        if (key === 'chain') {
+          onChangeChainValue(text);
+          return;
+        }
         onChangeValue(key)(text);
       };
     },
-    [onChangeValue, onUpdateErrors],
+    [onChangeChainValue, onChangeValue, onUpdateErrors],
   );
 
   const onPressQrButton = async () => {

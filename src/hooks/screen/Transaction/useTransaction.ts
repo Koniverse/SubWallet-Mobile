@@ -1,19 +1,29 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { TRANSACTION_TITLE_MAP } from 'constants/transaction';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
+import useFormControl, { FormControlConfig, FormControlOption } from 'hooks/screen/useFormControl';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _getOriginChainOfAsset } from '@subwallet/extension-base/services/chain-service/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
+import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
+import useChainChecker from 'hooks/chain/useChainChecker';
+import { AppModalContext } from 'providers/AppModalContext';
 
-export const useTransaction = (action: string, extraFormConfig: FormControlConfig) => {
+export const useTransaction = (
+  action: string,
+  extraFormConfig: FormControlConfig,
+  formControlOption: FormControlOption,
+) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const navigation = useNavigation<RootNavigationProps>();
-  const transactionType = useMemo((): ExtrinsicType => {
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { turnOnChain, checkChainConnected } = useChainChecker();
+  const appModalContext = useContext(AppModalContext);
+  const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
       case 'stake':
         return ExtrinsicType.STAKING_JOIN_POOL;
@@ -27,6 +37,10 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
         return ExtrinsicType.STAKING_WITHDRAW;
       case 'compound':
         return ExtrinsicType.STAKING_COMPOUNDING;
+      case 'import-nft':
+        return ExtraExtrinsicType.IMPORT_NFT;
+      case 'import-token':
+        return ExtraExtrinsicType.IMPORT_TOKEN;
       case 'send-nft':
         return ExtrinsicType.SEND_NFT;
       case 'send-fund':
@@ -76,7 +90,10 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
     ...extraFormConfig,
   };
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(transactionFormConfig, {});
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(
+    transactionFormConfig,
+    formControlOption || {},
+  );
 
   const onDone = useCallback(
     (id: string) => {
@@ -85,6 +102,34 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
       navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, id, path: homePath });
     },
     [formState.data.chain, formState.data.from, homePath, navigation],
+  );
+
+  const showPopupEnableChain = useCallback(
+    (chain: string) => {
+      if (!chainInfoMap[chain]) {
+        return;
+      }
+      const isConnected = checkChainConnected(chain);
+      if (!isConnected) {
+        setTimeout(() => {
+          appModalContext.setConfirmModal({
+            visible: true,
+            message: `Your selected chain (${chainInfoMap[chain].name}) is currently disabled, you need to turn it on`,
+            title: 'Enable chain?',
+            onCancelModal: () => {
+              appModalContext.hideConfirmModal();
+            },
+            onCompleteModal: () => {
+              appModalContext.hideConfirmModal();
+              setTimeout(() => turnOnChain(chain), 200);
+            },
+            messageIcon: chain,
+          });
+        }, 700);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [appModalContext, chainInfoMap],
   );
 
   const onChangeFromValue = useCallback(
@@ -99,15 +144,17 @@ export const useTransaction = (action: string, extraFormConfig: FormControlConfi
       const chain = _getOriginChainOfAsset(value);
       onChangeValue('asset')(value);
       onChangeValue('chain')(chain);
+      showPopupEnableChain(chain);
     },
-    [onChangeValue],
+    [onChangeValue, showPopupEnableChain],
   );
 
   const onChangeChainValue = useCallback(
     (value: string) => {
       onChangeValue('chain')(value);
+      showPopupEnableChain(value);
     },
-    [onChangeValue],
+    [onChangeValue, showPopupEnableChain],
   );
 
   const onChangeAmountValue = useCallback(

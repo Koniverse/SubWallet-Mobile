@@ -3,12 +3,15 @@
 
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { ConfirmationType } from 'stores/base/RequestState';
+import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 import i18n from 'utils/i18n/i18n';
 
-export const TRANSACTION_TITLE_MAP: Record<ExtrinsicType, string> = {
+export const TRANSACTION_TITLE_MAP: Record<ExtrinsicTypeMobile, string> = {
   [ExtrinsicType.TRANSFER_BALANCE]: i18n.header.transfer,
   [ExtrinsicType.TRANSFER_XCM]: i18n.header.transfer,
   [ExtrinsicType.TRANSFER_TOKEN]: i18n.header.transfer,
+  [ExtraExtrinsicType.IMPORT_NFT]: i18n.header.importNft,
+  [ExtraExtrinsicType.IMPORT_TOKEN]: i18n.header.importToken,
   [ExtrinsicType.SEND_NFT]: i18n.header.transferNft,
   [ExtrinsicType.CROWDLOAN]: i18n.header.crowdloans,
   [ExtrinsicType.STAKING_JOIN_POOL]: i18n.header.addToBond,
