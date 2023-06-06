@@ -18,4 +18,6 @@ export { default as Tag } from './tag';
 export { default as Divider } from './divider';
 export { default as PageIcon } from './page-icon';
 export { default as QRCode } from './qr-code';
+export { default as Input } from './input';
+export { default as Field } from './field';
 export * from './web3-block';
