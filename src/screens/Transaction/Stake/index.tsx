@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
@@ -148,6 +148,8 @@ export const Stake = ({
       unmount = true;
     };
   }, [from, _stakingType, chain, chainState?.active, currentStakingType]);
+  const fromRef = useRef<string>(from);
+  const tokenRef = useRef<string>(asset);
 
   const tokenList = useGetSupportedStakingTokens(currentStakingType as StakingType, from, stakingChain);
   const accountInfo = useGetAccountByAddress(from);
@@ -330,6 +332,7 @@ export const Stake = ({
   const onSelectToken = useCallback(
     (item: TokenItemType) => {
       onChangeAssetValue(item.slug);
+      tokenRef.current = item.slug;
       setTokenSelectModalVisible(false);
     },
     [onChangeAssetValue],
@@ -361,12 +364,15 @@ export const Stake = ({
     (type: StakingType) => {
       onChangeValue('stakingType')(type);
 
-      if (isEthereumAddress(from) && currentStakingType === StakingType.NOMINATED) {
+      if (isAllAccount && isEthereumAddress(from) && currentStakingType === StakingType.NOMINATED) {
         onChangeFromValue('');
         onChangeAssetValue('');
+      } else {
+        onChangeFromValue(fromRef.current);
+        onChangeAssetValue(tokenRef.current);
       }
     },
-    [currentStakingType, from, onChangeAssetValue, onChangeFromValue, onChangeValue],
+    [currentStakingType, from, isAllAccount, onChangeAssetValue, onChangeFromValue, onChangeValue],
   );
 
   return (
@@ -379,7 +385,11 @@ export const Stake = ({
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps={'handled'}>
           {_stakingType === ALL_KEY && (
-            <StakingTab selectedType={currentStakingType as StakingType} onSelectType={onChangeStakingType} />
+            <StakingTab
+              from={from}
+              selectedType={currentStakingType as StakingType}
+              onSelectType={onChangeStakingType}
+            />
           )}
 
           {isAllAccount && (
@@ -464,6 +474,7 @@ export const Stake = ({
           modalVisible={accountSelectModalVisible}
           onSelectItem={item => {
             onChangeFromValue(item.address);
+            fromRef.current = item.address;
             setAccountSelectModalVisible(false);
           }}
           items={accountSelectorList}
