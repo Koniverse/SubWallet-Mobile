@@ -75,7 +75,7 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
           try {
             return getValidURL(decodeURIComponent(url));
           } catch (e) {
-            console.log('Cannot decode url ' + url);
+            console.warn('Cannot decode url ' + url);
             return getValidURL(url);
           }
         },
@@ -117,7 +117,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   };
 
   const onError = (error: Error, stackTrace: string) => {
-    console.log('AppNavigator.tsx / Error boundary: ', error, stackTrace);
+    console.warn('AppNavigator.tsx / Error boundary: ', error, stackTrace);
   };
 
   const onUpdateRoute = useCallback((state: NavigationState | undefined) => {

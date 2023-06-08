@@ -1,3 +1,7 @@
+## 1.0.5 (179)
+- Fix open deeplink issue when the app is closed
+- Fix bug can't select token in case change Nominate to Pool when specific account mode (#771)
+
 ## 1.0.5 (178)
 - Bug UI Confirmation screen on Android (#742)
 - Error page in case import token, import NFT when chain is turn off (#767)

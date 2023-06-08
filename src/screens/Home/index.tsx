@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
-import { Platform, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, TouchableOpacity, View } from 'react-native';
 import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
@@ -131,7 +131,17 @@ export const Home = () => {
   const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
   const { isLocked } = useAppLock();
   const [isLoading, setLoading] = useState(true);
+
   useEffect(() => {
+    if (isReady) {
+      Linking.getInitialURL()
+        .then(url => {
+          if (url) {
+            Linking.openURL(url);
+          }
+        })
+        .catch(e => console.warn('e', e));
+    }
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 500);
     }
