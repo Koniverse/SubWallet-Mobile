@@ -6,10 +6,8 @@ import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
 import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySigner';
 import ImportQrCode from 'screens/Account/ImportQrCode';
-import { Home } from 'screens/Home';
 import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
-import { Settings } from 'screens/Settings';
 import { GeneralSettings } from 'screens/Settings/General';
 import { SendFund } from 'screens/Transaction/SendFund';
 import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
@@ -61,6 +59,7 @@ import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { Platform } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Home } from 'screens/Home';
 
 interface Props {
   isAppReady: boolean;
@@ -172,9 +171,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
           {isAppReady && (
             <>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
-                <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
-                <Stack.Screen name="Settings" component={Settings} />
+                <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
                 <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
@@ -184,9 +181,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                 <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                <Stack.Screen name="History" component={HistoryScreen} />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
+                <Stack.Screen name="History" component={HistoryScreen} />
+                <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}

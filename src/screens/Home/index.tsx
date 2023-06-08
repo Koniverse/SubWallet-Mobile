@@ -7,7 +7,7 @@ import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BOTTOM_BAR_HEIGHT } from 'constants/index';
+import { BOTTOM_BAR_HEIGHT, deviceWidth } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { FirstScreen } from 'screens/Home/FirstScreen';
@@ -22,8 +22,9 @@ import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useAppLock from 'hooks/useAppLock';
-
-const MainScreen = () => {
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Settings } from 'screens/Settings';
+const MainScreenContent = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
@@ -123,6 +124,27 @@ const MainScreen = () => {
         }}
       />
     </Tab.Navigator>
+  );
+};
+
+const getSettingsContent = () => {
+  return <Settings />;
+};
+
+const MainScreen = () => {
+  const Drawer = createDrawerNavigator();
+  return (
+    <Drawer.Navigator
+      initialRouteName={'Main'}
+      drawerContent={getSettingsContent}
+      screenOptions={{
+        drawerStyle: {
+          width: deviceWidth,
+        },
+        drawerType: 'front',
+      }}>
+      <Drawer.Screen name="Main" component={MainScreenContent} options={{ headerShown: false }} />
+    </Drawer.Navigator>
   );
 };
 

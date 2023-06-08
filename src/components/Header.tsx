@@ -13,6 +13,7 @@ import { SVGImages } from 'assets/index';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { isAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 export interface HeaderProps {}
 
@@ -29,6 +30,7 @@ export const Header = () => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const drawerNavigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
 
@@ -59,7 +61,7 @@ export const Header = () => {
           size={'xs'}
           icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
-            navigation.navigate('Settings');
+            drawerNavigation.toggleDrawer();
           }}
         />
       </View>
