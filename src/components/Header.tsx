@@ -11,6 +11,8 @@ import { RootStackParamList } from 'routes/index';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SVGImages } from 'assets/index';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
+import { isAddress } from '@polkadot/util-crypto';
+import i18n from 'utils/i18n/i18n';
 
 export interface HeaderProps {}
 
@@ -25,6 +27,7 @@ const headerWrapper: StyleProp<any> = {
 
 export const Header = () => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
@@ -33,6 +36,19 @@ export const Header = () => {
       setIsScanning(true);
     }
   }, []);
+
+  const onScanAddress = useCallback(
+    (data: string) => {
+      if (isAddress(data)) {
+        setError(undefined);
+        setIsScanning(false);
+        navigation.navigate('SendFund', { recipient: data });
+      } else {
+        setError(i18n.errorMessage.isNotAnAddress);
+      }
+    },
+    [navigation],
+  );
 
   return (
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
@@ -62,8 +78,13 @@ export const Header = () => {
 
       <AddressScanner
         qrModalVisible={isScanning}
-        onPressCancel={() => setIsScanning(false)}
-        onChangeAddress={data => navigation.navigate('SendFund', { recipient: data })}
+        onPressCancel={() => {
+          setError(undefined);
+          setIsScanning(false);
+        }}
+        onChangeAddress={onScanAddress}
+        error={error}
+        isShowError={true}
       />
     </View>
   );
