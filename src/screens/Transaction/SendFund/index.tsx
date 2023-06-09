@@ -265,7 +265,7 @@ export const SendFund = ({
   };
 
   const { title, formState, onChangeValue, onUpdateErrors, onDone, onChangeFromValue, onChangeAssetValue } =
-    useTransaction('send-fund', formConfig);
+    useTransaction('send-fund', formConfig, {});
   const { asset, chain, destChain, from, to, value: amount } = formState.data;
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, handleTransferAll);
   const isDataNotReady = !to || !amount;
@@ -548,7 +548,7 @@ export const SendFund = ({
             const token = tokenItems.find(item => item.originChain === network.slug);
 
             if (token) {
-              onChangeValue('asset')(token.slug);
+              onChangeAssetValue(tokenItems[0].slug);
               onChangeValue('chain')(assetRegistry[token.slug].originChain);
               onChangeValue('destChain')(assetRegistry[token.slug].originChain);
               pass = true;
@@ -557,7 +557,7 @@ export const SendFund = ({
         }
 
         if (!pass) {
-          onChangeValue('asset')(tokenItems[0].slug);
+          onChangeAssetValue(tokenItems[0].slug);
           onChangeValue('chain')(assetRegistry[tokenItems[0].slug].originChain);
           onChangeValue('destChain')(assetRegistry[tokenItems[0].slug].originChain);
         }
@@ -565,13 +565,13 @@ export const SendFund = ({
         const isSelectedTokenInList = tokenItems.some(i => i.slug === asset);
 
         if (!isSelectedTokenInList) {
-          onChangeValue('asset')(tokenItems[0].slug);
+          onChangeAssetValue(tokenItems[0].slug);
           onChangeValue('chain')(assetRegistry[tokenItems[0].slug].originChain);
           onChangeValue('destChain')(assetRegistry[tokenItems[0].slug].originChain);
         }
       }
     }
-  }, [accounts, tokenItems, assetRegistry, chainInfoMap, asset, from, onChangeValue]);
+  }, [accounts, tokenItems, assetRegistry, chainInfoMap, asset, from, onChangeValue, onChangeAssetValue]);
 
   // Get max transfer value
   useEffect(() => {

@@ -1178,6 +1178,7 @@ export const en = {
     crowdloanUrlMustBeAValidUrl: 'Crowdloan URL must be a valid URL',
     blockExplorerMustBeAValidUrl: 'Block explorer must be a valid URL',
     invalidAmount: 'Amount is invalid',
+    isNotAnAddress: 'Invalid. This QR code is not an address',
   },
   notificationMessage: {
     watchOnlyNoti: 'The account you are using is watch-only, you cannot send assets with it',

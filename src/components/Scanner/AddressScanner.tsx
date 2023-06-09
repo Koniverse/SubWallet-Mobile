@@ -13,6 +13,7 @@ import { getNetworkLogo } from 'utils/index';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { IconButton } from 'components/IconButton';
+import { Warning } from 'components/Warning';
 
 interface Props {
   onPressCancel: () => void;
@@ -21,6 +22,8 @@ interface Props {
   networkKey?: string;
   token?: string;
   scanMessage?: string;
+  error?: string;
+  isShowError?: boolean;
 }
 
 const CancelButtonStyle: StyleProp<ViewStyle> = {
@@ -40,6 +43,13 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   marginHorizontal: 22,
 };
 
+const BottomSubContentStyle: StyleProp<ViewStyle> = {
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  marginHorizontal: 16,
+  flex: 1,
+};
+
 export const AddressScanner = ({
   onPressCancel,
   onChangeAddress,
@@ -47,11 +57,13 @@ export const AddressScanner = ({
   networkKey,
   token,
   scanMessage = i18n.common.toSendFund,
+  error,
+  isShowError = false,
 }: Props) => {
   const onSuccess = (e: BarCodeReadEvent) => {
     try {
       onChangeAddress(e.data);
-      onPressCancel();
+      !isShowError && onPressCancel();
     } catch (err) {
       console.log(err);
     }
@@ -94,6 +106,7 @@ export const AddressScanner = ({
               <View style={ScannerStyles.LeftAndRightOverlayStyle} />
             </View>
             <View style={ScannerStyles.BottomOverlayStyle}>
+              <View style={BottomSubContentStyle}>{!!error && <Warning message={error} isDanger />}</View>
               <View style={BottomContentStyle}>
                 {networkKey && <View style={ScannerStyles.LogoContainerStyle}>{getNetworkLogo(networkKey, 34)}</View>}
 
