@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
-import { ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View } from 'react-native';
+import { ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View, ViewStyle } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useLazyList } from 'hooks/common/useLazyList';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -19,7 +19,7 @@ interface Props<T> {
   filterFunction?: (items: T[], filters: string[]) => T[];
   groupBy: (item: T) => string;
   selectedFilters?: string[];
-  listStyle?: StyleProp<any>;
+  listStyle?: StyleProp<ViewStyle>;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
   renderItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
   sortItemFunction?: SortFunctionInterface<T>;

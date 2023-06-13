@@ -5,6 +5,7 @@ import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet
 import { AuthUrls } from '@subwallet/extension-base/background/handlers/State';
 import {
   AccountsWithCurrentAddress,
+  AddressBookInfo,
   AllLogoMap,
   AssetSetting,
   BalanceJson,
@@ -90,6 +91,17 @@ export const subscribeKeyringState = lazySubscribeMessage(
   null,
   updateKeyringState,
   updateKeyringState,
+);
+
+export const updateAddressBook = (data: AddressBookInfo) => {
+  store.dispatch({ type: 'accountState/updateAddressBook', payload: data });
+};
+
+export const subscribeAddressBook = lazySubscribeMessage(
+  'pri(accounts.subscribeAddresses)',
+  null,
+  updateAddressBook,
+  updateAddressBook,
 );
 
 function convertConfirmationToMap(data: ConfirmationRequestBase[]) {
