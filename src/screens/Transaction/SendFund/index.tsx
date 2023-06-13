@@ -695,7 +695,7 @@ export const SendFund = ({
                 value={formState.data.to}
                 onChange={onChangeRecipientAddress}
                 isValidValue={formState.isValidated.recipientAddress}
-                placeholder={i18n.placeholder.enterOrPasteAnAddress}
+                placeholder={i18n.placeholder.accountAddress}
                 disabled={loading}
                 onSubmitField={onSubmit}
               />

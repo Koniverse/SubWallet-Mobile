@@ -153,7 +153,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
           backgroundIcon={Wallet}
           backgroundIconColor={theme['green-7']}
           style={{ marginHorizontal: 16 }}
-          label={i18n.customization.showTokensWithZeroBalance}
+          label={i18n.customization.showZeroBalance}
           isEnabled={isShowZeroBalance}
           onValueChange={onChangeZeroBalance}
         />

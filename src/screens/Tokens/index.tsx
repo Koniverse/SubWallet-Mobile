@@ -150,6 +150,7 @@ export const CustomTokenSetting = () => {
         title={i18n.header.manageTokens}
         items={assetItems}
         autoFocus={false}
+        placeholder={i18n.placeholder.searchToken}
         filterOptions={FILTER_OPTIONS}
         filterFunction={filterFunction}
         searchFunction={searchFunction}

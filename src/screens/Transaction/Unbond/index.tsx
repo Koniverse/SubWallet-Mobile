@@ -74,7 +74,7 @@ export const Unbond = ({
   );
 
   const { title, formState, onChangeValue, onChangeAmountValue, onChangeFromValue, onDone, onUpdateErrors } =
-    useTransaction('unstake', unbondFormConfig);
+    useTransaction('unstake', unbondFormConfig, {});
   const { from, nomination: currentValidator, chain, value: currentValue } = formState.data;
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -321,7 +321,7 @@ export const Unbond = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            {i18n.buttonTitles.unstake}
+            {i18n.buttonTitles.unbond}
           </Button>
         </View>
       </>

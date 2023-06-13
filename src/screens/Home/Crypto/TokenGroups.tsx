@@ -240,7 +240,7 @@ export const TokenGroups = () => {
       <View style={{ width: '100%', alignItems: 'center', paddingVertical: 16 }}>
         <LeftIconButton
           icon={SlidersHorizontal}
-          title={i18n.common.manageTokenList}
+          title={i18n.buttonTitles.manageTokens}
           onPress={() => navigation.navigate('CustomTokenSetting')}
         />
       </View>

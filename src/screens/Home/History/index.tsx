@@ -174,14 +174,14 @@ enum FilterValue {
 }
 
 const FILTER_OPTIONS = [
-  { label: 'Send token transaction', value: FilterValue.SEND },
-  { label: 'Receive token transaction', value: FilterValue.RECEIVED },
-  { label: 'NFT transaction', value: FilterValue.NFT },
-  { label: 'Stake transaction', value: FilterValue.STAKE },
-  { label: 'Claim reward transaction', value: FilterValue.CLAIM },
+  { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
+  { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
+  { label: i18n.filterOptions.nftTransaction, value: FilterValue.NFT },
+  { label: i18n.filterOptions.stakeTransaction, value: FilterValue.STAKE },
+  { label: i18n.filterOptions.claimStakingReward, value: FilterValue.CLAIM },
   // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
-  { label: 'Successful transaction', value: FilterValue.SUCCESSFUL },
-  { label: 'Failed transaction', value: FilterValue.FAILED },
+  { label: i18n.filterOptions.successful, value: FilterValue.SUCCESSFUL },
+  { label: i18n.filterOptions.failed, value: FilterValue.FAILED },
 ];
 
 const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {

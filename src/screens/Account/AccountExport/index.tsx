@@ -28,7 +28,7 @@ const titleMap: Record<ExportType, string> = {
   [ExportType.JSON_FILE]: i18n.header.successful,
   [ExportType.QR_CODE]: i18n.header.yourQrCode,
   [ExportType.PRIVATE_KEY]: i18n.header.yourPrivateKey,
-  [ExportType.SEED_PHRASE]: i18n.header.yourSeedPhrase,
+  [ExportType.SEED_PHRASE]: i18n.header.yourRecoveryPhrase,
 };
 
 export const AccountExport = ({
@@ -190,7 +190,7 @@ export const AccountExport = ({
 
   const title = useMemo(() => {
     if (currentViewStep === ViewStep.SELECT_TYPES) {
-      return i18n.title.exportAccount;
+      return i18n.header.exportAccount;
     } else {
       if (!exportSingle) {
         return 'Export successful';

@@ -25,7 +25,7 @@ export const GeneralSettings = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.security} navigation={navigation}>
+    <SubScreenContainer title={i18n.header.generalSettings} navigation={navigation}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <SelectItem
           icon={Image}

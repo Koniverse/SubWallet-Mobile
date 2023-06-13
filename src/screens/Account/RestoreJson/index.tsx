@@ -291,7 +291,7 @@ export const RestoreJson = () => {
                   onSubmitField={onSubmitField('password')}
                   showEyeButton={false}
                   outerStyle={styles.passwordField}
-                  placeholder={i18n.placeholder.currentPassword}
+                  placeholder={i18n.placeholder.password}
                   isBusy={isBusy}
                 />
               </View>
@@ -305,7 +305,7 @@ export const RestoreJson = () => {
             icon={getButtonIcon(FileArrowDown)}
             onPress={onPressSubmit(onPressSubmitButton)}
             disabled={isDisabled}>
-            {i18n.buttonTitles.importAccount}
+            {i18n.buttonTitles.importByJsonFile}
           </Button>
         </View>
       </View>

@@ -8,10 +8,9 @@ import { getSchemaColor, renderColContent } from 'components/MetaInfo/shared';
 import { AccountItem, ChainItem } from 'components/MetaInfo/parts/index';
 import i18n from 'utils/i18n/i18n';
 import { View } from 'react-native';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import Typography from '../../design-system-ui/typography';
 import { toShort } from 'utils/index';
-import { Logo } from 'components/design-system-ui';
+import { Avatar, Logo } from 'components/design-system-ui';
 
 export interface TransferInfoItem extends Omit<InfoItemBase, 'label'> {
   senderAddress: string;
@@ -51,7 +50,7 @@ const TransferItem: React.FC<TransferInfoItem> = ({
   const genAccountBlock = (address: string, name?: string) => {
     return (
       <View style={[_style.valueWrapper, { gap: theme.sizeXS }]}>
-        <SubWalletAvatar address={address} size={24} />
+        <Avatar value={address} size={24} />
         <Typography.Text ellipsis style={valueStyle}>
           {name || toShort(address)}
         </Typography.Text>

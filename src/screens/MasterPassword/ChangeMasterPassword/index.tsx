@@ -174,7 +174,7 @@ const ChangeMasterPassword = () => {
             />
           }
           onPress={onSubmit}>
-          {i18n.buttonTitles.finish}
+          {i18n.buttonTitles.save}
         </Button>
       </View>
     </ContainerWithSubHeader>
