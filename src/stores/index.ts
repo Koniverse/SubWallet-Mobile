@@ -21,13 +21,13 @@ import StakingReducer from './feature/Staking';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import LogoMap from 'stores/base/LogoMap';
-// import { reduxStorage } from 'utils/storage';
+import { reduxStorage } from 'utils/storage';
 
-const persistConfig = {
+const persistRootConfig = {
   key: 'root',
   version: 2,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion', 'price', 'chainStore', 'assetRegistry', 'balance'],
+  whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion'],
   migrate: (state: any) => {
     const beforeInfo = state?._persist || {};
     if ((beforeInfo.version || 0) < 2) {
@@ -57,6 +57,12 @@ const persistConfig = {
   },
 };
 
+const persistMainConfig = {
+  key: 'main',
+  storage: reduxStorage,
+  whitelist: ['price', 'chainStore', 'assetRegistry', 'balance'],
+};
+
 const rootReducer = combineReducers({
   // Basic mobile app store
   appState: appStateReducer,
@@ -71,13 +77,13 @@ const rootReducer = combineReducers({
   crowdloan: CrowdloanReducer,
   nft: NftReducer,
   staking: StakingReducer,
-  price: PriceReducer,
-  balance: BalanceReducer,
+  price: persistReducer(persistMainConfig, PriceReducer),
+  balance: persistReducer(persistMainConfig, BalanceReducer),
   bonding: BondingReducer,
 
   // // Common
-  chainStore: ChainStoreReducer,
-  assetRegistry: AssetRegistryReducer,
+  chainStore: persistReducer(persistMainConfig, ChainStoreReducer),
+  assetRegistry: persistReducer(persistMainConfig, AssetRegistryReducer),
 
   // // Base
   requestState: RequestStateReducer,
@@ -86,7 +92,7 @@ const rootReducer = combineReducers({
   logoMaps: LogoMap,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistRootConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,

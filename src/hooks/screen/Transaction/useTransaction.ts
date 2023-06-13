@@ -16,7 +16,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 export const useTransaction = (
   action: string,
   extraFormConfig: FormControlConfig,
-  formControlOption: FormControlOption,
+  formControlOption?: FormControlOption,
 ) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const navigation = useNavigation<RootNavigationProps>();
