@@ -75,10 +75,16 @@ const NftItemList = ({
         }
 
         navigation.navigate('Home', {
-          screen: 'NFTs',
+          // @ts-ignore
+          screen: 'Main',
           params: {
-            screen: 'NftDetail',
-            params: { collectionId, nftId: key },
+            // @ts-ignore
+            screen: 'NFTs',
+            params: {
+              // @ts-ignore
+              screen: 'NftDetail',
+              params: { collectionId, nftId: key },
+            },
           },
         });
       };

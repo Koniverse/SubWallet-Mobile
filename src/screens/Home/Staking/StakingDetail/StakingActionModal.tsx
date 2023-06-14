@@ -57,22 +57,28 @@ const StakingActionModal = (props: Props) => {
 
   const unStakeAction = useCallback(() => {
     closeModal();
-    navigation.navigate('TransactionAction', {
-      screen: 'Unbond',
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
       params: {
-        type: chainStakingMetadata?.type || ALL_KEY,
-        chain: chainStakingMetadata?.chain || ALL_KEY,
+        screen: 'Unbond',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: chainStakingMetadata?.chain || ALL_KEY,
+        },
       },
     });
   }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation]);
 
   const stakeAction = useCallback(() => {
     closeModal();
-    navigation.navigate('TransactionAction', {
-      screen: 'Stake',
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
       params: {
-        type: chainStakingMetadata?.type || ALL_KEY,
-        chain: nominatorMetadata?.chain || ALL_KEY,
+        screen: 'Stake',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: nominatorMetadata?.chain || ALL_KEY,
+        },
       },
     });
   }, [chainStakingMetadata?.type, closeModal, navigation, nominatorMetadata?.chain]);
@@ -86,22 +92,28 @@ const StakingActionModal = (props: Props) => {
     closeModal();
 
     setSelected(undefined);
-    navigation.navigate('TransactionAction', {
-      screen: 'Withdraw',
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
       params: {
-        type: chainStakingMetadata?.type || ALL_KEY,
-        chain: chainStakingMetadata?.chain || ALL_KEY,
+        screen: 'Withdraw',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: chainStakingMetadata?.chain || ALL_KEY,
+        },
       },
     });
   }, [nominatorMetadata, closeModal, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
 
   const cancelUnstakeAction = useCallback(() => {
     closeModal();
-    navigation.navigate('TransactionAction', {
-      screen: 'CancelUnstake',
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
       params: {
-        type: chainStakingMetadata?.type || ALL_KEY,
-        chain: chainStakingMetadata?.chain || ALL_KEY,
+        screen: 'CancelUnstake',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: chainStakingMetadata?.chain || ALL_KEY,
+        },
       },
     });
   }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation]);
@@ -115,11 +127,14 @@ const StakingActionModal = (props: Props) => {
 
     setSelected(undefined);
     closeModal();
-    navigation.navigate('TransactionAction', {
-      screen: 'ClaimReward',
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
       params: {
-        type: chainStakingMetadata?.type || ALL_KEY,
-        chain: chainStakingMetadata?.chain || ALL_KEY,
+        screen: 'ClaimReward',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: chainStakingMetadata?.chain || ALL_KEY,
+        },
       },
     });
   }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, nominatorMetadata, navigation]);

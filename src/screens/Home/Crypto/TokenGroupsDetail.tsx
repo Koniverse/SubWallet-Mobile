@@ -175,7 +175,7 @@ export const TokenGroupsDetail = ({
       return;
     }
 
-    navigation.navigate('SendFund', { slug: tokenGroupSlug });
+    navigation.navigate('TransactionAction', { screen: 'SendFund', params: { slug: tokenGroupSlug } });
   }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
 
   const listHeaderNode = useMemo(() => {

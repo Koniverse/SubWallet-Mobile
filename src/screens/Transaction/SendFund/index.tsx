@@ -39,7 +39,7 @@ import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { Warning } from 'components/Warning';
 import { ContainerHorizontalPadding, DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { RootStackParamList, SendFundProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -50,6 +50,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import { SendFundProps } from 'routes/transaction/transactionAction';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -223,7 +224,7 @@ export const SendFund = ({
   route: {
     params: { slug: tokenGroupSlug, recipient: scanRecipient },
   },
-}: SendFundProps): React.ReactElement<SendFundProps> => {
+}: SendFundProps) => {
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);

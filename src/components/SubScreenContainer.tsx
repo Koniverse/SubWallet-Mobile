@@ -3,15 +3,16 @@ import { ContainerWithSubHeader, ContainerWithSubHeaderProps } from 'components/
 
 interface Props extends Omit<ContainerWithSubHeaderProps, 'onPressBack'> {
   navigation: any;
+  onPressLeftBtn?: () => void;
 }
 
-export const SubScreenContainer = ({ navigation, ...containerWithSubHeaderProp }: Props) => {
+export const SubScreenContainer = ({ navigation, onPressLeftBtn, ...containerWithSubHeaderProp }: Props) => {
   const onPressBack = () => {
     navigation.goBack();
   };
 
   return (
-    <ContainerWithSubHeader {...containerWithSubHeaderProp} onPressBack={onPressBack}>
+    <ContainerWithSubHeader {...containerWithSubHeaderProp} onPressBack={onPressLeftBtn || onPressBack}>
       {containerWithSubHeaderProp.children}
     </ContainerWithSubHeader>
   );

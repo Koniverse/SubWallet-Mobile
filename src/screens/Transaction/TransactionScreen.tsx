@@ -6,12 +6,14 @@ import { Unbond } from 'screens/Transaction/Unbond';
 import ClaimReward from 'screens/Transaction/ClaimReward';
 import { CancelUnstake } from 'screens/Transaction/CancelUnstake';
 import { Withdraw } from 'screens/Transaction/Withdraw';
+import { SendFund } from 'screens/Transaction/SendFund';
 
 const TransactionScreen = () => {
   const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
 
   return (
     <TransactionActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <TransactionActionStack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
       <TransactionActionStack.Screen name="Stake" component={Stake} options={{ gestureEnabled: false }} />
       <TransactionActionStack.Screen name="Withdraw" component={Withdraw} options={{ gestureEnabled: false }} />
       <TransactionActionStack.Screen name="Unbond" component={Unbond} options={{ gestureEnabled: false }} />
