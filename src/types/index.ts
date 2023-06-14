@@ -39,6 +39,17 @@ export type BalanceInfo = {
   isReady: boolean;
 };
 
+export type CrowdloanValueInfo = {
+  value: BigN;
+  convertedValue: BigN;
+  symbol: string;
+};
+
+export type CrowdloanContributeValueType = {
+  paraState?: CrowdloanParaState;
+  contribute: CrowdloanValueInfo;
+};
+
 export type CrowdloanItemType = {
   slug: string;
   contribute: string | BigN;

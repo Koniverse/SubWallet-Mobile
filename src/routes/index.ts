@@ -49,6 +49,7 @@ export type RootStackParamList = {
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   AccountExport: { address: string };
   ExportJson: { address: string };
+  BrowserHome: NavigatorScreenParams<{}>;
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   BrowserListByTabview: { type: string };
@@ -102,6 +103,7 @@ export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'Trans
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
 export type BrowserListByTabviewProps = NativeStackScreenProps<RootStackParamList, 'BrowserListByTabview'>;
+export type BrowserHomeProps = NativeStackScreenProps<RootStackParamList, 'BrowserHome'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
