@@ -6,11 +6,12 @@ import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTyp
 import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
 import { SigningActionStackParamList } from 'routes/signing';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
+import { WrapperParamList } from 'routes/wrapper';
 
 export type RootStackParamList = {
   LockScreen: undefined;
   LoadingScreen: undefined;
-  Home: NavigatorScreenParams<HomeStackParamList> | undefined;
+  Home: NavigatorScreenParams<HomeStackParamList>;
   CreatePassword: {
     pathName:
       | 'CreateAccount'
@@ -42,6 +43,7 @@ export type RootStackParamList = {
   NetworkSettingDetail: { chainSlug: string };
   ImportNetwork: undefined;
   SendFund: { slug?: string; recipient?: string };
+  Drawer: NavigatorScreenParams<WrapperParamList>;
   Languages: undefined;
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };

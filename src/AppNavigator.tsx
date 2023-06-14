@@ -59,6 +59,10 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { Platform } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Home } from 'screens/Home';
+import { deviceWidth } from 'constants/index';
+import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
+import { Settings } from 'screens/Settings';
+import { WrapperParamList } from 'routes/wrapper';
 
 interface Props {
   isAppReady: boolean;
@@ -85,6 +89,28 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
       },
     },
   },
+};
+
+const getSettingsContent = (props: DrawerContentComponentProps) => {
+  return <Settings {...props} />;
+};
+
+const DrawerScreen = () => {
+  const Drawer = createDrawerNavigator<WrapperParamList>();
+  return (
+    <Drawer.Navigator
+      initialRouteName={'TransactionAction'}
+      drawerContent={getSettingsContent}
+      screenOptions={{
+        drawerStyle: {
+          width: deviceWidth,
+        },
+        drawerType: 'front',
+        headerShown: false,
+      }}>
+      <Drawer.Screen name="TransactionAction" component={TransactionScreen} />
+    </Drawer.Navigator>
+  );
 };
 
 const HistoryScreen = (props: JSX.IntrinsicAttributes) => {
@@ -181,6 +207,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
+                <Stack.Screen name="Drawer" component={DrawerScreen} />
                 <Stack.Screen name="History" component={HistoryScreen} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen
@@ -233,11 +260,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
-                <Stack.Screen
-                  name="TransactionAction"
-                  component={TransactionScreen}
-                  options={{ gestureEnabled: false }}
-                />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

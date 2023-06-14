@@ -198,7 +198,13 @@ export const TokenGroups = () => {
       return;
     }
 
-    navigation.navigate('SendFund', {});
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'SendFund',
+        params: {},
+      },
+    });
   }, [currentAccount, navigation, showNoti]);
 
   const tokenSearchItems = useMemo<TokenBalanceItemType[]>(() => {

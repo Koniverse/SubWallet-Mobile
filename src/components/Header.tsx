@@ -44,7 +44,7 @@ export const Header = () => {
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);
-        navigation.navigate('SendFund', { recipient: data });
+        navigation.navigate('TransactionAction', { screen: 'SendFund', params: { recipient: data } });
       } else {
         setError(i18n.errorMessage.isNotAnAddress);
       }
@@ -61,7 +61,7 @@ export const Header = () => {
           size={'xs'}
           icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
-            drawerNavigation.toggleDrawer();
+            drawerNavigation.openDrawer();
           }}
         />
       </View>

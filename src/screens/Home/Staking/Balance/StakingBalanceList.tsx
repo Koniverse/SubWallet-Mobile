@@ -106,9 +106,12 @@ const StakingBalanceList = () => {
 
   const handlePressStartStaking = useCallback(
     () =>
-      navigation.navigate('TransactionAction', {
-        screen: 'Stake',
-        params: {},
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
+        params: {
+          screen: 'Stake',
+          params: {},
+        },
       }),
     [navigation],
   );

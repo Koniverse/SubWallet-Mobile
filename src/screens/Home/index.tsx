@@ -22,9 +22,15 @@ import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useAppLock from 'hooks/useAppLock';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
+import { WrapperParamList } from 'routes/wrapper';
 import { Settings } from 'screens/Settings';
-const MainScreenContent = () => {
+
+const getSettingsContent = (props: DrawerContentComponentProps) => {
+  return <Settings {...props} />;
+};
+
+const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
@@ -127,15 +133,10 @@ const MainScreenContent = () => {
   );
 };
 
-const getSettingsContent = () => {
-  return <Settings />;
-};
-
-const MainScreen = () => {
-  const Drawer = createDrawerNavigator();
+const Wrapper = () => {
+  const Drawer = createDrawerNavigator<WrapperParamList>();
   return (
     <Drawer.Navigator
-      initialRouteName={'Main'}
       drawerContent={getSettingsContent}
       screenOptions={{
         drawerStyle: {
@@ -143,7 +144,7 @@ const MainScreen = () => {
         },
         drawerType: 'front',
       }}>
-      <Drawer.Screen name="Main" component={MainScreenContent} options={{ headerShown: false }} />
+      <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
     </Drawer.Navigator>
   );
 };
@@ -179,7 +180,7 @@ export const Home = () => {
 
   return (
     <>
-      {isEmptyAccounts ? <FirstScreen /> : <MainScreen />}
+      {isEmptyAccounts ? <FirstScreen /> : <Wrapper />}
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
     </>
   );

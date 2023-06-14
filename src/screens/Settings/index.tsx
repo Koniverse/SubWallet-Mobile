@@ -43,6 +43,7 @@ import useAppLock from 'hooks/useAppLock';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -70,7 +71,7 @@ type settingItemType = {
   backgroundColor: string;
 };
 
-export const Settings = () => {
+export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
@@ -201,7 +202,8 @@ export const Settings = () => {
       navigation={navigation}
       icon={<SVGImages.Logo width={24} height={24} />}
       rightIcon={X}
-      onPressRightIcon={() => navigation.goBack()}>
+      onPressLeftBtn={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}
+      onPressRightIcon={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}>
       <>
         <ScrollView
           style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}

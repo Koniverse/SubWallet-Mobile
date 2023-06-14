@@ -118,11 +118,14 @@ export const StakingDetailModal = ({
   const onClickStakeMoreBtn = useCallback(() => {
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(() => {
-      navigation.navigate('TransactionAction', {
-        screen: 'Stake',
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
         params: {
-          type: chainStakingMetadata?.type || ALL_KEY,
-          chain: nominatorMetadata?.chain || ALL_KEY,
+          screen: 'Stake',
+          params: {
+            type: chainStakingMetadata?.type || ALL_KEY,
+            chain: nominatorMetadata?.chain || ALL_KEY,
+          },
         },
       });
     }, 300);
@@ -132,11 +135,14 @@ export const StakingDetailModal = ({
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(
       () =>
-        navigation.navigate('TransactionAction', {
-          screen: 'Unbond',
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
           params: {
-            type: chainStakingMetadata?.type || ALL_KEY,
-            chain: chainStakingMetadata?.chain || ALL_KEY,
+            screen: 'Unbond',
+            params: {
+              type: chainStakingMetadata?.type || ALL_KEY,
+              chain: chainStakingMetadata?.chain || ALL_KEY,
+            },
           },
         }),
       300,
