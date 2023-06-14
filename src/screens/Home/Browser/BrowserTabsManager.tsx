@@ -112,10 +112,10 @@ function ConfirmationTrigger() {
 export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProps) => {
   const theme = useSubWalletTheme().swThemes;
   const [propSiteInfo, setPropSiteInfo] = useState<SiteInfo>({
-    name: params.name || '',
-    url: params.url || '',
+    name: params?.name || '',
+    url: params?.url || '',
   });
-  const propsIsOpenTabs = !!params.isOpenTabs;
+  const propsIsOpenTabs = !!params?.isOpenTabs;
   const activeTab = useSelector((state: RootState) => state.browser.activeTab);
   const tabs = useSelector((state: RootState) => state.browser.tabs);
   const [isTabsShowed, setIsTabsShowed] = useState<boolean>(propsIsOpenTabs);
@@ -233,11 +233,11 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
   }, [navigation, isEmptyAccounts]);
 
   useEffect(() => {
-    if (params.url) {
+    if (params?.url) {
       createNewTabIfEmpty(params.url);
 
       setPropSiteInfo({
-        name: params.name || params.url,
+        name: params?.name || params.url,
         url: params.url,
       });
     }
@@ -251,7 +251,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
     if (propSiteInfo.url) {
       currentActiveTabRef.current?.goToSite({
         url: propSiteInfo.url,
-        name: propSiteInfo.name || propSiteInfo.url,
+        name: propSiteInfo?.name || propSiteInfo.url,
       });
       setIsTabsShowed(false);
     }

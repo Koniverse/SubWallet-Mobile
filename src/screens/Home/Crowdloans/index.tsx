@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
-import { CrowdloanItemType } from '@subwallet/extension-koni-ui/src/types/crowdloan';
+
 import { RocketLaunch } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { FlatListScreen } from 'components/FlatListScreen';
@@ -10,6 +10,7 @@ import { EmptyList } from 'components/EmptyList';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useIsFocused } from '@react-navigation/native';
+import { CrowdloanItemType } from 'types/index';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;

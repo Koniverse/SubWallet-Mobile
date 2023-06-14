@@ -35,11 +35,13 @@ export const ApplyDone = ({ accounts }: Props) => {
 
       {accounts.length > 2 && (
         <Typography.Text style={_style.applyDoneText}>
-          And other
-          <Typography.Text style={{ paddingHorizontal: theme.paddingXXS, color: theme.colorTextLight1 }}>{` ${
-            accounts.length - 2
-          } `}</Typography.Text>
-          accounts
+          {i18n.applyMasterPassword.andOther}
+          {
+            <Typography.Text style={{ paddingHorizontal: theme.paddingXXS, color: theme.colorTextLight1 }}>{`${
+              accounts.length - 2
+            }`}</Typography.Text>
+          }
+          {i18n.applyMasterPassword.accounts.toLowerCase()}
         </Typography.Text>
       )}
     </View>

@@ -123,19 +123,19 @@ export const NetworkSettingDetail = ({
   const formConfig = useMemo((): FormControlConfig => {
     return {
       currentProvider: {
-        name: 'provider',
+        name: i18n.common.provider.toLowerCase(),
         value: chainState.currentProvider,
         require: true,
       },
       blockExplorer: {
-        name: 'Block explorer',
+        name: i18n.placeholder.blockExplorer,
         value: _blockExplorer || '',
         validateFunc: (value: string) => {
           return validateBlockExplorer(value);
         },
       },
       crowdloanUrl: {
-        name: 'Crowdloan url',
+        name: i18n.placeholder.crowdloanUrl,
         value: _crowdloanUrl,
         validateFunc: (value: string) => {
           return validateCrowdloanUrl(value);

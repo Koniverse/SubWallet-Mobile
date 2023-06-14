@@ -165,7 +165,7 @@ export const customFormatDate = (
   const MMMM = timeDefine.month.full[month - 1] || '';
   const MMM = timeDefine.month.brief[month - 1] || '';
 
-  const date = time.getDate() + 1;
+  const date = time.getDate();
   const D = date.toString();
   const sDs = timeDefine.day.prefix + D + timeDefine.day.suffix;
   const DD = D.toString().padStart(2, '0');

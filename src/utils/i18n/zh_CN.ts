@@ -301,6 +301,8 @@ export const zh = {
   applyMasterPassword: {
     applyMasterPassword: '立即应用master密码',
     applyMasterPasswordMessage: '创建master密码成功。请应用于当前存在的账户。',
+    andOther: '及其他',
+    accounts: '账户',
   },
   customization: {
     balance: '余额',
@@ -596,7 +598,7 @@ export const zh = {
     successful: '成功',
     failed: '失败',
     substrateDApp: 'Substrate dApp',
-    evmDApp: 'EVM DApp',
+    evmDApp: '以太坊dApp',
     blockedDApp: '已封锁dApp',
     connectedDApp: '已连接dApp',
   },

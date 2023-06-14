@@ -5,11 +5,7 @@ import {
   _getSubstrateParaId,
   _getSubstrateRelayParent,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import {
-  CrowdloanContributeValueType,
-  CrowdloanItemType,
-  CrowdloanValueInfo,
-} from '@subwallet/extension-koni-ui/src/types/crowdloan';
+
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -17,6 +13,7 @@ import { BN_ZERO } from 'utils/chainBalances';
 import BigN from 'bignumber.js';
 import { useMemo } from 'react';
 import { getBalanceValue, getConvertedBalanceValue } from 'hooks/screen/useAccountBalance';
+import { CrowdloanItemType, CrowdloanContributeValueType, CrowdloanValueInfo } from 'types/index';
 
 const GroupDisplayNameMap: Record<string, string> = {
   polkadot: 'Polkadot parachain',

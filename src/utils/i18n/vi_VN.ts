@@ -305,6 +305,8 @@ export const vi = {
     applyMasterPassword: 'Áp dụng mật khẩu chính',
     applyMasterPasswordMessage:
       'Mật khẩu chính được tạo thành công. Vui lòng áp dụng mật khẩu chính cho các tài khoản hiện có của bạn.',
+    andOther: 'Thêm ',
+    accounts: ' tài khoản khác',
   },
   customization: {
     balance: 'Số dư',

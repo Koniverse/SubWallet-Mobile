@@ -306,6 +306,8 @@ export const en = {
     applyMasterPassword: 'Apply master password',
     applyMasterPasswordMessage:
       'Master password created successfully. Please apply the master password to your existing accounts',
+    andOther: 'And other ',
+    accounts: ' accounts',
   },
   customization: {
     balance: 'BALANCE',

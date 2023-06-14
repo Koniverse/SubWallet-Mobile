@@ -38,7 +38,7 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { getValidURL } from 'utils/browser';
+import { deeplinks, getValidURL } from 'utils/browser';
 import ErrorBoundary from 'react-native-error-boundary';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
@@ -140,7 +140,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   );
 
   const linking: LinkingOptions<RootStackParamList> = {
-    prefixes: ['subwallet://'],
+    prefixes: deeplinks,
     config,
   };
 

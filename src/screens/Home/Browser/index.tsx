@@ -14,8 +14,8 @@ import createStylesheet from './styles';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { Typography } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
-import { BrowserListByTabviewProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RoutesType = {
   key: string;
@@ -62,7 +62,7 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
     </View>
   );
 };
-export const BrowserScreen = ({ navigation }: BrowserListByTabviewProps) => {
+export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
@@ -96,7 +96,7 @@ export const BrowserScreen = ({ navigation }: BrowserListByTabviewProps) => {
     <ScreenContainer backgroundColor={theme.colorBgDefault}>
       <>
         <BrowserHeader />
-
+        {/* @ts-ignore */}
         <FakeSearchInput style={stylesheet.fakeSearch} onPress={() => navigation.navigate('BrowserSearch')} />
 
         <Tab.Navigator
