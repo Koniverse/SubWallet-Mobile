@@ -1,3 +1,10 @@
+## 1.0.6 (180)
+- Fix bug enable chain and scan for SendFund (#628)
+- Use MMKV storage to inhance redux persist performance (#773)
+- Standardization word and sentence entire the app (#696)
+- The effect of opening settings changes to slide right (#697)
+- Prevent the back action on the screen while performing a transaction on an Android device (#753)
+
 ## 1.0.5 (179)
 - Fix open deeplink issue when the app is closed
 - Fix bug can't select token in case change Nominate to Pool when specific account mode (#771)

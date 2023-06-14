@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from 'routes/index';
+import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
 import { StyleProp, View } from 'react-native';
 import Text from 'components/Text';
@@ -16,7 +16,6 @@ import { ColorMap } from 'styles/color';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Icon, SelectItem } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 const modalTitle: StyleProp<any> = {
   ...sharedStyles.mediumText,
@@ -72,7 +71,7 @@ export const Security = () => {
     (state: RootState) => state.mobileSettings,
   );
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
-  const navigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
 
   const onValueChangePinCode = () => {
@@ -98,7 +97,6 @@ export const Security = () => {
       navigation={navigation}
       onPressLeftBtn={() => {
         navigation.goBack();
-        navigation.toggleDrawer();
       }}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <ToggleItem
