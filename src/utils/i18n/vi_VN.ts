@@ -346,6 +346,7 @@ export const en = {
     viewTransaction: 'View transaction',
     manageTokens: 'Manage tokens',
     unbond: 'Unbond',
+    addContact: 'Add contact',
   },
   inputLabel: {
     selectAcc: 'Select account',

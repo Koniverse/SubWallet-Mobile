@@ -9,16 +9,15 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import { ListRenderItemInfo, View } from 'react-native';
 import Typography from '../../design-system-ui/typography';
-import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
+import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { isAddress } from '@polkadot/util-crypto';
-import reformatAddress from 'utils/index';
+import reformatAddress, { toShort } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
 import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import useFormatAddress from 'hooks/account/useFormatAddress';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import createStylesheet from './style/AddressBookModal';
 
@@ -194,33 +193,18 @@ export const AddressBookModal = ({
       const address = formatAddress(item);
       const selected = value ? isSameAddress(address, value) : false;
 
-      if (item.group === AccountGroup.RECENT) {
-        return (
-          <AccountItemBase
-            key={`${item.name}-${item.address}`}
-            address={item.address}
-            avatarSize={theme.sizeLG}
-            addressPreLength={9}
-            addressSufLength={11}
-            onPress={onSelectItem(item)}
-            customStyle={{ address: { ...FontSemiBold, color: theme.colorTextLight4 } }}
-            isSelected={selected}
-          />
-        );
-      }
-
       return (
         <AccountItemWithName
           key={`${item.name}-${item.address}`}
-          accountName={item.name}
-          address={item.address}
+          accountName={item.name || toShort(item.address, 4, 4)}
+          address={address}
           avatarSize={theme.sizeLG}
           onPress={onSelectItem(item)}
           isSelected={selected}
         />
       );
     },
-    [formatAddress, onSelectItem, theme.colorTextLight4, theme.sizeLG, value],
+    [formatAddress, onSelectItem, theme.sizeLG, value],
   );
 
   const renderSectionHeader: (info: { section: SectionListData<AccountItem> }) => React.ReactElement | null =

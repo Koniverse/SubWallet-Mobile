@@ -20,10 +20,6 @@ import i18n from 'utils/i18n/i18n';
 import { NetworkField } from 'components/Field/Network';
 import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { InputAddress } from 'components/Input/InputAddress';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { WebRunnerContext } from 'providers/contexts';
@@ -37,6 +33,8 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendNFTProps } from 'routes/index';
+import { InputAddress } from 'components/Input/inputAddressV2';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -83,8 +81,9 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
-  const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const addressPrefix = useGetChainPrefixBySlug(nftChain);
+  const chainGenesisHash = chainInfoMap[nftChain]?.substrateInfo?.genesisHash || '';
 
   const validateRecipientAddress = (recipientAddress: string): string[] => {
     if (!recipientAddress) {
@@ -145,31 +144,12 @@ const SendNFT: React.FC<SendNFTProps> = ({
 
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
 
-  const onUpdateInputAddress = useCallback(
-    (text: string) => {
-      formState.refs.recipientAddress.current?.onChange(text);
-    },
-    [formState.refs],
-  );
-
   const onChangeReceiverAddress = useCallback(
-    (receiverAddress: string | null, currentTextValue: string) => {
+    (currentTextValue: string) => {
       onChangeValue('recipientAddress')(currentTextValue);
     },
     [onChangeValue],
   );
-
-  const onPressQrButton = useCallback(async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setIsShowQrModalVisible(true);
-    }
-  }, []);
-
-  const closeQrScan = useCallback(() => {
-    setIsShowQrModalVisible(false);
-  }, []);
 
   const goBack = useCallback(() => {
     navigation.goBack();
@@ -251,15 +231,22 @@ const SendNFT: React.FC<SendNFTProps> = ({
             <Text style={NftNameTextStyle}>{nftItem.name ? nftItem.name : '#' + nftItem.id}</Text>
             <InputAddress
               ref={formState.refs.recipientAddress}
-              onPressQrButton={onPressQrButton}
               containerStyle={InputStyle}
+              showAddressBook
+              addressPrefix={addressPrefix}
+              networkGenesisHash={chainGenesisHash}
               label={formState.labels.recipientAddress}
               value={formState.data.recipientAddress}
-              onChange={onChangeReceiverAddress}
+              onChangeText={onChangeReceiverAddress}
               isValidValue={formState.isValidated.recipientAddress}
               placeholder={i18n.placeholder.accountAddress}
-              onSubmitField={handleSend}
+              onSubmitEditing={handleSend}
               disabled={loading}
+              scannerProps={{
+                networkKey: nftItem.chain,
+                token: _getChainNativeTokenBasicInfo(chainInfo).symbol,
+                scanMessage: i18n.common.toSendNFT,
+              }}
             />
             {!!formState.errors.recipientAddress.length && (
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />
@@ -273,15 +260,6 @@ const SendNFT: React.FC<SendNFTProps> = ({
               {i18n.transferNft.send}
             </Button>
           </View>
-
-          <AddressScanner
-            qrModalVisible={isShowQrModalVisible}
-            onPressCancel={closeQrScan}
-            onChangeAddress={onUpdateInputAddress}
-            networkKey={nftItem.chain}
-            token={_getChainNativeTokenBasicInfo(chainInfo).symbol}
-            scanMessage={i18n.common.toSendNFT}
-          />
         </>
       </TouchableWithoutFeedback>
     </ContainerWithSubHeader>

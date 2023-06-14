@@ -48,6 +48,7 @@ import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import { InputAddress } from 'components/Input/inputAddressV2';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -264,6 +265,8 @@ export const SendFund = ({
   const { title, formState, onChangeValue, onUpdateErrors, onDone, onChangeFromValue, onChangeAssetValue } =
     useTransaction('send-fund', formConfig, {});
   const { asset, chain, destChain, from, to, value: amount } = formState.data;
+  const destChainNetworkPrefix = useGetChainPrefixBySlug(destChain);
+  const destChainGenesisHash = chainInfoMap[destChain]?.substrateInfo?.genesisHash || '';
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, handleTransferAll);
   const isDataNotReady = !to || !amount;
 
@@ -673,9 +676,13 @@ export const SendFund = ({
                 placeholder={i18n.placeholder.accountAddress}
                 disabled={loading}
                 onSubmitEditing={onSubmit}
+                addressPrefix={destChainNetworkPrefix}
+                networkGenesisHash={destChainGenesisHash}
                 showAddressBook
                 saveAddress
-                scanMessage={i18n.common.toSendFund}
+                scannerProps={{
+                  scanMessage: i18n.common.toSendFund,
+                }}
               />
 
               {!!(formState.errors.to && formState.errors.to.length) &&

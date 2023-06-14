@@ -9,7 +9,7 @@ import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
+import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
 import { saveRecentAccount } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
@@ -21,8 +21,8 @@ interface Props extends InputProps {
   showAddressBook?: boolean;
   networkGenesisHash?: string;
   addressPrefix?: number;
-  scanMessage?: string;
   saveAddress?: boolean;
+  scannerProps?: Omit<AddressScannerProps, 'onChangeAddress' | 'onPressCancel' | 'qrModalVisible'>;
 }
 
 const Component = (
@@ -32,7 +32,7 @@ const Component = (
     showAddressBook,
     networkGenesisHash,
     addressPrefix,
-    scanMessage,
+    scannerProps = {},
     saveAddress = true,
     ...inputProps
   }: Props,
@@ -178,10 +178,10 @@ const Component = (
       />
 
       <AddressScanner
+        {...scannerProps}
         qrModalVisible={isShowQrModalVisible}
         onPressCancel={closeAddressScanner}
         onChangeAddress={onChangeInputText}
-        scanMessage={scanMessage}
       />
 
       {showAddressBook && (

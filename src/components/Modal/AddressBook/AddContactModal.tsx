@@ -190,7 +190,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
         />
 
         <Button icon={ButtonIcon} disabled={isButtonDisabled} onPress={handleSubmit(onSubmit)}>
-          {i18n.common.submit}
+          {i18n.buttonTitles.addContact}
         </Button>
       </View>
     </SwModal>
