@@ -1,9 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { Warning } from 'components/Warning';
 import { Image, Linking, ListRenderItemInfo, Platform } from 'react-native';
 import qs from 'querystring';
 import reformatAddress from 'utils/index';
@@ -19,29 +16,17 @@ import useAppLock from 'hooks/useAppLock';
 import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { ImageLogosMap } from 'assets/logo';
+import { SelectModal } from 'components/common/SelectModal';
 
 interface Props {
-  modalVisible: boolean;
   address: string;
   token: string;
-  onPressBack?: () => void;
-  onChangeModalVisible: () => void;
+  ref?: React.Ref<any>;
 }
 
 const filterFunction = (items: { label: string; value: string; url: string }[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
   return items.filter(item => item.label.toLowerCase().includes(lowerCaseSearchString));
-};
-
-const renderListEmptyComponent = () => {
-  return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.warningMessage.noServiceAvailable}
-      isDanger={false}
-    />
-  );
 };
 
 const HOST = {
@@ -59,7 +44,7 @@ const tokenKeyMapIsEthereum: Record<string, boolean> = (() => {
   return result;
 })();
 
-export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, address, token }: Props) => {
+function _ServiceModal({ address, token }: Props, ref: ForwardedRef<any>) {
   const toastRef = useRef<ToastContainer>(null);
   const show = useCallback((text: string) => {
     if (toastRef.current) {
@@ -217,22 +202,16 @@ export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, 
   };
 
   return (
-    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
-      <FlatListScreen
-        autoFocus={true}
-        items={SERVICE_OPTIONS}
-        style={FlatListScreenPaddingTop}
-        title={i18n.title.serviceSelect}
-        searchFunction={filterFunction}
-        renderItem={renderItem}
-        onPressBack={() => {
-          setSelectedService({ selectedService: undefined, isOpenInAppBrowser: false });
-          onPressBack && onPressBack();
-        }}
-        isShowFilterBtn={false}
-        renderListEmptyComponent={renderListEmptyComponent}
-      />
-
+    <SelectModal
+      items={SERVICE_OPTIONS}
+      selectedValueMap={{}}
+      title={i18n.title.serviceSelect}
+      renderCustomItem={renderItem}
+      searchFunc={filterFunction}
+      closeModalAfterSelect={false}
+      selectModalType={'single'}
+      isShowInput={false}
+      ref={ref}>
       <Toast
         duration={TOAST_DURATION}
         normalColor={ColorMap.notification}
@@ -240,6 +219,8 @@ export const ServiceModal = ({ onPressBack, modalVisible, onChangeModalVisible, 
         placement={'bottom'}
         offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
       />
-    </SubWalletFullSizeModal>
+    </SelectModal>
   );
-};
+}
+
+export const ServiceModal = forwardRef(_ServiceModal);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { Button, Divider, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListRenderItemInfo, View } from 'react-native';
@@ -7,14 +7,21 @@ import { OptionType } from 'components/common/FilterModal';
 import { AccountSelectItem } from 'components/common/SelectModal/parts/AccountSelectItem';
 import { _TokenSelectItem } from 'components/common/SelectModal/parts/TokenSelectItem';
 import { ChainSelectItem } from 'components/common/SelectModal/parts/ChainSelectItem';
-import { IconProps } from 'phosphor-react-native';
+import { IconProps, MagnifyingGlass } from 'phosphor-react-native';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
+import { EmptyList } from 'components/EmptyList';
+import i18n from 'utils/i18n/i18n';
+import { AccountJson } from '@subwallet/extension-base/background/types';
+import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { ChainInfo } from 'types/index';
 
 interface Props<T> {
   items: T[];
-  searchFunc: (items: T[], searchString: string) => T[];
+  searchFunc?: (items: T[], searchString: string) => T[];
   renderCustomItem?: ({ item }: ListRenderItemInfo<T>) => JSX.Element;
-  renderListEmptyComponent: (searchString?: string | undefined) => JSX.Element;
+  renderListEmptyComponent?: (searchString?: string | undefined) => JSX.Element;
   title?: string;
   isShowFilterBtn?: boolean;
   filterFunction?: ((items: T[], filters: string[]) => T[]) | undefined;
@@ -35,9 +42,13 @@ interface Props<T> {
     icon: React.ElementType<IconProps>;
     onPressApplyBtn: () => void;
   };
+  closeModalAfterSelect?: boolean;
+  children?: React.ReactNode;
+  isShowContent?: boolean;
+  isShowInput?: boolean;
 }
 
-export function SelectModal<T>(selectModalProps: Props<T>) {
+function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const {
     items,
     renderCustomItem,
@@ -59,9 +70,46 @@ export function SelectModal<T>(selectModalProps: Props<T>) {
     onSelectItem,
     disabled,
     applyBtn,
+    closeModalAfterSelect = true,
+    children,
+    isShowContent = true,
+    isShowInput = true,
   } = selectModalProps;
+  const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
   const onCloseModal = () => setOpen(false);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      onOpenModal: () => setOpen(true),
+      onCloseModal: () => setOpen(false),
+      isModalOpen: isOpen,
+    }),
+    [isOpen],
+  );
+
+  const _searchFunction = (_items: T[], searchString: string): T[] => {
+    if (selectModalItemType === 'account') {
+      return (_items as AccountJson[]).filter(
+        acc =>
+          (acc.name && acc.name.toLowerCase().includes(searchString.toLowerCase())) ||
+          acc.address.toLowerCase().includes(searchString.toLowerCase()),
+      ) as T[];
+    } else if (selectModalItemType === 'token') {
+      const lowerCaseSearchString = searchString.toLowerCase();
+      return (_items as TokenItemType[]).filter(
+        ({ symbol, originChain }) =>
+          symbol.toLowerCase().includes(lowerCaseSearchString) ||
+          chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
+      ) as T[];
+    } else if (selectModalItemType === 'chain') {
+      const lowerCaseSearchString = searchString.toLowerCase();
+      return (items as ChainInfo[]).filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString)) as T[];
+    } else {
+      return items;
+    }
+  };
 
   const renderItem = ({ item }: ListRenderItemInfo<T>) => {
     if (selectModalItemType === 'account') {
@@ -71,7 +119,7 @@ export function SelectModal<T>(selectModalProps: Props<T>) {
             item={item}
             selectedValueMap={selectedValueMap}
             onSelectItem={onSelectItem}
-            onCloseModal={() => selectModalType === 'single' && onCloseModal()}
+            onCloseModal={() => closeModalAfterSelect && onCloseModal()}
           />
         </>
       );
@@ -81,7 +129,7 @@ export function SelectModal<T>(selectModalProps: Props<T>) {
           item={item}
           selectedValueMap={selectedValueMap}
           onSelectItem={onSelectItem}
-          onCloseModal={() => selectModalType === 'single' && onCloseModal()}
+          onCloseModal={() => closeModalAfterSelect && onCloseModal()}
         />
       );
     } else if (selectModalItemType === 'chain') {
@@ -90,12 +138,22 @@ export function SelectModal<T>(selectModalProps: Props<T>) {
           item={item}
           selectedValueMap={selectedValueMap}
           onSelectItem={onSelectItem}
-          onCloseModal={() => selectModalType === 'single' && onCloseModal()}
+          onCloseModal={() => closeModalAfterSelect && onCloseModal()}
         />
       );
     } else {
       return <></>;
     }
+  };
+
+  const _renderListEmptyComponent = () => {
+    return (
+      <EmptyList
+        icon={MagnifyingGlass}
+        title={i18n.emptyScreen.selectorEmptyTitle}
+        message={i18n.emptyScreen.selectorEmptyMessage}
+      />
+    );
   };
 
   const renderFooter = () => {
@@ -115,30 +173,40 @@ export function SelectModal<T>(selectModalProps: Props<T>) {
     <>
       {renderSelectModalBtn ? (
         renderSelectModalBtn(setOpen)
-      ) : (
+      ) : isShowInput ? (
         <SelectModalField disabled={disabled} onPressField={() => setOpen(true)} renderSelected={renderSelected} />
+      ) : (
+        <></>
       )}
 
-      <SwFullSizeModal modalVisible={isOpen}>
-        <FlatListScreen
-          autoFocus={true}
-          items={items}
-          style={[FlatListScreenPaddingTop, { flex: 1 }]}
-          renderItem={renderCustomItem || renderItem}
-          searchFunction={searchFunc}
-          renderListEmptyComponent={renderListEmptyComponent}
-          title={title}
-          onPressBack={onCloseModal}
-          isShowFilterBtn={isShowFilterBtn}
-          filterFunction={filterFunction}
-          filterOptions={filterOptions}
-          placeholder={placeholder}
-          loading={loading}
-          withSearchInput={withSearchInput}
-          isShowListWrapper={isShowListWrapper}
-          afterListItem={selectModalType === 'multi' ? renderFooter() : undefined}
-        />
-      </SwFullSizeModal>
+      {isShowContent ? (
+        <SwFullSizeModal modalVisible={isOpen}>
+          <FlatListScreen
+            autoFocus={true}
+            items={items}
+            style={[FlatListScreenPaddingTop, { flex: 1 }]}
+            renderItem={renderCustomItem || renderItem}
+            searchFunction={searchFunc || _searchFunction}
+            renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}
+            title={title}
+            onPressBack={onCloseModal}
+            isShowFilterBtn={isShowFilterBtn}
+            filterFunction={filterFunction}
+            filterOptions={filterOptions}
+            placeholder={placeholder}
+            loading={loading}
+            withSearchInput={withSearchInput}
+            isShowListWrapper={isShowListWrapper}
+            afterListItem={selectModalType === 'multi' ? renderFooter() : undefined}
+          />
+          {children}
+        </SwFullSizeModal>
+      ) : (
+        <>{children}</>
+      )}
     </>
   );
 }
+
+export const SelectModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
+  forwardRef(_SelectModal);

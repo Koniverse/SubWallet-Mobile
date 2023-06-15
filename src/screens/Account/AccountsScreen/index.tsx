@@ -1,6 +1,6 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
+import { ModalRef } from 'types/modalRef';
 
 const renderListEmptyComponent = () => {
   return (
@@ -52,9 +53,9 @@ export const AccountsScreen = ({
     return fullAccounts.filter(a => !isAccountAll(a.address));
   }, [fullAccounts]);
 
-  const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
-  const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
-  const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
+  const createAccountRef = useRef<ModalRef>();
+  const importAccountRef = useRef<ModalRef>();
+  const attachAccountRef = useRef<ModalRef>();
 
   const selectAccount = useCallback(
     (accAddress: string) => {
@@ -119,7 +120,7 @@ export const AccountsScreen = ({
           icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setCreateAccountModalVisible(true);
+            createAccountRef && createAccountRef.current?.onOpenModal();
           }}>
           {i18n.buttonTitles.createANewAcc}
         </Button>
@@ -128,14 +129,14 @@ export const AccountsScreen = ({
           icon={<Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setImportAccountModalVisible(true);
+            importAccountRef && importAccountRef.current?.onOpenModal();
           }}
         />
         <Button
           icon={<Icon phosphorIcon={Swatches} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setAttachAccountModalVisible(true);
+            attachAccountRef && attachAccountRef.current?.onOpenModal();
           }}
         />
       </View>
@@ -157,13 +158,10 @@ export const AccountsScreen = ({
       />
 
       <AccountCreationArea
+        createAccountRef={createAccountRef}
+        importAccountRef={importAccountRef}
+        attachAccountRef={attachAccountRef}
         allowToShowSelectType={true}
-        createAccountModalVisible={createAccountModalVisible}
-        importAccountModalVisible={importAccountModalVisible}
-        attachAccountModalVisible={attachAccountModalVisible}
-        onChangeCreateAccountModalVisible={setCreateAccountModalVisible}
-        onChangeImportAccountModalVisible={setImportAccountModalVisible}
-        onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
       />
     </>
   );

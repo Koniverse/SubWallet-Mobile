@@ -102,15 +102,8 @@ export function FlatListScreen<T>({
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
   const searchRef = useRef<TextInput>(null);
-  const {
-    filterSelectionMap,
-    filterModalVisible,
-    openFilterModal,
-    onApplyFilter,
-    onChangeFilterOption,
-    selectedFilters,
-    onCloseFilterModal,
-  } = useFilterModal();
+  const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
+    useFilterModal();
 
   useEffect(() => {
     setTimeout(() => {
@@ -184,12 +177,11 @@ export function FlatListScreen<T>({
 
       {!!(filterOptions && filterOptions.length && filterSelectionMap) && (
         <FilterModal
+          filterModalRef={filterModalRef}
           options={filterOptions}
-          modalVisible={filterModalVisible}
           onChangeOption={onChangeFilterOption}
           optionSelectionMap={filterSelectionMap}
           onApplyFilter={onApplyFilter}
-          onChangeModalVisible={onCloseFilterModal}
         />
       )}
     </View>

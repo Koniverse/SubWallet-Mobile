@@ -5,53 +5,27 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import { ActivityIndicator, SwModal } from 'components/design-system-ui';
-import { LazyFlatList } from 'components/LazyFlatList';
-import { Search } from 'components/Search';
+import { ActivityIndicator } from 'components/design-system-ui';
 import { deviceHeight, EVM_ACCOUNT_TYPE, TOAST_DURATION } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deriveAccountV3 } from 'messaging/index';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ListRenderItemInfo, ScrollView, TextInput, View } from 'react-native';
+import { ListRenderItemInfo, View } from 'react-native';
 import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
-import { ScrollViewStyle, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import { VoidFunction } from 'types/index';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
-import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { SelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 type Props = {
-  modalVisible: boolean;
-  onChangeModalVisible: VoidFunction;
-};
-
-const renderListEmptyComponent = () => {
-  return (
-    <ScrollView
-      style={{ ...ScrollViewStyle }}
-      contentContainerStyle={{ alignItems: 'center', minHeight: '100%', justifyContent: 'center', paddingBottom: 50 }}>
-      <EmptyList
-        icon={MagnifyingGlass}
-        title={i18n.emptyScreen.selectorEmptyTitle}
-        message={i18n.emptyScreen.selectorEmptyMessage}
-      />
-    </ScrollView>
-  );
-};
-
-const filteredAccounts = (_items: AccountJson[], searchString: string) => {
-  return _items.filter(
-    acc =>
-      acc.address.toLowerCase().includes(searchString.toLowerCase()) ||
-      acc.name?.toLowerCase().includes(searchString.toLowerCase()),
-  );
+  deriveAccModalRef: React.MutableRefObject<ModalRef | undefined>;
 };
 
 const renderLoaderIcon = (x: React.ReactNode): React.ReactNode => {
@@ -64,19 +38,17 @@ const renderLoaderIcon = (x: React.ReactNode): React.ReactNode => {
 };
 
 const DeriveAccountModal: React.FC<Props> = (props: Props) => {
-  const { modalVisible, onChangeModalVisible: _onChangeModalVisible } = props;
+  const { deriveAccModalRef } = props;
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
 
   const { accounts } = useSelector((state: RootState) => state.accountState);
 
   const toastRef = useRef<ToastContainer>(null);
-  const searchRef = useRef<TextInput>(null);
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [selected, setSelected] = useState('');
-  const [searchString, setSearchString] = useState<string>('');
 
   const filtered = useMemo(
     () =>
@@ -94,11 +66,6 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
     toastRef.current?.show(message, { type: 'danger' });
   }, []);
 
-  const onChangeModalVisible = useCallback(() => {
-    _onChangeModalVisible();
-    setSearchString('');
-  }, [_onChangeModalVisible]);
-
   const onSelectAccount = useCallback(
     (account: AccountJson): (() => void) => {
       return () => {
@@ -109,7 +76,6 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
             address: account.address,
           })
             .then(() => {
-              onChangeModalVisible();
               goHome();
             })
             .catch((e: Error) => {
@@ -121,7 +87,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
         }, 500);
       };
     },
-    [goHome, onChangeModalVisible, toastError],
+    [goHome, toastError],
   );
 
   const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
@@ -132,17 +98,19 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
       const isSelected = account.address === selected;
 
       return (
-        <AccountItemWithName
-          key={account.address}
-          accountName={account.name}
-          address={account.address}
-          avatarSize={theme.sizeLG}
-          onPress={disabled || isSelected ? undefined : onPressSubmit(onSelectAccount(account))}
-          renderRightItem={isSelected ? renderLoaderIcon : undefined}
-          customStyle={{
-            container: [styles.accountItem, disabled && !isSelected && styles.accountDisable],
-          }}
-        />
+        <View style={{ marginBottom: 8, paddingHorizontal: 16 }}>
+          <AccountItemWithName
+            key={account.address}
+            accountName={account.name}
+            address={account.address}
+            avatarSize={theme.sizeLG}
+            onPress={disabled || isSelected ? undefined : onPressSubmit(onSelectAccount(account))}
+            renderRightItem={isSelected ? renderLoaderIcon : undefined}
+            customStyle={{
+              container: [styles.accountItem, disabled && !isSelected && styles.accountDisable],
+            }}
+          />
+        </View>
       );
     },
     [onPressSubmit, onSelectAccount, selected, styles.accountDisable, styles.accountItem, theme.sizeLG],
@@ -150,33 +118,17 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <SwModal
-        modalVisible={modalVisible}
-        onChangeModalVisible={selected ? undefined : onChangeModalVisible}
-        isFullHeight={true}
-        modalTitle={i18n.header.selectAccount}
-        modalStyle={styles.modal}>
-        <View style={styles.wrapper}>
-          <View style={styles.container}>
-            <Search
-              autoFocus={false}
-              placeholder={i18n.common.accountName}
-              onClearSearchString={() => setSearchString('')}
-              onSearch={setSearchString}
-              searchText={searchString}
-              style={styles.search}
-              searchRef={searchRef}
-            />
-            <LazyFlatList
-              items={filtered}
-              renderItem={renderItem}
-              renderListEmptyComponent={renderListEmptyComponent}
-              searchFunction={filteredAccounts}
-              searchString={searchString}
-              flatListStyle={styles.list}
-            />
-          </View>
-        </View>
+      <SelectModal
+        items={filtered}
+        selectedValueMap={{}}
+        selectModalType={'single'}
+        selectModalItemType={'account'}
+        title={i18n.header.selectAccount}
+        closeModalAfterSelect={true}
+        placeholder={i18n.common.accountName}
+        isShowInput={false}
+        ref={deriveAccModalRef}
+        renderCustomItem={renderItem}>
         <Toast
           duration={TOAST_DURATION}
           normalColor={ColorMap.notification}
@@ -185,7 +137,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
           offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
         />
         <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
-      </SwModal>
+      </SelectModal>
     </>
   );
 };

@@ -1,39 +1,48 @@
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { SelectAccountType } from 'components/common/SelectAccountType';
-import { Button, Icon } from 'components/design-system-ui';
+import { AccountTypeItem } from 'components/common/SelectAccountType';
+import { Logo, SelectItem } from 'components/design-system-ui';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { CheckCircle } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { StyleProp, View } from 'react-native';
-import Text from '../Text';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import React, { useCallback, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
+import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
-  modalVisible: boolean;
-  onChangeModalVisible: () => void;
-  onModalHide?: () => void;
   onConfirm: (keyTypes: KeypairType[]) => void;
+  selectTypeRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
-const modalTitle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontBold,
-  color: ColorMap.light,
-  paddingBottom: 16,
-  textAlign: 'center',
-};
+export interface AccountTypeModalItem {
+  label: string;
+  key: KeypairType;
+  icon: string;
+}
 
-const defaultKeyTypes: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
+const items: AccountTypeModalItem[] = [
+  {
+    icon: 'polkadot',
+    key: SUBSTRATE_ACCOUNT_TYPE,
+    label: i18n.createAccount.substrate,
+  },
+  {
+    icon: 'ethereum',
+    key: EVM_ACCOUNT_TYPE,
+    label: i18n.createAccount.ethereum,
+  },
+];
 
-const ButtonIcon = (color: string) => {
-  return <Icon phosphorIcon={CheckCircle} size={'lg'} iconColor={color} />;
-};
+const defaultValueMap = { sr25519: true, ethereum: true };
 
-export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onModalHide, onConfirm }: Props) => {
-  const [keyTypes, setKeyTypes] = useState<KeypairType[]>(defaultKeyTypes);
+export const SelectAccountTypeModal = ({ onConfirm, selectTypeRef }: Props) => {
+  const [selectedValueMap, setSelectedValueMap] = useState<Record<string, boolean>>(defaultValueMap);
+
+  const onChangeOption = useCallback((value: string, isCheck?: boolean) => {
+    setSelectedValueMap(prev => ({
+      ...prev,
+      [value]: !!isCheck,
+    }));
+  }, []);
 
   const _onConfirm = useCallback(
     (_keyTypes: KeypairType[]) => {
@@ -44,21 +53,44 @@ export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onM
     [onConfirm],
   );
 
-  useEffect(() => {
-    if (!modalVisible) {
-      setKeyTypes(defaultKeyTypes);
-    }
-  }, [modalVisible]);
+  const renderAccountTypeItem = (item: AccountTypeItem) => {
+    return (
+      <SelectItem
+        key={item.label}
+        label={item.label}
+        leftItemIcon={<Logo size={28} network={item.icon} shape={'circle'} />}
+        isSelected={selectedValueMap[item.key]}
+        onPress={() => onChangeOption(item.key, !selectedValueMap[item.key])}
+        showUnselect={true}
+      />
+    );
+  };
 
   return (
-    <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
-      <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.header.selectAccType}</Text>
-        <SelectAccountType selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
-        <Button icon={ButtonIcon} disabled={!keyTypes.length} onPress={_onConfirm(keyTypes)}>
-          {i18n.common.confirm}
-        </Button>
-      </View>
-    </SubWalletModal>
+    <>
+      <BasicSelectModal
+        ref={selectTypeRef}
+        selectedValueMap={selectedValueMap}
+        title={i18n.header.selectAccType}
+        items={items}
+        selectModalType={'multi'}
+        isShowInput={false}
+        renderCustomItem={renderAccountTypeItem}
+        applyBtn={{
+          label: i18n.common.confirm,
+          onPressApplyBtn: () => {
+            const currentKeyTypes: KeypairType[] = Object.keys(selectedValueMap).filter(
+              o => selectedValueMap[o],
+            ) as KeypairType[];
+            setSelectedValueMap(defaultValueMap);
+            _onConfirm(currentKeyTypes)();
+          },
+          icon: CheckCircle,
+        }}
+        onChangeModalVisible={() => {
+          setSelectedValueMap(defaultValueMap);
+        }}
+      />
+    </>
   );
 };

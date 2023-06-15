@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isAccountAll as checkIsAccountAll } from '@subwallet/extension-base/utils';
 import { getAccountType } from 'utils/index';
@@ -11,6 +11,7 @@ import { findAccountByAddress } from 'utils/account';
 import { PREDEFINED_TRANSAK_TOKEN } from '../../../../predefined/transak';
 import { AccountType } from 'types/ui-types';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { ModalRef } from 'types/modalRef';
 
 type BuyTokenSelectedResult = {
   selectedBuyAccount?: string;
@@ -52,13 +53,14 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const fixedTokenKey = currentSymbol ? PREDEFINED_TRANSAK_TOKEN[currentSymbol]?.slug : undefined;
-  const [isBuyTokenSelectorModalVisible, setBuyTokenSelectorModalVisible] = useState<boolean>(false);
-  const [isBuyAccountSelectorModalVisible, setBuyAccountSelectorModalVisible] = useState<boolean>(false);
-  const [isBuyServiceSelectorModalVisible, setBuyServiceSelectorModalVisible] = useState<boolean>(false);
   const [{ selectedBuyAccount, selectedBuyToken }, setBuyTokenSelectedResult] = useState<BuyTokenSelectedResult>({
     selectedBuyAccount: isAllAccount ? undefined : currentAccount?.address,
     selectedBuyToken: fixedTokenKey || '',
   });
+
+  const accountBuyRef = useRef<ModalRef>();
+  const tokenBuyRef = useRef<ModalRef>();
+  const serviceBuyRef = useRef<ModalRef>();
 
   const buyAccountSelectorItems = useMemo<AccountJson[]>(() => {
     if (!isAllAccount) {
@@ -75,6 +77,15 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
 
     return accounts.filter(a => !checkIsAccountAll(a.address));
   }, [isAllAccount, tokenGroupSlug, accounts, assetRegistryMap, chainInfoMap]);
+
+  const selectedBuyAccountMap: Record<string, boolean> = useMemo(() => {
+    let result: Record<string, boolean> = {};
+    buyAccountSelectorItems.forEach(acc => {
+      result[acc.address] = acc.address === selectedBuyAccount;
+    });
+
+    return result;
+  }, [buyAccountSelectorItems, selectedBuyAccount]);
 
   const accountType = selectedBuyAccount ? getAccountType(selectedBuyAccount) : '';
 
@@ -110,44 +121,39 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
     }
 
     if (checkIsAccountAll(currentAccount.address)) {
-      setBuyAccountSelectorModalVisible(true);
+      accountBuyRef && accountBuyRef.current?.onOpenModal();
     } else {
-      setBuyTokenSelectorModalVisible(true);
+      tokenBuyRef && tokenBuyRef.current?.onOpenModal();
     }
   }, [currentAccount]);
 
-  const openSelectBuyAccount = useCallback(
-    (account: AccountJson) => {
-      setBuyTokenSelectedResult({ selectedBuyAccount: account.address });
-      setBuyAccountSelectorModalVisible(false);
-      actionWithSetTimeout(() => {
-        setBuyTokenSelectorModalVisible(true);
-      });
-    },
-    [actionWithSetTimeout],
-  );
+  const openSelectBuyAccount = useCallback((account: AccountJson) => {
+    setBuyTokenSelectedResult({ selectedBuyAccount: account.address });
+    tokenBuyRef && tokenBuyRef.current?.onOpenModal();
+  }, []);
 
   const openSelectBuyToken = useCallback(
     (item: TokenItemType) => {
       setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: item.slug }));
-      setBuyTokenSelectorModalVisible(false);
+      accountBuyRef && accountBuyRef.current?.onCloseModal();
+      tokenBuyRef && tokenBuyRef.current?.onCloseModal();
       actionWithSetTimeout(() => {
-        setBuyServiceSelectorModalVisible(true);
+        serviceBuyRef && serviceBuyRef.current?.onOpenModal();
       });
     },
     [actionWithSetTimeout],
   );
 
   const onCloseSelectBuyAccount = useCallback(() => {
-    setBuyAccountSelectorModalVisible(false);
+    accountBuyRef && accountBuyRef.current?.onCloseModal();
   }, []);
 
   const onCloseSelectBuyToken = useCallback(() => {
-    setBuyTokenSelectorModalVisible(false);
+    tokenBuyRef && tokenBuyRef.current?.onCloseModal();
   }, []);
 
   const onCloseSelectBuyService = useCallback(() => {
-    setBuyServiceSelectorModalVisible(false);
+    serviceBuyRef && serviceBuyRef.current?.onCloseModal();
   }, []);
 
   useEffect(() => {
@@ -158,9 +164,6 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
   }, [currentAccount?.address]);
 
   return {
-    isBuyTokenSelectorModalVisible,
-    isBuyAccountSelectorModalVisible,
-    isBuyServiceSelectorModalVisible,
     onOpenBuyToken,
     openSelectBuyAccount,
     openSelectBuyToken,
@@ -171,5 +174,9 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
     selectedBuyToken,
     buyAccountSelectorItems,
     buyTokenSelectorItems,
+    accountBuyRef,
+    tokenBuyRef,
+    serviceBuyRef,
+    selectedBuyAccountMap,
   };
 }

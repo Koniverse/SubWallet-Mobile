@@ -7,7 +7,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import SelectAccountTypeStyles from './style';
 import i18n from 'utils/i18n/i18n';
 
-interface AccountTypeItem {
+export interface AccountTypeItem {
   label: string;
   key: KeypairType;
   icon: string;
