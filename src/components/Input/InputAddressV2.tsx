@@ -4,7 +4,7 @@ import { TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isAddress } from '@polkadot/util-crypto';
 import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
-import { toShort } from 'utils/index';
+import reformatAddress, { toShort } from 'utils/index';
 import { Book, Scan } from 'phosphor-react-native';
 import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal';
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
@@ -13,7 +13,10 @@ import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressS
 import { saveRecentAccount } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
-import createStylesheet from './style/inputAddress';
+import createStylesheet from './style/InputAddress';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { findContactByAddress } from 'utils/account';
 
 interface Props extends InputProps {
   isValidValue?: boolean;
@@ -44,6 +47,7 @@ const Component = (
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
   const isAddressValid = isAddress(address) && (isValidValue !== undefined ? isValidValue : true);
+  const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
 
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !address || !isInputBlur;
@@ -57,6 +61,28 @@ const Component = (
     showAddressBook,
   );
 
+  const _contacts = useMemo(() => [...accounts, ...contacts], [accounts, contacts]);
+
+  const accountName = useMemo(() => {
+    const account = findContactByAddress(_contacts, inputProps.value);
+
+    return account?.name;
+  }, [_contacts, inputProps.value]);
+
+  const formattedAddress = useMemo((): string => {
+    const _value = inputProps.value || '';
+
+    if (addressPrefix === undefined) {
+      return _value;
+    }
+
+    try {
+      return reformatAddress(_value, addressPrefix);
+    } catch (e) {
+      return _value;
+    }
+  }, [addressPrefix, inputProps.value]);
+
   const LeftPart = useMemo(() => {
     return (
       <>
@@ -65,10 +91,25 @@ const Component = (
             <Avatar value={address || ''} size={hasLabel ? 20 : 24} />
           </View>
         )}
-        <Typography.Text style={stylesheet.addressText}>{toShort(address, 9, 9)}</Typography.Text>
+        <Typography.Text ellipsis style={stylesheet.addressText}>
+          {accountName || toShort(address, 9, 9)}
+        </Typography.Text>
+        {(accountName || addressPrefix !== undefined) && (
+          <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
+        )}
       </>
     );
-  }, [address, hasLabel, showAvatar, stylesheet.addressText, stylesheet.avatarWrapper]);
+  }, [
+    accountName,
+    address,
+    addressPrefix,
+    formattedAddress,
+    hasLabel,
+    showAvatar,
+    stylesheet.addressAliasText,
+    stylesheet.addressText,
+    stylesheet.avatarWrapper,
+  ]);
 
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
@@ -169,12 +210,13 @@ const Component = (
         ref={ref}
         {...inputProps}
         leftPart={LeftPart}
+        leftPartStyle={stylesheet.inputLeftPart}
         rightPart={RightPart}
         isError={!isAddressValid}
         onChangeText={onChangeInputText}
         onFocus={onInputFocus}
         onBlur={onInputBlur}
-        inputStyle={stylesheet.inputStyle}
+        inputStyle={stylesheet.input}
       />
 
       <AddressScanner

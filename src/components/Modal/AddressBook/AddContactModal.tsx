@@ -12,7 +12,7 @@ import Input from 'components/design-system-ui/input';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { editContactAddress } from 'messaging/index';
-import { InputAddress } from 'components/Input/inputAddressV2';
+import { InputAddress } from 'components/Input/InputAddressV2';
 import { PlusCircle } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/AddContactModal';

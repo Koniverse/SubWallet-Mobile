@@ -47,7 +47,7 @@ import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { SendFundProps } from 'routes/transaction/transactionAction';
-import { InputAddress } from 'components/Input/inputAddressV2';
+import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 function isAssetTypeValid(

@@ -1,5 +1,5 @@
-import { decodeAddress, encodeAddress, isEthereumAddress } from '@polkadot/util-crypto';
-import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
+import { decodeAddress, encodeAddress, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { AbstractAddressJson, AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import {
   _getChainSubstrateAddressPrefix,
@@ -161,4 +161,27 @@ export const recodeAddress = (
     prefix,
     isEthereum,
   };
+};
+
+export const findContactByAddress = (contacts: AbstractAddressJson[], address?: string): AbstractAddressJson | null => {
+  try {
+    const isAllAccount = address && isAccountAll(address);
+
+    if (!isAddress(address) && !isAllAccount) {
+      return null;
+    }
+
+    const originAddress = isAccountAll(address)
+      ? address
+      : isEthereumAddress(address)
+      ? address
+      : encodeAddress(decodeAddress(address));
+    const result = contacts.find(contact => contact.address.toLowerCase() === originAddress.toLowerCase());
+
+    return result || null;
+  } catch (e) {
+    console.error('Fail to detect address', e);
+
+    return null;
+  }
 };

@@ -33,7 +33,7 @@ import { SWTransactionResponse } from '@subwallet/extension-base/services/transa
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps, SendNFTProps } from 'routes/index';
-import { InputAddress } from 'components/Input/inputAddressV2';
+import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 const DEFAULT_ITEM: NftItem = {
