@@ -50,7 +50,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
       middleItem={
         <View
           style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>
-          <Text style={styles.accountName}>
+          <Text style={styles.accountName} numberOfLines={1}>
             {isAll ? i18n.common.allAccounts : accountName || toShort(address, addressPreLength, addressSufLength)}
           </Text>
           {!isAll && (

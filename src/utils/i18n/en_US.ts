@@ -170,6 +170,7 @@ export const en = {
     specVersion: 'Spec version',
     selectStakingValidator: (validatorLabel: string) => `Select ${validatorLabel}`,
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
+    submit: 'Submit',
   },
   title: {
     exportAccount: 'Export account',
@@ -345,6 +346,7 @@ export const en = {
     viewTransaction: 'View transaction',
     manageTokens: 'Manage tokens',
     unbond: 'Unbond',
+    addContact: 'Add contact',
   },
   inputLabel: {
     selectAcc: 'Select account',
@@ -490,6 +492,7 @@ export const en = {
     searchHistory: 'Search history',
     seedPhrase: 'Seed phrase',
     enterPrivateKey: 'Enter private key',
+    searchAddressBook: 'Account name',
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
@@ -666,6 +669,10 @@ export const en = {
     createMasterPassword: 'Create master password',
     deleteToken: 'Delete token',
     language: 'Language',
+    manageAddressBook: 'Manage address book',
+    addressBook: 'Address book',
+    addContact: 'Add contact',
+    editContact: 'Edit contact',
   },
   cryptoScreen: {
     receive: 'Receive',
@@ -756,6 +763,13 @@ export const en = {
       stakingAppearHere: 'Your staking accounts will be appear here',
     },
   },
+  addressBook: {
+    typeWallet: 'Your Wallet',
+    typeContact: 'Saved contacts',
+    typeRecent: 'Recent',
+    contactName: 'Contact name',
+    contactAddress: 'Contact address',
+  },
   confirmation: {
     signatureRequest: 'Signature request',
     approveRequest: 'Approve request',
@@ -781,6 +795,8 @@ export const en = {
       `Approving this update will sync your metadata for ${chain} chain from ${url}`,
     notSpMessagePart1: 'This feature is not available for',
     notSpMessagePart2: 'Please click choose another account',
+    deleteContactTitle: 'Delete this contact?',
+    deleteContactMessage: 'You would no longer see this address in your address book',
   },
   signingAction: {
     basic: 'Basic',
@@ -927,6 +943,10 @@ export const en = {
     blockExplorerMustBeAValidUrl: 'Block explorer must be a valid URL',
     invalidAmount: 'Amount is invalid',
     isNotAnAddress: 'Invalid. This QR code is not an address',
+    contactAddressIsRequired: 'Contact address is required',
+    invalidContactAddress: 'Invalid contact address',
+    contactNameIsRequired: 'Contact name is required',
+    contactNameMustBeUnique: 'Contact name must be unique',
   },
   notificationMessage: {
     watchOnlyNoti: 'The account you are using is watch-only, you cannot send assets with it',

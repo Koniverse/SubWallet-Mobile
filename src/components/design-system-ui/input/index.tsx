@@ -8,24 +8,33 @@ import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { DisabledStyle } from 'styles/sharedStyles';
 
-type PartBlock = {
-  content: React.ReactNode;
-  style?: StyleProp<ViewStyle>;
-};
-
-interface Props extends Omit<TextInputProps, 'style' | 'editable'> {
+export interface InputProps extends Omit<TextInputProps, 'style' | 'editable'> {
   label?: string;
   inputStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
   isError?: boolean;
   readonly?: boolean;
   disabled?: boolean;
-  leftPart?: PartBlock;
-  rightPart?: PartBlock;
+  leftPart?: React.ReactNode;
+  leftPartStyle?: StyleProp<ViewStyle>;
+  rightPart?: React.ReactNode;
+  rightPartStyle?: StyleProp<ViewStyle>;
 }
 
 const Input = (
-  { label, isError, inputStyle, containerStyle, readonly, disabled, leftPart, rightPart, ...textInputProps }: Props,
+  {
+    label,
+    isError,
+    inputStyle,
+    containerStyle,
+    readonly,
+    disabled,
+    leftPart,
+    rightPart,
+    leftPartStyle,
+    rightPartStyle,
+    ...textInputProps
+  }: InputProps,
   ref: ForwardedRef<TextInput>,
 ) => {
   const theme = useSubWalletTheme().swThemes;
@@ -36,7 +45,7 @@ const Input = (
 
   return (
     <Field label={label} style={[disabled && DisabledStyle, containerStyle]} labelStyle={stylesheet.label}>
-      {!!leftPart && <View style={[stylesheet.leftPart, leftPart.style]}>{leftPart.content}</View>}
+      {!!leftPart && <View style={[stylesheet.leftPart, leftPartStyle]}>{leftPart}</View>}
       <TextInput
         ref={ref}
         placeholderTextColor={theme.colorTextLight4}
@@ -45,7 +54,7 @@ const Input = (
         editable={!disabled && !readonly}
       />
 
-      {!!rightPart && <View style={[stylesheet.rightPart, rightPart.style]}>{rightPart.content}</View>}
+      {!!rightPart && <View style={[stylesheet.rightPart, rightPartStyle]}>{rightPart}</View>}
     </Field>
   );
 };

@@ -18,10 +18,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { InputAddress } from 'components/Input/InputAddress';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { AccountSelectField } from 'components/Field/AccountSelect';
@@ -51,6 +47,8 @@ import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 import { SendFundProps } from 'routes/transaction/transactionAction';
+import { InputAddress } from 'components/Input/InputAddressV2';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -242,7 +240,6 @@ export const SendFund = ({
   const [forceUpdateMaxValue, setForceUpdateMaxValue] = useState<object | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
   const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
   const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
@@ -268,6 +265,8 @@ export const SendFund = ({
   const { title, formState, onChangeValue, onUpdateErrors, onDone, onChangeFromValue, onChangeAssetValue } =
     useTransaction('send-fund', formConfig, {});
   const { asset, chain, destChain, from, to, value: amount } = formState.data;
+  const destChainNetworkPrefix = useGetChainPrefixBySlug(destChain);
+  const destChainGenesisHash = chainInfoMap[destChain]?.substrateInfo?.genesisHash || '';
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, handleTransferAll);
   const isDataNotReady = !to || !amount;
 
@@ -350,17 +349,8 @@ export const SendFund = ({
     [chainInfoMap, onUpdateErrors],
   );
 
-  const onUpdateReceiverInputAddress = useCallback(
-    (text: string) => {
-      setToAddressDirty(true);
-      formState.refs.to.current?.onChange(text);
-      validateRecipientAddress(text, from, chain, destChain);
-    },
-    [chain, destChain, formState.refs.to, from, validateRecipientAddress],
-  );
-
   const onChangeRecipientAddress = useCallback(
-    (recipientAddress: string | null, currentTextValue: string) => {
+    (currentTextValue: string) => {
       setToAddressDirty(true);
       onChangeValue('to')(currentTextValue);
       validateRecipientAddress(currentTextValue, from, chain, destChain);
@@ -377,18 +367,6 @@ export const SendFund = ({
       }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onPressQrButton = useCallback(async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setIsShowQrModalVisible(true);
-    }
-  }, []);
-
-  const closeQrScan = useCallback(() => {
-    setIsShowQrModalVisible(false);
   }, []);
 
   const validateAmount = useCallback(
@@ -690,22 +668,21 @@ export const SendFund = ({
 
               <InputAddress
                 ref={formState.refs.to}
-                onPressQrButton={onPressQrButton}
                 containerStyle={{ marginBottom: theme.sizeSM }}
                 label={formState.labels.to}
                 value={formState.data.to}
-                onChange={onChangeRecipientAddress}
+                onChangeText={onChangeRecipientAddress}
                 isValidValue={formState.isValidated.recipientAddress}
                 placeholder={i18n.placeholder.accountAddress}
                 disabled={loading}
-                onSubmitField={onSubmit}
-              />
-
-              <AddressScanner
-                qrModalVisible={isShowQrModalVisible}
-                onPressCancel={closeQrScan}
-                onChangeAddress={onUpdateReceiverInputAddress}
-                scanMessage={i18n.common.toSendFund}
+                onSubmitEditing={onSubmit}
+                addressPrefix={destChainNetworkPrefix}
+                networkGenesisHash={destChainGenesisHash}
+                showAddressBook
+                saveAddress
+                scannerProps={{
+                  scanMessage: i18n.common.toSendFund,
+                }}
               />
 
               {!!(formState.errors.to && formState.errors.to.length) &&

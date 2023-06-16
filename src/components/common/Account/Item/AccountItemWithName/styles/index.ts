@@ -33,6 +33,8 @@ export default (theme: ThemeTypes) => {
       marginLeft: theme.marginXXS,
     },
     accountName: {
+      overflow: 'hidden',
+      flexShrink: 1,
       fontWeight: `${theme.fontWeightStrong}`,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,

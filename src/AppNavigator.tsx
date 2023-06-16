@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/routers';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
@@ -63,6 +63,7 @@ import { deviceWidth } from 'constants/index';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Settings } from 'screens/Settings';
 import { WrapperParamList } from 'routes/wrapper';
+import { ManageAddressBook } from 'screens/Settings/AddressBook';
 
 interface Props {
   isAppReady: boolean;
@@ -114,7 +115,7 @@ const DrawerScreen = () => {
 };
 
 const HistoryScreen = (props: JSX.IntrinsicAttributes) => {
-  return withPageWrapper(History, ['transactionHistory'])(props);
+  return withPageWrapper(History as ComponentType, ['transactionHistory'])(props);
 };
 
 const AppNavigator = ({ isAppReady }: Props) => {
@@ -215,6 +216,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   component={CreateMasterPassword}
                   options={{ gestureEnabled: false }}
                 />
+                <Stack.Screen name="ManageAddressBook" component={ManageAddressBook} />
                 <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
                 <Stack.Screen name="ImportNetwork" component={ImportNetwork} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />

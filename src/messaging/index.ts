@@ -135,11 +135,10 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { Message } from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
-import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
+import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 import { MetadataDef } from '@subwallet/extension-inject/types';
-import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 import {
   SWTransactionResponse,
   SWTransactionResult,
@@ -815,8 +814,16 @@ export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddres
   return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
 }
 
-export async function saveRecentAccountId(accountId: string): Promise<SingleAddress> {
+export async function saveRecentAccount(accountId: string): Promise<KeyringAddress> {
   return sendMessage('pri(accounts.saveRecent)', { accountId });
+}
+
+export async function editContactAddress(address: string, name: string): Promise<boolean> {
+  return sendMessage('pri(accounts.editContact)', { address: address, meta: { name: name } });
+}
+
+export async function removeContactAddress(address: string): Promise<boolean> {
+  return sendMessage('pri(accounts.deleteContact)', { address: address });
 }
 
 export async function triggerAccountsSubscription(): Promise<boolean> {

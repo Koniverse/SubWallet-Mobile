@@ -1,10 +1,10 @@
-import { Icon } from 'components/design-system-ui';
+import { Icon, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import Avatar from '../../avatar';
 import Web3Block, { Web3BlockCustomStyle, Web3BlockProps } from '../Web3Block';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
-import { StyleProp, Text, TextStyle } from 'react-native';
+import { StyleProp, TextStyle } from 'react-native';
 import createStyle from './styles';
 import { CheckCircle } from 'phosphor-react-native';
 
@@ -27,7 +27,7 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
     rightItem,
     middleItem,
     address,
-    avatarSize,
+    avatarSize = 24,
     addressPreLength,
     addressSufLength,
     isSelected,
@@ -47,7 +47,11 @@ const AccountItem: React.FC<AccountItemProps> = (props: AccountItemProps) => {
       }}
       leftItem={leftItem || <Avatar value={address} size={avatarSize} />}
       middleItem={
-        middleItem || <Text style={[addressStyle]}>{toShort(address || '', addressPreLength, addressSufLength)}</Text>
+        middleItem || (
+          <Typography.Text style={[addressStyle]}>
+            {toShort(address || '', addressPreLength, addressSufLength)}
+          </Typography.Text>
+        )
       }
       rightItem={
         rightItem || (

@@ -15,7 +15,7 @@ import { overlayColor, rectDimensions } from 'constants/scanner';
 import { IconButton } from 'components/IconButton';
 import { Warning } from 'components/Warning';
 
-interface Props {
+export interface AddressScannerProps {
   onPressCancel: () => void;
   onChangeAddress: (data: string) => void;
   qrModalVisible: boolean;
@@ -59,7 +59,7 @@ export const AddressScanner = ({
   scanMessage = i18n.common.toSendFund,
   error,
   isShowError = false,
-}: Props) => {
+}: AddressScannerProps) => {
   const onSuccess = (e: BarCodeReadEvent) => {
     try {
       onChangeAddress(e.data);

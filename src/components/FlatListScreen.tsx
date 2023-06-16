@@ -45,7 +45,7 @@ interface Props<T> {
   placeholder?: string;
   numberColumns?: number;
   loading?: boolean;
-  flatListStyle?: StyleProp<any>;
+  flatListStyle?: StyleProp<ViewStyle>;
   leftButtonDisabled?: boolean;
   headerContent?: () => JSX.Element;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;

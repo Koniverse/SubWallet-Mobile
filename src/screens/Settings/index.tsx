@@ -105,7 +105,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: BookBookmark,
           title: i18n.settings.manageAddressBook,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: onPressComingSoonFeature,
+          onPress: () => navigation.navigate('ManageAddressBook'),
           backgroundColor: '#0078D9',
         },
         {
