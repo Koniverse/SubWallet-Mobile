@@ -184,6 +184,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
               onSubmitEditing={handleSubmit(onSubmit)}
               isError={errors && !!errors[FormFieldName.ADDRESS]}
               ref={ref}
+              saveAddress={false}
             />
           )}
           name={FormFieldName.ADDRESS}
