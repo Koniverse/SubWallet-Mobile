@@ -569,6 +569,7 @@ export const en = {
     selectAccount: 'Select account',
     accountDetails: 'Account details',
     exportAccount: 'Export account',
+    yourSeedPhrase: 'Your seed phrase',
     yourRecoveryPhrase: 'Your recovery phrase',
     yourPrivateKey: 'Your private key',
     successful: 'Successful',
