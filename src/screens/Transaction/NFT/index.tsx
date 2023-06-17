@@ -242,11 +242,6 @@ const SendNFT: React.FC<SendNFTProps> = ({
               placeholder={i18n.placeholder.accountAddress}
               onSubmitEditing={handleSend}
               disabled={loading}
-              scannerProps={{
-                networkKey: nftItem.chain,
-                token: _getChainNativeTokenBasicInfo(chainInfo).symbol,
-                scanMessage: i18n.common.toSendNFT,
-              }}
             />
             {!!formState.errors.recipientAddress.length && (
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />

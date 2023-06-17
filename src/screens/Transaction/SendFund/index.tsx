@@ -680,9 +680,6 @@ export const SendFund = ({
                 networkGenesisHash={destChainGenesisHash}
                 showAddressBook
                 saveAddress
-                scannerProps={{
-                  scanMessage: i18n.common.toSendFund,
-                }}
               />
 
               {!!(formState.errors.to && formState.errors.to.length) &&
