@@ -9,7 +9,6 @@ import { ColorMap } from 'styles/color';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { BarCodeReadEvent } from 'react-native-camera';
 import i18n from 'utils/i18n/i18n';
-import { getNetworkLogo } from 'utils/index';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { IconButton } from 'components/IconButton';
@@ -19,9 +18,6 @@ export interface AddressScannerProps {
   onPressCancel: () => void;
   onChangeAddress: (data: string) => void;
   qrModalVisible: boolean;
-  networkKey?: string;
-  token?: string;
-  scanMessage?: string;
   error?: string;
   isShowError?: boolean;
 }
@@ -36,13 +32,6 @@ const CancelButtonStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
 };
 
-const BottomContentStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginHorizontal: 22,
-};
-
 const BottomSubContentStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
   justifyContent: 'flex-end',
@@ -54,9 +43,6 @@ export const AddressScanner = ({
   onPressCancel,
   onChangeAddress,
   qrModalVisible,
-  networkKey,
-  token,
-  scanMessage = i18n.common.toSendFund,
   error,
   isShowError = false,
 }: AddressScannerProps) => {
@@ -107,16 +93,7 @@ export const AddressScanner = ({
             </View>
             <View style={ScannerStyles.BottomOverlayStyle}>
               <View style={BottomSubContentStyle}>{!!error && <Warning message={error} isDanger />}</View>
-              <View style={BottomContentStyle}>
-                {networkKey && <View style={ScannerStyles.LogoContainerStyle}>{getNetworkLogo(networkKey, 34)}</View>}
-
-                {token && (
-                  <Text
-                    style={
-                      ScannerStyles.CenterTextStyle
-                    }>{`${i18n.common.scan} ${token} ${i18n.common.address} ${scanMessage}`}</Text>
-                )}
-              </View>
+              <View style={BottomSubContentStyle} />
             </View>
           </View>
         }

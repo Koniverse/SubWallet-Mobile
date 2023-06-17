@@ -384,9 +384,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           qrModalVisible={isShowQrModalVisible}
           onPressCancel={() => setShowQrModalVisible(false)}
           onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
-          networkKey={chain || 'default'}
-          token={'contract'}
-          scanMessage={i18n.common.toImportNFT}
         />
       </ScrollView>
 

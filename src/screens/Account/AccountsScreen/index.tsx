@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FileArrowDown, MagnifyingGlass, PlusCircle, Swatches } from 'phosphor-react-native';
-import { RootNavigationProps } from 'routes/index';
+import { AccountsScreenProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { saveCurrentAccountAddress } from 'messaging/index';
@@ -36,11 +36,14 @@ const searchFunction = (items: AccountJson[], searchString: string) => {
   );
 };
 
-export const AccountsScreen = () => {
+export const AccountsScreen = ({
+  route: {
+    params: { pathName },
+  },
+}: AccountsScreenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-
   const accounts = useMemo(() => {
     if (fullAccounts.length > 2) {
       return fullAccounts;
@@ -69,9 +72,15 @@ export const AccountsScreen = () => {
         }
       }
 
-      navigation.navigate('Home');
+      if (pathName === 'TokenGroupsDetail') {
+        // need 2x goBack() for going back to TokenGroups because of specific reason
+        navigation.goBack();
+        navigation.goBack();
+      } else {
+        navigation.navigate('Home');
+      }
     },
-    [currentAccountAddress, navigation, accounts],
+    [currentAccountAddress, pathName, accounts, navigation],
   );
 
   const renderItem = useCallback(

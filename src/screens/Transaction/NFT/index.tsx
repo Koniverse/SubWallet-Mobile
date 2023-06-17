@@ -20,7 +20,6 @@ import i18n from 'utils/i18n/i18n';
 import { NetworkField } from 'components/Field/Network';
 import { ContainerHorizontalPadding, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
@@ -135,8 +134,6 @@ const SendNFT: React.FC<SendNFTProps> = ({
       nftCollections.find(item => nftChain === item.chain && item.collectionId === collectionId) || DEFAULT_COLLECTION,
     [collectionId, nftChain, nftCollections],
   );
-
-  const chainInfo = useMemo(() => chainInfoMap[nftChain], [chainInfoMap, nftChain]);
 
   const [loading, setLoading] = useState(false);
   const { title, formState, onChangeValue, onChangeChainValue, onDone } = useTransaction('send-nft', NFTFormConfig);
