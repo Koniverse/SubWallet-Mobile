@@ -44,7 +44,10 @@ export const Header = () => {
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);
-        navigation.navigate('TransactionAction', { screen: 'SendFund', params: { recipient: data } });
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
+          params: { screen: 'SendFund', params: { recipient: data } },
+        });
       } else {
         setError(i18n.errorMessage.isNotAnAddress);
       }
