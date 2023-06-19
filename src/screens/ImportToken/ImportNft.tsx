@@ -5,7 +5,7 @@ import InputText from 'components/Input/InputText';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Keyboard, ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
@@ -369,7 +369,9 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChangeText={handleChangeValue('collectionName')}
           errorMessages={formState.errors.collectionName}
           value={collectionName}
-          onSubmitField={onSubmitField('collectionName')}
+          onSubmitField={
+            !!formState.isValidated.smartContract ? onSubmitField('collectionName') : () => Keyboard.dismiss()
+          }
         />
 
         {!isNetConnected && (
