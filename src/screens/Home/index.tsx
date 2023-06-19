@@ -143,6 +143,7 @@ const Wrapper = () => {
           width: deviceWidth,
         },
         drawerType: 'front',
+        swipeEnabled: false,
       }}>
       <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
     </Drawer.Navigator>

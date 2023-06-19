@@ -108,6 +108,7 @@ const DrawerScreen = () => {
         },
         drawerType: 'front',
         headerShown: false,
+        swipeEnabled: false,
       }}>
       <Drawer.Screen name="TransactionAction" component={TransactionScreen} />
     </Drawer.Navigator>
