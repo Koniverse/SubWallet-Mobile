@@ -37,20 +37,20 @@ const Component = (
     addressPrefix,
     scannerProps = {},
     saveAddress = true,
+    value = '',
     ...inputProps
   }: Props,
   ref: ForwardedRef<TextInput>,
 ) => {
   const theme = useSubWalletTheme().swThemes;
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
-  const [address, setAddress] = useState<string>(inputProps.value || '');
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
-  const isAddressValid = isAddress(address) && (isValidValue !== undefined ? isValidValue : true);
+  const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
 
   const hasLabel = !!inputProps.label;
-  const isInputVisible = !isAddressValid || !address || !isInputBlur;
+  const isInputVisible = !isAddressValid || !value || !isInputBlur;
   const stylesheet = createStylesheet(
     theme,
     isInputVisible,
@@ -64,13 +64,13 @@ const Component = (
   const _contacts = useMemo(() => [...accounts, ...contacts], [accounts, contacts]);
 
   const accountName = useMemo(() => {
-    const account = findContactByAddress(_contacts, inputProps.value);
+    const account = findContactByAddress(_contacts, value);
 
     return account?.name;
-  }, [_contacts, inputProps.value]);
+  }, [_contacts, value]);
 
   const formattedAddress = useMemo((): string => {
-    const _value = inputProps.value || '';
+    const _value = value || '';
 
     if (addressPrefix === undefined) {
       return _value;
@@ -81,18 +81,18 @@ const Component = (
     } catch (e) {
       return _value;
     }
-  }, [addressPrefix, inputProps.value]);
+  }, [addressPrefix, value]);
 
   const LeftPart = useMemo(() => {
     return (
       <>
         {showAvatar && (
           <View style={stylesheet.avatarWrapper}>
-            <Avatar value={address || ''} size={hasLabel ? 20 : 24} />
+            <Avatar value={value || ''} size={hasLabel ? 20 : 24} />
           </View>
         )}
         <Typography.Text ellipsis style={stylesheet.addressText}>
-          {accountName || toShort(address, 9, 9)}
+          {accountName || toShort(value, 9, 9)}
         </Typography.Text>
         {(accountName || addressPrefix !== undefined) && (
           <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
@@ -101,7 +101,6 @@ const Component = (
     );
   }, [
     accountName,
-    address,
     addressPrefix,
     formattedAddress,
     hasLabel,
@@ -109,6 +108,7 @@ const Component = (
     stylesheet.addressAliasText,
     stylesheet.addressText,
     stylesheet.avatarWrapper,
+    value,
   ]);
 
   const onPressQrButton = useCallback(async () => {
@@ -166,7 +166,6 @@ const Component = (
   const onChangeInputText = useCallback(
     (rawText: string) => {
       const text = rawText.trim();
-      setAddress(text);
 
       if (inputProps.onChangeText) {
         inputProps.onChangeText(text);
@@ -217,6 +216,7 @@ const Component = (
         onFocus={onInputFocus}
         onBlur={onInputBlur}
         inputStyle={stylesheet.input}
+        value={value}
       />
 
       <AddressScanner
@@ -232,7 +232,7 @@ const Component = (
           modalVisible={isShowAddressBookModal}
           networkGenesisHash={networkGenesisHash}
           onSelect={onSelectAddressBook}
-          value={inputProps.value}
+          value={value}
           onClose={closeAddressBookModal}
         />
       )}

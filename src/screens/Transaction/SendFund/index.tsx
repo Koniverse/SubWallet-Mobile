@@ -223,6 +223,7 @@ export const SendFund = ({
     params: { slug: tokenGroupSlug, recipient: scanRecipient },
   },
 }: SendFundProps) => {
+  console.log('scanRecipient', scanRecipient);
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
@@ -343,7 +344,7 @@ export const SendFund = ({
         }
       }
 
-      onUpdateErrors('to')(undefined);
+      onUpdateErrors('to')([]);
       return true;
     },
     [chainInfoMap, onUpdateErrors],
@@ -353,21 +354,25 @@ export const SendFund = ({
     (currentTextValue: string) => {
       setToAddressDirty(true);
       onChangeValue('to')(currentTextValue);
-      validateRecipientAddress(currentTextValue, from, chain, destChain);
+      if (currentTextValue !== to) {
+        validateRecipientAddress(currentTextValue, from, chain, destChain);
+      }
     },
-    [chain, destChain, from, onChangeValue, validateRecipientAddress],
+    [chain, destChain, from, onChangeValue, to, validateRecipientAddress],
   );
 
   useEffect(() => {
     if (scanRecipient) {
-      setTimeout(() => {
-        setToAddressDirty(true);
-        formState.refs.to.current?.onChange(scanRecipient);
-        validateRecipientAddress(scanRecipient, from, chain, destChain);
-      }, 500);
+      setToAddressDirty(true);
+      onChangeValue('to')(scanRecipient);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onChangeValue, scanRecipient]);
+
+  useEffect(() => {
+    if (scanRecipient === to) {
+      validateRecipientAddress(to, from, chain, destChain);
+    }
+  }, [chain, destChain, from, scanRecipient, to, validateRecipientAddress]);
 
   const validateAmount = useCallback(
     (_amount: string, _maxTransfer: string, isValidInput?: boolean) => {
@@ -598,6 +603,8 @@ export const SendFund = ({
   const buttonIcon = useCallback((color: string) => {
     return <Icon phosphorIcon={PaperPlaneTilt} weight={'fill'} size={'lg'} iconColor={color} />;
   }, []);
+
+  console.log('formState.data.to', formState.data.to);
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
