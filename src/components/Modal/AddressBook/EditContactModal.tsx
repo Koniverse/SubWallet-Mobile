@@ -1,5 +1,5 @@
 import { Button, Icon, SwModal } from 'components/design-system-ui';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -17,6 +17,10 @@ import useConfirmModal from 'hooks/modal/useConfirmModal';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import ToastContainer, { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/EditContactModal';
+import Toast from 'react-native-toast-notifications';
+import { deviceHeight, TOAST_DURATION } from 'constants/index';
+import { ColorMap } from 'styles/color';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 type Props = {
   addressJson: AddressJson;
@@ -145,7 +149,6 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
 
   return (
     <>
-      <ToastContainer ref={toastRef} placement="top" />
       <SwModal
         modalTitle={i18n.header.editContact}
         modalVisible={modalVisible}
@@ -168,7 +171,7 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
             name={FormFieldName.NAME}
           />
 
-          <ReadonlyAddressField address={address} label={i18n.addressBook.contactAddress} />
+          <ReadonlyAddressField toastRef={toastRef} address={address} label={i18n.addressBook.contactAddress} />
 
           <View style={stylesheet.buttonGroupContainer}>
             <Button
@@ -199,6 +202,14 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
           message={i18n.confirmation.deleteContactMessage}
           onCompleteModal={onCompleteDelete}
           onCancelModal={onCancelDelete}
+        />
+
+        <Toast
+          duration={TOAST_DURATION}
+          normalColor={ColorMap.notification}
+          ref={toastRef}
+          placement={'bottom'}
+          offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - (Platform.OS === 'android' ? 80 : 120)}
         />
       </SwModal>
     </>
