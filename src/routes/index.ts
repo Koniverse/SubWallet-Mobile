@@ -11,7 +11,7 @@ import { WrapperParamList } from 'routes/wrapper';
 export type RootStackParamList = {
   LockScreen: undefined;
   LoadingScreen: undefined;
-  Home: NavigatorScreenParams<HomeStackParamList>;
+  Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   CreatePassword: {
     pathName:
       | 'CreateAccount'
@@ -29,7 +29,7 @@ export type RootStackParamList = {
   MigratePassword: undefined;
   CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
   QrScanner: undefined;
-  AccountsScreen: undefined;
+  AccountsScreen: { pathName?: string };
   EditAccount: { address: string; name: string };
   RemoveAccount: { address: string };
   RestoreJson: undefined;
@@ -92,6 +92,7 @@ export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'Cre
 export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>;
+export type AccountsScreenProps = NativeStackScreenProps<RootStackParamList, 'AccountsScreen'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;

@@ -28,7 +28,7 @@ export const WebViewDebugger = () => {
   }, [navigation]);
 
   const onPressReload = useCallback(() => {
-    reload();
+    reload && reload();
   }, [reload]);
 
   const openQr = useCallback(async () => {
@@ -66,13 +66,7 @@ export const WebViewDebugger = () => {
         </View>
         <View style={containerStyle}>
           <Input value={input} onChangeText={setInput} style={textStyle} />
-          <AddressScanner
-            qrModalVisible={showQr}
-            onPressCancel={() => setShowQr(false)}
-            onChangeAddress={setInput}
-            networkKey={'default'}
-            scanMessage={'Scan URL'}
-          />
+          <AddressScanner qrModalVisible={showQr} onPressCancel={() => setShowQr(false)} onChangeAddress={setInput} />
           <Button style={{ marginBottom: 5 }} onPress={openQr}>
             Scan
           </Button>

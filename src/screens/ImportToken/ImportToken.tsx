@@ -348,9 +348,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             qrModalVisible={isShowQrModalVisible}
             onPressCancel={() => setShowQrModalVisible(false)}
             onChangeAddress={(text: string) => onUpdateContractAddress(text)}
-            networkKey={formState.data.chain || 'default'}
-            token={'contract'}
-            scanMessage={i18n.common.toImportToken}
           />
         </ScrollView>
 

@@ -37,12 +37,6 @@ const BottomSubContentStyle: StyleProp<ViewStyle> = {
   flex: 1,
 };
 
-const BottomContentStyle: StyleProp<ViewStyle> = {
-  alignItems: 'center',
-  justifyContent: 'center',
-  flex: 1,
-};
-
 const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
   const [error, setError] = useState<string>('');
 
@@ -109,12 +103,6 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
             </View>
             <View style={ScannerStyles.BottomOverlayStyle}>
               <View style={BottomSubContentStyle}>{!!error && <Warning message={error} isDanger />}</View>
-              <View style={BottomContentStyle}>
-                <Text style={ScannerStyles.CenterTextStyle}>
-                  {type === SCAN_TYPE.QR_SIGNER && i18n.common.scanFromHardwareWallet}
-                  {type === SCAN_TYPE.SECRET && i18n.common.scanFromWallet}
-                </Text>
-              </View>
               <View style={BottomSubContentStyle} />
             </View>
           </View>

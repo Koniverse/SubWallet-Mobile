@@ -31,6 +31,8 @@ export const Header = () => {
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const drawerNavigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
+  const navigationRoutes = navigation.getState().routes;
+  const nearestPathName = navigationRoutes[navigationRoutes.length - 1].name;
   const onPressQrButton = useCallback(async () => {
     const result = await requestCameraPermission();
 
@@ -44,6 +46,7 @@ export const Header = () => {
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);
+        //TODO: need to refactor
         navigation.navigate('Drawer', {
           screen: 'TransactionAction',
           params: { screen: 'SendFund', params: { recipient: data } },
@@ -69,7 +72,7 @@ export const Header = () => {
         />
       </View>
 
-      <AccountSelectField onPress={() => navigation.navigate('AccountsScreen')} />
+      <AccountSelectField onPress={() => navigation.navigate('AccountsScreen', { pathName: nearestPathName })} />
 
       <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
         <Button
