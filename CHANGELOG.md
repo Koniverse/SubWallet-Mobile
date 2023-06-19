@@ -1,4 +1,8 @@
 ## 1.0.6 (181)
+- Fix bug crash app when scan to SendFund (#788)
+- Fix bug in ImportNFT screen and toast for EditContactModal (#794) 
+
+## 1.0.6 (181)
 - Do not send token when user standing on the token detail screen (#788)
 - Navigate incorrect screen in case switch account on token detail screen (#789)
 - Fix route for Right header button and some UI bug (#628)
