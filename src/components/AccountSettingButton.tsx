@@ -20,7 +20,7 @@ export const AccountSettingButton = ({ navigation }: Props) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('AccountsScreen');
+        navigation.navigate('AccountsScreen', {});
       }}>
       <View>
         <SubWalletAvatar address={currentAccountAddress || ''} size={32} SubIcon={SubIcon} />

@@ -151,7 +151,9 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
           <Button
             style={{ flex: 1 }}
             disabled={!scanExplorerAddressUrl}
-            icon={<Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} size={'lg'} />}
+            icon={(iconColor: string) => (
+              <Icon phosphorIcon={GlobeHemisphereWest} weight={'fill'} size={'lg'} iconColor={iconColor} />
+            )}
             type={'secondary'}
             onPress={() => {
               !!scanExplorerAddressUrl && Linking.openURL(scanExplorerAddressUrl);
