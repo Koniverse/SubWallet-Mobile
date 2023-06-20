@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Divider, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { ListRenderItemInfo, View } from 'react-native';
@@ -16,6 +16,7 @@ import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props<T> {
   items: T[];
@@ -41,11 +42,15 @@ interface Props<T> {
     label: string;
     icon: React.ElementType<IconProps>;
     onPressApplyBtn: () => void;
+    applyBtnDisabled?: boolean;
   };
   closeModalAfterSelect?: boolean;
   children?: React.ReactNode;
   isShowContent?: boolean;
   isShowInput?: boolean;
+  defaultValue?: string;
+  acceptDefaultValue?: boolean;
+  renderAfterListItem?: () => JSX.Element;
 }
 
 function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -74,10 +79,41 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     children,
     isShowContent = true,
     isShowInput = true,
+    defaultValue,
+    acceptDefaultValue,
+    renderAfterListItem,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
   const onCloseModal = () => setOpen(false);
+  const theme = useSubWalletTheme().swThemes;
+
+  useEffect(() => {
+    if (acceptDefaultValue) {
+      if (!defaultValue) {
+        items[0] && onSelectItem && onSelectItem(items[0]);
+      } else {
+        let existed;
+        if (selectModalItemType === 'token') {
+          const tokenItems = items as TokenItemType[];
+          existed = tokenItems.find(item => item.slug === defaultValue);
+        } else if (selectModalItemType === 'account') {
+          const accountItems = items as AccountJson[];
+          existed = accountItems.find(item => item.address === defaultValue);
+        } else {
+          const chainItems = items as ChainInfo[];
+          existed = chainItems.find(item => item.slug === defaultValue);
+        }
+
+        if (!existed) {
+          items[0] && onSelectItem && onSelectItem(items[0]);
+        } else {
+          onSelectItem && onSelectItem(existed as T);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, defaultValue]);
 
   useImperativeHandle(
     ref,
@@ -161,7 +197,17 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       <>
         <Divider style={{ marginVertical: 16 }} color={'#1A1A1A'} />
         <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
-          <Button icon={<Icon phosphorIcon={applyBtn?.icon} size={'lg'} />} onPress={applyBtn?.onPressApplyBtn}>
+          <Button
+            disabled={applyBtn?.applyBtnDisabled}
+            icon={
+              <Icon
+                phosphorIcon={applyBtn?.icon}
+                size={'lg'}
+                weight={'fill'}
+                iconColor={applyBtn?.applyBtnDisabled ? theme.colorTextLight5 : theme.colorWhite}
+              />
+            }
+            onPress={applyBtn?.onPressApplyBtn}>
             {applyBtn?.label}
           </Button>
         </View>
@@ -197,7 +243,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             loading={loading}
             withSearchInput={withSearchInput}
             isShowListWrapper={isShowListWrapper}
-            afterListItem={selectModalType === 'multi' ? renderFooter() : undefined}
+            afterListItem={
+              selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
+            }
           />
           {children}
         </SwFullSizeModal>
@@ -208,5 +256,5 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   );
 }
 
-export const SelectModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
+export const FullSizeSelectModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
   forwardRef(_SelectModal);

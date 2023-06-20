@@ -4,7 +4,7 @@ import { TokenBalanceItemType } from 'types/balance';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
 import { TokenBalanceItem } from 'components/common/TokenBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { SelectModal } from 'components/common/SelectModal';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -47,7 +47,7 @@ function _TokenSearchModal({ onSelectItem, items, isShowBalance }: Props, ref: F
   );
 
   return (
-    <SelectModal
+    <FullSizeSelectModal
       ref={ref}
       items={items}
       selectedValueMap={{}}

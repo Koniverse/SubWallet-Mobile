@@ -12,17 +12,16 @@ import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deriveAccountV3 } from 'messaging/index';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ListRenderItemInfo, View } from 'react-native';
+import { ListRenderItemInfo, Platform, View } from 'react-native';
 import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
-import i18n from 'utils/i18n/i18n';
 import createStyles from './styles';
-import { SelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 
 type Props = {
   deriveAccModalRef: React.MutableRefObject<ModalRef | undefined>;
@@ -118,26 +117,22 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <SelectModal
+      <AccountSelector
         items={filtered}
         selectedValueMap={{}}
-        selectModalType={'single'}
-        selectModalItemType={'account'}
-        title={i18n.header.selectAccount}
-        closeModalAfterSelect={true}
-        placeholder={i18n.common.accountName}
+        accountSelectorRef={deriveAccModalRef}
         isShowInput={false}
-        ref={deriveAccModalRef}
-        renderCustomItem={renderItem}>
+        renderCustomItem={renderItem}
+        closeModalAfterSelect={true}>
         <Toast
           duration={TOAST_DURATION}
           normalColor={ColorMap.notification}
           ref={toastRef}
           placement={'bottom'}
-          offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
+          offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - (Platform.OS === 'android' ? 120 : 80)}
         />
         <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
-      </SelectModal>
+      </AccountSelector>
     </>
   );
 };

@@ -575,6 +575,7 @@ export const en = {
   header: {
     selectAccount: 'Select account',
     accountDetails: 'Account details',
+    selectCollator: 'Select collator',
     exportAccount: 'Export account',
     yourSeedPhrase: 'Your seed phrase',
     yourRecoveryPhrase: 'Your recovery phrase',

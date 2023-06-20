@@ -576,6 +576,7 @@ export const vi = {
     selectAccount: 'Select account',
     accountDetails: 'Account details',
     exportAccount: 'Export account',
+    selectCollator: 'Select collator',
     yourSeedPhrase: 'Your seed phrase',
     yourRecoveryPhrase: 'Your recovery phrase',
     yourPrivateKey: 'Your private key',

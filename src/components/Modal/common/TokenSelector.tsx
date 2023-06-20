@@ -1,14 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import { ListRenderItemInfo } from 'react-native';
-import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { TokenSelectItem } from 'components/TokenSelectItem';
-import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
 
 export type TokenItemType = {
   name: string;
@@ -18,98 +11,55 @@ export type TokenItemType = {
 };
 
 interface Props {
-  modalVisible: boolean;
-  onCancel: () => void;
-  onSelectItem: (item: TokenItemType) => void;
   items: TokenItemType[];
-  title?: string;
+  selectedValueMap: Record<string, boolean>;
+  onSelectItem?: (item: TokenItemType) => void;
+  disabled?: boolean;
+  renderSelected?: () => JSX.Element;
+  tokenSelectorRef?: React.Ref<any>;
+  closeModalAfterSelect?: boolean;
+  isShowContent?: boolean;
+  isShowInput?: boolean;
+  children?: React.ReactNode;
+  renderCustomItem?: ({ item }: ListRenderItemInfo<TokenItemType>) => JSX.Element;
   defaultValue?: string;
   acceptDefaultValue?: boolean;
-  selectedValue?: string;
 }
 
-const renderListEmptyComponent = () => {
-  return (
-    <EmptyList
-      icon={MagnifyingGlass}
-      title={i18n.emptyScreen.selectorEmptyTitle}
-      message={i18n.emptyScreen.selectorEmptyMessage}
-    />
-  );
-};
-
 export const TokenSelector = ({
-  modalVisible,
-  onCancel,
-  onSelectItem,
   items,
-  acceptDefaultValue,
-  title = i18n.header.selectToken,
+  selectedValueMap,
+  onSelectItem,
+  disabled,
+  renderSelected,
+  tokenSelectorRef,
+  closeModalAfterSelect,
+  isShowContent,
+  isShowInput,
+  children,
+  renderCustomItem,
   defaultValue,
-  selectedValue,
+  acceptDefaultValue,
 }: Props) => {
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-
-  const filterFunction = useCallback(
-    (rawItems: TokenItemType[], searchString: string) => {
-      const lowerCaseSearchString = searchString.toLowerCase();
-      return rawItems.filter(
-        ({ symbol, originChain }) =>
-          symbol.toLowerCase().includes(lowerCaseSearchString) ||
-          chainInfoMap[originChain]?.name?.toLowerCase().includes(lowerCaseSearchString),
-      );
-    },
-    [chainInfoMap],
-  );
-  useEffect(() => {
-    if (acceptDefaultValue) {
-      if (!defaultValue) {
-        items[0] && onSelectItem(items[0]);
-      } else {
-        const existed = items.find(item => item.slug === defaultValue);
-
-        if (!existed) {
-          items[0] && onSelectItem(items[0]);
-        } else {
-          onSelectItem(existed);
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, defaultValue]);
-
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<TokenItemType>) => {
-      const { symbol, originChain } = item;
-
-      return (
-        <TokenSelectItem
-          key={`${symbol}-${originChain}`}
-          symbol={symbol}
-          chain={`${chainInfoMap[originChain]?.name || ''}`}
-          logoKey={symbol.toLowerCase()}
-          subLogoKey={originChain}
-          isSelected={item.slug === selectedValue}
-          onSelectNetwork={() => onSelectItem(item)}
-        />
-      );
-    },
-    [chainInfoMap, onSelectItem, selectedValue],
-  );
-
   return (
-    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
-      <FlatListScreen
-        autoFocus={true}
-        items={items}
-        placeholder={i18n.placeholder.searchToken}
-        style={FlatListScreenPaddingTop}
-        title={title}
-        searchFunction={filterFunction}
-        renderItem={renderItem}
-        onPressBack={onCancel}
-        renderListEmptyComponent={renderListEmptyComponent}
-      />
-    </SubWalletFullSizeModal>
+    <FullSizeSelectModal
+      items={items}
+      selectedValueMap={selectedValueMap}
+      selectModalType={'single'}
+      selectModalItemType={'token'}
+      title={i18n.header.selectToken}
+      onSelectItem={onSelectItem}
+      ref={tokenSelectorRef}
+      renderSelected={renderSelected}
+      placeholder={i18n.placeholder.searchToken}
+      closeModalAfterSelect={closeModalAfterSelect}
+      isShowContent={isShowContent}
+      isShowInput={isShowInput}
+      renderCustomItem={renderCustomItem}
+      defaultValue={defaultValue}
+      acceptDefaultValue={acceptDefaultValue}
+      disabled={disabled}>
+      {children}
+    </FullSizeSelectModal>
   );
 };

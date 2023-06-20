@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { ActionSelectItem } from 'components/common/SelectModal/parts/ActionSelectItem';
 import { FilterSelectItem } from 'components/common/SelectModal/parts/FilterSelectItem';
 import { ActionItemType } from 'components/Modal/AccountActionSelectModal';
+import { OptionType } from 'components/common/FilterModal';
 
 interface Props<T> {
   title: string;
@@ -72,7 +73,15 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
         />
       );
     } else if (selectModalItemType === 'filter') {
-      return <FilterSelectItem item={item} selectedValueMap={selectedValueMap} onSelectItem={onSelectItem} />;
+      const filterItem = item as OptionType;
+      return (
+        <FilterSelectItem
+          key={filterItem.value}
+          item={item}
+          selectedValueMap={selectedValueMap}
+          onSelectItem={onSelectItem}
+        />
+      );
     } else {
       return <></>;
     }

@@ -1,14 +1,12 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportTokenProps, RootNavigationProps } from 'routes/index';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { FormState } from 'hooks/screen/useFormControl';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { NetworkField } from 'components/Field/Network';
-import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -33,10 +31,13 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { useToast } from 'react-native-toast-notifications';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
-import { AssetTypeOption } from '../../types/asset';
+import { AssetTypeOption } from 'types/asset';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import AlertBox from 'components/design-system-ui/alert-box';
 import { Plus } from 'phosphor-react-native';
+import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
+import { ModalRef } from 'types/modalRef';
+import { ChainSelector } from 'components/Modal/common/ChainSelector';
 
 interface TokenTypeOption {
   label: string;
@@ -82,9 +83,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const chainInfoMap = useGetContractSupportedChains();
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const [isBusy, setBusy] = useState<boolean>(false);
-  const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
-  const [isShowTokenTypeModal, setShowTokenTypeModal] = useState<boolean>(false);
   const toast = useToast();
   useHandlerHardwareBackPress(isBusy);
   const payload = routeParams?.payload;
@@ -92,13 +91,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const [name, setName] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
-
-  const chainOptions = useMemo(() => {
-    return Object.values(chainInfoMap).map(item => ({
-      value: item.slug,
-      label: item.name,
-    }));
-  }, [chainInfoMap]);
 
   const formConfig = {
     chain: {
@@ -187,6 +179,9 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   } = useTransaction('import-token', formConfig, {
     onSubmitForm: onSubmit,
   });
+  const tokenTypeRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef>();
+  const { selectedTokenType: selectedTokenTypeData } = formState.data;
 
   const tokenTypeOptions = useMemo(() => {
     return getTokenTypeSupported(chainInfoMap[formState.data.chain]);
@@ -281,7 +276,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const onSelectTokenType = useCallback(
     (item: AssetTypeOption) => {
       onChangeValue('selectedTokenType')(item.value);
-      setShowTokenTypeModal(false);
+      tokenTypeRef && tokenTypeRef.current?.onCloseModal();
     },
     [onChangeValue],
   );
@@ -318,23 +313,33 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     <ContainerWithSubHeader onPressBack={_goBack} title={i18n.header.importToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }} keyboardShouldPersistTaps={'handled'}>
-          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
-            <NetworkField
-              networkKey={formState.data.chain}
-              label={formState.labels.chain}
-              placeholder={i18n.placeholder.searchNetwork}
-              showIcon
-            />
-          </TouchableOpacity>
+          <ChainSelector
+            items={Object.values(chainInfoMap)}
+            selectedValueMap={{ [formState.data.chain]: true }}
+            chainSelectorRef={chainSelectorRef}
+            onSelectItem={item => {
+              handleChangeValue('chain')(item.slug);
+              handleChangeValue('selectedTokenType')(getTokenType(item.slug, chainInfoMap));
+              setName('');
+              chainSelectorRef && chainSelectorRef.current?.onCloseModal();
+            }}
+            renderSelected={() => (
+              <NetworkField
+                networkKey={formState.data.chain}
+                label={formState.labels.chain}
+                placeholder={i18n.placeholder.searchNetwork}
+                showIcon
+              />
+            )}
+          />
 
           <TokenTypeSelector
             disabled={!formState.data.chain || !tokenTypeOptions.length}
-            modalVisible={isShowTokenTypeModal}
             items={tokenTypeOptions}
-            selectedValue={formState.data.selectedTokenType}
-            onPress={() => setShowTokenTypeModal(true)}
             onSelectItem={onSelectTokenType}
-            onChangeModalVisible={() => setShowTokenTypeModal(false)}
+            selectedValueMap={selectedTokenTypeData ? { [selectedTokenTypeData]: true } : {}}
+            tokenTypeRef={tokenTypeRef}
+            renderSelected={() => <TokenTypeSelectField value={selectedTokenTypeData} showIcon />}
           />
 
           <InputAddress
@@ -396,19 +401,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             error={error}
           />
         </ScrollView>
-
-        <ChainSelect
-          items={chainOptions}
-          modalVisible={isShowChainModal}
-          onChangeModalVisible={() => setShowChainModal(false)}
-          onChangeValue={(text: string) => {
-            handleChangeValue('chain')(text);
-            handleChangeValue('selectedTokenType')(getTokenType(text, chainInfoMap));
-            setName('');
-            setShowChainModal(false);
-          }}
-          selectedItem={formState.data.chain}
-        />
 
         <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>
           <Button disabled={isBusy} type={'secondary'} style={{ flex: 1, marginRight: 6 }} onPress={_goBack}>

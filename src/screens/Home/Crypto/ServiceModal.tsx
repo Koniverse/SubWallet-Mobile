@@ -16,7 +16,7 @@ import useAppLock from 'hooks/useAppLock';
 import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { ImageLogosMap } from 'assets/logo';
-import { SelectModal } from 'components/common/SelectModal';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
 
 interface Props {
   address: string;
@@ -202,7 +202,7 @@ function _ServiceModal({ address, token }: Props, ref: ForwardedRef<any>) {
   };
 
   return (
-    <SelectModal
+    <FullSizeSelectModal
       items={SERVICE_OPTIONS}
       selectedValueMap={{}}
       title={i18n.title.serviceSelect}
@@ -219,7 +219,7 @@ function _ServiceModal({ address, token }: Props, ref: ForwardedRef<any>) {
         placement={'bottom'}
         offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
       />
-    </SelectModal>
+    </FullSizeSelectModal>
   );
 }
 

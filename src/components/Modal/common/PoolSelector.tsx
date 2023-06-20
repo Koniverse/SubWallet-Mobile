@@ -1,7 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SwFullSizeModal } from 'components/design-system-ui';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { DisabledStyle, FlatListScreenPaddingTop } from 'styles/sharedStyles';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { NominationPoolInfo, StakingType } from '@subwallet/extension-base/background/KoniTypes';
@@ -12,6 +9,8 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -41,13 +40,13 @@ const renderListEmptyComponent = () => {
 
 export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedPool, disabled }: Props) => {
   const items = useGetValidatorList(chain, StakingType.POOLED) as NominationPoolDataType[];
-  const [poolSelectModalVisible, setPoolSelectModalVisible] = useState<boolean>(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
   const nominatorMetadata = useGetNominatorInfo(chain, StakingType.POOLED, from);
   const nominationPoolValueList = useMemo((): string[] => {
     return nominatorMetadata[0]?.nominations.map(item => item.validatorAddress) || [];
   }, [nominatorMetadata]);
+  const poolSelectorRef = useRef<ModalRef>();
 
   useEffect(() => {
     const defaultSelectedPool = nominationPoolValueList[0] || String(PREDEFINED_STAKING_POOL[chain] || '');
@@ -71,7 +70,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
           key={id}
           onPress={() => {
             onSelectItem && onSelectItem(item.id.toString());
-            setPoolSelectModalVisible(false);
+            poolSelectorRef && poolSelectorRef.current?.onCloseModal();
           }}
           onPressRightButton={() => {
             setSelectedItem(item);
@@ -90,29 +89,26 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
 
   return (
     <>
-      <PoolSelectorField
-        onPressBookBtn={() => setPoolSelectModalVisible(true)}
-        onPressLightningBtn={() => setPoolSelectModalVisible(true)}
+      <FullSizeSelectModal
+        selectedValueMap={{}}
+        selectModalType={'single'}
+        items={items}
+        renderCustomItem={renderItem}
+        searchFunc={searchFunction}
+        title={'Select pool'}
+        ref={poolSelectorRef}
+        renderListEmptyComponent={renderListEmptyComponent}
         disabled={isDisabled}
-        item={selectedPool}
-        label={i18n.inputLabel.selectPool}
-        loading={poolLoading}
-        outerStyle={isDisabled && DisabledStyle}
-      />
-
-      <SwFullSizeModal modalVisible={poolSelectModalVisible}>
-        <FlatListScreen
-          autoFocus={true}
-          items={items}
-          style={FlatListScreenPaddingTop}
-          title={'Select pool'}
-          searchFunction={searchFunction}
-          renderItem={renderItem}
-          onPressBack={() => setPoolSelectModalVisible(false)}
-          renderListEmptyComponent={renderListEmptyComponent}
-          isShowFilterBtn={false}
-        />
-
+        renderSelected={() => (
+          <PoolSelectorField
+            disabled={isDisabled}
+            onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+            onPressLightningBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+            item={selectedPool}
+            label={i18n.inputLabel.selectPool}
+            loading={poolLoading}
+          />
+        )}>
         {!!selectedItem && (
           <PoolSelectorDetailModal
             detailItem={selectedItem}
@@ -120,7 +116,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             onCancel={() => setDetailModalVisible(false)}
           />
         )}
-      </SwFullSizeModal>
+      </FullSizeSelectModal>
     </>
   );
 };
