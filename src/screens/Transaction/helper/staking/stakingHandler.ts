@@ -18,7 +18,7 @@ export function getUnstakingPeriod(unstakingPeriod?: number) {
 }
 
 export function getWaitingTime(waitingTime?: number) {
-  const days = waitingTime ? Number(waitingTime / 24).toFixed(2) : 0;
+  const days = waitingTime ? Number(waitingTime / 24).toFixed(0) : 0;
 
   if (days < 1) {
     if (days) {

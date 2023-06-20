@@ -153,6 +153,7 @@ export const AccountsScreen = ({
         searchFunction={searchFunction}
         autoFocus={false}
         afterListItem={renderFooterComponent()}
+        placeholder={i18n.placeholder.accountName}
       />
 
       <AccountCreationArea
