@@ -1,6 +1,9 @@
-## 1.0.6 (181)
+## 1.0.6 (183)
+- Error page in case touch Icon account in Browser tab and fix some UI bugs (#796)
+
+## 1.0.6 (182)
 - Fix bug crash app when scan to SendFund (#788)
-- Fix bug in ImportNFT screen and toast for EditContactModal (#794) 
+- Fix bug in ImportNFT screen and toast for EditContactModal (#794)
 
 ## 1.0.6 (181)
 - Do not send token when user standing on the token detail screen (#788)
