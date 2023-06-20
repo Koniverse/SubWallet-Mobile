@@ -30,10 +30,11 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
-import { PlusCircle } from 'phosphor-react-native';
+import { Plus, PlusCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import AlertBox from 'components/design-system-ui/alert-box';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -179,13 +180,17 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       });
   };
 
-  const { formState, onChangeValue, onChangeChainValue, onUpdateErrors, onSubmitField } = useTransaction(
-    'import-nft',
-    formConfig,
-    {
-      onSubmitForm: handleAddToken,
-    },
-  );
+  const {
+    formState,
+    onChangeValue,
+    onChangeChainValue,
+    onUpdateErrors,
+    onSubmitField,
+    showPopupEnableChain,
+    checkChainConnected,
+  } = useTransaction('import-nft', formConfig, {
+    onSubmitForm: handleAddToken,
+  });
 
   const { data: formData } = formState;
   const { chain, smartContract, collectionName, selectedNftType } = formData;
@@ -370,7 +375,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           errorMessages={formState.errors.collectionName}
           value={collectionName}
           onSubmitField={
-            !!formState.isValidated.smartContract ? onSubmitField('collectionName') : () => Keyboard.dismiss()
+            formState.isValidated.smartContract ? onSubmitField('collectionName') : () => Keyboard.dismiss()
           }
         />
 
@@ -380,6 +385,24 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
 
         {!isReady && (
           <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
+        )}
+
+        {chain && !checkChainConnected(chain) && (
+          <>
+            <AlertBox
+              type={'warning'}
+              title={i18n.warningTitle.updateNetwork}
+              description={i18n.warningMessage.enableNetworkMessage}
+            />
+
+            <Button
+              icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
+              style={{ marginTop: 8 }}
+              onPress={() => showPopupEnableChain(chain)}
+              type={'ghost'}>
+              {i18n.buttonTitles.enableNetwork}
+            </Button>
+          </>
         )}
 
         <AddressScanner

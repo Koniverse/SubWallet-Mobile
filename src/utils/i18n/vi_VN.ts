@@ -1,4 +1,4 @@
-export const en = {
+export const vi = {
   common: {
     enterPinToUnlock: 'Enter PIN to unlock',
     createWalletNotification: 'Your wallet name will only be used locally in this application. You can edit it later.',
@@ -347,6 +347,7 @@ export const en = {
     manageTokens: 'Manage tokens',
     unbond: 'Unbond',
     addContact: 'Add contact',
+    enableNetwork: 'Enable network',
   },
   inputLabel: {
     selectAcc: 'Select account',
@@ -862,6 +863,7 @@ export const en = {
     warning: 'Warning',
     error: 'Error!',
     clearHistory: 'Clear history',
+    updateNetwork: 'Update network',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',
@@ -895,6 +897,8 @@ export const en = {
     networkUnSupportQrSigner: 'This network does not support this feature with QR-signer account',
     featureIsNotAvailable: 'This feature is not available for the chosen account',
     tokenExists: 'The token already exists.',
+    enableNetworkMessage:
+      'The network you selected has not enable. Please enable by click this button or choose other network',
   },
   errorMessage: {
     invalidPinCode: 'Invalid PIN Code',
