@@ -1020,6 +1020,8 @@ export const en = {
     invalidEvmContractAddress: 'Invalid EVM contract address',
     tokenAlreadyAdded: 'This token has already been added',
     invalidContractForSelectedChain: 'Invalid contract for the selected chain',
+    errorValidatingThisToken: 'Error validating this token',
+    invalidContractAddress: 'Invalid contract address',
     unknownError: 'Encountered an error, please try again.',
     networkHasBeenAlreadyAdded: 'This network has already been added',
     providerHasExisted: 'This provider has existed',

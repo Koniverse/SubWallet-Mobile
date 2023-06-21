@@ -2,7 +2,7 @@ import { Platform, StyleSheet, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontMedium } from 'styles/sharedStyles';
 
-export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, showAvatar?: boolean, readonly?: boolean) => {
+export default (theme: ThemeTypes, hasLabel: boolean, isError: boolean, readonly?: boolean) => {
   const baseInput = 48;
 
   const partBlock: ViewStyle = {

@@ -30,7 +30,7 @@ import { CustomTokenSetting } from 'screens/Tokens';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
 import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
-import { ImportToken } from 'screens/ImportToken/ImportToken';
+import { ImportToken } from 'screens/ImportToken/ImportTokenv2';
 import ImportNft from 'screens/ImportToken/ImportNft';
 import { WebViewDebugger } from 'screens/WebViewDebugger';
 import SigningScreen from 'screens/Signing/SigningScreen';
