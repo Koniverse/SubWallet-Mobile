@@ -1,8 +1,9 @@
 import React from 'react';
 import { SafeAreaView, StyleProp, Text, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import ModalBase from 'components/Modal/Base/ModalBase';
 import { FontSemiBold } from 'styles/sharedStyles';
+import ModalBase from 'components/design-system-ui/modal/ModalBase';
+
 export interface SWModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -12,6 +13,7 @@ export interface SWModalProps {
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   modalTitle?: string;
+  onBackButtonPress?: () => void;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -45,6 +47,7 @@ const SwModal = ({
   modalTitle,
   onModalHide,
   isFullHeight = false,
+  onBackButtonPress,
 }: SWModalProps) => {
   return (
     <ModalBase
@@ -59,6 +62,7 @@ const SwModal = ({
       animationIn={'slideInUp'}
       animationOut={'slideOutDown'}
       avoidKeyboard={true}
+      onBackButtonPress={onBackButtonPress}
       // useNativeDriver
       hideModalContentWhileAnimating
       propagateSwipe>

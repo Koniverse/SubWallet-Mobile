@@ -2,6 +2,7 @@ import React from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 export type TokenItemType = {
   name: string;
@@ -16,7 +17,7 @@ interface Props {
   onSelectItem?: (item: TokenItemType) => void;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  tokenSelectorRef?: React.Ref<any>;
+  tokenSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;
@@ -45,6 +46,7 @@ export const TokenSelector = ({
     <FullSizeSelectModal
       items={items}
       selectedValueMap={selectedValueMap}
+      onBackButtonPress={() => tokenSelectorRef?.current?.onCloseModal()}
       selectModalType={'single'}
       selectModalItemType={'token'}
       title={i18n.header.selectToken}

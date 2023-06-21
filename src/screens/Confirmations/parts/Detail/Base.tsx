@@ -36,7 +36,7 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
         icon={<Icon phosphorIcon={ArrowCircleUpRight} iconColor={theme['gray-4']} />}>
         {i18n.common.viewDetail}
       </Button>
-      <SwModal modalVisible={open} modalTitle={title} onChangeModalVisible={onClose}>
+      <SwModal modalVisible={open} modalTitle={title} onChangeModalVisible={onClose} onBackButtonPress={onClose}>
         <View style={styles.container}>
           {children}
           <Button onPress={onClose} icon={<Icon phosphorIcon={XCircle} weight="fill" />}>

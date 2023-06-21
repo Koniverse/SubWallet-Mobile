@@ -153,6 +153,7 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
       <SwModal
         modalTitle={i18n.header.editContact}
         modalVisible={modalVisible}
+        onBackButtonPress={onChangeModalVisible}
         onChangeModalVisible={onChangeModalVisible}>
         <View style={stylesheet.formContainer}>
           <FormItem

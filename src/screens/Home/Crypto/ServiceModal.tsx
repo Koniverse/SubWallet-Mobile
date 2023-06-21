@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Image, Linking, ListRenderItemInfo, Platform } from 'react-native';
@@ -17,11 +17,12 @@ import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { ImageLogosMap } from 'assets/logo';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
   address: string;
   token: string;
-  ref?: React.Ref<any>;
+  serviceRef?: React.MutableRefObject<ModalRef | undefined>;
 }
 
 const filterFunction = (items: { label: string; value: string; url: string }[], searchString: string) => {
@@ -44,7 +45,7 @@ const tokenKeyMapIsEthereum: Record<string, boolean> = (() => {
   return result;
 })();
 
-function _ServiceModal({ address, token }: Props, ref: ForwardedRef<any>) {
+export const ServiceModal = ({ address, token, serviceRef }: Props) => {
   const toastRef = useRef<ToastContainer>(null);
   const show = useCallback((text: string) => {
     if (toastRef.current) {
@@ -211,7 +212,8 @@ function _ServiceModal({ address, token }: Props, ref: ForwardedRef<any>) {
       closeModalAfterSelect={false}
       selectModalType={'single'}
       isShowInput={false}
-      ref={ref}>
+      onBackButtonPress={() => serviceRef?.current?.onCloseModal()}
+      ref={serviceRef}>
       <Toast
         duration={TOAST_DURATION}
         normalColor={ColorMap.notification}
@@ -221,6 +223,4 @@ function _ServiceModal({ address, token }: Props, ref: ForwardedRef<any>) {
       />
     </FullSizeSelectModal>
   );
-}
-
-export const ServiceModal = forwardRef(_ServiceModal);
+};

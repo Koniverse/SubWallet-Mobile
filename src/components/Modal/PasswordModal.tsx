@@ -1,5 +1,4 @@
 import { PasswordField } from 'components/Field/Password';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect } from 'react';
 import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
@@ -9,7 +8,7 @@ import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
-import { Button } from 'components/design-system-ui';
+import { Button, SwModal } from 'components/design-system-ui';
 
 interface Props {
   visible: boolean;
@@ -91,7 +90,10 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
   const errors = [...formState.errors.password, ...(errorArr && errorArr.length ? errorArr : [])];
 
   return (
-    <SubWalletModal modalVisible={visible} onChangeModalVisible={!isBusy ? closeModal : undefined}>
+    <SwModal
+      modalVisible={visible}
+      onChangeModalVisible={!isBusy ? closeModal : undefined}
+      onBackButtonPress={!isBusy ? closeModal : undefined}>
       <View style={ContainerStyle}>
         <Text style={TitleTextStyle}>{i18n.common.enterYourPassword}</Text>
         <PasswordField
@@ -117,7 +119,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           {i18n.common.confirm}
         </Button>
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };
 

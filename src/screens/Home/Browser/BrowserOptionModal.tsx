@@ -1,4 +1,3 @@
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { Linking, StyleProp, Text, View } from 'react-native';
 import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -11,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { addBookmark, removeBookmark } from 'stores/updater';
 import i18n from 'utils/i18n/i18n';
+import { SwModal } from 'components/design-system-ui';
 
 interface Props {
   visibleModal: boolean;
@@ -80,14 +80,14 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
   ];
 
   return (
-    <SubWalletModal modalVisible={visibleModal} onChangeModalVisible={onClose}>
+    <SwModal modalVisible={visibleModal} onChangeModalVisible={onClose} onBackButtonPress={onClose}>
       <View style={{ width: '100%' }}>
         <Text style={titleStyle}>More options</Text>
         {OPTIONS.map(opt => (
           <SelectItem key={opt.key} isSelected={false} label={opt.label} leftIcon={opt.icon} onPress={opt.onPress} />
         ))}
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };
 

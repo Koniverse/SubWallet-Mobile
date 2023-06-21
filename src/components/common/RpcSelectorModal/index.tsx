@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 export interface ProviderItemType {
   value: string;
@@ -21,7 +22,7 @@ interface Props {
   onPressBack: () => void;
   onSelectItem?: (item: ProviderItemType) => void;
   renderSelected?: () => JSX.Element;
-  rpcSelectorRef: React.Ref<any>;
+  rpcSelectorRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
 const searchFunction = (items: { label: string; value: string }[], searchString: string) => {
@@ -82,6 +83,7 @@ export const RpcSelectorModal = ({
       title={i18n.header.providers}
       ref={rpcSelectorRef}
       searchFunc={searchFunction}
+      onBackButtonPress={() => rpcSelectorRef?.current?.onCloseModal()}
       renderAfterListItem={() => (
         <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
           <Button

@@ -10,11 +10,10 @@ import { CaretRight, Globe, Key, Password, Scan, ShieldCheck } from 'phosphor-re
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Icon, SelectItem } from 'components/design-system-ui';
+import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 
 const modalTitle: StyleProp<any> = {
@@ -172,7 +171,10 @@ export const Security = () => {
           disabled={!pinCode}
         />
 
-        <SubWalletModal modalVisible={iShowAutoLockModal} onChangeModalVisible={() => setIsShowAutoLockModal(false)}>
+        <SwModal
+          modalVisible={iShowAutoLockModal}
+          onChangeModalVisible={() => setIsShowAutoLockModal(false)}
+          onBackButtonPress={() => setIsShowAutoLockModal(false)}>
           <View style={{ width: '100%' }}>
             <Text style={modalTitle}>{i18n.common.autoLock}</Text>
             {AUTO_LOCK_LIST.map(item => (
@@ -184,7 +186,7 @@ export const Security = () => {
               />
             ))}
           </View>
-        </SubWalletModal>
+        </SwModal>
       </View>
     </SubScreenContainer>
   );

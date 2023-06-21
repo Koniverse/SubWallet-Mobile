@@ -34,6 +34,7 @@ const FilterModal = ({
         items={options}
         selectedValueMap={optionSelectionMap}
         selectModalType={'multi'}
+        onBackButtonPress={() => filterModalRef?.current?.onCloseModal()}
         selectModalItemType={'filter'}
         onSelectItem={item => onChangeOption && onChangeOption(item.value, !optionSelectionMap[item.value])}
         isShowInput={false}

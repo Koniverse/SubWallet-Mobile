@@ -209,7 +209,7 @@ export const AccountCreationArea = ({
   return (
     <>
       <AccountActionSelectModal
-        ref={createAccountRef}
+        accActionRef={createAccountRef}
         modalTitle={i18n.header.createNewAcc}
         items={createAccountAction}
         onSelectItem={createAccountFunc}>
@@ -219,14 +219,14 @@ export const AccountCreationArea = ({
       </AccountActionSelectModal>
 
       <AccountActionSelectModal
-        ref={importAccountRef}
+        accActionRef={importAccountRef}
         modalTitle={i18n.header.importAcc}
         items={importAccountActions}
         onSelectItem={importAccountActionFunc}
       />
 
       <AccountActionSelectModal
-        ref={attachAccountRef}
+        accActionRef={attachAccountRef}
         modalTitle={i18n.header.attachAnAcc}
         items={attachAccountActions}
         onSelectItem={attachAccountFunc}

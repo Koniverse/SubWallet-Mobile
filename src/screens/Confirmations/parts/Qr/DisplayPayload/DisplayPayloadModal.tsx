@@ -29,7 +29,7 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
   const checkCamera = useCheckCamera();
 
   return (
-    <SwFullSizeModal modalVisible={visible}>
+    <SwFullSizeModal modalVisible={visible} onBackButtonPress={onClose}>
       <SafeAreaView style={{ flex: 1, width: '100%' }}>
         <View style={styles.container}>
           <SubHeader title={i18n.common.confirm} onPressBack={onClose} />

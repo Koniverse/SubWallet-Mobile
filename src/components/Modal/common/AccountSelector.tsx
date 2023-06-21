@@ -3,6 +3,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ListRenderItemInfo } from 'react-native';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
   items: AccountJson[];
@@ -10,7 +11,7 @@ interface Props {
   onSelectItem?: (item: AccountJson) => void;
   disabled?: boolean;
   renderSelected?: () => JSX.Element;
-  accountSelectorRef?: React.Ref<any>;
+  accountSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
   closeModalAfterSelect?: boolean;
   isShowContent?: boolean;
   isShowInput?: boolean;
@@ -34,6 +35,7 @@ export const AccountSelector = ({
   return (
     <FullSizeSelectModal
       items={items}
+      onBackButtonPress={() => accountSelectorRef?.current?.onCloseModal()}
       selectedValueMap={selectedValueMap}
       onSelectItem={onSelectItem}
       selectModalType={'single'}

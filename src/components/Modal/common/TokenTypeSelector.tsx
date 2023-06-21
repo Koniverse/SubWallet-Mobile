@@ -5,13 +5,14 @@ import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal
 import { SelectItem } from 'components/design-system-ui';
 import { Coin } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
   items: AssetTypeOption[];
   onSelectItem: (item: AssetTypeOption) => void;
   selectedValueMap: Record<string, boolean>;
   disabled?: boolean;
-  tokenTypeRef: React.Ref<any>;
+  tokenTypeRef: React.MutableRefObject<ModalRef | undefined>;
   renderSelected?: () => JSX.Element;
 }
 
@@ -33,6 +34,7 @@ export const TokenTypeSelector = ({
       onSelectItem={onSelectItem}
       renderSelected={renderSelected}
       disabled={disabled}
+      onBackButtonPress={() => tokenTypeRef?.current?.onCloseModal()}
       ref={tokenTypeRef}
       isShowInput={true}
       renderCustomItem={item => (

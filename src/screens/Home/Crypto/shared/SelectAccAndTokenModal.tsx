@@ -4,10 +4,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
-  accountRef: React.Ref<any>;
-  tokenRef: React.Ref<any>;
+  accountRef: React.MutableRefObject<ModalRef | undefined>;
+  tokenRef: React.MutableRefObject<ModalRef | undefined>;
   accountItems: AccountJson[];
   tokenItems: TokenItemType[];
   openSelectAccount: (account: AccountJson) => void;

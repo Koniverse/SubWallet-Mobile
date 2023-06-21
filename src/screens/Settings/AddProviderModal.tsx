@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { Keyboard, StyleProp, Text, View } from 'react-native';
 import InputText from 'components/Input/InputText';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
@@ -9,7 +8,7 @@ import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
-import { Button } from 'components/design-system-ui';
+import { Button, SwModal } from 'components/design-system-ui';
 
 interface Props {
   loading: boolean;
@@ -58,7 +57,10 @@ export const AddProviderModal = ({ loading, modalVisible, onCloseModal, createPr
   });
 
   return (
-    <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={!loading ? onCloseModal : undefined}>
+    <SwModal
+      modalVisible={modalVisible}
+      onChangeModalVisible={!loading ? onCloseModal : undefined}
+      onBackButtonPress={!loading ? onCloseModal : undefined}>
       <View style={{ width: '100%' }}>
         <Text style={modalTitle}>{i18n.title.addProvider}</Text>
         <InputText
@@ -85,6 +87,6 @@ export const AddProviderModal = ({ loading, modalVisible, onCloseModal, createPr
           offsetBottom={OFFSET_BOTTOM}
         />
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };

@@ -95,10 +95,11 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
         items={items}
         renderCustomItem={renderItem}
         searchFunc={searchFunction}
-        title={'Select pool'}
+        title={i18n.header.selectPool}
         ref={poolSelectorRef}
         renderListEmptyComponent={renderListEmptyComponent}
         disabled={isDisabled}
+        onBackButtonPress={() => poolSelectorRef?.current?.onCloseModal()}
         renderSelected={() => (
           <PoolSelectorField
             disabled={isDisabled}

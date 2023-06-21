@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import { itemWrapperStyle } from 'screens/Home/Crypto/layers/shared';
@@ -6,11 +6,13 @@ import { TokenBalanceItem } from 'components/common/TokenBalanceItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
   onSelectItem: (item: TokenBalanceItemType) => void;
   items: TokenBalanceItemType[];
   isShowBalance: boolean;
+  tokenSearchRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
 const searchFunction = (items: TokenBalanceItemType[], searchString: string) => {
@@ -18,7 +20,7 @@ const searchFunction = (items: TokenBalanceItemType[], searchString: string) => 
   return items.filter(({ symbol }) => symbol.toLowerCase().includes(lowerCaseSearchString));
 };
 
-function _TokenSearchModal({ onSelectItem, items, isShowBalance }: Props, ref: ForwardedRef<any>) {
+export const TokenSearchModal = ({ onSelectItem, items, isShowBalance, tokenSearchRef }: Props) => {
   const theme = useSubWalletTheme().swThemes;
 
   const _onPressItem = useCallback(
@@ -48,7 +50,7 @@ function _TokenSearchModal({ onSelectItem, items, isShowBalance }: Props, ref: F
 
   return (
     <FullSizeSelectModal
-      ref={ref}
+      ref={tokenSearchRef}
       items={items}
       selectedValueMap={{}}
       selectModalType={'single'}
@@ -58,8 +60,7 @@ function _TokenSearchModal({ onSelectItem, items, isShowBalance }: Props, ref: F
       title={i18n.header.selectToken}
       placeholder={i18n.placeholder.searchToken}
       closeModalAfterSelect={true}
+      onBackButtonPress={() => tokenSearchRef?.current?.onCloseModal()}
     />
   );
-}
-
-export const TokenSearchModal = forwardRef(_TokenSearchModal);
+};

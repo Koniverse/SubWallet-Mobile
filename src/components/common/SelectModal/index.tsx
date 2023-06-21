@@ -51,6 +51,7 @@ interface Props<T> {
   defaultValue?: string;
   acceptDefaultValue?: boolean;
   renderAfterListItem?: () => JSX.Element;
+  onBackButtonPress?: () => void;
 }
 
 function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -82,6 +83,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     defaultValue,
     acceptDefaultValue,
     renderAfterListItem,
+    onBackButtonPress,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -226,7 +228,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       )}
 
       {isShowContent ? (
-        <SwFullSizeModal modalVisible={isOpen}>
+        <SwFullSizeModal modalVisible={isOpen} onBackButtonPress={onBackButtonPress}>
           <FlatListScreen
             autoFocus={true}
             items={items}

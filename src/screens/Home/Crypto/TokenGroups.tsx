@@ -277,7 +277,7 @@ export const TokenGroups = () => {
         />
 
         {selectedBuyAccount && selectedBuyToken && (
-          <ServiceModal ref={serviceBuyRef} token={selectedBuyToken} address={selectedBuyAccount} />
+          <ServiceModal serviceRef={serviceBuyRef} token={selectedBuyToken} address={selectedBuyAccount} />
         )}
 
         <ReceiveModal
@@ -288,7 +288,7 @@ export const TokenGroups = () => {
         />
 
         <TokenSearchModal
-          ref={tokenSearchRef}
+          tokenSearchRef={tokenSearchRef}
           onSelectItem={onPressSearchItem}
           isShowBalance={isShowBalance}
           items={tokenSearchItems}

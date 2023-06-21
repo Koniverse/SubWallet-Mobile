@@ -129,6 +129,7 @@ export const ValidatorSelector = ({
           onPressApplyBtn: onApplyChangeValidators,
           applyBtnDisabled: !changeValidators.length,
         }}
+        onBackButtonPress={() => validatorSelectModalRef?.current?.onCloseModal()}
         renderSelected={() => (
           <ValidatorSelectorField
             onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}

@@ -297,6 +297,7 @@ export const StakingDetailModal = ({
       modalVisible={modalVisible}
       modalTitle={modalTitle}
       onChangeModalVisible={_onCloseDetailModal}
+      onBackButtonPress={_onCloseDetailModal}
       footer={footer()}
       modalStyle={{ maxHeight: '90%' }}>
       <View style={{ width: '100%' }}>
