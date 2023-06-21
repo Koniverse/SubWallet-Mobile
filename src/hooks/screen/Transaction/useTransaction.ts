@@ -177,5 +177,7 @@ export const useTransaction = (
     onChangeValue,
     onDone,
     onUpdateErrors,
+    showPopupEnableChain,
+    checkChainConnected,
   };
 };

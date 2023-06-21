@@ -132,7 +132,8 @@ export const NetworksSetting = ({}: Props) => {
 
   useEffect(() => {
     setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), true));
-  }, [chainInfoMap, pendingChainMap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     cachePendingChainMap = pendingChainMap;

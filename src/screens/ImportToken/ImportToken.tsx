@@ -29,12 +29,14 @@ import {
   _isChainTestNet,
   _parseMetadataForSmartContractAsset,
 } from '@subwallet/extension-base/services/chain-service/utils';
-import { Button } from 'components/design-system-ui';
+import { Button, Icon } from 'components/design-system-ui';
 import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { useToast } from 'react-native-toast-notifications';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from '../../types/asset';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import AlertBox from 'components/design-system-ui/alert-box';
+import { Plus } from 'phosphor-react-native';
 
 interface TokenTypeOption {
   label: string;
@@ -173,13 +175,17 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       });
   };
 
-  const { formState, onChangeValue, onChangeChainValue, onUpdateErrors, onSubmitField } = useTransaction(
-    'import-token',
-    formConfig,
-    {
-      onSubmitForm: onSubmit,
-    },
-  );
+  const {
+    formState,
+    onChangeValue,
+    onChangeChainValue,
+    onUpdateErrors,
+    onSubmitField,
+    showPopupEnableChain,
+    checkChainConnected,
+  } = useTransaction('import-token', formConfig, {
+    onSubmitForm: onSubmit,
+  });
 
   const tokenTypeOptions = useMemo(() => {
     return getTokenTypeSupported(chainInfoMap[formState.data.chain]);
@@ -342,6 +348,24 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
           {!isReady && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
+          )}
+
+          {formState.data.chain && !checkChainConnected(formState.data.chain) && (
+            <>
+              <AlertBox
+                type={'warning'}
+                title={i18n.warningTitle.updateNetwork}
+                description={i18n.warningMessage.enableNetworkMessage}
+              />
+
+              <Button
+                icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
+                style={{ marginTop: 8 }}
+                onPress={() => showPopupEnableChain(formState.data.chain)}
+                type={'ghost'}>
+                {i18n.buttonTitles.enableNetwork}
+              </Button>
+            </>
           )}
 
           <AddressScanner
