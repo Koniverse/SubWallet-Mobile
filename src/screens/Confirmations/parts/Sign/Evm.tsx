@@ -11,7 +11,7 @@ import { completeConfirmation } from 'messaging/index';
 import { ConfirmationDefinitions, ConfirmationResult } from '@subwallet/extension-base/background/KoniTypes';
 import { SigData } from 'types/signer';
 import { getSignMode } from 'utils/account';
-import { AccountSignMode } from 'types/index';
+import { AccountSignMode } from 'types/signer';
 import { isEvmMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
 import { HIDE_MODAL_DURATION } from 'constants/index';

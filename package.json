@@ -125,6 +125,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.5",
     "@babel/plugin-syntax-import-meta": "^7.10.4",
+    "@babel/plugin-transform-flow-strip-types": "^7.22.5",
+    "@babel/plugin-transform-private-methods": "^7.22.5",
     "@babel/preset-env": "^7.20.2",
     "@babel/runtime": "^7.20.6",
     "@polkadot/types": "^9.9.4",

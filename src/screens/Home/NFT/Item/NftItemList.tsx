@@ -18,9 +18,9 @@ import { useRefresh } from 'hooks/useRefresh';
 import { Trash } from 'phosphor-react-native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
-import useGetChainAssetInfo from '@subwallet/extension-koni-ui/src/hooks/screen/common/useGetChainAssetInfo';
 import { _isCustomAsset, _isSmartContractToken } from '@subwallet/extension-base/services/chain-service/utils';
 import { useToast } from 'react-native-toast-notifications';
+import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,

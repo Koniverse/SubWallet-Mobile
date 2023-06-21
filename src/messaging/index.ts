@@ -47,7 +47,6 @@ import {
   NftCollection,
   NftJson,
   NftTransactionRequest,
-  NftTransferExtra,
   NominationPoolInfo,
   NominatorMetadata,
   OptionInputAddress,
@@ -75,7 +74,6 @@ import {
   RequestKeyringExportMnemonic,
   RequestMaxTransferable,
   RequestMigratePassword,
-  RequestNftForceUpdate,
   RequestParseEvmContractInput,
   RequestParseTransactionSubstrate,
   RequestQrSignEvm,
@@ -525,15 +523,12 @@ export async function showAccount(address: string, isShowing: boolean): Promise<
   return sendMessage('pri(accounts.show)', { address, isShowing });
 }
 
-export async function saveCurrentAccountAddress(
-  data: RequestCurrentAccountAddress,
-  callback: (data: CurrentAccountInfo) => void,
-): Promise<boolean> {
-  return sendMessage('pri(currentAccount.saveAddress)', data, callback);
+export async function saveCurrentAccountAddress(data: RequestCurrentAccountAddress): Promise<CurrentAccountInfo> {
+  return sendMessage('pri(currentAccount.saveAddress)', data);
 }
 
 export async function toggleBalancesVisibility(): Promise<boolean> {
-  return sendMessage('pri(settings.changeBalancesVisibility)', null, () => {});
+  return sendMessage('pri(settings.changeBalancesVisibility)', null);
 }
 
 export async function saveAccountAllLogo(
@@ -814,20 +809,8 @@ export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddres
   return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
 }
 
-export async function saveRecentAccount(accountId: string): Promise<KeyringAddress> {
+export async function saveRecentAccountId(accountId: string): Promise<KeyringAddress> {
   return sendMessage('pri(accounts.saveRecent)', { accountId });
-}
-
-export async function editContactAddress(address: string, name: string): Promise<boolean> {
-  return sendMessage('pri(accounts.editContact)', { address: address, meta: { name: name } });
-}
-
-export async function removeContactAddress(address: string): Promise<boolean> {
-  return sendMessage('pri(accounts.deleteContact)', { address: address });
-}
-
-export async function triggerAccountsSubscription(): Promise<boolean> {
-  return sendMessage('pri(accounts.triggerSubscription)');
 }
 
 export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
@@ -1060,22 +1043,6 @@ export async function subscribeStakingReward(
   callback: (stakingRewardData: StakingRewardJson) => void,
 ): Promise<StakingRewardJson> {
   return sendMessage('pri(stakingReward.getSubscription)', request, callback);
-}
-
-export async function nftForceUpdate(request: RequestNftForceUpdate): Promise<boolean> {
-  return sendMessage('pri(nft.forceUpdate)', request);
-}
-
-export async function getNftTransfer(): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getNftTransfer)', null);
-}
-
-export async function subscribeNftTransfer(callback: (data: NftTransferExtra) => void): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
-}
-
-export async function setNftTransfer(request: NftTransferExtra): Promise<boolean> {
-  return sendMessage('pri(nftTransfer.setNftTransfer)', request);
 }
 
 export async function makeTransfer(request: RequestTransfer): Promise<SWTransactionResponse> {

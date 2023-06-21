@@ -18,7 +18,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
-import { SIGN_MODE } from 'types/signer';
+import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { deriveAccountV3, editAccount, forgetAccount } from 'messaging/index';
@@ -39,7 +39,7 @@ export const AccountDetail = ({
   const signMode = useGetAccountSignModeByAddress(currentAddress);
 
   const styles = useMemo(() => createStyle(theme), [theme]);
-  const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
+  const canExport = useMemo((): boolean => signMode === AccountSignMode.PASSWORD, [signMode]);
   const canDerive = useMemo((): boolean => {
     if (account) {
       if (account.isExternal) {

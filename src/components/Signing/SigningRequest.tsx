@@ -13,7 +13,7 @@ import QrRequest from 'components/Signing/QR/QrRequest';
 import UnknownRequest from 'components/Signing/Unknown/UnknownRequest';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import { Keyboard, StyleProp, View, ViewStyle } from 'react-native';
-import { BaseSignProps, SIGN_MODE } from 'types/signer';
+import { BaseSignProps, AccountSignMode } from 'types/signer';
 import { ExternalRequestContext } from 'providers/ExternalRequestContext';
 import { QrContextState, QrSignerContext, QrStep } from 'providers/QrSignerContext';
 import { SigningContext } from 'providers/SigningContext';
@@ -322,12 +322,12 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
   const renderContent = useCallback(() => {
     if (network) {
       switch (signMode) {
-        case SIGN_MODE.QR:
+        case AccountSignMode.QR:
           if (handleSignQr) {
             return <QrRequest network={network} handlerStart={onSubmitQr} baseProps={baseProps} />;
           }
           break;
-        case SIGN_MODE.LEDGER:
+        case AccountSignMode.LEDGER:
           //   if (handleSignLedger) {
           //     return (
           //       <Wrapper>
@@ -345,9 +345,9 @@ const SigningRequest = <T extends BaseRequestSign, V extends BasicTxResponse>({
           //     break;
           //   }
           break;
-        case SIGN_MODE.UNKNOWN:
+        case AccountSignMode.UNKNOWN:
           break;
-        case SIGN_MODE.PASSWORD:
+        case AccountSignMode.PASSWORD:
           return <PasswordRequest handlerStart={onSubmitPassword} baseProps={baseProps} />;
       }
     }
