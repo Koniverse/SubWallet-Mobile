@@ -66,7 +66,8 @@ export const en = {
     searchPlaceholder: 'Search or enter website',
     anErrorHasOccurred: 'An error has occurred.',
     chooseAccount: 'Choose the account(s) you’d like to connect',
-    youDonotHaveAnyAcc: "You don't have any accounts to connect. Please create a new account",
+    youDonotHaveAnyAcc: (accountType: string) =>
+      `You don't have any ${accountType} accounts to connect. Please create a new one`,
     connect: 'Connect',
     favorites: 'Favorites',
     history: 'History',

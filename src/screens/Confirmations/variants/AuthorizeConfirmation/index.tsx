@@ -66,22 +66,17 @@ export const filterAuthorizeAccounts = (accounts: AccountJson[], accountAuthType
 const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   const { request } = props;
   const { accountAuthType, allowedAccounts } = request.request;
-
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   const theme = useSubWalletTheme().swThemes;
-
   const { accounts } = useSelector((state: RootState) => state.accountState);
-
   const styles = useMemo(() => createStyle(theme), [theme]);
-
   const [loading, setLoading] = useState(false);
-
   const visibleAccounts = useMemo(
     () => filterAuthorizeAccounts(accounts, accountAuthType || 'both'),
     [accountAuthType, accounts],
   );
-
+  const accountTypeMessage =
+    accountAuthType === 'substrate' ? 'Substrate' : accountAuthType === 'evm' ? 'EVM' : 'Substrate & EVM';
   // Selected map with default values is map of all accounts
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
 
@@ -181,7 +176,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
         {visibleAccounts.length > 0 ? (
           <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         ) : (
-          <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc}</Text>
+          <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc(accountTypeMessage || '')}</Text>
         )}
         <ScrollView
           style={styles.scroll}
