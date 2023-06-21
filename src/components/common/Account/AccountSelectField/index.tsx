@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Text, View, TouchableWithoutFeedback } from 'react-native';
 import { Avatar, Icon, Typography } from 'components/design-system-ui';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import AvatarGroup from '../../AvatarGroup';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
