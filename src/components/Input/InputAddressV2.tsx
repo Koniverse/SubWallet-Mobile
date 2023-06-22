@@ -10,7 +10,7 @@ import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal'
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
-import { saveRecentAccount } from 'messaging/index';
+import { saveRecentAccountId } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import createStylesheet from './style/InputAddress';
@@ -171,7 +171,7 @@ const Component = (
         inputProps.onChangeText(text);
 
         if (saveAddress && isAddress(text)) {
-          saveRecentAccount(text).catch(console.error);
+          saveRecentAccountId(text).catch(console.error);
         }
       }
     },

@@ -813,6 +813,14 @@ export async function saveRecentAccountId(accountId: string): Promise<KeyringAdd
   return sendMessage('pri(accounts.saveRecent)', { accountId });
 }
 
+export async function editContactAddress(address: string, name: string): Promise<boolean> {
+  return sendMessage('pri(accounts.editContact)', { address: address, meta: { name: name } });
+}
+
+export async function removeContactAddress(address: string): Promise<boolean> {
+  return sendMessage('pri(accounts.deleteContact)', { address: address });
+}
+
 export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
   return sendMessage('pri(authorize.requests)', null, cb);
 }

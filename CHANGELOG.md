@@ -1,8 +1,12 @@
+## 1.0.6 (185)
+- Add message turn on chain in import Token and import NFT screen (#785)
+- Bugs related to Web-runner version 1.0.10 (#803)
+- Show duplicate network, token in case apply multi conditions when filter (#792)
+
 ## 1.0.6 (184)
 - Bump webrunner to 1.0.10-0
 - Optimize import from @subwallet/libraries
 - Fix problems by wrong import and update @subwallet/extension-koni-ui
-- Add message turn on chain in import Token and import NFT screen (#785)
 
 ## 1.0.6 (183)
 - Error page in case touch Icon account in Browser tab and fix some UI bugs (#796)
