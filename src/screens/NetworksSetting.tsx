@@ -46,44 +46,42 @@ const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
 };
 
 const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
-  const filteredChainList: ChainInfoWithState[] = [];
-
   if (!filters.length) {
     return items;
   }
 
-  items.forEach(item => {
+  return items.filter(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.CUSTOM:
           if (_isCustomChain(item.slug)) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.ENABLED:
           if (item.active) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.DISABLED:
           if (!item.active) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.SUBSTRATE:
           if (_isSubstrateChain(item)) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.EVM:
           if (_isChainEvmCompatible(item)) {
-            filteredChainList.push(item);
+            return true;
           }
+          break;
       }
     }
+    return false;
   });
-
-  return filteredChainList;
 };
 
 const processChainMap = (

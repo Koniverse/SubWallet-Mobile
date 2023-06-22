@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useGetValidatorList, { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop, MarginBottomForSubmitButton, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import {
+  DisabledStyle,
+  FlatListScreenPaddingTop,
+  MarginBottomForSubmitButton,
+  STATUS_BAR_HEIGHT,
+} from 'styles/sharedStyles';
 import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
@@ -143,6 +148,7 @@ export const ValidatorSelector = ({
         label={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
         loading={validatorLoading}
         placeholder={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
+        outerStyle={(!chain || !from || disabled) && DisabledStyle}
       />
 
       <SwFullSizeModal modalVisible={validatorSelectModalVisible}>
