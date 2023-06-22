@@ -43,29 +43,26 @@ const renderEmpty = (val?: string) => {
 };
 
 const filterFunction = (items: StakingDataType[], filters: string[]) => {
-  const filteredChainList: StakingDataType[] = [];
-
   if (!filters.length) {
     return items;
   }
 
-  items.forEach(item => {
+  return items.filter(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.NOMINATED:
           if (item.staking.type === StakingType.NOMINATED) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.POOLED:
           if (item.staking.type === StakingType.POOLED) {
-            filteredChainList.push(item);
+            return true;
           }
       }
     }
+    return false;
   });
-
-  return filteredChainList;
 };
 
 const searchFunction = (items: StakingDataType[], searchString: string) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { Coins, Plus } from 'phosphor-react-native';
@@ -49,36 +49,36 @@ export const CustomTokenSetting = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const [pendingAssetMap, setPendingAssetMap] = useState<Record<string, boolean>>(cachePendingAssetMap);
 
-  const filterFunction = (items: _ChainAsset[], filters: string[]) => {
-    const filteredChainList: _ChainAsset[] = [];
-
-    if (!filters.length) {
-      return items;
-    }
-
-    items.forEach(item => {
-      for (const filter of filters) {
-        switch (filter) {
-          case FilterValue.CUSTOM:
-            if (_isCustomAsset(item.slug)) {
-              filteredChainList.push(item);
-            }
-            break;
-          case FilterValue.ENABLED:
-            if (assetSettingMap[item.slug] && assetSettingMap[item.slug].visible) {
-              filteredChainList.push(item);
-            }
-            break;
-          case FilterValue.DISABLED:
-            if (!assetSettingMap[item.slug] || !assetSettingMap[item.slug]?.visible) {
-              filteredChainList.push(item);
-            }
-        }
+  const filterFunction = useCallback(
+    (items: _ChainAsset[], filters: string[]) => {
+      if (!filters.length) {
+        return items;
       }
-    });
 
-    return filteredChainList;
-  };
+      return items.filter(item => {
+        for (const filter of filters) {
+          switch (filter) {
+            case FilterValue.CUSTOM:
+              if (_isCustomAsset(item.slug)) {
+                return true;
+              }
+              break;
+            case FilterValue.ENABLED:
+              if (assetSettingMap[item.slug] && assetSettingMap[item.slug].visible) {
+                return true;
+              }
+              break;
+            case FilterValue.DISABLED:
+              if (!assetSettingMap[item.slug] || !assetSettingMap[item.slug]?.visible) {
+                return true;
+              }
+          }
+        }
+        return false;
+      });
+    },
+    [assetSettingMap],
+  );
 
   useEffect(() => {
     setPendingAssetMap(prePendingAssetMap => {
