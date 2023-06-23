@@ -17,6 +17,7 @@ import createStylesheet from './style/InputAddress';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { findContactByAddress } from 'utils/account';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends InputProps {
   isValidValue?: boolean;
@@ -48,6 +49,7 @@ const Component = (
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
   const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
@@ -178,6 +180,19 @@ const Component = (
     [inputProps, saveAddress],
   );
 
+  const onScanInputText = useCallback(
+    (data: string) => {
+      if (isAddress(data)) {
+        setError(undefined);
+        setIsShowQrModalVisible(false);
+        onChangeInputText(data);
+      } else {
+        setError(i18n.errorMessage.isNotAnAddress);
+      }
+    },
+    [onChangeInputText],
+  );
+
   const onInputFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
     setInputBlur(false);
     inputProps.onFocus && inputProps.onFocus(e);
@@ -196,6 +211,7 @@ const Component = (
   );
 
   const closeAddressScanner = useCallback(() => {
+    setError(undefined);
     setIsShowQrModalVisible(false);
   }, []);
 
@@ -223,7 +239,9 @@ const Component = (
         {...scannerProps}
         qrModalVisible={isShowQrModalVisible}
         onPressCancel={closeAddressScanner}
-        onChangeAddress={onChangeInputText}
+        onChangeAddress={onScanInputText}
+        isShowError
+        error={error}
       />
 
       {showAddressBook && (

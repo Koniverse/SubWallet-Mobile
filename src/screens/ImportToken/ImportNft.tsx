@@ -1,4 +1,4 @@
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
@@ -91,6 +91,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
   const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
   const [isShowTokenTypeModal, setShowTokenTypeModal] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>(undefined);
   useHandlerHardwareBackPress(loading);
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
@@ -291,12 +292,15 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     loading ||
     !!(formState.errors.smartContract && formState.errors.smartContract.length);
 
-  const onUpdateNftContractAddress = (text: string) => {
-    if (formState.refs.smartContract && formState.refs.smartContract.current) {
-      // @ts-ignore
-      formState.refs.smartContract.current.onChange(text);
-    }
-  };
+  const onUpdateNftContractAddress = useCallback(
+    (text: string) => {
+      if (formState.refs.smartContract && formState.refs.smartContract.current) {
+        // @ts-ignore
+        formState.refs.smartContract.current.onChange(text);
+      }
+    },
+    [formState.refs.smartContract],
+  );
 
   const onSelectNFTType = useCallback(
     (item: AssetTypeOption) => {
@@ -309,6 +313,19 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const getSubmitIconBtn = (color: string) => {
     return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
   };
+
+  const onScanContractAddress = useCallback(
+    (data: string) => {
+      if (isAddress(data)) {
+        setError(undefined);
+        setShowQrModalVisible(false);
+        onUpdateNftContractAddress(data);
+      } else {
+        setError(i18n.errorMessage.isNotContractAddress);
+      }
+    },
+    [onUpdateNftContractAddress],
+  );
 
   return (
     <ContainerWithSubHeader
@@ -407,8 +424,13 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
 
         <AddressScanner
           qrModalVisible={isShowQrModalVisible}
-          onPressCancel={() => setShowQrModalVisible(false)}
-          onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
+          onPressCancel={() => {
+            setError(undefined);
+            setShowQrModalVisible(false);
+          }}
+          onChangeAddress={onScanContractAddress}
+          isShowError
+          error={error}
         />
       </ScrollView>
 

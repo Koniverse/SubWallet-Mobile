@@ -15,7 +15,11 @@ import { BarCodeReadEvent } from 'react-native-camera';
 import { getFunctionScan } from 'utils/scanner/attach';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { IconButton } from 'components/IconButton';
-import { X } from 'phosphor-react-native';
+import { CaretLeft, ImageSquare } from 'phosphor-react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import RNQRGenerator from 'rn-qr-generator';
+import { updatePreventLock } from 'stores/MobileSettings';
+import { useDispatch } from 'react-redux';
 
 interface Props {
   visible: boolean;
@@ -25,6 +29,12 @@ interface Props {
 }
 
 const CancelButtonStyle: StyleProp<ViewStyle> = {
+  position: 'absolute',
+  left: 16,
+  zIndex: 10,
+};
+
+const LibraryButtonStyle: StyleProp<ViewStyle> = {
   position: 'absolute',
   right: 16,
   zIndex: 10,
@@ -39,7 +49,7 @@ const BottomSubContentStyle: StyleProp<ViewStyle> = {
 
 const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
   const [error, setError] = useState<string>('');
-
+  const dispatch = useDispatch();
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
       try {
@@ -60,6 +70,31 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
     },
     [onHideModal, onSuccess, type],
   );
+
+  const onPressLibraryBtn = async () => {
+    dispatch(updatePreventLock(true));
+    const result = await launchImageLibrary({ mediaType: 'photo' });
+
+    RNQRGenerator.detect({
+      uri: result.assets && result.assets[0]?.uri,
+      base64: result.assets && result.assets[0].base64,
+    })
+      .then(response => {
+        const funcRead = getFunctionScan(type);
+        const qrAccount = funcRead(response.values[0]);
+
+        if (!qrAccount) {
+          setError(i18n.warningMessage.invalidQRCode);
+          return;
+        }
+
+        setError('');
+        onSuccess(qrAccount);
+        onHideModal();
+        dispatch(updatePreventLock(false));
+      })
+      .catch(e => setError((e as Error).message));
+  };
 
   useEffect(() => {
     if (!visible) {
@@ -84,7 +119,8 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.header.scanQR}</Text>
-                <IconButton icon={X} style={CancelButtonStyle} onPress={onHideModal} />
+                <IconButton icon={CaretLeft} style={CancelButtonStyle} onPress={onHideModal} />
+                <IconButton icon={ImageSquare} style={LibraryButtonStyle} onPress={onPressLibraryBtn} />
               </View>
             </View>
             <View style={ScannerStyles.CenterOverlayStyle}>

@@ -11,7 +11,7 @@ import { NetworkField } from 'components/Field/Network';
 import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { completeConfirmation, upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { Warning } from 'components/Warning';
 import { InputAddress } from 'components/Input/InputAddress';
@@ -91,6 +91,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const tokenInfo = payload?.payload;
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const [name, setName] = useState('');
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const chainOptions = useMemo(() => {
     return Object.values(chainInfoMap).map(item => ({
@@ -240,12 +241,15 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     }
   }, [currentAccount?.address, formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
 
-  const onUpdateContractAddress = (text: string) => {
-    if (formState.refs.contractAddress && formState.refs.contractAddress.current) {
-      // @ts-ignore
-      formState.refs.contractAddress.current.onChange(text);
-    }
-  };
+  const onUpdateContractAddress = useCallback(
+    (text: string) => {
+      if (formState.refs.contractAddress && formState.refs.contractAddress.current) {
+        // @ts-ignore
+        formState.refs.contractAddress.current.onChange(text);
+      }
+    },
+    [formState.refs.contractAddress],
+  );
 
   const handleChangeValue = useCallback(
     (key: string) => {
@@ -259,6 +263,19 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       };
     },
     [onChangeChainValue, onChangeValue, onUpdateErrors],
+  );
+
+  const onScanContractAddress = useCallback(
+    (data: string) => {
+      if (isAddress(data)) {
+        setError(undefined);
+        setShowQrModalVisible(false);
+        onUpdateContractAddress(data);
+      } else {
+        setError(i18n.errorMessage.isNotContractAddress);
+      }
+    },
+    [onUpdateContractAddress],
   );
 
   const onSelectTokenType = useCallback(
@@ -370,8 +387,13 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
           <AddressScanner
             qrModalVisible={isShowQrModalVisible}
-            onPressCancel={() => setShowQrModalVisible(false)}
-            onChangeAddress={(text: string) => onUpdateContractAddress(text)}
+            onPressCancel={() => {
+              setError(undefined);
+              setShowQrModalVisible(false);
+            }}
+            onChangeAddress={onScanContractAddress}
+            isShowError
+            error={error}
           />
         </ScrollView>
 
