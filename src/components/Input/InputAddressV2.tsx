@@ -1,5 +1,5 @@
 import Input, { InputProps } from 'components/design-system-ui/input';
-import React, { ForwardedRef, forwardRef, useCallback, useMemo, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isAddress } from '@polkadot/util-crypto';
@@ -17,6 +17,7 @@ import createStylesheet from './style/InputAddress';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { findContactByAddress } from 'utils/account';
+import { setAdjustResize } from 'rn-android-keyboard-adjust';
 
 interface Props extends InputProps {
   isValidValue?: boolean;
@@ -60,6 +61,8 @@ const Component = (
     showAvatar,
     showAddressBook,
   );
+
+  useEffect(() => setAdjustResize(), []);
 
   const _contacts = useMemo(() => [...accounts, ...contacts], [accounts, contacts]);
 

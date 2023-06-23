@@ -12,6 +12,7 @@ export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   isShowPlaceHolder?: boolean;
   statusBarColor?: string;
   needGapWithStatusBar?: boolean;
+  androidKeyboardVerticalOffset?: number;
 }
 
 const getContainerStyle: (
@@ -45,11 +46,13 @@ export const ContainerWithSubHeader = ({
   isShowMainHeader = false,
   statusBarColor = ColorMap.dark1,
   needGapWithStatusBar = true,
+  androidKeyboardVerticalOffset,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.select({ ios: 0, android: androidKeyboardVerticalOffset })}
       style={[getContainerStyle(subHeaderProps.backgroundColor, needGapWithStatusBar, isShowPlaceHolder), style]}>
       {isShowPlaceHolder && <View style={getStatusBarPlaceholderStyle(statusBarColor)} />}
       <SafeAreaView>
