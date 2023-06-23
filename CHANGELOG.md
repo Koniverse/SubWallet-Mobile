@@ -1,3 +1,6 @@
+## 1.0.7 (186)
+- Update to newer Web Runner
+
 ## 1.0.6 (185)
 - Add message turn on chain in import Token and import NFT screen (#785)
 - Bugs related to Web-runner version 1.0.10 (#803)
