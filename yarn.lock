@@ -2956,7 +2956,7 @@
     "@polkadot/util" "8.7.1"
     "@substrate/ss58-registry" "^1.17.0"
 
-"@polkadot/phishing@^0.21.3":
+"@polkadot/phishing@^0.21.3", "@polkadot/phishing@^0.21.5":
   version "0.21.5"
   resolved "https://registry.yarnpkg.com/@polkadot/phishing/-/phishing-0.21.5.tgz#89134c75ac78bf3bb25fa54016ae2e0ecf403d6d"
   integrity sha512-bLlOvx5AdOn+zYIjoCw5wETKzu048R2qlBq6hUScZ8tjRMFHSqsp3viU9iODBq+UKkM4TTSKMxAAH/fTj1rRhw==
@@ -4246,7 +4246,7 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.40.0.tgz#2223409c496271df786c1ca8496898896595441e"
   integrity sha512-QuU2nBql3J4KCnOWtWDw4n1K4JU0T79j54ZZvm/9nhsX6AIar13FyhsaBfs6QkJ2ixTQAnd7TocJIoJRWbqMZA==
 
-"@subwallet/chain-list@0.2.1", "@subwallet/chain-list@^0.2.1":
+"@subwallet/chain-list@0.2.1", "@subwallet/chain-list@^0.2.1", "@subwallet/chain-list@^0.2.2":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.1.tgz#71f24f81b5206c07e5b48899b397c96f972c1a12"
   integrity sha512-8IrNH+lFoqO5K+MjlWtx94xFZrGQAlkB8mUJ4r8Grsvfwv7hfELHoFqdS1D4IraLFeOlgqJb1gMJA0I5fxmCGQ==
@@ -4255,7 +4255,7 @@
     "@polkadot/util" "^10.2.1"
     eventemitter3 "^4.0.7"
 
-"@subwallet/extension-base@^1.0.10-0", "@subwallet/extension-base@^1.0.11-0":
+"@subwallet/extension-base@^1.0.10-0", "@subwallet/extension-base@^1.0.11-0", "@subwallet/extension-base@^1.0.11-2":
   version "1.0.10-0"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.0.10-0.tgz#c0ae2d64fb90dee8be2952c20f3e67c1eb3d443e"
   integrity sha512-4SSuDmFK8MTTqtREyPcvSsnQP22phKs1XEhZjxaIX7+z7MFHyp064inAIdc2W30ejttxuXHL4v7xO/SdzG8wxg==
@@ -4373,6 +4373,17 @@
     "@polkadot/util-crypto" "^12.2.1"
     "@subwallet/extension-inject" "^1.0.11-0"
 
+"@subwallet/extension-chains@^1.0.11-2":
+  version "1.0.11-2"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.0.11-2.tgz#b92726cae956be8f79fa028add3db6c2165c25c3"
+  integrity sha512-eOx/SJz5OWjeMf6MCpEF9g0CzhTwNdfhwxUBMCcQInT/Ie9FxEEwtrMUpG4T7iYQRu8hzOJQCW9z0D5KWgemKg==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
+    "@polkadot/networks" "^12.2.1"
+    "@polkadot/util" "^12.2.1"
+    "@polkadot/util-crypto" "^12.2.1"
+    "@subwallet/extension-inject" "^1.0.11-2"
+
 "@subwallet/extension-dapp@^1.0.10-0":
   version "1.0.10-0"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.0.10-0.tgz#22831b3cfd9148c7f8f794c3fbca72eef1e9b1cb"
@@ -4393,6 +4404,16 @@
     "@polkadot/util-crypto" "^12.2.1"
     "@subwallet/extension-inject" "^1.0.11-0"
 
+"@subwallet/extension-dapp@^1.0.11-2":
+  version "1.0.11-2"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.0.11-2.tgz#27e16a374e346c6a42fd5311fc5e9212527fd9b4"
+  integrity sha512-E4t2y5fodwWW7V0DkrqTpja18LfEPdr3Dunor9g6YPcJSi+iMkwBpRNgwlKNX2u8LLbuRTHAZy6C6Mhj2g4+Mw==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
+    "@polkadot/util" "^12.2.1"
+    "@polkadot/util-crypto" "^12.2.1"
+    "@subwallet/extension-inject" "^1.0.11-2"
+
 "@subwallet/extension-inject@^1.0.10-0":
   version "1.0.10-0"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.0.10-0.tgz#3a6bee00f171aec069a9d5c0f061a24e0d22afbf"
@@ -4410,6 +4431,19 @@
   version "1.0.11-0"
   resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.0.11-0.tgz#15cf66e5446e418757a276f762b440339502f7bf"
   integrity sha512-o2wnfpcLggUUx2yLAXgxjx4cCyW93FiOpFa2REeH9vUZHuJVdNv6mmdhzUtEmk/WlT6c7ijtaFsKpMoZMvC20g==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
+    "@polkadot/rpc-provider" "^10.7.2"
+    "@polkadot/types" "^10.7.2"
+    "@polkadot/util" "^12.2.1"
+    "@polkadot/util-crypto" "^12.2.1"
+    "@polkadot/x-global" "^12.2.1"
+    web3-core "^1.10.0"
+
+"@subwallet/extension-inject@^1.0.11-2":
+  version "1.0.11-2"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.0.11-2.tgz#b488bf90c579916ea38d8ac5811aeec5e36af581"
+  integrity sha512-YOffYELvQmxQ5AmHuGe/yGFBdpE1QssDoIFn9+M7gUT9S6ToFz+d9NtkNU47L+/aEhJJneHsIEAfIVNYrx9+hQ==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^10.7.2"
@@ -6090,7 +6124,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axios@^1.2.0, axios@^1.2.1, axios@^1.3.4:
+axios@^1.2.1, axios@^1.3.4, axios@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.4.0.tgz#38a7bf1224cd308de271146038b551d725f0be1f"
   integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
@@ -6374,9 +6408,9 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"

@@ -4,9 +4,6 @@
   "build": "186",
   "private": true,
   "license": "Apache-2.0",
-  "bin": {
-    "autocheck": "./scripts/autocheck.mjs"
-  },
   "reactNativePermissionsIOS": [
     "Camera",
     "FaceID",
@@ -149,7 +146,7 @@
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "assert": "^2.0.0",
-    "axios": "^1.2.0",
+    "axios": "^1.4.0",
     "babel-jest": "^29.3.1",
     "babel-loader": "^9.1.0",
     "babel-plugin-module-resolver": "^4.1.0",
