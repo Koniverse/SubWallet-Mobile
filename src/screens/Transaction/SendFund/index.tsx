@@ -49,6 +49,7 @@ import i18n from 'utils/i18n/i18n';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import { addLazy } from 'utils/lazyUpdate';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -409,9 +410,14 @@ export const SendFund = ({
 
   const _onChangeAmount = useCallback(
     (_amount: string, isValidInput: boolean) => {
-      onChangeValue('value')(_amount);
-
-      validateAmount(_amount, maxTransfer, isValidInput);
+      addLazy(
+        'input-amount',
+        () => {
+          onChangeValue('value')(_amount);
+          validateAmount(_amount, maxTransfer, isValidInput);
+        },
+        500,
+      );
     },
     [maxTransfer, onChangeValue, validateAmount],
   );
