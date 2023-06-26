@@ -16,6 +16,7 @@ import { InputAddress } from 'components/Input/InputAddressV2';
 import { PlusCircle } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/AddContactModal';
+import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
 
 type Props = {
   modalVisible: boolean;
@@ -84,8 +85,8 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
 
   const nameValidator: UseControllerProps<FormValues>['rules'] = useMemo(
     () => ({
-      validate: name => {
-        if (!name) {
+      validate: (name: string) => {
+        if (!name || !name.trim()) {
           return i18n.errorMessage.contactNameIsRequired;
         }
 
@@ -161,7 +162,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
             <Input
               placeholder={i18n.addressBook.contactName}
               onBlur={onBlur}
-              onChangeText={onChange}
+              onChangeText={onChange as unknown as TextInputProps['onChangeText']}
               value={value}
               label={i18n.addressBook.contactName}
               onSubmitEditing={onSubmitName}
@@ -178,7 +179,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
             <InputAddress
               placeholder={i18n.addressBook.contactAddress}
               onBlur={onBlur}
-              onChangeText={onChange}
+              onChangeText={onChange as unknown as TextInputProps['onChangeText']}
               value={value}
               label={i18n.addressBook.contactAddress}
               onSubmitEditing={handleSubmit(onSubmit)}

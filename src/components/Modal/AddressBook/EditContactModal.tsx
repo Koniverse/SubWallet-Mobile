@@ -21,6 +21,7 @@ import Toast from 'react-native-toast-notifications';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
 
 type Props = {
   addressJson: AddressJson;
@@ -73,8 +74,8 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
 
   const nameValidator: UseControllerProps<FormValues>['rules'] = useMemo(
     () => ({
-      validate: name => {
-        if (!name) {
+      validate: (name: string) => {
+        if (!name || !name.trim()) {
           return i18n.errorMessage.contactNameIsRequired;
         }
 
@@ -161,7 +162,7 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
               <Input
                 placeholder={i18n.addressBook.contactName}
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={onChange as unknown as TextInputProps['onChangeText']}
                 value={value}
                 label={i18n.addressBook.contactName}
                 onSubmitEditing={handleSubmit(onSubmit)}

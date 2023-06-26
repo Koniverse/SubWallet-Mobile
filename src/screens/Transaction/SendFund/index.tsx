@@ -28,7 +28,7 @@ import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { getMaxTransfer, makeCrossChainTransfer, makeTransfer } from 'messaging/index';
+import { getMaxTransfer, makeCrossChainTransfer, makeTransfer, saveRecentAccountId } from 'messaging/index';
 import { Button, Icon } from 'components/design-system-ui';
 import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
@@ -223,7 +223,6 @@ export const SendFund = ({
     params: { slug: tokenGroupSlug, recipient: scanRecipient },
   },
 }: SendFundProps) => {
-  console.log('scanRecipient', scanRecipient);
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
@@ -365,6 +364,9 @@ export const SendFund = ({
     if (scanRecipient) {
       setToAddressDirty(true);
       onChangeValue('to')(scanRecipient);
+      if (isAddress(scanRecipient)) {
+        saveRecentAccountId(scanRecipient).catch(console.error);
+      }
     }
   }, [onChangeValue, scanRecipient]);
 
@@ -603,8 +605,6 @@ export const SendFund = ({
   const buttonIcon = useCallback((color: string) => {
     return <Icon phosphorIcon={PaperPlaneTilt} weight={'fill'} size={'lg'} iconColor={color} />;
   }, []);
-
-  console.log('formState.data.to', formState.data.to);
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
