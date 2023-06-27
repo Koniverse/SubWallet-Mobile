@@ -172,6 +172,7 @@ export const en = {
     selectStakingValidator: (validatorLabel: string) => `Select ${validatorLabel}`,
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
     submit: 'Submit',
+    accountSelected: 'account selected',
   },
   title: {
     exportAccount: 'Export account',
@@ -566,6 +567,10 @@ export const en = {
     claimStakingReward: 'Claim staking reward',
     successful: 'Successful',
     failed: 'Failed',
+    substrateDApp: 'Substrate dApp',
+    ethereumDApp: 'Ethereum dApp',
+    blockedDApp: 'Blocked dApp',
+    connectedDApp: 'Connected dApp',
   },
   header: {
     selectAccount: 'Select account',
