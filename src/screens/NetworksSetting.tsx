@@ -112,6 +112,7 @@ const processChainMap = (
 export const NetworksSetting = ({}: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useChainInfoWithState();
+  const [isToggleItem, setToggleItem] = useState(false);
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
 
@@ -129,15 +130,15 @@ export const NetworksSetting = ({}: Props) => {
   }, [chainInfoMap]);
 
   useEffect(() => {
-    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), !isToggleItem));
+  }, [chainInfoMap, isToggleItem, pendingChainMap]);
 
   useEffect(() => {
     cachePendingChainMap = pendingChainMap;
   }, [pendingChainMap]);
 
   const onToggleItem = (item: ChainInfoWithState) => {
+    setToggleItem(true);
     setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
     const reject = () => {
       console.warn('Toggle network request failed!');
@@ -173,7 +174,10 @@ export const NetworksSetting = ({}: Props) => {
         }
         onValueChange={() => onToggleItem(item)}
         showEditButton
-        onPressEditBtn={() => navigation.navigate('NetworkSettingDetail', { chainSlug: item.slug })}
+        onPressEditBtn={() => {
+          navigation.navigate('NetworkSettingDetail', { chainSlug: item.slug });
+          setToggleItem(false);
+        }}
       />
     );
   };
@@ -190,7 +194,13 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <FlatListScreen
-      rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('ImportNetwork') }}
+      rightIconOption={{
+        icon: Plus,
+        onPress: () => {
+          navigation.navigate('ImportNetwork');
+          setToggleItem(false);
+        },
+      }}
       items={currentChainList}
       title={i18n.header.manageNetworks}
       placeholder={i18n.placeholder.searchNetwork}
