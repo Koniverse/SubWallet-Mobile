@@ -1,16 +1,13 @@
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { Linking, StyleProp, Text, View } from 'react-native';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
-import { ArrowsOutSimple, Star, StarHalf } from 'phosphor-react-native';
-import { SelectItem } from 'components/SelectItem';
-import { getLeftSelectItemIcon } from 'utils/index';
+import { Linking, View } from 'react-native';
+import { ArrowSquareUpRight, IconProps, Star, StarHalf } from 'phosphor-react-native';
 import { SiteInfo } from 'stores/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { addBookmark, removeBookmark } from 'stores/updater';
 import i18n from 'utils/i18n/i18n';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { SelectItem, SwModal } from 'components/design-system-ui';
 
 interface Props {
   visibleModal: boolean;
@@ -19,24 +16,18 @@ interface Props {
 
 interface OptionType {
   key: string;
-  icon: JSX.Element;
+  icon: React.ElementType<IconProps>;
   label: string;
   onPress: () => void;
+  iconBackgroundColor: string;
 }
 
 export interface BrowserOptionModalRef {
   onUpdateSiteInfo: (siteInfo: SiteInfo) => void;
 }
 
-const titleStyle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
-  color: ColorMap.light,
-  textAlign: 'center',
-  paddingBottom: 16,
-};
-
 const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
+  const theme = useSubWalletTheme().swThemes;
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
 
   const [siteInfo, setSiteInfo] = useState<SiteInfo>({
@@ -53,21 +44,10 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
 
   const OPTIONS: OptionType[] = [
     {
-      key: 'openInBrowser',
-      icon: getLeftSelectItemIcon(ArrowsOutSimple),
-      label: i18n.common.openInBrowser,
-      onPress: () => {
-        if (siteInfo.url) {
-          Linking.canOpenURL(siteInfo.url).then(() => Linking.openURL(siteInfo.url));
-        }
-
-        onClose();
-      },
-    },
-    {
       key: 'toggleFavouriteSite',
-      icon: getLeftSelectItemIcon(isBookmarked ? StarHalf : Star),
+      icon: isBookmarked ? StarHalf : Star,
       label: isBookmarked ? i18n.common.removeFromFavourites : i18n.common.addToFavourites,
+      iconBackgroundColor: isBookmarked ? theme['gray-3'] : theme['green-6'],
       onPress: () => {
         if (isBookmarked) {
           removeBookmark(siteInfo);
@@ -77,17 +57,36 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
         onClose();
       },
     },
+    {
+      key: 'openInBrowser',
+      icon: ArrowSquareUpRight,
+      label: i18n.common.openInBrowser,
+      iconBackgroundColor: theme['geekblue-7'],
+      onPress: () => {
+        if (siteInfo.url) {
+          Linking.canOpenURL(siteInfo.url).then(() => Linking.openURL(siteInfo.url));
+        }
+
+        onClose();
+      },
+    },
   ];
 
   return (
-    <SubWalletModal modalVisible={visibleModal} onChangeModalVisible={onClose}>
+    <SwModal modalVisible={visibleModal} onChangeModalVisible={onClose} modalTitle={'More options'}>
       <View style={{ width: '100%' }}>
-        <Text style={titleStyle}>More options</Text>
         {OPTIONS.map(opt => (
-          <SelectItem key={opt.key} isSelected={false} label={opt.label} leftIcon={opt.icon} onPress={opt.onPress} />
+          <SelectItem
+            onPress={opt.onPress}
+            icon={opt.icon}
+            key={opt.key}
+            label={opt.label}
+            isSelected={false}
+            backgroundColor={opt.iconBackgroundColor}
+          />
         ))}
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };
 
