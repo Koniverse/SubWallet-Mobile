@@ -14,7 +14,7 @@ interface Props {
 }
 
 const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {
-  const { request, gap = 20 } = props;
+  const { request, gap = 0 } = props;
   const domain = getDomainFromUrl(request.url);
   const leftLogoUrl = `https://icons.duckduckgo.com/ip2/${domain}.ico`;
 
