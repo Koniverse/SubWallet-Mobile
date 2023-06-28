@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleProp, StyleSheet, View } from 'react-native';
+import { SafeAreaView, StatusBar, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import LinearGradient from 'react-native-linear-gradient';
@@ -9,6 +9,7 @@ interface Props {
   backgroundColor?: string;
   safeAreaBottomViewColor?: string;
   gradientBackground?: [string, string];
+  statusBarStyle?: StyleProp<ViewStyle>;
 }
 
 function getContainerStyle(backgroundColor: string): StyleProp<any> {
@@ -29,6 +30,7 @@ export const ScreenContainer = ({
   children,
   backgroundColor,
   gradientBackground = ['transparent', 'transparent'],
+  statusBarStyle,
 }: Props) => {
   return (
     <View style={getContainerStyle(backgroundColor || ColorMap.dark1)}>
@@ -37,7 +39,7 @@ export const ScreenContainer = ({
         colors={backgroundColor ? [backgroundColor, backgroundColor] : gradientBackground}
         style={styles.gradientWrapper}
       />
-      <SafeAreaView>
+      <SafeAreaView style={statusBarStyle}>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
       <View style={styles.contentContainer}>{children}</View>

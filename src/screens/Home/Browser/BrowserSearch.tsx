@@ -1,68 +1,87 @@
-import { ScreenContainer } from 'components/ScreenContainer';
-import React, { useEffect, useState } from 'react';
-import { ColorMap } from 'styles/color';
-import { ListRenderItemInfo, StyleProp, Text, View } from 'react-native';
-import { Search } from 'components/Search';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ListRenderItemInfo, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import { Button } from 'components/Button';
-import { ContainerHorizontalPadding, FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { BrowserItem } from 'components/BrowserItem';
 import { predefinedDApps } from '../../../predefined/dAppSites';
-import { GlobeHemisphereEast } from 'phosphor-react-native';
+import { MagnifyingGlass } from 'phosphor-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { SiteInfo } from 'stores/types';
 import { getHostName, getValidURL } from 'utils/browser';
 import { createNewTab } from 'stores/updater';
-import { LazyFlatList } from 'components/LazyFlatList';
+import { BrowserItem } from 'components/Browser/BrowserItem';
+import { FlatListScreen } from 'components/FlatListScreen';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import createStylesheet from './style/BrowserSearch';
+import { EmptyList } from 'components/EmptyList';
+import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
+import Typography from '../../../components/design-system-ui/typography';
+import { SectionItem } from 'components/LazySectionList';
 
 function doFilter(searchString: string) {
-  return predefinedDApps.dapps.filter(item => item.url.toLowerCase().includes(searchString.toLowerCase()));
+  return predefinedDApps.dapps.filter(item => item.name.toLowerCase().includes(searchString.toLowerCase()));
 }
 
 type SearchItemType = {
-  displayUrl?: string;
+  isSearch?: boolean;
 } & SiteInfo;
 
+// todo: i18n all text
 function getFirstSearchItem(searchString: string): SearchItemType {
   const url = getValidURL(searchString);
 
   if (url.startsWith('https://duckduckgo.com')) {
     return {
       url,
-      displayUrl: `${searchString} - ${i18n.common.searchAtDuckDuckGo}`,
-      name: 'duckduckgo.com',
+      name: `${searchString}`,
+      isSearch: true,
     };
   } else {
     return {
       url,
       name: getHostName(url),
+      isSearch: true,
     };
   }
 }
 
-const searchResultStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.light,
-  paddingVertical: 24,
-  ...ContainerHorizontalPadding,
+function searchFunction(items: SearchItemType[], searchString: string) {
+  if (!searchString) {
+    return items;
+  }
+
+  return [getFirstSearchItem(searchString), ...doFilter(searchString)];
+}
+
+const emptyList = () => {
+  return (
+    <EmptyList
+      icon={MagnifyingGlass}
+      title={i18n.emptyScreen.selectorEmptyTitle}
+      message={i18n.emptyScreen.selectorEmptyMessage}
+    />
+  );
 };
 
-export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
-  const navigation = useNavigation<RootNavigationProps>();
-  const [searchString, setSearchString] = useState<string>('');
-  const [filteredList, setFilteredList] = useState<SearchItemType[]>(predefinedDApps.dapps);
-  const isOpenNewTab = params && params.isOpenNewTab;
+const groupBy = (item: SearchItemType) => {
+  if (item.isSearch) {
+    return '1|' + 'Search';
+  }
 
-  useEffect(() => {
-    if (searchString) {
-      setFilteredList([getFirstSearchItem(searchString), ...doFilter(searchString)]);
-    } else {
-      setFilteredList(predefinedDApps.dapps);
-    }
-  }, [searchString]);
+  return '0|' + 'Recommended';
+};
+
+const sortSection = (a: SectionItem<SearchItemType>, b: SectionItem<SearchItemType>) => {
+  return b.title.localeCompare(a.title);
+};
+
+// todo: check the performance of search
+export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
+  const navigation = useNavigation<RootNavigationProps>();
+  const [searchItems] = useState<SearchItemType[]>(predefinedDApps.dapps);
+  const isOpenNewTab = params && params.isOpenNewTab;
 
   const onPressItem = (item: SearchItemType) => {
     if (isOpenNewTab) {
@@ -76,48 +95,44 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {
-    return (
-      <BrowserItem
-        leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
-        text={item.displayUrl || item.url}
-        onPress={() => onPressItem(item)}
-      />
-    );
+    return <BrowserItem name={item.name} url={item.url} onPress={() => onPressItem(item)} />;
   };
 
+  const renderSectionHeader: (info: { section: SectionListData<SearchItemType> }) => React.ReactElement | null =
+    useCallback(
+      (info: { section: SectionListData<SearchItemType> }) => {
+        return (
+          <View style={stylesheet.sectionHeaderContainer}>
+            <Typography.Text size={'lg'} style={stylesheet.sectionHeaderTitle}>
+              {`${info.section.title.split('|')[1]}`}
+            </Typography.Text>
+          </View>
+        );
+      },
+      [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderTitle],
+    );
+
+  const grouping = useMemo(() => {
+    return { groupBy, sortSection, renderSectionHeader };
+  }, [renderSectionHeader]);
+
+  const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);
+
   return (
-    <ScreenContainer>
-      <>
-        <View style={{ flexDirection: 'row', alignItems: 'center', ...ContainerHorizontalPadding }}>
-          <Search
-            style={{ flex: 1, marginRight: 8 }}
-            autoFocus={true}
-            autoCapitalize={'none'}
-            searchText={searchString}
-            onSearch={setSearchString}
-            onClearSearchString={() => setSearchString('')}
-            placeholder={i18n.common.searchPlaceholder}
-            onSubmitEditing={({ nativeEvent: { text } }) => {
-              onPressItem(getFirstSearchItem(text));
-            }}
-          />
-
-          <Button title={i18n.common.cancel} onPress={() => navigation.canGoBack() && navigation.goBack()} />
-        </View>
-
-        <View style={{ flex: 1 }}>
-          <Text style={searchResultStyle}>{i18n.common.searchResult}</Text>
-          <LazyFlatList
-            items={filteredList}
-            searchString={searchString}
-            renderListEmptyComponent={() => {
-              return <></>;
-            }}
-            flatListStyle={{ paddingBottom: 12 }}
-            renderItem={renderItem}
-          />
-        </View>
-      </>
-    </ScreenContainer>
+    <FlatListScreen
+      autoFocus
+      showLeftBtn={true}
+      items={searchItems}
+      beforeListItem={BeforeListItem}
+      title={'Search'}
+      placeholder={'Search or enter website'}
+      renderItem={renderItem}
+      searchFunction={searchFunction}
+      renderListEmptyComponent={emptyList}
+      grouping={grouping}
+      isShowMainHeader={false}
+      searchMarginBottom={theme.sizeXS}
+      flatListStyle={stylesheet.flatListStyle}
+    />
   );
 };
