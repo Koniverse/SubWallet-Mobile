@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
+import { Dimensions, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ScreenContainer } from 'components/ScreenContainer';
@@ -12,8 +12,14 @@ import { RootState } from 'stores/index';
 import { BrowserItem } from 'components/BrowserItem';
 import { StoredSiteInfo } from 'stores/types';
 import { Button } from 'components/Button';
-import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 import { EmptyList } from 'components/EmptyList';
+import { Header } from 'components/Header';
+import { SVGImages } from 'assets/index';
+import styles from './styles/BrowserHome';
+import { predefinedDApps } from '../../../predefined/dAppSites';
+import { PredefinedDApps } from 'types/browser';
+import BrowserHome from './BrowserHome';
+import { TabView, TabBar, SceneMap, NavigationState, SceneRendererProps } from 'react-native-tab-view';
 
 const searchTitleStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -32,15 +38,14 @@ const groupHeaderWrapperStyle: StyleProp<any> = {
 const rightHeaderButtonStyle: StyleProp<any> = {
   width: 40,
   height: 40,
-  alignItems: 'center',
+  alignItems: 'flex-end',
   justifyContent: 'center',
-  marginHorizontal: 7,
 };
 
 const rightHeaderButtonTextOutlineStyle: StyleProp<any> = {
-  width: 20,
-  height: 20,
-  borderRadius: 4,
+  width: 18,
+  height: 18,
+  borderRadius: 1,
   borderWidth: 2,
   borderColor: ColorMap.light,
   alignItems: 'center',
@@ -49,9 +54,11 @@ const rightHeaderButtonTextOutlineStyle: StyleProp<any> = {
 
 const rightHeaderButtonTextStyle: StyleProp<any> = {
   ...FontSize0,
+  fontSize: 10,
   color: ColorMap.light,
+  fontWeight: '700',
   ...FontMedium,
-  lineHeight: 16,
+  lineHeight: 13,
 };
 
 function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
@@ -65,25 +72,45 @@ function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
 }
 
 export const BrowserScreen = () => {
-  const historyItems = useSelector((state: RootState) => state.browser.history);
-  const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
+  const [dApps, setDApps] = useState<PredefinedDApps>(predefinedDApps);
+  const [tabviewIndex, ontabviewIndexChange] = useState<number>(1);
+  // const historyItems = useSelector((state: RootState) => state.browser.history);
+  // const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
+  const tabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
 
-  const renderSiteItem = (item: StoredSiteInfo) => {
-    return (
-      <BrowserItem
-        key={item.id}
-        leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
-        text={item.url}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
-      />
-    );
+  const renderScene = ({ route, jumpTo, position }) => {
+    if (position === 0) {
+      return <BrowserHome tabRoute={route} jumpTo={jumpTo} position={position} />;
+    }
+
+    return <BrowserHome tabRoute={route} jumpTo={jumpTo} position={position} />;
   };
+  const renderTabBar = (props: SceneRendererProps & { navigationState: State }) => (
+    <TabBar
+      {...props}
+      scrollEnabled
+      indicatorStyle={{ backgroundColor: 'blue', width: 0.77, left: 0 }}
+      style={{ backgroundColor: 'transparent' }}
+      tabStyle={{ width: 'auto', paddingBottom: 0, justifyContent: 'flex-end' }}
+      labelStyle={{ textTransform: 'capitalize', paddingBottom: 0, marginLeft: 4 }}
+    />
+  );
+  // const renderSiteItem = (item: StoredSiteInfo) => {
+  //   return (
+  //     <BrowserItem
+  //       key={item.id}
+  //       leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
+  //       text={item.url}
+  //       onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
+  //     />
+  //   );
+  // };
 
-  const onPressSearchBar = useCallback(() => {
-    navigation.navigate('BrowserSearch');
-  }, [navigation]);
+  // const onPressSearchBar = useCallback(() => {
+  //   navigation.navigate('BrowserSearch');
+  // }, [navigation]);
 
   const onOpenBrowserTabs = useCallback(() => {
     navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
@@ -93,6 +120,11 @@ export const BrowserScreen = () => {
     return (
       <TouchableOpacity style={rightHeaderButtonStyle} onPress={onOpenBrowserTabs}>
         <View style={rightHeaderButtonTextOutlineStyle}>
+          <View style={{ position: 'absolute', top: -6.5, right: -6.5 }}>
+            <Suspense>
+              <SVGImages.IcHalfSquare width={19} height={19} />
+            </Suspense>
+          </View>
           <Text style={rightHeaderButtonTextStyle}>{tabsNumber}</Text>
         </View>
       </TouchableOpacity>
@@ -102,34 +134,48 @@ export const BrowserScreen = () => {
   return (
     <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
-        <BrowserHeader onPressSearchBar={onPressSearchBar} rightComponent={browserHeaderRightComponent} />
+        <Header rightComponent={browserHeaderRightComponent} />
 
-        {!!bookmarkItems.length || !!historyItems.length ? (
-          <ScrollView style={{ flex: 1, marginTop: 16 }} contentContainerStyle={{ paddingBottom: 12 }}>
-            {!!bookmarkItems.length && (
-              <>
-                {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}
-
-                {bookmarkItems.slice(0, 15).map(item => renderSiteItem(item))}
-              </>
-            )}
-
-            {!!historyItems.length && (
-              <>
-                {renderGroupHeader(i18n.common.history, () => navigation.navigate('HistoryGroupDetail'))}
-
-                {historyItems.slice(0, 15).map(item => renderSiteItem(item))}
-              </>
-            )}
-          </ScrollView>
-        ) : (
-          <EmptyList
-            icon={GlobeSimple}
-            title={i18n.emptyScreen.browserEmptyTitle}
-            message={i18n.emptyScreen.browserEmptyMessage}
+        {tabRoutes.length > 0 && (
+          <TabView
+            lazy
+            navigationState={{
+              index: tabviewIndex,
+              routes: tabRoutes,
+            }}
+            initialLayout={{ width: Dimensions.get('window').width }}
+            renderScene={renderScene}
+            renderTabBar={renderTabBar}
+            onIndexChange={ontabviewIndexChange}
           />
         )}
       </>
     </ScreenContainer>
   );
 };
+
+// {!!bookmarkItems.length || !!historyItems.length ? (
+//   <ScrollView style={{ flex: 1, marginTop: 16 }} contentContainerStyle={{ paddingBottom: 12 }}>
+//     {!!bookmarkItems.length && (
+//       <>
+//         {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}
+
+//         {bookmarkItems.slice(0, 15).map(item => renderSiteItem(item))}
+//       </>
+//     )}
+
+//     {!!historyItems.length && (
+//       <>
+//         {renderGroupHeader(i18n.common.history, () => navigation.navigate('HistoryGroupDetail'))}
+
+//         {historyItems.slice(0, 15).map(item => renderSiteItem(item))}
+//       </>
+//     )}
+//   </ScrollView>
+// ) : (
+//   <EmptyList
+//     icon={GlobeSimple}
+//     title={i18n.emptyScreen.browserEmptyTitle}
+//     message={i18n.emptyScreen.browserEmptyMessage}
+//   />
+// )}
