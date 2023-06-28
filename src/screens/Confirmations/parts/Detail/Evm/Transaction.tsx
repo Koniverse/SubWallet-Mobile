@@ -4,12 +4,15 @@
 import { EvmSendTransactionRequest, EvmTransactionArg } from '@subwallet/extension-base/background/KoniTypes';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import BigN from 'bignumber.js';
+import { Icon, Typography } from 'components/design-system-ui';
 import MetaInfo from 'components/MetaInfo';
 import useGetChainInfoByChainId from 'hooks/chain/useGetChainInfoByChainId';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import React, { useCallback, useMemo } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { TouchableWithoutFeedback, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
+import { CaretRight } from 'phosphor-react-native';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   request: EvmSendTransactionRequest;
@@ -27,6 +30,8 @@ const convertToBigN = (num: EvmSendTransactionRequest['value']): string | number
 const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
   const { account, request } = props;
   const { chainId } = request;
+  const theme = useSubWalletTheme().swThemes;
+  const [isShowDetailHexData, setShowHexData] = useState<boolean>(false);
 
   const recipient = useGetAccountByAddress(request.to);
 
@@ -101,7 +106,22 @@ const EvmTransactionDetail: React.FC<Props> = (props: Props) => {
       />
       {renderInputInfo()}
       {request.data && request.data !== '0x' && (
-        <MetaInfo.Data label={i18n.inputLabel.hexData}>{request.data}</MetaInfo.Data>
+        <MetaInfo.Data label={i18n.inputLabel.hexData}>
+          {valueStyle => (
+            <TouchableWithoutFeedback onPress={() => setShowHexData(!isShowDetailHexData)}>
+              {isShowDetailHexData ? (
+                <Typography.Text style={valueStyle}>{request.data}</Typography.Text>
+              ) : (
+                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                  <Icon phosphorIcon={CaretRight} weight={'fill'} size={'xs'} iconColor={theme.colorTextTertiary} />
+                  <Typography.Text ellipsis style={[valueStyle, { flex: 1 }]}>
+                    {request.data}
+                  </Typography.Text>
+                </View>
+              )}
+            </TouchableWithoutFeedback>
+          )}
+        </MetaInfo.Data>
       )}
     </MetaInfo>
   );
