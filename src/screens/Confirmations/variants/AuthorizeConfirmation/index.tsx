@@ -172,11 +172,14 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
   return (
     <React.Fragment>
       <ConfirmationContent gap={theme.size}>
-        <ConfirmationGeneralInfo request={request} gap={theme.size} />
+        <ConfirmationGeneralInfo request={request} gap={0} />
         {visibleAccounts.length > 0 ? (
           <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         ) : (
-          <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc(accountTypeMessage || '')}</Text>
+          <>
+            <Text style={styles.noAccountTextStyle}>{i18n.common.noAvailableAccount}</Text>
+            <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc(accountTypeMessage || '')}</Text>
+          </>
         )}
         <ScrollView
           style={styles.scroll}

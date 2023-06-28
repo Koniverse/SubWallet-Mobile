@@ -45,10 +45,11 @@ const confirmationPopupWrapper: StyleProp<any> = {
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
-  width: 56,
-  height: 4,
-  borderRadius: 2,
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  width: 70,
+  height: 5,
+  borderRadius: 100,
+  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  marginBottom: 16,
 };
 
 const titleMap: Record<ConfirmationType, string> = {
