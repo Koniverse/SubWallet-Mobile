@@ -15,7 +15,9 @@ import { isAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 
-export interface HeaderProps {}
+export interface HeaderProps {
+  rightComponent?: JSX.Element;
+}
 
 const headerWrapper: StyleProp<any> = {
   flexDirection: 'row',
@@ -26,7 +28,7 @@ const headerWrapper: StyleProp<any> = {
   zIndex: 10,
 };
 
-export const Header = () => {
+export const Header = ({ rightComponent }: HeaderProps) => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -75,13 +77,15 @@ export const Header = () => {
       <AccountSelectField onPress={() => navigation.navigate('AccountsScreen', { pathName: nearestPathName })} />
 
       <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
-        <Button
-          style={{ marginRight: -8 }}
-          size={'xs'}
-          type={'ghost'}
-          icon={<Icon phosphorIcon={QrCode} weight={'bold'} />}
-          onPress={onPressQrButton}
-        />
+        {rightComponent || (
+          <Button
+            style={{ marginRight: -8 }}
+            size={'xs'}
+            type={'ghost'}
+            icon={<Icon phosphorIcon={QrCode} weight={'bold'} />}
+            onPress={onPressQrButton}
+          />
+        )}
       </View>
 
       <AddressScanner

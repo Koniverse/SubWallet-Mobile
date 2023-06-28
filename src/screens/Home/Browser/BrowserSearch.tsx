@@ -55,6 +55,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const [searchString, setSearchString] = useState<string>('');
   const [filteredList, setFilteredList] = useState<SearchItemType[]>(predefinedDApps.dapps);
   const isOpenNewTab = params && params.isOpenNewTab;
+  console.log('filteredList', filteredList)
 
   useEffect(() => {
     if (searchString) {
