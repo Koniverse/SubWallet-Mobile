@@ -5,6 +5,7 @@ export type DAPPCategory = {
 
 export type DAppInfo = {
   name: string;
+  id: string;
   url: string;
   icon: string;
   categories: string[];
