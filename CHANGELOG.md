@@ -1,3 +1,7 @@
+## 1.0.7 (187)
+- Fix some issues related to Address book feature (#779)
+- Fix bugs related to the Manage network feature in Build 185 (#881)
+
 ## 1.0.7 (186)
 - Update to newer Web Runner
 
