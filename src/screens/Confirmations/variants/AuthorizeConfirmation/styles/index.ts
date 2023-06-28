@@ -1,12 +1,13 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontMedium } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   text: TextStyle;
   textCenter: TextStyle;
   scroll: ViewStyle;
   contentContainer: ViewStyle;
+  noAccountTextStyle: TextStyle;
 }
 
 export default (theme: ThemeTypes) => {
@@ -26,6 +27,14 @@ export default (theme: ThemeTypes) => {
       textAlign: 'center',
       paddingHorizontal: theme.padding,
       ...FontMedium,
+    },
+    noAccountTextStyle: {
+      color: theme.colorWhite,
+      fontSize: theme.fontSizeHeading4,
+      lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+      width: '100%',
+      textAlign: 'center',
+      ...FontSemiBold,
     },
     scroll: {
       maxHeight: 180,

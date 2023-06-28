@@ -25,6 +25,7 @@ export default (theme: ThemeTypes) => {
       color: theme.colorTextTertiary,
       textAlign: 'center',
       width: '100%',
+      paddingHorizontal: 32,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
       ...FontMedium,
