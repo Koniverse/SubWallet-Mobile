@@ -13,17 +13,17 @@ const cloudConfig = JSON.parse(process.env.NEXTCLOUD_CONFIG || '{}');
 
 export async function execSync(cmd, name) {
   return new Promise((resolve, reject) => {
-    const startTime = new Date().getTime();
+    // const startTime = new Date().getTime();
     try {
       cp.execSync(cmd, {stdio: 'inherit'});
-      const runTime = (new Date().getTime() - startTime)/1000
-      discordHook.send(`Finish ${name || cmd} in ${runTime}s`).finally(resolve);
+      // const runTime = (new Date().getTime() - startTime)/1000
+      // discordHook.send(`Finish ${name || cmd} in ${runTime}s`).finally(resolve);
+      resolve();
     } catch (error) {
-      discordHook.send(`:red_circle: :red_circle: :red_circle:  Failed to run "${name || cmd}" for "${refName}: ${commitMessage}"`).finally(() => {
+      discordHook.send(`:red_circle:  Failed to run "${name || cmd}" for "${refName}: ${commitMessage}"`).finally(() => {
         process.exit(-1);
+        reject(error)
       })
-
-      reject(error)
     }
   })
 }

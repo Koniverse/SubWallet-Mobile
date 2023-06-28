@@ -12,10 +12,10 @@ import {
 } from "./common.mjs";
 
 function notifyStart() {
-  return discordHook.send(`:computer: :computer: :computer: Start build android for: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`:computer: Start build android for: "${refName}: ${commitMessage}"`);
 }
 function notifyFinish() {
-  return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish build android for: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`:ok: Finish build android for: "${refName}: ${commitMessage}"`);
 }
 
 async function runCleanAndroid() {
@@ -29,11 +29,11 @@ async function runBuildAndroid() {
 async function runUploadAndroid() {
   const packageInfo = getPackageInfo('../package.json');
   const downloadLink = await uploadBuild('./app/build/outputs/apk/release/app-release.apk', `SubWalletMobile-build-${packageInfo.build}-${refName}-${buildDateString}.apk`);
-  return discordHook.send(`Uploaded Android build to: ${downloadLink}`);
+  return discordHook.send(`:robot: Android build (${refName}): ${downloadLink}`);
 }
 
-await notifyStart();
+// await notifyStart();
 await runCleanAndroid()
 await runBuildAndroid();
 await runUploadAndroid();
-await notifyFinish();
+// await notifyFinish();

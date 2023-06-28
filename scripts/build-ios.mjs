@@ -12,10 +12,10 @@ import {
 } from "./common.mjs";
 
 function notifyStart() {
-  return discordHook.send(`:computer: :computer: :computer: Start build ios for: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`:computer: Start build ios for: "${refName}: ${commitMessage}"`);
 }
 function notifyFinish() {
-  return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish build ios for: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`:ok: Finish build ios for: "${refName}: ${commitMessage}"`);
 }
 
 async function runCleanIOS() {
@@ -33,12 +33,12 @@ async function runExportIOS() {
 async function runUploadIOS() {
   const packageInfo = getPackageInfo('../package.json');
   const downloadLink = await uploadBuild('./dist/SubWalletMobile.ipa', `SubWalletMobile-build-${packageInfo.build}-${refName}-${buildDateString}.ipa`);
-  return discordHook.send(`Uploaded IOS build to: ${downloadLink}`);
+  return discordHook.send(`:apple: IOS build (${refName}): ${downloadLink}`);
 }
 
-await notifyStart();
+// await notifyStart();
 await runCleanIOS()
 await runBuildIOS();
 await runExportIOS();
 await runUploadIOS();
-await notifyFinish();
+// await notifyFinish();
