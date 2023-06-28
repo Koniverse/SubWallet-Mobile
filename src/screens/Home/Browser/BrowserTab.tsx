@@ -31,8 +31,6 @@ import {
   GlobeSimple,
   House,
   IconProps,
-  LockSimple,
-  LockSimpleOpen,
   X,
 } from 'phosphor-react-native';
 import { WebRunnerContext } from 'providers/contexts';
@@ -69,6 +67,7 @@ type Props = {
   tabId: string;
   tabsNumber: number;
   onOpenBrowserTabs: () => void;
+  connectionTrigger: React.ReactNode;
 };
 
 type BrowserActionButtonType = {
@@ -131,7 +130,10 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
-const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: ForwardedRef<BrowserTabRef>) => {
+const Component = (
+  { tabId, tabsNumber, onOpenBrowserTabs, connectionTrigger }: Props,
+  ref: ForwardedRef<BrowserTabRef>,
+) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
@@ -151,8 +153,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   const siteName = useRef('');
   const browserOptionModalRef = useRef<BrowserOptionModalRef>(null);
   const hostname = siteUrl.current ? getHostName(siteUrl.current) : null;
-  const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
-  const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
 
@@ -442,11 +442,11 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
               navigation.navigate('BrowserSearch');
             }}
             style={stylesheet.siteInfoTouchableArea}>
-            <LockIcon size={16} color={isUrlSecure ? theme.colorSuccess : theme.colorTextLight4} weight={'bold'} />
             <Typography.Text ellipsis style={stylesheet.siteInfoName}>
               {hostname || ''}
             </Typography.Text>
           </TouchableOpacity>
+          {connectionTrigger}
           <Button
             type={'ghost'}
             size={'xs'}

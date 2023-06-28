@@ -24,14 +24,13 @@ export default (theme: ThemeTypes) =>
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: theme.colorBgSecondary,
-      paddingLeft: theme.padding,
       paddingRight: 40 + theme.paddingXXS,
       borderRadius: 30,
       height: 40,
     },
     siteInfoName: {
       color: theme.colorTextLight2,
-      marginHorizontal: theme.marginXS,
+      marginHorizontal: 40,
       flex: 1,
     },
     reloadButton: {
