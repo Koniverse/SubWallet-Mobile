@@ -6,8 +6,8 @@ on:
       - koni-dev
       - upgrade-ui
 jobs:
-  approved:
-    name: ${{ matrix.step }}
+  build_preview:
+    name: Build Preview
     runs-on: mac-worker
     steps:
     - uses: actions/checkout@v3
