@@ -11,22 +11,36 @@ export default (theme: ThemeTypes) => {
     logoWrapper: { marginRight: 12 },
 
     logo: {
-      width: 44,
-      height: 44,
-      backgroundColor: 'transparent',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
 
-    siteContentWrapper: { flex: 1 },
+    textContentWrapper: { flex: 1 },
 
-    siteName: {
-      width: '100%',
+    textContentLine1: {
+      flexDirection: 'row',
+      gap: theme.sizeXS,
+    },
+
+    title: {
       fontSize: theme.fontSizeHeading5,
       lineHeight: theme.lineHeightHeading5 * theme.fontSizeHeading5,
       ...FontSemiBold,
       color: theme.colorTextLight1,
+      flexShrink: 1,
     },
 
-    siteHost: {
+    tagContainer: {
+      flexDirection: 'row',
+      gap: theme.sizeXXS,
+    },
+
+    subtitle: {
       fontSize: theme.fontSizeSM,
       lineHeight: theme.lineHeightSM * theme.fontSizeSM,
       color: theme.colorTextLight4,

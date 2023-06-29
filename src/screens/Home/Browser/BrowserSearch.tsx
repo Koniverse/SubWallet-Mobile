@@ -1,86 +1,74 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { ListRenderItemInfo, View } from 'react-native';
-import i18n from 'utils/i18n/i18n';
-import { predefinedDApps } from '../../../predefined/dAppSites';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ListRenderItemInfo, SectionList, View } from 'react-native';
+import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
-import { SiteInfo } from 'stores/types';
+import { StoredSiteInfo } from 'stores/types';
 import { getHostName, getValidURL } from 'utils/browser';
-import { createNewTab } from 'stores/updater';
+import { clearHistory, createNewTab } from 'stores/updater';
 import { BrowserItem } from 'components/Browser/BrowserItem';
-import { FlatListScreen } from 'components/FlatListScreen';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/BrowserSearch';
-import { EmptyList } from 'components/EmptyList';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
-import { SectionItem } from 'components/LazySectionList';
-
-function doFilter(searchString: string) {
-  return predefinedDApps.dapps.filter(item => item.name.toLowerCase().includes(searchString.toLowerCase()));
-}
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { Search } from 'components/Search';
+import { ScrollViewStyle } from 'styles/sharedStyles';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { addLazy, removeLazy } from 'utils/lazyUpdate';
+import { BrowserSearchItem } from 'components/Browser/BrowserSearchItem';
+import { Button } from 'components/design-system-ui';
+import i18n from 'utils/i18n/i18n';
 
 type SearchItemType = {
+  logo?: string;
+  tags?: string[];
   isSearch?: boolean;
-} & SiteInfo;
+  subtitle: string;
+} & StoredSiteInfo;
 
-// todo: i18n all text
+type SectionItem = { title: string; data: SearchItemType[]; type: string };
+
+const recommendItems: SearchItemType[] = predefinedDApps.dapps.map(i => ({
+  id: i.id,
+  logo: i.icon,
+  tags: i.categories,
+  url: i.url,
+  name: i.name,
+  subtitle: getHostName(i.url),
+}));
+
 function getFirstSearchItem(searchString: string): SearchItemType {
   const url = getValidURL(searchString);
 
   if (url.startsWith('https://duckduckgo.com')) {
     return {
+      id: 'search',
       url,
       name: `${searchString}`,
+      subtitle: i18n.browser.searchWithDuckduckgo,
       isSearch: true,
     };
   } else {
     return {
+      id: 'search',
       url,
-      name: getHostName(url),
+      name: url,
+      subtitle: getHostName(url),
       isSearch: true,
     };
   }
 }
 
-function searchFunction(items: SearchItemType[], searchString: string) {
-  if (!searchString) {
-    return items;
-  }
-
-  return [getFirstSearchItem(searchString), ...doFilter(searchString)];
-}
-
-const emptyList = () => {
-  return (
-    <EmptyList
-      icon={MagnifyingGlass}
-      title={i18n.emptyScreen.selectorEmptyTitle}
-      message={i18n.emptyScreen.selectorEmptyMessage}
-    />
-  );
-};
-
-const groupBy = (item: SearchItemType) => {
-  if (item.isSearch) {
-    return '1|' + 'Search';
-  }
-
-  return '0|' + 'Recommended';
-};
-
-const sortSection = (a: SectionItem<SearchItemType>, b: SectionItem<SearchItemType>) => {
-  return b.title.localeCompare(a.title);
-};
-
-// todo: check the performance of search
 export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
+  const historyItems = useSelector((state: RootState) => state.browser.history);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
-  const [searchItems] = useState<SearchItemType[]>(predefinedDApps.dapps);
+  const [searchString, setSearchString] = useState<string>('');
+  const [sectionItems, setSectionItems] = useState<SectionItem[]>([]);
   const isOpenNewTab = params && params.isOpenNewTab;
 
   const onPressItem = (item: SearchItemType) => {
@@ -95,7 +83,23 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   };
 
   const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {
-    return <BrowserItem name={item.name} url={item.url} onPress={() => onPressItem(item)} />;
+    if (item.isSearch) {
+      return (
+        <BrowserSearchItem key={item.id} title={item.name} subtitle={item.subtitle} onPress={() => onPressItem(item)} />
+      );
+    }
+
+    return (
+      <BrowserItem
+        key={item.id}
+        logo={item.logo}
+        title={item.name}
+        tags={item.tags}
+        url={item.url}
+        subtitle={item.subtitle}
+        onPress={() => onPressItem(item)}
+      />
+    );
   };
 
   const renderSectionHeader: (info: { section: SectionListData<SearchItemType> }) => React.ReactElement | null =
@@ -103,36 +107,114 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       (info: { section: SectionListData<SearchItemType> }) => {
         return (
           <View style={stylesheet.sectionHeaderContainer}>
-            <Typography.Text size={'lg'} style={stylesheet.sectionHeaderTitle}>
-              {`${info.section.title.split('|')[1]}`}
+            <Typography.Text size={'md'} style={stylesheet.sectionHeaderTitle}>
+              {`${info.section.title}`}
             </Typography.Text>
+
+            {info.section.type === 'history' && (
+              <Button
+                style={stylesheet.clearButton}
+                size={'xs'}
+                type={'ghost'}
+                onPress={clearHistory}
+                externalTextStyle={{ color: theme.colorPrimary }}>
+                Clear history
+              </Button>
+            )}
           </View>
         );
       },
-      [stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderTitle],
+      [stylesheet.clearButton, stylesheet.sectionHeaderContainer, stylesheet.sectionHeaderTitle, theme.colorPrimary],
     );
 
-  const grouping = useMemo(() => {
-    return { groupBy, sortSection, renderSectionHeader };
-  }, [renderSectionHeader]);
+  const getSectionItems = useCallback((): SectionItem[] => {
+    const _historyItems = (
+      !searchString ? historyItems : historyItems.filter(i => i.name.toLowerCase().includes(searchString.toLowerCase()))
+    ).map(i => {
+      const dapp = predefinedDApps.dapps.find(a => i.url.includes(a.id));
 
-  const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);
+      const hostName = getHostName(i.url);
+
+      return {
+        id: i.id,
+        logo: dapp?.icon,
+        tags: dapp?.categories,
+        url: i.url,
+        name: DAppTitleMap[hostName] || i.name,
+        subtitle: hostName,
+      };
+    });
+    const result: SectionItem[] = [];
+
+    if (searchString) {
+      result.push({
+        title: i18n.common.search,
+        data: [getFirstSearchItem(searchString)],
+        type: 'search',
+      });
+    }
+
+    if (_historyItems.length) {
+      result.push({
+        title: i18n.common.history,
+        data: _historyItems,
+        type: 'history',
+      });
+    }
+
+    const _recommendItems = !searchString
+      ? recommendItems
+      : recommendItems.filter(i => i.name.toLowerCase().includes(searchString.toLowerCase()));
+
+    if (_recommendItems.length) {
+      result.push({
+        title: i18n.common.recommend,
+        data: !searchString
+          ? recommendItems
+          : recommendItems.filter(i => i.name.toLowerCase().includes(searchString.toLowerCase())),
+        type: 'recommend',
+      });
+    }
+
+    return result;
+  }, [historyItems, searchString]);
+
+  useEffect(() => {
+    addLazy('searchBrowser', () => {
+      setSectionItems(getSectionItems());
+    });
+
+    return () => {
+      removeLazy('searchBrowser');
+    };
+  }, [getSectionItems]);
 
   return (
-    <FlatListScreen
-      autoFocus
-      showLeftBtn={true}
-      items={searchItems}
-      beforeListItem={BeforeListItem}
-      title={'Search'}
-      placeholder={'Search or enter website'}
-      renderItem={renderItem}
-      searchFunction={searchFunction}
-      renderListEmptyComponent={emptyList}
-      grouping={grouping}
-      isShowMainHeader={false}
-      searchMarginBottom={theme.sizeXS}
-      flatListStyle={stylesheet.flatListStyle}
-    />
+    <ContainerWithSubHeader
+      title={i18n.header.search}
+      showLeftBtn
+      onPressBack={() => {
+        navigation.canGoBack() && navigation.goBack();
+      }}>
+      <View style={stylesheet.listContainer}>
+        <Search
+          style={stylesheet.search}
+          autoFocus={false}
+          placeholder={i18n.placeholder.searchWebsite}
+          onClearSearchString={() => setSearchString('')}
+          onSearch={setSearchString}
+          searchText={searchString}
+        />
+        <SectionList
+          style={{ ...ScrollViewStyle }}
+          keyboardShouldPersistTaps={'handled'}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={stylesheet.listStyle}
+          sections={sectionItems}
+        />
+      </View>
+    </ContainerWithSubHeader>
   );
 };

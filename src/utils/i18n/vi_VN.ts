@@ -174,6 +174,7 @@ export const vi = {
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
     submit: 'Submit',
     accountSelected: 'account selected',
+    recommend: 'Recommend',
   },
   title: {
     exportAccount: 'Export account',
@@ -497,6 +498,7 @@ export const vi = {
     seedPhrase: 'Seed phrase',
     enterPrivateKey: 'Enter private key',
     searchAddressBook: 'Account name',
+    searchWebsite: 'Search or enter website',
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
@@ -682,6 +684,7 @@ export const vi = {
     addressBook: 'Address book',
     addContact: 'Add contact',
     editContact: 'Edit contact',
+    search: 'Search',
   },
   cryptoScreen: {
     receive: 'Receive',
@@ -971,5 +974,8 @@ export const vi = {
     deleteChainSuccessfully: 'Deleted chain successfully',
     addProviderSuccessfully: 'Added a provider successfully',
     addTokenSuccessfully: 'Added token successfully',
+  },
+  browser: {
+    searchWithDuckduckgo: 'Search with Duckduckgo',
   },
 };

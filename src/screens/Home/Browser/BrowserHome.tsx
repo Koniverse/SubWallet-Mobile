@@ -14,6 +14,7 @@ import { DAppInfo, PredefinedDApps } from 'types/browser';
 import { BrowserItem } from 'components/Browser/BrowserItem';
 import { SiteInfo, StoredSiteInfo } from 'stores/types';
 import IconItem from './Shared/IconItem';
+import { getHostName } from 'utils/browser';
 
 interface HeaderProps {
   title: string;
@@ -89,7 +90,8 @@ const BrowserSearch = ({ route }: BrowserSearchProps) => {
     return (
       <BrowserItem
         style={{ width: 303, marginBottom: 16 }}
-        name={item.name}
+        title={item.name}
+        subtitle={getHostName(item.url)}
         url={item.url}
         onPress={() => onPressSectionItem(item)}
       />

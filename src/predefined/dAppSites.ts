@@ -122,38 +122,47 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'DeFi',
       id: 'defi',
+      theme: 'cyan',
     },
     {
       name: 'NFT',
       id: 'nft',
+      theme: 'primary',
     },
     {
       name: 'EVM',
       id: 'evm',
+      theme: 'magenta',
     },
     {
       name: 'Community',
       id: 'community',
+      theme: 'volcano',
     },
     {
       name: 'Utilities',
       id: 'utilities',
+      theme: 'orange',
     },
     {
       name: 'Crowdloans',
       id: 'crowdloans',
+      theme: 'blue',
     },
     {
       name: 'Staking',
       id: 'staking',
+      theme: 'geekblue',
     },
     {
       name: 'Test',
       id: 'test',
+      theme: 'red',
     },
     {
       name: 'Data',
       id: 'data',
+      theme: 'green',
     },
   ],
   dapps: [
@@ -839,7 +848,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Sirius Finance',
       icon: 'https://app.sirius.finance/apple-touch-icon.png',
-      id: 'app.sirius.finance/#/swap',
+      id: 'app.sirius.finance',
       url: 'https://app.sirius.finance/#/swap',
       categories: ['defi'],
     },
