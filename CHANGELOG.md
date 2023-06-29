@@ -1,3 +1,6 @@
+## 1.0.7 (188)
+- Fix some issues related to Address book feature (#846)
+
 ## 1.0.7 (187)
 - Fix some issues related to Address book feature (#779)
 - Fix bugs related to the Manage network feature in Build 185 (#881)
