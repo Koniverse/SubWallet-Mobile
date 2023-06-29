@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
 import { predefinedDApps } from '../../../predefined/dAppSites';
 import { CaretRight } from 'phosphor-react-native';
-import { BrowserSearchProps } from 'routes/index';
 import browserHomeStyle from './styles/BrowserHome';
 import FastImage from 'react-native-fast-image';
 import { Images } from 'assets/index';
@@ -58,7 +57,7 @@ const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Elem
   );
 };
 
-const BrowserSearch = ({ route }: BrowserSearchProps) => {
+const BrowserSearch = () => {
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
@@ -86,7 +85,6 @@ const BrowserSearch = ({ route }: BrowserSearchProps) => {
     return <IconItem data={data} isWithText />;
   };
   const renderSectionItem = (item: DAppInfo) => {
-    console.log('item teim', item);
     return (
       <BrowserItem
         style={{ width: 303, marginBottom: 16 }}
@@ -116,16 +114,20 @@ const BrowserSearch = ({ route }: BrowserSearchProps) => {
             />
           </>
         )}
-        <SectionHeader title="Favorite" onPress={() => console.log('press')} />
-        <FlatList
-          style={{ maxHeight: ITEM_HEIGHT + 11, marginBottom: 11 }}
-          contentContainerStyle={{ alignItems: 'center' }}
-          data={bookmarkItems}
-          renderItem={renderBookmarkItem}
-          ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-          getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
-          horizontal
-        />
+        {bookmarkItems && (
+          <>
+            <SectionHeader title="Favorite" onPress={() => console.log('press')} />
+            <FlatList
+              style={{ maxHeight: ITEM_HEIGHT + 11, marginBottom: 11 }}
+              contentContainerStyle={{ alignItems: 'center' }}
+              data={bookmarkItems}
+              renderItem={renderBookmarkItem}
+              ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+              getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
+              horizontal
+            />
+          </>
+        )}
         <SectionHeader title="Recommended" onPress={() => console.log('press')} />
         <SectionList data={recommendedList} renderItem={renderSectionItem} />
       </ScrollView>
