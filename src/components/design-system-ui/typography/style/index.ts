@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { FontMonoRegular } from 'styles/sharedStyles';
+import { FontMonoRegular, FontSemiBold } from 'styles/sharedStyles';
 
 export interface TypographyStyle {
   monospace: TextStyle;
@@ -9,6 +9,7 @@ export interface TypographyStyle {
   smText: TextStyle;
   mdText: TextStyle;
   lgText: TextStyle;
+  title: TextStyle;
   titleLevel1: TextStyle;
   titleLevel2: TextStyle;
   titleLevel3: TextStyle;
@@ -33,6 +34,7 @@ export default (theme: ThemeTypes) =>
     // todo: current has no lineHeightXL, use lineHeightHeading4 for temporary solution
     lgText: { fontSize: theme.fontSizeXL, lineHeight: theme.lineHeightHeading4 * theme.fontSizeXL },
     // Title styles
+    title: { ...FontSemiBold },
     titleLevel1: { fontSize: theme.fontSizeHeading1, lineHeight: theme.lineHeightHeading1 * theme.fontSizeHeading1 },
     titleLevel2: { fontSize: theme.fontSizeHeading2, lineHeight: theme.lineHeightHeading2 * theme.fontSizeHeading2 },
     titleLevel3: { fontSize: theme.fontSizeHeading3, lineHeight: theme.lineHeightHeading3 * theme.fontSizeHeading3 },
