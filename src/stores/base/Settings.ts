@@ -12,7 +12,7 @@ import { AppSettings, ReduxStatus } from 'stores/types';
 const initialState = {
   // UI settings
   isShowBalance: false,
-  isShowZeroBalance: true,
+  isShowZeroBalance: false,
   accountAllLogo: '',
   theme: ThemeNames.DARK,
   language: 'en',
