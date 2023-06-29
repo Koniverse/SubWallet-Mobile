@@ -19,6 +19,7 @@ export default (theme: ThemeTypes) => {
     siteContentWrapper: { flex: 1 },
 
     siteName: {
+      width: '100%',
       fontSize: theme.fontSizeHeading5,
       lineHeight: theme.lineHeightHeading5 * theme.fontSizeHeading5,
       ...FontSemiBold,
