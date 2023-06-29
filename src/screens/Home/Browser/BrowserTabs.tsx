@@ -12,7 +12,7 @@ import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import createStylesheet from 'screens/Home/Browser/style/BrowserTabs';
+import createStylesheet from './styles/BrowserTabs';
 
 interface Props {
   activeTab: BrowserSlice['activeTab'];
@@ -57,6 +57,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
             </Typography.Text>
           </View>
           <View style={stylesheet.tabItemBody}>
+            <View style={stylesheet.tabItemBodySpaceHolder} />
             {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={stylesheet.tabItemImage} />}
           </View>
           <TouchableOpacity

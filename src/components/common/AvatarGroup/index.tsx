@@ -11,6 +11,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   addresses?: string[];
+  avatarSize?: number;
 }
 
 const sizeAva = {
@@ -18,7 +19,7 @@ const sizeAva = {
   large: 24,
 };
 
-const AvatarGroup = ({ addresses: _addresses }: Props) => {
+const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
   const _style = AvatarGroupStyle();
@@ -31,8 +32,8 @@ const AvatarGroup = ({ addresses: _addresses }: Props) => {
   }, [_addresses, accounts]);
 
   const avatarSize: number = useMemo((): number => {
-    return noAllAccount.length > 2 ? sizeAva.default : sizeAva.large;
-  }, [noAllAccount]);
+    return _avatarSize || (noAllAccount.length > 2 ? sizeAva.default : sizeAva.large);
+  }, [_avatarSize, noAllAccount.length]);
 
   const countMore: number = useMemo((): number => {
     return noAllAccount.length - 3;

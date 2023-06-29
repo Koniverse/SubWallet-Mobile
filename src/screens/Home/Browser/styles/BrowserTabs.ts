@@ -24,12 +24,14 @@ export default (theme: ThemeTypes) =>
       borderTopRightRadius: theme.borderRadiusLG,
     },
     tabItemBody: {
-      height: 140,
       backgroundColor: theme.colorWhite,
       borderBottomLeftRadius: theme.borderRadiusLG,
       borderBottomRightRadius: theme.borderRadiusLG,
       position: 'relative',
       overflow: 'hidden',
+    },
+    tabItemBodySpaceHolder: {
+      paddingTop: '100%',
     },
     tabItemImage: {
       position: 'absolute',

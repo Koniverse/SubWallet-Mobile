@@ -7,14 +7,23 @@ import { SVGImages } from 'assets/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 
+type Props = {
+  onPress?: () => void;
+};
+
 const styles = browserTitleStyle();
-const TabIcon = () => {
+const TabIcon = ({ onPress }: Props) => {
   const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
 
   const onOpenBrowserTabs = useCallback(() => {
+    if (onPress) {
+      onPress();
+      return;
+    }
+
     navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
-  }, [navigation]);
+  }, [navigation, onPress]);
 
   return (
     <TouchableOpacity style={styles.rightHeaderButtonStyle} onPress={onOpenBrowserTabs}>

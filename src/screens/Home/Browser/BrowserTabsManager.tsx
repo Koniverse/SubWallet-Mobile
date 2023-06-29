@@ -330,7 +330,6 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
             <BrowserTab
               ref={isTabActive ? currentActiveTabRef : undefined}
               tabId={t.id}
-              tabsNumber={tabs.length}
               onOpenBrowserTabs={onOpenBrowserTabs}
               connectionTrigger={ConnectionTrigger}
             />

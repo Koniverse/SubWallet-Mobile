@@ -12,7 +12,7 @@ import { createNewTab } from 'stores/updater';
 import { BrowserItem } from 'components/Browser/BrowserItem';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import createStylesheet from './style/BrowserSearch';
+import createStylesheet from './styles/BrowserSearch';
 import { EmptyList } from 'components/EmptyList';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';

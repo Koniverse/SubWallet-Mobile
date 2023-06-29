@@ -10,16 +10,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import {
-  Alert,
-  Linking,
-  NativeSyntheticEvent,
-  Platform,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, Linking, NativeSyntheticEvent, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -57,7 +48,8 @@ import { BridgeScript, DAppScript, NovaScript } from 'screens/Home/Browser/Brows
 import { NoInternetScreen } from 'components/NoInternetScreen';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import createStylesheet from 'screens/Home/Browser/style/BrowserTab';
+import createStylesheet from './styles/BrowserTab';
+import TabIcon from 'screens/Home/Browser/Shared/TabIcon';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -65,7 +57,6 @@ export interface BrowserTabRef {
 
 type Props = {
   tabId: string;
-  tabsNumber: number;
   onOpenBrowserTabs: () => void;
   connectionTrigger: React.ReactNode;
 };
@@ -130,10 +121,7 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
-const Component = (
-  { tabId, tabsNumber, onOpenBrowserTabs, connectionTrigger }: Props,
-  ref: ForwardedRef<BrowserTabRef>,
-) => {
+const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: ForwardedRef<BrowserTabRef>) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
@@ -362,14 +350,7 @@ const Component = (
   const renderBrowserTabBar = (button: BrowserActionButtonType) => {
     if (!button.icon) {
       if (button.key === 'tabs') {
-        // todo: will be remove
-        return (
-          <TouchableOpacity key={button.key} onPress={button.onPress} style={stylesheet.buttonTabs}>
-            <View style={stylesheet.buttonTabsIcon}>
-              <Text style={stylesheet.buttonTabsText}>{tabsNumber}</Text>
-            </View>
-          </TouchableOpacity>
-        );
+        return <TabIcon onPress={button.onPress} />;
       }
 
       return null;
@@ -432,9 +413,7 @@ const Component = (
   return (
     <ScreenContainer backgroundColor={theme.colorBgDefault}>
       <View style={stylesheet.header}>
-        <View style={stylesheet.avatarWrapper}>
-          <AccountSettingButton navigation={navigation} />
-        </View>
+        <AccountSettingButton navigation={navigation} style={stylesheet.avatarSelector} />
 
         <View style={stylesheet.siteInfoWrapper}>
           <TouchableOpacity
@@ -510,7 +489,7 @@ const Component = (
         )}
       </View>
 
-      <View style={stylesheet.footer}>{bottomButtonList.map(button => renderBrowserTabBar(button))}</View>
+      <View style={stylesheet.footer}>{bottomButtonList.map(renderBrowserTabBar)}</View>
 
       <SafeAreaView style={stylesheet.footerAfter} />
 

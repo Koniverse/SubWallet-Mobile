@@ -12,7 +12,7 @@ export default (theme: ThemeTypes) =>
       alignItems: 'center',
       paddingBottom: theme.padding,
     },
-    avatarWrapper: {
+    avatarSelector: {
       paddingLeft: theme.padding,
       paddingRight: theme.paddingSM,
     },
