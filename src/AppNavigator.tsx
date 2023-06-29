@@ -64,6 +64,7 @@ import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navig
 import { Settings } from 'screens/Settings';
 import { WrapperParamList } from 'routes/wrapper';
 import { ManageAddressBook } from 'screens/Settings/AddressBook';
+import { BuyToken } from 'screens/Home/Crypto/BuyToken';
 
 interface Props {
   isAppReady: boolean;
@@ -111,6 +112,7 @@ const DrawerScreen = () => {
         swipeEnabled: false,
       }}>
       <Drawer.Screen name="TransactionAction" component={TransactionScreen} />
+      <Drawer.Screen name="BuyToken" component={BuyToken} />
     </Drawer.Navigator>
   );
 };
@@ -207,9 +209,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                 <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-              </Stack.Group>
-              <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
                 <Stack.Screen name="Drawer" component={DrawerScreen} />
+              </Stack.Group>
+              <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="History" component={HistoryScreen} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen

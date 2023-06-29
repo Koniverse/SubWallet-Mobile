@@ -25,8 +25,6 @@ import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
-import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
-import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { useToast } from 'react-native-toast-notifications';
 import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
 
@@ -47,7 +45,6 @@ export const TokenGroups = () => {
   const { sortedTokenGroups, tokenGroupMap, sortedTokenSlugs } = useTokenGroup(chainsByAccountType);
   const { tokenGroupBalanceMap, totalBalanceInfo, tokenBalanceMap } = useAccountBalance(tokenGroupMap);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
-  const [accessBy, setAccessBy] = useState<'buy' | 'receive' | undefined>(undefined);
   const isTotalBalanceDecrease = totalBalanceInfo.change.status === 'decrease';
   const [isCustomizationModalVisible, setCustomizationModalVisible] = useState<boolean>(false);
   const [isTokenSearchModalVisible, setTokenSearchModalVisible] = useState<boolean>(false);
@@ -67,22 +64,6 @@ export const TokenGroups = () => {
     isQrModalVisible,
     tokenSelectorItems,
   } = useReceiveQR();
-
-  const {
-    isBuyTokenSelectorModalVisible,
-    isBuyAccountSelectorModalVisible,
-    isBuyServiceSelectorModalVisible,
-    onOpenBuyToken,
-    openSelectBuyAccount,
-    openSelectBuyToken,
-    onCloseSelectBuyAccount,
-    onCloseSelectBuyToken,
-    onCloseSelectBuyService,
-    selectedBuyAccount,
-    selectedBuyToken,
-    buyAccountSelectorItems,
-    buyTokenSelectorItems,
-  } = useBuyToken();
 
   const toast = useToast();
 
@@ -174,13 +155,7 @@ export const TokenGroups = () => {
     );
   }, [onOpenHistoryScreen, onOpenCustomizationModal, onOpenTokenSearchModal, theme]);
 
-  const _onOpenBuyTokens = useCallback(() => {
-    setAccessBy('buy');
-    onOpenBuyToken();
-  }, [onOpenBuyToken]);
-
   const _onOpenReceive = useCallback(() => {
-    setAccessBy('receive');
     onOpenReceive();
   }, [onOpenReceive]);
 
@@ -227,12 +202,10 @@ export const TokenGroups = () => {
         totalChangeValue={totalBalanceInfo.change.value}
         totalValue={totalBalanceInfo.convertedValue}
         isPriceDecrease={isTotalBalanceDecrease}
-        onOpenBuyTokens={_onOpenBuyTokens}
         onOpenSendFund={_onOpenSendFund}
       />
     );
   }, [
-    _onOpenBuyTokens,
     _onOpenReceive,
     _onOpenSendFund,
     isTotalBalanceDecrease,
@@ -268,33 +241,19 @@ export const TokenGroups = () => {
           layoutFooter={listFooterNode}
         />
 
-        {accessBy && (
-          <AccountSelector
-            modalVisible={accessBy !== 'buy' ? isAccountSelectorModalVisible : isBuyAccountSelectorModalVisible}
-            onCancel={accessBy !== 'buy' ? onCloseSelectAccount : onCloseSelectBuyAccount}
-            items={accessBy !== 'buy' ? accountSelectorItems : buyAccountSelectorItems}
-            onSelectItem={accessBy !== 'buy' ? openSelectAccount : openSelectBuyAccount}
-          />
-        )}
+        <AccountSelector
+          modalVisible={isAccountSelectorModalVisible}
+          onCancel={onCloseSelectAccount}
+          items={accountSelectorItems}
+          onSelectItem={openSelectAccount}
+        />
 
-        {accessBy && (
-          <TokenSelector
-            modalVisible={accessBy !== 'buy' ? isTokenSelectorModalVisible : isBuyTokenSelectorModalVisible}
-            items={accessBy !== 'buy' ? tokenSelectorItems : buyTokenSelectorItems}
-            onSelectItem={accessBy !== 'buy' ? openSelectToken : openSelectBuyToken}
-            onCancel={accessBy !== 'buy' ? onCloseSelectToken : onCloseSelectBuyToken}
-          />
-        )}
-
-        {selectedBuyAccount && selectedBuyToken && (
-          <ServiceModal
-            modalVisible={isBuyServiceSelectorModalVisible}
-            onChangeModalVisible={onCloseSelectBuyService}
-            onPressBack={onCloseSelectBuyService}
-            token={selectedBuyToken}
-            address={selectedBuyAccount}
-          />
-        )}
+        <TokenSelector
+          modalVisible={isTokenSelectorModalVisible}
+          items={tokenSelectorItems}
+          onSelectItem={openSelectToken}
+          onCancel={onCloseSelectToken}
+        />
 
         <ReceiveModal
           modalVisible={isQrModalVisible}

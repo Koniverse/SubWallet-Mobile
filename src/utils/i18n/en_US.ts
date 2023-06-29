@@ -496,6 +496,7 @@ export const en = {
     seedPhrase: 'Seed phrase',
     enterPrivateKey: 'Enter private key',
     searchAddressBook: 'Account name',
+    selectService: 'Select service',
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
@@ -544,6 +545,7 @@ export const en = {
     requestCreateMasterPassword:
       'Your master password is the password that allows access to multiple accounts. Once a master password is confirmed, you will not need to manually type your password with every transaction.',
     transactionDoneMessage: 'Your request has been sent. You can track its progress on the Transaction History page.',
+    buyMessage: 'You will be taken to independent provider to complete this transaction',
     changeMasterPasswordMessage1: 'To create a new password, you must correctly enter your current password.',
     changeMasterPasswordMessage2: 'Use this password to unlock your account.',
   },
