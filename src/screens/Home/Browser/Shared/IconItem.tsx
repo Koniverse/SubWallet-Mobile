@@ -10,16 +10,17 @@ import iconItemStyle from './styles/IconItem';
 interface IconItemProps {
   data: DAppInfo | undefined;
   isWithText?: boolean;
+  onPress?: () => void;
 }
 const styles = iconItemStyle();
-const IconItem: React.FC<IconItemProps> = ({ data, isWithText }) => {
+const IconItem: React.FC<IconItemProps> = ({ data, isWithText, onPress }) => {
   const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
 
   if (data) {
     const iconFragment = data.icon.split('.');
     if (iconFragment[iconFragment.length - 1].toLowerCase() === 'svg') {
       return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress} disabled={!onPress}>
           <Squircle
             squircleStyle={styles.absolute}
             customStyle={styles.squircleWrapper}
@@ -38,7 +39,7 @@ const IconItem: React.FC<IconItemProps> = ({ data, isWithText }) => {
   }
 
   return (
-    <TouchableOpacity style={styles.imageWrapper}>
+    <TouchableOpacity style={styles.imageWrapper} onPress={onPress} disabled={!onPress}>
       <Image
         src={{ uri: data?.icon || assetLogoMap.default }}
         style={styles.image}

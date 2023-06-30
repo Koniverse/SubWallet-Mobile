@@ -51,6 +51,7 @@ export type RootStackParamList = {
   ExportJson: { address: string };
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
+  BrowserListByTabview: { type: string };
   ConfirmationPopup: undefined;
   Confirmations: undefined;
   FavouritesGroupDetail: undefined;
@@ -102,6 +103,7 @@ export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'Rem
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
+export type BrowserListByTabviewProps = NativeStackScreenProps<RootStackParamList, 'BrowserListByTabview'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;

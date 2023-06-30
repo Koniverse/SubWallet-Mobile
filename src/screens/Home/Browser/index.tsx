@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import React, { useEffect, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { predefinedDApps } from '../../../predefined/dAppSites';
@@ -8,11 +6,16 @@ import { PredefinedDApps } from 'types/browser';
 import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
 import BrowserListByCategory from './BrowserListByCategory';
-// import { TabView, TabBar, SceneRendererProps } from 'react-native-tab-view';
+import { Search } from 'components/Search';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Dimensions, Text, TouchableOpacity } from 'react-native';
+import { Icon } from 'components/design-system-ui';
+import { MagnifyingGlass } from 'phosphor-react-native';
+import { useNavigationState } from '@react-navigation/native';
+import browserStyles from './styles';
 
 const Tab = createMaterialTopTabNavigator();
-const tabScreenOption = {
+const defaultTabScreenOption = {
   tabBarActiveTintColor: 'white',
   tabBarLabelStyle: { fontSize: 12, textTransform: 'capitalize' },
   tabBarStyle: { backgroundColor: 'transparent' },
@@ -21,31 +24,59 @@ const tabScreenOption = {
   tabBarScrollEnabled: true,
   lazy: true,
 };
-export const BrowserScreen = () => {
+const initialLayout = {
+  width: Dimensions.get('window').width,
+};
+const styles = browserStyles();
+export const BrowserScreen = ({ navigation }) => {
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
-  const [tabviewIndex, ontabviewIndexChange] = useState<number>(0);
-  // const historyItems = useSelector((state: RootState) => state.browser.history);
-  // const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const navigation = useNavigation<RootNavigationProps>();
+  const [searchString, setSearchString] = useState<string>('');
   const categoryTabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
   const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
+  const navigationState = useNavigationState(state => state);
+  const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
+  const tabscreenOption = { ...defaultTabScreenOption, swipeEnabled: !!currentTabIndex };
+  const TabComponent = props => <BrowserListByCategory searchString={searchString} {...props} />;
 
   return (
     <ScreenContainer backgroundColor={ColorMap.dark1}>
       <>
         <BrowserHeader />
+        {/* TODO: check when change tab show search button or input */}
+        {currentTabIndex === 0 ? (
+          <TouchableOpacity style={styles.fakeSearchInput} onPress={() => navigation.navigate('BrowserSearch')}>
+            <Icon phosphorIcon={MagnifyingGlass} />
+            <Text style={styles.fakeSearchInputText}>Search or enter website</Text>
+          </TouchableOpacity>
+        ) : (
+          <Search
+            autoFocus={false}
+            placeholder={'Search or enter website'}
+            onClearSearchString={() => setSearchString('')}
+            onSearch={setSearchString}
+            searchText={searchString}
+            style={styles.searchInputStyle}
+          />
+        )}
 
-        <Tab.Navigator overScrollMode={'always'} initialRouteName="TabBrowserHome0" screenOptions={tabScreenOption}>
+        <Tab.Navigator initialLayout={initialLayout} initialRouteName="TabBrowserHome0" screenOptions={tabscreenOption}>
           {allTabRoutes.map((item, index) => {
             if (index === 0) {
-              return <Tab.Screen name="TabBrowserHome0" component={BrowserHome} options={{ tabBarLabel: 'All' }} />;
+              return (
+                <Tab.Screen
+                  key={'TabBrowserHome0'}
+                  name="TabBrowserHome0"
+                  component={BrowserHome}
+                  options={{ tabBarLabel: 'All' }}
+                />
+              );
             }
             return (
               <Tab.Screen
+                key={item.key}
                 name={item.key}
-                component={BrowserListByCategory}
+                component={TabComponent}
                 options={{ tabBarLabel: item.title }}
-                categoryID={item.key}
               />
             );
           })}

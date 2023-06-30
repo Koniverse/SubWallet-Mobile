@@ -16,7 +16,7 @@ export interface BrowserStyle {
 export default () => {
   // const theme = useSubWalletTheme().swThemes;
   return StyleSheet.create<BrowserStyle>({
-    container: { flex: 1, padding: 16 },
+    container: { flex: 1, paddingTop: 16, paddingHorizontal: 16 },
     banner: { width: '100%', height: 120, borderRadius: 12, marginBottom: 6 },
     sectionContainer: {
       flexDirection: 'row',

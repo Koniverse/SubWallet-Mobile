@@ -14,6 +14,8 @@ import { BrowserItem } from 'components/Browser/BrowserItem';
 import { SiteInfo, StoredSiteInfo } from 'stores/types';
 import IconItem from './Shared/IconItem';
 import { getHostName } from 'utils/browser';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface HeaderProps {
   title: string;
@@ -46,24 +48,26 @@ const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element =
   );
 };
 
-// TODO: ADD LW's item
 const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Element => {
   return (
     <ScrollView horizontal>
       {data.map(item => (
-        <View style={{ marginRight: 12 }}>{item.data.map(item2 => renderItem(item2))}</View>
+        <View key={Math.random()} style={{ marginRight: 12 }}>
+          {item.data.map(item2 => renderItem(item2))}
+        </View>
       ))}
     </ScrollView>
   );
 };
 
-const BrowserSearch = () => {
+const BrowserHome = () => {
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
+  const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const recommendedList = useMemo((): RecommendedListType[] => {
     const sectionData = [];
-    for (let i = 0; i < dApps.dapps.length; i += 4) {
+    for (let i = 0; i < 16; i += 4) {
       const section = {
         data: dApps.dapps.slice(i, i + 4),
       };
@@ -73,20 +77,32 @@ const BrowserSearch = () => {
   }, [dApps.dapps]);
 
   const onPressSectionItem = (item: SearchItemType) => {
-    console.log('a', item);
+    navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
   };
 
   const renderRecentItem: ListRenderItem<StoredSiteInfo> = item => {
     const data = dApps.dapps.find(dAppItem => item.item.url.includes(dAppItem.id));
-    return <IconItem data={data} />;
+    return (
+      <IconItem
+        data={data}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: data?.url, name: data?.name })}
+      />
+    );
   };
   const renderBookmarkItem: ListRenderItem<StoredSiteInfo> = item => {
     const data = dApps.dapps.find(dAppItem => item.item.url.includes(dAppItem.id));
-    return <IconItem data={data} isWithText />;
+    return (
+      <IconItem
+        data={data}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: data?.url, name: data?.name })}
+        isWithText
+      />
+    );
   };
   const renderSectionItem = (item: DAppInfo) => {
     return (
       <BrowserItem
+        key={item.id}
         style={{ width: 303, marginBottom: 16 }}
         title={item.name}
         subtitle={getHostName(item.url)}
@@ -102,7 +118,7 @@ const BrowserSearch = () => {
       <ScrollView>
         {historyItems && historyItems.length > 0 && (
           <>
-            <SectionHeader title="Recent" onPress={() => console.log('press')} />
+            <SectionHeader title="Recent" onPress={() => navigation.navigate('BrowserSearch')} />
             <FlatList
               style={{ maxHeight: ICON_ITEM_HEIGHT + 11, marginBottom: 11 }}
               contentContainerStyle={{ alignItems: 'center' }}
@@ -116,7 +132,10 @@ const BrowserSearch = () => {
         )}
         {bookmarkItems && (
           <>
-            <SectionHeader title="Favorite" onPress={() => console.log('press')} />
+            <SectionHeader
+              title="Favorite"
+              onPress={() => navigation.navigate('BrowserListByTabview', { type: 'BOOKMARK' })}
+            />
             <FlatList
               style={{ maxHeight: ITEM_HEIGHT + 11, marginBottom: 11 }}
               contentContainerStyle={{ alignItems: 'center' }}
@@ -128,10 +147,13 @@ const BrowserSearch = () => {
             />
           </>
         )}
-        <SectionHeader title="Recommended" onPress={() => console.log('press')} />
+        <SectionHeader
+          title="Recommended"
+          onPress={() => navigation.navigate('BrowserListByTabview', { type: 'RECOMMENDED' })}
+        />
         <SectionList data={recommendedList} renderItem={renderSectionItem} />
       </ScrollView>
     </View>
   );
 };
-export default BrowserSearch;
+export default BrowserHome;

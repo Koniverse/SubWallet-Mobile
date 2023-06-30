@@ -14,6 +14,7 @@ import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
 import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
+import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/Account/CreateAccount';
@@ -204,6 +205,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
+                <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
                 <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
