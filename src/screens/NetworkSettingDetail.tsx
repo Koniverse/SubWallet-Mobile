@@ -290,7 +290,7 @@ export const NetworkSettingDetail = ({
       onPressRightIcon={onPressDelete}
       title={i18n.header.networkDetails}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps={'handled'}>
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
             <RpcSelectField
               showRightIcon

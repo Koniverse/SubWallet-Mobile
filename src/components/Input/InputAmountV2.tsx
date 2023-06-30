@@ -5,6 +5,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './style/InputAmount';
 import Input, { InputProps } from 'components/design-system-ui/input';
 import i18n from 'utils/i18n/i18n';
+import { setAdjustResize } from 'rn-android-keyboard-adjust';
 
 export const InvalidAmountValue = '__NAN__';
 export const isInvalidAmountValue = (value: string) => {
@@ -69,6 +70,9 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     onChangeValue(maxValue);
     onSetMax?.(true);
   }, [decimals, maxValue, onChangeValue, onSetMax]);
+
+  // for Android keyboard
+  useEffect(() => setAdjustResize(), []);
 
   const getMaxLengthText = useCallback(
     (_value: string) => {

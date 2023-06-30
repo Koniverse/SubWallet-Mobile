@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
@@ -11,6 +11,8 @@ import { ColorMap } from 'styles/color';
 import { useRefresh } from 'hooks/useRefresh';
 import { restartSubscriptionServices } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { setAdjustPan } from 'rn-android-keyboard-adjust';
+import { useIsFocused } from '@react-navigation/native';
 
 const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
   return <CrowdloanItem item={item} />;
@@ -44,6 +46,13 @@ export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   const [isRefresh, refresh] = useRefresh();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      setAdjustPan();
+    }
+  }, [isFocused]);
 
   const doFilterOptions = useCallback((itemList: CrowdloanItemType[], searchKeyword: string) => {
     const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
