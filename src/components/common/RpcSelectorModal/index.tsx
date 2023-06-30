@@ -27,12 +27,14 @@ interface ProviderItemType {
 
 const defaultRenderListEmptyComponent = () => {
   return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.errorMessage.noProviderAvailable}
-      isDanger={false}
-    />
+    <View style={{ flex: 1 }}>
+      <Warning
+        style={{ marginHorizontal: 16 }}
+        title={i18n.warningTitle.warning}
+        message={i18n.errorMessage.noProviderAvailable}
+        isDanger={false}
+      />
+    </View>
   );
 };
 
@@ -96,6 +98,7 @@ export const RpcSelectorModal = ({
         onPressBack={onPressBack}
         renderListEmptyComponent={renderEmptyList ? renderEmptyList : defaultRenderListEmptyComponent}
         isShowFilterBtn={false}
+        androidKeyboardVerticalOffset={24}
         afterListItem={
           <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
             <Button

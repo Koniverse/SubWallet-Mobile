@@ -61,6 +61,7 @@ interface Props<T> {
   needGapWithStatusBar?: boolean;
   isShowMainHeader?: boolean;
   isShowPlaceHolder?: boolean;
+  androidKeyboardVerticalOffset?: number;
 }
 
 export function FlatListScreen<T>({
@@ -96,6 +97,7 @@ export function FlatListScreen<T>({
   needGapWithStatusBar,
   isShowMainHeader,
   isShowPlaceHolder,
+  androidKeyboardVerticalOffset,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -213,6 +215,7 @@ export function FlatListScreen<T>({
       rightIconColor={rightIconOption?.color}
       isShowPlaceHolder={isShowPlaceHolder}
       isShowMainHeader={isShowMainHeader}
+      androidKeyboardVerticalOffset={androidKeyboardVerticalOffset}
       needGapWithStatusBar={needGapWithStatusBar}>
       {renderContent()}
     </ContainerWithSubHeader>

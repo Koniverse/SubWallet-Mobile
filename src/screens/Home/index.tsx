@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
-import { Linking, Platform, TouchableOpacity, View } from 'react-native';
+import { Linking, TouchableOpacity, View } from 'react-native';
 import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
 import { FontMedium } from 'styles/sharedStyles';
@@ -94,7 +94,6 @@ const MainScreen = () => {
         name={'NFTs'}
         component={NFTStackScreen}
         options={{
-          tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {
             return <Aperture size={24} color={color} weight={'fill'} />;
           },
@@ -104,7 +103,6 @@ const MainScreen = () => {
         name={'Crowdloans'}
         component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
         options={{
-          tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {
             return <Rocket size={24} color={color} weight={'fill'} />;
           },
@@ -114,7 +112,6 @@ const MainScreen = () => {
         name={'Staking'}
         component={StakingScreen}
         options={{
-          tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: ({ color }) => {
             return <Database size={24} color={color} weight={'fill'} />;
           },
