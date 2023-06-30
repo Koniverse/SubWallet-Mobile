@@ -1,5 +1,10 @@
+## 1.0.7 (189)
+- Consider handling in case validate amount (#621)
+- UI bug in case search haven't data (#785)
+- Continue Update "show zero balance" default value (#846)
+
 ## 1.0.7 (188)
-- Fix some issues related to Address book feature (#846)
+- Update "show zero balance" default value (#846)
 
 ## 1.0.7 (187)
 - Fix some issues related to Address book feature (#779)
