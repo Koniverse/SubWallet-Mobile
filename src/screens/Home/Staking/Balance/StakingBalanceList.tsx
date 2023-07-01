@@ -1,8 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { StakingDataType } from 'hooks/types';
 import { Plus, Trophy } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
@@ -17,6 +17,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootNavigationProps } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
+import { setAdjustPan } from 'rn-android-keyboard-adjust';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -86,6 +87,12 @@ const StakingBalanceList = () => {
       setDetailModalVisible(true);
     };
   }, []);
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      setAdjustPan();
+    }
+  }, [isFocused]);
 
   const renderItem = useCallback(
     ({ item: stakingData }: ListRenderItemInfo<StakingDataType>) => {
