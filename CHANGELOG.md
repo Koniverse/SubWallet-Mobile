@@ -1,3 +1,6 @@
+## 1.0.7 (190)
+- Preview mobile browser
+
 ## 1.0.7 (189)
 - Consider handling in case validate amount (#621)
 - UI bug in case search haven't data (#785)
