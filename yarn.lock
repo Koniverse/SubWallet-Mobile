@@ -16469,6 +16469,11 @@ rlp@^2.0.0, rlp@^2.2.3, rlp@^2.2.4:
   dependencies:
     bn.js "^5.2.0"
 
+rn-android-keyboard-adjust@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/rn-android-keyboard-adjust/-/rn-android-keyboard-adjust-2.1.2.tgz#f2b792628700dcb026215420192317ce43fd954f"
+  integrity sha512-pUYiMT7aucw5YnV4geGdalyl6o6rEwRYhDnw2oPQwDym1BZHtmKsxFLupky1Kj2ZNkNKadpEyoyHOElLo+f3sA==
+
 rn-fetch-blob@0.13.0-beta.2:
   version "0.13.0-beta.2"
   resolved "https://registry.yarnpkg.com/rn-fetch-blob/-/rn-fetch-blob-0.13.0-beta.2.tgz#f8f38e07b36c898b20a338cc51365f6d310c41bb"
