@@ -9,7 +9,7 @@ export interface BrowserStyle {
 export default () => {
   // const theme = useSubWalletTheme().swThemes;
   return StyleSheet.create<BrowserStyle>({
-    container: { flex: 1, padding: 16 },
+    container: { flex: 1 },
     listItem: { marginBottom: 16 },
     itemSeparator: { width: 10 },
   });

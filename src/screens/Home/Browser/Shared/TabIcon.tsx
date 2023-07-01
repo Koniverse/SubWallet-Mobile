@@ -1,5 +1,5 @@
 import React, { Suspense, useCallback } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import browserTitleStyle from './styles/TabIcon';
@@ -8,11 +8,12 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 
 type Props = {
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 };
 
 const styles = browserTitleStyle();
-const TabIcon = ({ onPress }: Props) => {
+const TabIcon = ({ onPress, style }: Props) => {
   const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
   const navigation = useNavigation<RootNavigationProps>();
 
@@ -26,7 +27,7 @@ const TabIcon = ({ onPress }: Props) => {
   }, [navigation, onPress]);
 
   return (
-    <TouchableOpacity style={styles.rightHeaderButtonStyle} onPress={onOpenBrowserTabs}>
+    <TouchableOpacity style={[styles.rightHeaderButtonStyle, style]} onPress={onOpenBrowserTabs}>
       <View style={styles.rightHeaderButtonTextOutlineStyle}>
         <View style={styles.imageSvgWrapper}>
           <Suspense>

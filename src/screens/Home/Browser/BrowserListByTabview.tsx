@@ -1,73 +1,96 @@
 import React, { useState } from 'react';
-import { ScreenContainer } from 'components/ScreenContainer';
-import { ColorMap } from 'styles/color';
 import { predefinedDApps } from '../../../predefined/dAppSites';
 import { PredefinedDApps } from 'types/browser';
 import BrowserListByCategory from './BrowserListByCategory';
-import { Search } from 'components/Search';
 import { BrowserListByTabviewProps } from 'routes/index';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import BrowserHeader from './Shared/BrowserHeader';
-import { Icon } from 'components/design-system-ui';
-import { CaretLeft } from 'phosphor-react-native';
-import { Text, TouchableOpacity } from 'react-native';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { View } from 'react-native';
+import { Typography } from 'components/design-system-ui';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 const Tab = createMaterialTopTabNavigator();
-const navigationType = {
-  BOOKMARK: 'Favorite',
+const navigationType: Record<string, string> = {
+  BOOKMARK: 'Favorites',
   RECOMMENDED: 'Recommended',
 };
-const tabScreenOption = {
-  tabBarActiveTintColor: 'white',
-  tabBarLabelStyle: { fontSize: 12, textTransform: 'capitalize' },
-  tabBarStyle: { backgroundColor: 'transparent' },
-  tabBarItemStyle: { width: 'auto', paddingBottom: 0 },
-  tabBarIndicatorStyle: { backgroundColor: 'blue', width: 0.77, left: 0 },
-  tabBarScrollEnabled: true,
-  lazy: true,
-};
+
 export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabviewProps) => {
+  const theme = useSubWalletTheme().swThemes;
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
-  const [searchString, setSearchString] = useState<string>('');
+  const [searchString] = useState<string>('');
   const categoryTabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
   const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
+  // @ts-ignore
   const TabComponent = restProps => (
     <BrowserListByCategory searchString={searchString} navigationType={route.params.type} {...restProps} />
   );
 
+  const title = navigationType[route.params.type];
+
   return (
-    <ScreenContainer backgroundColor={ColorMap.dark1}>
+    <ContainerWithSubHeader
+      title={title}
+      showLeftBtn
+      onPressBack={() => {
+        navigation.canGoBack() && navigation.goBack();
+      }}>
       <>
-        <BrowserHeader />
-        <Search
-          autoFocus={false}
-          placeholder={'Search or enter website'}
-          onClearSearchString={() => setSearchString('')}
-          onSearch={setSearchString}
-          searchText={searchString}
-          style={{ marginTop: 16, marginHorizontal: 16 }}
-        />
+        <FakeSearchInput style={{ margin: theme.margin }} onPress={() => navigation.navigate('BrowserSearch')} />
 
-        <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 10, paddingHorizontal: 10 }}
-          onPress={() => navigation.goBack()}>
-          <Icon phosphorIcon={CaretLeft} customSize={18} />
-          <Text style={{ color: 'white' }}>{navigationType[route.params.type]}</Text>
-        </TouchableOpacity>
-
-        <Tab.Navigator overScrollMode={'always'} initialRouteName="TabBrowserHome0" screenOptions={tabScreenOption}>
+        <Tab.Navigator
+          overScrollMode={'always'}
+          initialRouteName="TabBrowserHome0"
+          sceneContainerStyle={{ backgroundColor: 'transparent' }}
+          screenOptions={() => ({
+            tabBarStyle: { height: 28, backgroundColor: 'transparent' },
+            tabBarItemStyle: {
+              width: 'auto',
+              paddingLeft: 0,
+              paddingRight: 0,
+            },
+            tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
+            tabBarScrollEnabled: true,
+            lazy: true,
+            tabBarShowLabel: false,
+            tabBarIndicatorStyle: { backgroundColor: 'transparent' },
+          })}
+          style={{ backgroundColor: 'transparent' }}>
           {allTabRoutes.map(item => {
             return (
               <Tab.Screen
                 key={item.key}
                 name={item.key}
                 component={TabComponent}
-                options={{ tabBarLabel: item.title }}
+                options={{
+                  tabBarLabel: item.title,
+                  tabBarIcon: ({ focused }) => (
+                    <View
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingLeft: item.title.toLocaleLowerCase() === 'all' ? 16 : undefined,
+                      }}>
+                      <Typography.Text
+                        style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
+                        {item.title}
+                      </Typography.Text>
+                      <View
+                        style={{
+                          height: 2,
+                          marginTop: theme.marginXXS,
+                          backgroundColor: focused ? theme.colorPrimary : 'transparent',
+                        }}
+                      />
+                    </View>
+                  ),
+                }}
               />
             );
           })}
         </Tab.Navigator>
       </>
-    </ScreenContainer>
+    </ContainerWithSubHeader>
   );
 };

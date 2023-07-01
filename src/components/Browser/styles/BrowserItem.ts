@@ -8,7 +8,7 @@ export default (theme: ThemeTypes) => {
 
     contentWrapper: { flexDirection: 'row', flex: 1, overflow: 'hidden' },
 
-    logoWrapper: { marginRight: 12 },
+    logoWrapper: { marginRight: 12, width: 44 },
 
     logo: {
       width: 44,
@@ -16,7 +16,7 @@ export default (theme: ThemeTypes) => {
       backgroundColor: 'transparent',
     },
 
-    textContentWrapper: { flex: 1 },
+    textContentWrapper: { flex: 1, marginRight: theme.marginXS },
 
     textContentLine1: {
       flexDirection: 'row',

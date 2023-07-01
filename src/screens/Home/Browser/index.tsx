@@ -1,65 +1,63 @@
 import React, { useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { ColorMap } from 'styles/color';
 import { predefinedDApps } from '../../../predefined/dAppSites';
 import { PredefinedDApps } from 'types/browser';
 import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
 import BrowserListByCategory from './BrowserListByCategory';
-import { Search } from 'components/Search';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Dimensions, Text, TouchableOpacity } from 'react-native';
-import { Icon } from 'components/design-system-ui';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { Dimensions, View } from 'react-native';
 import { useNavigationState } from '@react-navigation/native';
-import browserStyles from './styles';
+import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import createStylesheet from './styles';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { Typography } from 'components/design-system-ui';
 
 const Tab = createMaterialTopTabNavigator();
-const defaultTabScreenOption = {
-  tabBarActiveTintColor: 'white',
-  tabBarLabelStyle: { fontSize: 12, textTransform: 'capitalize' },
-  tabBarStyle: { backgroundColor: 'transparent' },
-  tabBarItemStyle: { width: 'auto', paddingBottom: 0 },
-  tabBarIndicatorStyle: { backgroundColor: 'blue', width: 0.77, left: 0 },
-  tabBarScrollEnabled: true,
-  lazy: true,
-};
 const initialLayout = {
   width: Dimensions.get('window').width,
 };
-const styles = browserStyles();
+
+// @ts-ignore
 export const BrowserScreen = ({ navigation }) => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
-  const [searchString, setSearchString] = useState<string>('');
+  const [searchString] = useState<string>('');
   const categoryTabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
   const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
-  const tabscreenOption = { ...defaultTabScreenOption, swipeEnabled: !!currentTabIndex };
+
+  // @ts-ignore
   const TabComponent = props => <BrowserListByCategory searchString={searchString} {...props} />;
 
   return (
-    <ScreenContainer backgroundColor={ColorMap.dark1}>
+    <ScreenContainer backgroundColor={theme.colorBgDefault}>
       <>
         <BrowserHeader />
-        {/* TODO: check when change tab show search button or input */}
-        {currentTabIndex === 0 ? (
-          <TouchableOpacity style={styles.fakeSearchInput} onPress={() => navigation.navigate('BrowserSearch')}>
-            <Icon phosphorIcon={MagnifyingGlass} />
-            <Text style={styles.fakeSearchInputText}>Search or enter website</Text>
-          </TouchableOpacity>
-        ) : (
-          <Search
-            autoFocus={false}
-            placeholder={'Search or enter website'}
-            onClearSearchString={() => setSearchString('')}
-            onSearch={setSearchString}
-            searchText={searchString}
-            style={styles.searchInputStyle}
-          />
-        )}
 
-        <Tab.Navigator initialLayout={initialLayout} initialRouteName="TabBrowserHome0" screenOptions={tabscreenOption}>
+        <FakeSearchInput style={stylesheet.fakeSearch} onPress={() => navigation.navigate('BrowserSearch')} />
+
+        <Tab.Navigator
+          initialLayout={initialLayout}
+          sceneContainerStyle={{ backgroundColor: 'transparent' }}
+          initialRouteName="TabBrowserHome0"
+          screenOptions={() => ({
+            tabBarStyle: { height: 28, backgroundColor: 'transparent' },
+            tabBarItemStyle: {
+              width: 'auto',
+              paddingLeft: 0,
+              paddingRight: 0,
+            },
+            tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
+            tabBarScrollEnabled: true,
+            lazy: true,
+            tabBarShowLabel: false,
+            swipeEnabled: !!currentTabIndex,
+            tabBarIndicatorStyle: { backgroundColor: 'transparent' },
+          })}>
           {allTabRoutes.map((item, index) => {
             if (index === 0) {
               return (
@@ -67,7 +65,24 @@ export const BrowserScreen = ({ navigation }) => {
                   key={'TabBrowserHome0'}
                   name="TabBrowserHome0"
                   component={BrowserHome}
-                  options={{ tabBarLabel: 'All' }}
+                  options={{
+                    tabBarLabel: 'All',
+                    tabBarIcon: ({ focused }) => (
+                      <View style={{ paddingHorizontal: 8, paddingLeft: 16 }}>
+                        <Typography.Text
+                          style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
+                          All
+                        </Typography.Text>
+                        <View
+                          style={{
+                            height: 2,
+                            marginTop: theme.marginXXS,
+                            backgroundColor: focused ? theme.colorPrimary : 'transparent',
+                          }}
+                        />
+                      </View>
+                    ),
+                  }}
                 />
               );
             }
@@ -76,7 +91,24 @@ export const BrowserScreen = ({ navigation }) => {
                 key={item.key}
                 name={item.key}
                 component={TabComponent}
-                options={{ tabBarLabel: item.title }}
+                options={{
+                  tabBarLabel: item.title,
+                  tabBarIcon: ({ focused }) => (
+                    <View style={{ paddingHorizontal: 8 }}>
+                      <Typography.Text
+                        style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
+                        {item.title}
+                      </Typography.Text>
+                      <View
+                        style={{
+                          height: 2,
+                          marginTop: theme.marginXXS,
+                          backgroundColor: focused ? theme.colorPrimary : 'transparent',
+                        }}
+                      />
+                    </View>
+                  ),
+                }}
               />
             );
           })}

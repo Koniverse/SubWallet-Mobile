@@ -9,6 +9,7 @@ import { StoredSiteInfo } from 'stores/types';
 import { addBookmark, removeBookmark } from 'stores/updater';
 import createStylesheet from './styles/BrowserItem';
 import { predefinedDApps } from '../../predefined/dAppSites';
+import { SvgUri } from 'react-native-svg';
 
 interface Props {
   logo?: string;
@@ -54,12 +55,22 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags }
     );
   };
 
+  const SvgImage = (() => {
+    if (logo) {
+      const iconFragment = logo.split('.');
+      if (iconFragment[iconFragment.length - 1].toLowerCase() === 'svg') {
+        return <SvgUri width={44} height={44} uri={logo} />;
+      }
+    }
+
+    return null;
+  })();
+
   return (
     <View style={[stylesheet.container, style]}>
       <TouchableOpacity onPress={onPress} style={stylesheet.contentWrapper}>
         <View style={stylesheet.logoWrapper}>
-          {/* todo: use share component to handle case svg image */}
-          <Image src={{ uri: logo || assetLogoMap.default }} style={stylesheet.logo} squircleSize={44} />
+          {SvgImage || <Image src={{ uri: logo || assetLogoMap.default }} style={stylesheet.logo} squircleSize={44} />}
         </View>
         <View style={stylesheet.textContentWrapper}>
           <View style={stylesheet.textContentLine1}>

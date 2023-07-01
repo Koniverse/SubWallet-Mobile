@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Image, Squircle, Typography } from 'components/design-system-ui';
 import { SvgUri } from 'react-native-svg';
 import { DAppInfo } from 'types/browser';
@@ -20,38 +20,31 @@ const IconItem: React.FC<IconItemProps> = ({ data, isWithText, onPress }) => {
     const iconFragment = data.icon.split('.');
     if (iconFragment[iconFragment.length - 1].toLowerCase() === 'svg') {
       return (
-        <TouchableOpacity onPress={onPress} disabled={!onPress}>
-          <Squircle
-            squircleStyle={styles.absolute}
-            customStyle={styles.squircleWrapper}
-            backgroundColor={'transparent'}
-            customSize={44}>
+        <View style={{ width: 50 }}>
+          <TouchableOpacity onPress={onPress} disabled={!onPress} style={styles.imageWrapper}>
             <SvgUri width={44} height={44} uri={data?.icon} />
-          </Squircle>
-          {isWithText && (
-            <Typography.Text style={styles.title} ellipsis>
-              {data?.name}
-            </Typography.Text>
-          )}
-        </TouchableOpacity>
+            {isWithText && (
+              <Typography.Text style={styles.title} ellipsis>
+                {data?.name}
+              </Typography.Text>
+            )}
+          </TouchableOpacity>
+        </View>
       );
     }
   }
 
   return (
-    <TouchableOpacity style={styles.imageWrapper} onPress={onPress} disabled={!onPress}>
-      <Image
-        src={{ uri: data?.icon || assetLogoMap.default }}
-        style={styles.image}
-        shape="squircle"
-        squircleSize={44}
-      />
-      {isWithText && (
-        <Typography.Text style={styles.title} ellipsis>
-          {data?.name}
-        </Typography.Text>
-      )}
-    </TouchableOpacity>
+    <View style={{ width: 50 }}>
+      <TouchableOpacity style={styles.imageWrapper} onPress={onPress} disabled={!onPress}>
+        <Image src={{ uri: data?.icon || assetLogoMap.default }} style={styles.image} />
+        {isWithText && (
+          <Typography.Text style={styles.title} ellipsis>
+            {data?.name}
+          </Typography.Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 };
 

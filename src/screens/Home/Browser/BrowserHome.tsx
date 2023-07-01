@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
 import { predefinedDApps } from '../../../predefined/dAppSites';
 import { CaretRight } from 'phosphor-react-native';
-import browserHomeStyle from './styles/BrowserHome';
+import createStylesheet from './styles/BrowserHome';
 import FastImage from 'react-native-fast-image';
 import { Images } from 'assets/index';
 import { Typography, Icon } from 'components/design-system-ui';
@@ -16,6 +16,8 @@ import IconItem from './Shared/IconItem';
 import { getHostName } from 'utils/browser';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { DEVICE } from 'constants/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface HeaderProps {
   title: string;
@@ -31,45 +33,21 @@ type RecommendedListType = {
 type SearchItemType = {
   isSearch?: boolean;
 } & SiteInfo;
-const styles = browserHomeStyle();
 const ICON_ITEM_HEIGHT = 44;
 const ITEM_HEIGHT = 72;
-const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element => {
-  return (
-    <View style={styles.sectionContainer}>
-      <Typography.Title style={styles.sectionTitle}>{title}</Typography.Title>
-      <TouchableOpacity onPress={onPress}>
-        <View style={styles.sectionAction}>
-          <Typography.Text style={styles.sectionActionTitle}>See all</Typography.Text>
-          <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor="white" />
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Element => {
-  return (
-    <ScrollView horizontal>
-      {data.map(item => (
-        <View key={Math.random()} style={{ marginRight: 12 }}>
-          {item.data.map(item2 => renderItem(item2))}
-        </View>
-      ))}
-    </ScrollView>
-  );
-};
 
 const BrowserHome = () => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const recommendedList = useMemo((): RecommendedListType[] => {
     const sectionData = [];
-    for (let i = 0; i < 16; i += 4) {
+    for (let i = 0; i < 20; i += 5) {
       const section = {
-        data: dApps.dapps.slice(i, i + 4),
+        data: dApps.dapps.slice(i, i + 5),
       };
       sectionData.push(section);
     }
@@ -85,7 +63,7 @@ const BrowserHome = () => {
     return (
       <IconItem
         data={data}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: data?.url, name: data?.name })}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.item.url, name: data?.name })}
       />
     );
   };
@@ -103,45 +81,83 @@ const BrowserHome = () => {
     return (
       <BrowserItem
         key={item.id}
-        style={{ width: 303, marginBottom: 16 }}
+        style={{ width: DEVICE.width * 0.78, marginBottom: 16 }}
         title={item.name}
         subtitle={getHostName(item.url)}
         url={item.url}
+        logo={item.icon}
+        tags={item.categories}
         onPress={() => onPressSectionItem(item)}
       />
     );
   };
 
+  const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element => {
+    return (
+      <View style={stylesheet.sectionContainer}>
+        <Typography.Title level={5} style={stylesheet.sectionTitle}>
+          {title}
+        </Typography.Title>
+        <TouchableOpacity onPress={onPress}>
+          <View style={stylesheet.sectionAction}>
+            <Typography.Text style={stylesheet.sectionActionTitle}>See all</Typography.Text>
+            <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor="white" />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Element => {
+    return (
+      <ScrollView
+        horizontal
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: theme.padding }}>
+        {data.map(item => (
+          <View key={Math.random()} style={{ marginRight: theme.marginSM }}>
+            {item.data.map(item2 => renderItem(item2))}
+          </View>
+        ))}
+      </ScrollView>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      <FastImage style={styles.banner} resizeMode="cover" source={Images.browserBanner} />
-      <ScrollView>
+    <View style={stylesheet.container}>
+      <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+        <FastImage style={stylesheet.banner} resizeMode="cover" source={Images.browserBanner} />
         {historyItems && historyItems.length > 0 && (
           <>
             <SectionHeader title="Recent" onPress={() => navigation.navigate('BrowserSearch')} />
             <FlatList
-              style={{ maxHeight: ICON_ITEM_HEIGHT + 11, marginBottom: 11 }}
-              contentContainerStyle={{ alignItems: 'center' }}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              style={{ maxHeight: ICON_ITEM_HEIGHT, marginBottom: theme.marginSM }}
+              contentContainerStyle={{ alignItems: 'center', paddingHorizontal: theme.padding }}
               data={historyItems}
               renderItem={renderRecentItem}
-              ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+              ItemSeparatorComponent={() => <View style={{ width: theme.sizeSM }} />}
               getItemLayout={(data, index) => ({ index, length: ICON_ITEM_HEIGHT, offset: ICON_ITEM_HEIGHT * index })}
               horizontal
             />
           </>
         )}
-        {bookmarkItems && (
+        {bookmarkItems && bookmarkItems.length > 0 && (
           <>
             <SectionHeader
               title="Favorite"
               onPress={() => navigation.navigate('BrowserListByTabview', { type: 'BOOKMARK' })}
             />
             <FlatList
-              style={{ maxHeight: ITEM_HEIGHT + 11, marginBottom: 11 }}
-              contentContainerStyle={{ alignItems: 'center' }}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              style={{ maxHeight: ITEM_HEIGHT, marginBottom: theme.marginSM }}
+              contentContainerStyle={{ alignItems: 'center', paddingHorizontal: theme.padding }}
               data={bookmarkItems}
               renderItem={renderBookmarkItem}
-              ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+              ItemSeparatorComponent={() => <View style={{ width: theme.sizeSM }} />}
               getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
               horizontal
             />

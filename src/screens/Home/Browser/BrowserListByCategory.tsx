@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, View } from 'react-native';
-import { predefinedDApps } from '../../../predefined/dAppSites';
+import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import browserHomeStyle from './styles/BrowserListByCategory';
 import { useSelector } from 'react-redux';
@@ -11,9 +11,10 @@ import { SiteInfo } from 'stores/types';
 import { getHostName } from 'utils/browser';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
-interface BrowserListByCategoryProps extends NativeStackScreenProps<RootStackParamList> {
-  searchString: string;
+export interface BrowserListByCategoryProps extends NativeStackScreenProps<RootStackParamList> {
+  searchString?: string;
   navigationType: 'BOOKMARK' | 'RECOMMENDED';
 }
 type SearchItemType = {
@@ -21,7 +22,8 @@ type SearchItemType = {
 } & SiteInfo;
 const styles = browserHomeStyle();
 const ITEM_HEIGHT = 72;
-const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, searchString, navigationType }) => {
+const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, searchString = '', navigationType }) => {
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const [browserData] = useState<PredefinedDApps>(predefinedDApps);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
@@ -57,10 +59,16 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
   };
 
   const renderBrowserItem: ListRenderItem<DAppInfo> = ({ item }) => {
+    const dapp = predefinedDApps.dapps.find(a => item.url.includes(a.id));
+    const hostName = getHostName(item.url);
+
     return (
       <BrowserItem
+        key={item.id}
+        logo={dapp?.icon}
+        tags={dapp?.categories}
         style={styles.listItem}
-        title={item.name}
+        title={DAppTitleMap[hostName] || item.name}
         subtitle={getHostName(item.url)}
         url={item.url}
         onPress={() => onPressSectionItem(item)}
@@ -71,8 +79,11 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
   return (
     <View style={styles.container}>
       <FlatList
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         data={listByCategory}
         keyExtractor={item => item.id}
+        style={{ padding: theme.padding, paddingTop: theme.paddingSM }}
         renderItem={renderBrowserItem}
         ItemSeparatorComponent={itemSeparator}
         getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}

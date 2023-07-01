@@ -13,7 +13,7 @@ export default () => {
     rightHeaderButtonStyle: {
       width: 40,
       height: 40,
-      alignItems: 'flex-end',
+      alignItems: 'center',
       justifyContent: 'center',
     },
     rightHeaderButtonTextOutlineStyle: {
@@ -23,6 +23,8 @@ export default () => {
       borderWidth: 2,
       borderColor: 'white',
       alignItems: 'center',
+      marginLeft: -4,
+      marginBottom: -4,
       justifyContent: 'center',
     },
     rightHeaderButtonTextStyle: {
