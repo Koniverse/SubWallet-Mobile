@@ -83,6 +83,7 @@ export type MobileSettingsSlice = {
   pinCodeEnabled: boolean;
   faceIdEnabled: boolean;
   autoLockTime: number | undefined;
+  isPreventLock: boolean;
 };
 
 export type SiteInfo = {

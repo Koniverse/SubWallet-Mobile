@@ -123,6 +123,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
       </View>
       <View style={styles.footer}>
         <Button
+          disabled={loading}
           icon={<Icon phosphorIcon={QrCode} weight="fill" />}
           onPress={onPressSubmit(onOpenModal)}
           loading={loading}>
