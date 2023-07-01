@@ -523,7 +523,7 @@ export const en = {
     warningAccTitle: 'Warning: Never disclose this key',
     warningAccMessage: 'Anyone with your key can use any assets held in your account',
     warningPasswordTitle: 'Always choose a strong password!',
-    warningPasswordMessage: '8 characters at least. Uppercase, numbers, and special characters are recommended',
+    warningPasswordMessage: '6 characters at least. Uppercase, numbers, and special characters are recommended',
     warningCreatePasswordTitle: 'Always choose a strong password!',
   },
   message: {
@@ -544,6 +544,8 @@ export const en = {
     requestCreateMasterPassword:
       'Your master password is the password that allows access to multiple accounts. Once a master password is confirmed, you will not need to manually type your password with every transaction.',
     transactionDoneMessage: 'Your request has been sent. You can track its progress on the Transaction History page.',
+    changeMasterPasswordMessage1: 'To create a new password, you must correctly enter your current password.',
+    changeMasterPasswordMessage2: 'Use this password to unlock your account.',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
@@ -682,6 +684,8 @@ export const en = {
     addContact: 'Add contact',
     editContact: 'Edit contact',
     websiteAccessConfig: 'Website access config',
+    currentPassword: 'Current password',
+    newPassword: 'New password',
   },
   cryptoScreen: {
     receive: 'Receive',
