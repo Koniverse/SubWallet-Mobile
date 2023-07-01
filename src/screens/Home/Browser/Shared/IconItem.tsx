@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { Image, Squircle, Typography } from 'components/design-system-ui';
+import { Image, Typography } from 'components/design-system-ui';
 import { SvgUri } from 'react-native-svg';
 import { DAppInfo } from 'types/browser';
 import { useSelector } from 'react-redux';
