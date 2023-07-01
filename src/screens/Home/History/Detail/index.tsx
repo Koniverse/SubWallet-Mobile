@@ -12,6 +12,7 @@ import i18n from 'utils/i18n/i18n';
 import { Linking, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
+import { ExtrinsicType, TransactionAdditionalInfo } from '@subwallet/extension-base/background/KoniTypes';
 
 type Props = {
   onChangeModalVisible: () => void;
@@ -41,9 +42,18 @@ export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }:
       return null;
     }
 
+    const extrinsicType = data.type;
     const chainInfo = chainInfoMap[data.chain];
+    let originChainInfo = chainInfo;
+
+    if (extrinsicType === ExtrinsicType.TRANSFER_XCM && data.additionalInfo) {
+      const additionalInfo = data.additionalInfo as TransactionAdditionalInfo<ExtrinsicType.TRANSFER_XCM>;
+
+      originChainInfo = chainInfoMap[additionalInfo.originalChain] || chainInfo;
+    }
+
     const link =
-      data.extrinsicHash && data.extrinsicHash !== '' && getExplorerLink(chainInfo, data.extrinsicHash, 'tx');
+      data.extrinsicHash && data.extrinsicHash !== '' && getExplorerLink(originChainInfo, data.extrinsicHash, 'tx');
 
     if (link) {
       return (
