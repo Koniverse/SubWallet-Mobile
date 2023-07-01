@@ -104,8 +104,8 @@ export const en = {
     close: 'Close',
     viewDetail: 'View Detail',
     on: 'on',
-    block: 'Block',
-    unblock: 'Unblock',
+    block: 'Block this site',
+    unblock: 'Unblock this site',
     forgetAll: 'Forget all',
     disconnectAll: 'Disconnect all',
     connectAll: 'Connect all',
@@ -172,6 +172,7 @@ export const en = {
     selectStakingValidator: (validatorLabel: string) => `Select ${validatorLabel}`,
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
     submit: 'Submit',
+    accountConnected: 'account connected',
   },
   title: {
     exportAccount: 'Export account',
@@ -566,6 +567,10 @@ export const en = {
     claimStakingReward: 'Claim staking reward',
     successful: 'Successful',
     failed: 'Failed',
+    substrateDApp: 'Substrate DApp',
+    evmDApp: 'EVM DApp',
+    blockedDApp: 'Blocked DApp',
+    connectedDApp: 'Connected DApp',
   },
   header: {
     selectAccount: 'Select account',
@@ -676,6 +681,7 @@ export const en = {
     addressBook: 'Address book',
     addContact: 'Add contact',
     editContact: 'Edit contact',
+    websiteAccessConfig: 'Website access config',
   },
   cryptoScreen: {
     receive: 'Receive',
