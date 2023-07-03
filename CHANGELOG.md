@@ -1,3 +1,8 @@
+## 1.0.8 (192)
+- Browser - Website Access (#797, #824)
+- Upload Image to read QR code (#800)
+- Fix bug show incorrect some information on the XCM history detail (#841)
+
 ## 1.0.7 (191)
 - Preview mobile browser (2)
 
@@ -6,7 +11,7 @@
 
 ## 1.0.7 (189)
 - Consider handling in case validate amount (#621)
-- UI bug in case search haven't data (#785)
+- UI bug in case search haven't data (#806)
 - Continue Update "show zero balance" default value (#846)
 
 ## 1.0.7 (188)

@@ -23,7 +23,7 @@ export const MoreOptionModal = ({ modalVisible, moreOptionList, onChangeModalVis
     <SwModal
       modalVisible={modalVisible}
       onChangeModalVisible={onChangeModalVisible}
-      modalTitle={i18n.title.moreOptions}>
+      modalTitle={i18n.header.websiteAccessConfig}>
       <View style={{ width: '100%' }}>
         {moreOptionList.map(item => (
           <SelectItem

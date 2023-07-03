@@ -62,7 +62,7 @@ function quickFormatAddressToCompare(address?: string) {
 }
 
 function getIcon(item: TransactionHistoryItem): React.ElementType<IconProps> {
-  if (item.status === ExtrinsicStatus.PROCESSING) {
+  if (item.status === ExtrinsicStatus.PROCESSING || item.status === ExtrinsicStatus.SUBMITTING) {
     return IconMap.processing;
   }
 
@@ -130,11 +130,12 @@ function getDisplayData(
     };
   }
 
-  const isProcessing = item.status === ExtrinsicStatus.PROCESSING;
-
-  if (isProcessing) {
-    displayData.className = '-processing';
+  if (item.status === ExtrinsicStatus.PROCESSING) {
     displayData.typeName = nameMap.processing;
+  }
+
+  if (item.status === ExtrinsicStatus.SUBMITTING) {
+    displayData.typeName = nameMap.submitting;
   }
 
   return displayData;
@@ -325,7 +326,9 @@ function History({
 
   useEffect(() => {
     if (transactionId && chain && !isOpenByLink) {
-      const existed = historyList.find(item => item.chain === chain && item.transactionId === transactionId);
+      const existed = historyList.find(
+        item => item.chain === chain && (item.transactionId === transactionId || item.extrinsicHash === transactionId),
+      );
 
       setTimeout(() => {
         if (existed) {
@@ -350,7 +353,7 @@ function History({
         <HistoryItem
           style={{ marginTop: theme.marginXS }}
           item={item}
-          key={`${item.transactionId || item.extrinsicHash}-${item.address}`}
+          key={`${item.transactionId || item.extrinsicHash}-${item.address}-${item.direction}`}
           onPress={onOpenDetail(item)}
         />
       );

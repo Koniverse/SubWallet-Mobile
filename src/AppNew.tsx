@@ -46,18 +46,25 @@ const layerScreenStyle: StyleProp<any> = {
 };
 
 AutoLockState.isPreventAutoLock = false;
-const autoLockParams: { pinCodeEnabled: boolean; faceIdEnabled: boolean; autoLockTime?: number; lock: () => void } = {
+const autoLockParams: {
+  pinCodeEnabled: boolean;
+  faceIdEnabled: boolean;
+  autoLockTime?: number;
+  lock: () => void;
+  isPreventLock: boolean;
+} = {
   pinCodeEnabled: false,
   faceIdEnabled: false,
+  isPreventLock: false,
   autoLockTime: undefined,
   lock: () => {},
 };
 let timeout: NodeJS.Timeout | undefined;
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
-  const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock } = autoLockParams;
+  const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock, isPreventLock } = autoLockParams;
 
-  if (state === 'background') {
+  if (state === 'background' && !isPreventLock) {
     keyringLock().catch((e: Error) => console.log(e));
   }
 
@@ -96,7 +103,9 @@ export const AppNew = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
-  const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
+  const { pinCodeEnabled, faceIdEnabled, autoLockTime, isPreventLock } = useSelector(
+    (state: RootState) => state.mobileSettings,
+  );
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
   const { isLocked, lock } = useAppLock();
@@ -119,7 +128,8 @@ export const AppNew = () => {
     autoLockParams.autoLockTime = autoLockTime;
     autoLockParams.pinCodeEnabled = pinCodeEnabled;
     autoLockParams.faceIdEnabled = faceIdEnabled;
-  }, [autoLockTime, faceIdEnabled, lock, pinCodeEnabled]);
+    autoLockParams.isPreventLock = isPreventLock;
+  }, [autoLockTime, faceIdEnabled, isPreventLock, lock, pinCodeEnabled]);
 
   const isRequiredStoresReady = true;
 

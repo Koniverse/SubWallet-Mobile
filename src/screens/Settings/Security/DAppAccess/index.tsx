@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
-import { DotsThree, GlobeHemisphereWest, Plugs, PlugsConnected, X } from 'phosphor-react-native';
+import { DotsThree, GlobeSimple, Plugs, PlugsConnected, X } from 'phosphor-react-native';
 import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -32,7 +32,7 @@ enum FilterValue {
 
 const FILTER_OPTIONS = [
   { label: i18n.filterOptions.substrateDApp, value: FilterValue.SUBSTRATE },
-  { label: i18n.filterOptions.ethereumDApp, value: FilterValue.ETHEREUM },
+  { label: i18n.filterOptions.evmDApp, value: FilterValue.ETHEREUM },
   { label: i18n.filterOptions.blockedDApp, value: FilterValue.BLOCKED },
   { label: i18n.filterOptions.connectedDApp, value: FilterValue.CONNECTED },
 ];
@@ -149,7 +149,7 @@ export const DAppAccessScreen = () => {
       placeholder={i18n.placeholder.searchOrEnterWebsite}
       renderListEmptyComponent={() => (
         <EmptyList
-          icon={GlobeHemisphereWest}
+          icon={GlobeSimple}
           title={i18n.emptyScreen.manageDAppEmptyTitle}
           message={i18n.emptyScreen.manageDAppEmptyMessage}
         />

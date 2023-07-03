@@ -1,7 +1,7 @@
 {
   "name": "SubWalletMobile",
-  "version": "1.0.7",
-  "build": "191",
+  "version": "1.0.8",
+  "build": "192",
   "private": true,
   "license": "Apache-2.0",
   "reactNativePermissionsIOS": [
@@ -121,7 +121,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
     "rn-android-keyboard-adjust": "^2.1.2",
-    "rn-fetch-blob": "0.13.0-beta.2"
+    "rn-fetch-blob": "0.13.0-beta.2",
+    "rn-qr-generator": "^1.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",

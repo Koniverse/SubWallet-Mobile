@@ -30,13 +30,6 @@ const HistoryDetailFee: React.FC<Props> = (props: Props) => {
           suffix={fee?.symbol || undefined}
           value={fee?.value || '0'}
         />
-
-        <MetaInfo.Number
-          decimals={xcmInfo.fee?.decimals || undefined}
-          label={i18n.historyScreen.label.destinationFee}
-          suffix={xcmInfo.fee?.symbol || undefined}
-          value={xcmInfo.fee?.value || '0'}
-        />
       </>
     );
   }

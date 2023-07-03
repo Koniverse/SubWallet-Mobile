@@ -15,6 +15,7 @@ export const StakingTypeNameMap: Record<string, string> = {
 export const TxTypeNameMap: Record<string, string> = {
   ...StakingTypeNameMap,
   transaction: 'Transaction',
+  submitting: 'Submitting...',
   processing: 'Processing...',
   send: 'Send',
   receive: 'Receive',

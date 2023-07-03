@@ -19,7 +19,7 @@ import { EmptyList } from 'components/EmptyList';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { BackgroundIcon, Typography } from 'components/design-system-ui';
-import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-block/DappAccessItem';
 import { getHostName } from 'utils/browser';
 import { ThemeTypes } from 'styles/themes';
@@ -86,7 +86,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
           {`${('0' + accountConnectedItems.length).slice(-2)}`}
         </Typography.Text>
         <Typography.Text style={styles.dAppAccessDetailAllAcc}>
-          {`/${('0' + accountItems.length).slice(-2)} ${i18n.common.accountSelected}`}
+          {`/${('0' + accountItems.length).slice(-2)} ${i18n.common.accountConnected}`}
         </Typography.Text>
       </Typography.Text>
     </>
@@ -96,20 +96,6 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
     const isAllowed = authInfo.isAllowed;
 
     const options = [
-      {
-        key: 'blockOrUnblock',
-        name: isAllowed ? i18n.common.block : i18n.common.unblock,
-        icon: isAllowed ? ShieldSlash : Shield,
-        backgroundColor: isAllowed ? theme['red-6'] : theme['green-6'],
-        onPress: () => {
-          toggleAuthorization(origin)
-            .then(({ list }) => {
-              updateAuthUrls(list);
-            })
-            .catch(console.error);
-          setModalVisible(false);
-        },
-      },
       {
         key: 'forgetSite',
         icon: X,
@@ -147,6 +133,22 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
         },
       );
     }
+
+    options.push({
+      key: 'blockOrUnblock',
+      name: isAllowed ? i18n.common.block : i18n.common.unblock,
+      icon: isAllowed ? ShieldSlash : Shield,
+      // @ts-ignore
+      backgroundColor: isAllowed ? theme['red-6'] : theme['green-6'],
+      onPress: () => {
+        toggleAuthorization(origin)
+          .then(({ list }) => {
+            updateAuthUrls(list);
+          })
+          .catch(console.error);
+        setModalVisible(false);
+      },
+    });
 
     return options;
   }, [authInfo.isAllowed, theme, origin, navigation]);
@@ -193,12 +195,12 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       return (
         <>
           <AccountItemWithName
-            customStyle={{ container: { marginHorizontal: theme.margin } }}
+            customStyle={{ container: [{ marginHorizontal: theme.margin }, !authInfo.isAllowed && DisabledStyle] }}
             address={item.address}
             accountName={item.name}
             renderRightItem={() => (
               <Switch
-                disabled={pendingMap[item.address] !== undefined}
+                disabled={pendingMap[item.address] !== undefined || !authInfo.isAllowed}
                 ios_backgroundColor={ColorMap.switchInactiveButtonColor}
                 value={pendingMap[item.address] === undefined ? isEnabled : pendingMap[item.address]}
                 onValueChange={onChangeToggle}
@@ -208,7 +210,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
         </>
       );
     },
-    [authInfo.isAllowedMap, theme.margin, origin, pendingMap],
+    [authInfo.isAllowedMap, authInfo.isAllowed, theme.margin, origin, pendingMap],
   );
 
   return (
