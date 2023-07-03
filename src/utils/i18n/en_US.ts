@@ -803,7 +803,7 @@ export const en = {
     metadataDescription: (chain: string, url: string) =>
       `Approving this update will sync your metadata for ${chain} chain from ${url}`,
     notSpMessagePart1: 'This feature is not available for',
-    notSpMessagePart2: 'Please click choose another account',
+    notSpMessagePart2: 'Please change to another account type',
     deleteContactTitle: 'Delete this contact?',
     deleteContactMessage: 'You would no longer see this address in your address book',
   },

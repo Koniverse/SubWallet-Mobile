@@ -76,9 +76,9 @@ const NotSupportConfirmation: React.FC<Props> = (props: Props) => {
           {isMessage ? i18n.confirmation.signatureRequest : i18n.confirmation.approveRequest}
         </Text>
         <Text style={styles.description}>
-          <Text>{i18n.confirmation.notSpMessagePart1}</Text>
+          <Text style={styles.message}>{i18n.confirmation.notSpMessagePart1}</Text>
           <Text style={styles.highlight}>&nbsp;"{accountTitle}"</Text>
-          <Text>{`. ${i18n.confirmation.notSpMessagePart2}.`}</Text>
+          <Text style={styles.message}>{`. ${i18n.confirmation.notSpMessagePart2}.`}</Text>
         </Text>
         <AccountItemWithName
           accountName={account?.name}

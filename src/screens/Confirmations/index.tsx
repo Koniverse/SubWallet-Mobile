@@ -34,14 +34,16 @@ import {
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 
-const confirmationPopupWrapper: StyleProp<any> = {
-  maxHeight: '100%',
-  width: '100%',
-  backgroundColor: ColorMap.dark1,
-  borderTopLeftRadius: 32,
-  borderTopRightRadius: 32,
-  alignItems: 'center',
-  paddingTop: Platform.OS === 'ios' ? 8 : STATUS_BAR_HEIGHT + 8,
+const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
+  return {
+    maxHeight: '100%',
+    width: '100%',
+    backgroundColor: ColorMap.dark1,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    alignItems: 'center',
+    paddingTop: Platform.OS === 'ios' ? 8 : isShowSeparator ? 8 : STATUS_BAR_HEIGHT + 8,
+  };
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
@@ -216,7 +218,7 @@ export const Confirmations = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <View style={confirmationPopupWrapper}>
+        <View style={getConfirmationPopupWrapperStyle(!confirmation || !confirmation.item.isInternal)}>
           {(!confirmation || !confirmation.item.isInternal) && <View style={subWalletModalSeparator} />}
           <ConfirmationHeader
             index={index}
