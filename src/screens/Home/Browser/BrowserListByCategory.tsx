@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, View } from 'react-native';
-import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
+import { predefinedDApps } from '../../../predefined/dAppSites';
 import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import browserHomeStyle from './styles/BrowserListByCategory';
 import { useSelector } from 'react-redux';
@@ -60,7 +60,6 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
 
   const renderBrowserItem: ListRenderItem<DAppInfo> = ({ item }) => {
     const dapp = predefinedDApps.dapps.find(a => item.url.includes(a.id));
-    const hostName = getHostName(item.url);
 
     return (
       <BrowserItem
@@ -68,7 +67,7 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
         logo={dapp?.icon}
         tags={dapp?.categories}
         style={styles.listItem}
-        title={DAppTitleMap[hostName] || item.name}
+        title={dapp?.name || item.name}
         subtitle={getHostName(item.url)}
         url={item.url}
         onPress={() => onPressSectionItem(item)}
