@@ -12,6 +12,7 @@ import { getHostName } from 'utils/browser';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
 
 export interface BrowserListByCategoryProps extends NativeStackScreenProps<RootStackParamList> {
   searchString?: string;
@@ -77,16 +78,20 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
 
   return (
     <View style={styles.container}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        data={listByCategory}
-        keyExtractor={item => item.id}
-        style={{ padding: theme.padding, paddingTop: theme.paddingSM }}
-        renderItem={renderBrowserItem}
-        ItemSeparatorComponent={itemSeparator}
-        getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
-      />
+      {listByCategory.length ? (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          data={listByCategory}
+          keyExtractor={item => item.id}
+          style={{ padding: theme.padding, paddingTop: theme.paddingSM }}
+          renderItem={renderBrowserItem}
+          ItemSeparatorComponent={itemSeparator}
+          getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
+        />
+      ) : (
+        <CategoryEmptyList />
+      )}
     </View>
   );
 };

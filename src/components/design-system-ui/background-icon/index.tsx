@@ -55,7 +55,7 @@ const BackgroundIcon: React.FC<BackgroundIconProps> = ({
           customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
           backgroundColor={backgroundColor}
           size={size}>
-          <View style={[{ backgroundColor, position: 'absolute' }, _style[`${shape}Icon`]]}>
+          <View style={[{ backgroundColor }, _style[`${shape}Icon`]]}>
             <Icon
               type={type}
               phosphorIcon={phosphorIcon}

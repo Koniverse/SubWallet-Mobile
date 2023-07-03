@@ -144,7 +144,7 @@ const Button: React.FC<ButtonProps> = props => {
             ? (_style[`${type}DisabledRaw`].backgroundColor as string) || '#fff'
             : (_style[`${type}Raw`].backgroundColor as string) || '#fff'
         }>
-        <View style={{ position: 'absolute' }}>{buttonNode}</View>
+        {buttonNode}
       </Squircle>
     );
   }

@@ -77,7 +77,7 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
         customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         size={'sm'}
         backgroundColor={getBorderColor()}>
-        <Squircle customStyle={{ position: 'absolute' }} customSize={44} backgroundColor={'#1A1A1A'}>
+        <Squircle customSize={44} backgroundColor={theme.colorBgSecondary}>
           <View
             // Make sure that you pass onLayout={getCellOnLayoutHandler(index)} prop to root component of "Cell"
             onLayout={getCellOnLayoutHandler(index)}

@@ -5,7 +5,7 @@ import { CaretRight } from 'phosphor-react-native';
 import createStylesheet from './styles/BrowserHome';
 import FastImage from 'react-native-fast-image';
 import { Images } from 'assets/index';
-import { Typography, Icon } from 'components/design-system-ui';
+import { Icon, Typography } from 'components/design-system-ui';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -16,7 +16,6 @@ import IconItem from './Shared/IconItem';
 import { getHostName } from 'utils/browser';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { DEVICE } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface HeaderProps {
@@ -81,7 +80,7 @@ const BrowserHome = () => {
     return (
       <BrowserItem
         key={item.id}
-        style={{ width: DEVICE.width * 0.78, marginBottom: 16 }}
+        style={stylesheet.browserItem}
         title={item.name}
         subtitle={getHostName(item.url)}
         url={item.url}
@@ -101,7 +100,7 @@ const BrowserHome = () => {
         <TouchableOpacity onPress={onPress}>
           <View style={stylesheet.sectionAction}>
             <Typography.Text style={stylesheet.sectionActionTitle}>See all</Typography.Text>
-            <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor="white" />
+            <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor={theme.colorTextLight1} />
           </View>
         </TouchableOpacity>
       </View>
@@ -114,9 +113,9 @@ const BrowserHome = () => {
         horizontal
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: theme.padding }}>
+        contentContainerStyle={stylesheet.recommendListContentContainer}>
         {data.map(item => (
-          <View key={Math.random()} style={{ marginRight: theme.marginSM }}>
+          <View key={Math.random()} style={stylesheet.recommendListSeparator}>
             {item.data.map(item2 => renderItem(item2))}
           </View>
         ))}
@@ -135,10 +134,10 @@ const BrowserHome = () => {
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
               style={{ maxHeight: ICON_ITEM_HEIGHT, marginBottom: theme.marginSM }}
-              contentContainerStyle={{ alignItems: 'center', paddingHorizontal: theme.padding }}
+              contentContainerStyle={stylesheet.flatListContentContainer}
               data={historyItems}
               renderItem={renderRecentItem}
-              ItemSeparatorComponent={() => <View style={{ width: theme.sizeSM }} />}
+              ItemSeparatorComponent={() => <View style={stylesheet.flatListSeparator} />}
               getItemLayout={(data, index) => ({ index, length: ICON_ITEM_HEIGHT, offset: ICON_ITEM_HEIGHT * index })}
               horizontal
             />
@@ -154,10 +153,10 @@ const BrowserHome = () => {
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
               style={{ maxHeight: ITEM_HEIGHT, marginBottom: theme.marginSM }}
-              contentContainerStyle={{ alignItems: 'center', paddingHorizontal: theme.padding }}
+              contentContainerStyle={stylesheet.flatListContentContainer}
               data={bookmarkItems}
               renderItem={renderBookmarkItem}
-              ItemSeparatorComponent={() => <View style={{ width: theme.sizeSM }} />}
+              ItemSeparatorComponent={() => <View style={stylesheet.flatListSeparator} />}
               getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
               horizontal
             />

@@ -1,22 +1,10 @@
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { ImageStyle as FastImageStyle } from 'react-native-fast-image';
+import { StyleSheet } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
-
-export interface BrowserStyle {
-  imageItem: FastImageStyle;
-  squircleWrapper: ViewStyle;
-  sectionActionTitle: TextStyle;
-  sectionAction: ViewStyle;
-  sectionTitle: TextStyle;
-  sectionContainer: ViewStyle;
-  container: ViewStyle;
-  banner: FastImageStyle;
-  absolute: ViewStyle;
-}
+import { DEVICE } from 'constants/index';
 
 export default (theme: ThemeTypes) => {
-  return StyleSheet.create<BrowserStyle>({
+  return StyleSheet.create({
     container: { flex: 1 },
     banner: { height: 120, borderRadius: theme.borderRadiusLG, margin: theme.margin },
     sectionContainer: {
@@ -42,5 +30,22 @@ export default (theme: ThemeTypes) => {
     absolute: { position: 'absolute' },
     squircleWrapper: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
     imageItem: { width: 55, height: 55 },
+    browserItem: {
+      width: DEVICE.width * 0.78,
+      marginBottom: theme.margin,
+    },
+    flatListContentContainer: {
+      alignItems: 'center',
+      paddingHorizontal: theme.padding,
+    },
+    flatListSeparator: {
+      width: theme.sizeSM,
+    },
+    recommendListContentContainer: {
+      paddingHorizontal: theme.padding,
+    },
+    recommendListSeparator: {
+      marginRight: theme.marginSM,
+    },
   });
 };

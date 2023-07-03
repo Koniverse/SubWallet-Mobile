@@ -1,22 +1,14 @@
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { ImageStyle as FastImageStyle } from 'react-native-fast-image';
+import { StyleSheet } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { ThemeTypes } from 'styles/themes';
 
-export interface BrowserStyle {
-  title: TextStyle;
-  image: FastImageStyle;
-  imageWrapper: FastImageStyle;
-  squircleWrapper: ViewStyle;
-  absolute: ViewStyle;
-}
-
-export default () => {
-  // const theme = useSubWalletTheme().swThemes;
-  return StyleSheet.create<BrowserStyle>({
+export default (theme: ThemeTypes) => {
+  return StyleSheet.create({
+    container: { width: 50 },
     absolute: { position: 'absolute' },
     squircleWrapper: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
     imageWrapper: { alignItems: 'center' },
     image: { width: 44, height: 44 },
-    title: { width: 40, color: 'white', fontSize: 10, ...FontSemiBold, marginTop: 8 },
+    title: { width: 40, color: theme.colorTextLight1, ...FontSemiBold, marginTop: theme.marginXS },
   });
 };
