@@ -47,6 +47,7 @@ const NftCollectionList = () => {
         autoFocus={false}
         showLeftBtn={false}
         title={i18n.header.yourCollections}
+        titleTextAlign={'left'}
         renderItem={renderItem}
         renderListEmptyComponent={renderEmptyNFT}
         searchFunction={filteredCollection}

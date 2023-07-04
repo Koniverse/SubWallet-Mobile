@@ -132,6 +132,7 @@ const StakingBalanceList = () => {
       <FlatListScreen
         style={{ flex: 1, paddingBottom: 16 }}
         title={i18n.header.staking}
+        titleTextAlign={'left'}
         items={data}
         showLeftBtn={false}
         placeholder={i18n.placeholder.searchToken}

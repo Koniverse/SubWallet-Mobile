@@ -62,6 +62,7 @@ interface Props<T> {
   isShowMainHeader?: boolean;
   isShowPlaceHolder?: boolean;
   androidKeyboardVerticalOffset?: number;
+  titleTextAlign?: 'left' | 'center';
 }
 
 export function FlatListScreen<T>({
@@ -98,6 +99,7 @@ export function FlatListScreen<T>({
   isShowMainHeader,
   isShowPlaceHolder,
   androidKeyboardVerticalOffset,
+  titleTextAlign,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
@@ -206,6 +208,7 @@ export function FlatListScreen<T>({
       headerContent={headerContent}
       disabled={!!leftButtonDisabled}
       title={title}
+      titleTextAlign={titleTextAlign}
       style={[{ width: '100%' }, style]}
       showRightBtn={!!rightIconOption?.icon}
       rightIcon={rightIconOption?.icon}

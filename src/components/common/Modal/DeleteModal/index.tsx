@@ -26,6 +26,7 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
     <SwModal
       modalVisible={visible}
       modalTitle={title}
+      titleTextAlign={'center'}
       footer={
         <View style={styles.footerModalStyle}>
           <Button

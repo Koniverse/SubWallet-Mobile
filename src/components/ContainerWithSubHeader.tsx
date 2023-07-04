@@ -47,6 +47,7 @@ export const ContainerWithSubHeader = ({
   statusBarColor = ColorMap.dark1,
   needGapWithStatusBar = true,
   androidKeyboardVerticalOffset,
+  titleTextAlign,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
   return (
@@ -63,7 +64,7 @@ export const ContainerWithSubHeader = ({
           <Header />
         </View>
       )}
-      <SubHeader {...subHeaderProps} />
+      <SubHeader {...subHeaderProps} titleTextAlign={titleTextAlign} />
       {children}
       <SafeAreaView />
     </KeyboardAvoidingView>

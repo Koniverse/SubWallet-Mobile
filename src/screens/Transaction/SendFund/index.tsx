@@ -619,7 +619,12 @@ export const SendFund = ({
           <Header />
 
           <View style={{ paddingTop: 16 }}>
-            <SubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading} />
+            <SubHeader
+              title={title}
+              onPressBack={() => navigation.goBack()}
+              disabled={loading}
+              titleTextAlign={'left'}
+            />
           </View>
 
           <>

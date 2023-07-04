@@ -1,14 +1,10 @@
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { SelectAccountType } from 'components/common/SelectAccountType';
-import { Button, Icon } from 'components/design-system-ui';
+import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import { CheckCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { StyleProp, View } from 'react-native';
-import Text from '../Text';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import { View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 
 interface Props {
@@ -17,14 +13,6 @@ interface Props {
   onModalHide?: () => void;
   onConfirm: (keyTypes: KeypairType[]) => void;
 }
-
-const modalTitle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontBold,
-  color: ColorMap.light,
-  paddingBottom: 16,
-  textAlign: 'center',
-};
 
 const defaultKeyTypes: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
 
@@ -51,14 +39,17 @@ export const SelectAccountTypeModal = ({ modalVisible, onChangeModalVisible, onM
   }, [modalVisible]);
 
   return (
-    <SubWalletModal modalVisible={modalVisible} onModalHide={onModalHide} onChangeModalVisible={onChangeModalVisible}>
+    <SwModal
+      modalVisible={modalVisible}
+      onModalHide={onModalHide}
+      onChangeModalVisible={onChangeModalVisible}
+      modalTitle={i18n.header.selectAccType}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitle}>{i18n.header.selectAccType}</Text>
         <SelectAccountType selectedItems={keyTypes} setSelectedItems={setKeyTypes} />
         <Button icon={ButtonIcon} disabled={!keyTypes.length} onPress={_onConfirm(keyTypes)}>
           {i18n.common.confirm}
         </Button>
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };
