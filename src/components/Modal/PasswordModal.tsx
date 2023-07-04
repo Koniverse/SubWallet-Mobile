@@ -59,7 +59,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
     [onConfirm],
   );
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
 
@@ -100,7 +100,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           defaultValue={formState.data.password}
           onChangeText={handleChangePassword}
           errorMessages={errors}
-          onSubmitField={onSubmitField('password')}
+          onSubmitField={() => onSubmit(formState)}
           style={PasswordContainerStyle}
           isBusy={isBusy}
         />
@@ -113,7 +113,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           style={{ marginTop: 16 }}
           loading={isBusy}
           onPress={onPress}
-          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected}>
+          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected || isBusy}>
           {i18n.common.confirm}
         </Button>
       </View>
