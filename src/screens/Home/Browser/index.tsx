@@ -6,21 +6,62 @@ import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
 import BrowserListByCategory from './BrowserListByCategory';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Dimensions, View } from 'react-native';
+import { Animated, Dimensions, View } from 'react-native';
 import { useNavigationState } from '@react-navigation/native';
 import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { Typography } from 'components/design-system-ui';
+import { ThemeTypes } from 'styles/themes';
+import { BrowserListByTabviewProps } from 'routes/index';
 
+type RoutesType = {
+  key: string;
+  title: string;
+};
+type TabbarType = {
+  focused: boolean;
+};
 const Tab = createMaterialTopTabNavigator();
 const initialLayout = {
   width: Dimensions.get('window').width,
 };
-
-// @ts-ignore
-export const BrowserScreen = ({ navigation }) => {
+const transparent = { backgroundColor: 'transparent' };
+const screenOptions = (currentTabIndex: number) => ({
+  tabBarStyle: { height: 28, ...transparent },
+  tabBarItemStyle: {
+    width: 'auto',
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
+  tabBarScrollEnabled: true,
+  lazy: true,
+  tabBarShowLabel: false,
+  swipeEnabled: !!currentTabIndex,
+  tabBarIndicatorStyle: transparent,
+});
+const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
+  const wrapperStyle = {
+    paddingHorizontal: 8,
+    paddingLeft: item.title.toLocaleLowerCase() === 'all' ? 16 : undefined,
+  };
+  const spaceStyle = {
+    height: 2,
+    marginTop: theme.marginXXS,
+    backgroundColor: focused ? theme.colorPrimary : 'transparent',
+  };
+  return (
+    <View style={wrapperStyle}>
+      <Typography.Text style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
+        {item.title}
+      </Typography.Text>
+      <View style={spaceStyle} />
+    </View>
+  );
+};
+export const BrowserScreen = ({ navigation }: BrowserListByTabviewProps) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
@@ -29,9 +70,26 @@ export const BrowserScreen = ({ navigation }) => {
   const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
+  const av = new Animated.Value(0);
+  av.addListener(() => {
+    return;
+  });
 
-  // @ts-ignore
-  const TabComponent = props => <BrowserListByCategory searchString={searchString} {...props} />;
+  const tabScreenOptions = (item: RoutesType) => {
+    return {
+      tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
+    };
+  };
+
+  const screenListener = {
+    focus: () => {
+      Animated.timing(av, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    },
+  };
 
   return (
     <ScreenContainer backgroundColor={theme.colorBgDefault}>
@@ -42,22 +100,10 @@ export const BrowserScreen = ({ navigation }) => {
 
         <Tab.Navigator
           initialLayout={initialLayout}
-          sceneContainerStyle={{ backgroundColor: 'transparent' }}
+          sceneContainerStyle={transparent}
           initialRouteName="TabBrowserHome0"
-          screenOptions={() => ({
-            tabBarStyle: { height: 28, backgroundColor: 'transparent' },
-            tabBarItemStyle: {
-              width: 'auto',
-              paddingLeft: 0,
-              paddingRight: 0,
-            },
-            tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
-            tabBarScrollEnabled: true,
-            lazy: true,
-            tabBarShowLabel: false,
-            swipeEnabled: !!currentTabIndex,
-            tabBarIndicatorStyle: { backgroundColor: 'transparent' },
-          })}>
+          screenListeners={screenListener}
+          screenOptions={screenOptions(currentTabIndex)}>
           {allTabRoutes.map((item, index) => {
             if (index === 0) {
               return (
@@ -65,24 +111,7 @@ export const BrowserScreen = ({ navigation }) => {
                   key={'TabBrowserHome0'}
                   name="TabBrowserHome0"
                   component={BrowserHome}
-                  options={{
-                    tabBarLabel: 'All',
-                    tabBarIcon: ({ focused }) => (
-                      <View style={{ paddingHorizontal: 8, paddingLeft: 16 }}>
-                        <Typography.Text
-                          style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
-                          All
-                        </Typography.Text>
-                        <View
-                          style={{
-                            height: 2,
-                            marginTop: theme.marginXXS,
-                            backgroundColor: focused ? theme.colorPrimary : 'transparent',
-                          }}
-                        />
-                      </View>
-                    ),
-                  }}
+                  options={tabScreenOptions(item)}
                 />
               );
             }
@@ -90,25 +119,9 @@ export const BrowserScreen = ({ navigation }) => {
               <Tab.Screen
                 key={item.key}
                 name={item.key}
-                component={TabComponent}
-                options={{
-                  tabBarLabel: item.title,
-                  tabBarIcon: ({ focused }) => (
-                    <View style={{ paddingHorizontal: 8 }}>
-                      <Typography.Text
-                        style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
-                        {item.title}
-                      </Typography.Text>
-                      <View
-                        style={{
-                          height: 2,
-                          marginTop: theme.marginXXS,
-                          backgroundColor: focused ? theme.colorPrimary : 'transparent',
-                        }}
-                      />
-                    </View>
-                  ),
-                }}
+                initialParams={{ searchString }}
+                component={BrowserListByCategory}
+                options={tabScreenOptions(item)}
               />
             );
           })}

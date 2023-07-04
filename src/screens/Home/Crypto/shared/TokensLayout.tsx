@@ -203,6 +203,10 @@ export const TokensLayout = ({
         data={listActions ? [{ slug: null }, ...tokenBalanceItems] : tokenBalanceItems}
         renderItem={customRenderItem}
         ListFooterComponent={layoutFooter}
+        maxToRenderPerBatch={12}
+        initialNumToRender={12}
+        removeClippedSubviews
+        windowSize={12}
         refreshControl={refreshControlNode}
       />
     </View>

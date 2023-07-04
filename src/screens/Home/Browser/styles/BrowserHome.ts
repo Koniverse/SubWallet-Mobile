@@ -1,9 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { DEVICE } from 'constants/index';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
-export default (theme: ThemeTypes) => {
+const Styles = () => {
+  const theme = useSubWalletTheme().swThemes;
+
   return StyleSheet.create({
     container: { flex: 1 },
     banner: { height: 120, borderRadius: theme.borderRadiusLG, margin: theme.margin },
@@ -49,3 +51,5 @@ export default (theme: ThemeTypes) => {
     },
   });
 };
+
+export default Styles;

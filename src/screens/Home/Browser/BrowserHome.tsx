@@ -34,10 +34,47 @@ type SearchItemType = {
 } & SiteInfo;
 const ICON_ITEM_HEIGHT = 44;
 const ITEM_HEIGHT = 72;
-
-const BrowserHome = () => {
+const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element => {
   const theme = useSubWalletTheme().swThemes;
-  const stylesheet = createStylesheet(theme);
+  const stylesheet = createStylesheet();
+  return (
+    <View style={stylesheet.sectionContainer}>
+      <Typography.Title level={5} style={stylesheet.sectionTitle}>
+        {title}
+      </Typography.Title>
+      <TouchableOpacity onPress={onPress}>
+        <View style={stylesheet.sectionAction}>
+          <Typography.Text style={stylesheet.sectionActionTitle}>See all</Typography.Text>
+          <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor={theme.colorTextLight1} />
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Element => {
+  const stylesheet = createStylesheet();
+  return (
+    <ScrollView
+      horizontal
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={stylesheet.recommendListContentContainer}>
+      {data.map(item => (
+        <View key={Math.random()} style={stylesheet.recommendListSeparator}>
+          {item.data.map(item2 => renderItem(item2))}
+        </View>
+      ))}
+    </ScrollView>
+  );
+};
+const ItemSeparator = () => {
+  const stylesheet = createStylesheet();
+  return <View style={stylesheet.flatListSeparator} />;
+};
+const BrowserHome = () => {
+  const stylesheet = createStylesheet();
+  const theme = useSubWalletTheme().swThemes;
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
@@ -91,38 +128,6 @@ const BrowserHome = () => {
     );
   };
 
-  const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element => {
-    return (
-      <View style={stylesheet.sectionContainer}>
-        <Typography.Title level={5} style={stylesheet.sectionTitle}>
-          {title}
-        </Typography.Title>
-        <TouchableOpacity onPress={onPress}>
-          <View style={stylesheet.sectionAction}>
-            <Typography.Text style={stylesheet.sectionActionTitle}>See all</Typography.Text>
-            <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor={theme.colorTextLight1} />
-          </View>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Element => {
-    return (
-      <ScrollView
-        horizontal
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={stylesheet.recommendListContentContainer}>
-        {data.map(item => (
-          <View key={Math.random()} style={stylesheet.recommendListSeparator}>
-            {item.data.map(item2 => renderItem(item2))}
-          </View>
-        ))}
-      </ScrollView>
-    );
-  };
-
   return (
     <View style={stylesheet.container}>
       <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
@@ -137,7 +142,7 @@ const BrowserHome = () => {
               contentContainerStyle={stylesheet.flatListContentContainer}
               data={historyItems}
               renderItem={renderRecentItem}
-              ItemSeparatorComponent={() => <View style={stylesheet.flatListSeparator} />}
+              ItemSeparatorComponent={ItemSeparator}
               getItemLayout={(data, index) => ({ index, length: ICON_ITEM_HEIGHT, offset: ICON_ITEM_HEIGHT * index })}
               horizontal
             />
@@ -156,7 +161,7 @@ const BrowserHome = () => {
               contentContainerStyle={stylesheet.flatListContentContainer}
               data={bookmarkItems}
               renderItem={renderBookmarkItem}
-              ItemSeparatorComponent={() => <View style={stylesheet.flatListSeparator} />}
+              ItemSeparatorComponent={ItemSeparator}
               getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
               horizontal
             />

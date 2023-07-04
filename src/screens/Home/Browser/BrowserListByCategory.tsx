@@ -14,8 +14,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
 
-export interface BrowserListByCategoryProps extends NativeStackScreenProps<RootStackParamList> {
-  searchString?: string;
+export interface BrowserListByCategoryProps {
+  searchString: string;
   navigationType: 'BOOKMARK' | 'RECOMMENDED';
 }
 type SearchItemType = {
@@ -23,7 +23,8 @@ type SearchItemType = {
 } & SiteInfo;
 const styles = browserHomeStyle();
 const ITEM_HEIGHT = 72;
-const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, searchString = '', navigationType }) => {
+const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route }) => {
+  const { searchString, navigationType } = route.params as BrowserListByCategoryProps;
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const [browserData] = useState<PredefinedDApps>(predefinedDApps);
@@ -59,6 +60,12 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
     navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
   };
 
+  const getItemLayout = (data: DAppInfo[] | null | undefined, index: number) => ({
+    index,
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+  });
+  const keyExtractor = (item: DAppInfo) => item.id;
   const renderBrowserItem: ListRenderItem<DAppInfo> = ({ item }) => {
     const dapp = predefinedDApps.dapps.find(a => item.url.includes(a.id));
 
@@ -82,12 +89,15 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
         <FlatList
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
+          maxToRenderPerBatch={12}
+          initialNumToRender={12}
+          removeClippedSubviews
           data={listByCategory}
-          keyExtractor={item => item.id}
+          keyExtractor={keyExtractor}
           style={{ padding: theme.padding, paddingTop: theme.paddingSM }}
           renderItem={renderBrowserItem}
           ItemSeparatorComponent={itemSeparator}
-          getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
+          getItemLayout={getItemLayout}
         />
       ) : (
         <CategoryEmptyList />
@@ -95,4 +105,5 @@ const BrowserListByCategory: React.FC<BrowserListByCategoryProps> = ({ route, se
     </View>
   );
 };
+
 export default BrowserListByCategory;
