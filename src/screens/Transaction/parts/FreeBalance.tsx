@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useGetBalance } from 'hooks/balance';
-import { Text, View } from 'react-native';
+import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
@@ -12,9 +12,10 @@ interface Props {
   label?: string;
   chain?: string;
   onBalanceReady?: (rs: boolean) => void;
+  style?: StyleProp<ViewStyle>;
 }
 
-export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }: Props) => {
+export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug, style }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const { error, isLoading, nativeTokenBalance, nativeTokenSlug, tokenBalance } = useGetBalance(
     chain,
@@ -31,7 +32,7 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
   }
 
   return (
-    <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+    <View style={[{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }, style]}>
       {!error && (
         <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
           {label || `${i18n.sendToken.senderAvailableBalance}`}

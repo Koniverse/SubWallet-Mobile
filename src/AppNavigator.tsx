@@ -9,7 +9,7 @@ import ImportQrCode from 'screens/Account/ImportQrCode';
 import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { GeneralSettings } from 'screens/Settings/General';
-import { SendFund } from 'screens/Transaction/SendFund';
+import { SendFund } from 'screens/Transaction/SendFundV2';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
 import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';

@@ -29,6 +29,20 @@ export const TRANSACTION_TITLE_MAP = (): Record<ExtrinsicTypeMobile, string> => 
   [ExtrinsicType.UNKNOWN]: 'Unknown',
 });
 
+export const ALL_STAKING_ACTIONS: ExtrinsicType[] = [
+  ExtrinsicType.STAKING_JOIN_POOL,
+  ExtrinsicType.STAKING_BOND,
+  ExtrinsicType.STAKING_LEAVE_POOL,
+  ExtrinsicType.STAKING_UNBOND,
+  ExtrinsicType.STAKING_WITHDRAW,
+  ExtrinsicType.STAKING_POOL_WITHDRAW,
+  ExtrinsicType.STAKING_LEAVE_POOL,
+  ExtrinsicType.STAKING_CANCEL_UNSTAKE,
+  ExtrinsicType.STAKING_CLAIM_REWARD,
+  ExtrinsicType.STAKING_COMPOUNDING,
+  ExtrinsicType.STAKING_CANCEL_COMPOUNDING,
+];
+
 export const NEED_SIGN_CONFIRMATION: ConfirmationType[] = [
   'evmSignatureRequest',
   'evmSendTransactionRequest',
