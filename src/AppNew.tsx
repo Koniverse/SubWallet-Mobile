@@ -29,6 +29,7 @@ import { setBuildNumber } from './stores/AppVersion';
 // import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
 import { getBuildNumber } from 'react-native-device-info';
 import { AppModalContextProvider } from './providers/AppModalContext';
+import { CustomToast } from 'components/design-system-ui/toast';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -159,6 +160,7 @@ export const AppNew = () => {
       <View style={{ flex: 1 }}>
         <ToastProvider
           duration={TOAST_DURATION}
+          renderToast={toast => <CustomToast toast={toast} />}
           placement="top"
           normalColor={theme.colors.notification}
           textStyle={{ textAlign: 'center', ...FontMedium }}

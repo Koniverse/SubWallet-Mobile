@@ -183,9 +183,9 @@ const NftDetail = ({
   }, [ownerAccount]);
 
   const show = useCallback(
-    (message: string) => {
+    (message: string, type?: 'normal' | 'success' | 'danger' | 'warning' | '') => {
       toast.hideAll();
-      toast.show(message);
+      toast.show(message, { type: type });
     },
     [toast],
   );
@@ -196,7 +196,7 @@ const NftDetail = ({
 
   const handleClickTransfer = useCallback(() => {
     if (!originChainInfo || !canSend || !data.chain) {
-      show(i18n.common.anErrorHasOccurred);
+      show(i18n.common.anErrorHasOccurred, 'danger');
 
       return;
     }

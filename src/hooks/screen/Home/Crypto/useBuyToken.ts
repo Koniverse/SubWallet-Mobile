@@ -72,7 +72,7 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
       // @ts-ignore
       toastRef.current.hideAll();
       // @ts-ignore
-      toastRef.current.show(text);
+      toastRef.current.show(text, { type: 'danger' });
     }
   }, []);
 

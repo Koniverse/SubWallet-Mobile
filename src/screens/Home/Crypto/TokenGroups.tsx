@@ -162,7 +162,7 @@ export const TokenGroups = () => {
   const showNoti = useCallback(
     (text: string) => {
       toast.hideAll();
-      toast.show(text, { textStyle: { textAlign: 'center' } });
+      toast.show(text, { textStyle: { textAlign: 'center' }, type: 'normal' });
     },
     [toast],
   );

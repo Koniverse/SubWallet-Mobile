@@ -26,7 +26,7 @@ export default function useChainChecker() {
       chainStateMap[connectingChain.current]?.connectionStatus === _ChainConnectionStatus.CONNECTED
     ) {
       const chainName = chainInfoMap[connectingChain.current].name;
-      setTimeout(() => show(`${chainName} is connected!`), 300);
+      setTimeout(() => show(`${chainName} is connected!`, { type: 'success' }), 300);
       setChainStatus(ChainStatus.CONNECTED);
     }
   }, [chainInfoMap, chainStateMap, connectingChainStatus, show]);
@@ -61,7 +61,7 @@ export default function useChainChecker() {
       .then(() => {
         setChainStatus(ChainStatus.CONNECTING);
         connectingChain.current = chain;
-        show('Connecting...');
+        show('Connecting...', { type: 'warning' });
       })
       .catch(console.error);
   }

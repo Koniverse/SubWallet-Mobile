@@ -163,7 +163,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     })
       .then(resp => {
         if (resp) {
-          toast.show(i18n.notificationMessage.addTokenSuccessfully);
+          toast.show(i18n.notificationMessage.addTokenSuccessfully, { type: 'success' });
           _goBack();
         } else {
           onUpdateErrors('contractAddress')([i18n.errorMessage.occurredError]);

@@ -102,7 +102,7 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
         })
         .catch((e: Error) => {
           hideAll();
-          show(e.message);
+          show(e.message, { type: 'danger' });
         })
         .finally(() => {
           setLoading(false);

@@ -11,7 +11,7 @@ const useHandleSubmitTransaction = (onDone: (id: string) => void, setIgnoreWarni
       if (errors.length || warnings.length) {
         if (errors[0]?.message !== 'User reject request') {
           hideAll();
-          show(errors[0]?.message || warnings[0]?.message);
+          show(errors[0]?.message || warnings[0]?.message, { type: 'danger' });
         }
 
         warnings[0] && setIgnoreWarnings?.(true);
@@ -25,7 +25,7 @@ const useHandleSubmitTransaction = (onDone: (id: string) => void, setIgnoreWarni
   const onError = useCallback(
     (error: Error) => {
       hideAll();
-      show(error.message);
+      show(error.message, { type: 'danger' });
     },
     [hideAll, show],
   );

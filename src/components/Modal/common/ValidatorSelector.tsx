@@ -35,6 +35,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import { CustomToast } from 'components/design-system-ui/toast';
 import { ModalRef } from 'types/modalRef';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import BigN from 'bignumber.js';
@@ -306,6 +307,7 @@ export const ValidatorSelector = ({
             ref={toastRef}
             placement={'bottom'}
             offsetBottom={OFFSET_BOTTOM}
+            renderToast={toast => <CustomToast toast={toast} />}
           />
         }
       </SwFullSizeModal>

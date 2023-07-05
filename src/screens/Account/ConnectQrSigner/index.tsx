@@ -78,13 +78,13 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
         })
           .then(errors => {
             if (errors.length) {
-              toast.show(errors[0].message);
+              toast.show(errors[0].message, { type: 'danger' });
             } else {
               onComplete();
             }
           })
           .catch((error: Error) => {
-            toast.show(error.message);
+            toast.show(error.message, { type: 'danger' });
           })
           .finally(() => {
             setLoading(false);

@@ -53,9 +53,9 @@ export const ConfigureToken = ({
   };
 
   const showToast = useCallback(
-    (message: string) => {
+    (message: string, type?: 'normal' | 'success' | 'danger' | 'warning' | '') => {
       toast.hideAll();
-      toast.show(message);
+      toast.show(message, { type: type });
     },
     [toast],
   );
@@ -65,13 +65,13 @@ export const ConfigureToken = ({
       .then(result => {
         if (result) {
           navigation.goBack();
-          showToast(i18n.common.importTokenSuccessMessage);
+          showToast(i18n.common.importTokenSuccessMessage, 'success');
         } else {
-          showToast(i18n.errorMessage.occurredError);
+          showToast(i18n.errorMessage.occurredError, 'danger');
         }
       })
       .catch(() => {
-        showToast(i18n.errorMessage.occurredError);
+        showToast(i18n.errorMessage.occurredError, 'danger');
       });
   }, [navigation, showToast, tokenInfo?.slug]);
 
