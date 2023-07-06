@@ -9,7 +9,6 @@ import { RootState } from 'stores/index';
 import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { ColorMap } from 'styles/color';
-import { filterNotReadOnlyAccount } from 'utils/account';
 import { changeAuthorization, changeAuthorizationPerAccount, forgetSite, toggleAuthorization } from 'messaging/index';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { updateAuthUrls } from 'stores/updater';
@@ -42,7 +41,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const hostName = getHostName(authInfo.url);
   const accountItems = useMemo(() => {
-    const accountListWithoutAll = filterNotReadOnlyAccount(accounts.filter(opt => opt.address !== 'ALL'));
+    const accountListWithoutAll = accounts.filter(opt => opt.address !== 'ALL');
 
     if (accountAuthType === 'substrate') {
       return accountListWithoutAll.filter(acc => !isEthereumAddress(acc.address));

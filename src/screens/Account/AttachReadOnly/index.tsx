@@ -98,7 +98,7 @@ const AttachReadOnly = () => {
           address: _account.content,
           genesisHash: _account.genesisHash,
           isEthereum: _account.isEthereum,
-          isAllowed: false,
+          isAllowed: true,
           isReadOnly: true,
         })
           .then(errs => {
