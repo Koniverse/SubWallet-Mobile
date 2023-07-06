@@ -68,6 +68,7 @@ export const vi = {
     chooseAccount: 'Choose the account(s) you’d like to connect',
     youDonotHaveAnyAcc: (accountType: string) =>
       `You don't have any ${accountType} accounts to connect. Please create a new one`,
+    noAvailableAccount: 'No available account',
     connect: 'Connect',
     favorites: 'Favorites',
     history: 'History',

@@ -49,7 +49,7 @@ const MetadataConfirmation: React.FC<Props> = (props: Props) => {
         <ConfirmationGeneralInfo request={request} />
         <Text style={styles.text}>{i18n.confirmation.yourMetadataIsOutOfDate}</Text>
         <Text style={styles.description}>{i18n.confirmation.metadataDescription(chain, request.url)}</Text>
-        <View>
+        <View style={{ paddingBottom: 8 }}>
           <View style={styles.detailContainer}>
             <Text style={styles.detailName}>{i18n.common.symbol}</Text>
             <Text style={styles.detailValue}>{tokenSymbol}</Text>

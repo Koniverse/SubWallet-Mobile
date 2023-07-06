@@ -2,7 +2,7 @@ import React from 'react';
 import { GestureResponderEvent, StyleProp, TextStyle, View } from 'react-native';
 import Text from '../components/Text';
 import { SpaceStyle } from 'styles/space';
-import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold } from 'styles/sharedStyles';
 import { CaretLeft, IconProps } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Button, Icon } from 'components/design-system-ui';
@@ -47,9 +47,10 @@ const getHeaderTitleContainer = (textAlign?: string, showLeftBtn?: boolean, show
 };
 
 const subHeaderTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSize4,
-  ...FontBold,
+  fontSize: 20,
+  lineHeight: 28,
+  ...FontSemiBold,
+  textAlign: 'center',
   color: ColorMap.light,
 };
 

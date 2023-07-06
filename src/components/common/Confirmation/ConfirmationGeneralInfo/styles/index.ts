@@ -1,5 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMedium } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   container: ViewStyle;
@@ -17,6 +18,7 @@ export default (theme: ThemeTypes, gap: number) => {
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.lineHeightHeading6 * theme.fontSizeHeading6,
       color: theme.colorTextTertiary,
+      ...FontMedium,
     },
   });
 };
