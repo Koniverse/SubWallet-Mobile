@@ -26,7 +26,7 @@ import { InputAmount } from 'components/Input/InputAmount';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { addLazy, isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
 import { getMaxTransfer, makeCrossChainTransfer, makeTransfer, saveRecentAccountId } from 'messaging/index';
 import { Button, Icon } from 'components/design-system-ui';
@@ -49,7 +49,6 @@ import i18n from 'utils/i18n/i18n';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
-import { addLazy } from 'utils/lazyUpdate';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,

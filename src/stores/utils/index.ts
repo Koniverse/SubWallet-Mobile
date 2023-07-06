@@ -33,7 +33,7 @@ import {
 } from '@subwallet/extension-base/background/types';
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
-import { canDerive } from '@subwallet/extension-base/utils';
+import { addLazy, canDerive } from '@subwallet/extension-base/utils';
 import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
@@ -244,7 +244,15 @@ export const subscribeChainInfoMap = lazySubscribeMessage(
 
 export const updateChainStateMap = (data: Record<string, _ChainState>) => {
   // TODO useTokenGroup
-  store.dispatch({ type: 'chainStore/updateChainStateMap', payload: data });
+  if (data && Object.keys(data).length > 0) {
+    addLazy(
+      'updateChainStateMap',
+      () => {
+        store.dispatch({ type: 'chainStore/updateChainStateMap', payload: data });
+      },
+      900,
+    );
+  }
 };
 
 export const subscribeChainStateMap = lazySubscribeMessage(
@@ -307,7 +315,15 @@ export const updatePrice = (data: PriceJson) => {
 export const subscribePrice = lazySubscribeMessage('pri(price.getSubscription)', null, updatePrice, updatePrice);
 
 export const updateBalance = (data: BalanceJson) => {
-  store.dispatch({ type: 'balance/update', payload: data.details });
+  if (data.details && Object.keys(data.details).length > 0) {
+    addLazy(
+      'updateBalanceStore',
+      () => {
+        store.dispatch({ type: 'balance/update', payload: data.details });
+      },
+      900,
+    );
+  }
 };
 
 export const subscribeBalance = lazySubscribeMessage(
