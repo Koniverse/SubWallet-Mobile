@@ -5,7 +5,7 @@ import { FontSemiBold } from 'styles/sharedStyles';
 export default (theme: ThemeTypes) =>
   StyleSheet.create({
     listStyle: {
-      paddingTop: theme.sizeXS,
+      paddingTop: 0,
       paddingHorizontal: theme.padding,
       paddingBottom: theme.padding,
       gap: theme.size,
@@ -14,7 +14,7 @@ export default (theme: ThemeTypes) =>
       paddingTop: theme.sizeXS,
       paddingBottom: theme.sizeXS,
       marginBottom: -theme.sizeXS,
-      marginTop: -theme.size,
+      marginTop: -theme.sizeXS,
       backgroundColor: theme.colorBgDefault,
     },
     sectionHeaderTitle: {
@@ -26,6 +26,7 @@ export default (theme: ThemeTypes) =>
       position: 'absolute',
     },
     listContainer: {
+      flex: 1,
       paddingTop: theme.margin,
     },
     search: {

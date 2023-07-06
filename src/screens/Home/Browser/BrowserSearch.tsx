@@ -209,6 +209,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
           style={{ ...ScrollViewStyle }}
           keyboardShouldPersistTaps={'handled'}
           renderItem={renderItem}
+          stickySectionHeadersEnabled
           renderSectionHeader={renderSectionHeader}
           onEndReachedThreshold={0.5}
           contentContainerStyle={stylesheet.listStyle}

@@ -18,6 +18,7 @@ export default (theme: ThemeTypes) => {
     connectAccountMessage: {
       marginTop: theme.size,
       marginBottom: theme.size,
+      color: theme.colorTextLight2,
     },
     accountsContainer: {
       gap: theme.sizeXS,

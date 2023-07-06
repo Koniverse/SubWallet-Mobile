@@ -53,7 +53,7 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
     );
     return data;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [browserData.dapps, searchString]);
+  }, [browserData.dapps, searchString, bookmarkItems]);
 
   const itemSeparator = () => <View style={styles.itemSeparator} />;
   const onPressSectionItem = (item: SearchItemType) => {
