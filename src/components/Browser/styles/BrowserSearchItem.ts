@@ -20,6 +20,8 @@ export default (theme: ThemeTypes) => {
       alignItems: 'center',
     },
 
+    squircleStyle: { width: '100%', height: '100%' },
+
     textContentWrapper: { flex: 1 },
 
     textContentLine1: {

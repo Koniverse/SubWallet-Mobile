@@ -17,7 +17,7 @@ import { Search } from 'components/Search';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { addLazy, removeLazy } from 'utils/lazyUpdate';
+import { addLazy } from 'utils/lazyUpdate';
 import { BrowserSearchItem } from 'components/Browser/BrowserSearchItem';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
@@ -187,7 +187,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
     setSectionItems(newItem);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const onSearch = value => {
+  const onSearch = (value: string) => {
     searchStringRef.current = value;
     const newItem = getSectionItems();
     setSearchString(value);
@@ -224,7 +224,6 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
           onEndReachedThreshold={0.5}
           maxToRenderPerBatch={12}
           initialNumToRender={12}
-          removeClippedSubviews
           contentContainerStyle={stylesheet.listStyle}
           sections={sectionItems}
         />
