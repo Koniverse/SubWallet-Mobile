@@ -47,17 +47,19 @@ const SelectItem = (props: SelectItemProps) => {
       onPress={onPress}
       disabled={disabled}
       activeOpacity={disabled ? theme.opacityDisable : theme.opacityPress}>
-      <View style={styles.left}>
-        {leftItemIcon || (
-          <BackgroundIcon
-            shape={'circle'}
-            backgroundColor={backgroundColor}
-            iconColor={iconColor}
-            phosphorIcon={icon}
-            weight={'fill'}
-          />
-        )}
-      </View>
+      {!!(icon || leftItemIcon) && (
+        <View style={styles.left}>
+          {leftItemIcon || (
+            <BackgroundIcon
+              shape={'circle'}
+              backgroundColor={backgroundColor}
+              iconColor={iconColor}
+              phosphorIcon={icon}
+              weight={'fill'}
+            />
+          )}
+        </View>
+      )}
       <Text
         numberOfLines={1}
         style={[styles.text, { color: !disabled ? textColor || '#FFF' : 'rgba(255, 255, 255, 0.3)' }]}>
