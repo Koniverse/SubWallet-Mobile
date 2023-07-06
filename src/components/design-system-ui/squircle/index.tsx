@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 
@@ -9,7 +9,7 @@ interface Props {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   customSize?: number;
   customStyle?: ViewStyle;
-  squircleStyle?: ViewStyle;
+  containerStyle?: ViewStyle;
 }
 
 export const SIZE_MAP: Record<string, number> = {
@@ -20,11 +20,19 @@ export const SIZE_MAP: Record<string, number> = {
   xl: 72,
 };
 
-const Squircle: React.FC<Props> = ({ children, customSize, size = 'md', backgroundColor = '#004BFF', customStyle }) => {
+const Squircle: React.FC<Props> = ({
+  children,
+  customSize,
+  size = 'md',
+  backgroundColor = '#004BFF',
+  customStyle,
+  containerStyle,
+}) => {
   const squircleSize = customSize ? customSize : size ? SIZE_MAP[size] : 52;
+  const rootStyle = { position: 'relative', width: squircleSize, height: squircleSize } as ViewStyle;
   return (
     <MaskedView
-      style={[{ position: 'relative', width: squircleSize, height: squircleSize, backgroundColor }, customStyle]}
+      style={[rootStyle, customStyle]}
       maskElement={
         <Svg width={squircleSize} height={squircleSize} viewBox="0 0 64 64">
           <Path
@@ -33,7 +41,7 @@ const Squircle: React.FC<Props> = ({ children, customSize, size = 'md', backgrou
           />
         </Svg>
       }>
-      {children}
+      <View style={{ ...containerStyle, backgroundColor }}>{children}</View>
     </MaskedView>
   );
 };
