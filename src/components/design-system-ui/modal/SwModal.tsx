@@ -12,6 +12,7 @@ export interface SWModalProps {
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   modalTitle?: string;
+  titleTextAlign?: 'left' | 'center';
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -32,7 +33,7 @@ const subWalletModalSeparator: StyleProp<any> = {
   height: 5,
   borderRadius: 100,
   backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  marginBottom: 22,
+  marginBottom: 16,
   textAlign: 'center',
 };
 
@@ -45,6 +46,7 @@ const SwModal = ({
   modalTitle,
   onModalHide,
   isFullHeight = false,
+  titleTextAlign = 'left',
 }: SWModalProps) => {
   return (
     <ModalBase
@@ -73,7 +75,12 @@ const SwModal = ({
           }}>
           <View style={subWalletModalSeparator} />
           {modalTitle && (
-            <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
+            <View
+              style={{
+                width: '100%',
+                marginBottom: 16,
+                alignItems: titleTextAlign === 'left' ? 'flex-start' : 'center',
+              }}>
               <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
             </View>
           )}

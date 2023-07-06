@@ -214,6 +214,10 @@ const SendNFT: React.FC<SendNFTProps> = ({
   return (
     <ContainerWithSubHeader
       title={title}
+      isShowMainHeader={true}
+      isShowPlaceHolder={false}
+      needGapWithStatusBar={false}
+      titleTextAlign={'left'}
       onPressBack={goBack}
       disabled={loading}
       rightButtonTitle={i18n.transferNft.send}

@@ -83,6 +83,7 @@ export const CrowdloansScreen = () => {
       <FlatListScreen
         isShowFilterBtn
         title={i18n.header.crowdloans}
+        titleTextAlign={'left'}
         flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
         renderListEmptyComponent={renderListEmptyComponent}
         renderItem={renderItem}

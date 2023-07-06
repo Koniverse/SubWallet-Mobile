@@ -74,6 +74,7 @@ const NftItemList = ({
           return;
         }
 
+        // @ts-ignore
         navigation.navigate('Home', {
           // @ts-ignore
           screen: 'Main',
@@ -126,7 +127,7 @@ const NftItemList = ({
       <FlatListScreen
         headerContent={() => {
           return (
-            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'flex-start', paddingLeft: 32 }}>
               <Text numberOfLines={1} style={[NftItemsTextStyle, { maxWidth: 200 }]}>
                 {collection?.collectionName || i18n.title.nftList}
               </Text>
@@ -134,6 +135,9 @@ const NftItemList = ({
             </View>
           );
         }}
+        isShowMainHeader
+        isShowPlaceHolder={false}
+        needGapWithStatusBar={false}
         autoFocus={false}
         showLeftBtn={true}
         renderItem={renderItem}

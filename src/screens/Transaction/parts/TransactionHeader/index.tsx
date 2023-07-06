@@ -30,6 +30,7 @@ const TransactionHeader = ({
         <SubHeader
           onPressBack={() => navigation.goBack()}
           title={title}
+          titleTextAlign={'left'}
           rightIcon={showRightIcon ? Info : undefined}
           onPressRightIcon={onPressRightIcon}
           disableRightButton={disableRightButton}

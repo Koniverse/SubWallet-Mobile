@@ -225,6 +225,10 @@ const NftDetail = ({
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
+      titleTextAlign={'left'}
+      isShowPlaceHolder={false}
+      isShowMainHeader={true}
+      needGapWithStatusBar={false}
       title={data.name || i18n.title.nftDetail}
       style={ContainerHeaderStyle}
       onPressBack={() => navigation.goBack()}>

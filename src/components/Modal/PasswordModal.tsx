@@ -1,15 +1,12 @@
 import { PasswordField } from 'components/Field/Password';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect } from 'react';
-import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
-import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
-import { Button } from 'components/design-system-ui';
+import { Button, SwModal } from 'components/design-system-ui';
 
 interface Props {
   visible: boolean;
@@ -23,14 +20,6 @@ interface Props {
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   width: '100%',
-};
-
-const TitleTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
-  textAlign: 'center',
-  color: ColorMap.light,
-  marginBottom: 24,
 };
 
 const PasswordContainerStyle: StyleProp<ViewStyle> = {
@@ -91,9 +80,11 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
   const errors = [...formState.errors.password, ...(errorArr && errorArr.length ? errorArr : [])];
 
   return (
-    <SubWalletModal modalVisible={visible} onChangeModalVisible={!isBusy ? closeModal : undefined}>
+    <SwModal
+      modalVisible={visible}
+      modalTitle={i18n.common.enterYourPassword}
+      onChangeModalVisible={!isBusy ? closeModal : undefined}>
       <View style={ContainerStyle}>
-        <Text style={TitleTextStyle}>{i18n.common.enterYourPassword}</Text>
         <PasswordField
           ref={formState.refs.password}
           label={formState.labels.password}
@@ -117,7 +108,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           {i18n.common.confirm}
         </Button>
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };
 
