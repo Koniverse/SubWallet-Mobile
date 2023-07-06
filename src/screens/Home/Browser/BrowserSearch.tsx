@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ListRenderItemInfo, SectionList, View } from 'react-native';
 import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
 import { useNavigation } from '@react-navigation/native';
@@ -68,6 +68,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>('');
+  const searchStringRef = useRef('');
   const [sectionItems, setSectionItems] = useState<SectionItem[]>([]);
   const isOpenNewTab = params && params.isOpenNewTab;
 
@@ -129,7 +130,9 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
   const getSectionItems = useCallback((): SectionItem[] => {
     const _historyItems = (
-      !searchString ? historyItems : historyItems.filter(i => i.name.toLowerCase().includes(searchString.toLowerCase()))
+      !searchStringRef.current
+        ? historyItems
+        : historyItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase()))
     ).map(i => {
       const dapp = predefinedDApps.dapps.find(a => i.url.includes(a.id));
 
@@ -146,10 +149,10 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
     });
     const result: SectionItem[] = [];
 
-    if (searchString) {
+    if (searchStringRef.current) {
       result.push({
         title: i18n.common.search,
-        data: [getFirstSearchItem(searchString)],
+        data: [getFirstSearchItem(searchStringRef.current)],
         type: 'search',
       });
     }
@@ -162,32 +165,39 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       });
     }
 
-    const _recommendItems = !searchString
+    const _recommendItems = !searchStringRef.current
       ? recommendItems
-      : recommendItems.filter(i => i.name.toLowerCase().includes(searchString.toLowerCase()));
+      : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase()));
 
     if (_recommendItems.length) {
       result.push({
         title: i18n.common.recommend,
-        data: !searchString
+        data: !searchStringRef.current
           ? recommendItems
-          : recommendItems.filter(i => i.name.toLowerCase().includes(searchString.toLowerCase())),
+          : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase())),
         type: 'recommend',
       });
     }
 
     return result;
-  }, [historyItems, searchString]);
+  }, [historyItems]);
 
   useEffect(() => {
+    const newItem = getSectionItems();
+    setSectionItems(newItem);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const onSearch = value => {
+    searchStringRef.current = value;
+    const newItem = getSectionItems();
+    setSearchString(value);
     addLazy('searchBrowser', () => {
-      setSectionItems(getSectionItems());
+      setSectionItems(newItem);
     });
-
-    return () => {
-      removeLazy('searchBrowser');
-    };
-  }, [getSectionItems]);
+  };
+  const onClearSearch = () => {
+    onSearch('');
+  };
 
   return (
     <ContainerWithSubHeader
@@ -199,10 +209,10 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       <View style={stylesheet.listContainer}>
         <Search
           style={stylesheet.search}
-          autoFocus={false}
+          autoFocus
           placeholder={i18n.placeholder.searchWebsite}
-          onClearSearchString={() => setSearchString('')}
-          onSearch={setSearchString}
+          onClearSearchString={onClearSearch}
+          onSearch={onSearch}
           searchText={searchString}
         />
         <SectionList
@@ -212,6 +222,9 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
           stickySectionHeadersEnabled
           renderSectionHeader={renderSectionHeader}
           onEndReachedThreshold={0.5}
+          maxToRenderPerBatch={12}
+          initialNumToRender={12}
+          removeClippedSubviews
           contentContainerStyle={stylesheet.listStyle}
           sections={sectionItems}
         />
