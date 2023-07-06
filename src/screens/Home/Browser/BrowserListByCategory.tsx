@@ -31,16 +31,26 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
   const listByCategory = useMemo((): DAppInfo[] => {
     if (navigationType && navigationType === 'BOOKMARK') {
-      const dAppsByBookmark = bookmarkItems.map(item =>
-        browserData.dapps.find(dapp => {
+      const dAppsByBookmark = bookmarkItems.map(item => {
+        const bookmarkedDApps = browserData.dapps.find(dapp => {
           let isTrue = item.url.includes(dapp.id) && dapp.name.toLowerCase().includes(searchString);
           if (route.name === 'all') {
             return isTrue;
           }
           return isTrue && dapp.categories.includes(route.name);
-        }),
-      );
-      return dAppsByBookmark.filter(item => !!item) as DAppInfo[];
+        });
+        if (bookmarkedDApps) {
+          return bookmarkedDApps;
+        }
+        return {
+          name: item.name,
+          id: item.id,
+          url: item.url,
+          icon: '',
+          categories: [],
+        };
+      });
+      return dAppsByBookmark;
     }
     if (route.name === 'all') {
       if (searchString) {

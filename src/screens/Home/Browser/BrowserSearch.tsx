@@ -186,7 +186,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
     const newItem = getSectionItems();
     setSectionItems(newItem);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [historyItems]);
   const onSearch = (value: string) => {
     searchStringRef.current = value;
     const newItem = getSectionItems();
