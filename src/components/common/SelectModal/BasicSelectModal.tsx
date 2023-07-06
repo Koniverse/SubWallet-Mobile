@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
 import { Button, Divider, Icon, SwModal } from 'components/design-system-ui';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { IconProps } from 'phosphor-react-native';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
 import { View } from 'react-native';
 import { ActionSelectItem } from 'components/common/SelectModal/parts/ActionSelectItem';
 import { FilterSelectItem } from 'components/common/SelectModal/parts/FilterSelectItem';
+import { ActionItemType } from 'components/Modal/AccountActionSelectModal';
+import { OptionType } from 'components/common/FilterModal';
 
 interface Props<T> {
   title: string;
@@ -14,7 +15,7 @@ interface Props<T> {
   renderSelected?: () => JSX.Element;
   selectModalType?: 'single' | 'multi';
   selectModalItemType?: 'filter' | 'select';
-  onSelectItem?: (item: T) => void;
+  onSelectItem?: (item: T, isCheck?: boolean) => void;
   disabled?: boolean;
   selectedValueMap: Record<string, boolean>;
   applyBtn?: {
@@ -22,9 +23,14 @@ interface Props<T> {
     icon: React.ElementType<IconProps>;
     onPressApplyBtn: () => void;
   };
+  isShowInput?: boolean;
+  isShowContent?: boolean;
+  children?: React.ReactNode;
+  renderCustomItem?: (item: T) => JSX.Element;
+  onChangeModalVisible?: () => void;
 }
 
-export function BasicSelectModal<T>(selectModalProps: Props<T>) {
+function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const {
     title,
     items,
@@ -36,27 +42,44 @@ export function BasicSelectModal<T>(selectModalProps: Props<T>) {
     selectModalItemType,
     applyBtn,
     selectedValueMap,
+    isShowInput,
+    isShowContent = true,
+    children,
+    renderCustomItem,
+    onChangeModalVisible,
   } = selectModalProps;
   const [isOpen, setOpen] = useState<boolean>(false);
   const onCloseModal = () => setOpen(false);
   const onOpenModal = () => setOpen(true);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      onOpenModal: onOpenModal,
+      onCloseModal: onCloseModal,
+      isModalOpen: isOpen,
+    }),
+    [isOpen],
+  );
   const renderItem = (item: T) => {
     if (selectModalItemType === 'select') {
+      const selectItem = item as ActionItemType;
       return (
         <ActionSelectItem
+          key={selectItem.key}
           item={item}
           onSelectItem={onSelectItem}
           selectedValueMap={selectedValueMap}
-          onCloseModal={onCloseModal}
         />
       );
     } else if (selectModalItemType === 'filter') {
+      const filterItem = item as OptionType;
       return (
         <FilterSelectItem
+          key={filterItem.value}
           item={item}
           selectedValueMap={selectedValueMap}
           onSelectItem={onSelectItem}
-          onCloseModal={onCloseModal}
         />
       );
     } else {
@@ -68,11 +91,9 @@ export function BasicSelectModal<T>(selectModalProps: Props<T>) {
     return (
       <>
         <Divider style={{ paddingTop: 4, paddingBottom: 16 }} color={'#1A1A1A'} />
-        <View style={{ width: '100%', ...MarginBottomForSubmitButton }}>
-          <Button icon={<Icon phosphorIcon={applyBtn?.icon} size={'lg'} />} onPress={applyBtn?.onPressApplyBtn}>
-            {applyBtn?.label}
-          </Button>
-        </View>
+        <Button icon={<Icon phosphorIcon={applyBtn?.icon} size={'lg'} />} onPress={applyBtn?.onPressApplyBtn}>
+          {applyBtn?.label}
+        </Button>
       </>
     );
   };
@@ -81,16 +102,32 @@ export function BasicSelectModal<T>(selectModalProps: Props<T>) {
     <>
       {renderSelectModalBtn ? (
         renderSelectModalBtn(() => setOpen(true))
-      ) : (
+      ) : isShowInput ? (
         <SelectModalField disabled={disabled} onPressField={onOpenModal} renderSelected={renderSelected} />
+      ) : (
+        <></>
       )}
 
-      <SwModal modalVisible={isOpen} modalTitle={title} onChangeModalVisible={onCloseModal}>
-        <>
-          {items.map(item => renderItem(item))}
-          {selectModalType === 'multi' && renderFooter()}
-        </>
-      </SwModal>
+      {isShowContent ? (
+        <SwModal
+          modalVisible={isOpen}
+          modalTitle={title}
+          onChangeModalVisible={() => {
+            onChangeModalVisible && onChangeModalVisible();
+            onCloseModal();
+          }}>
+          <View style={{ width: '100%' }}>
+            {items.map(item => (renderCustomItem ? renderCustomItem(item) : renderItem(item)))}
+            {selectModalType === 'multi' && renderFooter()}
+            {children}
+          </View>
+        </SwModal>
+      ) : (
+        <>{children}</>
+      )}
     </>
   );
 }
+
+export const BasicSelectModal: React.ForwardRefExoticComponent<Props<any> & React.RefAttributes<any>> =
+  forwardRef(_BasicSelectModal);

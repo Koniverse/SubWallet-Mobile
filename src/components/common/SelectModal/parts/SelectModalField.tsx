@@ -12,10 +12,7 @@ interface Props extends FieldBaseProps {
 
 export const SelectModalField = ({ onPressField, renderSelected, disabled }: Props) => {
   return (
-    <TouchableOpacity
-      disabled={disabled}
-      style={[{ marginBottom: 16 }, disabled && DisabledStyle]}
-      onPress={onPressField}>
+    <TouchableOpacity disabled={disabled} style={disabled && DisabledStyle} onPress={onPressField}>
       {renderSelected && renderSelected()}
     </TouchableOpacity>
   );

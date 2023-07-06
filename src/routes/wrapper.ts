@@ -6,6 +6,7 @@ import { HomeStackParamList } from 'routes/home';
 export type WrapperParamList = {
   Main: NavigatorScreenParams<HomeStackParamList>;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
+  BuyToken: undefined;
   LoadingScreen: undefined;
 };
 

@@ -496,6 +496,7 @@ export const vi = {
     seedPhrase: 'Seed phrase',
     enterPrivateKey: 'Enter private key',
     searchAddressBook: 'Account name',
+    selectService: 'Select service',
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
@@ -546,6 +547,7 @@ export const vi = {
     transactionDoneMessage: 'Your request has been sent. You can track its progress on the Transaction History page.',
     changeMasterPasswordMessage1: 'To create a new password, you must correctly enter your current password.',
     changeMasterPasswordMessage2: 'Use this password to unlock your account.',
+    buyMessage: 'You will be taken to independent provider to complete this transaction',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',

@@ -1,16 +1,21 @@
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isAccountAll as checkIsAccountAll } from '@subwallet/extension-base/utils';
 import { getAccountType } from 'utils/index';
 import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
-import { HIDE_MODAL_DURATION } from 'constants/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { findAccountByAddress } from 'utils/account';
 import { PREDEFINED_TRANSAK_TOKEN } from '../../../../predefined/transak';
 import { AccountType } from 'types/ui-types';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
+import { ModalRef } from 'types/modalRef';
+import { InAppBrowser } from 'react-native-inappbrowser-reborn';
+import { ColorMap } from 'styles/color';
+import { Linking } from 'react-native';
+import i18n from 'utils/i18n/i18n';
+import ToastContainer from 'react-native-toast-notifications';
 
 type BuyTokenSelectedResult = {
   selectedBuyAccount?: string;
@@ -52,13 +57,30 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const fixedTokenKey = currentSymbol ? PREDEFINED_TRANSAK_TOKEN[currentSymbol]?.slug : undefined;
-  const [isBuyTokenSelectorModalVisible, setBuyTokenSelectorModalVisible] = useState<boolean>(false);
-  const [isBuyAccountSelectorModalVisible, setBuyAccountSelectorModalVisible] = useState<boolean>(false);
-  const [isBuyServiceSelectorModalVisible, setBuyServiceSelectorModalVisible] = useState<boolean>(false);
   const [{ selectedBuyAccount, selectedBuyToken }, setBuyTokenSelectedResult] = useState<BuyTokenSelectedResult>({
     selectedBuyAccount: isAllAccount ? undefined : currentAccount?.address,
     selectedBuyToken: fixedTokenKey || '',
   });
+  const sleep = (timeout: number) => new Promise<void>(resolve => setTimeout(resolve, timeout));
+  const [{ selectedService, isOpenInAppBrowser, serviceUrl }, setSelectedService] = useState<{
+    selectedService: string | undefined;
+    isOpenInAppBrowser: boolean;
+    serviceUrl: string;
+  }>({ selectedService: undefined, isOpenInAppBrowser: false, serviceUrl: '' });
+
+  const toastRef = useRef<ToastContainer>(null);
+  const show = useCallback((text: string) => {
+    if (toastRef.current) {
+      // @ts-ignore
+      toastRef.current.hideAll();
+      // @ts-ignore
+      toastRef.current.show(text);
+    }
+  }, []);
+
+  const accountBuyRef = useRef<ModalRef>();
+  const tokenBuyRef = useRef<ModalRef>();
+  const serviceBuyRef = useRef<ModalRef>();
 
   const buyAccountSelectorItems = useMemo<AccountJson[]>(() => {
     if (!isAllAccount) {
@@ -76,7 +98,10 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
     return accounts.filter(a => !checkIsAccountAll(a.address));
   }, [isAllAccount, tokenGroupSlug, accounts, assetRegistryMap, chainInfoMap]);
 
-  const accountType = selectedBuyAccount ? getAccountType(selectedBuyAccount) : '';
+  const accountType = useMemo(
+    () => (selectedBuyAccount ? getAccountType(selectedBuyAccount) : ''),
+    [selectedBuyAccount],
+  );
 
   const ledgerNetwork = useMemo((): string | undefined => {
     const account = findAccountByAddress(accounts, selectedBuyAccount);
@@ -100,55 +125,102 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
     return getTokenItems(accountType, ledgerNetwork);
   }, [accountType, fixedTokenKey, ledgerNetwork]);
 
-  const actionWithSetTimeout = useCallback((action: () => void) => {
-    setTimeout(action, HIDE_MODAL_DURATION);
+  const openSelectBuyAccount = useCallback((account: AccountJson) => {
+    setBuyTokenSelectedResult({ selectedBuyAccount: account.address });
   }, []);
 
-  const onOpenBuyToken = useCallback(() => {
-    if (!currentAccount) {
-      return;
-    }
-
-    if (checkIsAccountAll(currentAccount.address)) {
-      setBuyAccountSelectorModalVisible(true);
-    } else {
-      setBuyTokenSelectorModalVisible(true);
-    }
-  }, [currentAccount]);
-
-  const openSelectBuyAccount = useCallback(
-    (account: AccountJson) => {
-      setBuyTokenSelectedResult({ selectedBuyAccount: account.address });
-      setBuyAccountSelectorModalVisible(false);
-      actionWithSetTimeout(() => {
-        setBuyTokenSelectorModalVisible(true);
-      });
-    },
-    [actionWithSetTimeout],
-  );
-
-  const openSelectBuyToken = useCallback(
-    (item: TokenItemType) => {
-      setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: item.slug }));
-      setBuyTokenSelectorModalVisible(false);
-      actionWithSetTimeout(() => {
-        setBuyServiceSelectorModalVisible(true);
-      });
-    },
-    [actionWithSetTimeout],
-  );
+  const openSelectBuyToken = useCallback((item: TokenItemType) => {
+    setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: item.slug }));
+    tokenBuyRef && tokenBuyRef.current?.onCloseModal();
+  }, []);
 
   const onCloseSelectBuyAccount = useCallback(() => {
-    setBuyAccountSelectorModalVisible(false);
+    accountBuyRef && accountBuyRef.current?.onCloseModal();
   }, []);
 
   const onCloseSelectBuyToken = useCallback(() => {
-    setBuyTokenSelectorModalVisible(false);
+    tokenBuyRef && tokenBuyRef.current?.onCloseModal();
   }, []);
 
   const onCloseSelectBuyService = useCallback(() => {
-    setBuyServiceSelectorModalVisible(false);
+    serviceBuyRef && serviceBuyRef.current?.onCloseModal();
   }, []);
+
+  const onBuyToken = useCallback(
+    async (currentUrl?: string, animated = true) => {
+      try {
+        if (await InAppBrowser.isAvailable()) {
+          // A delay to change the StatusBar when the browser is opened
+          await InAppBrowser.open(currentUrl || serviceUrl, {
+            // iOS Properties
+            dismissButtonStyle: 'done',
+            preferredBarTintColor: ColorMap.dark1,
+            preferredControlTintColor: ColorMap.light,
+            readerMode: true,
+            animated,
+            modalEnabled: true,
+            enableBarCollapsing: false,
+            // Android Properties
+            showTitle: true,
+            toolbarColor: ColorMap.dark1,
+            secondaryToolbarColor: ColorMap.dark1,
+            navigationBarColor: ColorMap.dark1,
+            navigationBarDividerColor: 'white',
+            enableUrlBarHiding: true,
+            enableDefaultShare: true,
+            forceCloseOnRedirection: false,
+            // Specify full animation resource identifier(package:anim/name)
+            // or only resource name(in case of animation bundled with app).
+            animations: {
+              startEnter: 'slide_in_right',
+              startExit: 'slide_out_left',
+              endEnter: 'slide_in_left',
+              endExit: 'slide_out_right',
+            },
+            headers: {
+              'my-custom-header': 'my custom header value',
+            },
+            hasBackButton: true,
+            browserPackage: undefined,
+            showInRecents: true,
+            includeReferrer: true,
+          });
+          // A delay to show an alert when the browser is closed
+          // await sleep(800);
+          // if (result.type === 'cancel') {
+          //   InAppBrowser.close();
+          // }
+          setSelectedService(prevState => ({
+            ...prevState,
+            isOpenInAppBrowser: false,
+          }));
+        } else {
+          Linking.openURL(currentUrl || serviceUrl);
+        }
+      } catch (error) {
+        await sleep(50);
+        const errorMessage = (error as Error).message || (error as string);
+        console.log('error message for buy feature', errorMessage);
+      }
+    },
+    [serviceUrl],
+  );
+
+  const onPressItem = (currentValue: string, currentUrl: string) => {
+    setSelectedService({ selectedService: currentValue, isOpenInAppBrowser: true, serviceUrl: currentUrl });
+    if (currentUrl) {
+      if (currentValue !== 'transak') {
+        show(i18n.notificationMessage.comingSoon);
+      }
+      serviceBuyRef?.current?.onCloseModal();
+    } else {
+      if (currentValue === 'transak') {
+        show(i18n.common.unsupportedToken);
+      } else {
+        show(i18n.notificationMessage.comingSoon);
+      }
+    }
+  };
 
   useEffect(() => {
     setBuyTokenSelectedResult(prev => ({
@@ -157,11 +229,21 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
     }));
   }, [currentAccount?.address]);
 
+  useEffect(() => {
+    if (!fixedTokenKey && buyTokenSelectorItems.length) {
+      if (!selectedBuyToken) {
+        setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: buyTokenSelectorItems[0].slug }));
+      } else {
+        const isSelectedTokenInList = buyTokenSelectorItems.some(i => i.slug === selectedBuyToken);
+
+        if (!isSelectedTokenInList) {
+          setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: buyTokenSelectorItems[0].slug }));
+        }
+      }
+    }
+  }, [buyTokenSelectorItems, fixedTokenKey, selectedBuyToken]);
+
   return {
-    isBuyTokenSelectorModalVisible,
-    isBuyAccountSelectorModalVisible,
-    isBuyServiceSelectorModalVisible,
-    onOpenBuyToken,
     openSelectBuyAccount,
     openSelectBuyToken,
     onCloseSelectBuyAccount,
@@ -171,5 +253,13 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
     selectedBuyToken,
     buyAccountSelectorItems,
     buyTokenSelectorItems,
+    accountBuyRef,
+    tokenBuyRef,
+    serviceBuyRef,
+    onBuyToken,
+    onPressItem,
+    selectedService,
+    isOpenInAppBrowser,
+    serviceUrl,
   };
 }

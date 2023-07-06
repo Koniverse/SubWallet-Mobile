@@ -8,7 +8,8 @@ import { ColorMap } from 'styles/color';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import ToastContainer from 'react-native-toast-notifications';
 
-type ActionItemType = {
+export type ActionItemType = {
+  key: string;
   backgroundColor: string;
   icon: React.ElementType<IconProps>;
   label: string;

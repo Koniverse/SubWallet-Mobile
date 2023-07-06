@@ -13,6 +13,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { toggleBalancesVisibility } from 'messaging/index';
 import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { updateToggleBalance } from 'stores/base/Settings';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props {
   totalValue: SwNumberProps['value'];
@@ -20,7 +22,6 @@ interface Props {
   totalChangePercent: SwNumberProps['value'];
   isPriceDecrease: boolean;
   onOpenSendFund?: () => void;
-  onOpenBuyTokens?: () => void;
   onOpenReceive?: () => void;
 }
 
@@ -44,7 +45,6 @@ const containerStyle: StyleProp<any> = {
 
 export const TokenGroupsUpperBlock = ({
   isPriceDecrease,
-  onOpenBuyTokens,
   onOpenReceive,
   onOpenSendFund,
   totalChangePercent,
@@ -52,6 +52,7 @@ export const TokenGroupsUpperBlock = ({
   totalValue,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const _toggleBalances = () => {
     updateToggleBalance();
@@ -148,7 +149,7 @@ export const TokenGroupsUpperBlock = ({
           disabled={Platform.OS === 'ios'}
           label={i18n.cryptoScreen.buy}
           icon={ButtonIcon.Buy}
-          onPress={onOpenBuyTokens}
+          onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken' })}
           buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
         />
       </View>

@@ -49,11 +49,7 @@ export const TokenSelectField = ({
           </Typography.Text>
         )}
 
-        {!!showIcon && (
-          <View style={styles.iconWrapper}>
-            <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />
-          </View>
-        )}
+        {!!showIcon && <CaretDown size={20} color={theme.colorTextLight3} weight={'bold'} />}
       </View>
     </FieldBase>
   );
@@ -66,7 +62,7 @@ function createStyle(theme: ThemeTypes, disabled?: boolean) {
       color: disabled ? theme.colorTextLight4 : theme.colorTextLight2,
       flex: 1,
     },
-    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center' },
+    blockContent: { flexDirection: 'row', height: 48, alignItems: 'center', paddingRight: theme.paddingSM },
     logoWrapper: {
       paddingLeft: theme.sizeSM,
       paddingRight: theme.sizeXS,
