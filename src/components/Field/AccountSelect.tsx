@@ -44,7 +44,7 @@ const getPlaceholderStyle = (): StyleProp<any> => {
     ...FontSemiBold,
     paddingLeft: 8,
     paddingRight: 8,
-    color: '#FFF',
+    color: 'rgba(255, 255, 255, 0.45)',
   };
 };
 
@@ -72,7 +72,7 @@ export const AccountSelectField = ({
     <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Avatar value={value} size={24} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
+          <Avatar value={value} size={label ? 20 : 24} theme={isEthereumAddress(value) ? 'ethereum' : 'polkadot'} />
           {!!value && <Text style={accountNameTextStyle}>{accountName}</Text>}
           {!!value && <Text style={getTextStyle(!!disabled)}>{`(${toShort(value, 4, 4)})`}</Text>}
           {!value && <Text style={getPlaceholderStyle()}>{i18n.header.selectAccount}</Text>}

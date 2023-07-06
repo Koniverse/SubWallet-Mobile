@@ -78,6 +78,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   }, [transactionType]);
 
   const form = useForm<T, TContext>({
+    mode: 'onChange',
+    ...formOptions,
     defaultValues: {
       from: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
       chain: '',
@@ -85,8 +87,6 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       value: '',
       ...formOptions.defaultValues,
     } as UseFormProps<T, TContext>['defaultValues'],
-    mode: 'onChange',
-    ...formOptions,
   });
 
   const { getValues, setValue } = form;

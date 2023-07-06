@@ -35,7 +35,15 @@ import { useToast } from 'react-native-toast-notifications';
 import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import { useWatch } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { Header } from 'components/Header';
 import { SubHeader } from 'components/SubHeader';
@@ -193,11 +201,17 @@ function getTokenItemsForViewStep2(
   originTokenItems: TokenItemType[],
   xcmRefMap: Record<string, _AssetRef>,
   chainInfoMap: Record<string, _ChainInfo>,
+  senderAddress: string,
   recipientAddress: string,
 ) {
   const isRecipientAddressEvmType = isEthereumAddress(recipientAddress);
+  const isFromAndToSameType = isEthereumAddress(senderAddress) === isEthereumAddress(recipientAddress);
 
   return originTokenItems.filter(ti => {
+    if (isFromAndToSameType && _isChainEvmCompatible(chainInfoMap[ti.originChain]) === isRecipientAddressEvmType) {
+      return true;
+    }
+
     for (let xKey in xcmRefMap) {
       if (!xcmRefMap.hasOwnProperty(xKey)) {
         continue;
@@ -301,7 +315,7 @@ export const SendFund = ({
       handleSubmit,
       trigger,
       setFocus,
-      formState: { errors },
+      formState: { errors, dirtyFields },
     },
     onChangeFromValue: setFrom,
     onChangeAssetValue: setAsset,
@@ -310,9 +324,8 @@ export const SendFund = ({
   } = useTransaction<TransferFormValues>('send-fund', {
     mode: 'onBlur',
     defaultValues: {
-      from: '5HbcGs2QXVAc6Q6eoTzLYNAJWpN17AkCFRLnWDaHCiGYXvNc',
       destChain: '',
-      to: scanRecipient || '5HMkyzwXxVtFa4VGid3DuDtuWxZcGqt57wq9WiZPP8YrSt6d',
+      to: '',
     },
   });
 
@@ -428,12 +441,12 @@ export const SendFund = ({
   }, [accounts, assetRegistry, assetSettingMap, chainInfoMap, fromValue, multiChainAssetMap, tokenGroupSlug]);
 
   const tokenItemsViewStep2 = useMemo(() => {
-    if (viewStep !== 2) {
+    if (viewStep !== 2 || !fromValue || !toValue) {
       return [];
     }
 
-    return getTokenItemsForViewStep2(tokenItems, xcmRefMap, chainInfoMap, toValue);
-  }, [chainInfoMap, toValue, tokenItems, viewStep, xcmRefMap]);
+    return getTokenItemsForViewStep2(tokenItems, xcmRefMap, chainInfoMap, fromValue, toValue);
+  }, [chainInfoMap, fromValue, toValue, tokenItems, viewStep, xcmRefMap]);
 
   const recipientAddressRules = useMemo(
     () => ({
@@ -552,12 +565,13 @@ export const SendFund = ({
   // Submit transaction
   const onSubmit = useCallback(
     (values: TransferFormValues) => {
+      Keyboard.dismiss();
       setLoading(true);
-      const { chain, destChain, to, value } = values;
+      const { chain, destChain, to, value, from, asset } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
 
-      const account = findAccountByAddress(accounts, fromValue);
+      const account = findAccountByAddress(accounts, from);
 
       if (!account) {
         setLoading(false);
@@ -569,7 +583,7 @@ export const SendFund = ({
 
       const isLedger = !!account.isHardware;
       const isEthereum = isEthereumAddress(account.address);
-      const chainAsset = assetRegistry[assetValue];
+      const chainAsset = assetRegistry[asset];
 
       if (chain === destChain) {
         if (isLedger) {
@@ -586,10 +600,10 @@ export const SendFund = ({
 
         // Transfer token or send fund
         sendPromise = makeTransfer({
-          from: fromValue,
+          from,
           networkKey: chain,
           to: to,
-          tokenSlug: assetValue,
+          tokenSlug: asset,
           value: value,
           transferAll: isTransferAll,
         });
@@ -605,9 +619,9 @@ export const SendFund = ({
         // Make cross chain transfer
         sendPromise = makeCrossChainTransfer({
           destinationNetworkKey: destChain,
-          from: fromValue,
+          from,
           originNetworkKey: chain,
-          tokenSlug: assetValue,
+          tokenSlug: asset,
           to,
           value,
           transferAll: isTransferAll,
@@ -624,8 +638,67 @@ export const SendFund = ({
           });
       }, 300);
     },
-    [accounts, fromValue, assetRegistry, assetValue, isTransferAll, hideAll, show, onSuccess, onError],
+    [accounts, assetRegistry, isTransferAll, hideAll, show, onSuccess, onError],
   );
+
+  const isNextButtonDisable = (() => {
+    if (!isBalanceReady || !fromValue || !assetValue || !destChainValue || !toValue) {
+      return true;
+    }
+
+    return !!errors.to;
+  })();
+
+  const isSubmitButtonDisable = (() => {
+    return loading || isNextButtonDisable || !transferAmount || !!errors.value;
+  })();
+
+  const onInputChangeAmount = useCallback(() => {
+    setIsTransferAll(false);
+  }, []);
+
+  const renderAmountInput = useCallback(
+    ({ field: { onBlur, onChange, value, ref } }: UseControllerReturn<TransferFormValues>) => (
+      <>
+        <Amount
+          ref={ref}
+          value={value}
+          forceUpdateValue={forceUpdateValue}
+          onChangeValue={onChange}
+          onInputChange={onInputChangeAmount}
+          onBlur={onBlur}
+          onSideEffectChange={onBlur}
+          decimals={decimals}
+          placeholder={'0'}
+          containerStyle={{ backgroundColor: 'transparent' }}
+          inputStyle={{
+            textAlign: 'center',
+            fontSize: 38,
+            lineHeight: 40,
+            paddingTop: 0,
+            paddingBottom: 0,
+            height: 62,
+          }}
+          showMaxButton
+        />
+        <AmountValueConverter
+          value={isInvalidAmountValue(value) ? '0' : value || '0'}
+          tokenSlug={assetValue}
+          style={{ justifyContent: 'center' }}
+        />
+      </>
+    ),
+    [assetValue, decimals, forceUpdateValue, onInputChangeAmount],
+  );
+
+  useEffect(() => {
+    if (scanRecipient) {
+      setValue('to', scanRecipient, {
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
+  }, [scanRecipient, setValue]);
 
   useEffect(() => {
     setForceUpdateValue(isTransferAll ? { value: maxTransfer } : undefined);
@@ -726,72 +799,24 @@ export const SendFund = ({
   }, [scanRecipient]);
 
   useEffect(() => {
-    if (scanRecipient && scanRecipient === toValue) {
-      if (fromValue && chainValue && destChainValue) {
-        trigger('to');
-      }
-    }
-  }, [chainValue, destChainValue, fromValue, scanRecipient, toValue, trigger]);
-
-  const isNextButtonDisable = (() => {
-    if (!isBalanceReady || !fromValue || !assetValue || !destChainValue || !toValue) {
-      return true;
+    if (fromValue && chainValue && destChainValue && dirtyFields.to) {
+      addLazy(
+        'trigger-validate-send-fund-to',
+        () => {
+          trigger('to');
+        },
+        100,
+      );
     }
 
-    return !!errors.to;
-  })();
-
-  const isSubmitButtonDisable = (() => {
-    if (isNextButtonDisable) {
-      return true;
-    }
-
-    return !!errors.value;
-  })();
-
-  const onInputChangeAmount = useCallback(() => {
-    setIsTransferAll(false);
-  }, []);
-
-  const renderAmountInput = useCallback(
-    ({ field: { onBlur, onChange, value, ref } }: UseControllerReturn<TransferFormValues>) => (
-      <>
-        <Amount
-          ref={ref}
-          value={value}
-          forceUpdateValue={forceUpdateValue}
-          onChangeValue={onChange}
-          onInputChange={onInputChangeAmount}
-          onBlur={onBlur}
-          onSideEffectChange={onBlur}
-          decimals={decimals}
-          placeholder={'0'}
-          containerStyle={{ backgroundColor: 'transparent' }}
-          inputStyle={{
-            textAlign: 'center',
-            fontSize: 38,
-            lineHeight: 40,
-            paddingTop: 0,
-            paddingBottom: 0,
-            height: 62,
-          }}
-          showMaxButton
-        />
-        <AmountValueConverter
-          value={isInvalidAmountValue(value) ? '0' : value || '0'}
-          tokenSlug={assetValue}
-          style={{ justifyContent: 'center' }}
-        />
-      </>
-    ),
-    [assetValue, decimals, forceUpdateValue, onInputChangeAmount],
-  );
+    return () => {
+      removeLazy('trigger-validate-send-fund-to');
+    };
+  }, [chainValue, destChainValue, dirtyFields.to, fromValue, trigger]);
 
   useEffect(() => {
     addLazy('auto-focus-send-fund', () => {
-      if (viewStep === 1) {
-        setFocus('to');
-      } else {
+      if (viewStep === 2) {
         setFocus('value');
       }
     });
@@ -962,7 +987,11 @@ export const SendFund = ({
                   disabled={isNextButtonDisable}
                   icon={getButtonIcon(ArrowCircleRight)}
                   onPress={() => {
-                    setViewStep(2);
+                    trigger('to').then(pass => {
+                      if (pass) {
+                        setViewStep(2);
+                      }
+                    });
                   }}>
                   Next
                 </Button>
