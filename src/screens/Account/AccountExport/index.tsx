@@ -3,21 +3,22 @@ import AlertBox from 'components/design-system-ui/alert-box';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import useGoHome from 'hooks/screen/useGoHome';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Share, View } from 'react-native';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { AccountExportProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { ExportType, SelectExportType } from 'components/common/SelectExportType';
-import { Button, Icon, QRCode, Typography } from 'components/design-system-ui';
+import { Button, Icon, QRCode, SelectItem, Typography } from 'components/design-system-ui';
 import PasswordModal from 'components/Modal/PasswordModal';
 import { exportAccount, exportAccountPrivateKey, keyringExportMnemonic } from 'messaging/index';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { KeyringPair$Json } from '@subwallet/keyring/types';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { CheckCircle, CopySimple, X } from 'phosphor-react-native';
+import { AddressBook, CheckCircle, CopySimple, DownloadSimple, X } from 'phosphor-react-native';
 import createStyle from './styles';
+import { toShort } from 'utils/index';
 
 const ViewStep = {
   SELECT_TYPES: 1,
@@ -55,8 +56,6 @@ export const AccountExport = ({
   const [seedPhrase, setSeedPhrase] = useState<string>('');
   const [jsonData, setJsonData] = useState<null | KeyringPair$Json>(null);
 
-  const jsonString = useMemo(() => JSON.stringify(jsonData), [jsonData]);
-
   const exportSingle = selectedTypes.length <= 1;
 
   useHandlerHardwareBackPress(isBusy);
@@ -73,26 +72,13 @@ export const AccountExport = ({
     return result.join(':');
   }, [account?.name, publicKey, privateKey]);
 
-  // const onExportJson = useCallback(
-  //   (_jsonData: KeyringPair$Json, _address: string): (() => void) => {
-  //     return () => {
-  //       if (_jsonData) {
-  //         setDownloading(true);
-  //         setTimeout(() => {
-  //           const fileName = `${_address}.json`;
-  //           const downloadDir = RNFetchBlob.fs.dirs.DocumentDir;
-  //           console.log(downloadDir);
-  //           RNFetchBlob.fs.writeFile(`${downloadDir}/${fileName}`, JSON.stringify(_jsonData), 'utf8').then(() => {
-  //             setDownloading(false);
-  //             toast.hideAll();
-  //             toast.show('Save complete');
-  //           });
-  //         }, 300);
-  //       }
-  //     };
-  //   },
-  //   [toast],
-  // );
+  const onExportJson = useCallback((_jsonData: KeyringPair$Json, _address: string): (() => void) => {
+    return () => {
+      if (_jsonData) {
+        Share.share({ title: 'Account Json', message: JSON.stringify(_jsonData) });
+      }
+    };
+  }, []);
 
   const onPressSubmit = useCallback(
     (password: string) => {
@@ -182,7 +168,6 @@ export const AccountExport = ({
 
   const copyPrivateKey = useCopyClipboard(privateKey);
   const copyQr = useCopyClipboard(qrData);
-  const copyJSON = useCopyClipboard(jsonString);
 
   const onPressDone = () => {
     navigation.goBack();
@@ -298,18 +283,20 @@ export const AccountExport = ({
                       Your json file
                     </Typography.Text>
                   )}
-                  <View style={styles.rsBlock}>
-                    <Typography.Text style={styles.blockText}>{jsonString}</Typography.Text>
-                  </View>
-                  <View style={styles.copyArea}>
-                    <Button
-                      type="ghost"
-                      size="xs"
-                      onPress={copyJSON}
-                      icon={<Icon phosphorIcon={CopySimple} size="md" iconColor={theme.colorTextLight4} />}>
-                      {i18n.common.copyToClipboard}
-                    </Button>
-                  </View>
+                  <SelectItem
+                    onPress={onExportJson(jsonData, address)}
+                    icon={AddressBook}
+                    backgroundColor={theme.colorPrimary}
+                    label={`${toShort(address)}.json`}
+                    rightIcon={
+                      <Icon
+                        phosphorIcon={DownloadSimple}
+                        size={'sm'}
+                        iconColor={theme.colorTextTertiary}
+                        weight={'bold'}
+                      />
+                    }
+                  />
                 </View>
               )}
             </View>
