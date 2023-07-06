@@ -56,6 +56,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     onSideEffectChange,
     value = '',
     inputStyle,
+    containerStyle,
     ...inputProps
   } = props;
   const stylesheet = createStylesheet(theme);
@@ -153,6 +154,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
         maxLength={getMaxLengthText(inputValue)}
         {...inputProps}
         inputStyle={[stylesheet.input, inputStyle]}
+        containerStyle={[stylesheet.container, containerStyle]}
       />
     </>
   );

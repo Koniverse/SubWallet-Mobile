@@ -50,7 +50,7 @@ import { SubHeader } from 'components/SubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { DisabledStyle } from 'styles/sharedStyles';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import i18n from 'utils/i18n/i18n';
 import { TokenSelectField } from 'components/Field/TokenSelect';
@@ -68,6 +68,7 @@ import { getButtonIcon } from 'utils/button';
 import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { AmountValueConverter } from 'screens/Transaction/SendFundV2/AmountValueConverter';
 import { addLazy, removeLazy } from 'utils/lazyUpdate';
+import createStylesheet from './styles';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -301,6 +302,7 @@ export const SendFund = ({
   },
 }: SendFundProps) => {
   const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   const { show, hideAll } = useToast();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [viewStep, setViewStep] = useState<ViewStep>(1);
@@ -562,6 +564,20 @@ export const SendFund = ({
     setChainSelectModalVisible(false);
   };
 
+  const onSubheaderPressBack = useCallback(() => {
+    if (viewStep === 1) {
+      navigation.goBack();
+    } else {
+      setViewStep(1);
+      resetField('value', {
+        keepDirty: false,
+        keepError: false,
+        keepTouched: false,
+      });
+      setForceUpdateValue({ value: null });
+    }
+  }, [navigation, resetField, viewStep]);
+
   // Submit transaction
   const onSubmit = useCallback(
     (values: TransferFormValues) => {
@@ -670,25 +686,16 @@ export const SendFund = ({
           onSideEffectChange={onBlur}
           decimals={decimals}
           placeholder={'0'}
-          containerStyle={{ backgroundColor: 'transparent' }}
-          inputStyle={{
-            textAlign: 'center',
-            fontSize: 38,
-            lineHeight: 40,
-            paddingTop: 0,
-            paddingBottom: 0,
-            height: 62,
-          }}
           showMaxButton
         />
         <AmountValueConverter
           value={isInvalidAmountValue(value) ? '0' : value || '0'}
           tokenSlug={assetValue}
-          style={{ justifyContent: 'center' }}
+          style={stylesheet.amountValueConverter}
         />
       </>
     ),
-    [assetValue, decimals, forceUpdateValue, onInputChangeAmount],
+    [assetValue, decimals, forceUpdateValue, onInputChangeAmount, stylesheet.amountValueConverter],
   );
 
   useEffect(() => {
@@ -832,50 +839,38 @@ export const SendFund = ({
         <>
           <Header />
 
-          <View style={{ paddingTop: theme.padding }}>
+          <View style={stylesheet.subheader}>
             <SubHeader
               title={viewStep === 1 ? title : 'Amount'}
-              onPressBack={() => {
-                if (viewStep === 1) {
-                  navigation.goBack();
-                } else {
-                  setViewStep(1);
-                  resetField('value', {
-                    keepDirty: false,
-                    keepError: false,
-                    keepTouched: false,
-                  });
-                  setForceUpdateValue({ value: null });
-                }
-              }}
+              onPressBack={onSubheaderPressBack}
               disabled={loading}
             />
           </View>
 
           <>
             <ScrollView
-              style={{ flex: 1, marginTop: theme.margin }}
-              contentContainerStyle={{ paddingHorizontal: theme.padding }}
+              style={stylesheet.scrollView}
+              contentContainerStyle={stylesheet.scrollViewContentContainer}
               keyboardShouldPersistTaps={'handled'}>
               {isAllAccount && viewStep === 1 && (
                 <>
                   <TouchableOpacity
                     onPress={() => setAccountSelectModalVisible(true)}
                     disabled={loading}
-                    style={[{ marginBottom: theme.margin }, loading && DisabledStyle]}>
+                    style={[stylesheet.accountSelector, loading && DisabledStyle]}>
                     <AccountSelectField
                       label={i18n.inputLabel.sendFrom}
                       accountName={senderAccountName}
                       value={fromValue}
                       showIcon
-                      outerStyle={{ marginBottom: 0 }}
+                      outerStyle={stylesheet.selector}
                     />
                   </TouchableOpacity>
                 </>
               )}
 
-              <View style={{ flexDirection: 'row', gap: theme.sizeSM, marginBottom: theme.margin }}>
-                <View style={{ flex: 1 }}>
+              <View style={stylesheet.row}>
+                <View style={stylesheet.rowItem}>
                   <TouchableOpacity
                     style={[(!tokenItems.length || loading) && DisabledStyle]}
                     disabled={!tokenItems.length || loading}
@@ -883,7 +878,7 @@ export const SendFund = ({
                       setTokenSelectModalVisible(true);
                     }}>
                     <TokenSelectField
-                      outerStyle={{ marginBottom: 0 }}
+                      outerStyle={stylesheet.selector}
                       logoKey={currentChainAsset?.symbol || ''}
                       subLogoKey={currentChainAsset?.originChain || ''}
                       value={currentChainAsset?.symbol || ''}
@@ -892,11 +887,11 @@ export const SendFund = ({
                   </TouchableOpacity>
                 </View>
 
-                <View style={{ justifyContent: 'center' }}>
+                <View style={stylesheet.paperPlaneIconWrapper}>
                   <Icon phosphorIcon={PaperPlaneRight} size={'md'} iconColor={theme['gray-5']} />
                 </View>
 
-                <View style={{ flex: 1 }}>
+                <View style={stylesheet.rowItem}>
                   <TouchableOpacity
                     style={[(!destChainItems.length || loading) && DisabledStyle]}
                     disabled={!destChainItems.length || loading}
@@ -905,7 +900,7 @@ export const SendFund = ({
                     }}>
                     <NetworkField
                       networkKey={destChainValue}
-                      outerStyle={{ marginBottom: 0 }}
+                      outerStyle={stylesheet.selector}
                       placeholder={i18n.placeholder.selectChain}
                       showIcon
                     />
@@ -940,19 +935,19 @@ export const SendFund = ({
               )}
 
               {viewStep === 2 && (
-                <View style={{ paddingTop: 48, paddingBottom: 56 }}>
+                <View style={stylesheet.amountWrapper}>
                   <FormItem control={control} rules={amountRules} render={renderAmountInput} name="value" />
                 </View>
               )}
 
-              <View style={{ flexDirection: 'row' }}>
+              <View style={stylesheet.balanceWrapper}>
                 <FreeBalance
                   label={viewStep === 2 ? 'Balance:' : undefined}
                   address={fromValue}
                   chain={chainValue}
                   onBalanceReady={setIsBalanceReady}
                   tokenSlug={assetValue}
-                  style={{ paddingTop: theme.padding, marginBottom: 0, flex: 1 }}
+                  style={stylesheet.balance}
                 />
 
                 {viewStep === 2 && (
@@ -965,23 +960,14 @@ export const SendFund = ({
                         setIsTransferAll(true);
                       }
                     }}
-                    style={{
-                      paddingHorizontal: theme.padding,
-                      paddingTop: theme.padding,
-                      marginRight: -theme.margin,
-                    }}>
-                    {<Typography.Text style={{ color: theme.colorSuccess }}>Max</Typography.Text>}
+                    style={stylesheet.max}>
+                    {<Typography.Text style={stylesheet.maxText}>Max</Typography.Text>}
                   </TouchableOpacity>
                 )}
               </View>
             </ScrollView>
 
-            <View
-              style={{
-                paddingHorizontal: 16,
-                paddingTop: 16,
-                ...MarginBottomForSubmitButton,
-              }}>
+            <View style={stylesheet.footer}>
               {viewStep === 1 && (
                 <Button
                   disabled={isNextButtonDisable}

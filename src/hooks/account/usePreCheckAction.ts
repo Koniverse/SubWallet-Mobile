@@ -20,7 +20,7 @@ const usePreCheckAction = (
   address?: string,
   blockAllAccount = true,
   message?: string,
-): ((onClick: VoidFunction, action: ExtrinsicType) => VoidFunction) => {
+): ((onPress: VoidFunction, action: ExtrinsicType) => VoidFunction) => {
   const { show, hideAll } = useToast();
 
   const account = useGetAccountByAddress(address);
@@ -46,7 +46,7 @@ const usePreCheckAction = (
   }, []);
 
   return useCallback(
-    (onClick: VoidFunction, action: ExtrinsicType) => {
+    (onPress: VoidFunction, action: ExtrinsicType) => {
       return () => {
         if (!account) {
           hideAll();
@@ -106,7 +106,7 @@ const usePreCheckAction = (
           }
 
           if (!block) {
-            onClick();
+            onPress();
           } else {
             hideAll();
             show((message || defaultMessage).replace('{{accountTitle}}', accountTitle));
