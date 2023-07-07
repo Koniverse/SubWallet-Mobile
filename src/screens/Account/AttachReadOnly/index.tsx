@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { InputAddress } from 'components/Input/InputAddress';
+import { InputAddress } from 'components/Input/InputAddressV2';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import useCheckCamera from 'hooks/common/useCheckCamera';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
@@ -17,7 +16,6 @@ import { QrAccount } from 'types/qr/attach';
 import { backToHome } from 'utils/navigation';
 import { readOnlyScan } from 'utils/scanner/attach';
 import { createAccountExternalV2 } from 'messaging/index';
-import { sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
@@ -73,12 +71,6 @@ const AttachReadOnly = () => {
     backToHome(goHome);
   }, [goHome]);
 
-  const checkCamera = useCheckCamera();
-
-  const onOpenScanner = useCallback(async () => {
-    setIsScanning(true);
-  }, []);
-
   const onCloseScanner = useCallback(() => {
     setScanError(undefined);
     setIsScanning(false);
@@ -128,18 +120,22 @@ const AttachReadOnly = () => {
   });
 
   const onChangeAddress = useCallback(
-    (receiverAddress: string | null, currentTextValue: string) => {
+    (currentTextValue: string) => {
+      setErrors([]);
+      onChangeValue('address')(currentTextValue);
+      if (!currentTextValue) {
+        setErrors([i18n.warningMessage.requireMessage]);
+        return;
+      }
+
       const qrAccount = readOnlyScan(currentTextValue);
 
       if (!qrAccount) {
         setErrors([i18n.errorMessage.invalidAddress]);
-        onChangeValue('address')('');
         return;
       }
 
-      setErrors([]);
       setAccount(qrAccount);
-      onChangeValue('address')(qrAccount.content);
     },
     [onChangeValue],
   );
@@ -188,16 +184,15 @@ const AttachReadOnly = () => {
             <PageIcon icon={Eye} color={theme.colorSuccess} />
           </View>
           <InputAddress
-            value={formState.data.address}
             ref={formState.refs.address}
+            containerStyle={{ marginBottom: theme.sizeSM }}
             label={formState.labels.address}
+            value={formState.data.address}
+            onChangeText={onChangeAddress}
             isValidValue={formState.isValidated.address}
-            onSubmitField={onSubmitField('address')}
-            onChange={onChangeAddress}
-            onPressQrButton={checkCamera(onOpenScanner)}
-            containerStyle={sharedStyles.mb8}
-            showAvatar={true}
+            placeholder={i18n.placeholder.accountAddress}
             disabled={isBusy}
+            onSubmitEditing={errors.length > 0 ? () => Keyboard.dismiss() : onSubmitField('address')}
           />
           {errors.length > 0 &&
             errors.map((message, index) => <Warning isDanger message={message} key={index} style={styles.warning} />)}
