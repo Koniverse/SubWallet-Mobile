@@ -1,3 +1,6 @@
+## 1.0.9 (195)
+- Rollback performance issue
+
 ## 1.0.9 (194)
 - Improve performance for token list (#854)
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   ListRenderItem,
   ListRenderItemInfo,
@@ -19,8 +19,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  AnimatedStyleProp,
-  AnimateStyle,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -46,7 +44,7 @@ const flatListContentContainerStyle: StyleProp<any> = {
   justifyContent: 'center',
   position: 'relative',
 };
-const PAGE_SIZE = 15;
+
 export const TokensLayout = ({
   layoutHeader,
   stickyBackground,
@@ -59,49 +57,23 @@ export const TokensLayout = ({
   refresh,
   style,
 }: Props) => {
-  const [tokenListData, setTokenListData] = useState<TokenBalanceItemType[]>(tokenBalanceItems.slice(0, PAGE_SIZE));
   const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
   const isAnimating = useSharedValue(0);
-  const tokenListDataRef = useRef(tokenListData);
 
-  useEffect(() => {
-    tokenListDataRef.current = tokenListData;
-  }, [tokenListData]);
-
-  useEffect(() => {
-    if (tokenBalanceItems.length === 0) {
-      return;
-    }
-    if (tokenListDataRef.current.length === 0) {
-      const newData = tokenBalanceItems.slice(0, PAGE_SIZE);
-      setTokenListData(newData);
-      return;
-    }
-    if (tokenBalanceItems.length <= PAGE_SIZE) {
-      setTokenListData(tokenBalanceItems);
-      return;
-    }
-
-    const newData = tokenBalanceItems.slice(0, tokenListDataRef.current.length);
-    setTokenListData(newData);
-  }, [tokenBalanceItems]);
-
-  const headerStyles = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
+  const headerStyles = useAnimatedStyle(() => {
     const translateY = interpolate(yOffset.value, [0, 200], [0, -10], Extrapolate.CLAMP);
     const opacity = interpolate(yOffset.value, [0, 200], [1, 0], Extrapolate.CLAMP);
     return {
       opacity,
-      // @ts-ignore
       transform: [{ translateY }],
     };
   }, []);
-  const stickyHeaderStyles = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
+  const stickyHeaderStyles = useAnimatedStyle(() => {
     const opacity = interpolate(yOffset.value, [210, 218], [1, 0], Extrapolate.CLAMP);
     const translateY = interpolate(yOffset.value, [210, 218], [0, -40], Extrapolate.CLAMP);
     return {
       opacity,
-      // @ts-ignore
       transform: [{ translateY }],
     };
   }, []);
@@ -187,47 +159,36 @@ export const TokensLayout = ({
     );
   }
 
-  const onEndReached = () => {
-    if (tokenBalanceItems.length === 0) {
-      return;
-    }
-    let newDataCollection = tokenBalanceItems.slice(tokenListData.length, tokenListData.length + PAGE_SIZE);
-    const newData = tokenListData.concat(newDataCollection);
-    setTokenListData(newData);
-  };
-  const handledTokenListData = listActions ? [{ slug: null }, ...tokenListData] : tokenListData;
-
-  // TODO: Move these codes to style folder in next refactor
-  const flex1 = { flex: 1 };
-  const listContainerStyle = { paddingHorizontal: 16 };
-  const stickyActionHeaderStyle = [
-    {
-      paddingHorizontal: 16,
-      backgroundColor: theme.colorBgDefault,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      overflow: 'hidden',
-    },
-    stickyHeaderInvisibleStyles,
-  ] as StyleProp<AnimateStyle<StyleProp<ViewStyle>>>;
-  const stickyHeaderFakingGradientStyle = {
-    flex: 1,
-    marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
-    height: 600,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  } as StyleProp<ViewStyle>;
-
   return (
-    <View style={[flex1, style]}>
+    <View style={[{ flex: 1 }, style]}>
       {!!listActions && (
-        <Animated.View style={stickyActionHeaderStyle}>
+        <Animated.View
+          style={[
+            {
+              paddingHorizontal: 16,
+              backgroundColor: theme.colorBgDefault,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              overflow: 'hidden',
+            },
+            stickyHeaderInvisibleStyles,
+          ]}>
           {!!stickyBackground && (
-            <LinearGradient locations={[0, 0.5]} colors={stickyBackground} style={stickyHeaderFakingGradientStyle} />
+            <LinearGradient
+              locations={[0, 0.5]}
+              colors={stickyBackground}
+              style={{
+                flex: 1,
+                marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
+                height: 600,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+              }}
+            />
           )}
           {listActions}
         </Animated.View>
@@ -238,16 +199,10 @@ export const TokensLayout = ({
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps={'handled'}
         ListHeaderComponent={renderHeaderComponent}
-        contentContainerStyle={listContainerStyle}
-        data={handledTokenListData}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        data={listActions ? [{ slug: null }, ...tokenBalanceItems] : tokenBalanceItems}
         renderItem={customRenderItem}
         ListFooterComponent={layoutFooter}
-        maxToRenderPerBatch={12}
-        initialNumToRender={12}
-        removeClippedSubviews
-        windowSize={12}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.7}
         refreshControl={refreshControlNode}
       />
     </View>
