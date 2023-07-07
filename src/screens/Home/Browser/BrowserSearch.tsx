@@ -17,7 +17,7 @@ import { Search } from 'components/Search';
 import { ScrollViewStyle } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { addLazy } from 'utils/lazyUpdate';
+import { addLazy } from '@subwallet/extension-base/utils';
 import { BrowserSearchItem } from 'components/Browser/BrowserSearchItem';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';

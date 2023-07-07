@@ -1,3 +1,9 @@
+## 1.0.9 (197)
+- Browser Home (#692)
+- Browser - Webview (#822)
+- Browser - Browser Home - List (#821)
+- Browser - Connection (#826)
+
 ## 1.0.9 (196)
 - Improve performance for token list (#854)
 
