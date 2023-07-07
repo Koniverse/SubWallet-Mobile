@@ -3,27 +3,16 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
-import { StyleProp, View } from 'react-native';
-import Text from 'components/Text';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
+import { View } from 'react-native';
+import { sharedStyles } from 'styles/sharedStyles';
 import { CaretRight, Globe, Key, Password, Scan, ShieldCheck } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
-import { ColorMap } from 'styles/color';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Icon, SelectItem } from 'components/design-system-ui';
+import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
-
-const modalTitle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontBold,
-  color: ColorMap.light,
-  paddingBottom: 16,
-  textAlign: 'center',
-};
 
 const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
   {
@@ -172,9 +161,11 @@ export const Security = () => {
           disabled={!pinCode}
         />
 
-        <SubWalletModal modalVisible={iShowAutoLockModal} onChangeModalVisible={() => setIsShowAutoLockModal(false)}>
+        <SwModal
+          modalVisible={iShowAutoLockModal}
+          onChangeModalVisible={() => setIsShowAutoLockModal(false)}
+          modalTitle={i18n.common.autoLock}>
           <View style={{ width: '100%' }}>
-            <Text style={modalTitle}>{i18n.common.autoLock}</Text>
             {AUTO_LOCK_LIST.map(item => (
               <SelectItem
                 key={item.text}
@@ -184,7 +175,7 @@ export const Security = () => {
               />
             ))}
           </View>
-        </SubWalletModal>
+        </SwModal>
       </View>
     </SubScreenContainer>
   );

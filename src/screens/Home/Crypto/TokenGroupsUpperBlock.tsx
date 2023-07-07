@@ -149,7 +149,7 @@ export const TokenGroupsUpperBlock = ({
           disabled={Platform.OS === 'ios'}
           label={i18n.cryptoScreen.buy}
           icon={ButtonIcon.Buy}
-          onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken' })}
+          onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}
           buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
         />
       </View>

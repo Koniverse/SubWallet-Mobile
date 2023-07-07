@@ -1,19 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import React, { useEffect, useMemo, useState } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { Image, ListRenderItemInfo, Platform } from 'react-native';
 import qs from 'querystring';
 import reformatAddress from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import Toast from 'react-native-toast-notifications';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { ColorMap } from 'styles/color';
 import { ServiceSelectItem } from 'components/ServiceSelectItem';
-import ToastContainer from 'react-native-toast-notifications';
-import { deviceHeight, HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
+import { HIDE_MODAL_DURATION } from 'constants/index';
 import useAppLock from 'hooks/useAppLock';
-import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
+import { PREDEFINED_TRANSAK_TOKEN, PREDEFINED_TRANSAK_TOKEN_BY_SLUG } from '../../../predefined/transak';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { ImageLogosMap } from 'assets/logo';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
@@ -61,7 +57,6 @@ export const ServiceModal = ({
   isOpenInAppBrowser,
   onBuyToken,
 }: Props) => {
-  const toastRef = useRef<ToastContainer>(null);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const [isCloseByLockScreen, setIsCloseBuyLockScreen] = useState(false);
   const networkPrefix = useMemo(() => {
@@ -69,7 +64,7 @@ export const ServiceModal = ({
       return -1;
     }
 
-    const chain = PREDEFINED_TRANSAK_TOKEN[token].chain;
+    const chain = PREDEFINED_TRANSAK_TOKEN_BY_SLUG[token].chain;
     return _getChainSubstrateAddressPrefix(chainInfoMap[chain]);
   }, [chainInfoMap, token]);
 
@@ -86,11 +81,11 @@ export const ServiceModal = ({
 
   const url = useMemo((): string => {
     const host = HOST.PRODUCTION;
-    if (!token || !PREDEFINED_TRANSAK_TOKEN[token]) {
+    if (!token || !PREDEFINED_TRANSAK_TOKEN_BY_SLUG[token]) {
       return '';
     }
 
-    const { symbol, transakNetwork } = PREDEFINED_TRANSAK_TOKEN[token];
+    const { symbol, transakNetwork } = PREDEFINED_TRANSAK_TOKEN_BY_SLUG[token];
 
     const params = {
       apiKey: '4b3bfb00-7f7c-44b3-844f-d4504f1065be',
@@ -106,8 +101,8 @@ export const ServiceModal = ({
   const SERVICE_OPTIONS = useMemo(
     () => [
       { label: 'Transak', value: 'transak', url: url, icon: ImageLogosMap.transak },
-      { label: 'MoonPay', value: 'moonpay', url: '', icon: ImageLogosMap.moonpay },
-      { label: 'Onramper', value: 'onramper', url: '', icon: ImageLogosMap.onramper },
+      { label: 'MoonPay (Coming soon)', value: 'moonpay', url: '', icon: ImageLogosMap.moonpay },
+      { label: 'Onramper (Coming soon)', value: 'onramper', url: '', icon: ImageLogosMap.onramper },
     ],
     [url],
   );
@@ -168,14 +163,7 @@ export const ServiceModal = ({
           showIcon
         />
       )}
-      ref={serviceRef}>
-      <Toast
-        duration={TOAST_DURATION}
-        normalColor={ColorMap.notification}
-        ref={toastRef}
-        placement={'bottom'}
-        offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
-      />
-    </FullSizeSelectModal>
+      ref={serviceRef}
+    />
   );
 };

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isAccountAll as checkIsAccountAll } from '@subwallet/extension-base/utils';
 import { getAccountType } from 'utils/index';
-import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { findAccountByAddress } from 'utils/account';
 import { PREDEFINED_TRANSAK_TOKEN } from '../../../../predefined/transak';
@@ -53,7 +52,6 @@ const getTokenItems = (accountType: AccountType, ledgerNetwork?: string): TokenI
 export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: string) {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
-  const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const fixedTokenKey = currentSymbol ? PREDEFINED_TRANSAK_TOKEN[currentSymbol]?.slug : undefined;
@@ -87,16 +85,13 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
       return [];
     }
 
-    if (tokenGroupSlug) {
-      const targetAccountType = getAccountTypeByTokenGroup(tokenGroupSlug, assetRegistryMap, chainInfoMap);
-      if (targetAccountType === 'ALL') {
-        return accounts.filter(a => !checkIsAccountAll(a.address));
-      }
-      return accounts.filter(a => getAccountType(a.address) === targetAccountType);
+    if (currentSymbol) {
+      const currentAccountType = PREDEFINED_TRANSAK_TOKEN[currentSymbol].support;
+      return accounts.filter(a => getAccountType(a.address) === currentAccountType);
     }
 
     return accounts.filter(a => !checkIsAccountAll(a.address));
-  }, [isAllAccount, tokenGroupSlug, accounts, assetRegistryMap, chainInfoMap]);
+  }, [isAllAccount, currentSymbol, accounts]);
 
   const accountType = useMemo(
     () => (selectedBuyAccount ? getAccountType(selectedBuyAccount) : ''),
@@ -209,15 +204,10 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
   const onPressItem = (currentValue: string, currentUrl: string) => {
     setSelectedService({ selectedService: currentValue, isOpenInAppBrowser: true, serviceUrl: currentUrl });
     if (currentUrl) {
-      if (currentValue !== 'transak') {
-        show(i18n.notificationMessage.comingSoon);
-      }
       serviceBuyRef?.current?.onCloseModal();
     } else {
       if (currentValue === 'transak') {
         show(i18n.common.unsupportedToken);
-      } else {
-        show(i18n.notificationMessage.comingSoon);
       }
     }
   };
@@ -230,18 +220,20 @@ export default function useBuyToken(tokenGroupSlug?: string, currentSymbol?: str
   }, [currentAccount?.address]);
 
   useEffect(() => {
-    if (!fixedTokenKey && buyTokenSelectorItems.length) {
-      if (!selectedBuyToken) {
+    if (buyTokenSelectorItems.length) {
+      if (!fixedTokenKey) {
         setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: buyTokenSelectorItems[0].slug }));
       } else {
-        const isSelectedTokenInList = buyTokenSelectorItems.some(i => i.slug === selectedBuyToken);
+        const isSelectedTokenInList = buyTokenSelectorItems.some(i => i.slug === fixedTokenKey);
 
         if (!isSelectedTokenInList) {
           setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: buyTokenSelectorItems[0].slug }));
+        } else {
+          setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: fixedTokenKey }));
         }
       }
     }
-  }, [buyTokenSelectorItems, fixedTokenKey, selectedBuyToken]);
+  }, [buyTokenSelectorItems, fixedTokenKey]);
 
   return {
     openSelectBuyAccount,
