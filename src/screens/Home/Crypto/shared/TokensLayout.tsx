@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ListRenderItem,
   ListRenderItemInfo,
@@ -63,7 +63,29 @@ export const TokensLayout = ({
   const theme = useSubWalletTheme().swThemes;
   const yOffset = useSharedValue(0);
   const isAnimating = useSharedValue(0);
-  const currentPage = useRef(1);
+  const tokenListDataRef = useRef(tokenListData);
+
+  useEffect(() => {
+    tokenListDataRef.current = tokenListData;
+  }, [tokenListData]);
+
+  useEffect(() => {
+    if (tokenBalanceItems.length === 0) {
+      return;
+    }
+    if (tokenListDataRef.current.length === 0) {
+      const newData = tokenBalanceItems.slice(0, PAGE_SIZE);
+      setTokenListData(newData);
+      return;
+    }
+    if (tokenBalanceItems.length <= PAGE_SIZE) {
+      setTokenListData(tokenBalanceItems);
+      return;
+    }
+
+    const newData = tokenBalanceItems.slice(0, tokenListDataRef.current.length);
+    setTokenListData(newData);
+  }, [tokenBalanceItems]);
 
   const headerStyles = useAnimatedStyle((): AnimatedStyleProp<ViewStyle> => {
     const translateY = interpolate(yOffset.value, [0, 200], [0, -10], Extrapolate.CLAMP);
@@ -169,11 +191,9 @@ export const TokensLayout = ({
     if (tokenBalanceItems.length === 0) {
       return;
     }
-    const loadedData = PAGE_SIZE * currentPage.current;
-    let newDataCollection = tokenBalanceItems.slice(loadedData, loadedData + PAGE_SIZE);
+    let newDataCollection = tokenBalanceItems.slice(tokenListData.length, tokenListData.length + PAGE_SIZE);
     const newData = tokenListData.concat(newDataCollection);
     setTokenListData(newData);
-    currentPage.current += 1;
   };
   const handledTokenListData = listActions ? [{ slug: null }, ...tokenListData] : tokenListData;
 

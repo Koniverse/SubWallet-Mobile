@@ -1,3 +1,16 @@
+## 1.0.9 (194)
+- Improve performance for token list (#854)
+
+## 1.0.9 (193)
+- Allow DApp access to watch-only account (#842)
+- Update UI - Header on list view (#853)
+- Update UI - Change master password (#810)
+- Allow user exported and download the JSON file (#807)
+- Update UI - Buy Token (#764)
+- Upgrade UI Browser - DApp Confirmation (#823)
+- Update web runner, lazy load
+- Improve performance for token list (#854)
+
 ## 1.0.8 (192)
 - Browser - Website Access (#797, #824)
 - Upload Image to read QR code (#800)

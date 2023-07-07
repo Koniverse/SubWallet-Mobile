@@ -39,7 +39,7 @@ const persistRootConfig = {
   key: 'root',
   version: 3,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'settings', 'appVersion', 'balance'],
+  whitelist: ['mobileSettings', 'settings', 'appVersion'],
   blacklist: ['browser', 'price', 'balance', 'chainStore', 'assetRegistry'],
   migrate: async (state: any) => {
     if (state?._persist && state._persist.version < 3 && state.browser) {
