@@ -1,8 +1,9 @@
 import React from 'react';
-import { SafeAreaView, StyleProp, Text, View, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
+import { SafeAreaView, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import ModalBase from 'components/Modal/Base/ModalBase';
-import { FontSemiBold } from 'styles/sharedStyles';
+import Typography from '../typography';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+
 export interface SWModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -13,6 +14,8 @@ export interface SWModalProps {
   isFullHeight?: boolean;
   modalTitle?: string;
   titleTextAlign?: 'left' | 'center';
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -47,7 +50,10 @@ const SwModal = ({
   onModalHide,
   isFullHeight = false,
   titleTextAlign = 'left',
+  contentContainerStyle,
+  titleStyle,
 }: SWModalProps) => {
+  const theme = useSubWalletTheme().swThemes;
   return (
     <ModalBase
       isVisible={modalVisible}
@@ -66,13 +72,16 @@ const SwModal = ({
       propagateSwipe>
       <View style={[getSubWalletModalContainerStyle(!!isFullHeight), modalStyle]}>
         <View
-          style={{
-            width: '100%',
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-            alignItems: 'center',
-            flex: isFullHeight ? 1 : undefined,
-          }}>
+          style={[
+            {
+              width: '100%',
+              paddingBottom: 16,
+              paddingHorizontal: 16,
+              alignItems: 'center',
+              flex: isFullHeight ? 1 : undefined,
+            },
+            contentContainerStyle,
+          ]}>
           <View style={subWalletModalSeparator} />
           {modalTitle && (
             <View
@@ -81,7 +90,9 @@ const SwModal = ({
                 marginBottom: 16,
                 alignItems: titleTextAlign === 'left' ? 'flex-start' : 'center',
               }}>
-              <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
+              <Typography.Title level={4} style={[{ color: theme.colorTextLight1 }, titleStyle]}>
+                {modalTitle}
+              </Typography.Title>
             </View>
           )}
 

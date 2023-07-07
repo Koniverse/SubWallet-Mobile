@@ -163,6 +163,14 @@ export const recodeAddress = (
   };
 };
 
+export const funcSortByName = (a: AbstractAddressJson, b: AbstractAddressJson) => {
+  if (isAccountAll(b.address)) {
+    return 3;
+  }
+
+  return (a?.name || '').toLowerCase() > (b?.name || '').toLowerCase() ? 1 : -1;
+};
+
 export const findContactByAddress = (contacts: AbstractAddressJson[], address?: string): AbstractAddressJson | null => {
   try {
     const isAllAccount = address && isAccountAll(address);

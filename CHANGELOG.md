@@ -22,6 +22,12 @@
 - Upload Image to read QR code (#800)
 - Fix bug show incorrect some information on the XCM history detail (#841)
 
+## 1.0.7 (191)
+- Preview mobile browser (2)
+
+## 1.0.7 (190)
+- Preview mobile browser
+
 ## 1.0.7 (189)
 - Consider handling in case validate amount (#621)
 - UI bug in case search haven't data (#806)

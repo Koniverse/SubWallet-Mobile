@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from 'react-native';
-import { CheckCircle, IconProps } from 'phosphor-react-native';
+import { CheckCircle, IconProps, IconWeight } from 'phosphor-react-native';
 import Text from 'components/Text';
 import React, { useMemo } from 'react';
 import { BackgroundIcon, Icon } from 'components/design-system-ui';
@@ -11,6 +11,7 @@ import createStyle from './styles';
 export interface SelectItemProps {
   icon?: React.ElementType<IconProps>;
   iconColor?: string;
+  iconWeight?: IconWeight;
   backgroundColor?: string;
   onPress?: () => void;
   label: string;
@@ -37,6 +38,7 @@ const SelectItem = (props: SelectItemProps) => {
     rightItem,
     rightIcon,
     textColor,
+    iconWeight = 'fill',
   } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -55,7 +57,7 @@ const SelectItem = (props: SelectItemProps) => {
               backgroundColor={backgroundColor}
               iconColor={iconColor}
               phosphorIcon={icon}
-              weight={'fill'}
+              weight={iconWeight}
             />
           )}
         </View>
@@ -71,7 +73,7 @@ const SelectItem = (props: SelectItemProps) => {
             <Icon
               phosphorIcon={CheckCircle}
               size={'sm'}
-              weight={'fill'}
+              weight={iconWeight}
               iconColor={isSelected ? theme.colorSuccess : theme['gray-5']}
             />
           )}

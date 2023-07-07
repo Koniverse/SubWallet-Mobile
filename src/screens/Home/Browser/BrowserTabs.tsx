@@ -1,20 +1,18 @@
-import React, { useCallback, useMemo } from 'react';
-import { Image, SafeAreaView, ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { IconButton } from 'components/IconButton';
+import React, { useCallback } from 'react';
+import { FlatList, Image, ListRenderItemInfo, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { Browsers, House, Plus, X } from 'phosphor-react-native';
 import { closeAllTab, closeTab } from 'stores/updater';
-import { FontMedium, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
 import { getHostName } from 'utils/browser';
 import { RootStackParamList } from 'routes/index';
 import { BrowserSlice, BrowserSliceTab } from 'stores/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Button } from 'components/Button';
 import i18n from 'utils/i18n/i18n';
-import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { DEVICE } from 'constants/index';
+import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { EmptyList } from 'components/EmptyList';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import createStylesheet from './styles/BrowserTabs';
 
 interface Props {
   activeTab: BrowserSlice['activeTab'];
@@ -24,105 +22,9 @@ interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
-const tabItemStyle: StyleProp<any> = {
-  marginBottom: 20,
-  position: 'relative',
-};
-
-const tabItemHeaderStyle: StyleProp<any> = {
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: ColorMap.dark2,
-  height: 32,
-  paddingHorizontal: 14,
-  borderTopLeftRadius: 5,
-  borderTopRightRadius: 5,
-};
-
-const tabItemBodyStyle: StyleProp<any> = {
-  height: 128,
-  backgroundColor: ColorMap.light,
-  borderBottomLeftRadius: 5,
-  borderBottomRightRadius: 5,
-  position: 'relative',
-  overflow: 'hidden',
-};
-
-const tabScreenshotStyle: StyleProp<any> = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  resizeMode: 'cover',
-  paddingTop: DEVICE.height - 242,
-};
-
-const tabItemTitleStyle: StyleProp<any> = {
-  paddingLeft: 8,
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.light,
-};
-
-const bottomTabBarWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  borderTopWidth: 1,
-  borderTopColor: ColorMap.dark2,
-  paddingHorizontal: 16,
-  paddingTop: 4,
-};
-
-const cancelButtonStyle: StyleProp<any> = { width: 40, height: 40, position: 'absolute', right: -4, top: -4 };
-
-function getTabItemOverlayStyle(isActive: boolean): StyleProp<any> {
-  const style: StyleProp<any> = {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    position: 'absolute',
-    borderRadius: 5,
-  };
-
-  if (isActive) {
-    style.borderWidth = 1;
-    style.borderColor = ColorMap.secondary;
-  }
-
-  return style;
-}
-
-const renderBrowserTabItem = (
-  item: BrowserSliceTab,
-  activeTab: string | null,
-  onPressItem: (tab: BrowserSliceTab) => void,
-) => {
-  return (
-    <View key={item.id} style={tabItemStyle}>
-      <View style={tabItemHeaderStyle}>
-        <Image
-          source={{ uri: `https://icons.duckduckgo.com/ip2/${getHostName(item.url)}.ico`, width: 16, height: 16 }}
-        />
-        <Text style={tabItemTitleStyle}>{getHostName(item.url)}</Text>
-      </View>
-      <View style={tabItemBodyStyle}>
-        {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={tabScreenshotStyle} />}
-      </View>
-      <TouchableOpacity style={getTabItemOverlayStyle(item.id === activeTab)} onPress={() => onPressItem(item)} />
-      <IconButton
-        icon={X}
-        size={16}
-        color={ColorMap.disabled}
-        style={cancelButtonStyle}
-        onPress={() => closeTab(item.id)}
-      />
-    </View>
-  );
-};
-
 export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabItem }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   const isEmptyTabs = !tabs.length;
 
   const onPressSearchBar = useCallback(() => {
@@ -145,40 +47,100 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
     }
   }, [navigation]);
 
-  const browserHeaderRightComponent = useMemo(() => {
-    return <IconButton style={{ marginHorizontal: 7 }} icon={House} onPress={goToBrowserHome} />;
-  }, [goToBrowserHome]);
-
-  return (
-    <ScreenContainer>
-      <>
-        <BrowserHeader onPressSearchBar={onPressSearchBar} rightComponent={browserHeaderRightComponent} />
-        {!!tabs.length && (
-          <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 20 }}>
-            {tabs.map(t => renderBrowserTabItem(t, activeTab, onPressTabItem))}
-          </ScrollView>
-        )}
-        {!tabs.length && <EmptyList title={i18n.common.emptyBrowserTabsMessage} icon={Browsers} />}
-        <View style={bottomTabBarWrapperStyle}>
-          <Button
-            title={i18n.common.closeAll}
-            onPress={() => closeAllTab()}
-            color={isEmptyTabs ? ColorMap.disabled : ColorMap.light}
-            textStyle={{ ...FontMedium }}
-            disabled={isEmptyTabs}
+  const renderBrowserTabItem = ({ item }: ListRenderItemInfo<BrowserSliceTab>) => {
+    return (
+      <View style={stylesheet.tabItemWrapper}>
+        <View style={stylesheet.tabItem}>
+          <View style={stylesheet.tabItemHeader}>
+            <Typography.Text size={'sm'} style={{ color: theme.colorTextLight1 }}>
+              {getHostName(item.url)}
+            </Typography.Text>
+          </View>
+          <View style={stylesheet.tabItemBody}>
+            <View style={stylesheet.tabItemBodySpaceHolder} />
+            {!!item.screenshot && <Image source={{ uri: item.screenshot }} style={stylesheet.tabItemImage} />}
+          </View>
+          <TouchableOpacity
+            style={[stylesheet.tabItemTouchableLayer, item.id === activeTab && stylesheet.tabItemTouchableLayerActive]}
+            onPress={() => onPressTabItem(item)}
           />
-
-          <IconButton icon={Plus} size={24} onPress={onCreateNewTab} />
-
           <Button
-            title={i18n.common.done}
-            onPress={onClose}
-            color={isEmptyTabs ? ColorMap.disabled : ColorMap.light}
-            textStyle={{ ...FontMedium }}
-            disabled={isEmptyTabs}
+            type={'ghost'}
+            size={'xs'}
+            icon={<Icon phosphorIcon={X} weight={'bold'} iconColor={theme['gray-5']} size={'xs'} />}
+            style={stylesheet.tabItemCloseButton}
+            onPress={() => closeTab(item.id)}
           />
         </View>
-        <SafeAreaView />
+      </View>
+    );
+  };
+
+  return (
+    <ScreenContainer backgroundColor={theme.colorBgDefault}>
+      <>
+        <View style={stylesheet.header}>
+          <TouchableOpacity
+            activeOpacity={BUTTON_ACTIVE_OPACITY}
+            style={stylesheet.headerSearchButton}
+            onPress={onPressSearchBar}>
+            <Typography.Text style={stylesheet.headerSearchButtonText}>{i18n.common.searchPlaceholder}</Typography.Text>
+          </TouchableOpacity>
+
+          <Button
+            size={'xs'}
+            type={'ghost'}
+            style={stylesheet.headerHomeButton}
+            icon={<Icon phosphorIcon={House} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+            onPress={goToBrowserHome}
+          />
+        </View>
+
+        {!!tabs.length && (
+          <FlatList
+            data={tabs}
+            renderItem={renderBrowserTabItem}
+            keyExtractor={item => item.id}
+            numColumns={2}
+            style={stylesheet.tabListContainer}
+            contentContainerStyle={stylesheet.tabListContentContainer}
+          />
+        )}
+        {!tabs.length && <EmptyList title={i18n.common.emptyBrowserTabsMessage} icon={Browsers} />}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            backgroundColor: theme.colorBgSecondary,
+          }}>
+          <Button
+            size={'sm'}
+            type={'ghost'}
+            onPress={closeAllTab}
+            style={stylesheet.footerLeftButton}
+            externalTextStyle={stylesheet.footerButtonText}
+            disabled={isEmptyTabs}>
+            {i18n.common.closeAll}
+          </Button>
+
+          <Button
+            type={'ghost'}
+            size={'sm'}
+            icon={<Icon phosphorIcon={Plus} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+            onPress={onCreateNewTab}
+          />
+
+          <Button
+            size={'sm'}
+            type={'ghost'}
+            onPress={onClose}
+            style={stylesheet.footerRightButton}
+            externalTextStyle={stylesheet.footerButtonText}
+            disabled={isEmptyTabs}>
+            {i18n.common.done}
+          </Button>
+        </View>
+        <SafeAreaView style={{ backgroundColor: theme.colorBgDefault }} />
       </>
     </ScreenContainer>
   );

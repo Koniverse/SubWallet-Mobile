@@ -14,7 +14,12 @@ export interface TitleProps {
 const Title: React.FC<TitleProps> = ({ level, superLevel, style, children, ...restProps }) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = TypographyStyles(theme);
-  const allStyle = [level && _style[`titleLevel${level}`], superLevel && _style[`titleSuperLevel${superLevel}`], style];
+  const allStyle = [
+    _style.title,
+    level && _style[`titleLevel${level}`],
+    superLevel && _style[`titleSuperLevel${superLevel}`],
+    style,
+  ];
 
   return (
     <RNText style={allStyle} {...restProps}>

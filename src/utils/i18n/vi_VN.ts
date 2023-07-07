@@ -105,8 +105,8 @@ export const vi = {
     close: 'Close',
     viewDetail: 'View Detail',
     on: 'on',
-    block: 'Block',
-    unblock: 'Unblock',
+    block: 'Block this site',
+    unblock: 'Unblock this site',
     forgetAll: 'Forget all',
     disconnectAll: 'Disconnect all',
     connectAll: 'Connect all',
@@ -174,6 +174,7 @@ export const vi = {
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
     submit: 'Submit',
     accountConnected: 'account connected',
+    recommend: 'Recommend',
   },
   title: {
     exportAccount: 'Export account',
@@ -498,6 +499,7 @@ export const vi = {
     enterPrivateKey: 'Enter private key',
     searchAddressBook: 'Account name',
     selectService: 'Select service',
+    searchWebsite: 'Search or enter website',
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
@@ -686,6 +688,7 @@ export const vi = {
     addressBook: 'Address book',
     addContact: 'Add contact',
     editContact: 'Edit contact',
+    search: 'Search',
     websiteAccessConfig: 'Website access config',
     currentPassword: 'Current password',
     newPassword: 'New password',
@@ -979,5 +982,8 @@ export const vi = {
     deleteChainSuccessfully: 'Deleted chain successfully',
     addProviderSuccessfully: 'Added a provider successfully',
     addTokenSuccessfully: 'Added token successfully',
+  },
+  browser: {
+    searchWithDuckduckgo: 'Search with Duckduckgo',
   },
 };

@@ -1,5 +1,13 @@
 import React from 'react';
-import { Platform, StyleProp, TextInput, TextInputProps, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Platform,
+  StyleProp,
+  TextInput,
+  TextInputProps,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { FadersHorizontal, MagnifyingGlass, XCircle } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
@@ -15,6 +23,7 @@ interface Props extends TextInputProps {
   onSubmitEditing?: TextInputProps['onSubmitEditing'];
   isShowFilterBtn?: boolean;
   onPressFilterBtn?: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
 const searchContainerStyle: StyleProp<any> = {

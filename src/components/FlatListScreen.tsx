@@ -61,6 +61,7 @@ interface Props<T> {
   needGapWithStatusBar?: boolean;
   isShowMainHeader?: boolean;
   isShowPlaceHolder?: boolean;
+  defaultSearchString?: string;
   androidKeyboardVerticalOffset?: number;
   titleTextAlign?: 'left' | 'center';
 }
@@ -98,11 +99,12 @@ export function FlatListScreen<T>({
   needGapWithStatusBar,
   isShowMainHeader,
   isShowPlaceHolder,
+  defaultSearchString,
   androidKeyboardVerticalOffset,
   titleTextAlign,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
-  const [searchString, setSearchString] = useState<string>('');
+  const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
   const {
     filterSelectionMap,
