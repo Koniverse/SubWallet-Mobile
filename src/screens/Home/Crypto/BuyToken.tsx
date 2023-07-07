@@ -14,13 +14,18 @@ import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { TokenSelectField } from 'components/Field/TokenSelect';
-import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
+import { PREDEFINED_TRANSAK_TOKEN_BY_SLUG } from '../../../predefined/transak';
 import { StyleSheet, View } from 'react-native';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
+import { BuyTokenProps } from 'routes/wrapper';
 
-export const BuyToken = () => {
+export const BuyToken = ({
+  route: {
+    params: { slug: tokenGroupSlug, symbol: groupSymbol },
+  },
+}: BuyTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -40,11 +45,12 @@ export const BuyToken = () => {
     selectedService,
     isOpenInAppBrowser,
     serviceUrl,
-  } = useBuyToken();
+  } = useBuyToken(tokenGroupSlug, groupSymbol);
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
+  console.log('selectedBuyToken', selectedBuyToken);
   const symbol = useMemo(() => {
-    return selectedBuyToken ? PREDEFINED_TRANSAK_TOKEN[selectedBuyToken].symbol : '';
+    return selectedBuyToken ? PREDEFINED_TRANSAK_TOKEN_BY_SLUG[selectedBuyToken].symbol : '';
   }, [selectedBuyToken]);
 
   return (
@@ -78,6 +84,7 @@ export const BuyToken = () => {
           <View style={styles.tokenAndServiceWrapper}>
             <View style={{ flex: 1 }}>
               <ServiceModal
+                disabled={!selectedBuyAccount || !selectedBuyToken}
                 onPressItem={onPressItem}
                 selectedService={selectedService}
                 isOpenInAppBrowser={isOpenInAppBrowser}
@@ -90,7 +97,7 @@ export const BuyToken = () => {
 
             <View style={{ flex: 1 }}>
               <TokenSelector
-                disabled={!selectedBuyAccount}
+                disabled={!selectedBuyAccount || !!tokenGroupSlug}
                 items={buyTokenSelectorItems}
                 selectedValueMap={selectedBuyToken ? { [selectedBuyToken]: true } : {}}
                 onSelectItem={openSelectBuyToken}

@@ -26,7 +26,7 @@ const itemTextStyle: StyleProp<any> = {
 
 export const ServiceSelectItem = ({ logo, serviceName, onPressItem, url }: Props) => {
   return (
-    <TouchableOpacity style={{ opacity: url ? 1 : 0.5 }} onPress={onPressItem}>
+    <TouchableOpacity style={{ opacity: url ? 1 : 0.5 }} onPress={onPressItem} disabled={!url}>
       <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, alignItems: 'center' }}>
         <View style={logoWrapperStyle}>{logo}</View>
         <Text style={itemTextStyle}>{serviceName}</Text>
