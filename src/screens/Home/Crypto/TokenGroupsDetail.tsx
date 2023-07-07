@@ -21,8 +21,6 @@ import { RootState } from 'stores/index';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
-import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
-import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 
@@ -73,22 +71,6 @@ export const TokenGroupsDetail = ({
     isQrModalVisible,
     tokenSelectorItems,
   } = useReceiveQR(tokenGroupSlug);
-
-  const {
-    isBuyTokenSelectorModalVisible,
-    isBuyAccountSelectorModalVisible,
-    isBuyServiceSelectorModalVisible,
-    onOpenBuyToken,
-    openSelectBuyAccount,
-    openSelectBuyToken,
-    onCloseSelectBuyAccount,
-    onCloseSelectBuyToken,
-    onCloseSelectBuyService,
-    selectedBuyAccount,
-    selectedBuyToken,
-    buyAccountSelectorItems,
-    buyTokenSelectorItems,
-  } = useBuyToken(tokenGroupSlug, groupSymbol);
 
   const toast = useToast();
 
@@ -156,11 +138,6 @@ export const TokenGroupsDetail = ({
     onOpenReceive();
   }, [onOpenReceive]);
 
-  const onPressBuyToken = useCallback(() => {
-    setAccessBy('buy');
-    onOpenBuyToken();
-  }, [onOpenBuyToken]);
-
   const showNoti = useCallback(
     (text: string) => {
       toast.hideAll();
@@ -185,14 +162,14 @@ export const TokenGroupsDetail = ({
     return (
       <TokenGroupsDetailUpperBlock
         onOpenReceive={_onOpenReceive}
-        onOpenBuyTokens={onPressBuyToken}
         onOpenSendFund={_onOpenSendFund}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
         groupSymbol={groupSymbol}
+        tokenGroupSlug={tokenGroupSlug}
       />
     );
-  }, [_onOpenReceive, onPressBuyToken, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol]);
+  }, [_onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
@@ -235,29 +212,19 @@ export const TokenGroupsDetail = ({
 
         {accessBy && (
           <AccountSelector
-            modalVisible={accessBy !== 'buy' ? isAccountSelectorModalVisible : isBuyAccountSelectorModalVisible}
-            onCancel={accessBy !== 'buy' ? onCloseSelectAccount : onCloseSelectBuyAccount}
-            items={accessBy !== 'buy' ? accountSelectorItems : buyAccountSelectorItems}
-            onSelectItem={accessBy !== 'buy' ? openSelectAccount : openSelectBuyAccount}
+            modalVisible={isAccountSelectorModalVisible}
+            onCancel={onCloseSelectAccount}
+            items={accountSelectorItems}
+            onSelectItem={openSelectAccount}
           />
         )}
 
         {accessBy && (
           <TokenSelector
-            modalVisible={accessBy !== 'buy' ? isTokenSelectorModalVisible : isBuyTokenSelectorModalVisible}
-            items={accessBy !== 'buy' ? tokenSelectorItems : buyTokenSelectorItems}
-            onSelectItem={accessBy !== 'buy' ? openSelectToken : openSelectBuyToken}
-            onCancel={accessBy !== 'buy' ? onCloseSelectToken : onCloseSelectBuyToken}
-          />
-        )}
-
-        {selectedBuyAccount && selectedBuyToken && (
-          <ServiceModal
-            modalVisible={isBuyServiceSelectorModalVisible}
-            onChangeModalVisible={onCloseSelectBuyService}
-            onPressBack={onCloseSelectBuyService}
-            token={selectedBuyToken}
-            address={selectedBuyAccount}
+            modalVisible={isTokenSelectorModalVisible}
+            items={tokenSelectorItems}
+            onSelectItem={openSelectToken}
+            onCancel={onCloseSelectToken}
           />
         )}
 

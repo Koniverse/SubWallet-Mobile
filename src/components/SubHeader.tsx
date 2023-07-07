@@ -41,8 +41,8 @@ const getHeaderTitleContainer = (textAlign?: string, showLeftBtn?: boolean, show
     flexDirection: 'row',
     flex: 1,
     justifyContent: textAlign === 'left' ? 'flex-start' : 'center',
-    paddingLeft: !!showLeftBtn ? 32 : 0,
-    paddingRight: !!showRightBtn ? 32 : 0,
+    paddingLeft: !!showLeftBtn || textAlign === 'center' ? 32 : 0,
+    paddingRight: !!showRightBtn || textAlign === 'center' ? 32 : 0,
   };
 };
 
