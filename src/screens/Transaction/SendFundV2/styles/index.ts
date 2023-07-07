@@ -10,11 +10,16 @@ export default (theme: ThemeTypes) =>
     footer: {
       paddingHorizontal: theme.padding,
       paddingTop: theme.padding,
+      gap: theme.size,
       ...MarginBottomForSubmitButton,
     },
+    footerBalanceWrapper: {
+      flexDirection: 'row',
+      marginTop: -theme.margin,
+      marginBottom: -theme.margin,
+    },
     max: {
-      paddingHorizontal: theme.padding,
-      paddingTop: theme.padding,
+      padding: theme.padding,
       marginRight: -theme.margin,
     },
     maxText: {
@@ -23,7 +28,7 @@ export default (theme: ThemeTypes) =>
     row: {
       flexDirection: 'row',
       gap: theme.sizeSM,
-      marginBottom: theme.margin,
+      marginBottom: theme.marginSM,
     },
     subheader: {
       paddingTop: theme.padding,
@@ -46,7 +51,6 @@ export default (theme: ThemeTypes) =>
     },
     amountWrapper: {
       paddingTop: 48,
-      paddingBottom: 56,
     },
     selector: {
       marginBottom: 0,

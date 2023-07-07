@@ -13,6 +13,7 @@ import { AppModalContext } from 'providers/AppModalContext';
 import { FieldValues, UseFormProps } from 'react-hook-form/dist/types';
 import { FieldPath, useForm } from 'react-hook-form';
 import { FieldPathValue } from 'react-hook-form/dist/types/path';
+import i18n from 'utils/i18n/i18n';
 
 export interface TransactionFormValues extends FieldValues {
   from: string;
@@ -74,7 +75,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   }, [action]);
 
   const title = useMemo(() => {
-    return TRANSACTION_TITLE_MAP[transactionType];
+    return TRANSACTION_TITLE_MAP()[transactionType];
   }, [transactionType]);
 
   const form = useForm<T, TContext>({
@@ -111,8 +112,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         setTimeout(() => {
           appModalContext.setConfirmModal({
             visible: true,
-            message: `Your selected chain (${chainInfoMap[chain].name}) is currently disabled, you need to turn it on`,
-            title: 'Enable chain?',
+            message: i18n.common.enableChainMessage(chainInfoMap[chain].name),
+            title: i18n.common.enableChain,
             onCancelModal: () => {
               appModalContext.hideConfirmModal();
             },

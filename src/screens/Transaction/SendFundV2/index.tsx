@@ -12,9 +12,9 @@ import {
   _isTokenTransferredByEvm,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { addLazy, isSameAddress, removeLazy } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -50,13 +50,11 @@ import { SubHeader } from 'components/SubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { DisabledStyle } from 'styles/sharedStyles';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import i18n from 'utils/i18n/i18n';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import { NetworkField } from 'components/Field/Network';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
@@ -67,8 +65,10 @@ import { ArrowCircleRight, PaperPlaneRight, PaperPlaneTilt } from 'phosphor-reac
 import { getButtonIcon } from 'utils/button';
 import { UseControllerReturn } from 'react-hook-form/dist/types';
 import { AmountValueConverter } from 'screens/Transaction/SendFundV2/AmountValueConverter';
-import { addLazy, removeLazy } from 'utils/lazyUpdate';
 import createStylesheet from './styles';
+import { useGetBalance } from 'hooks/balance';
+import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
+import { ModalRef } from 'types/modalRef';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -234,11 +234,18 @@ function getTokenItemsForViewStep2(
 function getTokenAvailableDestinationsForViewStep2(
   originChainItems: ChainItemType[],
   chainInfoMap: Record<string, _ChainInfo>,
+  senderAddress: string,
   recipientAddress: string,
+  chainValue: string,
 ) {
   const isRecipientAddressEvmType = isEthereumAddress(recipientAddress);
+  const _isSameAddress = isSameAddress(senderAddress, recipientAddress);
 
   return originChainItems.filter(ci => {
+    if (_isSameAddress && chainValue === ci.slug) {
+      return false;
+    }
+
     const isDestChainEvmCompatible = _isChainEvmCompatible(chainInfoMap[ci.slug]);
     return isDestChainEvmCompatible === isRecipientAddressEvmType;
   });
@@ -306,6 +313,9 @@ export const SendFund = ({
   const { show, hideAll } = useToast();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [viewStep, setViewStep] = useState<ViewStep>(1);
+  const accountSelectorRef = useRef<ModalRef>();
+  const tokenSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef>();
 
   const {
     title,
@@ -325,6 +335,7 @@ export const SendFund = ({
     onTransactionDone: onDone,
   } = useTransaction<TransferFormValues>('send-fund', {
     mode: 'onBlur',
+    reValidateMode: 'onBlur',
     defaultValues: {
       destChain: '',
       to: '',
@@ -342,6 +353,14 @@ export const SendFund = ({
     ...useWatch<TransferFormValues>({ control }),
     ...getValues(),
   };
+
+  const {
+    error: isGetBalanceError,
+    isLoading: isGetBalanceLoading,
+    nativeTokenBalance,
+    nativeTokenSlug,
+    tokenBalance,
+  } = useGetBalance(chainValue, fromValue, assetValue);
 
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
   const { assetRegistry, assetSettingMap, multiChainAssetMap, xcmRefMap } = useSelector(
@@ -361,10 +380,6 @@ export const SendFund = ({
   const [isBalanceReady, setIsBalanceReady] = useState(true);
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
   const chainStatus = useMemo(() => chainStateMap[chainValue]?.connectionStatus, [chainValue, chainStateMap]);
-
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
-  const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
-  const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
 
   const senderAccountName = useMemo(() => {
     if (!fromValue) {
@@ -399,8 +414,8 @@ export const SendFund = ({
       return [];
     }
 
-    return getTokenAvailableDestinationsForViewStep2(destChainItems, chainInfoMap, toValue);
-  }, [viewStep, destChainItems, chainInfoMap, toValue]);
+    return getTokenAvailableDestinationsForViewStep2(destChainItems, chainInfoMap, fromValue, toValue, chainValue);
+  }, [viewStep, destChainItems, chainInfoMap, fromValue, toValue, chainValue]);
 
   const currentChainAsset = useMemo(() => {
     return assetValue ? assetRegistry[assetValue] : undefined;
@@ -545,7 +560,7 @@ export const SendFund = ({
 
   const _onChangeFrom = (item: AccountJson) => {
     setFrom(item.address);
-    setAccountSelectModalVisible(false);
+    accountSelectorRef?.current?.onCloseModal();
     resetField('asset');
     setForceUpdateValue(undefined);
     setIsTransferAll(false);
@@ -553,15 +568,31 @@ export const SendFund = ({
 
   const _onChangeAsset = (item: TokenItemType) => {
     setAsset(item.slug);
-    setValue('destChain', item.originChain);
-    setTokenSelectModalVisible(false);
+    const currentDestChainItems = getTokenAvailableDestinationsForViewStep2(
+      destChainItems,
+      chainInfoMap,
+      fromValue,
+      toValue,
+      item.originChain,
+    );
+    if (viewStep === 2 && isSameAddress(fromValue, toValue)) {
+      if (currentDestChainItems.some(destChainItem => destChainItem.slug === item.originChain)) {
+        setValue('destChain', item.originChain);
+      } else {
+        setValue('destChain', '');
+      }
+    } else {
+      setValue('destChain', item.originChain);
+    }
+
+    tokenSelectorRef?.current?.onCloseModal();
     setForceUpdateValue(undefined);
     setIsTransferAll(false);
   };
 
   const _onChangeDestChain = (item: ChainInfo) => {
     setValue('destChain', item.slug);
-    setChainSelectModalVisible(false);
+    chainSelectorRef?.current?.onCloseModal();
   };
 
   const onSubheaderPressBack = useCallback(() => {
@@ -575,6 +606,7 @@ export const SendFund = ({
         keepTouched: false,
       });
       setForceUpdateValue({ value: null });
+      setIsTransferAll(false);
     }
   }, [navigation, resetField, viewStep]);
 
@@ -697,6 +729,10 @@ export const SendFund = ({
     ),
     [assetValue, decimals, forceUpdateValue, onInputChangeAmount, stylesheet.amountValueConverter],
   );
+
+  useEffect(() => {
+    setIsBalanceReady(!isGetBalanceLoading && !isGetBalanceError);
+  }, [isGetBalanceError, isGetBalanceLoading]);
 
   useEffect(() => {
     if (scanRecipient) {
@@ -837,7 +873,7 @@ export const SendFund = ({
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <ScreenContainer>
         <>
-          <Header />
+          <Header disabled={loading} />
 
           <View style={stylesheet.subheader}>
             <SubHeader
@@ -854,37 +890,43 @@ export const SendFund = ({
               keyboardShouldPersistTaps={'handled'}>
               {isAllAccount && viewStep === 1 && (
                 <>
-                  <TouchableOpacity
-                    onPress={() => setAccountSelectModalVisible(true)}
+                  <AccountSelector
+                    items={accountItems}
+                    selectedValueMap={{ [fromValue]: true }}
+                    onSelectItem={_onChangeFrom}
+                    renderSelected={() => (
+                      <AccountSelectField
+                        label={i18n.inputLabel.sendFrom}
+                        accountName={senderAccountName}
+                        value={fromValue}
+                        showIcon
+                        outerStyle={{ marginBottom: theme.marginSM }}
+                      />
+                    )}
                     disabled={loading}
-                    style={[stylesheet.accountSelector, loading && DisabledStyle]}>
-                    <AccountSelectField
-                      label={i18n.inputLabel.sendFrom}
-                      accountName={senderAccountName}
-                      value={fromValue}
-                      showIcon
-                      outerStyle={stylesheet.selector}
-                    />
-                  </TouchableOpacity>
+                    accountSelectorRef={accountSelectorRef}
+                  />
                 </>
               )}
 
               <View style={stylesheet.row}>
                 <View style={stylesheet.rowItem}>
-                  <TouchableOpacity
-                    style={[(!tokenItems.length || loading) && DisabledStyle]}
+                  <TokenSelector
+                    items={viewStep === 1 ? tokenItems : tokenItemsViewStep2}
+                    selectedValueMap={{ [assetValue]: true }}
+                    onSelectItem={_onChangeAsset}
+                    tokenSelectorRef={tokenSelectorRef}
+                    renderSelected={() => (
+                      <TokenSelectField
+                        logoKey={currentChainAsset?.symbol || ''}
+                        subLogoKey={currentChainAsset?.originChain || ''}
+                        value={currentChainAsset?.symbol || ''}
+                        outerStyle={{ marginBottom: 0 }}
+                        showIcon
+                      />
+                    )}
                     disabled={!tokenItems.length || loading}
-                    onPress={() => {
-                      setTokenSelectModalVisible(true);
-                    }}>
-                    <TokenSelectField
-                      outerStyle={stylesheet.selector}
-                      logoKey={currentChainAsset?.symbol || ''}
-                      subLogoKey={currentChainAsset?.originChain || ''}
-                      value={currentChainAsset?.symbol || ''}
-                      showIcon
-                    />
-                  </TouchableOpacity>
+                  />
                 </View>
 
                 <View style={stylesheet.paperPlaneIconWrapper}>
@@ -892,19 +934,21 @@ export const SendFund = ({
                 </View>
 
                 <View style={stylesheet.rowItem}>
-                  <TouchableOpacity
-                    style={[(!destChainItems.length || loading) && DisabledStyle]}
+                  <ChainSelector
+                    items={viewStep === 1 ? destChainItems : destChainItemsViewStep2}
+                    selectedValueMap={{ [destChainValue]: true }}
+                    chainSelectorRef={chainSelectorRef}
+                    onSelectItem={_onChangeDestChain}
+                    renderSelected={() => (
+                      <NetworkField
+                        networkKey={destChainValue}
+                        outerStyle={{ marginBottom: 0 }}
+                        placeholder={i18n.placeholder.selectChain}
+                        showIcon
+                      />
+                    )}
                     disabled={!destChainItems.length || loading}
-                    onPress={() => {
-                      setChainSelectModalVisible(true);
-                    }}>
-                    <NetworkField
-                      networkKey={destChainValue}
-                      outerStyle={stylesheet.selector}
-                      placeholder={i18n.placeholder.selectChain}
-                      showIcon
-                    />
-                  </TouchableOpacity>
+                  />
                 </View>
               </View>
 
@@ -934,37 +978,25 @@ export const SendFund = ({
                 </>
               )}
 
-              {viewStep === 2 && (
+              {viewStep === 2 ? (
                 <View style={stylesheet.amountWrapper}>
                   <FormItem control={control} rules={amountRules} render={renderAmountInput} name="value" />
                 </View>
+              ) : (
+                <View style={stylesheet.balanceWrapper}>
+                  {!(!fromValue && !chainValue) && (
+                    <FreeBalanceDisplay
+                      tokenSlug={assetValue}
+                      nativeTokenBalance={nativeTokenBalance}
+                      nativeTokenSlug={nativeTokenSlug}
+                      tokenBalance={tokenBalance}
+                      style={stylesheet.balance}
+                      error={isGetBalanceError}
+                      isLoading={isGetBalanceLoading}
+                    />
+                  )}
+                </View>
               )}
-
-              <View style={stylesheet.balanceWrapper}>
-                <FreeBalance
-                  label={viewStep === 2 ? 'Balance:' : undefined}
-                  address={fromValue}
-                  chain={chainValue}
-                  onBalanceReady={setIsBalanceReady}
-                  tokenSlug={assetValue}
-                  style={stylesheet.balance}
-                />
-
-                {viewStep === 2 && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setForceUpdateValue({ value: maxTransfer });
-                      const bnMaxTransfer = new BN(maxTransfer);
-
-                      if (!bnMaxTransfer.isZero()) {
-                        setIsTransferAll(true);
-                      }
-                    }}
-                    style={stylesheet.max}>
-                    {<Typography.Text style={stylesheet.maxText}>Max</Typography.Text>}
-                  </TouchableOpacity>
-                )}
-              </View>
             </ScrollView>
 
             <View style={stylesheet.footer}>
@@ -983,40 +1015,47 @@ export const SendFund = ({
                 </Button>
               )}
               {viewStep === 2 && (
-                <Button
-                  disabled={isSubmitButtonDisable}
-                  loading={loading}
-                  type={isTransferAll ? 'warning' : undefined}
-                  onPress={checkAction(handleSubmit(onSubmit), extrinsicType)}
-                  icon={getButtonIcon(PaperPlaneTilt)}>
-                  {isTransferAll ? i18n.buttonTitles.transferAll : i18n.buttonTitles.transfer}
-                </Button>
+                <>
+                  <View style={stylesheet.footerBalanceWrapper}>
+                    <FreeBalanceDisplay
+                      label={viewStep === 2 ? 'Balance:' : undefined}
+                      tokenSlug={assetValue}
+                      nativeTokenBalance={nativeTokenBalance}
+                      nativeTokenSlug={nativeTokenSlug}
+                      tokenBalance={tokenBalance}
+                      style={stylesheet.balance}
+                      error={isGetBalanceError}
+                      isLoading={isGetBalanceLoading}
+                    />
+
+                    {viewStep === 2 && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setForceUpdateValue({ value: maxTransfer });
+                          const bnMaxTransfer = new BN(maxTransfer);
+
+                          if (!bnMaxTransfer.isZero()) {
+                            setIsTransferAll(true);
+                          }
+                        }}
+                        style={stylesheet.max}>
+                        {<Typography.Text style={stylesheet.maxText}>Max</Typography.Text>}
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  <Button
+                    disabled={isSubmitButtonDisable}
+                    loading={loading}
+                    type={isTransferAll ? 'warning' : undefined}
+                    onPress={checkAction(handleSubmit(onSubmit), extrinsicType)}
+                    icon={getButtonIcon(PaperPlaneTilt)}>
+                    {isTransferAll ? i18n.buttonTitles.transferAll : i18n.buttonTitles.transfer}
+                  </Button>
+                </>
               )}
             </View>
             <SafeAreaView />
           </>
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={_onChangeFrom}
-            items={accountItems}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedValue={fromValue}
-          />
-          <TokenSelector
-            modalVisible={tokenSelectModalVisible}
-            items={viewStep === 1 ? tokenItems : tokenItemsViewStep2}
-            onCancel={() => setTokenSelectModalVisible(false)}
-            onSelectItem={_onChangeAsset}
-            selectedValue={assetValue}
-          />
-          <ChainSelector
-            items={viewStep === 1 ? destChainItems : destChainItemsViewStep2}
-            modalVisible={chainSelectModalVisible}
-            onCancel={() => setChainSelectModalVisible(false)}
-            selectedValue={destChainValue}
-            onSelectItem={_onChangeDestChain}
-          />
         </>
       </ScreenContainer>
     </KeyboardAvoidingView>
