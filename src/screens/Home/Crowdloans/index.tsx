@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo, RefreshControl } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 import { CrowdloanItemType } from '@subwallet/extension-koni-ui/src/types/crowdloan';
 import { RocketLaunch } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
-import { ColorMap } from 'styles/color';
-import { useRefresh } from 'hooks/useRefresh';
-import { restartSubscriptionServices } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useIsFocused } from '@react-navigation/native';
@@ -45,7 +42,7 @@ const defaultFilterOpts = [
 export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
   const items: CrowdloanItemType[] = useGetCrowdloanList();
-  const [isRefresh, refresh] = useRefresh();
+  // const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -98,14 +95,14 @@ export const CrowdloansScreen = () => {
         placeholder={i18n.placeholder.searchProject}
         needGapWithStatusBar={false}
         // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
-        refreshControl={
-          <RefreshControl
-            style={{ backgroundColor: ColorMap.dark1 }}
-            tintColor={ColorMap.light}
-            refreshing={isRefresh}
-            onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
-          />
-        }
+        // refreshControl={
+        //   <RefreshControl
+        //     style={{ backgroundColor: ColorMap.dark1 }}
+        //     tintColor={ColorMap.light}
+        //     refreshing={isRefresh}
+        //     onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
+        //   />
+        // }
       />
     </>
   );

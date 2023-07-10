@@ -40,6 +40,7 @@ import {
   ConfirmationDefinitions,
   ConfirmationsQueue,
   ConfirmationType,
+  CronReloadRequest,
   CronServiceType,
   CrowdloanJson,
   CurrentAccountInfo,
@@ -487,6 +488,10 @@ export async function stopCronAndSubscriptionServices(request: RequestCronAndSub
 
 export async function restartCronAndSubscriptionServices(request: RequestCronAndSubscriptionAction): Promise<void> {
   return sendMessage('mobile(cronAndSubscription.restart)', request);
+}
+
+export async function reloadCron(request: CronReloadRequest): Promise<boolean> {
+  return sendMessage('pri(cron.reload)', request);
 }
 
 export async function startCronServices(request: CronServiceType[]): Promise<void> {
