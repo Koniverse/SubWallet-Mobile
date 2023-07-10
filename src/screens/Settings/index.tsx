@@ -188,6 +188,12 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
     ],
     [navigation, onPressComingSoonFeature, theme.colorTextLight3],
   );
+  //
+  // useEffect(() => {
+  //   if (isEmptyAccounts) {
+  //     drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack();
+  //   }
+  // }, [drawerNavigation, isEmptyAccounts, navigation]);
 
   const onPressVersionNumber = () => {
     if (hiddenCount > 9) {

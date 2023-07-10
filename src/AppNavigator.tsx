@@ -66,6 +66,7 @@ import { Settings } from 'screens/Settings';
 import { WrapperParamList } from 'routes/wrapper';
 import { ManageAddressBook } from 'screens/Settings/AddressBook';
 import { BuyToken } from 'screens/Home/Crypto/BuyToken';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
 interface Props {
   isAppReady: boolean;
@@ -129,7 +130,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
-
+  const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
 
@@ -179,6 +180,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
       amount = false;
     };
   }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
+
+  useEffect(() => {
+    if (isEmptyAccounts) {
+      navigationRef.current?.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    }
+  }, [isEmptyAccounts, navigationRef]);
 
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>

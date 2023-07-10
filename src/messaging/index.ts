@@ -79,6 +79,7 @@ import {
   RequestParseTransactionSubstrate,
   RequestQrSignEvm,
   RequestQrSignSubstrate,
+  RequestResetWallet,
   RequestSettingsType,
   RequestSigningApprovePasswordV2,
   RequestStakeCancelWithdrawal,
@@ -118,6 +119,7 @@ import {
   ResponseQrParseRLP,
   ResponseQrSignEvm,
   ResponseQrSignSubstrate,
+  ResponseResetWallet,
   ResponseSeedCreateV2,
   ResponseSeedValidateV2,
   ResponseUnlockKeyring,
@@ -1334,6 +1336,10 @@ export async function keyringExportMnemonic(
   request: RequestKeyringExportMnemonic,
 ): Promise<ResponseKeyringExportMnemonic> {
   return sendMessage('pri(keyring.export.mnemonic)', request);
+}
+
+export async function resetWallet(request: RequestResetWallet): Promise<ResponseResetWallet> {
+  return sendMessage('pri(keyring.reset)', request);
 }
 
 /// Derive

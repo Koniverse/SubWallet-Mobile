@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { ImageBackground, SafeAreaView, View } from 'react-native';
 import Text from 'components/Text';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
@@ -13,7 +13,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Images, SVGImages } from 'assets/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { WarningText } from 'components/design-system-ui';
+import { Button, WarningText } from 'components/design-system-ui';
+import { resetWallet } from 'messaging/index';
+import { useToast } from 'react-native-toast-notifications';
+import { ForgotPasswordModal } from 'components/common/ForgotPasswordModal';
 
 const optionalConfigObject = {
   title: 'Authentication Required', // Android
@@ -29,12 +32,16 @@ const optionalConfigObject = {
 
 export const LockScreen = () => {
   const theme = useSubWalletTheme().swThemes;
-  const { unlock } = useAppLock();
+  const { unlock, resetPinCode } = useAppLock();
   const faceIdEnabled = useSelector((state: RootState) => state.mobileSettings.faceIdEnabled);
   const [value, setValue] = useState<string>('');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [authMethod, setAuthMethod] = useState<'biometric' | 'pinCode'>(faceIdEnabled ? 'biometric' : 'pinCode');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const toast = useToast();
+  const [resetAccLoading, setAccLoading] = useState(false);
+  const [eraseAllLoading, setEraseAllLoading] = useState(false);
 
   const unlockWithBiometric = useAppLock().unlockWithBiometric;
 
@@ -68,6 +75,36 @@ export const LockScreen = () => {
       }
     }
   }, [ref, unlock, value]);
+
+  const onReset = useCallback(
+    (resetAll: boolean) => {
+      return () => {
+        const _setLoading = resetAll ? setEraseAllLoading : setAccLoading;
+        _setLoading(true);
+
+        setTimeout(() => {
+          _setLoading(false);
+          resetWallet({
+            resetAll: resetAll,
+          })
+            .then(rs => {
+              if (!rs.status) {
+                toast.show(rs.errors[0], { type: 'danger' });
+              }
+            })
+            .catch((e: Error) => {
+              toast.show(e.message, { type: 'danger' });
+            })
+            .finally(() => {
+              _setLoading(false);
+              setModalVisible(false);
+              resetPinCode();
+            });
+        }, 300);
+      };
+    },
+    [resetPinCode, toast],
+  );
 
   return (
     <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={{ flex: 1 }}>
@@ -111,6 +148,18 @@ export const LockScreen = () => {
           )}
 
           {!!error && <WarningText isDanger message={error} style={{ marginTop: 24 }} />}
+
+          <Button type={'ghost'} onPress={() => setModalVisible(true)}>
+            Forget account
+          </Button>
+
+          <ForgotPasswordModal
+            modalVisible={modalVisible}
+            onReset={onReset}
+            onCloseModalVisible={() => setModalVisible(false)}
+            resetAccLoading={resetAccLoading}
+            eraseAllLoading={eraseAllLoading}
+          />
         </View>
       </SafeAreaView>
     </ImageBackground>

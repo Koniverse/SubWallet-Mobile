@@ -16,6 +16,7 @@ export interface SWModalProps {
   titleTextAlign?: 'left' | 'center';
   contentContainerStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;
+  isUseForceHidden?: boolean;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -52,6 +53,7 @@ const SwModal = ({
   titleTextAlign = 'left',
   contentContainerStyle,
   titleStyle,
+  isUseForceHidden,
 }: SWModalProps) => {
   const theme = useSubWalletTheme().swThemes;
   return (
@@ -69,6 +71,7 @@ const SwModal = ({
       avoidKeyboard={true}
       // useNativeDriver
       hideModalContentWhileAnimating
+      isUseForceHidden={isUseForceHidden}
       propagateSwipe>
       <View style={[getSubWalletModalContainerStyle(!!isFullHeight), modalStyle]}>
         <View
