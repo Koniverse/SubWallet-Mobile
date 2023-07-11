@@ -168,8 +168,8 @@ export const predefinedDApps: PredefinedDApps = {
   dapps: [
     {
       name: 'ACE',
-      icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/dapps/color/ACE.svg',
-      id: 'ace.web3go.xyz/#',
+      icon: 'https://dotinsights.subwallet.app/assets/images/projects/ace.png',
+      id: 'ace.web3go.xyz',
       url: 'https://ace.web3go.xyz/#/',
       categories: ['utilities'],
       isSupportSubstrateAccount: true,
@@ -195,7 +195,7 @@ export const predefinedDApps: PredefinedDApps = {
     },
     {
       name: 'Aave - Open Source Liquidity Protocol',
-      icon: 'https://app.aave.com/favicon.ico',
+      icon: 'https://dotinsights.subwallet.app/assets/images/projects/aave.png',
       id: 'app.aave.com',
       url: 'https://app.aave.com/',
       categories: ['defi'],
@@ -205,7 +205,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'ArthSwap',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/arthswap.png',
-      id: 'app.arthswap.org/#/swap',
+      id: 'app.arthswap.org',
       url: 'https://app.arthswap.org/#/swap',
       categories: ['defi', 'staking', 'evm'],
       isSupportSubstrateAccount: false,
@@ -214,7 +214,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Basilisk Snek Swap',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/basilisk.png',
-      id: 'app.basilisk.cloud/#/trade',
+      id: 'app.basilisk.cloud',
       url: 'https://app.basilisk.cloud/#/trade',
       categories: ['defi'],
       isSupportSubstrateAccount: true,
@@ -295,7 +295,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Impossible Finance',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/impossible-finance.png',
-      id: 'app.impossible.finance/explore',
+      id: 'app.impossible.finance',
       url: 'https://app.impossible.finance/explore',
       categories: ['defi', 'evm'],
       isSupportSubstrateAccount: false,
@@ -304,7 +304,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'MoonFit - Web3 & NFT Lifestyle App',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/moonfit.png',
-      id: 'app.moonfit.xyz/nft-sale',
+      id: 'app.moonfit.xyz',
       url: 'https://app.moonfit.xyz/nft-sale',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -313,7 +313,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Multichain',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/multichain.png',
-      id: 'app.multichain.org/#/router',
+      id: 'app.multichain.org',
       url: 'https://app.multichain.org/#/router',
       categories: ['defi'],
       isSupportSubstrateAccount: true,
@@ -367,7 +367,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Solarbeam',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/solarbeam.png',
-      id: 'app.solarbeam.io/exchange/swap',
+      id: 'app.solarbeam.io',
       url: 'https://app.solarbeam.io/exchange/swap',
       categories: ['defi', 'staking', 'evm'],
       isSupportSubstrateAccount: false,
@@ -376,7 +376,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Solarflare',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/solarflare.png',
-      id: 'app.solarflare.io/exchange/swap',
+      id: 'app.solarflare.io',
       url: 'https://app.solarflare.io/exchange/swap',
       categories: ['defi', 'staking', 'evm'],
       isSupportSubstrateAccount: false,
@@ -385,7 +385,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Stellaswap',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/stellaswap.png',
-      id: 'app.stellaswap.com/exchange/swap',
+      id: 'app.stellaswap.com',
       url: 'https://app.stellaswap.com/exchange/swap',
       categories: ['defi', 'staking', 'evm'],
       isSupportSubstrateAccount: false,
@@ -403,7 +403,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'TAIGA',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/taiga.png',
-      id: 'app.taigaprotocol.io/assets',
+      id: 'app.taigaprotocol.io',
       url: 'https://app.taigaprotocol.io/assets',
       categories: ['defi'],
       isSupportSubstrateAccount: true,
@@ -529,7 +529,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'The Best Crypto & Binance Bridge | cBridge',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/celer-cbridge.png',
-      id: 'cbridge.celer.network/#/transfer',
+      id: 'cbridge.celer.network',
       url: 'https://cbridge.celer.network/#/transfer',
       categories: ['defi', 'evm'],
       isSupportSubstrateAccount: false,
@@ -538,7 +538,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Centrifuge Rewards Claim',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/centrifuge.png',
-      id: 'centrifuge.io/parachain/crowdloan',
+      id: 'centrifuge.io',
       url: 'https://centrifuge.io/parachain/crowdloan/',
       categories: ['crowdloans'],
       isSupportSubstrateAccount: true,
@@ -556,7 +556,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Huckleberry Finance',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/huckleberry.png',
-      id: 'clover.huckleberry.finance/#/swap',
+      id: 'clover.huckleberry.finance',
       url: 'https://clover.huckleberry.finance/#/swap',
       categories: ['defi', 'staking', 'evm'],
       isSupportSubstrateAccount: false,
@@ -610,7 +610,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Robonomics',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/robonomics.png',
-      id: 'dapp.robonomics.network/#/staking',
+      id: 'dapp.robonomics.network',
       url: 'https://dapp.robonomics.network/#/staking/',
       categories: ['staking'],
       isSupportSubstrateAccount: true,
@@ -637,7 +637,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Zenlink',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/zenlink.png',
-      id: 'dex.zenlink.pro/#/swap',
+      id: 'dex.zenlink.pro',
       url: 'https://dex.zenlink.pro/#/swap',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -646,7 +646,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Acala Rewards Claim',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/acala.png',
-      id: 'distribution.acala.network/claim/acala',
+      id: 'distribution.acala.network',
       url: 'https://distribution.acala.network/claim/acala',
       categories: ['crowdloans'],
       isSupportSubstrateAccount: true,
@@ -673,7 +673,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Mandala',
       icon: 'https://enterthemandala.app/SriChakraRainbow.png',
-      id: 'enterthemandala.app/HomePage',
+      id: 'enterthemandala.app',
       url: 'https://enterthemandala.app/HomePage',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -691,7 +691,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'EVRLOOT',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/evrloot.png',
-      id: 'game.evrloot.com/game',
+      id: 'game.evrloot.com',
       url: 'https://game.evrloot.com/game',
       categories: ['nft'],
       isSupportSubstrateAccount: true,
@@ -745,7 +745,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Bit.Country Pioneer Rewards Claim',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/bit.country-continuum.png',
-      id: 'ksmcrowdloan.bit.country/reward',
+      id: 'ksmcrowdloan.bit.country',
       url: 'https://ksmcrowdloan.bit.country/reward',
       categories: ['crowdloans'],
       isSupportSubstrateAccount: true,
@@ -799,7 +799,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'AzeroPunks',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/azeropunks.png',
-      id: 'mint.azeropunks.com/#/welcome',
+      id: 'mint.azeropunks.com',
       url: 'https://mint.azeropunks.com/#/welcome',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -817,7 +817,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Huckleberry Finance',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/huckleberry.png',
-      id: 'moonriver.huckleberry.finance/#/swap',
+      id: 'moonriver.huckleberry.finance',
       url: 'https://moonriver.huckleberry.finance/#/swap',
       categories: ['defi', 'staking', 'evm'],
       isSupportSubstrateAccount: false,
@@ -826,7 +826,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Moon Web3 identity',
       icon: 'https://moons.money/logo/logo.png?=2',
-      id: 'moons.money/app',
+      id: 'moons.money',
       url: 'https://moons.money/app',
       categories: ['evm'],
       isSupportSubstrateAccount: false,
@@ -853,7 +853,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Notifi',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/notifi-network.png',
-      id: 'notifi.network/dashboard',
+      id: 'notifi.network',
       url: 'https://notifi.network/dashboard',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -889,7 +889,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Polkadot.js',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/polkadot-%7B.js%7D.png',
-      id: 'polkadot.js.org/apps',
+      id: 'polkadot.js.org',
       url: 'https://polkadot.js.org/apps/#',
       categories: ['utilities'],
       isSupportSubstrateAccount: true,
@@ -924,7 +924,7 @@ export const predefinedDApps: PredefinedDApps = {
     },
     {
       name: "PolkaVerse u2013 Polkadot's Premier Social Network",
-      icon: '',
+      icon: 'https://dotinsights.subwallet.app/assets/images/projects/polkaverse.png',
       id: 'polkaverse.com',
       url: 'https://polkaverse.com/',
       categories: ['defi'],
@@ -952,7 +952,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Evolution Land. Columbus',
       icon: 'https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/dapps/color/Evolutionland.png',
-      id: 'portal.evolution.land/land/3/market/land',
+      id: 'portal.evolution.land',
       url: 'https://portal.evolution.land/land/3/market/land',
       categories: ['nft', 'evm'],
       isSupportSubstrateAccount: false,
@@ -1006,7 +1006,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Polkadot Staking Dashboard',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/polkadot.png',
-      id: 'staking.polkadot.network/dashboard#/overview',
+      id: 'staking.polkadot.network',
       url: 'https://staking.polkadot.network/dashboard#/overview',
       categories: ['staking'],
       isSupportSubstrateAccount: true,
@@ -1014,7 +1014,7 @@ export const predefinedDApps: PredefinedDApps = {
     },
     {
       name: 'Sub ID: Substrate Addresses, Balances, Crowdloans and NFTs',
-      icon: '',
+      icon: 'https://dotinsights.subwallet.app/assets/images/projects/sub-id.png',
       id: 'sub.id',
       url: 'https://sub.id/',
       categories: ['defi'],
@@ -1042,7 +1042,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Verse DEX | Bitcoin.comu00e2u20acu2122s official decentralized exchange',
       icon: 'https://verse.bitcoin.com/images/favicon.png',
-      id: 'verse.bitcoin.com/#',
+      id: 'verse.bitcoin.com',
       url: 'https://verse.bitcoin.com/#/',
       categories: ['defi'],
       isSupportSubstrateAccount: true,
@@ -1051,7 +1051,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Avault',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/avault.png',
-      id: 'www.avault.network/vault',
+      id: 'www.avault.network',
       url: 'https://www.avault.network/vault',
       categories: ['evm'],
       isSupportSubstrateAccount: false,
@@ -1060,7 +1060,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Bananaswap',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/bananaswap.png',
-      id: 'www.bananaswap.app/#/swap',
+      id: 'www.bananaswap.app',
       url: 'https://www.bananaswap.app/#/swap',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -1069,7 +1069,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Braindex | Smart Dex Aggregator',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/braindex.png',
-      id: 'www.braindex.io/swap',
+      id: 'www.braindex.io',
       url: 'https://www.braindex.io/swap',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -1087,7 +1087,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'HashKey DID',
       icon: 'https://www.hashkey.id/favicon.ico',
-      id: 'www.hashkey.id/home',
+      id: 'www.hashkey.id',
       url: 'https://www.hashkey.id/home',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
@@ -1123,7 +1123,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'XDAO',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/xdao.png',
-      id: 'www.xdao.app/137',
+      id: 'www.xdao.app',
       url: 'https://www.xdao.app/137',
       categories: ['defi', 'evm'],
       isSupportSubstrateAccount: false,

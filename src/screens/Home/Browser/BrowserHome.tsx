@@ -94,21 +94,25 @@ const BrowserHome = () => {
     navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
   };
 
-  const renderRecentItem: ListRenderItem<StoredSiteInfo> = item => {
-    const data = dApps.dapps.find(dAppItem => item.item.url.includes(dAppItem.id));
+  const renderRecentItem: ListRenderItem<StoredSiteInfo> = ({ item }) => {
+    const data = dApps.dapps.find(dAppItem => item.url.includes(dAppItem.id));
+
     return (
       <IconItem
         data={data}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.item.url, name: data?.name })}
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: data?.name })}
       />
     );
   };
-  const renderBookmarkItem: ListRenderItem<StoredSiteInfo> = item => {
-    const data = dApps.dapps.find(dAppItem => item.item.url.includes(dAppItem.id));
+  const renderBookmarkItem: ListRenderItem<StoredSiteInfo> = ({ item }) => {
+    const data = dApps.dapps.find(dAppItem => item.url.includes(dAppItem.id));
     return (
       <IconItem
         data={data}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: data?.url, name: data?.name })}
+        defaultData={item}
+        onPress={() =>
+          navigation.navigate('BrowserTabsManager', { url: data?.url || item.url, name: data?.name || item.name })
+        }
         isWithText
       />
     );

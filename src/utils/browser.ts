@@ -20,10 +20,12 @@ export function getHostName(url: string) {
   }
 }
 
+export const searchDomain = 'duckduckgo.com';
+
 export function getValidURL(address: string): string {
   if (isValidURL(address)) {
     return address.startsWith('http://') || address.startsWith('https://') ? address : `https://${address}`;
   } else {
-    return `https://duckduckgo.com/?q=${encodeURIComponent(address)}`;
+    return `https://${searchDomain}/?q=${encodeURIComponent(address)}`;
   }
 }

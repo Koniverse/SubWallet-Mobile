@@ -5,6 +5,7 @@ import { FontMedium, FontSize0 } from 'styles/sharedStyles';
 
 export default (theme: ThemeTypes) =>
   StyleSheet.create({
+    colorBlack: { backgroundColor: 'black' },
     header: {
       backgroundColor: theme.colorBgDefault,
       width: '100%',

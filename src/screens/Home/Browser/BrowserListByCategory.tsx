@@ -40,7 +40,7 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
           return isTrue && dapp.categories.includes(route.name);
         });
         if (bookmarkedDApps) {
-          return bookmarkedDApps;
+          return { ...bookmarkedDApps, url: item.url };
         }
         return {
           name: item.name,
@@ -75,7 +75,7 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
     length: ITEM_HEIGHT,
     offset: ITEM_HEIGHT * index,
   });
-  const keyExtractor = (item: DAppInfo) => item.id;
+  const keyExtractor = (item: DAppInfo) => item.id + item.url;
   const renderBrowserItem: ListRenderItem<DAppInfo> = ({ item }) => {
     const dapp = predefinedDApps.dapps.find(a => item.url.includes(a.id));
 
@@ -86,7 +86,7 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
         tags={dapp?.categories}
         style={styles.listItem}
         title={dapp?.name || item.name}
-        subtitle={getHostName(item.url)}
+        subtitle={navigationType === 'BOOKMARK' ? item.url : getHostName(item.url)}
         url={item.url}
         onPress={() => onPressSectionItem(item)}
       />
