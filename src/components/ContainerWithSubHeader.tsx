@@ -13,6 +13,7 @@ export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   statusBarColor?: string;
   needGapWithStatusBar?: boolean;
   androidKeyboardVerticalOffset?: number;
+  disabledMainHeader?: boolean;
 }
 
 const getContainerStyle: (
@@ -48,6 +49,7 @@ export const ContainerWithSubHeader = ({
   needGapWithStatusBar = true,
   androidKeyboardVerticalOffset,
   titleTextAlign,
+  disabledMainHeader,
   ...subHeaderProps
 }: ContainerWithSubHeaderProps) => {
   return (
@@ -61,7 +63,7 @@ export const ContainerWithSubHeader = ({
       </SafeAreaView>
       {isShowMainHeader && (
         <View style={{ marginTop: Platform.OS === 'ios' ? 8 : STATUS_BAR_HEIGHT + 8, marginBottom: 16 }}>
-          <Header />
+          <Header disabled={disabledMainHeader} />
         </View>
       )}
       <SubHeader {...subHeaderProps} titleTextAlign={titleTextAlign} />

@@ -14,9 +14,11 @@ import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { isAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { DisabledStyle } from 'styles/sharedStyles';
 
 export interface HeaderProps {
   rightComponent?: JSX.Element;
+  disabled?: boolean;
 }
 
 const headerWrapper: StyleProp<any> = {
@@ -28,7 +30,7 @@ const headerWrapper: StyleProp<any> = {
   zIndex: 10,
 };
 
-export const Header = ({ rightComponent }: HeaderProps) => {
+export const Header = ({ rightComponent, disabled }: HeaderProps) => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -64,7 +66,8 @@ export const Header = ({ rightComponent }: HeaderProps) => {
     <View style={[SpaceStyle.oneContainer, headerWrapper]}>
       <View style={{ position: 'absolute', left: 16 }}>
         <Button
-          style={{ marginLeft: -8 }}
+          style={[{ marginLeft: -8 }, disabled && DisabledStyle]}
+          disabled={disabled}
           type={'ghost'}
           size={'xs'}
           icon={<SVGImages.MenuBarLogo />}
@@ -74,12 +77,16 @@ export const Header = ({ rightComponent }: HeaderProps) => {
         />
       </View>
 
-      <AccountSelectField onPress={() => navigation.navigate('AccountsScreen', { pathName: nearestPathName })} />
+      <AccountSelectField
+        disabled={disabled}
+        onPress={() => navigation.navigate('AccountsScreen', { pathName: nearestPathName })}
+      />
 
       <View style={{ flexDirection: 'row', position: 'absolute', right: 16 }}>
         {rightComponent || (
           <Button
-            style={{ marginRight: -8 }}
+            disabled={disabled}
+            style={[{ marginRight: -8 }, disabled && DisabledStyle]}
             size={'xs'}
             type={'ghost'}
             icon={<Icon phosphorIcon={QrCode} weight={'bold'} />}
