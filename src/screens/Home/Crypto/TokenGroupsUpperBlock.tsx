@@ -137,20 +137,20 @@ export const TokenGroupsUpperBlock = ({
           label={i18n.cryptoScreen.receive}
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
         <ActionButton
           label={i18n.cryptoScreen.send}
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
         {Platform.OS !== 'ios' && (
           <ActionButton
             label={i18n.cryptoScreen.buy}
             icon={ButtonIcon.Buy}
             onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}
-            buttonWrapperStyle={{ paddingHorizontal: theme.sizeSM }}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
           />
         )}
       </View>

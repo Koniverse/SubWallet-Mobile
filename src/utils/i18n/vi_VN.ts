@@ -551,6 +551,8 @@ export const vi = {
     changeMasterPasswordMessage1: 'To create a new password, you must correctly enter your current password.',
     changeMasterPasswordMessage2: 'Use this password to unlock your account.',
     buyMessage: 'You will be taken to independent provider to complete this transaction',
+    forgotPasswordMessage:
+      'We do not keep your password. If you forgot your password, you will need to reset your wallet using the Secret Recovery Phrase',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',

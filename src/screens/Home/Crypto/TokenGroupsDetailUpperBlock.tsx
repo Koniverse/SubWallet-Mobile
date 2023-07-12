@@ -90,12 +90,12 @@ export const TokenGroupsDetailUpperBlock = ({
         <ActionButton
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
         <ActionButton
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginSM }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
         {isSupportBuyTokens && (
           <ActionButton
@@ -106,7 +106,7 @@ export const TokenGroupsDetailUpperBlock = ({
                 params: { slug: tokenGroupSlug, symbol: groupSymbol },
               })
             }
-            buttonWrapperStyle={{ paddingHorizontal: theme.marginSM }}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
           />
         )}
       </View>
