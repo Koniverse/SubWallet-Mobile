@@ -34,4 +34,5 @@ export const Images = {
   squircleBorder: require('./squircleBorder.png'),
   avatarPlaceholder: require('./avatar-placeholder.png'),
   browserBanner: require('./browser-banner.png'),
+  circleRobot: require('./circle-robot.png'),
 };
