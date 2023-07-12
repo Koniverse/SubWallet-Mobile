@@ -80,7 +80,7 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
   useEffect(() => {
     setTimeout(() => {
       pinCodeRef?.current?.focus();
-    }, 600);
+    }, 1000);
   }, [pinCodeRef]);
 
   const onChangeText = useCallback(
@@ -102,7 +102,7 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
       keyboardType="number-pad"
       textContentType="oneTimeCode"
       renderCell={renderCell}
-      autoFocus={true}
+      autoFocus={false}
     />
   );
 };

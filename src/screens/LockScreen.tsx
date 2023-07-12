@@ -52,10 +52,7 @@ export const LockScreen = () => {
             });
         })
         .catch(() => setAuthMethod('pinCode'));
-    } else {
-      ref.current?.focus();
     }
-
     setAuthMethod(_authMethod);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [faceIdEnabled, unlockWithBiometric]);
