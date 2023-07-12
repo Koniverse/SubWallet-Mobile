@@ -76,6 +76,9 @@ export const AccountsScreen = ({
         // need 2x goBack() for going back to TokenGroups because of specific reason
         navigation.goBack();
         navigation.goBack();
+      } else if (pathName === 'SendFund') {
+        navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
+        navigation.goBack();
       } else {
         navigation.navigate('Home');
       }
