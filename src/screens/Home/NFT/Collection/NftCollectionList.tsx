@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useEffect } from 'react';
-import { ListRenderItemInfo } from 'react-native';
+import { ListRenderItemInfo, RefreshControl } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Plus } from 'phosphor-react-native';
@@ -9,6 +9,9 @@ import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { useRefresh } from 'hooks/useRefresh';
+import { reloadCron } from 'messaging/index';
 
 const filteredCollection = (items: NftCollection[], searchString: string) => {
   return items.filter(collection => {
@@ -17,9 +20,10 @@ const filteredCollection = (items: NftCollection[], searchString: string) => {
 };
 
 const NftCollectionList = () => {
+  const theme = useSubWalletTheme().swThemes;
   const { nftCollections } = useFetchNftCollection();
   const navigation = useNavigation<NFTNavigationProps>();
-  // const [isRefresh, refresh] = useRefresh();
+  const [isRefresh, refresh] = useRefresh();
 
   const isFocused = useIsFocused();
 
@@ -60,14 +64,14 @@ const NftCollectionList = () => {
             navigation.navigate('ImportNft');
           },
         }}
-        // refreshControl={
-        //   <RefreshControl
-        //     style={{ backgroundColor: ColorMap.dark1 }}
-        //     tintColor={ColorMap.light}
-        //     refreshing={isRefresh}
-        //     onRefresh={() => refresh(restartCronServices(['nft']))}
-        //   />
-        // }
+        refreshControl={
+          <RefreshControl
+            style={{ backgroundColor: theme.colorBgDefault }}
+            tintColor={theme.colorWhite}
+            refreshing={isRefresh}
+            onRefresh={() => refresh(reloadCron({ data: 'nft' }))}
+          />
+        }
         androidKeyboardVerticalOffset={0}
         numberColumns={2}
         searchMarginBottom={16}

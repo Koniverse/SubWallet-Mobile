@@ -8,7 +8,7 @@ import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem'
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
-import { restartCronAndSubscriptionServices } from 'messaging/index';
+import { reloadCron } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
@@ -152,12 +152,7 @@ const StakingBalanceList = () => {
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => {
-              refresh(
-                restartCronAndSubscriptionServices({
-                  cronServices: ['staking'],
-                  subscriptionServices: ['staking'],
-                }),
-              );
+              refresh(reloadCron({ data: 'staking' }));
             }}
           />
         }
