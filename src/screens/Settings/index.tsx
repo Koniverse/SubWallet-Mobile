@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Linking, ScrollView, StyleProp } from 'react-native';
@@ -37,7 +37,6 @@ import {
   WEBSITE_URL,
   WIKI_URL,
 } from 'constants/index';
-import { useToast } from 'react-native-toast-notifications';
 import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
@@ -73,15 +72,9 @@ type settingItemType = {
 
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const { lock } = useAppLock();
-  const onPressComingSoonFeature = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.notificationMessage.comingSoon);
-    // navigation.navigate('GeneralSettings');
-  }, [toast]);
   const [hiddenCount, setHiddenCount] = useState(0);
 
   const settingList: settingItemType[][] = useMemo(
@@ -91,7 +84,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: GlobeHemisphereWest,
           title: i18n.settings.generalSettings,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: onPressComingSoonFeature,
+          onPress: () => navigation.navigate('GeneralSettings'),
           backgroundColor: '#D92079',
         },
         {
@@ -186,7 +179,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         },
       ],
     ],
-    [navigation, onPressComingSoonFeature, theme.colorTextLight3],
+    [navigation, theme.colorTextLight3],
   );
   //
   // useEffect(() => {

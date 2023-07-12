@@ -225,6 +225,7 @@ export const en = {
     importAccMessage: 'Import an existing account',
     attachAccLabel: 'Attach an account',
     attachAccMessage: 'Attach an account without private key',
+    forgetAccount: 'Forget account',
   },
   exportAccount: {
     exportSeedPhrase: 'Export seed phrase',

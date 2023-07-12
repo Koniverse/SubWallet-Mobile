@@ -17,16 +17,17 @@ interface Props {
 
 const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const { data } = props;
-
+  const txtTypeNameMap = TxTypeNameMap();
+  const historyStatusMap = HistoryStatusMap();
   return (
     <MetaInfo>
-      <MetaInfo.DisplayType label={i18n.historyScreen.label.transactionType} typeName={TxTypeNameMap[data.type]} />
+      <MetaInfo.DisplayType label={i18n.historyScreen.label.transactionType} typeName={txtTypeNameMap[data.type]} />
       <HistoryDetailHeader data={data} />
       <MetaInfo.Status
         label={i18n.historyScreen.label.transactionStatus}
-        statusIcon={HistoryStatusMap[data.status].icon as React.ElementType<IconProps>}
-        statusName={HistoryStatusMap[data.status].name}
-        valueColorSchema={HistoryStatusMap[data.status].schema}
+        statusIcon={historyStatusMap[data.status].icon as React.ElementType<IconProps>}
+        statusName={historyStatusMap[data.status].name}
+        valueColorSchema={historyStatusMap[data.status].schema}
       />
       {data.extrinsicHash && data.extrinsicHash.startsWith('0x') && (
         <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>

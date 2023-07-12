@@ -6,7 +6,6 @@ import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import { PasswordField } from 'components/Field/Password';
-import i18n from 'utils/i18n/i18n';
 import { validatePassword, validatePasswordMatched } from 'screens/Shared/AccountNamePasswordCreation';
 import { keyringChangeMasterPassword } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +14,7 @@ import CreateMasterPasswordStyle from './style';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import AlertBox from 'components/design-system-ui/alert-box';
+import i18n from 'utils/i18n/i18n';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;

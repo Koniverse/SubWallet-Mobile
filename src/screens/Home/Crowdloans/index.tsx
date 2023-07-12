@@ -32,18 +32,17 @@ enum FilterValue {
   FAIL = 'failed',
 }
 
-const defaultFilterOpts = [
-  { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
-  { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
-  { label: i18n.filterOptions.win, value: FilterValue.WINNER },
-  { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
-];
-
 export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   // const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
+  const defaultFilterOpts = [
+    { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
+    { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
+    { label: i18n.filterOptions.win, value: FilterValue.WINNER },
+    { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
+  ];
 
   useEffect(() => {
     if (isFocused) {

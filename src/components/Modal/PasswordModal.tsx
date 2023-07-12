@@ -28,17 +28,16 @@ const PasswordContainerStyle: StyleProp<ViewStyle> = {
   marginBottom: 8,
 };
 
-const formConfig: FormControlConfig = {
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-};
-
 const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr, onChangePassword }: Props) => {
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const formConfig: FormControlConfig = {
+    password: {
+      name: i18n.common.walletPassword,
+      value: '',
+      validateFunc: validatePassword,
+      require: true,
+    },
+  };
   const onSubmit = useCallback(
     (formState: FormState) => {
       const password = formState.data.password;

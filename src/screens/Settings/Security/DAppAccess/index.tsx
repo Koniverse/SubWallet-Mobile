@@ -30,13 +30,6 @@ enum FilterValue {
   CONNECTED = 'connected',
 }
 
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.substrateDApp, value: FilterValue.SUBSTRATE },
-  { label: i18n.filterOptions.evmDApp, value: FilterValue.ETHEREUM },
-  { label: i18n.filterOptions.blockedDApp, value: FilterValue.BLOCKED },
-  { label: i18n.filterOptions.connectedDApp, value: FilterValue.CONNECTED },
-];
-
 const filterFunction = (items: AuthUrlInfo[], filters: string[]) => {
   if (!filters.length) {
     return items;
@@ -79,6 +72,12 @@ export const DAppAccessScreen = () => {
   const dAppItems = useMemo<AuthUrlInfo[]>(() => {
     return getDAppItems(authUrlMap);
   }, [authUrlMap]);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.substrateDApp, value: FilterValue.SUBSTRATE },
+    { label: i18n.filterOptions.evmDApp, value: FilterValue.ETHEREUM },
+    { label: i18n.filterOptions.blockedDApp, value: FilterValue.BLOCKED },
+    { label: i18n.filterOptions.connectedDApp, value: FilterValue.CONNECTED },
+  ];
 
   const rightIconOption = useMemo(() => {
     return {

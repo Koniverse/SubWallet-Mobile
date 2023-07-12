@@ -29,14 +29,6 @@ enum FilterValue {
   EVM = 'evm',
 }
 
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.evmChains, value: FilterValue.EVM },
-  { label: i18n.filterOptions.substrateChains, value: FilterValue.SUBSTRATE },
-  { label: i18n.filterOptions.customChains, value: FilterValue.CUSTOM },
-  { label: i18n.filterOptions.enabledChains, value: FilterValue.ENABLED },
-  { label: i18n.filterOptions.disabledChains, value: FilterValue.DISABLED },
-];
-
 const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
   if (!searchString) {
     return items;
@@ -115,6 +107,13 @@ export const NetworksSetting = ({}: Props) => {
   const [isToggleItem, setToggleItem] = useState(false);
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.evmChains, value: FilterValue.EVM },
+    { label: i18n.filterOptions.substrateChains, value: FilterValue.SUBSTRATE },
+    { label: i18n.filterOptions.customChains, value: FilterValue.CUSTOM },
+    { label: i18n.filterOptions.enabledChains, value: FilterValue.ENABLED },
+    { label: i18n.filterOptions.disabledChains, value: FilterValue.DISABLED },
+  ];
 
   useEffect(() => {
     setPendingChainMap(prevPendingChainMap => {

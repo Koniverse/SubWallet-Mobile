@@ -12,7 +12,7 @@ export const StakingTypeNameMap: Record<string, string> = {
   [ExtrinsicType.STAKING_COMPOUNDING]: i18n.historyScreen.extrinsicType.compounding,
 };
 
-export const TxTypeNameMap: Record<string, string> = {
+export const TxTypeNameMap = (): Record<string, string> => ({
   ...StakingTypeNameMap,
   transaction: 'Transaction',
   submitting: 'Submitting...',
@@ -27,7 +27,7 @@ export const TxTypeNameMap: Record<string, string> = {
   [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.extrinsicType.claimReward,
   [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.extrinsicType.cancelUnstake,
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.extrinsicType.evmExecute,
-};
+});
 
 export const TxTypeTitleMap: Record<string, string> = {
   ...StakingTypeNameMap,
@@ -45,7 +45,7 @@ export const TxTypeTitleMap: Record<string, string> = {
   [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.extrinsicType.evmExecute,
 };
 
-export const HistoryStatusMap: Record<string, StatusType> = {
+export const HistoryStatusMap = (): Record<string, StatusType> => ({
   [ExtrinsicStatus.SUCCESS]: {
     schema: 'success',
     icon: CheckCircle,
@@ -88,4 +88,4 @@ export const HistoryStatusMap: Record<string, StatusType> = {
     name: i18n.historyScreen.extrinsicStatus.unknown,
     color: 'gray-6',
   },
-};
+});

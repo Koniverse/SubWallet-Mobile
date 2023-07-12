@@ -12,7 +12,6 @@ import { GeneralSettings } from 'screens/Settings/General';
 import { SendFund } from 'screens/Transaction/SendFund';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
-import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
 import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
@@ -217,7 +216,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
-                <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} />
               </Stack.Group>

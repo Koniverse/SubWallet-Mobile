@@ -17,7 +17,8 @@ interface Props {
 }
 
 function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | undefined {
-  const color = HistoryStatusMap[status]?.color;
+  const historyStatusMap = HistoryStatusMap();
+  const color = historyStatusMap[status]?.color;
 
   return theme[color || ''];
 }
