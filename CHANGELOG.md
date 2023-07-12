@@ -1,3 +1,11 @@
+## 1.0.10 (198)
+- Reset wallet feature (#812)
+- Fix bug still show Token detail screen when switch account (#879)
+- Update UI - Add the sort for the Select Pool/Validator/Collator/dApp screen (#875)
+- Implement reload nft and reload staking (#871)
+- Error page in adding watch-only account screen (#833)
+- Do not show the virtual keyboard to enter the PIN in the case that the popup is on before (#830)
+
 ## 1.0.9 (197)
 - Browser Home (#692)
 - Browser - Webview (#822)
