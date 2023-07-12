@@ -201,15 +201,21 @@ const NftDetail = ({
       return;
     }
 
-    navigation.navigate('SendNFT', {
-      itemId: data.id,
-      chain: data.chain,
-      collectionId: collectionRawId,
-      owner: reformatAddress(
-        data.owner || currentAccount?.address || '',
-        _getChainSubstrateAddressPrefix(originChainInfo),
-        false,
-      ),
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'SendNFT',
+        params: {
+          itemId: data.id,
+          chain: data.chain,
+          collectionId: collectionRawId,
+          owner: reformatAddress(
+            data.owner || currentAccount?.address || '',
+            _getChainSubstrateAddressPrefix(originChainInfo),
+            false,
+          ),
+        },
+      },
     });
   }, [canSend, data, originChainInfo, navigation, collectionRawId, currentAccount?.address, show]);
 

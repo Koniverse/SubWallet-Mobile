@@ -90,21 +90,25 @@ export const TokenGroupsDetailUpperBlock = ({
         <ActionButton
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.marginSM }}
         />
         <ActionButton
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.marginSM }}
         />
-        <ActionButton
-          disabled={!isSupportBuyTokens}
-          icon={ButtonIcon.Buy}
-          onPress={() =>
-            navigation.navigate('Drawer', { screen: 'BuyToken', params: { slug: tokenGroupSlug, symbol: groupSymbol } })
-          }
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
-        />
+        {isSupportBuyTokens && (
+          <ActionButton
+            icon={ButtonIcon.Buy}
+            onPress={() =>
+              navigation.navigate('Drawer', {
+                screen: 'BuyToken',
+                params: { slug: tokenGroupSlug, symbol: groupSymbol },
+              })
+            }
+            buttonWrapperStyle={{ paddingHorizontal: theme.marginSM }}
+          />
+        )}
       </View>
     </View>
   );

@@ -115,4 +115,3 @@ export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'T
 export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddProvider'>;
 export type TransactionActionProps = NativeStackScreenProps<RootStackParamList, 'TransactionAction'>;
 export type HistoryProps = NativeStackScreenProps<RootStackParamList, 'History'>;
-export type SendNFTProps = NativeStackScreenProps<RootStackParamList, 'SendNFT'>;

@@ -31,9 +31,10 @@ import { nftParamsHandler } from '../helper';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { evmNftSubmitTransaction, substrateNftSubmitTransaction } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps, SendNFTProps } from 'routes/index';
+import { RootNavigationProps } from 'routes/index';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import { SendNFTProps } from 'routes/transaction/transactionAction';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',

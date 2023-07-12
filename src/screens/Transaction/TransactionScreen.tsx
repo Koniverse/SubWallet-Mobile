@@ -7,12 +7,14 @@ import ClaimReward from 'screens/Transaction/ClaimReward';
 import { CancelUnstake } from 'screens/Transaction/CancelUnstake';
 import { Withdraw } from 'screens/Transaction/Withdraw';
 import { SendFund } from 'screens/Transaction/SendFund';
+import SendNFT from 'screens/Transaction/NFT';
 
 const TransactionScreen = () => {
   const TransactionActionStack = createNativeStackNavigator<TransactionActionStackParamList>();
 
   return (
     <TransactionActionStack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <TransactionActionStack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
       <TransactionActionStack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
       <TransactionActionStack.Screen name="Stake" component={Stake} options={{ gestureEnabled: false }} />
       <TransactionActionStack.Screen name="Withdraw" component={Withdraw} options={{ gestureEnabled: false }} />
