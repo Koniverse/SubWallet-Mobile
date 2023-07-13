@@ -1,3 +1,8 @@
+## 1.0.10 (199)
+- Autofocus password when create master password & Allow search by address on Manage website access detail screen (#884, #882)
+- Fix browser issue (#873)
+- Update banner, favorites logic filter (#885)
+
 ## 1.0.10 (198)
 - Reset wallet feature (#812)
 - Fix bug still show Token detail screen when switch account (#879)
