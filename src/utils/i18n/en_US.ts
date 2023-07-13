@@ -88,7 +88,6 @@ export const en = {
     detail: 'Detail',
     data: 'Data',
     method: 'Method',
-    arguments: 'Arguments',
     amount: 'Amount',
     rawData: 'Raw data',
     signMethod: 'Sign method',
