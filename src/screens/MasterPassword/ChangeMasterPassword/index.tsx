@@ -204,6 +204,7 @@ const ChangeMasterPassword = () => {
             errorMessages={formState.errors.curPassword}
             onSubmitField={onNextStep}
             isBusy={isBusy}
+            autoFocus
           />
         )}
 
@@ -217,6 +218,7 @@ const ChangeMasterPassword = () => {
               errorMessages={formState.errors.password}
               onSubmitField={onSubmitField('password')}
               isBusy={isBusy}
+              autoFocus
             />
 
             <PasswordField

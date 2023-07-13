@@ -131,6 +131,7 @@ const CreateMasterPassword = ({
           onSubmitField={onSubmitField('password')}
           placeholder={i18n.placeholder.enterPassword}
           isBusy={isBusy}
+          autoFocus
         />
 
         <PasswordField
