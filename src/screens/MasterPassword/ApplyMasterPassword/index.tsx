@@ -35,14 +35,6 @@ const removeIcon = <Icon phosphorIcon={Trash} size={'lg'} iconColor={'#737373'} 
 
 const nextIcon = <Icon phosphorIcon={ArrowCircleRight} size={'lg'} weight={'fill'} />;
 
-const formConfig: FormControlConfig = {
-  password: {
-    name: i18n.inputLabel.currentPassword,
-    value: '',
-    validateFunc: validatePassword,
-  },
-};
-
 const intersectionArray = (array1: AccountJson[], array2: AccountJson[]): AccountJson[] => {
   return array1.filter(account => array2.find(acc => acc.address === account.address));
 };
@@ -61,6 +53,13 @@ const ApplyMasterPassword = () => {
   const selectedAction = useRef<SelectedActionType>();
   useHandlerHardwareBackPress(true);
   const migrateAddressRef = useRef<string>('');
+  const formConfig: FormControlConfig = {
+    password: {
+      name: i18n.inputLabel.currentPassword,
+      value: '',
+      validateFunc: validatePassword,
+    },
+  };
 
   const migratedRef = useRef<AccountJson[]>(
     accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),

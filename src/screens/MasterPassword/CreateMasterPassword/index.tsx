@@ -16,23 +16,6 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import AlertBox from 'components/design-system-ui/alert-box';
 
-const formConfig: FormControlConfig = {
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-  repeatPassword: {
-    name: i18n.common.repeatWalletPassword,
-    value: '',
-    validateFunc: (value: string, formValue: Record<string, string>) => {
-      return validatePasswordMatched(value, formValue.password);
-    },
-    require: true,
-  },
-};
-
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
 }
@@ -48,6 +31,22 @@ const CreateMasterPassword = ({
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   useHandlerHardwareBackPress(true);
+  const formConfig: FormControlConfig = {
+    password: {
+      name: i18n.common.walletPassword,
+      value: '',
+      validateFunc: validatePassword,
+      require: true,
+    },
+    repeatPassword: {
+      name: i18n.common.repeatWalletPassword,
+      value: '',
+      validateFunc: (value: string, formValue: Record<string, string>) => {
+        return validatePasswordMatched(value, formValue.password);
+      },
+      require: true,
+    },
+  };
 
   const onComplete = async () => {
     if (pathName === 'CreateAccount') {

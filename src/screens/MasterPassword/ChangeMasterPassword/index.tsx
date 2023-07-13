@@ -19,29 +19,6 @@ import i18n from 'utils/i18n/i18n';
 import AlertBox from 'components/design-system-ui/alert-box';
 import { FontSemiBold } from 'styles/sharedStyles';
 
-const formConfig = {
-  curPassword: {
-    name: i18n.inputLabel.currentPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-  password: {
-    name: i18n.inputLabel.newPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-  repeatPassword: {
-    name: i18n.inputLabel.confirmNewPassword,
-    value: '',
-    validateFunc: (value: string, formValue: Record<string, string>) => {
-      return validatePasswordMatched(value, formValue.password);
-    },
-    require: true,
-  },
-};
-
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
 }
@@ -56,6 +33,28 @@ const ChangeMasterPassword = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [step, setStep] = useState<PageStep>('OldPassword');
+  const formConfig = {
+    curPassword: {
+      name: i18n.inputLabel.currentPassword,
+      value: '',
+      validateFunc: validatePassword,
+      require: true,
+    },
+    password: {
+      name: i18n.inputLabel.newPassword,
+      value: '',
+      validateFunc: validatePassword,
+      require: true,
+    },
+    repeatPassword: {
+      name: i18n.inputLabel.confirmNewPassword,
+      value: '',
+      validateFunc: (value: string, formValue: Record<string, string>) => {
+        return validatePasswordMatched(value, formValue.password);
+      },
+      require: true,
+    },
+  };
 
   useHandlerHardwareBackPress(isBusy);
 
