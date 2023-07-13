@@ -37,19 +37,21 @@ import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
-import { getHostName } from 'utils/browser';
+import { getHostName, searchDomain } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { SiteInfo } from 'stores/types';
 import { Bar as ProgressBar } from 'react-native-progress';
 import { captureScreen } from 'react-native-view-shot';
 import { EmptyList } from 'components/EmptyList';
-import { BridgeScript, DAppScript, NovaScript } from 'screens/Home/Browser/BrowserScripts';
+import { BridgeScript, DAppScript, ConnectToNovaScript } from 'screens/Home/Browser/BrowserScripts';
 import { NoInternetScreen } from 'components/NoInternetScreen';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/BrowserTab';
 import TabIcon from 'screens/Home/Browser/Shared/TabIcon';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -121,10 +123,22 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
+//todo: Update better style
+const PhishingBlockerLayer = () => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
+  return (
+    <View style={stylesheet.phishingBlockerLayer}>
+      <Warning isDanger title={i18n.title.phishingDetected} message={i18n.warningMessage.phishingMessage} />
+    </View>
+  );
+};
+
 const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: ForwardedRef<BrowserTabRef>) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
+  const historyItems = useSelector((state: RootState) => state.browser.history);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
   const [progressNumber, setProgressNumber] = useState<number>(0);
@@ -228,10 +242,16 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
     updateNavigationInfo(nativeEvent);
 
-    addToHistory({
-      url: nativeEvent.url,
-      name: nativeEvent.title || nativeEvent.url,
-    });
+    if (getHostName(nativeEvent.url) !== searchDomain) {
+      const isNotDuplicated =
+        historyItems.length === 0 || (historyItems.length > 0 && historyItems[0].url !== nativeEvent.url);
+      if (isNotDuplicated) {
+        addToHistory({
+          url: nativeEvent.url,
+          name: nativeEvent.title || nativeEvent.url,
+        });
+      }
+    }
 
     updateBrowserOptionModalRef(nativeEvent);
 
@@ -310,15 +330,6 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     },
   ];
 
-  //todo: Update better style
-  const PhishingBlockerLayer = () => {
-    return (
-      <View style={stylesheet.phishingBlockerLayer}>
-        <Warning isDanger title={i18n.title.phishingDetected} message={i18n.warningMessage.phishingMessage} />
-      </View>
-    );
-  };
-
   useEffect(() => {
     let isSync = true;
 
@@ -326,7 +337,8 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       const injectPageJsContent = await InjectPageJsScript.get();
 
       if (isSync) {
-        const injectScripts = getJsInjectContent(true) + BridgeScript + injectPageJsContent + NovaScript + DAppScript;
+        const injectScripts =
+          getJsInjectContent(true) + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
 
         setInjectedScripts(injectScripts);
       }
@@ -410,6 +422,10 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     return true;
   };
 
+  const onOutOfMemmories = () => {
+    webviewRef.current?.reload();
+  };
+
   return (
     <ScreenContainer backgroundColor={theme.colorBgDefault}>
       <View style={stylesheet.header}>
@@ -450,6 +466,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         {isNetConnected ? (
           isWebviewReady ? (
             <WebView
+              style={stylesheet.colorBlack}
               ref={webviewRef}
               originWhitelist={['*']}
               source={{ uri: initWebViewSource }}
@@ -458,13 +475,14 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
               onLoad={onLoad}
               onLoadProgress={onLoadProgress}
               onMessage={onWebviewMessage}
-              javaScriptEnabled={true}
-              allowFileAccess={true}
-              allowsInlineMediaPlayback={true}
-              allowUniversalAccessFromFileURLs={true}
-              allowFileAccessFromFileURLs={true}
-              domStorageEnabled={true}
               onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+              onContentProcessDidTerminate={onOutOfMemmories}
+              allowFileAccess
+              allowsInlineMediaPlayback
+              allowUniversalAccessFromFileURLs
+              allowFileAccessFromFileURLs
+              domStorageEnabled
+              javaScriptEnabled
             />
           ) : (
             <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />

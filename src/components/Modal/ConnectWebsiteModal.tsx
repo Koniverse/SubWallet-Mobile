@@ -256,6 +256,7 @@ export const ConnectWebsiteModal = ({
     <SwModal
       modalTitle={'Connect website'}
       modalVisible={modalVisible}
+      titleTextAlign="center"
       onChangeModalVisible={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>

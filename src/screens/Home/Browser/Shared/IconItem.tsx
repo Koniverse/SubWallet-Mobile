@@ -6,14 +6,16 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import createStylesheet from './styles/IconItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { StoredSiteInfo } from 'stores/types';
 
 interface IconItemProps {
   data: DAppInfo | undefined;
+  defaultData?: StoredSiteInfo;
   isWithText?: boolean;
   onPress?: () => void;
 }
 
-const IconItem: React.FC<IconItemProps> = ({ data, isWithText, onPress }) => {
+const IconItem: React.FC<IconItemProps> = ({ data, defaultData, isWithText, onPress }) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
@@ -25,7 +27,7 @@ const IconItem: React.FC<IconItemProps> = ({ data, isWithText, onPress }) => {
 
         {isWithText && (
           <Typography.Text size={'xs'} style={stylesheet.title} ellipsis>
-            {data?.name}
+            {data?.name || defaultData?.name}
           </Typography.Text>
         )}
       </TouchableOpacity>

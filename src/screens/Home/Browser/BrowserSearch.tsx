@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ListRenderItemInfo, SectionList, View } from 'react-native';
+import { SectionListRenderItemInfo, SectionList, View } from 'react-native';
 import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
@@ -83,7 +83,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
     });
   };
 
-  const renderItem = ({ item }: ListRenderItemInfo<SearchItemType>) => {
+  const renderItem = ({ item, section }: SectionListRenderItemInfo<SearchItemType>) => {
     if (item.isSearch) {
       return (
         <BrowserSearchItem key={item.id} title={item.name} subtitle={item.subtitle} onPress={() => onPressItem(item)} />
@@ -97,7 +97,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
         title={item.name}
         tags={item.tags}
         url={item.url}
-        subtitle={item.subtitle}
+        subtitle={section.type === 'history' ? item.url : item.subtitle}
         onPress={() => onPressItem(item)}
       />
     );
