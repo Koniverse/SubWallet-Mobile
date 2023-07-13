@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, View } from 'react-native';
 import { predefinedDApps } from '../../../predefined/dAppSites';
-import { RootNavigationProps, RootStackParamList } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
 import browserHomeStyle from './styles/BrowserListByCategory';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -9,7 +9,6 @@ import { DAppInfo, PredefinedDApps } from 'types/browser';
 import { BrowserItem } from 'components/Browser/BrowserItem';
 import { SiteInfo } from 'stores/types';
 import { getHostName } from 'utils/browser';
-import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
@@ -23,59 +22,66 @@ type SearchItemType = {
 } & SiteInfo;
 const styles = browserHomeStyle();
 const ITEM_HEIGHT = 72;
-const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route }) => {
+const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route, navigation }) => {
   const { searchString, navigationType } = route.params as BrowserListByCategoryProps;
   const theme = useSubWalletTheme().swThemes;
-  const navigation = useNavigation<RootNavigationProps>();
-  const [browserData] = useState<PredefinedDApps>(predefinedDApps);
-  const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
+  const [predefinedData] = useState<PredefinedDApps>(predefinedDApps);
+  const bookmarkedItems = useSelector((state: RootState) => state.browser.bookmarks);
+
   const listByCategory = useMemo((): DAppInfo[] => {
+    // Get Data by Bookmark
     if (navigationType && navigationType === 'BOOKMARK') {
-      const dAppsByBookmark = bookmarkItems.map(item => {
-        const bookmarkedDApps = browserData.dapps.find(dapp => {
-          let isTrue = item.url.includes(dapp.id) && dapp.name.toLowerCase().includes(searchString);
-          if (route.name === 'all') {
-            return isTrue;
+      const bookmarkedData = bookmarkedItems.map(bookmarkedItem => {
+        // if bookmark item is a pre-defined dapp
+        const bookmarkedDApp = predefinedData.dapps.find(
+          dapp => bookmarkedItem.url.includes(dapp.id) && dapp.name.toLowerCase().includes(searchString),
+        );
+
+        if (bookmarkedDApp) {
+          // if that dapp inside "all" tab or inside its categories
+          if (route.name === 'all' || bookmarkedDApp?.categories.includes(route.name)) {
+            return bookmarkedDApp;
           }
-          return isTrue && dapp.categories.includes(route.name);
-        });
-        if (bookmarkedDApps) {
-          return bookmarkedDApps;
+
+          return undefined;
         }
+
+        // if bookmarked item is not a pre-defined dapp or a webpage
         return {
-          name: item.name,
-          id: item.id,
-          url: item.url,
+          name: bookmarkedItem.name,
+          id: bookmarkedItem.id,
+          url: bookmarkedItem.url,
           icon: '',
           categories: [],
         };
       });
-      return dAppsByBookmark;
+      return bookmarkedData.filter(item => item !== undefined) as DAppInfo[];
     }
+
+    // Get Data by Category
     if (route.name === 'all') {
       if (searchString) {
-        return browserData.dapps.filter(item => item.name.toLowerCase().includes(searchString));
+        return predefinedData.dapps.filter(item => item.name.toLowerCase().includes(searchString));
       }
-      return browserData.dapps;
+      return predefinedData.dapps;
     }
-    const data = browserData.dapps.filter(
+    const data = predefinedData.dapps.filter(
       item => item.categories.includes(route.name) && item.name.toLowerCase().includes(searchString),
     );
     return data;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [browserData.dapps, searchString, bookmarkItems]);
+  }, [predefinedData.dapps, searchString, bookmarkedItems]);
 
   const itemSeparator = () => <View style={styles.itemSeparator} />;
-  const onPressSectionItem = (item: SearchItemType) => {
-    navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
-  };
-
   const getItemLayout = (data: DAppInfo[] | null | undefined, index: number) => ({
     index,
     length: ITEM_HEIGHT,
     offset: ITEM_HEIGHT * index,
   });
   const keyExtractor = (item: DAppInfo) => item.id;
+  const onPressSectionItem = (item: SearchItemType) => {
+    navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
+  };
   const renderBrowserItem: ListRenderItem<DAppInfo> = ({ item }) => {
     const dapp = predefinedDApps.dapps.find(a => item.url.includes(a.id));
 
