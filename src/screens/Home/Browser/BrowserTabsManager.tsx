@@ -190,7 +190,8 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
           if (isAllowed === undefined) {
             setConnectionState(ConnectionStatement.NOT_CONNECTED);
           } else {
-            setConnectionState(isAllowed ? ConnectionStatement.CONNECTED : ConnectionStatement.DISCONNECTED);
+            const connectionStatus = isAllowed ? ConnectionStatement.CONNECTED : ConnectionStatement.DISCONNECTED;
+            setConnectionState(connectionStatus);
           }
         } else {
           const numberAccounts = noAllAccounts.filter(({ address }) => filterType(address)).length;
