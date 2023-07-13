@@ -1,7 +1,6 @@
 import { WebRunnerContext } from 'providers/contexts';
 import { SigningContext } from 'providers/SigningContext';
 import { PasswordField } from 'components/Field/Password';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { SubmitButton } from 'components/SubmitButton';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext } from 'react';
@@ -11,6 +10,7 @@ import { ColorMap } from 'styles/color';
 import { FontSemiBold, MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import { BaseSignProps } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
+import { SwModal } from 'components/design-system-ui';
 
 interface Props extends BaseSignProps {
   handlerStart: (password: string) => void;
@@ -145,7 +145,10 @@ const PasswordRequest = ({
         )}
       </View>
 
-      <SubWalletModal modalVisible={isVisible} onChangeModalVisible={!isSubmitting ? closeModal : undefined}>
+      <SwModal
+        modalVisible={isVisible}
+        onChangeModalVisible={!isSubmitting ? closeModal : undefined}
+        onBackButtonPress={!isSubmitting ? closeModal : undefined}>
         <View style={ContainerStyle}>
           <Text style={TitleTextStyle}>{i18n.common.enterYourPassword}</Text>
           <PasswordField
@@ -168,7 +171,7 @@ const PasswordRequest = ({
             }
           />
         </View>
-      </SubWalletModal>
+      </SwModal>
     </>
   );
 };

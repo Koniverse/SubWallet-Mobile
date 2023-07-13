@@ -206,7 +206,11 @@ const StakingActionModal = (props: Props) => {
   ]);
 
   return (
-    <SwModal modalVisible={visible} modalTitle={i18n.header.actions} onChangeModalVisible={closeModal}>
+    <SwModal
+      modalVisible={visible}
+      modalTitle={i18n.header.actions}
+      onChangeModalVisible={closeModal}
+      onBackButtonPress={closeModal}>
       {actionList.map(item => {
         const actionDisable = !availableActions.includes(item.action);
         const hasAnAction = !!selected;

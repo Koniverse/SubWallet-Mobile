@@ -13,18 +13,16 @@ import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { InputAmount } from 'components/Input/InputAmount';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
-import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
 import { addLazy, isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
@@ -34,7 +32,7 @@ import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { Warning } from 'components/Warning';
-import { ContainerHorizontalPadding, DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { RootStackParamList } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
@@ -49,6 +47,9 @@ import i18n from 'utils/i18n/i18n';
 import { SendFundProps } from 'routes/transaction/transactionAction';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { ChainSelector } from 'components/Modal/common/ChainSelector';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -240,11 +241,10 @@ export const SendFund = ({
   const [forceUpdateMaxValue, setForceUpdateMaxValue] = useState<object | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
-  const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
-  const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
-
   const [isToAddressDirty, setToAddressDirty] = useState<boolean>(false);
+  const accountSelectorRef = useRef<ModalRef>();
+  const tokenSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef>();
 
   const handleTransferAll = useCallback((value: boolean) => {
     setForceUpdateMaxValue({});
@@ -631,37 +631,54 @@ export const SendFund = ({
               style={{ ...ContainerHorizontalPadding, paddingTop: theme.size, flex: 1 }}
               keyboardShouldPersistTaps={'handled'}>
               {isAllAccount && (
-                <>
-                  <TouchableOpacity
-                    onPress={() => setAccountSelectModalVisible(true)}
-                    disabled={loading}
-                    style={[{ marginBottom: theme.sizeSM }, loading && DisabledStyle]}>
+                <AccountSelector
+                  items={accountItems}
+                  selectedValueMap={{ [from]: true }}
+                  onSelectItem={item => {
+                    onChangeFromValue(item.address);
+                    setForceUpdateMaxValue(undefined);
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                    setIsTransferAll(false);
+                    isToAddressDirty && validateRecipientAddress(to, item.address, chain, destChain);
+                  }}
+                  renderSelected={() => (
                     <AccountSelectField
                       label={i18n.inputLabel.sendFrom}
                       accountName={senderAccountName}
                       value={from}
                       showIcon
-                      outerStyle={{ marginBottom: 0 }}
+                      outerStyle={{ marginBottom: 8 }}
                     />
-                  </TouchableOpacity>
-                </>
+                  )}
+                  disabled={loading}
+                  accountSelectorRef={accountSelectorRef}
+                />
               )}
 
               <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingBottom: theme.sizeXXS }}>
                 <View style={{ flex: 1 }}>
-                  <TouchableOpacity
-                    style={[(!tokenItems.length || loading) && DisabledStyle]}
+                  <TokenSelector
+                    items={tokenItems}
+                    selectedValueMap={{ [asset]: true }}
+                    onSelectItem={item => {
+                      onChangeAssetValue(item.slug);
+                      onChangeValue('destChain')(item.originChain);
+                      tokenSelectorRef && tokenSelectorRef.current?.onCloseModal();
+                      setIsTransferAll(false);
+                      setForceUpdateMaxValue(undefined);
+                      isToAddressDirty && validateRecipientAddress(to, from, item.originChain, item.originChain);
+                    }}
+                    tokenSelectorRef={tokenSelectorRef}
+                    renderSelected={() => (
+                      <TokenSelectField
+                        logoKey={currentChainAsset?.symbol || ''}
+                        subLogoKey={currentChainAsset?.originChain || ''}
+                        value={currentChainAsset?.symbol || ''}
+                        showIcon
+                      />
+                    )}
                     disabled={!tokenItems.length || loading}
-                    onPress={() => {
-                      setTokenSelectModalVisible(true);
-                    }}>
-                    <TokenSelectField
-                      logoKey={currentChainAsset?.symbol || ''}
-                      subLogoKey={currentChainAsset?.originChain || ''}
-                      value={currentChainAsset?.symbol || ''}
-                      showIcon
-                    />
-                  </TouchableOpacity>
+                  />
                 </View>
 
                 <View style={{ flex: 1 }}>
@@ -704,19 +721,26 @@ export const SendFund = ({
                   <Warning key={index} isDanger message={message} style={{ marginBottom: theme.marginSM }} />
                 ))}
 
-              <TouchableOpacity
-                style={[{ marginBottom: theme.marginSM }, (!destChainItems.length || loading) && DisabledStyle]}
+              <ChainSelector
+                items={destChainItems}
+                selectedValueMap={{ [destChain]: true }}
+                chainSelectorRef={chainSelectorRef}
+                onSelectItem={item => {
+                  onChangeValue('destChain')(item.slug);
+                  setForceUpdateMaxValue(isTransferAll ? {} : undefined);
+                  chainSelectorRef && chainSelectorRef.current?.onCloseModal();
+                  isToAddressDirty && validateRecipientAddress(to, from, chain, item.slug);
+                }}
+                renderSelected={() => (
+                  <NetworkField
+                    networkKey={destChain}
+                    outerStyle={{ marginBottom: 0 }}
+                    placeholder={i18n.placeholder.selectChain}
+                    showIcon
+                  />
+                )}
                 disabled={!destChainItems.length || loading}
-                onPress={() => {
-                  setChainSelectModalVisible(true);
-                }}>
-                <NetworkField
-                  networkKey={destChain}
-                  outerStyle={{ marginBottom: 0 }}
-                  placeholder={i18n.placeholder.selectChain}
-                  showIcon
-                />
-              </TouchableOpacity>
+              />
               <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
             </ScrollView>
 
@@ -743,46 +767,6 @@ export const SendFund = ({
             </View>
             <SafeAreaView />
           </>
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={item => {
-              onChangeFromValue(item.address);
-              setForceUpdateMaxValue(undefined);
-              setAccountSelectModalVisible(false);
-              setIsTransferAll(false);
-              isToAddressDirty && validateRecipientAddress(to, item.address, chain, destChain);
-            }}
-            items={accountItems}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedValue={from}
-          />
-          <TokenSelector
-            modalVisible={tokenSelectModalVisible}
-            items={tokenItems}
-            onCancel={() => setTokenSelectModalVisible(false)}
-            onSelectItem={item => {
-              onChangeAssetValue(item.slug);
-              onChangeValue('destChain')(item.originChain);
-              setTokenSelectModalVisible(false);
-              setIsTransferAll(false);
-              setForceUpdateMaxValue(undefined);
-              isToAddressDirty && validateRecipientAddress(to, from, item.originChain, item.originChain);
-            }}
-            selectedValue={asset}
-          />
-          <ChainSelector
-            items={destChainItems}
-            modalVisible={chainSelectModalVisible}
-            onCancel={() => setChainSelectModalVisible(false)}
-            selectedValue={destChain}
-            onSelectItem={item => {
-              onChangeValue('destChain')(item.slug);
-              setForceUpdateMaxValue(isTransferAll ? {} : undefined);
-              setChainSelectModalVisible(false);
-              isToAddressDirty && validateRecipientAddress(to, from, chain, item.slug);
-            }}
-          />
         </>
       </ScreenContainer>
     </KeyboardAvoidingView>

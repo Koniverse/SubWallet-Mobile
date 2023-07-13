@@ -1,5 +1,4 @@
 import React, { useMemo, useRef } from 'react';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import { Linking, Share, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
@@ -15,7 +14,7 @@ import {
   _getChainSubstrateAddressPrefix,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
-import { Button, Icon, QRCode, Typography } from 'components/design-system-ui';
+import { Button, Icon, QRCode, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
@@ -93,7 +92,7 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
   };
 
   return (
-    <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
+    <SwModal modalVisible={modalVisible} onChangeModalVisible={onCancel} onBackButtonPress={onCancel}>
       <View style={receiveModalContentWrapper}>
         <Typography.Text
           size={'lg'}
@@ -104,7 +103,7 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
           {i18n.header.yourAddress}
         </Typography.Text>
         <View style={{ paddingTop: 38 }}>
-          <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} errorLevel={'Q'} />
+          {formattedAddress && <QRCode qrRef={(ref?) => (svg = ref)} value={formattedAddress} errorLevel={'Q'} />}
         </View>
 
         <View
@@ -179,6 +178,6 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
           />
         }
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };

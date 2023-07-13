@@ -28,6 +28,7 @@ interface Props<T> {
   children?: React.ReactNode;
   renderCustomItem?: (item: T) => JSX.Element;
   onChangeModalVisible?: () => void;
+  onBackButtonPress?: () => void;
 }
 
 function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -47,6 +48,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
     children,
     renderCustomItem,
     onChangeModalVisible,
+    onBackButtonPress,
   } = selectModalProps;
   const [isOpen, setOpen] = useState<boolean>(false);
   const onCloseModal = () => setOpen(false);
@@ -110,6 +112,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
 
       {isShowContent ? (
         <SwModal
+          onBackButtonPress={onBackButtonPress}
           modalVisible={isOpen}
           modalTitle={title}
           onChangeModalVisible={() => {

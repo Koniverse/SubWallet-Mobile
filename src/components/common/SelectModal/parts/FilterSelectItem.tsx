@@ -6,10 +6,9 @@ interface Props<T> {
   item: T;
   selectedValueMap: Record<string, boolean>;
   onSelectItem?: (item: T) => void;
-  onCloseModal?: () => void;
 }
 
-export function FilterSelectItem<T>({ item, selectedValueMap, onSelectItem, onCloseModal }: Props<T>) {
+export function FilterSelectItem<T>({ item, selectedValueMap, onSelectItem }: Props<T>) {
   const { value, label } = item as OptionType;
   return (
     <InputCheckBox
@@ -18,7 +17,6 @@ export function FilterSelectItem<T>({ item, selectedValueMap, onSelectItem, onCl
       label={label}
       onPress={() => {
         onSelectItem && onSelectItem(item);
-        onCloseModal && onCloseModal();
       }}
     />
   );

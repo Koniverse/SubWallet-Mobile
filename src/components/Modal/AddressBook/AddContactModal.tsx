@@ -153,6 +153,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
     <SwModal
       modalTitle={i18n.header.addContact}
       modalVisible={modalVisible}
+      onBackButtonPress={onChangeModalVisible}
       onChangeModalVisible={onChangeModalVisible}>
       <View style={stylesheet.formContainer}>
         <FormItem

@@ -309,7 +309,11 @@ export const RestoreJson = () => {
           </Button>
         </View>
       </View>
-      <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={i18n.header.accounts}>
+      <SwModal
+        modalVisible={visible}
+        onChangeModalVisible={hideModal}
+        modalTitle={i18n.header.accounts}
+        onBackButtonPress={hideModal}>
         <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
       </SwModal>
       <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideModal} />

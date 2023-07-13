@@ -164,6 +164,7 @@ export const Security = () => {
         <SwModal
           modalVisible={iShowAutoLockModal}
           onChangeModalVisible={() => setIsShowAutoLockModal(false)}
+          onBackButtonPress={() => setIsShowAutoLockModal(false)}
           modalTitle={i18n.common.autoLock}>
           <View style={{ width: '100%' }}>
             {AUTO_LOCK_LIST.map(item => (

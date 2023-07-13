@@ -73,7 +73,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
   ];
 
   return (
-    <SwModal modalVisible={visibleModal} onChangeModalVisible={onClose} modalTitle={'More options'}>
+    <SwModal modalVisible={visibleModal} onChangeModalVisible={onClose} modalTitle={'More options'} onBackButtonPress={onClose}>
       <View style={{ width: '100%' }}>
         {OPTIONS.map(opt => (
           <SelectItem

@@ -583,6 +583,7 @@ export const vi = {
     selectAccount: 'Select account',
     accountDetails: 'Chi tiết tài khoản',
     exportAccount: 'Xuất tài khoản  ',
+    selectCollator: 'Select collator',
     yourSeedPhrase: 'Seed phrase của bạn',
     yourRecoveryPhrase: 'Seed phrase của bạn',
     yourPrivateKey: 'Private key của bạn',

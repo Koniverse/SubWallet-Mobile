@@ -13,8 +13,6 @@ import { useNavigation } from '@react-navigation/native';
 import { TokenDetailModal } from 'screens/Home/Crypto/TokenDetailModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
-import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -23,6 +21,7 @@ import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -40,7 +39,6 @@ export const TokenGroupsDetail = ({
   const [tokenDetailVisible, setTokenDetailVisible] = useState<boolean>(false);
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
-  const [accessBy, setAccessBy] = useState<'buy' | 'receive' | undefined>(undefined);
   const groupSymbol = useMemo<string>(() => {
     if (tokenGroupSlug) {
       if (multiChainAssetMap[tokenGroupSlug]) {
@@ -63,13 +61,12 @@ export const TokenGroupsDetail = ({
     openSelectToken,
     selectedAccount,
     selectedNetwork,
-    isTokenSelectorModalVisible,
-    isAccountSelectorModalVisible,
-    onCloseSelectAccount,
-    onCloseSelectToken,
     onCloseQrModal,
     isQrModalVisible,
     tokenSelectorItems,
+    accountRef,
+    tokenRef,
+    selectedAccountMap,
   } = useReceiveQR(tokenGroupSlug);
 
   const toast = useToast();
@@ -133,11 +130,6 @@ export const TokenGroupsDetail = ({
     navigation.goBack();
   }, [navigation]);
 
-  const _onOpenReceive = useCallback(() => {
-    setAccessBy('receive');
-    onOpenReceive();
-  }, [onOpenReceive]);
-
   const showNoti = useCallback(
     (text: string) => {
       toast.hideAll();
@@ -161,7 +153,7 @@ export const TokenGroupsDetail = ({
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock
-        onOpenReceive={_onOpenReceive}
+        onOpenReceive={onOpenReceive}
         onOpenSendFund={_onOpenSendFund}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
@@ -169,7 +161,7 @@ export const TokenGroupsDetail = ({
         tokenGroupSlug={tokenGroupSlug}
       />
     );
-  }, [_onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug]);
+  }, [onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
@@ -210,23 +202,15 @@ export const TokenGroupsDetail = ({
           onChangeModalVisible={onCloseTokenDetailModal}
         />
 
-        {accessBy && (
-          <AccountSelector
-            modalVisible={isAccountSelectorModalVisible}
-            onCancel={onCloseSelectAccount}
-            items={accountSelectorItems}
-            onSelectItem={openSelectAccount}
-          />
-        )}
-
-        {accessBy && (
-          <TokenSelector
-            modalVisible={isTokenSelectorModalVisible}
-            items={tokenSelectorItems}
-            onSelectItem={openSelectToken}
-            onCancel={onCloseSelectToken}
-          />
-        )}
+        <SelectAccAndTokenModal
+          accountRef={accountRef}
+          tokenRef={tokenRef}
+          accountItems={accountSelectorItems}
+          tokenItems={tokenSelectorItems}
+          openSelectAccount={openSelectAccount}
+          openSelectToken={openSelectToken}
+          selectedValueMap={selectedAccountMap}
+        />
 
         <ReceiveModal
           modalVisible={isQrModalVisible}

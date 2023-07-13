@@ -1,13 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { SwFullSizeModal } from 'components/design-system-ui';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { Warning } from 'components/Warning';
+import React, { useCallback, useMemo, useRef } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
-import { ListRenderItemInfo, TouchableOpacity } from 'react-native';
+import { ListRenderItemInfo } from 'react-native';
 import { StakingNominationItem } from 'components/common/StakingNominationItem';
 import { NominationSelectorField } from 'components/Field/NominationSelector';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
   nominators: NominationInfo[];
@@ -27,20 +25,8 @@ const searchFunction = (items: NominationInfo[], searchString: string) => {
   });
 };
 
-const renderListEmptyComponent = () => {
-  return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={'No collator available'}
-      isDanger={false}
-    />
-  );
-};
-
 export const NominationSelector = ({ nominators, selectedValue, onSelectItem, disabled }: Props) => {
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-
+  const collatorRef = useRef<ModalRef>();
   const selectedCollator = useMemo(() => {
     return nominators.find(item => item.validatorAddress === selectedValue);
   }, [nominators, selectedValue]);
@@ -53,7 +39,7 @@ export const NominationSelector = ({ nominators, selectedValue, onSelectItem, di
           isSelected={item.validatorAddress === selectedValue}
           onSelectItem={value => {
             onSelectItem(value);
-            setModalVisible(false);
+            collatorRef?.current?.onCloseModal();
           }}
         />
       );
@@ -63,23 +49,20 @@ export const NominationSelector = ({ nominators, selectedValue, onSelectItem, di
 
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(true)} disabled={disabled}>
-        <NominationSelectorField label={'Select validator'} item={selectedCollator} />
-      </TouchableOpacity>
-
-      <SwFullSizeModal modalVisible={modalVisible}>
-        <FlatListScreen
-          autoFocus={true}
-          items={nominators}
-          style={FlatListScreenPaddingTop}
-          title={'Select collator'}
-          searchFunction={searchFunction}
-          renderItem={renderItem}
-          onPressBack={() => setModalVisible(false)}
-          renderListEmptyComponent={renderListEmptyComponent}
-          isShowFilterBtn={false}
-        />
-      </SwFullSizeModal>
+      <FullSizeSelectModal
+        items={nominators}
+        selectedValueMap={selectedCollator ? { [selectedCollator.validatorAddress]: true } : {}}
+        selectModalType={'single'}
+        title={i18n.header.selectCollator}
+        disabled={disabled}
+        renderSelected={() => (
+          <NominationSelectorField label={i18n.inputLabel.selectCollator} item={selectedCollator} />
+        )}
+        onBackButtonPress={() => collatorRef?.current?.onCloseModal()}
+        ref={collatorRef}
+        renderCustomItem={renderItem}
+        searchFunc={searchFunction}
+      />
     </>
   );
 };

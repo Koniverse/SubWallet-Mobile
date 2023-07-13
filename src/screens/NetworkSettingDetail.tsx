@@ -1,11 +1,11 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
 import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { RpcSelectField } from 'components/Field/RpcSelect';
-import { RpcSelectorModal } from 'components/common/RpcSelectorModal';
+import { ProviderItemType, RpcSelectorModal } from 'components/common/RpcSelectorModal';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { NetworkSettingDetailProps, RootNavigationProps } from 'routes/index';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
@@ -35,6 +35,7 @@ import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...sharedStyles.layoutContainer,
@@ -64,13 +65,12 @@ export const NetworkSettingDetail = ({
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
+  const rpcSelectorRef = useRef<ModalRef>();
 
   const _chainInfo = useFetchChainInfo(chainSlug);
   const [chainInfo, setChainInfo] = useState(_chainInfo);
   const _chainState = useFetchChainState(chainSlug);
   const [chainState, setChainState] = useState(_chainState);
-
-  const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { decimals, symbol } = useMemo(() => {
@@ -258,7 +258,7 @@ export const NetworkSettingDetail = ({
     if (Object.keys(chainInfo.providers).length === 1) {
       navigation.navigate('AddProvider', { slug: chainInfo.slug });
     } else {
-      setRpcSelectorModalVisible(true);
+      rpcSelectorRef?.current?.onOpenModal();
     }
   };
 
@@ -291,6 +291,22 @@ export const NetworkSettingDetail = ({
       title={i18n.header.networkDetails}>
       <View style={ContainerStyle}>
         <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps={'handled'}>
+          <RpcSelectorModal
+            rpcSelectorRef={rpcSelectorRef}
+            chainSlug={chainSlug}
+            selectedValueMap={{ [formState.data.currentProvider]: true }}
+            onPressBack={() => rpcSelectorRef?.current?.onCloseModal()}
+            onSelectItem={(item: ProviderItemType) => {
+              onChangeValue('currentProvider')(item.value);
+            }}
+            renderSelected={() => (
+              <RpcSelectField
+                showRightIcon
+                value={chainInfo.providers[formState.data.currentProvider]}
+                rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
+              />
+            )}
+          />
           <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
             <RpcSelectField
               showRightIcon
@@ -367,16 +383,6 @@ export const NetworkSettingDetail = ({
           message={i18n.message.deleteNetworkMessage}
           onCompleteModal={onCompleteDeleteModal}
           onCancelModal={onCancelDelete}
-        />
-
-        <RpcSelectorModal
-          chainSlug={chainSlug}
-          modalVisible={rpcSelectorModalVisible}
-          selectedValue={formState.data.currentProvider}
-          onPressBack={() => setRpcSelectorModalVisible(false)}
-          onSelectItem={(value: string) => {
-            onChangeValue('currentProvider')(value);
-          }}
         />
       </View>
     </ContainerWithSubHeader>

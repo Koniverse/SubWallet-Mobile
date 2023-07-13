@@ -5,11 +5,10 @@ import React from 'react';
 interface Props<T> {
   item: T;
   selectedValueMap: Record<string, boolean>;
-  onSelectItem?: (item: T) => void;
-  onCloseModal?: () => void;
+  onSelectItem?: (item: T, isCheck?: boolean) => void;
 }
 
-export function ActionSelectItem<T>({ item, selectedValueMap, onSelectItem, onCloseModal }: Props<T>) {
+export function ActionSelectItem<T>({ item, selectedValueMap, onSelectItem }: Props<T>) {
   const { label, backgroundColor, icon, key } = item as ActionItemType;
   return (
     <SelectItem
@@ -18,7 +17,6 @@ export function ActionSelectItem<T>({ item, selectedValueMap, onSelectItem, onCl
       icon={icon}
       onPress={() => {
         onSelectItem && onSelectItem(item);
-        onCloseModal && onCloseModal();
       }}
       isSelected={!!selectedValueMap[key]}
     />

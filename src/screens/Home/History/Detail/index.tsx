@@ -73,6 +73,7 @@ export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }:
       modalVisible={modalVisible}
       modalTitle={data?.displayData?.title || ''}
       footer={modalFooter}
+      onBackButtonPress={onChangeModalVisible}
       onChangeModalVisible={onChangeModalVisible}>
       <View style={{ alignSelf: 'stretch' }}>{data && <HistoryDetailLayout data={data} />}</View>
     </SwModal>

@@ -17,6 +17,7 @@ export interface SWModalProps {
   contentContainerStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;
   isUseForceHidden?: boolean;
+  onBackButtonPress?: () => void;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -54,6 +55,7 @@ const SwModal = ({
   contentContainerStyle,
   titleStyle,
   isUseForceHidden,
+  onBackButtonPress,
 }: SWModalProps) => {
   const theme = useSubWalletTheme().swThemes;
   return (
@@ -69,6 +71,7 @@ const SwModal = ({
       animationIn={'slideInUp'}
       animationOut={'slideOutDown'}
       avoidKeyboard={true}
+      onBackButtonPress={onBackButtonPress}
       // useNativeDriver
       hideModalContentWhileAnimating
       isUseForceHidden={isUseForceHidden}

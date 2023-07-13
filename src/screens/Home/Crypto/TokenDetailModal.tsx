@@ -52,6 +52,7 @@ export const TokenDetailModal = ({ modalVisible, onChangeModalVisible, currentTo
     <SwModal
       modalVisible={modalVisible}
       modalTitle={i18n.header.tokenDetails}
+      onBackButtonPress={onChangeModalVisible}
       onChangeModalVisible={onChangeModalVisible}>
       <View style={_style.blockContainer}>
         {items.map(item => (

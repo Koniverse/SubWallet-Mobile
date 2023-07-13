@@ -83,6 +83,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
     <SwModal
       modalVisible={visible}
       modalTitle={i18n.common.enterYourPassword}
+      onBackButtonPress={!isBusy ? closeModal : undefined}
       onChangeModalVisible={!isBusy ? closeModal : undefined}>
       <View style={ContainerStyle}>
         <PasswordField
