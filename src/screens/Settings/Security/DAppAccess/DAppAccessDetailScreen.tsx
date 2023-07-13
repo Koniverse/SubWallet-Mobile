@@ -29,8 +29,12 @@ type Props = {
   authInfo: AuthUrlInfo;
 };
 
-const filterFunction = (items: AccountJson[], searchString: string) => {
-  return items.filter(item => item.name?.toLowerCase().includes(searchString.toLowerCase()));
+const searchFunction = (items: AccountJson[], searchString: string) => {
+  return items.filter(
+    item =>
+      item.name?.toLowerCase().includes(searchString.toLowerCase()) ||
+      item.address.toLowerCase().includes(searchString.toLowerCase()),
+  );
 };
 
 const Content = ({ origin, accountAuthType, authInfo }: Props) => {
@@ -219,7 +223,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       autoFocus={false}
       beforeListItem={renderBeforeListItem()}
       items={accountItems}
-      searchFunction={filterFunction}
+      searchFunction={searchFunction}
       placeholder={i18n.placeholder.accountName}
       renderListEmptyComponent={() => (
         <EmptyList
