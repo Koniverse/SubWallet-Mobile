@@ -119,7 +119,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
                 type={'ghost'}
                 onPress={clearHistory}
                 externalTextStyle={{ color: theme.colorPrimary }}>
-                Clear history
+                {i18n.browser.clearHistory}
               </Button>
             )}
           </View>

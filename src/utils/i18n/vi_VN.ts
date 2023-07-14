@@ -174,7 +174,6 @@ export const vi = {
     searchStakingValidator: (validatorLabel: string) => `Tìm kiếm ${validatorLabel}`,
     submit: 'Nộp',
     accountConnected: 'account connected',
-    recommend: 'Recommend',
   },
   title: {
     exportAccount: 'Xuất tài khoản  ',
@@ -986,5 +985,10 @@ export const vi = {
   },
   browser: {
     searchWithDuckduckgo: 'Search with Duckduckgo',
+    recent: 'Recent',
+    favorite: 'Favorites',
+    recommended: 'Recommended',
+    seeAll: 'See all',
+    clearHistory: 'Clear history',
   },
 };

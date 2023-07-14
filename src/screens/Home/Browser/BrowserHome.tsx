@@ -17,9 +17,11 @@ import { getHostName } from 'utils/browser';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import i18n from 'utils/i18n/i18n';
 
 interface HeaderProps {
   title: string;
+  actionTitle: string;
   onPress: () => void;
 }
 interface SectionListProps {
@@ -34,7 +36,7 @@ type SearchItemType = {
 } & SiteInfo;
 const ICON_ITEM_HEIGHT = 44;
 const ITEM_HEIGHT = 72;
-const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element => {
+const SectionHeader: React.FC<HeaderProps> = ({ title, actionTitle, onPress }): JSX.Element => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet();
   return (
@@ -44,7 +46,7 @@ const SectionHeader: React.FC<HeaderProps> = ({ title, onPress }): JSX.Element =
       </Typography.Title>
       <TouchableOpacity onPress={onPress}>
         <View style={stylesheet.sectionAction}>
-          <Typography.Text style={stylesheet.sectionActionTitle}>See all</Typography.Text>
+          <Typography.Text style={stylesheet.sectionActionTitle}>{actionTitle}</Typography.Text>
           <Icon phosphorIcon={CaretRight} weight="bold" customSize={16} iconColor={theme.colorTextLight1} />
         </View>
       </TouchableOpacity>
@@ -138,7 +140,11 @@ const BrowserHome = () => {
         <FastImage style={stylesheet.banner} resizeMode="cover" source={Images.browserBanner} />
         {historyItems && historyItems.length > 0 && (
           <>
-            <SectionHeader title="Recent" onPress={() => navigation.navigate('BrowserSearch')} />
+            <SectionHeader
+              title={i18n.browser.recent}
+              actionTitle={i18n.browser.seeAll}
+              onPress={() => navigation.navigate('BrowserSearch')}
+            />
             <FlatList
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
@@ -155,7 +161,8 @@ const BrowserHome = () => {
         {bookmarkItems && bookmarkItems.length > 0 && (
           <>
             <SectionHeader
-              title="Favorite"
+              title={i18n.browser.favorite}
+              actionTitle={i18n.browser.seeAll}
               onPress={() => navigation.navigate('BrowserListByTabview', { type: 'BOOKMARK' })}
             />
             <FlatList
@@ -172,7 +179,8 @@ const BrowserHome = () => {
           </>
         )}
         <SectionHeader
-          title="Recommended"
+          title={i18n.browser.recommended}
+          actionTitle={i18n.browser.seeAll}
           onPress={() => navigation.navigate('BrowserListByTabview', { type: 'RECOMMENDED' })}
         />
         <SectionList data={recommendedList} renderItem={renderSectionItem} />

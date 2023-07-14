@@ -173,7 +173,6 @@ export const en = {
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
     submit: 'Submit',
     accountConnected: 'account connected',
-    recommend: 'Recommend',
   },
   title: {
     exportAccount: 'Export account',
@@ -987,5 +986,10 @@ export const en = {
   },
   browser: {
     searchWithDuckduckgo: 'Search with Duckduckgo',
+    recent: 'Recent',
+    favorite: 'Favorites',
+    recommended: 'Recommended',
+    seeAll: 'See all',
+    clearHistory: 'Clear history',
   },
 };

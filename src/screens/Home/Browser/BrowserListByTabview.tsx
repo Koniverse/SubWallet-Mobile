@@ -11,6 +11,7 @@ import { Animated, View } from 'react-native';
 import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
+import i18n from 'utils/i18n/i18n';
 
 type RoutesType = {
   key: string;
@@ -21,8 +22,8 @@ type TabbarType = {
 };
 const Tab = createMaterialTopTabNavigator();
 const navigationType: Record<string, string> = {
-  BOOKMARK: 'Favorites',
-  RECOMMENDED: 'Recommended',
+  BOOKMARK: i18n.browser.favorite,
+  RECOMMENDED: i18n.browser.recommended,
 };
 const transparent = { backgroundColor: 'transparent' };
 const screenOptions = () => ({
