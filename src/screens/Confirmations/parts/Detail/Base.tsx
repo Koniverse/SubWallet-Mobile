@@ -36,7 +36,12 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
         icon={<Icon phosphorIcon={ArrowCircleUpRight} iconColor={theme['gray-4']} />}>
         {i18n.common.viewDetail}
       </Button>
-      <SwModal modalVisible={open} modalTitle={title} onChangeModalVisible={onClose} modalStyle={{ maxHeight: 600 }} onBackButtonPress={onClose}>
+      <SwModal
+        modalVisible={open}
+        modalTitle={title}
+        onChangeModalVisible={onClose}
+        modalStyle={{ maxHeight: 600 }}
+        onBackButtonPress={onClose}>
         <View style={{ maxHeight: 400, width: '100%' }}>
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <TouchableOpacity activeOpacity={1}>{children}</TouchableOpacity>
