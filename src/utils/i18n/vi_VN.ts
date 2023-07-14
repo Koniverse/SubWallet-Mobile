@@ -548,7 +548,7 @@ export const vi = {
     transactionDoneMessage: 'Yêu cầu của bạn đã được gửi đi. Bạn có thể theo dõi tiến trình trên trang Lịch sử.',
     changeMasterPasswordMessage1: 'To create a new password, you must correctly enter your current password.',
     changeMasterPasswordMessage2: 'Use this password to unlock your account.',
-    buyMessage: 'You will be taken to independent provider to complete this transaction',
+    buyMessage: 'You will be directed to the chosen supplier to complete this transaction',
     forgotPasswordMessage:
       'We do not keep your password. If you forgot your password, you will need to reset your wallet using the Secret Recovery Phrase',
   },

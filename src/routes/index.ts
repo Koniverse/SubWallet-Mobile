@@ -54,7 +54,6 @@ export type RootStackParamList = {
   BrowserListByTabview: { type: string };
   ConfirmationPopup: undefined;
   Confirmations: undefined;
-  FavouritesGroupDetail: undefined;
   HistoryGroupDetail: undefined;
   DAppAccess: undefined;
   DAppAccessDetail: { origin: string; accountAuthType: string };
