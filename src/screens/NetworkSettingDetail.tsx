@@ -254,14 +254,6 @@ export const NetworkSettingDetail = ({
     isDeleting,
   ]);
 
-  const onPressRpcField = () => {
-    if (Object.keys(chainInfo.providers).length === 1) {
-      navigation.navigate('AddProvider', { slug: chainInfo.slug });
-    } else {
-      rpcSelectorRef?.current?.onOpenModal();
-    }
-  };
-
   const {
     onPress: onPressDelete,
     onCancelModal: onCancelDelete,
@@ -299,21 +291,24 @@ export const NetworkSettingDetail = ({
             onSelectItem={(item: ProviderItemType) => {
               onChangeValue('currentProvider')(item.value);
             }}
-            renderSelected={() => (
-              <RpcSelectField
-                showRightIcon
-                value={chainInfo.providers[formState.data.currentProvider]}
-                rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
-              />
+            renderSelectModalBtn={onOpenModal => (
+              <TouchableOpacity
+                activeOpacity={BUTTON_ACTIVE_OPACITY}
+                onPress={() => {
+                  if (Object.keys(chainInfo.providers).length === 1) {
+                    navigation.navigate('AddProvider', { slug: chainInfo.slug });
+                  } else {
+                    onOpenModal(true);
+                  }
+                }}>
+                <RpcSelectField
+                  showRightIcon
+                  value={chainInfo.providers[formState.data.currentProvider]}
+                  rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
+                />
+              </TouchableOpacity>
             )}
           />
-          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
-            <RpcSelectField
-              showRightIcon
-              value={chainInfo.providers[formState.data.currentProvider]}
-              rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
-            />
-          </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', width: '100%' }}>
             <NetworkNameField outerStyle={{ flex: 2, marginRight: 12 }} chain={chainInfo.slug} />

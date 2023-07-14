@@ -22,6 +22,7 @@ interface Props<T> {
     label: string;
     icon: React.ElementType<IconProps>;
     onPressApplyBtn: () => void;
+    disabled?: boolean;
   };
   isShowInput?: boolean;
   isShowContent?: boolean;
@@ -93,7 +94,10 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
     return (
       <>
         <Divider style={{ paddingTop: 4, paddingBottom: 16 }} color={'#1A1A1A'} />
-        <Button icon={<Icon phosphorIcon={applyBtn?.icon} size={'lg'} />} onPress={applyBtn?.onPressApplyBtn}>
+        <Button
+          disabled={applyBtn?.disabled}
+          icon={color => <Icon phosphorIcon={applyBtn?.icon} size={'lg'} iconColor={color} />}
+          onPress={applyBtn?.onPressApplyBtn}>
           {applyBtn?.label}
         </Button>
       </>

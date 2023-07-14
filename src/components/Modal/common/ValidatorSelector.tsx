@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useGetValidatorList, { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
-import { FlatListScreen } from 'components/FlatListScreen';
-import {
-  DisabledStyle,
-  FlatListScreenPaddingTop,
-  MarginBottomForSubmitButton,
-  STATUS_BAR_HEIGHT,
-} from 'styles/sharedStyles';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
-import { Button, Icon, SelectItem, SwFullSizeModal } from 'components/design-system-ui';
-import { ListRenderItemInfo, SafeAreaView, View } from 'react-native';
+import { Button, Icon, SelectItem } from 'components/design-system-ui';
+import { ListRenderItemInfo } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
@@ -40,6 +34,7 @@ import { ModalRef } from 'types/modalRef';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import BigN from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -96,7 +91,6 @@ export const ValidatorSelector = ({
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
   const items = useGetValidatorList(chain, StakingType.NOMINATED) as ValidatorDataType[];
-  const [validatorSelectModalVisible, setValidatorSelectModalVisible] = useState<boolean>(false);
   const [detailItem, setDetailItem] = useState<ValidatorDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const nominatorMetadata = useGetNominatorInfo(chain, StakingType.NOMINATED, from);
@@ -114,14 +108,9 @@ export const ValidatorSelector = ({
     onCancelSelectValidator,
     onChangeSelectedValidator,
     onInitValidators,
-  } = useSelectValidators(
-    maxCount,
-    onSelectItem,
-    isSingleSelect,
-    () => setValidatorSelectModalVisible(false),
-    toastRef,
-  );
+  } = useSelectValidators(maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
   const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
+  const validatorSelectModalRef = useRef<ModalRef>();
   const sortingModalRef = useRef<ModalRef>();
   const sortingOptions: SortOption[] = useMemo(() => {
     const result: SortOption[] = [
@@ -222,97 +211,85 @@ export const ValidatorSelector = ({
 
   return (
     <>
-      <ValidatorSelectorField
+      <FullSizeSelectModal
+        items={resultList}
+        selectedValueMap={{}}
+        selectModalType={'multi'}
+        ref={validatorSelectModalRef}
         disabled={!chain || !from || disabled}
-        onPressLightningBtn={() => setValidatorSelectModalVisible(true)}
-        onPressBookBtn={() => setValidatorSelectModalVisible(true)}
-        value={selectedValidator}
-        label={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
-        loading={validatorLoading}
-        placeholder={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
-        outerStyle={(!chain || !from || disabled) && DisabledStyle}
-      />
-
-      <SwFullSizeModal modalVisible={validatorSelectModalVisible}>
-        <FlatListScreen
-          autoFocus={true}
-          items={resultList}
-          style={[FlatListScreenPaddingTop, { flex: 1 }]}
-          title={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
-          searchFunction={searchFunction}
-          renderItem={renderItem}
-          onPressBack={() => {
-            onCancelSelectValidator();
-            setSortSelection(SortKey.DEFAULT);
-          }}
-          renderListEmptyComponent={renderListEmptyComponent}
-          isShowFilterBtn={false}
-          placeholder={i18n.common.searchStakingValidator(getValidatorLabel(chain).toLowerCase())}
-          rightIconOption={{
-            icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
-            onPress: () => sortingModalRef?.current?.onOpenModal(),
-          }}
-          afterListItem={
-            <View
-              style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
-              <Button
-                disabled={!changeValidators.length}
-                block
-                onPress={onApplyChangeValidators}
-                icon={
-                  <Icon
-                    phosphorIcon={CheckCircle}
-                    weight={'fill'}
-                    iconColor={!changeValidators.length ? theme.colorTextLight5 : theme.colorWhite}
-                  />
-                }>
-                {i18n.buttonTitles.applyValidators(changeValidators.length)}
-              </Button>
-            </View>
-          }
-        />
-
-        <SafeAreaView />
-
-        <BasicSelectModal
-          ref={sortingModalRef}
-          title={i18n.header.sorting}
-          items={sortingOptions}
-          selectedValueMap={{ [sortSelection]: true }}
-          renderCustomItem={renderSortingItem}>
-          {
-            <Button
-              style={{ marginTop: 8 }}
-              icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
-              onPress={() => {
-                setSortSelection(SortKey.DEFAULT);
-                sortingModalRef?.current?.onCloseModal();
-              }}>
-              {i18n.buttonTitles.resetSorting}
-            </Button>
-          }
-        </BasicSelectModal>
-
-        {detailItem && (
-          <ValidatorSelectorDetailModal
-            detailModalVisible={detailModalVisible}
-            detailItem={detailItem}
-            onCancel={() => setDetailModalVisible(false)}
-            networkPrefix={networkPrefix}
+        applyBtn={{
+          icon: CheckCircle,
+          label: i18n.buttonTitles.applyValidators(changeValidators.length),
+          onPressApplyBtn: () => {
+            onApplyChangeValidators();
+            validatorSelectModalRef?.current?.onCloseModal();
+          },
+          applyBtnDisabled: !changeValidators.length,
+        }}
+        onBackButtonPress={() => validatorSelectModalRef?.current?.onCloseModal()}
+        onCloseModal={() => {
+          setSortSelection(SortKey.DEFAULT);
+          onCancelSelectValidator();
+        }}
+        renderListEmptyComponent={renderListEmptyComponent}
+        renderSelected={() => (
+          <ValidatorSelectorField
+            onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
+            onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
+            value={selectedValidator}
+            label={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
+            loading={validatorLoading}
+            placeholder={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
           />
         )}
+        rightIconOption={{
+          icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
+          onPress: () => sortingModalRef?.current?.onOpenModal(),
+        }}
+        renderCustomItem={renderItem}
+        searchFunc={searchFunction}
+        placeholder={i18n.common.searchStakingValidator(getValidatorLabel(chain).toLowerCase())}
+        title={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}>
+        <>
+          {detailItem && (
+            <ValidatorSelectorDetailModal
+              detailModalVisible={detailModalVisible}
+              detailItem={detailItem}
+              onCancel={() => setDetailModalVisible(false)}
+              networkPrefix={networkPrefix}
+            />
+          )}
 
-        {
-          <Toast
-            duration={TOAST_DURATION}
-            normalColor={ColorMap.notification}
-            ref={toastRef}
-            placement={'bottom'}
-            offsetBottom={OFFSET_BOTTOM}
-            renderToast={toast => <CustomToast toast={toast} />}
-          />
-        }
-      </SwFullSizeModal>
+          <BasicSelectModal
+            ref={sortingModalRef}
+            title={i18n.header.sorting}
+            items={sortingOptions}
+            selectedValueMap={{ [sortSelection]: true }}
+            renderCustomItem={renderSortingItem}>
+            {
+              <Button
+                style={{ marginTop: 8 }}
+                icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
+                onPress={() => {
+                  setSortSelection(SortKey.DEFAULT);
+                  sortingModalRef?.current?.onCloseModal();
+                }}>
+                {i18n.buttonTitles.resetSorting}
+              </Button>
+            }
+          </BasicSelectModal>
+
+          {
+            <Toast
+              duration={TOAST_DURATION}
+              normalColor={ColorMap.notification}
+              ref={toastRef}
+              placement={'bottom'}
+              offsetBottom={OFFSET_BOTTOM}
+            />
+          }
+        </>
+      </FullSizeSelectModal>
     </>
   );
 };

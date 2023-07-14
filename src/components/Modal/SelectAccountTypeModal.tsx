@@ -86,6 +86,7 @@ export const SelectAccountTypeModal = ({ onConfirm, selectTypeRef }: Props) => {
             _onConfirm(currentKeyTypes)();
           },
           icon: CheckCircle,
+          disabled: Object.values(selectedValueMap).every(item => !item),
         }}
         onChangeModalVisible={() => {
           setSelectedValueMap(defaultValueMap);
