@@ -217,7 +217,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                <Stack.Screen name="Drawer" component={DrawerScreen} />
+                <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="History" component={HistoryScreen} />

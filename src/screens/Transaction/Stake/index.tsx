@@ -380,6 +380,7 @@ export const Stake = ({
 
   return (
     <TransactionLayout
+      disableMainHeader={loading}
       title={title}
       showRightHeaderButton
       disableLeftButton={loading}

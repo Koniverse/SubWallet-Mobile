@@ -135,7 +135,7 @@ export const Withdraw = ({
   }, [chain, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading}>
+    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
