@@ -20,10 +20,15 @@ const usePreCheckReadOnly = (
             toastRef.current.hideAll();
             toastRef.current.show(
               message ?? 'The account you are using is watch-only, you cannot use this feature with it',
+              {
+                type: 'normal',
+              },
             );
           } else {
             hideAll();
-            show(message ?? 'The account you are using is watch-only, you cannot use this feature with it');
+            show(message ?? 'The account you are using is watch-only, you cannot use this feature with it', {
+              type: 'normal',
+            });
           }
         } else {
           onClick();

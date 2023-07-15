@@ -102,14 +102,14 @@ const NftItemList = ({
         .then(result => {
           if (result) {
             navigation.goBack();
-            toast.show(i18n.notificationMessage.deleteNftCollectionSuccessfully);
+            toast.show(i18n.notificationMessage.deleteNftCollectionSuccessfully, { type: 'success' });
           } else {
-            toast.show(i18n.notificationMessage.deleteNftCollectionUnsuccessfully);
+            toast.show(i18n.notificationMessage.deleteNftCollectionUnsuccessfully, { type: 'danger' });
           }
           setIsDeleting(false);
         })
         .catch(() => {
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
           setIsDeleting(false);
         });
     }

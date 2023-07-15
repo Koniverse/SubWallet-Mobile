@@ -131,15 +131,15 @@ export const AddProvider = ({
         setLoading(false);
 
         if (result) {
-          toast.show(i18n.notificationMessage.addProviderSuccessfully);
+          toast.show(i18n.notificationMessage.addProviderSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
       })
       .catch(() => {
         setLoading(false);
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
       });
   };
 

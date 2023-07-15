@@ -88,18 +88,18 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
                 if (success) {
                   onComplete();
                 } else {
-                  toast.show(errors[0].message);
+                  toast.show(errors[0].message, { type: 'danger' });
                 }
               })
               .catch((error: Error) => {
-                toast.show(error.message);
+                toast.show(error.message, { type: 'danger' });
               })
               .finally(() => {
                 setLoading(false);
               });
           })
           .catch((error: Error) => {
-            toast.show(error.message);
+            toast.show(error.message, { type: 'danger' });
             setLoading(false);
           });
       }, 300);

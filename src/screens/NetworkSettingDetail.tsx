@@ -179,17 +179,17 @@ export const NetworkSettingDetail = ({
         setLoading(false);
         if (result) {
           toast.hideAll();
-          toast.show(i18n.notificationMessage.updatedChainSuccessfully);
+          toast.show(i18n.notificationMessage.updatedChainSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
           toast.hideAll();
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
       })
       .catch(() => {
         setLoading(false);
         toast.hideAll();
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
       });
   };
 
@@ -202,15 +202,15 @@ export const NetworkSettingDetail = ({
     removeChain(chainInfo.slug)
       .then(result => {
         if (result) {
-          toast.show(i18n.notificationMessage.deleteChainSuccessfully);
+          toast.show(i18n.notificationMessage.deleteChainSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
         setIsDeleting(false);
       })
       .catch(() => {
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         setIsDeleting(false);
       });
   };

@@ -25,6 +25,7 @@ import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
+import { CustomToast } from 'components/design-system-ui/toast';
 
 interface Props {
   visible: boolean;
@@ -143,6 +144,7 @@ const StakingActionModal = (props: Props) => {
     if (!nominatorMetadata) {
       return [];
     }
+    // @ts-ignore
     return getStakingAvailableActionsByNominator(nominatorMetadata, reward?.unclaimedReward);
   }, [nominatorMetadata, reward?.unclaimedReward]);
 
@@ -266,6 +268,7 @@ const StakingActionModal = (props: Props) => {
         ref={toastRef}
         placement={'bottom'}
         offsetBottom={OFFSET_BOTTOM}
+        renderToast={toast => <CustomToast toast={toast} />}
       />
     </SwModal>
   );

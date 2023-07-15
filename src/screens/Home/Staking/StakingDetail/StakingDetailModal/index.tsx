@@ -41,6 +41,7 @@ import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import { CustomToast } from 'components/design-system-ui/toast';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -536,6 +537,7 @@ export const StakingDetailModal = ({
           ref={toastRef}
           placement={'bottom'}
           offsetBottom={OFFSET_BOTTOM}
+          renderToast={toast => <CustomToast toast={toast} />}
         />
       </View>
     </SwModal>

@@ -27,7 +27,7 @@ export function useSelectValidators(
               if (!defaultSelected.includes(changeVal)) {
                 if (toastRef && toastRef.current) {
                   toastRef.current.hideAll();
-                  toastRef.current.show(`You can only choose ${maxCount} validators`);
+                  toastRef.current.show(`You can only choose ${maxCount} validators`, { type: 'normal' });
                 }
 
                 return currentChangeValidators;
@@ -39,7 +39,7 @@ export function useSelectValidators(
             if (currentChangeValidators.length >= maxCount) {
               if (toastRef && toastRef.current) {
                 toastRef.current.hideAll();
-                toastRef.current.show(`You can only choose ${maxCount} validators`);
+                toastRef.current.show(`You can only choose ${maxCount} validators`, { type: 'normal' });
               }
 
               return currentChangeValidators;

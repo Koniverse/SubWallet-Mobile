@@ -113,7 +113,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
         })
         .catch((e: Error) => {
           hideAll();
-          show(e.message);
+          show(e.message, { type: 'danger' });
         })
         .finally(() => {
           setLoading(false);

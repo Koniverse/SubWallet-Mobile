@@ -171,15 +171,15 @@ export const ImportNetwork = () => {
       .then(result => {
         setLoading(false);
         if (result) {
-          toast.show(i18n.notificationMessage.importedChainSuccessfully);
+          toast.show(i18n.notificationMessage.importedChainSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
       })
       .catch(() => {
         setLoading(false);
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
       });
   };
 

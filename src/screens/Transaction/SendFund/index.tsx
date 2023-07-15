@@ -435,7 +435,7 @@ export const SendFund = ({
 
   const onSubmit = useCallback(() => {
     if (chainStateMap[chain].connectionStatus === _ChainConnectionStatus.DISCONNECTED) {
-      show(`${destChain} ${i18n.errorMessage.networkDisconected}`);
+      show(`${destChain} ${i18n.errorMessage.networkDisconected}`, { type: 'danger' });
       return;
     }
 
@@ -469,7 +469,7 @@ export const SendFund = ({
       if (acc?.isHardware) {
         setLoading(false);
         hideAll();
-        show('This feature is not available for Ledger account');
+        show('This feature is not available for Ledger account', { type: 'danger' });
 
         return;
       }

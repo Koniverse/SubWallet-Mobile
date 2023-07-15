@@ -164,17 +164,17 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       .then(resp => {
         if (resp) {
           toast.hideAll();
-          toast.show(i18n.common.addNftSuccess);
+          toast.show(i18n.common.addNftSuccess, { type: 'success' });
           onBack();
         } else {
           toast.hideAll();
-          toast.show(i18n.errorMessage.occurredError);
+          toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
         }
         setLoading(false);
       })
       .catch(() => {
         toast.hideAll();
-        toast.show(i18n.errorMessage.occurredError);
+        toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
         setLoading(false);
       })
       .finally(() => {

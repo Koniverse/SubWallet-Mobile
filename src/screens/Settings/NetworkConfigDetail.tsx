@@ -111,7 +111,7 @@ export const NetworkConfigDetail = ({
     }
 
     if (resp.success) {
-      toast.show(i18n.errorMessage.successfullyAddANewCustomProvider);
+      toast.show(i18n.errorMessage.successfullyAddANewCustomProvider, { type: 'success' });
       setModalVisible(false);
       if (networkInfo.customProviders) {
         const providerLength = Object.values(networkInfo.customProviders).length;
@@ -152,10 +152,10 @@ export const NetworkConfigDetail = ({
               console.error,
             );
           }
-          toast.show(i18n.common.importTokenSuccessMessage);
+          toast.show(i18n.common.importTokenSuccessMessage, { type: 'success' });
           navigation.goBack();
         } else {
-          toast.show(i18n.errorMessage.errorConfigureNetwork);
+          toast.show(i18n.errorMessage.errorConfigureNetwork, { type: 'danger' });
         }
       })
       .catch(e => {
