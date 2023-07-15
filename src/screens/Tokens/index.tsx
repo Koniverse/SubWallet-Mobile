@@ -24,12 +24,6 @@ enum FilterValue {
   NATIVE = 'native',
 }
 
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.enabledTokens, value: FilterValue.ENABLED },
-  { label: i18n.filterOptions.disabledTokens, value: FilterValue.DISABLED },
-  { label: i18n.filterOptions.customTokens, value: FilterValue.CUSTOM },
-];
-
 let cachePendingAssetMap: Record<string, boolean> = {};
 
 export const CustomTokenSetting = () => {
@@ -48,6 +42,11 @@ export const CustomTokenSetting = () => {
   }, [assetRegistry]);
   const navigation = useNavigation<RootNavigationProps>();
   const [pendingAssetMap, setPendingAssetMap] = useState<Record<string, boolean>>(cachePendingAssetMap);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.enabledTokens, value: FilterValue.ENABLED },
+    { label: i18n.filterOptions.disabledTokens, value: FilterValue.DISABLED },
+    { label: i18n.filterOptions.customTokens, value: FilterValue.CUSTOM },
+  ];
 
   const filterFunction = useCallback(
     (items: _ChainAsset[], filters: string[]) => {

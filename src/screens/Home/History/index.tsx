@@ -147,22 +147,6 @@ function getHistoryItemKey(
   return `${item.chain}-${item.address}-${item.transactionId || item.extrinsicHash}`;
 }
 
-const typeTitleMap: Record<string, string> = {
-  default: i18n.historyScreen.title.transaction,
-  send: i18n.historyScreen.title.sendTransaction,
-  receive: i18n.historyScreen.title.receiveTransaction,
-  [ExtrinsicType.SEND_NFT]: i18n.historyScreen.title.nftTransaction,
-  [ExtrinsicType.CROWDLOAN]: i18n.historyScreen.title.crowdloanTransaction,
-  [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.title.stakeTransaction,
-  [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.title.unstakeTransaction,
-  [ExtrinsicType.STAKING_BOND]: i18n.historyScreen.title.bondTransaction,
-  [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.title.unbondTransaction,
-  [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.title.claimRewardTransaction,
-  [ExtrinsicType.STAKING_WITHDRAW]: i18n.historyScreen.title.withdrawTransaction,
-  [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.title.cancelUnstakeTransaction,
-  [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
-};
-
 enum FilterValue {
   SEND = 'send',
   RECEIVED = 'received',
@@ -173,17 +157,6 @@ enum FilterValue {
   SUCCESSFUL = 'successful',
   FAILED = 'failed',
 }
-
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
-  { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
-  { label: i18n.filterOptions.nftTransaction, value: FilterValue.NFT },
-  { label: i18n.filterOptions.stakeTransaction, value: FilterValue.STAKE },
-  { label: i18n.filterOptions.claimStakingReward, value: FilterValue.CLAIM },
-  // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
-  { label: i18n.filterOptions.successful, value: FilterValue.SUCCESSFUL },
-  { label: i18n.filterOptions.failed, value: FilterValue.FAILED },
-];
 
 const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {
   const filteredChainList: TransactionHistoryDisplayItem[] = [];
@@ -260,6 +233,34 @@ function History({
       return accMap;
     }, {} as Record<string, string>);
   }, [accounts]);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
+    { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
+    { label: i18n.filterOptions.nftTransaction, value: FilterValue.NFT },
+    { label: i18n.filterOptions.stakeTransaction, value: FilterValue.STAKE },
+    { label: i18n.filterOptions.claimStakingReward, value: FilterValue.CLAIM },
+    // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
+    { label: i18n.filterOptions.successful, value: FilterValue.SUCCESSFUL },
+    { label: i18n.filterOptions.failed, value: FilterValue.FAILED },
+  ];
+  const typeTitleMap: Record<string, string> = useMemo(
+    () => ({
+      default: i18n.historyScreen.title.transaction,
+      send: i18n.historyScreen.title.sendTransaction,
+      receive: i18n.historyScreen.title.receiveTransaction,
+      [ExtrinsicType.SEND_NFT]: i18n.historyScreen.title.nftTransaction,
+      [ExtrinsicType.CROWDLOAN]: i18n.historyScreen.title.crowdloanTransaction,
+      [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.title.stakeTransaction,
+      [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.title.unstakeTransaction,
+      [ExtrinsicType.STAKING_BOND]: i18n.historyScreen.title.bondTransaction,
+      [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.title.unbondTransaction,
+      [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.title.claimRewardTransaction,
+      [ExtrinsicType.STAKING_WITHDRAW]: i18n.historyScreen.title.withdrawTransaction,
+      [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.title.cancelUnstakeTransaction,
+      [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
+    }),
+    [],
+  );
 
   const [historyMap, setHistoryMap] = useState<Record<string, TransactionHistoryDisplayItem>>({});
 
@@ -281,16 +282,17 @@ function History({
       const toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
       const key = getHistoryItemKey(item);
 
+      const txtTypeNameMap = TxTypeNameMap();
       finalHistoryMap[key] = {
         ...item,
         fromName,
         toName,
-        displayData: getDisplayData(item, TxTypeNameMap, typeTitleMap),
+        displayData: getDisplayData(item, txtTypeNameMap, typeTitleMap),
       };
     });
 
     return finalHistoryMap;
-  }, [accountMap, rawHistoryList, currentAccount?.address]);
+  }, [currentAccount?.address, rawHistoryList, accountMap, typeTitleMap]);
 
   useEffect(() => {
     const timeoutID = setTimeout(() => {

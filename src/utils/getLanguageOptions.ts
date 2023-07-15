@@ -1,12 +1,9 @@
-interface Option {
-  info?: string;
-  isDisabled?: boolean;
-  isHeader?: boolean;
+export interface LanguageOption {
   text: string;
-  value: string | number;
+  value: string;
 }
 
-export default function getLanguageOptions(): Option[] {
+export default function getLanguageOptions(): LanguageOption[] {
   return [
     // default/native
     {
@@ -18,7 +15,7 @@ export default function getLanguageOptions(): Option[] {
       value: 'vi',
     },
     {
-      text: 'Chinies',
+      text: 'Chinese',
       value: 'zh',
     },
     {

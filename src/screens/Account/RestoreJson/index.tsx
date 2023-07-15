@@ -29,27 +29,6 @@ import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 
-const formConfig: FormControlConfig = {
-  file: {
-    name: 'file',
-    value: '',
-  },
-  fileName: {
-    name: 'fileName',
-    value: '',
-  },
-  accountAddress: {
-    name: '',
-    value: '',
-  },
-  password: {
-    require: true,
-    name: i18n.common.currentPassword,
-    value: '',
-    validateFunc: validatePassword,
-  },
-};
-
 const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
   let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
   jsonFile.accounts.forEach(account => {
@@ -76,6 +55,26 @@ function formatJsonFile(jsonFile: any) {
 }
 
 export const RestoreJson = () => {
+  const formConfig: FormControlConfig = {
+    file: {
+      name: 'file',
+      value: '',
+    },
+    fileName: {
+      name: 'fileName',
+      value: '',
+    },
+    accountAddress: {
+      name: '',
+      value: '',
+    },
+    password: {
+      require: true,
+      name: i18n.common.currentPassword,
+      value: '',
+      validateFunc: validatePassword,
+    },
+  };
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const theme = useSubWalletTheme().swThemes;

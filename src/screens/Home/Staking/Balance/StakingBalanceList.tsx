@@ -24,11 +24,6 @@ enum FilterValue {
   POOLED = 'pooled',
 }
 
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
-  { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
-];
-
 const renderEmpty = (val?: string) => {
   if (val) {
     return (
@@ -87,6 +82,11 @@ const StakingBalanceList = () => {
       setDetailModalVisible(true);
     };
   }, []);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
+    { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
+  ];
+
   const isFocused = useIsFocused();
   useEffect(() => {
     if (isFocused) {

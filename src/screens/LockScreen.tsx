@@ -150,7 +150,7 @@ export const LockScreen = () => {
           {!!error && <WarningText isDanger message={error} style={{ marginTop: 24 }} />}
 
           <Button type={'ghost'} onPress={() => setModalVisible(true)}>
-            Forget account
+            {i18n.welcomeScreen.forgetAccount}
           </Button>
 
           <ForgotPasswordModal
