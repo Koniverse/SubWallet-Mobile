@@ -278,7 +278,7 @@ export const Stake = ({
           {chainStakingMetadata.expectedReturn && (
             <MetaInfo.Number
               label={`${i18n.inputLabel.estimatedEarnings}:`}
-              suffix={'% / year'}
+              suffix={`% / ${i18n.common.year}`}
               value={chainStakingMetadata.expectedReturn}
             />
           )}

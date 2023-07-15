@@ -94,7 +94,7 @@ export const NetworkDetailModal = ({
                       ...FontMedium,
                       color: theme.colorTextTertiary,
                     }}>
-                    {' after inflation'}
+                    {` ${i18n.stakingScreen.afterInflation}`}
                   </Text>
                 </View>
               )}

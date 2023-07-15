@@ -113,7 +113,7 @@ export const BuyToken = ({
           style={{ ...MarginBottomForSubmitButton, marginHorizontal: theme.padding }}
           onPress={() => onBuyToken()}
           icon={iconColor => <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />}>
-          Buy now
+          {i18n.buttonTitles.buyNow}
         </Button>
       </>
     </ContainerWithSubHeader>

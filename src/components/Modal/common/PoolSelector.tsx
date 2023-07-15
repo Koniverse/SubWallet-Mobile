@@ -60,34 +60,6 @@ const renderListEmptyComponent = () => {
   );
 };
 
-const sortingOptions: SortOption[] = [
-  {
-    desc: false,
-    label: 'Lowest total member',
-    value: SortKey.MEMBER,
-  },
-  {
-    desc: true,
-    label: 'Highest total bonded',
-    value: SortKey.TOTAL_POOLED,
-  },
-];
-
-const FILTER_OPTIONS: FilterOption[] = [
-  {
-    label: 'Active',
-    value: 'Open',
-  },
-  {
-    label: 'Locked',
-    value: 'Locked',
-  },
-  {
-    label: 'Destroying',
-    value: 'Destroying',
-  },
-];
-
 const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   if (!filters.length) {
     return items;
@@ -129,6 +101,33 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
     return nominatorMetadata[0]?.nominations.map(item => item.validatorAddress) || [];
   }, [nominatorMetadata]);
   const sortingModalRef = useRef<ModalRef>();
+  const sortingOptions: SortOption[] = [
+    {
+      desc: false,
+      label: i18n.stakingScreen.lowestMember,
+      value: SortKey.MEMBER,
+    },
+    {
+      desc: true,
+      label: i18n.stakingScreen.highestBonded,
+      value: SortKey.TOTAL_POOLED,
+    },
+  ];
+
+  const FILTER_OPTIONS: FilterOption[] = [
+    {
+      label: i18n.common.active,
+      value: 'Open',
+    },
+    {
+      label: i18n.common.locked,
+      value: 'Locked',
+    },
+    {
+      label: i18n.common.destroying,
+      value: 'Destroying',
+    },
+  ];
 
   const resultList = useMemo(() => {
     return [...items].sort((a: NominationPoolDataType, b: NominationPoolDataType) => {
@@ -255,7 +254,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
                 setSortSelection(SortKey.DEFAULT);
                 sortingModalRef?.current?.onCloseModal();
               }}>
-              Reset sorting
+              {i18n.buttonTitles.resetSorting}
             </Button>
           }
         </BasicSelectModal>

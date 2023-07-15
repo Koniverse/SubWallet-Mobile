@@ -7,6 +7,7 @@ import { ActivityIndicator, Avatar, Button, Icon } from 'components/design-syste
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NominationPoolInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { toShort } from 'utils/index';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   outerStyle?: StyleProp<any>;
@@ -41,7 +42,7 @@ export const PoolSelectorField = ({
   item,
   label,
   loading,
-  placeholder = 'Selected pool',
+  placeholder = i18n.stakingScreen.selectedPool,
   disabled,
   onPressBookBtn,
   onPressLightningBtn,

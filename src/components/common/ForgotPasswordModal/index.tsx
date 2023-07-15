@@ -34,7 +34,7 @@ export const ForgotPasswordModal = ({
     <SwModal
       onChangeModalVisible={onCloseModalVisible}
       modalVisible={modalVisible}
-      modalTitle={'Forgot password?'}
+      modalTitle={i18n.common.forgotPassword}
       isUseForceHidden={false}
       titleTextAlign={'center'}>
       <View style={styles.contentWrapper}>
@@ -48,7 +48,7 @@ export const ForgotPasswordModal = ({
             loading={resetAccLoading}
             disabled={resetAccLoading || eraseAllLoading}
             icon={renderLeftBtnIcon}>
-            Reset account
+            {i18n.common.resetAccount}
           </Button>
           <Button
             disabled={resetAccLoading || eraseAllLoading}
@@ -57,7 +57,7 @@ export const ForgotPasswordModal = ({
             onPress={onReset(true)}
             type={'danger'}
             icon={renderRightBtnIcon}>
-            Erase all
+            {i18n.common.eraseAll}
           </Button>
         </View>
       </View>

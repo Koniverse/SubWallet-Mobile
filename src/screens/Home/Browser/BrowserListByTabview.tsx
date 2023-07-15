@@ -21,10 +21,6 @@ type TabbarType = {
   focused: boolean;
 };
 const Tab = createMaterialTopTabNavigator();
-const navigationType: Record<string, string> = {
-  BOOKMARK: i18n.browser.favorite,
-  RECOMMENDED: i18n.browser.recommended,
-};
 const transparent = { backgroundColor: 'transparent' };
 const screenOptions = () => ({
   tabBarStyle: { height: 28, ...transparent },
@@ -64,6 +60,10 @@ export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabview
   const [searchString] = useState<string>('');
   const categoryTabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
   const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
+  const navigationType: Record<string, string> = {
+    BOOKMARK: i18n.browser.favorite,
+    RECOMMENDED: i18n.browser.recommended,
+  };
   const title = navigationType[route.params.type];
   const av = new Animated.Value(0);
   av.addListener(() => {

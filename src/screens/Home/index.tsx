@@ -25,6 +25,7 @@ import useAppLock from 'hooks/useAppLock';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { WrapperParamList } from 'routes/wrapper';
 import { Settings } from 'screens/Settings';
+import i18n from 'utils/i18n/i18n';
 
 const getSettingsContent = (props: DrawerContentComponentProps) => {
   return <Settings {...props} />;
@@ -85,6 +86,7 @@ const MainScreen = () => {
         name={'Tokens'}
         component={CryptoScreen}
         options={{
+          tabBarLabel: i18n.tabName.tokens,
           tabBarIcon: ({ color }) => {
             return <Wallet size={24} color={color} weight={'fill'} />;
           },
@@ -94,6 +96,7 @@ const MainScreen = () => {
         name={'NFTs'}
         component={NFTStackScreen}
         options={{
+          tabBarLabel: i18n.tabName.nfts,
           tabBarIcon: ({ color }) => {
             return <Aperture size={24} color={color} weight={'fill'} />;
           },
@@ -103,6 +106,7 @@ const MainScreen = () => {
         name={'Crowdloans'}
         component={withPageWrapper(CrowdloansScreen, ['crowdloan', 'price', 'chainStore', 'logoMaps'])}
         options={{
+          tabBarLabel: i18n.tabName.crowdloans,
           tabBarIcon: ({ color }) => {
             return <Rocket size={24} color={color} weight={'fill'} />;
           },
@@ -112,6 +116,7 @@ const MainScreen = () => {
         name={'Staking'}
         component={StakingScreen}
         options={{
+          tabBarLabel: i18n.tabName.staking,
           tabBarIcon: ({ color }) => {
             return <Database size={24} color={color} weight={'fill'} />;
           },
@@ -121,6 +126,7 @@ const MainScreen = () => {
         name={'Browser'}
         component={BrowserScreen}
         options={{
+          tabBarLabel: i18n.tabName.browser,
           tabBarIcon: ({ color }) => {
             return <Globe size={24} color={color} weight={'fill'} />;
           },

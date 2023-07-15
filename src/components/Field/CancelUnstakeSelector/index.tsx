@@ -7,6 +7,7 @@ import { ActivityIndicator, Icon, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { UnstakingInfo, UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   outerStyle?: StyleProp<any>;
@@ -40,7 +41,7 @@ export const CancelUnstakeSelectorField = ({
   item,
   label,
   loading,
-  placeholder = 'Select unstake request',
+  placeholder = i18n.stakingScreen.selectUnstakeRequest,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;

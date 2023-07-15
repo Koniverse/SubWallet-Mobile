@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getFreeBalance, updateAssetSetting } from 'messaging/index';
+import i18n from 'utils/i18n/i18n';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 
@@ -69,7 +70,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
               !cancel && setNativeTokenBalance(balance);
             })
             .catch((e: Error) => {
-              !cancel && setError('Can not get balance');
+              !cancel && setError(i18n.message.cannotGetBalance);
               console.error(e);
             }),
         );
@@ -81,7 +82,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
                 !cancel && setTokenBalance(balance);
               })
               .catch((e: Error) => {
-                !cancel && setError('Can not get balance');
+                !cancel && setError(i18n.message.cannotGetBalance);
                 console.error(e);
               }),
           );
@@ -104,7 +105,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
         !cancel && setNativeTokenBalance(DEFAULT_BALANCE);
         !cancel && setTokenBalance(DEFAULT_BALANCE);
         !cancel && setIsLoading(false);
-        !cancel && setError(`Please enable ${tokenNames.join(', ')} on ${chainInfo?.name}`);
+        !cancel && setError(i18n.message.enableTokenOnChain(tokenNames.join(', '), chainInfo?.name || ''));
       }
     }
 

@@ -1,3 +1,8 @@
+## 1.0.11 (200)
+- Update UI - Toast (#808)
+- Bugs when click on actions on header when standing transaction screen (#880)
+- Add support more languages (#56)
+
 ## 1.0.10 (199)
 - Autofocus password when create master password & Allow search by address on Manage website access detail screen (#884, #882)
 - Fix browser issue (#873)

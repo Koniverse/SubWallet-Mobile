@@ -14,11 +14,11 @@ export const StakingTypeNameMap: Record<string, string> = {
 
 export const TxTypeNameMap = (): Record<string, string> => ({
   ...StakingTypeNameMap,
-  transaction: 'Transaction',
-  submitting: 'Submitting...',
-  processing: 'Processing...',
-  send: 'Send',
-  receive: 'Receive',
+  transaction: i18n.historyScreen.title.transaction,
+  submitting: i18n.common.submitting,
+  processing: i18n.common.processing,
+  send: i18n.common.send,
+  receive: i18n.cryptoScreen.receive,
   [ExtrinsicType.TRANSFER_BALANCE]: i18n.historyScreen.extrinsicType.transfer,
   [ExtrinsicType.TRANSFER_TOKEN]: i18n.historyScreen.extrinsicType.transfer,
   [ExtrinsicType.TRANSFER_XCM]: i18n.historyScreen.extrinsicType.transfer,
@@ -31,10 +31,10 @@ export const TxTypeNameMap = (): Record<string, string> => ({
 
 export const TxTypeTitleMap: Record<string, string> = {
   ...StakingTypeNameMap,
-  transaction: 'Transaction',
-  processing: 'Processing...',
-  send: 'Send',
-  receive: 'Receive',
+  transaction: i18n.historyScreen.title.transaction,
+  processing: i18n.common.processing,
+  send: i18n.common.send,
+  receive: i18n.cryptoScreen.receive,
   [ExtrinsicType.TRANSFER_BALANCE]: i18n.historyScreen.extrinsicType.transfer,
   [ExtrinsicType.TRANSFER_TOKEN]: i18n.historyScreen.extrinsicType.transfer,
   [ExtrinsicType.TRANSFER_XCM]: i18n.historyScreen.extrinsicType.transfer,

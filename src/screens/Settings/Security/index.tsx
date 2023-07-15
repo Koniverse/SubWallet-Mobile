@@ -14,45 +14,6 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 
-const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
-  {
-    text: i18n.settings.immediately,
-    value: 0,
-  },
-  {
-    text: i18n.settings.ifLeftFor15Seconds,
-    value: 15 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor30Seconds,
-    value: 30 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor1Minute,
-    value: 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor5Minutes,
-    value: 5 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor15Minutes,
-    value: 15 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor30Minutes,
-    value: 30 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor1Hour,
-    value: 60 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.whenCloseApp,
-    value: undefined,
-  },
-];
-
 export const Security = () => {
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
@@ -62,6 +23,44 @@ export const Security = () => {
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
+  const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
+    {
+      text: i18n.settings.immediately,
+      value: 0,
+    },
+    {
+      text: i18n.settings.ifLeftFor15Seconds,
+      value: 15 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor30Seconds,
+      value: 30 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor1Minute,
+      value: 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor5Minutes,
+      value: 5 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor15Minutes,
+      value: 15 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor30Minutes,
+      value: 30 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor1Hour,
+      value: 60 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.whenCloseApp,
+      value: undefined,
+    },
+  ];
 
   const onValueChangePinCode = () => {
     if (!pinCodeEnabled) {

@@ -1,5 +1,6 @@
 export const en = {
   common: {
+    all: 'All',
     enterPinToUnlock: 'Enter PIN to unlock',
     createWalletNotification: 'Your wallet name will only be used locally in this application. You can edit it later.',
     privateKey: 'Private key',
@@ -62,6 +63,8 @@ export const en = {
     win: 'Win',
     fail: 'Fail',
     active: 'Active',
+    locked: 'Locked',
+    destroying: 'Destroying',
     search: 'Search',
     searchPlaceholder: 'Search or enter website',
     anErrorHasOccurred: 'An error has occurred.',
@@ -149,6 +152,7 @@ export const en = {
     polkadotParachain: 'Polkadot Parachain',
     kusamaParachain: 'Kusama Parachain',
     submitting: 'Submitting...',
+    processing: 'Processing...',
     sending: 'Sending...',
     scanForApprove: "Use your device's camera to scan the QR code\ndisplayed on your hardware wallet",
     scanQr: 'Scan QR',
@@ -173,6 +177,17 @@ export const en = {
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
     submit: 'Submit',
     accountConnected: 'account connected',
+    year: 'year',
+    days: 'days',
+    hours: 'hours',
+    forgotPassword: 'Forgot password?',
+    resetAccount: 'Reset account',
+    eraseAll: ' Erase all',
+    connecting: 'Connecting...',
+    chainConnected: (chain: string) => `${chain} is connected!`,
+    enableChain: 'Enable chain?',
+    enableChainMessage: (chainName: string) =>
+      `Your selected chain (${chainName}) is currently disabled, you need to turn it on`,
   },
   title: {
     exportAccount: 'Export account',
@@ -214,6 +229,8 @@ export const en = {
     tokens: 'Tokens',
     nfts: 'NFTs',
     crowdloans: 'Crowdloans',
+    staking: 'Staking',
+    browser: 'Browser',
   },
   welcomeScreen: {
     welcomeBackTitle: 'Welcome back!',
@@ -225,7 +242,7 @@ export const en = {
     importAccMessage: 'Import an existing account',
     attachAccLabel: 'Attach an account',
     attachAccMessage: 'Attach an account without private key',
-    forgetAccount: 'Forget account',
+    forgetAccount: 'Forget account?',
   },
   exportAccount: {
     exportSeedPhrase: 'Export seed phrase',
@@ -298,6 +315,7 @@ export const en = {
   },
   sendToken: {
     sendTokenMessage: 'Transfer token with the following details',
+    senderAvailableBalance: 'Sender available balance',
   },
   buttonTitles: {
     unlock: 'Unlock',
@@ -403,6 +421,7 @@ export const en = {
     estimatedAnnualEarnings: 'Estimated annual earnings',
     withdrawInXDays: (x: number) => `Withdraw in ${x} days`,
     withdrawInADay: 'Withdraw in a day',
+    availableForWithdraw: 'Available for withdraw',
     unstakeFromAcc: 'Unstake from account',
     selectCollator: 'Select collator',
     bonded: 'bonded',
@@ -552,6 +571,8 @@ export const en = {
     changeMasterPasswordMessage2: 'Use this password to unlock your account.',
     forgotPasswordMessage:
       'We do not keep your password. If you forgot your password, you will need to reset your wallet using the Secret Recovery Phrase',
+    cannotGetBalance: 'Can not get balance',
+    enableTokenOnChain: (tokenNames: string, chainName: string) => `Please enable ${tokenNames} on ${chainName}`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
@@ -783,6 +804,16 @@ export const en = {
     balanceList: {
       stakingAppearHere: 'Your staking accounts will be appear here',
     },
+    selectedCollator: 'Selected collator',
+    lowestCommission: 'Lowest commission',
+    highestReturn: 'Highest annual return',
+    lowestActiveStake: 'Lowest min active stake',
+    lowestMember: 'Lowest total member',
+    highestBonded: 'Highest total bonded',
+    selectedPool: 'Selected pool',
+    bonded: 'Bonded',
+    selectUnstakeRequest: 'Select unstake request',
+    afterInflation: 'after inflation',
   },
   addressBook: {
     typeWallet: 'Your Wallet',
@@ -972,6 +1003,7 @@ export const en = {
     invalidContactAddress: 'Invalid contact address',
     contactNameIsRequired: 'Contact name is required',
     contactNameMustBeUnique: 'Contact name must be unique',
+    invalidPassword: 'Invalid password',
   },
   notificationMessage: {
     watchOnlyNoti: 'The account you are using is watch-only, you cannot send assets with it',

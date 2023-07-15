@@ -8,6 +8,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NominationInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { toShort } from 'utils/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
+import i18n from 'utils/i18n/i18n';
 
 interface Props extends FieldBaseProps {
   outerStyle?: StyleProp<any>;
@@ -41,7 +42,7 @@ export const NominationSelectorField = ({
   item,
   label,
   loading,
-  placeholder = 'Selected collator',
+  placeholder = i18n.stakingScreen.selectedCollator,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;

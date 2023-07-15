@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { ActivityIndicator, Number, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   address?: string;
@@ -33,7 +34,7 @@ export const FreeBalance = ({ address, chain, label, onBalanceReady, tokenSlug }
     <View style={{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
       {!error && (
         <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
-          {label || 'Sender available balance:'}
+          {label || `${i18n.sendToken.senderAvailableBalance}`}
         </Text>
       )}
       {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}

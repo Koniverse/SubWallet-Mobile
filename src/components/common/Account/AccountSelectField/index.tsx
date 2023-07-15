@@ -9,6 +9,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import AccountSelectFieldStyles from './style';
 import { CaretDown } from 'phosphor-react-native';
 import { DisabledStyle } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   onPress: () => void;
@@ -36,7 +37,7 @@ const AccountSelectField = ({ disabled, onPress }: Props) => {
           />
         )}
         <Typography.Text style={_style.accountNameStyle} ellipsis={true}>
-          {isAll ? 'All accounts' : currentAccount?.name}
+          {isAll ? i18n.header.selectAccount : currentAccount?.name}
         </Typography.Text>
         {!isAll && <Text style={_style.accountAddressStyle}>{`(...${currentAccount?.address.slice(-3)})`}</Text>}
         <Icon phosphorIcon={CaretDown} size={'xxs'} />

@@ -2,15 +2,16 @@ import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { getBondingOptions, getNominationPoolOptions } from 'messaging/index';
 import { store } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
+import i18n from 'utils/i18n/i18n';
 
 export function getUnstakingPeriod(unstakingPeriod?: number) {
   if (unstakingPeriod) {
     const days = unstakingPeriod / 24;
 
     if (days < 1) {
-      return `${unstakingPeriod} hours`;
+      return `${unstakingPeriod} ${i18n.common.hours}`;
     } else {
-      return `${days} days`;
+      return `${days} ${i18n.common.days}`;
     }
   }
 
@@ -18,16 +19,16 @@ export function getUnstakingPeriod(unstakingPeriod?: number) {
 }
 
 export function getWaitingTime(waitingTime?: number) {
-  const days = waitingTime ? Number(waitingTime / 24).toFixed(0) : 0;
+  const days = waitingTime ? Number((waitingTime / 24).toFixed(0)) : 0;
 
   if (days < 1) {
     if (days) {
-      return 'Withdraw in <1 day';
+      return i18n.inputLabel.withdrawInADay;
     } else {
-      return 'Available for withdraw';
+      return i18n.inputLabel.availableForWithdraw;
     }
   } else {
-    return `Withdraw in ${days} days`;
+    return i18n.inputLabel.withdrawInXDays(days);
   }
 }
 

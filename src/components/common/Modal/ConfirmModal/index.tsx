@@ -31,6 +31,7 @@ const ConfirmModal: React.FC<Props> = ({
     <SwModal
       modalVisible={visible}
       modalTitle={title}
+      titleTextAlign="center"
       footer={
         <View style={styles.footerModalStyle}>
           <Button type="secondary" style={{ flex: 1, marginRight: 12 }} onPress={onCancelModal}>

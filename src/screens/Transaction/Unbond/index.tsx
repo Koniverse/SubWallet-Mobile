@@ -129,9 +129,9 @@ export const Unbond = ({
         const days = Math.floor(time / 24);
         const hours = time - days * 24;
 
-        return `${days} days${hours ? ` ${hours} 'hours'` : ''}`;
+        return `${days} days${hours ? ` ${hours} ${i18n.common.hours}` : ''}`;
       } else {
-        return `${time} 'hours'`;
+        return `${time} ${i18n.common.hours}`;
       }
     } else {
       return 'unknown time';

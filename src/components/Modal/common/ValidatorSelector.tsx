@@ -127,7 +127,7 @@ export const ValidatorSelector = ({
     const result: SortOption[] = [
       {
         desc: false,
-        label: 'Lowest commission',
+        label: i18n.stakingScreen.lowestCommission,
         value: SortKey.COMMISSION,
       },
     ];
@@ -135,14 +135,14 @@ export const ValidatorSelector = ({
     if (hasReturn) {
       result.push({
         desc: true,
-        label: 'Highest annual return',
+        label: i18n.stakingScreen.highestReturn,
         value: SortKey.RETURN,
       });
     }
 
     result.push({
       desc: false,
-      label: 'Lowest min active stake',
+      label: i18n.stakingScreen.lowestActiveStake,
       value: SortKey.MIN_STAKE,
     });
 
@@ -265,7 +265,9 @@ export const ValidatorSelector = ({
                     weight={'fill'}
                     iconColor={!changeValidators.length ? theme.colorTextLight5 : theme.colorWhite}
                   />
-                }>{`Apply ${changeValidators.length} validators`}</Button>
+                }>
+                {i18n.buttonTitles.applyValidators(changeValidators.length)}
+              </Button>
             </View>
           }
         />
@@ -274,7 +276,7 @@ export const ValidatorSelector = ({
 
         <BasicSelectModal
           ref={sortingModalRef}
-          title={'Sorting'}
+          title={i18n.header.sorting}
           items={sortingOptions}
           selectedValueMap={{ [sortSelection]: true }}
           renderCustomItem={renderSortingItem}>
@@ -286,7 +288,7 @@ export const ValidatorSelector = ({
                 setSortSelection(SortKey.DEFAULT);
                 sortingModalRef?.current?.onCloseModal();
               }}>
-              Reset sorting
+              {i18n.buttonTitles.resetSorting}
             </Button>
           }
         </BasicSelectModal>

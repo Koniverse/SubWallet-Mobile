@@ -171,7 +171,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
     if (_recommendItems.length) {
       result.push({
-        title: i18n.common.recommend,
+        title: i18n.browser.recommended,
         data: !searchStringRef.current
           ? recommendItems
           : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase())),

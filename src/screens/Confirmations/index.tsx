@@ -54,17 +54,6 @@ const subWalletModalSeparator: StyleProp<any> = {
   marginBottom: 16,
 };
 
-const titleMap: Record<ConfirmationType, string> = {
-  addNetworkRequest: i18n.header.addNetworkRequest,
-  addTokenRequest: i18n.header.addTokenRequest,
-  authorizeRequest: i18n.header.connectWithSubwallet,
-  evmSendTransactionRequest: i18n.header.transactionRequest,
-  evmSignatureRequest: i18n.header.signatureRequest,
-  metadataRequest: i18n.header.updateMetadata,
-  signingRequest: i18n.header.signatureRequest,
-  switchNetworkRequest: i18n.header.addNetworkRequest,
-} as Record<ConfirmationType, string>;
-
 export const Confirmations = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -73,6 +62,19 @@ export const Confirmations = () => {
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
   useHandlerHardwareBackPress(true);
+  const titleMap = useMemo(
+    () => ({
+      addNetworkRequest: i18n.header.addNetworkRequest,
+      addTokenRequest: i18n.header.addTokenRequest,
+      authorizeRequest: i18n.header.connectWithSubwallet,
+      evmSendTransactionRequest: i18n.header.transactionRequest,
+      evmSignatureRequest: i18n.header.signatureRequest,
+      metadataRequest: i18n.header.updateMetadata,
+      signingRequest: i18n.header.signatureRequest,
+      switchNetworkRequest: i18n.header.addNetworkRequest,
+    }),
+    [],
+  ) as Record<ConfirmationType, string>;
 
   const nextConfirmation = useCallback(() => {
     setIndex(val => Math.min(val + 1, numberOfConfirmations - 1));
@@ -119,7 +121,7 @@ export const Confirmations = () => {
     } else {
       return titleMap[confirmation.type] || '';
     }
-  }, [confirmation, transactionRequest]);
+  }, [confirmation, titleMap, transactionRequest]);
 
   const content = useMemo((): React.ReactNode => {
     if (!confirmation) {

@@ -157,7 +157,7 @@ export const AccountExport = ({
             setCurrentViewStep(2);
             setModalVisible(false);
           })
-          .catch(() => setErrorArr(['Invalid password']))
+          .catch(() => setErrorArr([i18n.errorMessage.invalidPassword]))
           .finally(() => {
             setIsBusy(false);
           });
