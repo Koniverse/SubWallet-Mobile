@@ -26,16 +26,6 @@ enum AccountGroup {
   RECENT = 'recent',
 }
 
-const AccountGroupNameMap = {
-  [AccountGroup.CONTACT]: i18n.addressBook.typeContact,
-  [AccountGroup.RECENT]: i18n.addressBook.typeRecent,
-};
-
-const FILTER_OPTIONS = [AccountGroup.RECENT, AccountGroup.CONTACT].map(value => ({
-  value,
-  label: AccountGroupNameMap[value],
-}));
-
 interface AccountItem extends AddressJson {
   group: AccountGroup;
 }
@@ -91,12 +81,6 @@ const emptyList = () => {
   );
 };
 
-const groupBy = (item: AccountItem) => {
-  const priority = item.group === AccountGroup.RECENT ? '1' : '0';
-
-  return `${priority}|${AccountGroupNameMap[item.group]}`;
-};
-
 const sortSection = (a: SectionItem<AccountItem>, b: SectionItem<AccountItem>) => {
   return b.title.localeCompare(a.title);
 };
@@ -116,6 +100,26 @@ export const ManageAddressBook = () => {
   const [isShowEditContactModal, setShowEditContactModal] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<AddressJson | undefined>();
   const stylesheet = createStylesheet(theme);
+  const AccountGroupNameMap = useMemo(
+    () => ({
+      [AccountGroup.CONTACT]: i18n.addressBook.typeContact,
+      [AccountGroup.RECENT]: i18n.addressBook.typeRecent,
+    }),
+    [],
+  );
+  const groupBy = useMemo(
+    () => (item: AccountItem) => {
+      const priority = item.group === AccountGroup.RECENT ? '1' : '0';
+
+      return `${priority}|${AccountGroupNameMap[item.group]}`;
+    },
+    [AccountGroupNameMap],
+  );
+
+  const FILTER_OPTIONS = [AccountGroup.RECENT, AccountGroup.CONTACT].map(value => ({
+    value,
+    label: AccountGroupNameMap[value],
+  }));
 
   const items = useMemo((): AccountItem[] => {
     const result: AccountItem[] = [];
@@ -155,7 +159,7 @@ export const ManageAddressBook = () => {
 
   const grouping = useMemo(() => {
     return { groupBy, sortSection, renderSectionHeader };
-  }, [renderSectionHeader]);
+  }, [groupBy, renderSectionHeader]);
 
   const ItemRightIcon = useMemo(
     () => (

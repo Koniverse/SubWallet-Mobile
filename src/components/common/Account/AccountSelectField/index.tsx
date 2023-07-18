@@ -37,7 +37,7 @@ const AccountSelectField = ({ disabled, onPress }: Props) => {
           />
         )}
         <Typography.Text style={_style.accountNameStyle} ellipsis={true}>
-          {isAll ? i18n.header.selectAccount : currentAccount?.name}
+          {isAll ? i18n.common.allAccounts : currentAccount?.name}
         </Typography.Text>
         {!isAll && <Text style={_style.accountAddressStyle}>{`(...${currentAccount?.address.slice(-3)})`}</Text>}
         <Icon phosphorIcon={CaretDown} size={'xxs'} />

@@ -178,7 +178,7 @@ export const AccountExport = ({
       return i18n.header.exportAccount;
     } else {
       if (!exportSingle) {
-        return 'Export successful';
+        return i18n.exportAccount.exportSuccessful;
       } else {
         return titleMap[selectedTypes[0]];
       }
@@ -280,7 +280,7 @@ export const AccountExport = ({
                 <View>
                   {!exportSingle && (
                     <Typography.Text style={styles.blockTitle} size={'sm'}>
-                      Your json file
+                      {i18n.exportAccount.yourJsonFile}
                     </Typography.Text>
                   )}
                   <SelectItem

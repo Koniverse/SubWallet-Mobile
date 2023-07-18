@@ -162,19 +162,20 @@ export const StakingDetailModal = ({
   }, []);
 
   const getStakingStatus = useCallback((status: StakingStatus) => {
+    const stakingStatusUi = StakingStatusUi();
     if (status === StakingStatus.EARNING_REWARD) {
-      return StakingStatusUi.active;
+      return stakingStatusUi.active;
     }
 
     if (status === StakingStatus.PARTIALLY_EARNING) {
-      return StakingStatusUi.partialEarning;
+      return stakingStatusUi.partialEarning;
     }
 
     if (status === StakingStatus.WAITING) {
-      return StakingStatusUi.waiting;
+      return stakingStatusUi.waiting;
     }
 
-    return StakingStatusUi.inactive;
+    return stakingStatusUi.inactive;
   }, []);
 
   const _onCloseDetailModal = useCallback(() => {

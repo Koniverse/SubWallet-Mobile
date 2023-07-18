@@ -14,6 +14,7 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import SwModal from 'components/design-system-ui/modal/SwModal';
 import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 import createStylesheet from './style/ConnectWebsiteModal';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   modalVisible: boolean;
@@ -187,12 +188,9 @@ export const ConnectWebsiteModal = ({
       return (
         <>
           <Typography.Title level={4} style={stylesheet.title}>
-            Not connected to this site
+            {i18n.confirmation.siteNotConnected}
           </Typography.Title>
-          <Typography.Text style={stylesheet.message}>
-            SubWallet is not connected to this site. Please find and press in the website the "Connect Wallet" button to
-            connect.
-          </Typography.Text>
+          <Typography.Text style={stylesheet.message}>{i18n.confirmation.siteNotConnectedMessage}</Typography.Text>
         </>
       );
     }
@@ -201,11 +199,9 @@ export const ConnectWebsiteModal = ({
       return (
         <>
           <Typography.Title level={4} style={stylesheet.title}>
-            This site has been blocked
+            {i18n.confirmation.siteBlocked}
           </Typography.Title>
-          <Typography.Text style={stylesheet.message}>
-            This site has been previously blocked. Do you wish to unblock and grant access to it?
-          </Typography.Text>
+          <Typography.Text style={stylesheet.message}>{i18n.confirmation.siteBlockedMessage}</Typography.Text>
         </>
       );
     }
@@ -223,9 +219,7 @@ export const ConnectWebsiteModal = ({
 
     return (
       <>
-        <Typography.Text style={stylesheet.connectAccountMessage}>
-          Your following account(s) are connected to this site
-        </Typography.Text>
+        <Typography.Text style={stylesheet.connectAccountMessage}>{i18n.confirmation.siteConnected}</Typography.Text>
 
         <View style={stylesheet.accountsContainer}>
           {list.map(({ address, value }) => {
@@ -254,7 +248,7 @@ export const ConnectWebsiteModal = ({
 
   return (
     <SwModal
-      modalTitle={'Connect website'}
+      modalTitle={i18n.header.connectWebsite}
       modalVisible={modalVisible}
       titleTextAlign="center"
       onChangeModalVisible={onChangeModalVisible}

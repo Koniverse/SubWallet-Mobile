@@ -188,6 +188,7 @@ export const en = {
     enableChain: 'Enable chain?',
     enableChainMessage: (chainName: string) =>
       `Your selected chain (${chainName}) is currently disabled, you need to turn it on`,
+    provider: 'Provider',
   },
   title: {
     exportAccount: 'Export account',
@@ -250,6 +251,8 @@ export const en = {
     exportPrivateKey: 'Export private key',
     exportQRCode: 'Export QR Code',
     exportJsonFileSuccessfulMessage: 'You have successfully exported JSON file for this account',
+    exportSuccessful: 'Export successful',
+    yourJsonFile: 'Your json file',
   },
   createAccount: {
     createWithNewSeedPhrase: 'Create with new seed phrase',
@@ -424,7 +427,6 @@ export const en = {
     availableForWithdraw: 'Available for withdraw',
     unstakeFromAcc: 'Unstake from account',
     selectCollator: 'Select collator',
-    bonded: 'bonded',
     collator: 'Collator',
     selectAnUnstakeRequest: 'Select an unstake request',
     cancelUnstakeFee: 'Cancel unstake fee',
@@ -797,6 +799,21 @@ export const en = {
     contractAddress: 'Contract address',
     tokenName: 'Token name',
   },
+  importNetwork: {
+    contractAddress: 'Contract address',
+    tokenName: 'Token name',
+    providerUrl: 'Provider URL',
+    chainName: 'Chain name',
+    addressPrefix: 'Address prefix',
+    paraId: 'Para Id',
+    evmChainId: 'EVM chain id',
+    decimal: 'Decimals',
+    symbol: 'Symbol',
+    priceId: 'Price Id',
+    chainType: 'Chain type',
+    blockExplorer: 'Block explorer',
+    crowdloanUrl: 'Crowdloan URL',
+  },
   transferNft: {
     send: 'Send',
   },
@@ -814,6 +831,8 @@ export const en = {
     bonded: 'Bonded',
     selectUnstakeRequest: 'Select unstake request',
     afterInflation: 'after inflation',
+    earningReward: 'Earning reward',
+    notEarning: 'Not earning',
   },
   addressBook: {
     typeWallet: 'Your Wallet',
@@ -849,6 +868,12 @@ export const en = {
     notSpMessagePart2: 'Please change to another account type',
     deleteContactTitle: 'Delete this contact?',
     deleteContactMessage: 'You would no longer see this address in your address book',
+    siteConnected: 'Your following account(s) are connected to this site',
+    siteNotConnected: 'Not connected to this site',
+    siteNotConnectedMessage:
+      'SubWallet is not connected to this site. Please find and press in the website the "Connect Wallet" button to connect',
+    siteBlocked: 'This site has been blocked',
+    siteBlockedMessage: 'This site has been previously blocked. Do you wish to unblock and grant access to it?',
   },
   signingAction: {
     basic: 'Basic',
