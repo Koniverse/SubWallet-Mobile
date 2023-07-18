@@ -171,7 +171,7 @@ export const en = {
     destinationChain: 'Destination chain',
     viewOnExplorer: 'View on explorer',
     currentPassword: 'Current password',
-    selectedValidators: 'selected validators',
+    selectedValidators: (validators: number) => `Selected (${validators}) validators`,
     specVersion: 'Spec version',
     selectStakingValidator: (validatorLabel: string) => `Select ${validatorLabel}`,
     searchStakingValidator: (validatorLabel: string) => `Search ${validatorLabel}`,
@@ -188,6 +188,9 @@ export const en = {
     enableChain: 'Enable chain?',
     enableChainMessage: (chainName: string) =>
       `Your selected chain (${chainName}) is currently disabled, you need to turn it on`,
+    provider: 'Provider',
+    pools: 'Pool',
+    nominate: 'Nominate',
   },
   title: {
     exportAccount: 'Export account',
@@ -250,6 +253,8 @@ export const en = {
     exportPrivateKey: 'Export private key',
     exportQRCode: 'Export QR Code',
     exportJsonFileSuccessfulMessage: 'You have successfully exported JSON file for this account',
+    exportSuccessful: 'Export successful',
+    yourJsonFile: 'Your json file',
   },
   createAccount: {
     createWithNewSeedPhrase: 'Create with new seed phrase',
@@ -274,6 +279,7 @@ export const en = {
     importPrivateKeyMessage: 'To import an existing wallet, please enter private key',
     importQrCodeMessage1: 'Please make sure that you have granted SubWallet the access to your device’s camera',
     importQrCodeMessage2: 'Click the “Scan QR” button or read this instruction for more details',
+    importAccounts: (number: string) => `Import ${number} accounts`,
   },
   removeAccount: {
     removeAccountTitle: 'Remove this account',
@@ -319,6 +325,7 @@ export const en = {
   },
   buttonTitles: {
     unlock: 'Unlock',
+    unblock: 'Unblock',
     doNotRememberYourPassword: 'Don’t remember your password?',
     createANewAcc: 'Create a new account',
     deriveAnAcc: 'Derive an account',
@@ -424,7 +431,6 @@ export const en = {
     availableForWithdraw: 'Available for withdraw',
     unstakeFromAcc: 'Unstake from account',
     selectCollator: 'Select collator',
-    bonded: 'bonded',
     collator: 'Collator',
     selectAnUnstakeRequest: 'Select an unstake request',
     cancelUnstakeFee: 'Cancel unstake fee',
@@ -540,6 +546,7 @@ export const en = {
     manageDAppDetailEmptyMessage: 'Your list of connected accounts will appear here.',
     manageDAppEmptyTitle: 'No dApps found',
     manageDAppEmptyMessage: 'Your list of approved dApps will appear here.',
+    categoryItemEmpty: 'This category is empty',
   },
   warning: {
     warningAccTitle: 'Warning: Never disclose this key',
@@ -772,6 +779,7 @@ export const en = {
       originChainFee: 'Origin Chain fee',
       destinationFee: 'Destination fee',
       fromAccount: 'From account',
+      transactionFail: ' fail',
     },
     title: {
       transaction: 'Transaction',
@@ -797,6 +805,21 @@ export const en = {
     contractAddress: 'Contract address',
     tokenName: 'Token name',
   },
+  importNetwork: {
+    contractAddress: 'Contract address',
+    tokenName: 'Token name',
+    providerUrl: 'Provider URL',
+    chainName: 'Chain name',
+    addressPrefix: 'Address prefix',
+    paraId: 'Para Id',
+    evmChainId: 'EVM chain id',
+    decimal: 'Decimals',
+    symbol: 'Symbol',
+    priceId: 'Price Id',
+    chainType: 'Chain type',
+    blockExplorer: 'Block explorer',
+    crowdloanUrl: 'Crowdloan URL',
+  },
   transferNft: {
     send: 'Send',
   },
@@ -814,6 +837,9 @@ export const en = {
     bonded: 'Bonded',
     selectUnstakeRequest: 'Select unstake request',
     afterInflation: 'after inflation',
+    earningReward: 'Earning reward',
+    notEarning: 'Not earning',
+    maximumSelectableValidators: (maxCount: number) => `You can only choose ${maxCount} validators`,
   },
   addressBook: {
     typeWallet: 'Your Wallet',
@@ -849,6 +875,12 @@ export const en = {
     notSpMessagePart2: 'Please change to another account type',
     deleteContactTitle: 'Delete this contact?',
     deleteContactMessage: 'You would no longer see this address in your address book',
+    siteConnected: 'Your following account(s) are connected to this site',
+    siteNotConnected: 'Not connected to this site',
+    siteNotConnectedMessage:
+      'SubWallet is not connected to this site. Please find and press in the website the "Connect Wallet" button to connect',
+    siteBlocked: 'This site has been blocked',
+    siteBlockedMessage: 'This site has been previously blocked. Do you wish to unblock and grant access to it?',
   },
   signingAction: {
     basic: 'Basic',
@@ -1024,5 +1056,15 @@ export const en = {
     recommended: 'Recommended',
     seeAll: 'See all',
     clearHistory: 'Clear history',
+    all: 'All',
+    defi: 'DeFi',
+    nft: 'NFT',
+    EVM: 'EVM',
+    community: 'Community',
+    utilities: 'Utilities',
+    crowdloans: 'Crowdloan',
+    staking: 'Staking',
+    test: 'Test',
+    data: 'Data',
   },
 };

@@ -14,6 +14,7 @@ interface Props {
 
 export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, onCancel }: Props) => {
   const { address = '', bondedAmount, memberCounter = 0, name, state, symbol, decimals } = detailItem;
+  const stakingStatusUi = StakingStatusUi();
   return (
     <SwModal
       modalVisible={detailModalVisible}
@@ -26,8 +27,8 @@ export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, onCanc
           <MetaInfo.Status
             statusName={state || ''}
             label={i18n.inputLabel.status}
-            statusIcon={StakingStatusUi.active.icon}
-            valueColorSchema={StakingStatusUi.active.schema}
+            statusIcon={stakingStatusUi.active.icon}
+            valueColorSchema={stakingStatusUi.active.schema}
           />
 
           <MetaInfo.Number

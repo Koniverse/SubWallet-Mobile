@@ -14,12 +14,13 @@ import {
 import {
   ExtrinsicStatus,
   ExtrinsicType,
+  LanguageType,
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { isTypeStaking, isTypeTransfer } from 'utils/transaction/detectType';
 import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'types/history';
-import { customFormatDate } from 'utils/customFormatDate';
+import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
@@ -93,7 +94,7 @@ function getDisplayData(
   let displayData: TransactionHistoryDisplayData;
   const time = customFormatDate(item.time, '#hhhh#:#mm#');
 
-  const displayStatus = item.status === ExtrinsicStatus.FAIL ? 'fail' : '';
+  const displayStatus = item.status === ExtrinsicStatus.FAIL ? i18n.historyScreen.label.transactionFail : '';
 
   if (
     item.type === ExtrinsicType.TRANSFER_BALANCE ||
@@ -106,7 +107,7 @@ function getDisplayData(
         className: `-receive -${item.status}`,
         title: titleMap.receive,
         name: nameMap.receive,
-        typeName: `${nameMap.receive} ${displayStatus} - ${time}`,
+        typeName: `${nameMap.receive}${displayStatus} - ${time}`,
         icon: IconMap.receive,
       };
     } else {
@@ -114,7 +115,7 @@ function getDisplayData(
         className: `-send -${item.status}`,
         title: titleMap.send,
         name: nameMap.send,
-        typeName: `${nameMap.send} ${displayStatus} - ${time}`,
+        typeName: `${nameMap.send}${displayStatus} - ${time}`,
         icon: IconMap.send,
       };
     }
@@ -124,7 +125,7 @@ function getDisplayData(
     displayData = {
       className: `-${item.type} -${item.status}`,
       title: titleMap[item.type],
-      typeName: `${typeName} ${displayStatus} - ${time}`,
+      typeName: `${typeName}${displayStatus} - ${time}`,
       name: nameMap[item.type],
       icon: getIcon(item),
     };
@@ -226,6 +227,8 @@ function History({
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
+
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -391,9 +394,12 @@ function History({
     });
   }, []);
 
-  const groupBy = useCallback((item: TransactionHistoryDisplayItem) => {
-    return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + customFormatDate(item.time, '#MMM# #DD#, #YYYY#');
-  }, []);
+  const groupBy = useCallback(
+    (item: TransactionHistoryDisplayItem) => {
+      return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + formatHistoryDate(item.time, language, 'list');
+    },
+    [language],
+  );
 
   const renderSectionHeader: (info: {
     section: SectionListData<TransactionHistoryDisplayItem>;

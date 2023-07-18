@@ -38,7 +38,7 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
             style={styles.footer}
             onPress={checkCamera(onOpenScan)}
             icon={<Icon phosphorIcon={QrCode} weight="fill" />}>
-            Scan QR
+            {i18n.common.scanQr}
           </Button>
         </View>
       </SafeAreaView>

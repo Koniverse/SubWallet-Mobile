@@ -40,17 +40,6 @@ interface AccountItem extends AbstractAddressJson {
   group: AccountGroup;
 }
 
-const AccountGroupNameMap = {
-  [AccountGroup.WALLET]: i18n.addressBook.typeWallet,
-  [AccountGroup.CONTACT]: i18n.addressBook.typeContact,
-  [AccountGroup.RECENT]: i18n.addressBook.typeRecent,
-};
-
-const FILTER_OPTIONS = [AccountGroup.WALLET, AccountGroup.CONTACT, AccountGroup.RECENT].map(value => ({
-  value,
-  label: AccountGroupNameMap[value],
-}));
-
 function searchFunction(items: AccountItem[], searchText: string) {
   if (!searchText) {
     return items;
@@ -107,20 +96,6 @@ const emptyList = () => {
   );
 };
 
-const groupBy = (item: AccountItem) => {
-  let priority;
-
-  if (item.group === AccountGroup.WALLET) {
-    priority = '2';
-  } else if (item.group === AccountGroup.CONTACT) {
-    priority = '1';
-  } else {
-    priority = '0';
-  }
-
-  return `${priority}|${AccountGroupNameMap[item.group]}`;
-};
-
 const sortSection = (a: SectionItem<AccountItem>, b: SectionItem<AccountItem>) => {
   return b.title.localeCompare(a.title);
 };
@@ -149,6 +124,35 @@ export const AddressBookModal = ({
   const formatAddress = useFormatAddress(addressPrefix);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
+  const AccountGroupNameMap = useMemo(
+    () => ({
+      [AccountGroup.WALLET]: i18n.addressBook.typeWallet,
+      [AccountGroup.CONTACT]: i18n.addressBook.typeContact,
+      [AccountGroup.RECENT]: i18n.addressBook.typeRecent,
+    }),
+    [],
+  );
+  const groupBy = useCallback(
+    (item: AccountItem) => {
+      let priority;
+
+      if (item.group === AccountGroup.WALLET) {
+        priority = '2';
+      } else if (item.group === AccountGroup.CONTACT) {
+        priority = '1';
+      } else {
+        priority = '0';
+      }
+
+      return `${priority}|${AccountGroupNameMap[item.group]}`;
+    },
+    [AccountGroupNameMap],
+  );
+
+  const FILTER_OPTIONS = [AccountGroup.WALLET, AccountGroup.CONTACT, AccountGroup.RECENT].map(valueItem => ({
+    value: valueItem,
+    label: AccountGroupNameMap[valueItem],
+  }));
 
   const items = useMemo((): AccountItem[] => {
     const result: AccountItem[] = [];
@@ -227,7 +231,7 @@ export const AddressBookModal = ({
 
   const grouping = useMemo(() => {
     return { groupBy, sortSection, renderSectionHeader };
-  }, [renderSectionHeader]);
+  }, [groupBy, renderSectionHeader]);
 
   const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);
 

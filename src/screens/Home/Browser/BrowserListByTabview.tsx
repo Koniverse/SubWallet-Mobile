@@ -58,8 +58,8 @@ export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabview
   const theme = useSubWalletTheme().swThemes;
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
   const [searchString] = useState<string>('');
-  const categoryTabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
-  const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
+  const categoryTabRoutes = dApps.categories()?.map(item => ({ key: item.id, title: item.name }));
+  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
   const navigationType: Record<string, string> = {
     BOOKMARK: i18n.browser.favorite,
     RECOMMENDED: i18n.browser.recommended,

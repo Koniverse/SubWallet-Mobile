@@ -1,6 +1,7 @@
 import { RefObject, useCallback } from 'react';
 import useIsReadOnlyAccount from '../useIsReadOnlyAccount';
 import ToastContainer, { useToast } from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 type VoidFunction = () => void;
 
@@ -18,15 +19,12 @@ const usePreCheckReadOnly = (
         if (isReadOnlyAccount) {
           if (toastRef && toastRef.current) {
             toastRef.current.hideAll();
-            toastRef.current.show(
-              message ?? 'The account you are using is watch-only, you cannot use this feature with it',
-              {
-                type: 'normal',
-              },
-            );
+            toastRef.current.show(message ?? i18n.notificationMessage.watchOnlyNoti, {
+              type: 'normal',
+            });
           } else {
             hideAll();
-            show(message ?? 'The account you are using is watch-only, you cannot use this feature with it', {
+            show(message ?? i18n.notificationMessage.watchOnlyNoti, {
               type: 'normal',
             });
           }

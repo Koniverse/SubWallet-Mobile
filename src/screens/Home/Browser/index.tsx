@@ -15,6 +15,7 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { Typography } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import { BrowserListByTabviewProps } from 'routes/index';
+import i18n from 'utils/i18n/i18n';
 
 type RoutesType = {
   key: string;
@@ -66,8 +67,8 @@ export const BrowserScreen = ({ navigation }: BrowserListByTabviewProps) => {
   const stylesheet = createStylesheet(theme);
   const [dApps] = useState<PredefinedDApps>(predefinedDApps);
   const [searchString] = useState<string>('');
-  const categoryTabRoutes = dApps.categories.map(item => ({ key: item.id, title: item.name }));
-  const allTabRoutes = [{ key: 'all', title: 'All' }, ...categoryTabRoutes];
+  const categoryTabRoutes = dApps.categories().map(item => ({ key: item.id, title: item.name }));
+  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
   const av = new Animated.Value(0);

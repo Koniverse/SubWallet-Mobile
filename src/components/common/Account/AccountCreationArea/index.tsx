@@ -31,60 +31,6 @@ interface Props {
   allowToShowSelectType?: boolean;
 }
 
-const importAccountActions = [
-  {
-    key: 'secretPhrase',
-    backgroundColor: '#51BC5E',
-    icon: Leaf,
-    label: i18n.importAccount.importFromSeedPhrase,
-  },
-  {
-    key: 'restoreJson',
-    backgroundColor: '#E68F25',
-    icon: FileJs,
-    label: i18n.importAccount.importFromJson,
-  },
-  {
-    key: 'privateKey',
-    backgroundColor: '#4D4D4D',
-    icon: Wallet,
-    label: i18n.importAccount.importByMetaMaskPrivateKey,
-  },
-  {
-    key: 'qrCode',
-    backgroundColor: '#2565E6',
-    icon: QrCode,
-    label: i18n.importAccount.importByQRCode,
-  },
-];
-
-const attachAccountActions = [
-  {
-    key: 'ledger',
-    backgroundColor: '#E68F25',
-    icon: Swatches,
-    label: i18n.attachAccount.connectALedgerDevice,
-  },
-  {
-    key: 'polkadotVault',
-    backgroundColor: '#E6478E',
-    icon: QrCode,
-    label: i18n.attachAccount.connectAPolkadotVaultAcc,
-  },
-  {
-    key: 'keystone',
-    backgroundColor: '#2565E6',
-    icon: DeviceTabletCamera,
-    label: i18n.attachAccount.connectAKeystoneDevice,
-  },
-  {
-    key: 'watchOnly',
-    backgroundColor: '#2DA73F',
-    icon: Eye,
-    label: i18n.attachAccount.attachAWatchOnlyAccount,
-  },
-];
-
 export const AccountCreationArea = ({
   allowToShowSelectType = false,
   createAccountRef,
@@ -95,6 +41,59 @@ export const AccountCreationArea = ({
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const selectTypeRef = useRef<ModalRef>();
   const deriveAccModalRef = useRef<ModalRef>();
+  const importAccountActions = [
+    {
+      key: 'secretPhrase',
+      backgroundColor: '#51BC5E',
+      icon: Leaf,
+      label: i18n.importAccount.importFromSeedPhrase,
+    },
+    {
+      key: 'restoreJson',
+      backgroundColor: '#E68F25',
+      icon: FileJs,
+      label: i18n.importAccount.importFromJson,
+    },
+    {
+      key: 'privateKey',
+      backgroundColor: '#4D4D4D',
+      icon: Wallet,
+      label: i18n.importAccount.importByMetaMaskPrivateKey,
+    },
+    {
+      key: 'qrCode',
+      backgroundColor: '#2565E6',
+      icon: QrCode,
+      label: i18n.importAccount.importByQRCode,
+    },
+  ];
+
+  const attachAccountActions = [
+    {
+      key: 'ledger',
+      backgroundColor: '#E68F25',
+      icon: Swatches,
+      label: i18n.attachAccount.connectALedgerDevice,
+    },
+    {
+      key: 'polkadotVault',
+      backgroundColor: '#E6478E',
+      icon: QrCode,
+      label: i18n.attachAccount.connectAPolkadotVaultAcc,
+    },
+    {
+      key: 'keystone',
+      backgroundColor: '#2565E6',
+      icon: DeviceTabletCamera,
+      label: i18n.attachAccount.connectAKeystoneDevice,
+    },
+    {
+      key: 'watchOnly',
+      backgroundColor: '#2DA73F',
+      icon: Eye,
+      label: i18n.attachAccount.attachAWatchOnlyAccount,
+    },
+  ];
 
   const canDerivedAccounts = useMemo(
     () =>

@@ -21,7 +21,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
       <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
         <MetaInfo.AccountGroup
           addresses={addressList}
-          content={`${data.selectedValidators.length} ${i18n.common.selectedValidators}`}
+          content={i18n.common.selectedValidators(data.selectedValidators.length)}
           label={data.type === StakingType.POOLED ? i18n.inputLabel.pool : i18n.inputLabel.validators}
         />
 

@@ -1,6 +1,7 @@
 // Credit: https://github.com/nova-wallet/nova-utils/blob/master/dapps/dapps_dev.json
 
 import { PredefinedDApps } from 'types/browser';
+import i18n from 'utils/i18n/i18n';
 
 export const DAppIconMap: Record<string, string> = {
   'kintsugi.interlay.io': 'https://kintsugi.interlay.io/kintsugi/apple-touch-icon.png',
@@ -118,49 +119,49 @@ export const DAppTitleMap: Record<string, string> = {
 };
 
 export const predefinedDApps: PredefinedDApps = {
-  categories: [
+  categories: () => [
     {
-      name: 'DeFi',
+      name: i18n.browser.defi,
       id: 'defi',
       theme: 'cyan',
     },
     {
-      name: 'NFT',
+      name: i18n.browser.nft,
       id: 'nft',
       theme: 'primary',
     },
     {
-      name: 'EVM',
+      name: i18n.browser.EVM,
       id: 'evm',
       theme: 'magenta',
     },
     {
-      name: 'Community',
+      name: i18n.browser.community,
       id: 'community',
       theme: 'volcano',
     },
     {
-      name: 'Utilities',
+      name: i18n.browser.utilities,
       id: 'utilities',
       theme: 'orange',
     },
     {
-      name: 'Crowdloans',
+      name: i18n.browser.crowdloans,
       id: 'crowdloans',
       theme: 'blue',
     },
     {
-      name: 'Staking',
+      name: i18n.browser.staking,
       id: 'staking',
       theme: 'geekblue',
     },
     {
-      name: 'Test',
+      name: i18n.browser.test,
       id: 'test',
       theme: 'red',
     },
     {
-      name: 'Data',
+      name: i18n.browser.data,
       id: 'data',
       theme: 'green',
     },

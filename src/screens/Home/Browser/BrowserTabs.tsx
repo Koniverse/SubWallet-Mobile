@@ -140,7 +140,7 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
             {i18n.common.done}
           </Button>
         </View>
-        <SafeAreaView style={{ backgroundColor: theme.colorBgDefault }} />
+        <SafeAreaView style={{ backgroundColor: theme.colorBgSecondary }} />
       </>
     </ScreenContainer>
   );

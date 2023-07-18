@@ -17,6 +17,6 @@ export type DAppInfo = {
 };
 
 export type PredefinedDApps = {
-  categories: DAPPCategory[];
+  categories: () => DAPPCategory[];
   dapps: DAppInfo[];
 };

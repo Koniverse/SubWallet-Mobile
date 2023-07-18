@@ -25,13 +25,6 @@ const ViewStep = {
   SHOW_RS: 2,
 };
 
-const titleMap: Record<ExportType, string> = {
-  [ExportType.JSON_FILE]: i18n.header.successful,
-  [ExportType.QR_CODE]: i18n.header.yourQrCode,
-  [ExportType.PRIVATE_KEY]: i18n.header.yourPrivateKey,
-  [ExportType.SEED_PHRASE]: i18n.header.yourRecoveryPhrase,
-};
-
 export const AccountExport = ({
   route: {
     params: { address },
@@ -55,6 +48,15 @@ export const AccountExport = ({
   const [publicKey, setPublicKey] = useState<string>('');
   const [seedPhrase, setSeedPhrase] = useState<string>('');
   const [jsonData, setJsonData] = useState<null | KeyringPair$Json>(null);
+  const titleMap: Record<ExportType, string> = useMemo(
+    () => ({
+      [ExportType.JSON_FILE]: i18n.header.successful,
+      [ExportType.QR_CODE]: i18n.header.yourQrCode,
+      [ExportType.PRIVATE_KEY]: i18n.header.yourPrivateKey,
+      [ExportType.SEED_PHRASE]: i18n.header.yourRecoveryPhrase,
+    }),
+    [],
+  );
 
   const exportSingle = selectedTypes.length <= 1;
 
@@ -178,12 +180,12 @@ export const AccountExport = ({
       return i18n.header.exportAccount;
     } else {
       if (!exportSingle) {
-        return 'Export successful';
+        return i18n.exportAccount.exportSuccessful;
       } else {
         return titleMap[selectedTypes[0]];
       }
     }
-  }, [currentViewStep, exportSingle, selectedTypes]);
+  }, [currentViewStep, exportSingle, selectedTypes, titleMap]);
 
   if (!account) {
     return null;
@@ -280,7 +282,7 @@ export const AccountExport = ({
                 <View>
                   {!exportSingle && (
                     <Typography.Text style={styles.blockTitle} size={'sm'}>
-                      Your json file
+                      {i18n.exportAccount.yourJsonFile}
                     </Typography.Text>
                   )}
                   <SelectItem

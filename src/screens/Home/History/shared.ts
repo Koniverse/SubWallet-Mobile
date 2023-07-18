@@ -3,17 +3,17 @@ import { ExtrinsicStatus, ExtrinsicType } from '@subwallet/extension-base/backgr
 import i18n from 'utils/i18n/i18n';
 import { StatusType } from 'screens/Home/History/Detail';
 
-export const StakingTypeNameMap: Record<string, string> = {
+export const StakingTypeNameMap = (): Record<string, string> => ({
   [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.extrinsicType.stake,
   [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.extrinsicType.unstake,
   [ExtrinsicType.STAKING_BOND]: i18n.historyScreen.extrinsicType.bond,
   [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.extrinsicType.unbond,
   [ExtrinsicType.STAKING_WITHDRAW]: i18n.historyScreen.extrinsicType.withdraw,
   [ExtrinsicType.STAKING_COMPOUNDING]: i18n.historyScreen.extrinsicType.compounding,
-};
+});
 
 export const TxTypeNameMap = (): Record<string, string> => ({
-  ...StakingTypeNameMap,
+  ...StakingTypeNameMap(),
   transaction: i18n.historyScreen.title.transaction,
   submitting: i18n.common.submitting,
   processing: i18n.common.processing,
@@ -30,7 +30,7 @@ export const TxTypeNameMap = (): Record<string, string> => ({
 });
 
 export const TxTypeTitleMap: Record<string, string> = {
-  ...StakingTypeNameMap,
+  ...StakingTypeNameMap(),
   transaction: i18n.historyScreen.title.transaction,
   processing: i18n.common.processing,
   send: i18n.common.send,

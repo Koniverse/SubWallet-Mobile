@@ -19,23 +19,22 @@ export interface AccountTypeModalItem {
   icon: string;
 }
 
-const items: AccountTypeModalItem[] = [
-  {
-    icon: 'polkadot',
-    key: SUBSTRATE_ACCOUNT_TYPE,
-    label: i18n.createAccount.substrate,
-  },
-  {
-    icon: 'ethereum',
-    key: EVM_ACCOUNT_TYPE,
-    label: i18n.createAccount.ethereum,
-  },
-];
-
 const defaultValueMap = { sr25519: true, ethereum: true };
 
 export const SelectAccountTypeModal = ({ onConfirm, selectTypeRef }: Props) => {
   const [selectedValueMap, setSelectedValueMap] = useState<Record<string, boolean>>(defaultValueMap);
+  const items: AccountTypeModalItem[] = [
+    {
+      icon: 'polkadot',
+      key: SUBSTRATE_ACCOUNT_TYPE,
+      label: i18n.createAccount.substrate,
+    },
+    {
+      icon: 'ethereum',
+      key: EVM_ACCOUNT_TYPE,
+      label: i18n.createAccount.ethereum,
+    },
+  ];
 
   const onChangeOption = useCallback((value: string, isCheck?: boolean) => {
     setSelectedValueMap(prev => ({

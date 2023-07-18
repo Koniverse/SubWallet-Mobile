@@ -45,7 +45,7 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags }
   };
 
   const renderTag = (tagId: string) => {
-    const tagInfo = predefinedDApps.categories.find(c => c.id === tagId);
+    const tagInfo = predefinedDApps.categories().find(c => c.id === tagId);
 
     return (
       <Tag key={tagId} bgType={tagInfo ? 'default' : 'gray'} color={tagInfo?.theme || 'default'}>

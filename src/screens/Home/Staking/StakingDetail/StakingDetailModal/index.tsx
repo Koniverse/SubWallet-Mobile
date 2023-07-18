@@ -112,8 +112,8 @@ export const StakingDetailModal = ({
   const account = useGetAccountByAddress(staking.address);
   const navigation = useNavigation<RootNavigationProps>();
   const stakingTypeNameMap: Record<string, string> = {
-    nominated: 'Nominated',
-    pooled: 'Pooled',
+    nominated: i18n.filterOptions.nominated,
+    pooled: i18n.filterOptions.pooled,
   };
 
   const onClickStakeMoreBtn = useCallback(() => {
@@ -162,19 +162,20 @@ export const StakingDetailModal = ({
   }, []);
 
   const getStakingStatus = useCallback((status: StakingStatus) => {
+    const stakingStatusUi = StakingStatusUi();
     if (status === StakingStatus.EARNING_REWARD) {
-      return StakingStatusUi.active;
+      return stakingStatusUi.active;
     }
 
     if (status === StakingStatus.PARTIALLY_EARNING) {
-      return StakingStatusUi.partialEarning;
+      return stakingStatusUi.partialEarning;
     }
 
     if (status === StakingStatus.WAITING) {
-      return StakingStatusUi.waiting;
+      return stakingStatusUi.waiting;
     }
 
-    return StakingStatusUi.inactive;
+    return stakingStatusUi.inactive;
   }, []);
 
   const _onCloseDetailModal = useCallback(() => {

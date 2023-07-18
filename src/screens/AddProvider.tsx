@@ -93,7 +93,7 @@ export const AddProvider = ({
   const formConfig: FormControlConfig = useMemo(() => {
     return {
       provider: {
-        name: 'Provider',
+        name: i18n.common.provider,
         value: '',
         require: true,
       },
