@@ -68,7 +68,6 @@ export function handleDeeplinkOnFirstOpen(navigation: NativeStackNavigationProp<
             isOpenTabs: false,
           });
         }
-        
       }
     })
     .catch(e => console.warn('e', e));

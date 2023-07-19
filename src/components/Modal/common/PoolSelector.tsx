@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Icon, SelectItem, SwFullSizeModal } from 'components/design-system-ui';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { DisabledStyle, FlatListScreenPaddingTop } from 'styles/sharedStyles';
+import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { NominationPoolInfo, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetValidatorList, { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
@@ -17,6 +15,7 @@ import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
 import { EmptyList } from 'components/EmptyList';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -92,7 +91,6 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
 export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedPool, disabled }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const items = useGetValidatorList(chain, StakingType.POOLED) as NominationPoolDataType[];
-  const [poolSelectModalVisible, setPoolSelectModalVisible] = useState<boolean>(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<NominationPoolDataType | undefined>(undefined);
   const nominatorMetadata = useGetNominatorInfo(chain, StakingType.POOLED, from);
@@ -100,6 +98,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
   const nominationPoolValueList = useMemo((): string[] => {
     return nominatorMetadata[0]?.nominations.map(item => item.validatorAddress) || [];
   }, [nominatorMetadata]);
+  const poolSelectorRef = useRef<ModalRef>();
   const sortingModalRef = useRef<ModalRef>();
   const sortingOptions: SortOption[] = [
     {
@@ -181,7 +180,7 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
           key={id}
           onPress={() => {
             onSelectItem && onSelectItem(item.id.toString());
-            setPoolSelectModalVisible(false);
+            poolSelectorRef && poolSelectorRef.current?.onCloseModal();
           }}
           onPressRightButton={() => {
             setSelectedItem(item);
@@ -200,65 +199,64 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
 
   return (
     <>
-      <PoolSelectorField
-        onPressBookBtn={() => setPoolSelectModalVisible(true)}
-        onPressLightningBtn={() => setPoolSelectModalVisible(true)}
+      <FullSizeSelectModal
+        selectedValueMap={{}}
+        selectModalType={'single'}
+        items={resultList}
+        renderCustomItem={renderItem}
+        searchFunc={searchFunction}
+        title={i18n.header.selectPool}
+        ref={poolSelectorRef}
+        renderListEmptyComponent={renderListEmptyComponent}
         disabled={isDisabled}
-        item={selectedPool}
-        label={i18n.inputLabel.selectPool}
-        loading={poolLoading}
-        outerStyle={isDisabled && DisabledStyle}
-      />
-
-      <SwFullSizeModal modalVisible={poolSelectModalVisible}>
-        <FlatListScreen
-          autoFocus={true}
-          items={resultList}
-          style={FlatListScreenPaddingTop}
-          title={i18n.header.selectPool}
-          filterOptions={FILTER_OPTIONS}
-          isShowFilterBtn={true}
-          filterFunction={filterFunction}
-          searchFunction={searchFunction}
-          renderItem={renderItem}
-          onPressBack={() => {
-            setPoolSelectModalVisible(false);
-            setSortSelection(SortKey.DEFAULT);
-          }}
-          renderListEmptyComponent={renderListEmptyComponent}
-          rightIconOption={{
-            icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
-            onPress: () => sortingModalRef?.current?.onOpenModal(),
-          }}
-        />
-
-        {!!selectedItem && (
-          <PoolSelectorDetailModal
-            detailItem={selectedItem}
-            detailModalVisible={detailModalVisible}
-            onCancel={() => setDetailModalVisible(false)}
+        isShowFilterBtn={true}
+        onBackButtonPress={() => poolSelectorRef?.current?.onCloseModal()}
+        filterOptions={FILTER_OPTIONS}
+        filterFunction={filterFunction}
+        onCloseModal={() => setSortSelection(SortKey.DEFAULT)}
+        rightIconOption={{
+          icon: ({ color }) => <Icon phosphorIcon={SortAscending} size="md" iconColor={color} />,
+          onPress: () => sortingModalRef?.current?.onOpenModal(),
+        }}
+        renderSelected={() => (
+          <PoolSelectorField
+            disabled={isDisabled}
+            onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+            onPressLightningBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+            item={selectedPool}
+            label={i18n.inputLabel.selectPool}
+            loading={poolLoading}
           />
-        )}
+        )}>
+        <>
+          {!!selectedItem && (
+            <PoolSelectorDetailModal
+              detailItem={selectedItem}
+              detailModalVisible={detailModalVisible}
+              onCancel={() => setDetailModalVisible(false)}
+            />
+          )}
 
-        <BasicSelectModal
-          ref={sortingModalRef}
-          title={i18n.header.sorting}
-          items={sortingOptions}
-          selectedValueMap={{ [sortSelection]: true }}
-          renderCustomItem={renderSortingItem}>
-          {
-            <Button
-              style={{ marginTop: 8 }}
-              icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
-              onPress={() => {
-                setSortSelection(SortKey.DEFAULT);
-                sortingModalRef?.current?.onCloseModal();
-              }}>
-              {i18n.buttonTitles.resetSorting}
-            </Button>
-          }
-        </BasicSelectModal>
-      </SwFullSizeModal>
+          <BasicSelectModal
+            ref={sortingModalRef}
+            title={i18n.header.sorting}
+            items={sortingOptions}
+            selectedValueMap={{ [sortSelection]: true }}
+            renderCustomItem={renderSortingItem}>
+            {
+              <Button
+                style={{ marginTop: 8 }}
+                icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
+                onPress={() => {
+                  setSortSelection(SortKey.DEFAULT);
+                  sortingModalRef?.current?.onCloseModal();
+                }}>
+                {i18n.buttonTitles.resetSorting}
+              </Button>
+            }
+          </BasicSelectModal>
+        </>
+      </FullSizeSelectModal>
     </>
   );
 };

@@ -21,7 +21,7 @@ interface Props {
   selectedValueMap: Record<string, boolean>;
   onPressBack: () => void;
   onSelectItem?: (item: ProviderItemType) => void;
-  renderSelected?: () => JSX.Element;
+  renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   rpcSelectorRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
@@ -35,7 +35,7 @@ export const RpcSelectorModal = ({
   selectedValueMap,
   onPressBack,
   onSelectItem,
-  renderSelected,
+  renderSelectModalBtn,
   rpcSelectorRef,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -79,7 +79,7 @@ export const RpcSelectorModal = ({
       selectedValueMap={{}}
       selectModalType={'single'}
       renderCustomItem={renderItem}
-      renderSelected={renderSelected}
+      renderSelectModalBtn={renderSelectModalBtn}
       title={i18n.header.providers}
       ref={rpcSelectorRef}
       searchFunc={searchFunction}

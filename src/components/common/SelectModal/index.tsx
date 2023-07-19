@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Button, Divider, Icon, SwFullSizeModal } from 'components/design-system-ui';
-import { FlatListScreen } from 'components/FlatListScreen';
+import { FlatListScreen, RightIconOpt } from 'components/FlatListScreen';
 import { ListRenderItemInfo, View } from 'react-native';
 import { FlatListScreenPaddingTop, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { OptionType } from 'components/common/FilterModal';
@@ -52,6 +52,8 @@ interface Props<T> {
   acceptDefaultValue?: boolean;
   renderAfterListItem?: () => JSX.Element;
   onBackButtonPress?: () => void;
+  onCloseModal?: () => void;
+  rightIconOption?: RightIconOpt;
 }
 
 function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -84,10 +86,15 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     acceptDefaultValue,
     renderAfterListItem,
     onBackButtonPress,
+    onCloseModal: _onCloseModal,
+    rightIconOption,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
-  const onCloseModal = () => setOpen(false);
+  const onCloseModal = () => {
+    setOpen(false);
+    _onCloseModal && _onCloseModal();
+  };
   const theme = useSubWalletTheme().swThemes;
 
   useEffect(() => {
@@ -245,6 +252,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             loading={loading}
             withSearchInput={withSearchInput}
             isShowListWrapper={isShowListWrapper}
+            rightIconOption={rightIconOption}
             afterListItem={
               selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
             }
