@@ -1,3 +1,8 @@
+## 1.0.11 (201)
+- Update New SelectModal for PoolSelector and ValidatorSelector (#777)
+- Config universal deeplink (#779)
+- Update multi-language (#56)
+
 ## 1.0.11 (200)
 - Update UI - Toast (#808)
 - Bugs when click on actions on header when standing transaction screen (#880)
