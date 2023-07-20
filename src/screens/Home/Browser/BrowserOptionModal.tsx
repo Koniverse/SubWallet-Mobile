@@ -8,6 +8,7 @@ import { addBookmark, removeBookmark } from 'stores/updater';
 import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SelectItem, SwModal } from 'components/design-system-ui';
+import { searchDomain } from 'utils/browser';
 
 interface Props {
   visibleModal: boolean;
@@ -86,6 +87,7 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
             key={opt.key}
             label={opt.label}
             isSelected={false}
+            disabled={opt.key === 'toggleFavouriteSite' && siteInfo.url.startsWith(`https://${searchDomain}`)}
             backgroundColor={opt.iconBackgroundColor}
           />
         ))}

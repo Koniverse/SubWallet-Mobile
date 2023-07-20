@@ -49,7 +49,7 @@ export type RootStackParamList = {
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   AccountExport: { address: string };
   ExportJson: { address: string };
-  BrowserHome: NavigatorScreenParams<{}>;
+  BrowserHome?: NavigatorScreenParams<undefined> | undefined;
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
   BrowserListByTabview: { type: string };

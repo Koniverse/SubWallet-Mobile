@@ -179,8 +179,8 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'ArtZero.io - NFT Marketplace for Aleph Zero Blockchain',
       icon: 'https://dotinsights.subwallet.app/assets/images/projects/artzero.png',
-      id: 'alephzero.artzero.io',
-      url: 'https://alephzero.artzero.io',
+      id: 'https://a0.artzero.io',
+      url: 'https://a0.artzero.io',
       categories: ['defi'],
       isSupportSubstrateAccount: true,
       isSupportEthereumAccount: false,
@@ -709,11 +709,20 @@ export const predefinedDApps: PredefinedDApps = {
     },
     {
       name: 'InkWhale.net - Staking and Yield Farming Platform on Aleph Zero',
-      icon: 'https://inkwhale.net/apple-touch-icon.png',
+      icon: 'https://www.inkwhale.net/apple-touch-icon.png',
       id: 'inkwhale.net',
       url: 'https://inkwhale.net',
       categories: ['defi'],
       isSupportSubstrateAccount: false,
+      isSupportEthereumAccount: false,
+    },
+    {
+      name: 'a0.inkwhale.net - Staking and Yield Farming Platform on Aleph Zero',
+      icon: 'https://www.inkwhale.net/apple-touch-icon.png',
+      id: 'a0.inkwhale.net',
+      url: 'https://a0.inkwhale.net',
+      categories: ['defi'],
+      isSupportSubstrateAccount: true,
       isSupportEthereumAccount: false,
     },
     {

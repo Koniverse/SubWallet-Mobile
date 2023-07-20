@@ -158,6 +158,7 @@ export const ImportSecretPhrase = () => {
             errorMessages={formState.errors.seed}
             placeholderTextColor={theme.colorTextTertiary}
             placeholder={i18n.placeholder.seedPhrase}
+            autoCapitalize="none"
           />
 
           <SelectAccountType

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SectionListRenderItemInfo, SectionList, View } from 'react-native';
+import { SectionListRenderItemInfo, SectionList, View, Platform } from 'react-native';
 import { DAppTitleMap, predefinedDApps } from '../../../predefined/dAppSites';
 import { useNavigation } from '@react-navigation/native';
 import { BrowserSearchProps, RootNavigationProps } from 'routes/index';
 import { navigateAndClearCurrentScreenHistory } from 'utils/navigation';
 import { StoredSiteInfo } from 'stores/types';
-import { getHostName, getValidURL } from 'utils/browser';
+import { getHostName, getValidURL, searchDomain } from 'utils/browser';
 import { clearHistory, createNewTab } from 'stores/updater';
 import { BrowserItem } from 'components/Browser/BrowserItem';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -43,7 +43,7 @@ const recommendItems: SearchItemType[] = predefinedDApps.dapps.map(i => ({
 function getFirstSearchItem(searchString: string): SearchItemType {
   const url = getValidURL(searchString);
 
-  if (url.startsWith('https://duckduckgo.com')) {
+  if (url.startsWith(`https://${searchDomain}`)) {
     return {
       id: 'search',
       url,
@@ -166,15 +166,13 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
     }
 
     const _recommendItems = !searchStringRef.current
-      ? recommendItems
-      : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase()));
+      ? recommendItems.slice(0, 20)
+      : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase())).slice(0, 10);
 
     if (_recommendItems.length) {
       result.push({
         title: i18n.browser.recommended,
-        data: !searchStringRef.current
-          ? recommendItems
-          : recommendItems.filter(i => i.name.toLowerCase().includes(searchStringRef.current.toLowerCase())),
+        data: _recommendItems,
         type: 'recommend',
       });
     }
@@ -198,6 +196,11 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const onClearSearch = () => {
     onSearch('');
   };
+  const onSubmitEditing = () => {
+    if (sectionItems[0].type === 'search') {
+      onPressItem(sectionItems[0].data[0]);
+    }
+  };
 
   return (
     <ContainerWithSubHeader
@@ -214,6 +217,10 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
           onClearSearchString={onClearSearch}
           onSearch={onSearch}
           searchText={searchString}
+          autoCapitalize="none"
+          keyboardType={Platform.OS === 'ios' ? 'web-search' : 'url'}
+          returnKeyType="go"
+          onSubmitEditing={onSubmitEditing}
         />
         <SectionList
           style={{ ...ScrollViewStyle }}

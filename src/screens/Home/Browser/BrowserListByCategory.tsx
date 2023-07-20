@@ -40,20 +40,24 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
         if (bookmarkedDApp) {
           // if that dapp inside "all" tab or inside its categories
           if (route.name === 'all' || bookmarkedDApp?.categories.includes(route.name)) {
-            return bookmarkedDApp;
+            return { ...bookmarkedDApp, url: bookmarkedItem.url, name: bookmarkedItem.name };
           }
 
           return undefined;
         }
 
         // if bookmarked item is not a pre-defined dapp or a webpage
-        return {
-          name: bookmarkedItem.name,
-          id: bookmarkedItem.id,
-          url: bookmarkedItem.url,
-          icon: '',
-          categories: [],
-        };
+        if (route.name === 'all') {
+          return {
+            name: bookmarkedItem.name,
+            id: bookmarkedItem.id,
+            url: bookmarkedItem.url,
+            icon: '',
+            categories: [],
+          };
+        }
+
+        return undefined;
       });
       return bookmarkedData.filter(item => item !== undefined) as DAppInfo[];
     }

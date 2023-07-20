@@ -313,7 +313,7 @@ export const StakingDetailModal = ({
                 {isAccountAll(nominatorMetadata?.address || '') ? (
                   <MetaInfo.AccountGroup
                     label={i18n.inputLabel.account}
-                    content={nominatorMetadata?.address || ''}
+                    content={nominatorMetadata?.address === 'ALL' ? i18n.common.allAccounts : ''}
                     addresses={accounts.map(acc => acc.address)}
                   />
                 ) : (

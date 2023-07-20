@@ -102,6 +102,7 @@ const BrowserHome = () => {
     return (
       <IconItem
         data={data}
+        url={item.url}
         onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: data?.name })}
       />
     );
@@ -111,10 +112,9 @@ const BrowserHome = () => {
     return (
       <IconItem
         data={data}
+        url={item.url}
         defaultData={item}
-        onPress={() =>
-          navigation.navigate('BrowserTabsManager', { url: data?.url || item.url, name: data?.name || item.name })
-        }
+        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
         isWithText
       />
     );

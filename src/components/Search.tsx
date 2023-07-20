@@ -49,6 +49,7 @@ export const Search = (searchProps: Props) => {
     placeholder,
     isShowFilterBtn,
     onPressFilterBtn,
+    ...restProps
   } = searchProps;
   const theme = useSubWalletTheme().swThemes;
 
@@ -81,6 +82,7 @@ export const Search = (searchProps: Props) => {
           placeholderTextColor={theme.colorTextTertiary}
           value={searchText}
           onSubmitEditing={onSubmitEditing}
+          {...restProps}
         />
         {!!searchText && (
           <Button

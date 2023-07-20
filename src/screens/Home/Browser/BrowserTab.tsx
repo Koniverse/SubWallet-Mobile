@@ -226,10 +226,17 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateNavigationInfo(nativeEvent);
 
-      updateLatestItemInHistory({
-        url: nativeEvent.url,
-        name: nativeEvent.title || nativeEvent.url,
-      });
+      setTimeout(() => {
+        if (getHostName(nativeEvent.url) !== searchDomain) {
+          const isHistoryItemExisted = historyItems.length > 0 && historyItems[0].url !== nativeEvent.url;
+          if (isHistoryItemExisted) {
+            updateLatestItemInHistory({
+              url: nativeEvent.url,
+              name: nativeEvent.title || nativeEvent.url,
+            });
+          }
+        }
+      }, 800);
       updateBrowserOptionModalRef(nativeEvent);
     }
   };
@@ -245,6 +252,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     if (getHostName(nativeEvent.url) !== searchDomain) {
       const isNotDuplicated =
         historyItems.length === 0 || (historyItems.length > 0 && historyItems[0].url !== nativeEvent.url);
+      console.log('isNotDuplicated', isNotDuplicated, historyItems[0], nativeEvent.url);
       if (isNotDuplicated) {
         addToHistory({
           url: nativeEvent.url,
