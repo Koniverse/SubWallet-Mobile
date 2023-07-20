@@ -1755,10 +1755,10 @@
     "@polkadot/rpc-provider" "^10.7.3"
     "@polkadot/types" "^10.7.3"
 
-"@google/model-viewer@^3.1.1":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-3.2.0.tgz#5e085075ad6f237c537811098cebe327d7e51449"
-  integrity sha512-MUWIAGjA5OEf1iVkNWs7istq6I3S0hftz3s1V5kPVma2jfK7wvNIHWHbBizWX8+OI8yD3VFjNhj8POlMmfb/SA==
+"@google/model-viewer@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@google/model-viewer/-/model-viewer-3.1.1.tgz#60e33f8cde9befa074a238e2bc9457f642017b30"
+  integrity sha512-RSIsFv/5XaHJHx4cWWlcR8fG8AD8bkGhw+rRfgAUKrJmbEzHQy7BZ1Cz6Ry66mNZ8uqQZwzclPsi4ckCMG02tw==
   dependencies:
     lit "^2.7.2"
 
@@ -4362,10 +4362,10 @@
     eventemitter3 "^4.0.7"
     rxjs "^7.5.6"
 
-"@subwallet/react-ui@^5.1.2-b60":
-  version "5.1.2-b66"
-  resolved "https://registry.yarnpkg.com/@subwallet/react-ui/-/react-ui-5.1.2-b66.tgz#a5a674a1e2d5d9462ecddb447ed0f41e461ce10e"
-  integrity sha512-NNdFZH7Ch1Lr1hgQbv1sygoR9X8wmEDJhoutl2CnjK0D14Ol73u/ZXummkFFeDpgtDjVf44+hdvCKLE9qiw1bQ==
+"@subwallet/react-ui@^5.1.2-b68":
+  version "5.1.2-b68"
+  resolved "https://registry.yarnpkg.com/@subwallet/react-ui/-/react-ui-5.1.2-b68.tgz#2a6aa0980e5394a02138451a9a7cafefacef91b6"
+  integrity sha512-IKrrlaYyEEV6nTX5m84efbW+EOpy8vlUUD3GpJbxgz4ZYAftjDjY0ZrvV58J2zw1bqHt3803n55Z07CdWpDFcQ==
   dependencies:
     "@ant-design/colors" "^6.0.0"
     "@ant-design/cssinjs" "^1.5.6"
@@ -4377,12 +4377,12 @@
     "@fortawesome/free-regular-svg-icons" "^6.2.1"
     "@fortawesome/free-solid-svg-icons" "^6.2.1"
     "@fortawesome/react-fontawesome" "^0.2.0"
-    "@google/model-viewer" "^3.1.1"
+    "@google/model-viewer" "3.1.1"
     "@polkadot/react-identicon" "^2.9.14"
     "@polkadot/util-crypto" "^11.1.1"
     "@rc-component/tour" "~1.1.0"
-    "@zxing/browser" "^0.1.1"
-    "@zxing/library" "^0.19.1"
+    "@zxing/browser" "0.1.1"
+    "@zxing/library" "0.19.1"
     bignumber.js "^9.1.1"
     boring-avatars "^1.7.0"
     classnames "^2.2.6"
@@ -4432,7 +4432,7 @@
     react-superellipse "^0.0.6"
     react-toastify "^9.1.1"
     scroll-into-view-if-needed "^3.0.3"
-    three "0.152.2"
+    three "^0.151.2"
     throttle-debounce "^5.0.0"
 
 "@subwallet/ui-keyring@^0.0.10":
@@ -5635,19 +5635,19 @@
     chalk "^4.1.0"
     hash.js "^1.1.7"
 
-"@zxing/browser@^0.1.1":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@zxing/browser/-/browser-0.1.4.tgz#8cfd4c58a45cca1e3fbf26122d3e2b3f4e867034"
-  integrity sha512-WYjaav7St4sj/u/Km2llE4NU2Pq3JFIWnczr0tmyCC1KUlp08rV3qpu7iiEB4kOx/CgcCzrSebNnSmFt5B3IFg==
+"@zxing/browser@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@zxing/browser/-/browser-0.1.1.tgz#f5d6c0a57bda3b223539eadfa3d87c1260e0536f"
+  integrity sha512-fdcHrvvno1NnoiY5++kn/h2b9QnBNyqtK1JqbfY3dfmTdwyXCJr/aT2ZGyRcfe0D3I/THu1I5VJAcpoU0svQMQ==
   optionalDependencies:
     "@zxing/text-encoding" "^0.9.0"
 
-"@zxing/library@^0.19.1":
-  version "0.19.3"
-  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.19.3.tgz#8f8fb119edac43c109e7d74ae240daba04b7f44f"
-  integrity sha512-RUv5svewpDoD0ymXleOP8yVTO5BLkR0zn5coGC/Vs1671u0OBJ4xdtR8WVWf08OcvrieEMHdSfQY3ZKtqII/hg==
+"@zxing/library@0.19.1":
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.19.1.tgz#68932436a9cf860e2148a6d6ae38fe1e27ea23a8"
+  integrity sha512-rKwvl3Uuqs8yf364iU9l3HDDaIx8yPv+CH6DbtQaQr67VdKLG22G1ukEp9fOdDefE6tpLtRAdMnTrgtpiaKAZw==
   dependencies:
-    ts-custom-error "^3.2.1"
+    ts-custom-error "^3.0.0"
   optionalDependencies:
     "@zxing/text-encoding" "~0.9.0"
 
@@ -17127,10 +17127,10 @@ thread-stream@^0.15.1:
   dependencies:
     real-require "^0.1.0"
 
-three@0.152.2:
-  version "0.152.2"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.152.2.tgz#2ee0f2c504d31a4bc29b45495c12bded9fda7bfc"
-  integrity sha512-Ff9zIpSfkkqcBcpdiFo2f35vA9ZucO+N8TNacJOqaEE6DrB0eufItVMib8bK8Pcju/ZNT6a7blE1GhTpkdsILw==
+three@^0.151.2:
+  version "0.151.3"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.151.3.tgz#0b3c7de4b070d5b66b15217f42465d67cbfa6004"
+  integrity sha512-+vbuqxFy8kzLeO5MgpBHUvP/EAiecaDwDuOPPDe6SbrZr96kccF0ktLngXc7xA7bzyd3N0t2f6mw3Z9y6JCojQ==
 
 throat@^5.0.0:
   version "5.0.0"
@@ -17274,7 +17274,7 @@ trim-repeated@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.2"
 
-ts-custom-error@^3.2.1:
+ts-custom-error@^3.0.0:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/ts-custom-error/-/ts-custom-error-3.3.1.tgz#8bd3c8fc6b8dc8e1cb329267c45200f1e17a65d1"
   integrity sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==
