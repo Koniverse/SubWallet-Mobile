@@ -227,6 +227,7 @@ export const en = {
     authorizeMessage: 'Authorize message',
     serviceSelect: 'Select service',
     login: 'Login',
+    slogan: 'Polkadot, Substrate & Ethereum wallet',
   },
   tabName: {
     tokens: 'Tokens',

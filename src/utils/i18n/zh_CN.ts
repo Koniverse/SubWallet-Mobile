@@ -225,6 +225,7 @@ export const zh = {
     authorizeMessage: '授权消息',
     serviceSelect: '选择服务',
     login: '登录',
+    slogan: 'Polkadot, Substrate & Ethereum wallet',
   },
   tabName: {
     tokens: '通证',

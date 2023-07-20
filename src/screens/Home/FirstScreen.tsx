@@ -142,7 +142,7 @@ export const FirstScreen = () => {
               <SVGImages.LogoGradient width={66} height={100} />
             </Suspense>
             <Text style={logoTextStyle}>SubWallet</Text>
-            <Text style={logoSubTextStyle}>Polkadot, Substrate & Ethereum wallet</Text>
+            <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
           </View>
 
           <View style={{ width: '100%' }}>
