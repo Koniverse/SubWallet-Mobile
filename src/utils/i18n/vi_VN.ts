@@ -227,6 +227,7 @@ export const vi = {
     authorizeMessage: 'Thông điệp ủy quyền',
     serviceSelect: 'Chọn dịch vụ',
     login: 'Đăng nhập',
+    slogan: 'Polkadot, Substrate & Ethereum wallet',
   },
   tabName: {
     tokens: 'Token',
