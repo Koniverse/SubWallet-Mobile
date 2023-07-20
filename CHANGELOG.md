@@ -1,3 +1,6 @@
+## 1.0.11 (202)
+- Update camera request permission flow
+
 ## 1.0.11 (201)
 - Update New SelectModal for PoolSelector and ValidatorSelector (#777)
 - Config universal deeplink (#779)
