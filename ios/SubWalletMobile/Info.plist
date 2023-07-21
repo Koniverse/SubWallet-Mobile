@@ -73,7 +73,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is used to capture QR code</string>
 	<key>NSMicrophoneUsageDescription</key>
-    <string>Microphone is used to record audio</string>
+	<string>Microphone is used to record audio</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -112,5 +112,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>bugsnag</key>
+	<dict>
+		<key>apiKey</key>
+		<string>e91123b94303311113a6318f6b269502</string>
+	</dict>
 </dict>
 </plist>

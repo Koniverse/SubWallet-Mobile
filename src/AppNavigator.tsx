@@ -65,6 +65,7 @@ import { WrapperParamList } from 'routes/wrapper';
 import { ManageAddressBook } from 'screens/Settings/AddressBook';
 import { BuyToken } from 'screens/Home/Crypto/BuyToken';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
+import Bugsnag from '@bugsnag/react-native';
 
 interface Props {
   isAppReady: boolean;
@@ -145,6 +146,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   };
 
   const onError = (error: Error, stackTrace: string) => {
+    Bugsnag.notify(new Error(stackTrace));
     console.warn('AppNavigator.tsx / Error boundary: ', error, stackTrace);
   };
 

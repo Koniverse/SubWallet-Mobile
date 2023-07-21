@@ -1,5 +1,6 @@
 package app.subwallet.mobile;
 
+import com.bugsnag.android.Bugsnag;
 import android.app.Application;
 import android.webkit.WebView;
 import com.facebook.react.PackageList;
@@ -53,6 +54,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    Bugsnag.start(this);
     WebView.setWebContentsDebuggingEnabled(true);
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {

@@ -41,5 +41,6 @@
           <data android:scheme="https" android:host="mobile.subwallet.app" />
         </intent-filter>
       </activity>
+      <meta-data android:name="com.bugsnag.android.API_KEY" android:value="e91123b94303311113a6318f6b269502" />
     </application>
 </manifest>

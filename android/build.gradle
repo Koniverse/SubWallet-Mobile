@@ -18,6 +18,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:7.3.1")
+        classpath("com.bugsnag:bugsnag-android-gradle-plugin:7.+")
         classpath("com.facebook.react:react-native-gradle-plugin")
     }
 }
