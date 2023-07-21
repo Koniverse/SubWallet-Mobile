@@ -33,6 +33,8 @@ import { SettingsStruct } from '@polkadot/ui-settings/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import { SessionTypes } from '@walletconnect/types';
+import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -151,6 +153,7 @@ export interface RequestState extends ConfirmationsQueue, BaseReduxStore {
   hasInternalConfirmations: boolean;
   numberOfConfirmations: number;
   transactionRequest: Record<string, SWTransactionResult>;
+  connectWCRequest: Record<string, WalletConnectSessionRequest>;
 }
 
 export interface UpdateConfirmationsQueueRequest extends BaseReduxStore {
@@ -210,3 +213,7 @@ export interface ChainNominationPoolParams {
 export type TransactionHistoryReducerType = {
   historyList: TransactionHistoryItem[];
 };
+
+export interface WalletConnectStore extends BaseReduxStore {
+  sessions: Record<string, SessionTypes.Struct>;
+}

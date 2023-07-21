@@ -33,6 +33,8 @@ import {
 } from './variants';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -72,6 +74,7 @@ export const Confirmations = () => {
       metadataRequest: i18n.header.updateMetadata,
       signingRequest: i18n.header.signatureRequest,
       switchNetworkRequest: i18n.header.addNetworkRequest,
+      connectWCRequest: i18n.header.walletConnect,
     }),
     [],
   ) as Record<ConfirmationType, string>;
@@ -193,6 +196,8 @@ export const Confirmations = () => {
         return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
       case 'signingRequest':
         return <SignConfirmation request={confirmation.item as SigningRequest} />;
+      case 'connectWCRequest':
+        return <ConnectWalletConnectConfirmation request={confirmation.item as WalletConnectSessionRequest} />;
     }
 
     return null;

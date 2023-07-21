@@ -118,6 +118,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
           onChangeText={onChangePassword}
           errorMessages={formState.errors.password}
           onSubmitField={onSubmitField('password')}
+          isBusy={loading}
         />
       </View>
     </SwModal>

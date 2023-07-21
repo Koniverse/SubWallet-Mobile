@@ -28,7 +28,7 @@ import { WrapperParamList } from 'routes/wrapper';
 import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
-import { handleDeeplinkOnFirstOpen } from 'utils/browser';
+import { handleDeeplinkOnFirstOpen } from 'utils/deeplink';
 
 interface tabbarIconColor {
   color: string;

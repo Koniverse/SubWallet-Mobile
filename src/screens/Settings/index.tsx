@@ -39,7 +39,7 @@ import {
 } from 'constants/index';
 import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';
-import { Button, Icon, SelectItem } from 'components/design-system-ui';
+import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -107,6 +107,13 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
+        },
+        {
+          icon: Clock,
+          title: i18n.header.walletConnect,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => navigation.navigate('ConnectList'),
+          backgroundColor: '#004BFF',
         },
       ],
       [
@@ -225,6 +232,15 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
               rightIcon={setting.rightIcon}
               key={setting.title}
               label={setting.title}
+              leftItemIcon={
+                setting.title === i18n.header.walletConnect ? (
+                  <BackgroundIcon
+                    shape={'circle'}
+                    backgroundColor={setting.backgroundColor}
+                    customIcon={<SVGImages.WalletConnect width={16} height={16} color={theme.colorWhite} />}
+                  />
+                ) : undefined
+              }
               icon={setting.icon}
               backgroundColor={setting.backgroundColor}
               onPress={setting.onPress}

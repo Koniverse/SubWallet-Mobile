@@ -38,7 +38,7 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { deeplinks, getValidURL } from 'utils/browser';
+import { deeplinks, getProtocol, getValidURL } from 'utils/browser';
 import ErrorBoundary from 'react-native-error-boundary';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
@@ -55,7 +55,7 @@ import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
 import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Home } from 'screens/Home';
 import { deviceWidth } from 'constants/index';
@@ -65,6 +65,13 @@ import { WrapperParamList } from 'routes/wrapper';
 import { ManageAddressBook } from 'screens/Settings/AddressBook';
 import { BuyToken } from 'screens/Home/Crypto/BuyToken';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
+import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
+import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
+import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
+import urlParse from 'url-parse';
+import queryString from 'querystring';
+import { connectWalletConnect } from 'utils/walletConnect';
+import { useToast } from 'react-native-toast-notifications';
 
 interface Props {
   isAppReady: boolean;
@@ -121,6 +128,10 @@ const HistoryScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(History as ComponentType, ['transactionHistory'])(props);
 };
 
+const ConnectionListScreen = (props: JSX.IntrinsicAttributes) => {
+  return withPageWrapper(ConnectionList as ComponentType, ['walletConnect'])(props);
+};
+
 const AppNavigator = ({ isAppReady }: Props) => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
@@ -131,6 +142,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const toast = useToast();
 
   const needMigrate = useMemo(
     () =>
@@ -188,6 +200,27 @@ const AppNavigator = ({ isAppReady }: Props) => {
     }
   }, [isEmptyAccounts, navigationRef]);
 
+  useEffect(() => {
+    Linking.addEventListener('url', ({ url }) => {
+      const urlParsed = new urlParse(url);
+      if (getProtocol(url) === 'subwallet') {
+        if (urlParsed.hostname === 'wc') {
+          const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
+          const finalWcUrl = Object.keys(decodedWcUrl)[0];
+          connectWalletConnect(finalWcUrl, toast);
+        }
+      } else if (getProtocol(url) === 'https') {
+        if (urlParsed.pathname.split('/')[1] === 'wc') {
+          const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
+          const finalWcUrl = Object.keys(decodedWcUrl)[0];
+          connectWalletConnect(finalWcUrl, toast);
+        }
+      }
+    });
+
+    return () => Linking.removeAllListeners('url');
+  }, [toast]);
+
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
@@ -222,6 +255,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
                 <Stack.Screen name="History" component={HistoryScreen} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
+                <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
+                <Stack.Screen name="ConnectDetail" component={ConnectionDetail} />
+                <Stack.Screen name="ConnectWalletConnect" component={ConnectWalletConnect} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}

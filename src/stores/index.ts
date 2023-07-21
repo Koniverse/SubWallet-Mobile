@@ -28,6 +28,7 @@ import CrowdloanReducer from './feature/Crowdloan';
 import NftReducer from './feature/Nft';
 import PriceReducer from './feature/Price';
 import StakingReducer from './feature/Staking';
+import WalletConnectReducer from './feature/WalletConnect';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import LogoMap from 'stores/base/LogoMap';
@@ -67,6 +68,7 @@ const rootReducer = combineReducers({
   price: persistReducer({ key: 'price', storage: mmkvReduxStore } as PersistConfig<PriceJson>, PriceReducer),
   balance: persistReducer({ key: 'balance', storage: mmkvReduxStore } as PersistConfig<BalanceStore>, BalanceReducer),
   bonding: BondingReducer,
+  walletConnect: WalletConnectReducer,
 
   //Common
   chainStore: persistReducer(

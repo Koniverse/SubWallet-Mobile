@@ -10,8 +10,8 @@ import {
   TransakNetwork,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
-import { isAccountAll } from '@subwallet/extension-base/utils';
+import { AccountAuthType, AccountJson, AccountWithChildren } from '@subwallet/extension-base/background/types';
+import { isAccountAll, uniqueStringArray } from '@subwallet/extension-base/utils';
 import { decodeAddress, encodeAddress, ethereumEncode, isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
@@ -24,6 +24,7 @@ import { isValidURL } from 'utils/browser';
 import { SUPPORTED_TRANSFER_SUBSTRATE_CHAIN } from 'types/nft';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { Logo as SWLogo } from 'components/design-system-ui';
+import { DEFAULT_ACCOUNT_TYPES, EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 export const PREDEFINED_TRANSAK_NETWORK: Record<string, TransakNetwork> = {
   polkadot: {
     networks: ['mainnet'],
@@ -667,3 +668,21 @@ export function isNftTransferSupported(networkKey: string, networkJson: NetworkJ
 export function isUrl(targetString: string) {
   return targetString.startsWith('http:') || targetString.startsWith('https:') || targetString.startsWith('wss:');
 }
+
+export const convertKeyTypes = (authTypes: AccountAuthType[]): KeypairType[] => {
+  const result: KeypairType[] = [];
+
+  for (const authType of authTypes) {
+    if (authType === 'evm') {
+      result.push(EVM_ACCOUNT_TYPE);
+    } else if (authType === 'substrate') {
+      result.push(SUBSTRATE_ACCOUNT_TYPE);
+    } else if (authType === 'both') {
+      result.push(SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE);
+    }
+  }
+
+  const _rs = uniqueStringArray(result) as KeypairType[];
+
+  return _rs.length ? _rs : DEFAULT_ACCOUNT_TYPES;
+};

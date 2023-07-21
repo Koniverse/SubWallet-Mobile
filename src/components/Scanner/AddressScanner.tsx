@@ -10,12 +10,13 @@ import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { BarCodeReadEvent } from 'react-native-camera';
 import i18n from 'utils/i18n/i18n';
 import ModalBase from 'components/Modal/Base/ModalBase';
-import { overlayColor, rectDimensions } from 'constants/scanner';
+import { rectDimensions } from 'constants/scanner';
 import { IconButton } from 'components/IconButton';
 import { Warning } from 'components/Warning';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
 import { Icon } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 export interface AddressScannerProps {
   onPressCancel: () => void;
@@ -59,6 +60,7 @@ export const AddressScanner = ({
   error,
   isShowError = false,
 }: AddressScannerProps) => {
+  const theme = useSubWalletTheme().swThemes;
   const onSuccess = (e: BarCodeReadEvent) => {
     try {
       onChangeAddress(e.data);
@@ -83,7 +85,7 @@ export const AddressScanner = ({
   return (
     <ModalBase isVisible={qrModalVisible} style={{ flex: 1, width: '100%', margin: 0 }}>
       <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
       <QRCodeScanner
         reactivate={true}
         reactivateTimeout={5000}
@@ -97,7 +99,7 @@ export const AddressScanner = ({
         customMarker={
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
-              <View style={ScannerStyles.HeaderStyle}>
+              <View style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
                 <IconButton icon={CaretLeft} style={CancelButtonStyle} onPress={onPressCancel} />
                 <IconButton

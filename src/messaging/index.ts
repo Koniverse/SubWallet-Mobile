@@ -58,10 +58,12 @@ import {
   RequestAccountCreateSuriV2,
   RequestAccountCreateWithSecretKey,
   RequestAccountMeta,
+  RequestApproveConnectWalletSession,
   RequestAuthorizationBlock,
   RequestAuthorizationPerSite,
   RequestBondingSubmit,
   RequestChangeMasterPassword,
+  RequestConnectWalletConnect,
   RequestCronAndSubscriptionAction,
   RequestCrossChainTransfer,
   RequestDeriveCreateMultiple,
@@ -79,6 +81,7 @@ import {
   RequestParseTransactionSubstrate,
   RequestQrSignEvm,
   RequestQrSignSubstrate,
+  RequestRejectConnectWalletSession,
   RequestResetWallet,
   RequestSettingsType,
   RequestSigningApprovePasswordV2,
@@ -1361,6 +1364,24 @@ export async function deriveAccountV3(request: RequestDeriveCreateV3): Promise<b
 
 export async function getTransaction(request: RequestGetTransaction): Promise<SWTransactionResult> {
   return sendMessage('pri(transactions.getOne)', request);
+}
+
+// Wallet Connect
+
+export async function addConnection(request: RequestConnectWalletConnect): Promise<boolean> {
+  return sendMessage('pri(walletConnect.connect)', request);
+}
+
+export async function approveWalletConnectSession(request: RequestApproveConnectWalletSession): Promise<boolean> {
+  return sendMessage('pri(walletConnect.session.approve)', request);
+}
+
+export async function rejectWalletConnectSession(request: RequestRejectConnectWalletSession): Promise<boolean> {
+  return sendMessage('pri(walletConnect.session.reject)', request);
+}
+
+export async function disconnectWalletConnectConnection(topic: string): Promise<boolean> {
+  return sendMessage('pri(walletConnect.session.disconnect)', { topic });
 }
 
 export async function subscribeTransactions(

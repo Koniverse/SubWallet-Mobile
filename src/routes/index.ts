@@ -26,6 +26,9 @@ export type RootStackParamList = {
     state?: string[];
   };
   ChangePassword: undefined;
+  ConnectList: undefined;
+  ConnectDetail: { topic: string };
+  ConnectWalletConnect: undefined;
   MigratePassword: undefined;
   CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
   QrScanner: undefined;
@@ -109,6 +112,7 @@ export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
 export type ImportTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportToken'>;
 export type ImportNftProps = NativeStackScreenProps<RootStackParamList, 'ImportNft'>;
+export type ConnectDetailProps = NativeStackScreenProps<RootStackParamList, 'ConnectDetail'>;
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;
 export type NetworkSettingDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkSettingDetail'>;
 export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'TransactionDone'>;

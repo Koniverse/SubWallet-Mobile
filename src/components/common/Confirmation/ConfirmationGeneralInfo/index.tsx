@@ -11,10 +11,12 @@ import { ImageLogosMap } from 'assets/logo';
 interface Props {
   request: ConfirmationRequestBase;
   gap?: number;
+  linkIcon?: React.ReactNode;
+  linkIconBg?: string;
 }
 
 const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {
-  const { request, gap = 0 } = props;
+  const { request, gap = 0, linkIcon, linkIconBg } = props;
   const domain = getDomainFromUrl(request.url);
   const leftLogoUrl = `https://icons.duckduckgo.com/ip2/${domain}.ico`;
 
@@ -26,6 +28,8 @@ const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {
     <View style={styles.container}>
       <DualLogo
         leftLogo={<Image shape={'squircle'} src={ImageLogosMap.subwallet} squircleSize={56} />}
+        linkIcon={linkIcon}
+        linkIconBg={linkIconBg}
         rightLogo={<Image shape="squircle" src={{ uri: leftLogoUrl }} squircleSize={56} />}
       />
       <Text style={styles.text}>{domain}</Text>

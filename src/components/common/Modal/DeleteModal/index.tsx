@@ -1,6 +1,6 @@
 import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Trash, XCircle } from 'phosphor-react-native';
+import { IconProps, Trash, XCircle } from 'phosphor-react-native';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
@@ -13,10 +13,22 @@ interface Props {
   onCompleteModal: VoidFunction;
   title: string;
   visible: boolean;
+  buttonTitle?: string;
+  buttonIcon?: (iconProps: IconProps) => JSX.Element;
+  loading?: boolean;
 }
 
 const DeleteModal: React.FC<Props> = (props: Props) => {
-  const { onCancelModal, onCompleteModal, visible, title, message } = props;
+  const {
+    onCancelModal,
+    onCompleteModal,
+    visible,
+    title,
+    message,
+    buttonTitle,
+    buttonIcon: ButtonIcon,
+    loading,
+  } = props;
 
   const theme = useSubWalletTheme().swThemes;
 
@@ -30,10 +42,12 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
       footer={
         <View style={styles.footerModalStyle}>
           <Button
-            icon={<Icon phosphorIcon={XCircle} size={'lg'} weight={'fill'} />}
+            disabled={loading}
+            loading={loading}
+            icon={<Icon phosphorIcon={ButtonIcon || XCircle} size={'lg'} weight={'fill'} />}
             type="danger"
             onPress={onCompleteModal}>
-            {i18n.buttonTitles.delete}
+            {buttonTitle || i18n.buttonTitles.delete}
           </Button>
         </View>
       }

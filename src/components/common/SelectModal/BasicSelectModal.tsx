@@ -30,6 +30,8 @@ interface Props<T> {
   renderCustomItem?: (item: T) => JSX.Element;
   onChangeModalVisible?: () => void;
   onBackButtonPress?: () => void;
+  titleTextAlign?: 'center' | 'left';
+  beforeListItem?: React.ReactNode;
 }
 
 function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -50,6 +52,8 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
     renderCustomItem,
     onChangeModalVisible,
     onBackButtonPress,
+    titleTextAlign,
+    beforeListItem,
   } = selectModalProps;
   const [isOpen, setOpen] = useState<boolean>(false);
   const onCloseModal = () => setOpen(false);
@@ -119,11 +123,13 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
           onBackButtonPress={onBackButtonPress}
           modalVisible={isOpen}
           modalTitle={title}
+          titleTextAlign={titleTextAlign}
           onChangeModalVisible={() => {
             onChangeModalVisible && onChangeModalVisible();
             onCloseModal();
           }}>
           <View style={{ width: '100%' }}>
+            {beforeListItem}
             {items.map(item => (renderCustomItem ? renderCustomItem(item) : renderItem(item)))}
             {selectModalType === 'multi' && renderFooter()}
             {children}
