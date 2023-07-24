@@ -379,6 +379,9 @@ export const en = {
     unbond: 'Unbond',
     addContact: 'Add contact',
     enableNetwork: 'Enable network',
+    newConnection: 'New connection',
+    disconnect: 'Disconnect',
+    applyAccounts: (account: number) => `Apply ${account} accounts`,
   },
   inputLabel: {
     selectAcc: 'Select account',
@@ -476,6 +479,7 @@ export const en = {
     to: 'To',
     hexData: 'Hex data',
     methodData: 'Method data',
+    dApp: 'DApp',
   },
   placeholder: {
     password: 'Password',
@@ -527,6 +531,7 @@ export const en = {
     searchAddressBook: 'Account name',
     selectService: 'Select service',
     searchWebsite: 'Search or enter website',
+    connectWalletPlaceholder: 'Please type or paste URI',
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
@@ -550,6 +555,8 @@ export const en = {
     manageDAppEmptyTitle: 'No dApps found',
     manageDAppEmptyMessage: 'Your list of approved dApps will appear here.',
     categoryItemEmpty: 'This category is empty',
+    walletConnectDetailEmptyTitle: 'No Dapp found',
+    walletConnectEmptyDetailMessage: 'Your approved dApp will appear here',
   },
   warning: {
     warningAccTitle: 'Warning: Never disclose this key',
@@ -583,6 +590,12 @@ export const en = {
       'We do not keep your password. If you forgot your password, you will need to reset your wallet using the Secret Recovery Phrase',
     cannotGetBalance: 'Can not get balance',
     enableTokenOnChain: (tokenNames: string, chainName: string) => `Please enable ${tokenNames} on ${chainName}`,
+    disconnectModalMessage:
+      'Once you disconnect, you will no longer see this connection on SubWallet and on your DApp.',
+    connectedNetworks: (chainLength: number) => `${chainLength} network(s)`,
+    connectedNetworkConnected: (chainLength: number) => `${chainLength} networks connected`,
+    connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
+    connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
@@ -725,6 +738,9 @@ export const en = {
     websiteAccessConfig: 'Website access config',
     currentPassword: 'Current password',
     newPassword: 'New password',
+    walletConnect: 'WalletConnect',
+    disconnect: 'Disconnect',
+    connectedNetworks: 'Connected networks',
   },
   cryptoScreen: {
     receive: 'Receive',
@@ -1039,6 +1055,9 @@ export const en = {
     contactNameIsRequired: 'Contact name is required',
     contactNameMustBeUnique: 'Contact name must be unique',
     invalidPassword: 'Invalid password',
+    connectionAlreadyExist: 'Connection already exists',
+    failToAddConnection: 'Fail to add connection',
+    unreadableQrCode: 'Unreadable QR code. Please scan another one.',
   },
   notificationMessage: {
     watchOnlyNoti: 'The account you are using is watch-only, you cannot send assets with it',

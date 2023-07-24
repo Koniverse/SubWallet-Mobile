@@ -374,6 +374,9 @@ export const zh = {
     unbond: '解除捆定',
     addContact: '添加联系人',
     enableNetwork: '启用网络',
+    newConnection: 'New connection',
+    disconnect: 'Disconnect',
+    applyAccounts: (account: number) => `Apply ${account} accounts`,
   },
   inputLabel: {
     selectAcc: '选择账户',
@@ -471,6 +474,7 @@ export const zh = {
     to: '到',
     hexData: 'HEX数据',
     methodData: '方式数据',
+    dApp: 'DApp',
   },
   placeholder: {
     password: '密码',
@@ -522,6 +526,7 @@ export const zh = {
     searchAddressBook: '账户名字',
     selectService: '选择服务',
     searchWebsite: '搜索或输入网站',
+    connectWalletPlaceholder: 'Please type or paste URI',
   },
   emptyScreen: {
     tokenEmptyTitle: '未找到通证',
@@ -545,6 +550,8 @@ export const zh = {
     manageDAppEmptyTitle: '未找到dApps',
     manageDAppEmptyMessage: '你批准的dApp名单将在此处出现',
     categoryItemEmpty: '这类别空白',
+    walletConnectDetailEmptyTitle: 'No Dapp found',
+    walletConnectEmptyDetailMessage: 'Your approved dApp will appear here',
   },
   warning: {
     warningAccTitle: '警告：切勿泄露此私钥',
@@ -575,6 +582,12 @@ export const zh = {
     forgotPasswordMessage: '我们不保存你的密码。若你无法解锁账户，你将需要使用助记词以重置你的钱包。',
     cannotGetBalance: '无法获取余额',
     enableTokenOnChain: (tokenNames: string, chainName: string) => `请在 ${chainName}上启用 ${tokenNames}`,
+    disconnectModalMessage:
+      'Once you disconnect, you will no longer see this connection on SubWallet and on your DApp.',
+    connectedNetworks: (chainLength: number) => `${chainLength} network(s)`,
+    connectedNetworkConnected: (chainLength: number) => `${chainLength} networks connected`,
+    connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
+    connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',
@@ -717,6 +730,9 @@ export const zh = {
     websiteAccessConfig: '网站访问配置',
     currentPassword: '当前密码',
     newPassword: '新密码',
+    walletConnect: 'WalletConnect',
+    disconnect: 'Disconnect',
+    connectedNetworks: 'Connected networks',
   },
   cryptoScreen: {
     receive: '领取',
@@ -1022,6 +1038,9 @@ export const zh = {
     contactNameIsRequired: '联系名字为必填项',
     contactNameMustBeUnique: '联系名字必须是唯一的',
     invalidPassword: '密码无效',
+    connectionAlreadyExist: 'Connection already exists',
+    failToAddConnection: 'Fail to add connection',
+    unreadableQrCode: 'Unreadable QR code. Please scan another one.',
   },
   notificationMessage: {
     watchOnlyNoti: '你正在使用仅可查看的账户，故无法发送资产',

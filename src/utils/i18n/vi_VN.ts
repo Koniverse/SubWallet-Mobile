@@ -378,6 +378,9 @@ export const vi = {
     unbond: 'Unstake',
     addContact: 'Thêm liên hệ',
     enableNetwork: 'Bật mạng',
+    newConnection: 'New connection',
+    disconnect: 'Disconnect',
+    applyAccounts: (account: number) => `Apply ${account} accounts`,
   },
   inputLabel: {
     selectAcc: 'Chọn tài khoản',
@@ -475,6 +478,7 @@ export const vi = {
     to: 'Đến',
     hexData: 'Dữ liệu Hex',
     methodData: 'Method data',
+    dApp: 'DApp',
   },
   placeholder: {
     password: 'Mật khẩu',
@@ -526,6 +530,7 @@ export const vi = {
     searchAddressBook: 'Tên tài khoản',
     selectService: 'Chọn dịch vụ',
     searchWebsite: 'Tìm kiếm hoặc nhập trang web',
+    connectWalletPlaceholder: 'Please type or paste URI',
   },
   emptyScreen: {
     tokenEmptyTitle: 'Không tìm thấy token',
@@ -549,6 +554,8 @@ export const vi = {
     manageDAppEmptyTitle: 'Không tìm thấy dApp',
     manageDAppEmptyMessage: 'Danh sách các dAPP của bạn sẽ xuất hiện tại đây.',
     categoryItemEmpty: 'Không có dApp',
+    walletConnectDetailEmptyTitle: 'No Dapp found',
+    walletConnectEmptyDetailMessage: 'Your approved dApp will appear here',
   },
   warning: {
     warningAccTitle: 'Cảnh báo: Không bao giờ tiết lộ seed phrase này.',
@@ -581,6 +588,12 @@ export const vi = {
       'Chúng tôi không giữ mật khẩu của bạn. Nếu bạn đã quên mật khẩu, hãy cài lại ví bằng cách sử dụng seed phrase',
     cannotGetBalance: 'Không thể lấy số dư',
     enableTokenOnChain: (tokenNames: string, chainName: string) => `Vui lòng bật ${tokenNames} trên ${chainName}`,
+    disconnectModalMessage:
+      'Once you disconnect, you will no longer see this connection on SubWallet and on your DApp.',
+    connectedNetworks: (chainLength: number) => `${chainLength} network(s)`,
+    connectedNetworkConnected: (chainLength: number) => `${chainLength} networks connected`,
+    connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
+    connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot Parachain',
@@ -723,6 +736,9 @@ export const vi = {
     websiteAccessConfig: 'Cấu hình truy cập',
     currentPassword: 'Mật khẩu hiện tại',
     newPassword: 'Mật khẩu mới',
+    walletConnect: 'WalletConnect',
+    disconnect: 'Disconnect',
+    connectedNetworks: 'Connected networks',
   },
   cryptoScreen: {
     receive: 'Nhận',
@@ -1038,6 +1054,9 @@ export const vi = {
     contactNameIsRequired: 'Tên liên hệ là bắt buộc',
     contactNameMustBeUnique: 'Tên liên hệ phải là duy nhất',
     invalidPassword: 'Mật khẩu không hợp lệ',
+    connectionAlreadyExist: 'Connection already exists',
+    failToAddConnection: 'Fail to add connection',
+    unreadableQrCode: 'Unreadable QR code. Please scan another one.',
   },
   notificationMessage: {
     watchOnlyNoti: 'Tài khoản bạn đang sử dụng là tài khoản chỉ xem, bạn không thể gửi tài sản trên tài khoản này.',
