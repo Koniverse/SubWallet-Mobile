@@ -593,6 +593,8 @@ export const zh = {
     connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
     connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
     connectSuccessfully: 'Connect successfully',
+    supportedNetworks: 'Supported networks',
+    networkSupported: (networkNumber: number) => `${networkNumber} networks support`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',

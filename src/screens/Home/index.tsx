@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
@@ -18,7 +18,7 @@ import { HomeStackParamList } from 'routes/home';
 import NFTStackScreen from 'screens/Home/NFT/NFTStackScreen';
 import withPageWrapper from 'components/pageWrapper';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -29,6 +29,12 @@ import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleDeeplinkOnFirstOpen } from 'utils/deeplink';
+import urlParse from 'url-parse';
+import { getProtocol } from 'utils/browser';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import queryString from 'querystring';
+import { connectWalletConnect } from 'utils/walletConnect';
+import { useToast } from 'react-native-toast-notifications';
 
 interface tabbarIconColor {
   color: string;
@@ -151,6 +157,7 @@ const MainScreen = () => {
 };
 
 const Wrapper = () => {
+  const isEmptyAccounts = useCheckEmptyAccounts();
   const Drawer = createDrawerNavigator<WrapperParamList>();
   return (
     <Drawer.Navigator
@@ -162,6 +169,7 @@ const Wrapper = () => {
         drawerType: 'front',
         swipeEnabled: false,
       }}>
+      {isEmptyAccounts && <Drawer.Screen name="FirstScreen" component={FirstScreen} options={{ headerShown: false }} />}
       <Drawer.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
     </Drawer.Navigator>
   );
@@ -174,13 +182,54 @@ export const Home = ({ navigation }: Props) => {
   const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
   const { isLocked } = useAppLock();
   const [isLoading, setLoading] = useState(true);
+  const isFirstOpen = useRef(true);
+  const toast = useToast();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isReady) {
-      handleDeeplinkOnFirstOpen(navigation);
-    }
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 500);
+    }
+  }, [isReady, isLoading]);
+
+  useEffect(() => {
+    if (isReady && !isLoading) {
+      handleDeeplinkOnFirstOpen(navigation);
+      isFirstOpen.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady, isLoading]);
+
+  useEffect(() => {
+    if (isReady && !isLoading) {
+      if (isFirstOpen.current) {
+        return;
+      }
+      Linking.addEventListener('url', ({ url }) => {
+        const urlParsed = new urlParse(url);
+        if (getProtocol(url) === 'subwallet') {
+          if (urlParsed.hostname === 'wc') {
+            dispatch(updateIsDeepLinkConnect(true));
+            if (urlParsed.query.startsWith('?requestId')) {
+              return;
+            }
+            const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
+            const finalWcUrl = Object.keys(decodedWcUrl)[0];
+            connectWalletConnect(finalWcUrl, toast);
+          }
+        } else if (getProtocol(url) === 'https') {
+          if (urlParsed.pathname.split('/')[1] === 'wc') {
+            dispatch(updateIsDeepLinkConnect(true));
+            if (urlParsed.query.startsWith('?requestId')) {
+              return;
+            }
+            const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
+            const finalWcUrl = Object.keys(decodedWcUrl)[0];
+            connectWalletConnect(finalWcUrl, toast);
+          }
+        }
+      });
+      // return () => Linking.removeAllListeners('url');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady, isLoading]);
@@ -195,7 +244,7 @@ export const Home = ({ navigation }: Props) => {
 
   return (
     <>
-      {isEmptyAccounts ? <FirstScreen /> : <Wrapper />}
+      <Wrapper />
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
     </>
   );

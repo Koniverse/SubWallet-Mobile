@@ -15,7 +15,6 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { getAccountType } from 'utils/index';
 import { RootState } from 'stores/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import { HIDE_MODAL_DURATION } from 'constants/index';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
 import { findAccountByAddress } from 'utils/account';
@@ -114,10 +113,6 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     [tokenGroupSlug, assetRegistryMap, accounts, chainInfoMap],
   );
 
-  const actionWithSetTimeout = useCallback((action: () => void) => {
-    setTimeout(action, HIDE_MODAL_DURATION);
-  }, []);
-
   const onOpenReceive = useCallback(() => {
     if (!currentAccount) {
       return;
@@ -165,9 +160,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         if (_tokenSelectorItems.length === 1) {
           setReceiveSelectedResult(prev => ({ ...prev, selectedNetwork: _tokenSelectorItems[0].originChain }));
           accountRef && accountRef.current?.onCloseModal();
-          actionWithSetTimeout(() => {
-            setQrModalVisible(true);
-          });
+          setQrModalVisible(true);
 
           return;
         }
@@ -175,20 +168,15 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
       tokenRef && tokenRef.current?.onOpenModal();
     },
-    [actionWithSetTimeout, getTokenSelectorItems, tokenGroupSlug],
+    [getTokenSelectorItems, tokenGroupSlug],
   );
 
-  const openSelectToken = useCallback(
-    (value: TokenItemType) => {
-      setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: value.originChain }));
-      tokenRef && tokenRef.current?.onCloseModal();
-      accountRef && accountRef.current?.onCloseModal();
-      actionWithSetTimeout(() => {
-        setQrModalVisible(true);
-      });
-    },
-    [actionWithSetTimeout],
-  );
+  const openSelectToken = useCallback((value: TokenItemType) => {
+    setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: value.originChain }));
+    tokenRef && tokenRef.current?.onCloseModal();
+    accountRef && accountRef.current?.onCloseModal();
+    setQrModalVisible(true);
+  }, []);
 
   const onCloseSelectAccount = useCallback(() => {
     accountRef && accountRef.current?.onCloseModal();
@@ -196,10 +184,6 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
 
   const onCloseSelectToken = useCallback(() => {
     tokenRef && tokenRef.current?.onCloseModal();
-  }, []);
-
-  const onCloseQrModal = useCallback(() => {
-    setQrModalVisible(false);
   }, []);
 
   useEffect(() => {
@@ -216,7 +200,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     openSelectToken,
     onCloseSelectAccount,
     onCloseSelectToken,
-    onCloseQrModal,
+    setQrModalVisible,
     selectedAccount,
     accountSelectorItems,
     tokenSelectorItems,

@@ -1,12 +1,11 @@
 import { NavigationState } from '@react-navigation/routers';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import React, { ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
 import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySigner';
 import ImportQrCode from 'screens/Account/ImportQrCode';
-import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
 import { GeneralSettings } from 'screens/Settings/General';
 import { SendFund } from 'screens/Transaction/SendFund';
@@ -38,7 +37,7 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { deeplinks, getProtocol, getValidURL } from 'utils/browser';
+import { deeplinks, getValidURL } from 'utils/browser';
 import ErrorBoundary from 'react-native-error-boundary';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
@@ -55,7 +54,7 @@ import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
 import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import { Linking, Platform } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Home } from 'screens/Home';
 import { deviceWidth } from 'constants/index';
@@ -68,10 +67,11 @@ import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
 import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
 import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
-import urlParse from 'url-parse';
-import queryString from 'querystring';
-import { connectWalletConnect } from 'utils/walletConnect';
-import { useToast } from 'react-native-toast-notifications';
+import useAppLock from 'hooks/useAppLock';
+import { LockScreen } from 'screens/LockScreen';
+import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import { UnlockModal } from 'components/common/Modal/UnlockModal';
+import { AppModalContext } from 'providers/AppModalContext';
 
 interface Props {
   isAppReady: boolean;
@@ -142,7 +142,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const toast = useToast();
+  const { isLocked } = useAppLock();
+  const appModalContext = useContext(AppModalContext);
 
   const needMigrate = useMemo(
     () =>
@@ -168,8 +169,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
     let amount = true;
     if (hasConfirmations && currentRoute && amount) {
       if (currentRoute.name !== 'Confirmations' && amount) {
-        if (currentRoute.name !== 'CreateAccount' && amount) {
-          navigationRef.current?.navigate('Confirmations');
+        if (!['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) && amount) {
+          appModalContext.hideConfirmModal();
+          setTimeout(() => navigationRef.current?.navigate('Confirmations'), 1000);
         }
       }
     }
@@ -177,6 +179,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
     return () => {
       amount = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasConfirmations, navigationRef, currentRoute]);
 
   useEffect(() => {
@@ -192,6 +195,18 @@ const AppNavigator = ({ isAppReady }: Props) => {
   }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
 
   useEffect(() => {
+    let amount = true;
+    if (isLocked && amount) {
+      appModalContext.hideConfirmModal();
+      setTimeout(() => navigationRef.current?.navigate('Login'), 500);
+    }
+    return () => {
+      amount = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocked, navigationRef]);
+
+  useEffect(() => {
     if (isEmptyAccounts) {
       navigationRef.current?.reset({
         index: 0,
@@ -200,29 +215,9 @@ const AppNavigator = ({ isAppReady }: Props) => {
     }
   }, [isEmptyAccounts, navigationRef]);
 
-  useEffect(() => {
-    Linking.addEventListener('url', ({ url }) => {
-      const urlParsed = new urlParse(url);
-      if (getProtocol(url) === 'subwallet') {
-        if (urlParsed.hostname === 'wc') {
-          const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
-          const finalWcUrl = Object.keys(decodedWcUrl)[0];
-          connectWalletConnect(finalWcUrl, toast);
-        }
-      } else if (getProtocol(url) === 'https') {
-        if (urlParsed.pathname.split('/')[1] === 'wc') {
-          const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
-          const finalWcUrl = Object.keys(decodedWcUrl)[0];
-          connectWalletConnect(finalWcUrl, toast);
-        }
-      }
-    });
-
-    return () => Linking.removeAllListeners('url');
-  }, [toast]);
-
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
           screenOptions={{
@@ -321,7 +316,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   component={Confirmations}
                   options={{ gestureEnabled: false, animationDuration: 100 }}
                 />
-                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Login" component={LockScreen} />
+                {<Stack.Screen name={'UnlockModal'} component={UnlockModal} />}
               </Stack.Group>
             </>
           )}

@@ -29,6 +29,7 @@ export const ConnectWalletConnect = () => {
   const [loading, setLoading] = useState(false);
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
+  const [isShowQrModalVisible, setQrModalVisible] = useState<boolean>(false);
 
   const formConfig = useMemo((): FormControlConfig => {
     return {
@@ -59,7 +60,9 @@ export const ConnectWalletConnect = () => {
           ? i18n.errorMessage.connectionAlreadyExist
           : i18n.errorMessage.failToAddConnection;
 
+        toast.hideAll();
         toast.show(message, { type: 'danger' });
+        setLoading(false);
       });
   };
 
@@ -68,7 +71,7 @@ export const ConnectWalletConnect = () => {
   });
 
   return (
-    <ContainerWithSubHeader onPressBack={() => navigation.goBack()} title={i18n.header.walletConnect}>
+    <ContainerWithSubHeader onPressBack={() => navigation.navigate('Home')} title={i18n.header.walletConnect}>
       <View style={{ paddingHorizontal: theme.padding, flex: 1, paddingTop: theme.padding }}>
         <Typography.Text
           style={{ ...FontMedium, color: theme.colorTextTertiary, textAlign: 'center', paddingHorizontal: 32 }}>
@@ -92,6 +95,9 @@ export const ConnectWalletConnect = () => {
           placeholder={i18n.placeholder.connectWalletPlaceholder}
           disabled={loading}
           onSubmitEditing={formState.errors.uri.length > 0 ? () => Keyboard.dismiss() : onSubmitField('uri')}
+          isShowQrModalVisible={isShowQrModalVisible}
+          setQrModalVisible={setQrModalVisible}
+          setLoading={setLoading}
         />
 
         {formState.errors.uri.length > 0 &&
@@ -109,7 +115,7 @@ export const ConnectWalletConnect = () => {
             color={!formState.isValidated.uri || loading ? theme.colorTextLight5 : theme.colorWhite}
           />
         }>
-        Connect
+        {i18n.common.connect}
       </Button>
     </ContainerWithSubHeader>
   );

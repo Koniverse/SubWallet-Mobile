@@ -61,7 +61,7 @@ export const TokenGroups = () => {
     openSelectToken,
     selectedAccount,
     selectedNetwork,
-    onCloseQrModal,
+    setQrModalVisible,
     isQrModalVisible,
     tokenSelectorItems,
     accountRef,
@@ -253,7 +253,7 @@ export const TokenGroups = () => {
           modalVisible={isQrModalVisible}
           address={selectedAccount}
           selectedNetwork={selectedNetwork}
-          onCancel={onCloseQrModal}
+          setModalVisible={setQrModalVisible}
         />
 
         <TokenSearchModal

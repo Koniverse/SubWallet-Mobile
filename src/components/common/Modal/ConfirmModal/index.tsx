@@ -6,6 +6,8 @@ import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
+import { noop } from 'utils/function';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   message: string;
@@ -26,25 +28,30 @@ const ConfirmModal: React.FC<Props> = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const insets = useSafeAreaInsets();
 
   return (
     <SwModal
+      setVisible={noop}
+      isUseForceHidden={false}
       modalVisible={visible}
       modalTitle={title}
       titleTextAlign="center"
       footer={
-        <View style={styles.footerModalStyle}>
-          <Button type="secondary" style={{ flex: 1, marginRight: 12 }} onPress={onCancelModal}>
-            {i18n.common.cancel}
-          </Button>
-          <Button
-            style={{ flex: 1 }}
-            icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
-            type="primary"
-            onPress={onCompleteModal}>
-            {i18n.common.connect}
-          </Button>
-        </View>
+        <>
+          <View style={[styles.footerModalStyle, { marginBottom: insets.bottom + 16 }]}>
+            <Button type="secondary" style={{ flex: 1, marginRight: 12 }} onPress={onCancelModal}>
+              {i18n.common.cancel}
+            </Button>
+            <Button
+              style={{ flex: 1 }}
+              icon={<Icon phosphorIcon={CheckCircle} size={'lg'} weight={'fill'} />}
+              type="primary"
+              onPress={onCompleteModal}>
+              {i18n.common.connect}
+            </Button>
+          </View>
+        </>
       }
       onBackButtonPress={onCancelModal}
       onChangeModalVisible={onCancelModal}>

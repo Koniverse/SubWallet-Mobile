@@ -22,10 +22,11 @@ import useGoHome from 'hooks/screen/useGoHome';
 import i18n from 'utils/i18n/i18n';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { SelectedActionType } from 'stores/types';
 import { noop } from 'utils/function';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
 
@@ -51,6 +52,7 @@ const ApplyMasterPassword = () => {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const selectedAction = useRef<SelectedActionType>();
+  const navigation = useNavigation<RootNavigationProps>();
   useHandlerHardwareBackPress(true);
   const migrateAddressRef = useRef<string>('');
   const formConfig: FormControlConfig = {
@@ -207,6 +209,7 @@ const ApplyMasterPassword = () => {
     onCancelModal: onCancelDelete,
     visible: deleteVisible,
     onCompleteModal: onCompleteDeleteModal,
+    setVisible,
   } = useConfirmModal(onDelete);
 
   const onChangePasswordValue = (currentValue: string) => {
@@ -238,7 +241,7 @@ const ApplyMasterPassword = () => {
     }
   }, []);
 
-  const { onPress, visible, onPasswordComplete, onHideModal } = useUnlockModal();
+  const { onPress } = useUnlockModal(navigation);
 
   const onPressActionButton = useCallback(
     (action: SelectedActionType) => {
@@ -350,6 +353,7 @@ const ApplyMasterPassword = () => {
         {step === 'Done' && <ApplyDone accounts={canMigrate} />}
 
         <DeleteModal
+          setVisible={setVisible}
           title={i18n.removeAccount.removeAccountTitle}
           visible={deleteVisible}
           message={i18n.removeAccount.removeAccountMessage}
@@ -358,8 +362,6 @@ const ApplyMasterPassword = () => {
         />
 
         <View style={_style.footerAreaStyle}>{renderFooterButton()}</View>
-
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </ContainerWithSubHeader>
   );

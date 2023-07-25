@@ -5,7 +5,7 @@ import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
 import React, { useEffect } from 'react';
-import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
+import { AppState, Dimensions, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -16,12 +16,11 @@ import useAppLock from 'hooks/useAppLock';
 import useCryptoReady from 'hooks/init/useCryptoReady';
 import useSetupI18n from 'hooks/init/useSetupI18n';
 import SplashScreen from 'react-native-splash-screen';
-import { LockScreen } from 'screens/LockScreen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
-import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
+import { HIDE_MODAL_DURATION, statusBarHeight, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
 import { keyringLock } from 'messaging/index';
 import { updateShowZeroBalanceState } from 'stores/utils';
@@ -30,11 +29,9 @@ import { setBuildNumber } from './stores/AppVersion';
 import { getBuildNumber } from 'react-native-device-info';
 import { AppModalContextProvider } from './providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
-
-const viewContainerStyle: StyleProp<any> = {
-  position: 'relative',
-  flex: 1,
-};
+import { PortalProvider } from '@gorhom/portal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -109,7 +106,7 @@ export const AppNew = () => {
   );
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
-  const { isLocked, lock } = useAppLock();
+  const { lock } = useAppLock();
   const dispatch = useDispatch();
 
   const isCryptoReady = useCryptoReady();
@@ -156,44 +153,53 @@ export const AppNew = () => {
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
 
   return (
-    <View style={viewContainerStyle}>
-      <View style={{ flex: 1 }}>
-        <ToastProvider
-          duration={TOAST_DURATION}
-          renderToast={toast => <CustomToast toast={toast} />}
-          placement="top"
-          normalColor={theme.colors.notification}
-          textStyle={{ textAlign: 'center', ...FontMedium }}
-          successColor={theme.colors.primary}
-          warningColor={theme.colors.notification_warning}
-          offsetTop={STATUS_BAR_HEIGHT + 40}
-          dangerColor={theme.colors.notification_danger}>
-          <ThemeContext.Provider value={theme}>
-            <SigningContextProvider>
-              <ExternalRequestContextProvider>
-                <QrSignerContextProvider>
-                  <ScannerContextProvider>
-                    <AppModalContextProvider>
-                      <AppNavigator isAppReady={isAppReady} />
-                    </AppModalContextProvider>
-                  </ScannerContextProvider>
-                </QrSignerContextProvider>
-              </ExternalRequestContextProvider>
-            </SigningContextProvider>
-          </ThemeContext.Provider>
-        </ToastProvider>
-      </View>
-      {!isAppReady && (
-        <View style={layerScreenStyle}>
-          <LoadingScreen />
+    <SafeAreaProvider style={{ flex: 1 }}>
+      <>
+        <View style={{ flex: 1 }}>
+          <ToastProvider
+            duration={TOAST_DURATION}
+            renderToast={toast => <CustomToast toast={toast} />}
+            placement="top"
+            normalColor={theme.colors.notification}
+            textStyle={{ textAlign: 'center', ...FontMedium }}
+            successColor={theme.colors.primary}
+            warningColor={theme.colors.notification_warning}
+            offsetTop={STATUS_BAR_HEIGHT + 40}
+            dangerColor={theme.colors.notification_danger}>
+            <ThemeContext.Provider value={theme}>
+              <SigningContextProvider>
+                <ExternalRequestContextProvider>
+                  <QrSignerContextProvider>
+                    <ScannerContextProvider>
+                      <AppModalContextProvider>
+                        <GestureHandlerRootView
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: Dimensions.get('window').width,
+                            height: Dimensions.get('window').height + (Platform.OS === 'ios' ? 0 : statusBarHeight),
+                            zIndex: 9999,
+                          }}>
+                          <PortalProvider>
+                            <AppNavigator isAppReady={isAppReady} />
+                          </PortalProvider>
+                        </GestureHandlerRootView>
+                      </AppModalContextProvider>
+                    </ScannerContextProvider>
+                  </QrSignerContextProvider>
+                </ExternalRequestContextProvider>
+              </SigningContextProvider>
+            </ThemeContext.Provider>
+          </ToastProvider>
         </View>
-      )}
-      {isLocked && (
-        <View style={layerScreenStyle}>
-          <LockScreen />
-        </View>
-      )}
-    </View>
+        {!isAppReady && (
+          <View style={layerScreenStyle}>
+            <LoadingScreen />
+          </View>
+        )}
+      </>
+    </SafeAreaProvider>
   );
 };
 

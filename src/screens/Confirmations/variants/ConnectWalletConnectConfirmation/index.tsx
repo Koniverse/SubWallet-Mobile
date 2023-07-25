@@ -25,7 +25,10 @@ import { WCAccountSelect } from 'components/WalletConnect/Account/WCAccountSelec
 import createStyle from './styles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { WCNetworkSupported } from 'components/WalletConnect/Network/WCNetworkSupported';
-import { SVGImages } from 'assets/index';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { Minimizer } from '../../../../NativeModules';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 
 interface Props {
   request: WalletConnectSessionRequest;
@@ -48,6 +51,8 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { params } = request.request;
   const toast = useToast();
+  const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
+  const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const nameSpaceNameMap = useMemo(
     (): Record<string, string> => ({
       [WALLET_CONNECT_EIP155_NAMESPACE]: 'EVM networks',
@@ -57,6 +62,7 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
   );
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const dispatch = useDispatch();
 
   const {
     isExpired,
@@ -102,17 +108,27 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
       .flat();
 
     handleConfirm(request, selectedAccounts)
+      .then(() => {
+        console.log('isDeepLinkConnect', isDeepLinkConnect);
+        toast.show('Connect successfully', { type: 'success' });
+        isDeepLinkConnect && Minimizer.goBack();
+        dispatch(updateIsDeepLinkConnect(false));
+      })
       .catch(e => {
         toast.show((e as Error).message, { type: 'danger' });
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [namespaceAccounts, request, toast]);
+  }, [dispatch, isDeepLinkConnect, namespaceAccounts, request, toast]);
 
   const onAddAccount = useCallback(() => {
-    navigation.replace('CreateAccount', { keyTypes: convertKeyTypes(missingType), isBack: true });
-  }, [missingType, navigation]);
+    if (hasMasterPassword) {
+      navigation.replace('CreateAccount', { keyTypes: convertKeyTypes(missingType), isBack: true });
+    } else {
+      navigation.replace('CreatePassword', { pathName: 'CreateAccount', state: convertKeyTypes(missingType) });
+    }
+  }, [hasMasterPassword, missingType, navigation]);
 
   const onApplyModal = useCallback(
     (namespace: string) => {
@@ -137,17 +153,13 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
   return (
     <React.Fragment>
       <ConfirmationContent>
-        <ConfirmationGeneralInfo
-          request={request}
-          gap={0}
-          linkIcon={<SVGImages.WalletConnect width={24} height={24} color={theme.colorWhite} />}
-        />
+        <ConfirmationGeneralInfo request={request} gap={0} />
         {isUnSupportCase && (
           <View>
             <View style={{ paddingBottom: 8 }}>
               <AlertBox
-                title={'Unsupported network'}
-                description={'There is at least 1 chosen network unavailable'}
+                title={i18n.warningTitle.unsupportedNetworkTitle}
+                description={i18n.warningMessage.unsupportedNetworkMessage}
                 type={'warning'}
               />
             </View>
@@ -158,8 +170,8 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
         {!isUnSupportCase && isExpired && (
           <>
             <AlertBox
-              description={'Connection expired. Please create a new connection from dApp'}
-              title={'Connection expired'}
+              description={i18n.warningMessage.expiredConnectionMessage}
+              title={i18n.warningTitle.expiredConnectionTitle}
               type="warning"
             />
           </>
@@ -174,7 +186,7 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
                   {!supportOneChain && (
                     <>
                       <Typography.Text style={styles.text}>
-                        {supportOneNamespace ? 'Networks' : nameSpaceNameMap[namespace]}
+                        {supportOneNamespace ? i18n.common.networks : nameSpaceNameMap[namespace]}
                       </Typography.Text>
                       <WCNetworkSelected networks={networks} />
                     </>
@@ -244,7 +256,7 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
               disabled={loading}
               icon={<Icon phosphorIcon={PlusCircle} weight={'fill'} />}
               onPress={onAddAccount}>
-              {'Create one'}
+              {i18n.buttonTitles.createOne}
             </Button>
           </>
         )}

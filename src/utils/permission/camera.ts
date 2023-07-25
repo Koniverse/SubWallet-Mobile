@@ -7,7 +7,7 @@ const getCameraPermission = () => {
   return Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
 };
 
-export const requestCameraPermission = async () => {
+export const requestCameraPermission = async (onPressCancel?: () => void) => {
   AutoLockState.isPreventAutoLock = true;
   const result = await check(getCameraPermission());
   AutoLockState.isPreventAutoLock = false;
@@ -17,7 +17,11 @@ export const requestCameraPermission = async () => {
       console.log('Images: This feature is not available (on this device / in this context)');
       break;
     case RESULTS.DENIED:
-      request(getCameraPermission());
+      request(getCameraPermission()).then(res => {
+        if (res === RESULTS.BLOCKED) {
+          onPressCancel && onPressCancel();
+        }
+      });
       console.log('Images: The permission has not been requested / is denied but requestable');
       break;
     case RESULTS.GRANTED:
@@ -27,10 +31,12 @@ export const requestCameraPermission = async () => {
       Alert.alert(i18n.common.notify, i18n.common.cannotScanQRCodeWithoutPermission, [
         {
           text: i18n.buttonTitles.cancel,
+          onPress: onPressCancel,
         },
         {
           text: i18n.common.goToSetting,
           onPress: () => {
+            onPressCancel && onPressCancel();
             Linking.openSettings();
           },
         },

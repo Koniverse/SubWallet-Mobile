@@ -1,5 +1,5 @@
 import { ThemeTypes } from 'styles/themes';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export default (theme: ThemeTypes) =>
   StyleSheet.create({
@@ -10,6 +10,7 @@ export default (theme: ThemeTypes) =>
     buttonGroupContainer: {
       flexDirection: 'row',
       gap: theme.sizeSM,
+      marginBottom: Platform.OS === 'ios' ? theme.margin : 0,
     },
     button: {
       flex: 1,

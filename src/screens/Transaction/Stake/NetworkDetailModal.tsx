@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { SwModal, Number } from 'components/design-system-ui';
 import { Text, View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
@@ -8,13 +8,14 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import BigN from 'bignumber.js';
 import i18n from 'utils/i18n/i18n';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   modalVisible: boolean;
   stakingType: StakingType;
   chainStakingMetadata: ChainStakingMetadata;
   minimumActive: AmountData;
-  onCloseModal?: () => void;
+  setVisible: (arg: boolean) => void;
 }
 
 export const NetworkDetailModal = ({
@@ -22,7 +23,7 @@ export const NetworkDetailModal = ({
   chainStakingMetadata,
   stakingType,
   minimumActive,
-  onCloseModal,
+  setVisible,
 }: Props) => {
   const {
     maxValidatorPerNominator,
@@ -32,11 +33,15 @@ export const NetworkDetailModal = ({
     unstakingPeriod,
   } = chainStakingMetadata;
   const theme = useSubWalletTheme().swThemes;
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const onCloseModal = () => modalBaseV2Ref?.current?.close();
   return (
     <SwModal
+      isUseModalV2
+      setVisible={setVisible}
+      modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
       modalTitle={i18n.header.networkDetails}
-      onChangeModalVisible={onCloseModal}
       onBackButtonPress={onCloseModal}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>

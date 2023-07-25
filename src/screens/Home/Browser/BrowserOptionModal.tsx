@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { ArrowSquareUpRight, IconProps, Star, StarHalf } from 'phosphor-react-native';
 import { SiteInfo } from 'stores/types';
@@ -9,10 +9,11 @@ import i18n from 'utils/i18n/i18n';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SelectItem, SwModal } from 'components/design-system-ui';
 import { searchDomain } from 'utils/browser';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   visibleModal: boolean;
-  onClose: () => void;
+  setVisibleModal: (arg: boolean) => void;
 }
 
 interface OptionType {
@@ -27,9 +28,12 @@ export interface BrowserOptionModalRef {
   onUpdateSiteInfo: (siteInfo: SiteInfo) => void;
 }
 
-const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
+const Component = ({ visibleModal, setVisibleModal }: Props, ref: ForwardedRef<BrowserOptionModalRef>) => {
   const theme = useSubWalletTheme().swThemes;
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
+  const modalRef = useRef<SWModalRefProps>(null);
+
+  const onClose = () => modalRef?.current?.close();
 
   const [siteInfo, setSiteInfo] = useState<SiteInfo>({
     url: '',
@@ -75,11 +79,13 @@ const Component = ({ visibleModal, onClose }: Props, ref: ForwardedRef<BrowserOp
 
   return (
     <SwModal
+      isUseModalV2={true}
+      modalBaseV2Ref={modalRef}
+      setVisible={setVisibleModal}
       modalVisible={visibleModal}
-      onChangeModalVisible={onClose}
       modalTitle={i18n.title.moreOptions}
       onBackButtonPress={onClose}>
-      <View style={{ width: '100%' }}>
+      <View style={{ width: '100%', gap: 8 }}>
         {OPTIONS.map(opt => (
           <SelectItem
             onPress={opt.onPress}

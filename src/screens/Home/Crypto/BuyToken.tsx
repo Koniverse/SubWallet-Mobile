@@ -57,8 +57,6 @@ export const BuyToken = ({
     <ContainerWithSubHeader
       title={i18n.header.buyToken}
       isShowMainHeader={true}
-      needGapWithStatusBar={false}
-      isShowPlaceHolder={false}
       onPressBack={() => navigation.navigate('Home')}>
       <>
         <View style={styles.contentWrapper}>

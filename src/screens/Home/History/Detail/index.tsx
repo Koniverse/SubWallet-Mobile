@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import HistoryDetailLayout from './parts/Layout';
@@ -10,14 +10,15 @@ import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { ArrowSquareUpRight } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
 import { Linking, View } from 'react-native';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getExplorerLink } from '@subwallet/extension-base/services/transaction-service/utils';
 import { ExtrinsicType, TransactionAdditionalInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 type Props = {
   onChangeModalVisible: () => void;
   modalVisible: boolean;
   data: TransactionHistoryDisplayItem | null;
+  setDetailModalVisible: (arg: boolean) => void;
 };
 
 export type StatusType = {
@@ -27,9 +28,14 @@ export type StatusType = {
   color?: string;
 };
 
-export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }: Props): React.ReactElement<Props> {
-  const theme = useSubWalletTheme().swThemes;
+export function HistoryDetailModal({
+  data,
+  onChangeModalVisible,
+  modalVisible,
+  setDetailModalVisible,
+}: Props): React.ReactElement<Props> {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
 
   const openBlockExplorer = useCallback((link: string) => {
     return () => {
@@ -57,7 +63,7 @@ export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }:
 
     if (link) {
       return (
-        <View style={{ padding: theme.size, alignSelf: 'stretch' }}>
+        <View style={{ alignSelf: 'stretch', marginBottom: 16 }}>
           <Button icon={<Icon phosphorIcon={ArrowSquareUpRight} weight={'fill'} />} onPress={openBlockExplorer(link)}>
             {i18n.common.viewOnExplorer}
           </Button>
@@ -66,16 +72,19 @@ export function HistoryDetailModal({ data, onChangeModalVisible, modalVisible }:
     }
 
     return null;
-  }, [chainInfoMap, data, openBlockExplorer, theme.size]);
+  }, [chainInfoMap, data, openBlockExplorer]);
 
   return (
     <SwModal
+      isUseModalV2
+      setVisible={setDetailModalVisible}
+      modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
       modalTitle={data?.displayData?.title || ''}
       footer={modalFooter}
       onBackButtonPress={onChangeModalVisible}
       onChangeModalVisible={onChangeModalVisible}>
-      <View style={{ alignSelf: 'stretch' }}>{data && <HistoryDetailLayout data={data} />}</View>
+      <View style={{ alignSelf: 'stretch', marginBottom: 16 }}>{data && <HistoryDetailLayout data={data} />}</View>
     </SwModal>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, SafeAreaView, StatusBar, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import LinearGradient from 'react-native-linear-gradient';
@@ -58,5 +58,5 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  contentContainer: { flex: 1, overflow: 'hidden', marginTop: 8 },
+  contentContainer: { flex: 1, overflow: 'hidden', paddingTop: Platform.OS === 'ios' ? 0 : 8 },
 });

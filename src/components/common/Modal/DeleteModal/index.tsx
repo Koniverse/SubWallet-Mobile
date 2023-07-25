@@ -1,26 +1,27 @@
 import { Button, Icon, PageIcon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { IconProps, Trash, XCircle } from 'phosphor-react-native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { Text, View } from 'react-native';
 import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   message: string;
-  onCancelModal: VoidFunction;
+  onCancelModal?: VoidFunction;
   onCompleteModal: VoidFunction;
   title: string;
   visible: boolean;
   buttonTitle?: string;
   buttonIcon?: (iconProps: IconProps) => JSX.Element;
   loading?: boolean;
+  setVisible: (arg: boolean) => void;
 }
 
 const DeleteModal: React.FC<Props> = (props: Props) => {
   const {
-    onCancelModal,
     onCompleteModal,
     visible,
     title,
@@ -28,14 +29,22 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
     buttonTitle,
     buttonIcon: ButtonIcon,
     loading,
+    setVisible,
+    onCancelModal,
   } = props;
-
+  const deleteModalRef = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
-
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const closeModal = useCallback(() => {
+    onCancelModal && onCancelModal();
+    deleteModalRef?.current?.close();
+  }, [onCancelModal]);
 
   return (
     <SwModal
+      isUseModalV2
+      modalBaseV2Ref={deleteModalRef}
+      setVisible={setVisible}
       modalVisible={visible}
       modalTitle={title}
       titleTextAlign={'center'}
@@ -51,7 +60,7 @@ const DeleteModal: React.FC<Props> = (props: Props) => {
           </Button>
         </View>
       }
-      onBackButtonPress={onCancelModal}
+      onBackButtonPress={closeModal}
       onChangeModalVisible={onCancelModal}>
       <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
         <View style={{ paddingBottom: 20 }}>

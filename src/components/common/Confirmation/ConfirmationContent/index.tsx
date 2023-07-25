@@ -15,7 +15,9 @@ const ConfirmationContent: React.FC<Props> = (props: Props) => {
   const styles = useMemo(() => createStyle(theme, gap), [theme, gap]);
 
   return (
-    <ScrollView style={[styles.container, isFullHeight && { height: '100%' }]} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={[styles.container, isFullHeight ? { height: '100%' } : { maxHeight: '70%' }]}
+      contentContainerStyle={styles.content}>
       {children}
     </ScrollView>
   );

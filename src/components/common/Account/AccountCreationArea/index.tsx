@@ -23,6 +23,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { ModalRef } from 'types/modalRef';
+import useGoHome from 'hooks/screen/useGoHome';
 
 interface Props {
   createAccountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -41,6 +42,7 @@ export const AccountCreationArea = ({
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const selectTypeRef = useRef<ModalRef>();
   const deriveAccModalRef = useRef<ModalRef>();
+  const goHome = useGoHome();
   const importAccountActions = [
     {
       key: 'secretPhrase',
@@ -214,7 +216,7 @@ export const AccountCreationArea = ({
         onSelectItem={createAccountFunc}>
         <SelectAccountTypeModal selectTypeRef={selectTypeRef} onConfirm={onSelectAccountTypes} />
 
-        <DeriveAccountModal deriveAccModalRef={deriveAccModalRef} />
+        <DeriveAccountModal deriveAccModalRef={deriveAccModalRef} goHome={goHome} navigation={navigation} />
       </AccountActionSelectModal>
 
       <AccountActionSelectModal

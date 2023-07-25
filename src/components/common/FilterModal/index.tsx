@@ -30,6 +30,7 @@ const FilterModal = ({
   return (
     <>
       <BasicSelectModal
+        level={2}
         title={modalTitle}
         items={options}
         selectedValueMap={optionSelectionMap}

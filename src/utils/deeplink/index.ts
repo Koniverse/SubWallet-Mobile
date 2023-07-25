@@ -18,10 +18,14 @@ export function handleDeeplinkOnFirstOpen(
       if (!url || prevDeeplinkUrl === url) {
         return;
       }
+
       prevDeeplinkUrl = url;
       if (getProtocol(url) === 'subwallet') {
         const urlParsed = new urlParse(url);
         if (urlParsed.hostname === 'wc') {
+          if (urlParsed.query.startsWith('?requestId')) {
+            return;
+          }
           const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
           const finalWcUrl = Object.keys(decodedWcUrl)[0];
           connectWalletConnect(finalWcUrl, toast);
@@ -41,6 +45,9 @@ export function handleDeeplinkOnFirstOpen(
         }
 
         if (urlParsed.pathname.split('/')[1] === 'wc') {
+          if (urlParsed.query.startsWith('?requestId')) {
+            return;
+          }
           const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
           const finalWcUrl = Object.keys(decodedWcUrl)[0];
           connectWalletConnect(finalWcUrl, toast);

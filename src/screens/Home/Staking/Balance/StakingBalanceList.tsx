@@ -12,7 +12,6 @@ import { reloadCron } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
-import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootNavigationProps } from 'routes/index';
@@ -74,7 +73,6 @@ const StakingBalanceList = () => {
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
-  const [moreActionModalVisible, setMoreActionModalVisible] = useState<boolean>(false);
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
       Keyboard.dismiss();
@@ -156,31 +154,18 @@ const StakingBalanceList = () => {
             }}
           />
         }
-        isShowPlaceHolder={false}
-        needGapWithStatusBar={false}
       />
 
       {selectedItem && (
         <StakingDetailModal
           modalVisible={detailModalVisible}
-          onCloseDetailModal={() => setDetailModalVisible(false)}
-          onOpenMoreActionModal={() => setMoreActionModalVisible(true)}
           chainStakingMetadata={selectedItem.chainStakingMetadata}
           nominatorMetadata={selectedItem.nominatorMetadata}
           rewardItem={selectedItem.reward}
           staking={selectedItem.staking}
+          setDetailModalVisible={setDetailModalVisible}
         />
       )}
-
-      <StakingActionModal
-        closeModal={() => setMoreActionModalVisible(false)}
-        openModal={() => setMoreActionModalVisible(true)}
-        visible={moreActionModalVisible}
-        chainStakingMetadata={selectedItem?.chainStakingMetadata}
-        nominatorMetadata={selectedItem?.nominatorMetadata}
-        staking={selectedItem?.staking}
-        reward={selectedItem?.reward}
-      />
     </>
   );
 };

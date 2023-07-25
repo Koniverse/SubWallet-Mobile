@@ -57,7 +57,7 @@ export const RpcSelectorModal = ({
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<{ label: string; value: string }>) => (
-      <View style={{ ...ContainerHorizontalPadding }}>
+      <View style={{ ...ContainerHorizontalPadding, marginBottom: theme.marginXS }}>
         <SelectItem
           icon={ShareNetwork}
           backgroundColor={theme.colorTextLight4}
@@ -70,7 +70,7 @@ export const RpcSelectorModal = ({
         />
       </View>
     ),
-    [theme.colorTextLight4, selectedValueMap, onSelectItem, onPressBack],
+    [theme.marginXS, theme.colorTextLight4, selectedValueMap, onSelectItem, onPressBack],
   );
 
   return (

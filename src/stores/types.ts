@@ -137,6 +137,7 @@ export interface AppSettings
     BaseReduxStore {
   authUrls: Record<string, AuthUrlInfo>;
   mediaAllowed: boolean;
+  isDeepLinkConnect: boolean;
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {

@@ -1,13 +1,4 @@
-import React, {
-  ForwardedRef,
-  forwardRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { ForwardedRef, forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
 import { Alert, Linking, NativeSyntheticEvent, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
@@ -359,10 +350,6 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     };
   }, [tabId]);
 
-  const onCloseBrowserOptionModal = useCallback(() => {
-    setModalVisible(false);
-  }, []);
-
   const onLoadProgress = ({ nativeEvent: { progress } }: WebViewProgressEvent) => {
     setProgressNumber(progress);
   };
@@ -519,7 +506,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       <SafeAreaView style={stylesheet.footerAfter} />
 
-      <BrowserOptionModal ref={browserOptionModalRef} visibleModal={modalVisible} onClose={onCloseBrowserOptionModal} />
+      <BrowserOptionModal ref={browserOptionModalRef} visibleModal={modalVisible} setVisibleModal={setModalVisible} />
     </ScreenContainer>
   );
 };

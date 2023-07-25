@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 import { stripUrl } from '@subwallet/extension-base/utils';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -10,7 +10,7 @@ import { chainsToWalletConnectChainInfos, getWCAccountList } from 'utils/walletC
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
-import { ConnectDetailProps } from 'routes/index';
+import { ConnectDetailProps, RootNavigationProps } from 'routes/index';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
@@ -24,6 +24,7 @@ import { EmptyList } from 'components/EmptyList';
 import { SessionTypes } from '@walletconnect/types';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { WCNetworkItem } from 'components/WalletConnect/Network/WCNetworkItem';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 export const ConnectionDetail = ({
   route: {
@@ -33,8 +34,9 @@ export const ConnectionDetail = ({
   const { sessions } = useSelector((state: RootState) => state.walletConnect);
   const theme = useSubWalletTheme().swThemes;
   const currentSession: SessionTypes.Struct = sessions[topic];
+  const networkDetailModalRef = useRef<SWModalRefProps>(null);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const [disconnectModalVisible, setDisconnectModalVisible] = useState<boolean>(false);
   const [networkModalVisible, setNetworkModalVisible] = useState<boolean>(false);
@@ -85,7 +87,7 @@ export const ConnectionDetail = ({
       .finally(() => {
         setLoading(false);
         setDisconnectModalVisible(false);
-        navigation.goBack();
+        navigation.navigate('ConnectList', { isDelete: true });
       });
   };
 
@@ -139,9 +141,11 @@ export const ConnectionDetail = ({
                 {i18n.message.connectedAccounts(accountItems.length)}
               </Typography.Text>
 
-              {accountItems.map(item => (
-                <AccountItemWithName key={item.address} address={item.address} accountName={item?.name} />
-              ))}
+              <View style={{ gap: theme.paddingXS }}>
+                {accountItems.map(item => (
+                  <AccountItemWithName key={item.address} address={item.address} accountName={item?.name} />
+                ))}
+              </View>
             </ScrollView>
             <Button
               onPress={() => setDisconnectModalVisible(true)}
@@ -155,18 +159,20 @@ export const ConnectionDetail = ({
               title={i18n.header.disconnect}
               visible={disconnectModalVisible}
               message={i18n.message.disconnectModalMessage}
-              onCancelModal={() => setDisconnectModalVisible(false)}
               onCompleteModal={onDisconnect}
               buttonTitle={i18n.buttonTitles.disconnect}
               buttonIcon={Plugs}
               loading={loading}
+              setVisible={setDisconnectModalVisible}
             />
 
             <SwModal
+              isUseModalV2
+              modalBaseV2Ref={networkDetailModalRef}
               modalVisible={networkModalVisible}
               modalTitle={i18n.header.connectedNetworks}
-              onChangeModalVisible={() => setNetworkModalVisible(false)}>
-              <View style={{ width: '100%' }}>
+              setVisible={setNetworkModalVisible}>
+              <View style={{ width: '100%', gap: 8 }}>
                 {chains.map(chain => (
                   <WCNetworkItem key={chain.slug} item={chain} selectedValueMap={connectedChainsMap} />
                 ))}

@@ -15,6 +15,7 @@ import { WalletConnectChainInfo } from 'types/walletConnect';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { ToastType } from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 export const chainsToWalletConnectChainInfos = (
   chainMap: Record<string, _ChainInfo>,
@@ -91,15 +92,21 @@ export const isValidUri = (uri: string) => {
   return !validWalletConnectUri(uri);
 };
 
+const runned: Record<string, boolean> = {};
+
 export const connectWalletConnect = (wcUrl: string, toast?: ToastType) => {
   if (isValidUri(wcUrl)) {
-    addConnection({ uri: wcUrl }).catch(e => {
-      const errMessage = (e as Error).message;
-      const message = errMessage.includes('Pairing already exists')
-        ? 'Connection already exists'
-        : 'Fail to add connection';
-      toast?.show(message, { type: 'danger' });
-    });
+    if (!runned[wcUrl]) {
+      runned[wcUrl] = true;
+      addConnection({ uri: wcUrl }).catch(e => {
+        const errMessage = (e as Error).message;
+        console.log('e----------', errMessage);
+        const message = errMessage.includes('Pairing already exists')
+          ? i18n.errorMessage.connectionAlreadyExist
+          : i18n.errorMessage.failToAddConnection;
+        toast?.show(message, { type: 'danger' });
+      });
+    }
   } else {
     toast?.show('Invalid uri');
   }

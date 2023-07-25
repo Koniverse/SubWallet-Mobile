@@ -4,11 +4,9 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { deviceHeight, EVM_ACCOUNT_TYPE, TOAST_DURATION } from 'constants/index';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
-import useGoHome from 'hooks/screen/useGoHome';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deriveAccountV3 } from 'messaging/index';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -22,9 +20,13 @@ import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import createStyles from './styles';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'routes/index';
 
 type Props = {
   deriveAccModalRef: React.MutableRefObject<ModalRef | undefined>;
+  goHome: () => void;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
 const renderLoaderIcon = (x: React.ReactNode): React.ReactNode => {
@@ -37,9 +39,8 @@ const renderLoaderIcon = (x: React.ReactNode): React.ReactNode => {
 };
 
 const DeriveAccountModal: React.FC<Props> = (props: Props) => {
-  const { deriveAccModalRef } = props;
+  const { deriveAccModalRef, goHome, navigation } = props;
   const theme = useSubWalletTheme().swThemes;
-  const goHome = useGoHome();
 
   const { accounts } = useSelector((state: RootState) => state.accountState);
 
@@ -89,7 +90,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
     [goHome, toastError],
   );
 
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   const renderItem = useCallback(
     ({ item: account }: ListRenderItemInfo<AccountJson>): JSX.Element => {
@@ -131,7 +132,6 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
           placement={'bottom'}
           offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - (Platform.OS === 'android' ? 120 : 80)}
         />
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </AccountSelector>
     </>
   );

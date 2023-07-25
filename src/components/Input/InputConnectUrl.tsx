@@ -10,21 +10,39 @@ import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressS
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
+import { addConnection } from 'messaging/index';
+import i18n from 'utils/i18n/i18n';
+import { validWalletConnectUri } from 'utils/scanner/walletConnect';
+import { useToast } from 'react-native-toast-notifications';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props extends InputProps {
   isValidValue?: boolean;
   showAvatar?: boolean;
   scannerProps?: Omit<AddressScannerProps, 'onChangeAddress' | 'onPressCancel' | 'qrModalVisible'>;
+  isShowQrModalVisible: boolean;
+  setQrModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Component = (
-  { isValidValue, scannerProps = {}, value = '', ...inputProps }: Props,
+  {
+    isValidValue,
+    scannerProps = {},
+    value = '',
+    isShowQrModalVisible,
+    setQrModalVisible,
+    setLoading,
+    ...inputProps
+  }: Props,
   ref: ForwardedRef<TextInput>,
 ) => {
   const theme = useSubWalletTheme().swThemes;
-  const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
   const isAddressValid = isValidValue !== undefined ? isValidValue : true;
   const [error, setError] = useState<string | undefined>(undefined);
+  const navigation = useNavigation<RootNavigationProps>();
+  const toast = useToast();
 
   useEffect(() => setAdjustResize(), []);
 
@@ -32,9 +50,9 @@ const Component = (
     const result = await requestCameraPermission();
 
     if (result === RESULTS.GRANTED) {
-      setIsShowQrModalVisible(true);
+      setQrModalVisible(true);
     }
-  }, []);
+  }, [setQrModalVisible]);
 
   const RightPart = useMemo(() => {
     return (
@@ -78,10 +96,28 @@ const Component = (
   const onScanInputText = useCallback(
     (data: string) => {
       setError(undefined);
-      setIsShowQrModalVisible(false);
+      setQrModalVisible(false);
       onChangeInputText(data);
+      setLoading(true);
+      if (!validWalletConnectUri(data)) {
+        addConnection({ uri: data })
+          .then(() => {
+            setLoading(false);
+            navigation.goBack();
+          })
+          .catch(e => {
+            const errMessage = (e as Error).message;
+            const message = errMessage.includes('Pairing already exists')
+              ? i18n.errorMessage.connectionAlreadyExist
+              : i18n.errorMessage.failToAddConnection;
+
+            toast.hideAll();
+            toast.show(message, { type: 'danger' });
+            setLoading(false);
+          });
+      }
     },
-    [onChangeInputText],
+    [navigation, onChangeInputText, setLoading, setQrModalVisible, toast],
   );
 
   const onInputFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
@@ -94,8 +130,8 @@ const Component = (
 
   const closeAddressScanner = useCallback(() => {
     setError(undefined);
-    setIsShowQrModalVisible(false);
-  }, []);
+    setQrModalVisible(false);
+  }, [setQrModalVisible]);
 
   return (
     <>

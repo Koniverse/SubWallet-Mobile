@@ -47,11 +47,13 @@ export const WCNetworkSelected = ({ networks }: Props) => {
   return (
     <BasicSelectModal
       ref={modalRef}
+      isUseModalV2={false}
       items={showNetworks}
       titleTextAlign={'center'}
       title={i18n.header.selectNetwork}
       selectedValueMap={connectedNetworksMap}
       isShowInput={true}
+      isUseForceHidden={false}
       renderSelected={() => (
         <WCNetworkInput
           networks={connectedNetworks}

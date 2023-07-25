@@ -4,8 +4,6 @@ import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, Vi
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
 import { defaultSortFunc } from 'utils/function';
 import i18n from 'utils/i18n/i18n';
 import { LazyFlatList } from 'components/LazyFlatList';
@@ -59,9 +57,7 @@ interface Props<T> {
     groupBy: (item: T) => string;
     sortSection?: SortFunctionInterface<SectionItem<T>>;
   };
-  needGapWithStatusBar?: boolean;
   isShowMainHeader?: boolean;
-  isShowPlaceHolder?: boolean;
   defaultSearchString?: string;
   androidKeyboardVerticalOffset?: number;
   titleTextAlign?: 'left' | 'center';
@@ -102,15 +98,12 @@ export function FlatListScreen<T>({
   isShowListWrapper = false,
   beforeListItem,
   grouping,
-  needGapWithStatusBar,
   isShowMainHeader,
-  isShowPlaceHolder,
   defaultSearchString,
   androidKeyboardVerticalOffset,
   titleTextAlign,
   getItemLayout,
 }: Props<T>) {
-  const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
   const searchRef = useRef<TextInput>(null);
   const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
@@ -126,7 +119,7 @@ export function FlatListScreen<T>({
 
   const _onPressBack = () => {
     searchRef && searchRef.current && searchRef.current.blur();
-    onPressBack ? onPressBack() : navigation.canGoBack() && navigation.goBack();
+    onPressBack && onPressBack();
   };
 
   const renderContent = () => (
@@ -220,10 +213,8 @@ export function FlatListScreen<T>({
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       rightIconColor={rightIconOption?.color}
-      isShowPlaceHolder={isShowPlaceHolder}
       isShowMainHeader={isShowMainHeader}
-      androidKeyboardVerticalOffset={androidKeyboardVerticalOffset}
-      needGapWithStatusBar={needGapWithStatusBar}>
+      androidKeyboardVerticalOffset={androidKeyboardVerticalOffset}>
       {renderContent()}
     </ContainerWithSubHeader>
   );

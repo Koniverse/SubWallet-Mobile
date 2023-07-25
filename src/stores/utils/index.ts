@@ -427,14 +427,13 @@ export const updateConnectWCRequests = (data: WalletConnectSessionRequest[]) => 
 };
 
 export const subscribeConnectWCRequests = lazySubscribeMessage(
-  'pri(walletConnect.requests.subscribe)',
+  'pri(walletConnect.requests.connect.subscribe)',
   null,
   updateConnectWCRequests,
   updateConnectWCRequests,
 );
 
 export const updateWalletConnectSessions = (data: SessionTypes.Struct[]) => {
-  console.log('data', data);
   const payload: Record<string, SessionTypes.Struct> = {};
 
   data.forEach(session => {

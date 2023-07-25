@@ -12,6 +12,7 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { CheckCircle } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   selectedAccounts: string[];
@@ -23,6 +24,8 @@ interface Props {
   onCancel: () => void;
 }
 
+const renderButtonIcon = (color: string) => <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={color} />;
+
 export const WCAccountSelect = ({
   appliedAccounts,
   availableAccounts,
@@ -32,6 +35,7 @@ export const WCAccountSelect = ({
   selectedAccounts,
   useModal,
 }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const modalRef = useRef<ModalRef>();
 
   const onCloseModal = useCallback(() => {
@@ -49,23 +53,25 @@ export const WCAccountSelect = ({
       const selected = !!selectedAccounts.find(address => isSameAddress(address, item.address));
 
       return (
-        <AccountItemWithName
-          accountName={item.name}
-          address={item.address}
-          avatarSize={24}
-          direction="horizontal"
-          isSelected={selected}
-          key={item.address}
-          onPress={onSelectAccount(item.address, false)}
-          showUnselectIcon={true}
-        />
+        <>
+          <AccountItemWithName
+            accountName={item.name}
+            address={item.address}
+            avatarSize={24}
+            direction="horizontal"
+            isSelected={selected}
+            key={item.address}
+            onPress={onSelectAccount(item.address, false)}
+            showUnselectIcon={true}
+          />
+        </>
       );
     },
     [onSelectAccount, selectedAccounts],
   );
 
   return (
-    <View>
+    <View style={{ width: '100%' }}>
       {!availableAccounts.length ? (
         <AlertBox
           title={i18n.common.noAvailableAccount}
@@ -74,23 +80,26 @@ export const WCAccountSelect = ({
         />
       ) : useModal ? (
         <BasicSelectModal
+          isUseModalV2={false}
           ref={modalRef}
           onChangeModalVisible={onCloseModal}
           title={i18n.inputLabel.selectAcc}
           items={availableAccounts}
           selectedValueMap={{}}
+          isShowInput
+          isUseForceHidden={false}
           renderSelected={() => <WCAccountInput accounts={availableAccounts} selected={appliedAccounts} />}
           renderCustomItem={renderItem}>
           <Button
-            block
+            style={{ marginTop: theme.margin }}
             disabled={!selectedAccounts.length}
-            icon={<Icon phosphorIcon={CheckCircle} weight={'fill'} />}
+            icon={renderButtonIcon}
             onPress={_onApply}>
             {i18n.buttonTitles.applyAccounts(selectedAccounts.length)}
           </Button>
         </BasicSelectModal>
       ) : (
-        <View>
+        <View style={{ gap: 8 }}>
           {availableAccounts.length > 1 && (
             <AccountItemWithName
               accountName={i18n.common.allAccounts}

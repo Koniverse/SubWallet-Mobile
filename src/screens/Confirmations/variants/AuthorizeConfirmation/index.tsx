@@ -4,7 +4,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AccountAuthType, AccountJson, AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ConfirmationContent, ConfirmationGeneralInfo } from 'components/common/Confirmation';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import { Button, Icon } from 'components/design-system-ui';
@@ -13,7 +12,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from 'routes/index';
@@ -135,7 +134,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     navigation.replace('CreateAccount', { keyTypes: types, isBack: true });
   }, [accountAuthType, navigation]);
 
-  const { onPress: onPressCreateOne, onPasswordComplete, visible, onHideModal } = useUnlockModal();
+  const { onPress: onPressCreateOne } = useUnlockModal(navigation);
 
   const onAccountSelect = useCallback(
     (address: string) => {
@@ -179,10 +178,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
             <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc(accountTypeMessage || '')}</Text>
           </>
         )}
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}>
+        <View style={styles.contentContainer}>
           <>
             {visibleAccounts.length > 1 && (
               <AccountItemWithName
@@ -207,7 +203,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               />
             ))}
           </>
-        </ScrollView>
+        </View>
       </ConfirmationContent>
       <ConfirmationFooter>
         {visibleAccounts.length > 0 ? (
@@ -239,7 +235,6 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
               Create one
             </Button>
-            <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
           </>
         )}
       </ConfirmationFooter>

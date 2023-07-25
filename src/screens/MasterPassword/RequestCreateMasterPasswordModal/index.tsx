@@ -24,7 +24,7 @@ const RequestCreateMasterPasswordModal = ({ visible }: Props) => {
   };
 
   return (
-    <SwModal modalVisible={modalVisible} modalTitle={i18n.header.createMasterPassword}>
+    <SwModal setVisible={setModalVisible} modalVisible={modalVisible} modalTitle={i18n.header.createMasterPassword}>
       <View style={{ width: '100%' }}>
         <Typography.Text style={_style.textStyle}>{i18n.message.requestCreateMasterPassword}</Typography.Text>
 

@@ -1,12 +1,15 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { Button, Divider, Icon, SwModal } from 'components/design-system-ui';
+import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { IconProps } from 'phosphor-react-native';
 import { SelectModalField } from 'components/common/SelectModal/parts/SelectModalField';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { ActionSelectItem } from 'components/common/SelectModal/parts/ActionSelectItem';
 import { FilterSelectItem } from 'components/common/SelectModal/parts/FilterSelectItem';
 import { ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { OptionType } from 'components/common/FilterModal';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props<T> {
   title: string;
@@ -32,6 +35,9 @@ interface Props<T> {
   onBackButtonPress?: () => void;
   titleTextAlign?: 'center' | 'left';
   beforeListItem?: React.ReactNode;
+  isUseForceHidden?: boolean;
+  level?: number;
+  isUseModalV2?: boolean;
 }
 
 function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
@@ -54,10 +60,21 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
     onBackButtonPress,
     titleTextAlign,
     beforeListItem,
+    isUseForceHidden,
+    isUseModalV2 = true,
+    level,
   } = selectModalProps;
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const [isOpen, setOpen] = useState<boolean>(false);
-  const onCloseModal = () => setOpen(false);
+  const onCloseModal = useCallback(() => {
+    if (isUseModalV2) {
+      modalBaseV2Ref?.current?.close();
+    } else {
+      setOpen(false);
+    }
+  }, [isUseModalV2]);
   const onOpenModal = () => setOpen(true);
+  const theme = useSubWalletTheme().swThemes;
 
   useImperativeHandle(
     ref,
@@ -66,7 +83,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
       onCloseModal: onCloseModal,
       isModalOpen: isOpen,
     }),
-    [isOpen],
+    [isOpen, onCloseModal],
   );
   const renderItem = (item: T) => {
     if (selectModalItemType === 'select') {
@@ -97,8 +114,13 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
   const renderFooter = () => {
     return (
       <>
-        <Divider style={{ paddingTop: 4, paddingBottom: 16 }} color={'#1A1A1A'} />
         <Button
+          style={{
+            width: '100%',
+            paddingHorizontal: theme.padding,
+            ...MarginBottomForSubmitButton,
+            marginTop: theme.padding,
+          }}
           disabled={applyBtn?.disabled}
           icon={color => <Icon phosphorIcon={applyBtn?.icon} size={'lg'} iconColor={color} />}
           onPress={applyBtn?.onPressApplyBtn}>
@@ -120,17 +142,29 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
 
       {isShowContent ? (
         <SwModal
+          level={level}
+          modalBaseV2Ref={modalBaseV2Ref}
           onBackButtonPress={onBackButtonPress}
           modalVisible={isOpen}
           modalTitle={title}
           titleTextAlign={titleTextAlign}
+          isUseForceHidden={isUseForceHidden}
+          setVisible={setOpen}
+          isUseModalV2={isUseModalV2}
           onChangeModalVisible={() => {
+            !isUseModalV2 && onCloseModal();
             onChangeModalVisible && onChangeModalVisible();
-            onCloseModal();
           }}>
           <View style={{ width: '100%' }}>
             {beforeListItem}
-            {items.map(item => (renderCustomItem ? renderCustomItem(item) : renderItem(item)))}
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps={'handled'}
+              style={{ width: '100%', maxHeight: 400 }}
+              contentContainerStyle={{ gap: 8 }}>
+              {items.map(item => (renderCustomItem ? renderCustomItem(item) : renderItem(item)))}
+            </ScrollView>
+
             {selectModalType === 'multi' && renderFooter()}
             {children}
           </View>

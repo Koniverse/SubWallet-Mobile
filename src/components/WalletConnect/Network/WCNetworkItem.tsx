@@ -49,7 +49,7 @@ export const WCNetworkItem = ({ item, selectedValueMap }: Props) => {
     return selectedValueMap[item.slug];
   }, [item.slug, selectedValueMap]);
   return (
-    <View style={{ marginBottom: 8 }}>
+    <>
       <View style={itemArea}>
         <View style={itemBodyArea}>
           <View style={logoWrapperStyle}>{getNetworkLogo(item.slug, 28)}</View>
@@ -62,6 +62,6 @@ export const WCNetworkItem = ({ item, selectedValueMap }: Props) => {
           </View>
         )}
       </View>
-    </View>
+    </>
   );
 };

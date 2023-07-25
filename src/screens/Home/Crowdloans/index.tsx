@@ -90,10 +90,8 @@ export const CrowdloansScreen = () => {
         searchFunction={doFilterOptions}
         filterOptions={defaultFilterOpts}
         filterFunction={getListByFilterOpt}
-        isShowPlaceHolder={false}
         isShowMainHeader
         placeholder={i18n.placeholder.searchProject}
-        needGapWithStatusBar={false}
         // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
         // refreshControl={
         //   <RefreshControl

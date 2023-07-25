@@ -150,6 +150,7 @@ export const AccountsScreen = ({
     <>
       <FlatListScreen
         style={{ flex: 1 }}
+        onPressBack={() => navigation.goBack()}
         title={i18n.header.selectAccount}
         items={accounts}
         renderItem={renderItem}

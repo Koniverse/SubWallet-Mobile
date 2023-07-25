@@ -195,8 +195,6 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         renderListEmptyComponent={renderListEmptyComponent}
         isLoadingData={isLoadingData}
         isShowListWrapper
-        isShowPlaceHolder={false}
-        needGapWithStatusBar={false}
         placeholder={i18n.placeholder.networkName}
       />
     </SubWalletFullSizeModal>

@@ -25,8 +25,9 @@ export type RootStackParamList = {
       | 'AttachReadOnly';
     state?: string[];
   };
+  UnlockModal: undefined;
   ChangePassword: undefined;
-  ConnectList: undefined;
+  ConnectList: { isDelete?: boolean };
   ConnectDetail: { topic: string };
   ConnectWalletConnect: undefined;
   MigratePassword: undefined;
@@ -112,6 +113,7 @@ export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
 export type ImportTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportToken'>;
 export type ImportNftProps = NativeStackScreenProps<RootStackParamList, 'ImportNft'>;
+export type ConnectListProps = NativeStackScreenProps<RootStackParamList, 'ConnectList'>;
 export type ConnectDetailProps = NativeStackScreenProps<RootStackParamList, 'ConnectDetail'>;
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;
 export type NetworkSettingDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkSettingDetail'>;

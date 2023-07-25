@@ -120,7 +120,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
-                <Text style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
+                <Text style={[ScannerStyles.HeaderTitleTextStyle, { backgroundColor: theme.colorBgSecondary }]}>
                   {i18n.header.scanQR}
                 </Text>
                 <IconButton icon={CaretLeft} style={CancelButtonStyle} onPress={onHideModal} />

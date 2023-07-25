@@ -1,16 +1,18 @@
 import { PasswordField } from 'components/Field/Password';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { Button, SwModal } from 'components/design-system-ui';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { ModalRefProps } from 'components/design-system-ui/modal/SwModal';
 
 interface Props {
   visible: boolean;
-  closeModal: () => void;
+  setModalVisible: (arg: boolean) => void;
   onConfirm: (password: string) => void;
   isBusy: boolean;
   errorArr: string[] | undefined;
@@ -28,8 +30,18 @@ const PasswordContainerStyle: StyleProp<ViewStyle> = {
   marginBottom: 8,
 };
 
-const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr, onChangePassword }: Props) => {
+const PasswordModal = ({
+  visible,
+  onConfirm,
+  isBusy,
+  errorArr,
+  setErrorArr,
+  onChangePassword,
+  setModalVisible,
+}: Props) => {
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const swModalRef = useRef<ModalRefProps>(null);
   const formConfig: FormControlConfig = {
     password: {
       name: i18n.common.walletPassword,
@@ -38,6 +50,9 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
       require: true,
     },
   };
+
+  const closeModal = () => modalBaseV2Ref?.current?.close();
+
   const onSubmit = useCallback(
     (formState: FormState) => {
       const password = formState.data.password;
@@ -80,10 +95,13 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
 
   return (
     <SwModal
+      ref={swModalRef}
+      modalBaseV2Ref={modalBaseV2Ref}
+      isUseModalV2
+      setVisible={setModalVisible}
       modalVisible={visible}
       modalTitle={i18n.common.enterYourPassword}
-      onBackButtonPress={!isBusy ? closeModal : undefined}
-      onChangeModalVisible={!isBusy ? closeModal : undefined}>
+      onBackButtonPress={!isBusy ? closeModal : undefined}>
       <View style={ContainerStyle}>
         <PasswordField
           ref={formState.refs.password}
@@ -101,7 +119,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
         )}
 
         <Button
-          style={{ marginTop: 16 }}
+          style={{ marginVertical: 16 }}
           loading={isBusy}
           onPress={onPress}
           disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected || isBusy}>

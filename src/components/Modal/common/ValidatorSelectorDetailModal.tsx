@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { SwModal } from 'components/design-system-ui';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
 import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import i18n from 'utils/i18n/i18n';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   detailModalVisible: boolean;
   detailItem: ValidatorDataType;
-  onCancel: () => void;
   networkPrefix?: number;
+  setVisible: (arg: boolean) => void;
 }
 
-export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, onCancel, networkPrefix }: Props) => {
+export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, networkPrefix, setVisible }: Props) => {
   const {
     address: validatorAddress,
     commission,
@@ -26,12 +27,18 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
     totalStake,
   } = detailItem;
 
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const onCancel = useCallback(() => modalBaseV2Ref?.current?.close(), []);
+
   return (
     <SwModal
+      level={2}
+      isUseModalV2
+      modalBaseV2Ref={modalBaseV2Ref}
+      setVisible={setVisible}
       modalVisible={detailModalVisible}
       modalTitle={i18n.header.validatorDetails}
-      onBackButtonPress={onCancel}
-      onChangeModalVisible={onCancel}>
+      onBackButtonPress={onCancel}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
           <MetaInfo.Account

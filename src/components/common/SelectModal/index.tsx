@@ -1,8 +1,8 @@
-import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { Button, Divider, Icon, SwFullSizeModal } from 'components/design-system-ui';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen, RightIconOpt } from 'components/FlatListScreen';
-import { ListRenderItemInfo, View } from 'react-native';
-import { FlatListScreenPaddingTop, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { ListRenderItemInfo, Platform, View } from 'react-native';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { OptionType } from 'components/common/FilterModal';
 import { AccountSelectItem } from 'components/common/SelectModal/parts/AccountSelectItem';
 import { _TokenSelectItem } from 'components/common/SelectModal/parts/TokenSelectItem';
@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props<T> {
   items: T[];
@@ -55,7 +56,9 @@ interface Props<T> {
   onCloseModal?: () => void;
   onModalOpened?: () => void;
   rightIconOption?: RightIconOpt;
+  level?: number;
 }
+const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
 function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const {
@@ -90,20 +93,23 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     onCloseModal: _onCloseModal,
     onModalOpened,
     rightIconOption,
+    level,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isLoadingData, setLoadingData] = useState<boolean>(true);
-  const onCloseModal = () => {
-    setTimeout(() => setLoadingData(true), 100);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const onCloseModal = useCallback(() => {
+    setTimeout(() => setLoadingData(true), LOADING_TIMEOUT);
     setOpen(false);
     _onCloseModal && _onCloseModal();
-  };
+  }, [_onCloseModal]);
+
   const theme = useSubWalletTheme().swThemes;
 
   useEffect(() => {
     if (isOpen) {
-      const timeout = setTimeout(() => setLoadingData(false), 100);
+      const timeout = setTimeout(() => setLoadingData(false), LOADING_TIMEOUT);
       return () => clearTimeout(timeout);
     }
   }, [isOpen]);
@@ -142,10 +148,10 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         setOpen(true);
         !!onModalOpened && onModalOpened();
       },
-      onCloseModal: () => setOpen(false),
+      onCloseModal: onCloseModal,
       isModalOpen: isOpen,
     }),
-    [isOpen, onModalOpened],
+    [isOpen, onCloseModal, onModalOpened],
   );
 
   const _searchFunction = (_items: T[], searchString: string): T[] => {
@@ -178,7 +184,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             item={item}
             selectedValueMap={selectedValueMap}
             onSelectItem={onSelectItem}
-            onCloseModal={() => closeModalAfterSelect && onCloseModal()}
+            onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
           />
         </>
       );
@@ -188,7 +194,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           item={item}
           selectedValueMap={selectedValueMap}
           onSelectItem={onSelectItem}
-          onCloseModal={() => closeModalAfterSelect && onCloseModal()}
+          onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
         />
       );
     } else if (selectModalItemType === 'chain') {
@@ -197,7 +203,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           item={item}
           selectedValueMap={selectedValueMap}
           onSelectItem={onSelectItem}
-          onCloseModal={() => closeModalAfterSelect && onCloseModal()}
+          onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
         />
       );
     } else {
@@ -218,8 +224,13 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   const renderFooter = () => {
     return (
       <>
-        <Divider style={{ marginVertical: 16 }} color={'#1A1A1A'} />
-        <View style={{ width: '100%', paddingHorizontal: 16, ...MarginBottomForSubmitButton }}>
+        <View
+          style={{
+            width: '100%',
+            paddingHorizontal: theme.padding,
+            ...MarginBottomForSubmitButton,
+            paddingTop: theme.padding,
+          }}>
           <Button
             disabled={applyBtn?.applyBtnDisabled}
             icon={
@@ -249,29 +260,38 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
       )}
 
       {isShowContent ? (
-        <SwFullSizeModal modalVisible={isOpen} onBackButtonPress={onBackButtonPress}>
-          <FlatListScreen
-            autoFocus={true}
-            items={items}
-            style={[FlatListScreenPaddingTop, { flex: 1 }]}
-            renderItem={renderCustomItem || renderItem}
-            searchFunction={searchFunc || _searchFunction}
-            renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}
-            title={title}
-            onPressBack={onCloseModal}
-            isLoadingData={isLoadingData}
-            isShowFilterBtn={isShowFilterBtn}
-            filterFunction={filterFunction}
-            filterOptions={filterOptions}
-            placeholder={placeholder}
-            loading={loading}
-            withSearchInput={withSearchInput}
-            isShowListWrapper={isShowListWrapper}
-            rightIconOption={rightIconOption}
-            afterListItem={
-              selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
-            }
-          />
+        <SwFullSizeModal
+          level={level}
+          modalBaseV2Ref={modalBaseV2Ref}
+          isUseModalV2
+          modalVisible={isOpen}
+          setVisible={setOpen}
+          onBackButtonPress={onBackButtonPress}>
+          <>
+            <FlatListScreen
+              autoFocus={true}
+              items={items}
+              style={{ flex: 1 }}
+              renderItem={renderCustomItem || renderItem}
+              searchFunction={searchFunc || _searchFunction}
+              renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}
+              title={title}
+              onPressBack={onCloseModal}
+              isLoadingData={isLoadingData}
+              isShowFilterBtn={isShowFilterBtn}
+              filterFunction={filterFunction}
+              filterOptions={filterOptions}
+              placeholder={placeholder}
+              loading={loading}
+              withSearchInput={withSearchInput}
+              isShowListWrapper={isShowListWrapper}
+              rightIconOption={rightIconOption}
+              afterListItem={
+                selectModalType === 'multi' ? renderFooter() : renderAfterListItem ? renderAfterListItem() : undefined
+              }
+            />
+          </>
+
           {children}
         </SwFullSizeModal>
       ) : (

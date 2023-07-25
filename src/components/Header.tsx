@@ -49,8 +49,6 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
 
   const onScanAddress = useCallback(
     (data: string) => {
-      const _error = validWalletConnectUri(data);
-      console.log('error', _error);
       if (isAddress(data)) {
         setError(undefined);
         setIsScanning(false);

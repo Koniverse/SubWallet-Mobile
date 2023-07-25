@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Number, SwModal, Typography } from 'components/design-system-ui';
 import { StyleSheet, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
@@ -7,6 +7,7 @@ import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 type ItemType = {
   symbol: string;
@@ -17,7 +18,7 @@ type ItemType = {
 
 export interface Props {
   modalVisible: boolean;
-  onChangeModalVisible?: () => void;
+  setVisible: (arg: boolean) => void;
   tokenBalanceMap: Record<string, TokenBalanceItemType>;
   currentTokenInfo?: {
     symbol: string;
@@ -25,9 +26,10 @@ export interface Props {
   };
 }
 
-export const TokenDetailModal = ({ modalVisible, onChangeModalVisible, currentTokenInfo, tokenBalanceMap }: Props) => {
+export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceMap, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = createStyleSheet(theme);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const items: ItemType[] = useMemo(() => {
     const symbol = currentTokenInfo?.symbol || '';
     const balanceInfo = currentTokenInfo ? tokenBalanceMap[currentTokenInfo.slug] : undefined;
@@ -47,13 +49,16 @@ export const TokenDetailModal = ({ modalVisible, onChangeModalVisible, currentTo
       },
     ];
   }, [currentTokenInfo, tokenBalanceMap]);
+  const onChangeModalVisible = () => modalBaseV2Ref?.current?.close();
 
   return (
     <SwModal
+      isUseModalV2
+      setVisible={setVisible}
+      modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
       modalTitle={i18n.header.tokenDetails}
-      onBackButtonPress={onChangeModalVisible}
-      onChangeModalVisible={onChangeModalVisible}>
+      onBackButtonPress={onChangeModalVisible}>
       <View style={_style.blockContainer}>
         {items.map(item => (
           <View key={item.key} style={_style.row}>

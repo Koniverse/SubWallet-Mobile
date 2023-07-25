@@ -89,10 +89,8 @@ const NftCollectionList = () => {
         androidKeyboardVerticalOffset={0}
         numberColumns={2}
         searchMarginBottom={16}
-        isShowPlaceHolder={false}
         isShowMainHeader
         getItemLayout={getItemLayout}
-        needGapWithStatusBar={false}
       />
     </>
   );

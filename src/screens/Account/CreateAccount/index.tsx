@@ -89,7 +89,7 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
               <InitSecretPhrase seed={seed} onPressSubmit={onPressSubmitInitSecretPhrase} />
             )}
             {currentViewStep === ViewStep.VERIFY_SP && (
-              <VerifySecretPhrase seed={seed} onPressSubmit={onCreateAccount} isBusy={isBusy} />
+              <VerifySecretPhrase seed={seed} onPressSubmit={onCreateAccount} isBusy={isBusy} navigation={navigation} />
             )}
           </>
         )}

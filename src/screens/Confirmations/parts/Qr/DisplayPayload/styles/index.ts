@@ -1,4 +1,4 @@
-import { StyleSheet, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
 
 export interface ComponentStyle {
@@ -13,6 +13,7 @@ export default (theme: ThemeTypes) => {
       display: 'flex',
       width: '100%',
       flex: 1,
+      marginTop: Platform.OS === 'ios' ? 0 : 8,
     },
     body: {
       flex: 1,

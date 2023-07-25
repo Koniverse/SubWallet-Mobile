@@ -32,11 +32,15 @@ export const WCNetworkAvatarGroup = ({ networks }: Props) => {
   }, [networks]);
 
   const getAvatarStyle = useCallback(
-    (index: number) => {
+    (index: number, arrLength: number) => {
       let avatarStyles: StyleProp<ViewStyle> = [_style.avatarContent];
 
       if (index === 0) {
-        avatarStyles.push({ marginLeft: 0, opacity: 0.5 });
+        if (index === arrLength - 1) {
+          avatarStyles.push({ marginLeft: 0, opacity: 1 });
+        } else {
+          avatarStyles.push({ marginLeft: 0, opacity: 0.5 });
+        }
       }
 
       if (index === 2) {
@@ -56,7 +60,7 @@ export const WCNetworkAvatarGroup = ({ networks }: Props) => {
     <View style={[_style.container, countMore > 0 && _style.mlStrong]}>
       {networks.slice(0, 3).map((network, index) => {
         return (
-          <View key={network.slug} style={getAvatarStyle(index)}>
+          <View key={network.slug} style={getAvatarStyle(index, networks.length)}>
             <Logo
               size={showCount === 3 ? sizeLogo.default : sizeLogo.large}
               shape={'squircle'}

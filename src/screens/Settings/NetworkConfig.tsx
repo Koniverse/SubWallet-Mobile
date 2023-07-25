@@ -60,6 +60,7 @@ export const NetworkConfig = () => {
 
   return (
     <FlatListScreen
+      onPressBack={() => navigation.goBack()}
       title={i18n.title.networks}
       items={sortedNetworkConfigList}
       renderItem={renderItem}

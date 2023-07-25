@@ -1,9 +1,8 @@
 import AvatarGroup from 'components/common/AvatarGroup';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { DotsThree, FileArrowDown, X } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, ListRenderItemInfo, Platform, ScrollView, View } from 'react-native';
 import { InputFile } from 'components/common/Field/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
@@ -28,6 +27,7 @@ import { Button, Icon, SelectItem, SwModal, Typography } from 'components/design
 import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
   let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
@@ -86,6 +86,7 @@ export const RestoreJson = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [accountsInfo, setAccountsInfo] = useState<ResponseJsonGetAccountInfo[]>([]);
   const [visible, setVisible] = useState(false);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
 
   const addresses = useMemo(() => accountsInfo.map(acc => acc.address), [accountsInfo]);
 
@@ -221,7 +222,7 @@ export const RestoreJson = () => {
     setVisible(false);
   }, []);
 
-  const { visible: unlockVisible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   useEffect(() => {
     let amount = true;
@@ -309,13 +310,14 @@ export const RestoreJson = () => {
         </View>
       </View>
       <SwModal
+        isUseModalV2
+        modalBaseV2Ref={modalBaseV2Ref}
+        setVisible={setVisible}
         modalVisible={visible}
-        onChangeModalVisible={hideModal}
         modalTitle={i18n.header.accounts}
         onBackButtonPress={hideModal}>
         <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
       </SwModal>
-      <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideModal} />
     </ContainerWithSubHeader>
   );
 };

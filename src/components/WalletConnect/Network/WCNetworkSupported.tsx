@@ -7,6 +7,7 @@ import { WalletConnectChainInfo } from 'types/walletConnect';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { WCNetworkItem } from 'components/WalletConnect/Network/WCNetworkItem';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   networks: WalletConnectChainInfo[];
@@ -26,15 +27,17 @@ export const WCNetworkSupported = ({ networks }: Props) => {
   const networkNumber = networks.length;
   return (
     <BasicSelectModal
+      isUseModalV2={false}
       ref={modalRef}
       items={networks}
+      isUseForceHidden={false}
       titleTextAlign={'center'}
-      title={'Supported networks'}
+      title={i18n.message.supportedNetworks}
       selectedValueMap={supportedNetworksMap}
       isShowInput={true}
       disabled={!networkNumber}
       renderSelected={() => (
-        <WCNetworkInput networks={networks} content={`${networkNumber} networks support`} onPress={() => {}} />
+        <WCNetworkInput networks={networks} content={i18n.message.networkSupported(networkNumber)} onPress={() => {}} />
       )}
       beforeListItem={
         <Typography.Text
@@ -42,7 +45,9 @@ export const WCNetworkSupported = ({ networks }: Props) => {
             ...FontSemiBold,
             color: theme.colorWhite,
             paddingBottom: theme.paddingXS,
-          }}>{`${networkNumber} networks support`}</Typography.Text>
+          }}>
+          {i18n.message.networkSupported(networkNumber)}
+        </Typography.Text>
       }
       renderCustomItem={renderItem}
     />
