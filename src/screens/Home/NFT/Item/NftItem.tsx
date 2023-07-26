@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import ImagePreview from 'components/ImagePreview';
 import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   nftItem: _NftItem;
@@ -13,15 +13,14 @@ interface Props {
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   width: '50%',
+  height: 220,
   paddingHorizontal: 8,
 };
 
 const ContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'relative',
+  flex: 1,
+  justifyContent: 'space-between',
   borderRadius: 8,
-  overflow: 'hidden',
   backgroundColor: ColorMap.dark2,
 };
 
@@ -31,21 +30,19 @@ const LogoStyle: StyleProp<any> = {
 };
 
 const InfoStyle: StyleProp<any> = {
-  display: 'flex',
   justifyContent: 'space-between',
-  position: 'relative',
   flexDirection: 'row',
   alignItems: 'center',
   width: '100%',
-  flex: 1,
-  marginTop: 10,
-  marginBottom: 16,
+  marginTop: 5,
+  paddingBottom: 16,
   paddingHorizontal: 12,
 };
 
 const NameStyle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
   ...FontSemiBold,
+  fontSize: 14,
+  lineHeight: 22,
   width: '100%',
   color: ColorMap.light,
 };
