@@ -1,3 +1,6 @@
+## 1.0.12 (204)
+- Update Web Runner to 1.1.3-0 (#904)
+
 ## 1.0.11 (203)
 - Can't access dapp from specific link when search on browser (#903)
 
