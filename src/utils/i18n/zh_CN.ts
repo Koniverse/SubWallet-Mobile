@@ -189,6 +189,9 @@ export const zh = {
     provider: '提供商',
     pools: '矿池',
     nominate: '提名',
+    evmNetworks: 'EVM networks',
+    substrateNetworks: 'Substrate networks',
+    networks: 'Networks',
   },
   title: {
     exportAccount: '导出账户',
@@ -377,6 +380,7 @@ export const zh = {
     newConnection: 'New connection',
     disconnect: 'Disconnect',
     applyAccounts: (account: number) => `Apply ${account} accounts`,
+    createOne: 'Create one',
   },
   inputLabel: {
     selectAcc: '选择账户',
@@ -588,6 +592,7 @@ export const zh = {
     connectedNetworkConnected: (chainLength: number) => `${chainLength} networks connected`,
     connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
     connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
+    connectSuccessfully: 'Connect successfully',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',
@@ -955,6 +960,8 @@ export const zh = {
     error: '出错！',
     clearHistory: '清档记录',
     updateNetwork: '更新网络',
+    expiredConnectionTitle: 'Connection expired',
+    unsupportedNetworkTitle: 'Unsupported network',
   },
   warningMessage: {
     passwordTooShort: '密码过短',
@@ -985,6 +992,8 @@ export const zh = {
     featureIsNotAvailable: '此功能不适用于所选的账户',
     tokenExists: '此通证已存在',
     enableNetworkMessage: '你选择的网络尚未启用。 请点击此按钮启用或选择其他网络',
+    expiredConnectionMessage: 'Connection expired. Please create a new connection from dApp',
+    unsupportedNetworkMessage: 'There is at least 1 chosen network unavailable',
   },
   errorMessage: {
     invalidPinCode: 'PIN码无效',

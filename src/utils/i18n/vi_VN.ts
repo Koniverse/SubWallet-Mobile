@@ -191,6 +191,9 @@ export const vi = {
     provider: 'Provider',
     pools: 'Pool',
     nominate: 'Nominate',
+    evmNetworks: 'EVM networks',
+    substrateNetworks: 'Substrate networks',
+    networks: 'Networks',
   },
   title: {
     exportAccount: 'Xuất tài khoản  ',
@@ -381,6 +384,7 @@ export const vi = {
     newConnection: 'New connection',
     disconnect: 'Disconnect',
     applyAccounts: (account: number) => `Apply ${account} accounts`,
+    createOne: 'Create one',
   },
   inputLabel: {
     selectAcc: 'Chọn tài khoản',
@@ -594,6 +598,7 @@ export const vi = {
     connectedNetworkConnected: (chainLength: number) => `${chainLength} networks connected`,
     connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
     connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
+    connectSuccessfully: 'Connect successfully',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot Parachain',
@@ -964,6 +969,8 @@ export const vi = {
     error: 'Lỗi',
     clearHistory: 'Xóa lịch sử',
     updateNetwork: 'Cập nhật mạng',
+    expiredConnectionTitle: 'Connection expired',
+    unsupportedNetworkTitle: 'Unsupported network',
   },
   warningMessage: {
     passwordTooShort: 'Mật khẩu quá ngắn',
@@ -999,6 +1006,8 @@ export const vi = {
     tokenExists: 'Token đã tồn tại',
     enableNetworkMessage:
       'Mạng bạn đã chọn chưa được kích hoạt. Vui lòng nhấp vào nút này để bật mạng hoặc chọn mạng khác',
+    expiredConnectionMessage: 'Connection expired. Please create a new connection from dApp',
+    unsupportedNetworkMessage: 'There is at least 1 chosen network unavailable',
   },
   errorMessage: {
     invalidPinCode: 'Mã PIN không hợp lệ',

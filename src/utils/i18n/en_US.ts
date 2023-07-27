@@ -191,6 +191,9 @@ export const en = {
     provider: 'Provider',
     pools: 'Pool',
     nominate: 'Nominate',
+    evmNetworks: 'EVM networks',
+    substrateNetworks: 'Substrate networks',
+    networks: 'Networks',
   },
   title: {
     exportAccount: 'Export account',
@@ -382,6 +385,7 @@ export const en = {
     newConnection: 'New connection',
     disconnect: 'Disconnect',
     applyAccounts: (account: number) => `Apply ${account} accounts`,
+    createOne: 'Create one',
   },
   inputLabel: {
     selectAcc: 'Select account',
@@ -596,6 +600,7 @@ export const en = {
     connectedNetworkConnected: (chainLength: number) => `${chainLength} networks connected`,
     connectedAccounts: (accountItemsLength: number) => `${accountItemsLength} account connected`,
     connectWalletConnectMessage: 'By clicking "Connect", you allow this dapp to view your public address',
+    connectSuccessfully: 'Connect successfully',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
@@ -965,6 +970,8 @@ export const en = {
     error: 'Error!',
     clearHistory: 'Clear history',
     updateNetwork: 'Update network',
+    expiredConnectionTitle: 'Connection expired',
+    unsupportedNetworkTitle: 'Unsupported network',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',
@@ -1000,6 +1007,8 @@ export const en = {
     tokenExists: 'The token already exists.',
     enableNetworkMessage:
       'The network you selected has not enable. Please enable by click this button or choose other network',
+    expiredConnectionMessage: 'Connection expired. Please create a new connection from dApp',
+    unsupportedNetworkMessage: 'There is at least 1 chosen network unavailable',
   },
   errorMessage: {
     invalidPinCode: 'Invalid PIN Code',
