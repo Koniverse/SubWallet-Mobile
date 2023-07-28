@@ -36,6 +36,8 @@ import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { getAstarWithdrawable } from '@subwallet/extension-base/koni/api/staking/bonding/astar';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -94,7 +96,10 @@ export const Withdraw = ({
   }, [accounts, allNominatorInfo, chainInfoMap, stakingType]);
 
   const unstakingInfo = useMemo((): UnstakingInfo | undefined => {
-    if (from && !isAccountAll(from)) {
+    if (from && !isAccountAll(from) && !!nominatorMetadata) {
+      if (_STAKING_CHAIN_GROUP.astar.includes(nominatorMetadata.chain)) {
+        return getAstarWithdrawable(nominatorMetadata);
+      }
       return nominatorMetadata.unstakings.filter(data => data.status === UnstakingStatus.CLAIMABLE)[0];
     }
 
