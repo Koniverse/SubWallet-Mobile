@@ -53,6 +53,7 @@ interface Props<T> {
   renderAfterListItem?: () => JSX.Element;
   onBackButtonPress?: () => void;
   onCloseModal?: () => void;
+  onModalOpened?: () => void;
   rightIconOption?: RightIconOpt;
 }
 
@@ -87,15 +88,25 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     renderAfterListItem,
     onBackButtonPress,
     onCloseModal: _onCloseModal,
+    onModalOpened,
     rightIconOption,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
+  const [isLoadingData, setLoadingData] = useState<boolean>(true);
   const onCloseModal = () => {
+    setTimeout(() => setLoadingData(true), 100);
     setOpen(false);
     _onCloseModal && _onCloseModal();
   };
   const theme = useSubWalletTheme().swThemes;
+
+  useEffect(() => {
+    if (isOpen) {
+      const timeout = setTimeout(() => setLoadingData(false), 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (acceptDefaultValue) {
@@ -127,11 +138,14 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
   useImperativeHandle(
     ref,
     () => ({
-      onOpenModal: () => setOpen(true),
+      onOpenModal: () => {
+        setOpen(true);
+        !!onModalOpened && onModalOpened();
+      },
       onCloseModal: () => setOpen(false),
       isModalOpen: isOpen,
     }),
-    [isOpen],
+    [isOpen, onModalOpened],
   );
 
   const _searchFunction = (_items: T[], searchString: string): T[] => {
@@ -245,6 +259,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
             renderListEmptyComponent={renderListEmptyComponent || _renderListEmptyComponent}
             title={title}
             onPressBack={onCloseModal}
+            isLoadingData={isLoadingData}
             isShowFilterBtn={isShowFilterBtn}
             filterFunction={filterFunction}
             filterOptions={filterOptions}

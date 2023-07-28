@@ -4,6 +4,7 @@ import {
   ListRenderItemInfo,
   RefreshControl,
   ScrollView,
+  SectionListData,
   StyleProp,
   View,
   ViewStyle,
@@ -29,6 +30,7 @@ import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { tokenItem, tokenItemMarginBottom } from 'constants/itemHeight';
 
 interface Props {
   layoutHeader: React.ReactElement;
@@ -48,7 +50,16 @@ const flatListContentContainerStyle: StyleProp<any> = {
   justifyContent: 'center',
   position: 'relative',
 };
+type GetItemLayoutType =
+  | readonly TokenBalanceItemType[]
+  | SectionListData<TokenBalanceItemType, SectionListData<TokenBalanceItemType>>[]
+  | null
+  | undefined;
+
 const PAGE_SIZE = 15;
+const ITEM_HEIGHT = tokenItem;
+const ITEM_SEPARATOR = tokenItemMarginBottom;
+const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 export const TokensLayout = ({
   layoutHeader,
   stickyBackground,
@@ -209,6 +220,12 @@ export const TokensLayout = ({
     right: 0,
   } as StyleProp<ViewStyle>;
 
+  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
+    index,
+    length: TOTAL_ITEM_HEIGHT,
+    offset: TOTAL_ITEM_HEIGHT * index,
+  });
+
   return (
     <View style={[flex1, style]}>
       {!!listActions && (
@@ -233,6 +250,7 @@ export const TokensLayout = ({
         initialNumToRender={12}
         removeClippedSubviews
         windowSize={12}
+        getItemLayout={getItemLayout}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.7}
         refreshControl={refreshControlNode}

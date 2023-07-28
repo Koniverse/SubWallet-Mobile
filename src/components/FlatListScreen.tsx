@@ -49,6 +49,7 @@ interface Props<T> {
   leftButtonDisabled?: boolean;
   headerContent?: () => JSX.Element;
   refreshControl?: React.ReactElement<RefreshControlProps, string | React.JSXElementConstructor<any>>;
+  isLoadingData?: boolean;
   isNetConnected?: boolean;
   isShowFilterBtn?: boolean;
   filterOptions?: OptionType[];
@@ -64,6 +65,10 @@ interface Props<T> {
   defaultSearchString?: string;
   androidKeyboardVerticalOffset?: number;
   titleTextAlign?: 'left' | 'center';
+  getItemLayout?: (
+    data: readonly T[] | SectionListData<T, SectionListData<T>>[] | null | undefined,
+    index: number,
+  ) => { length: number; offset: number; index: number };
 }
 
 export function FlatListScreen<T>({
@@ -90,6 +95,7 @@ export function FlatListScreen<T>({
   leftButtonDisabled,
   headerContent,
   refreshControl,
+  isLoadingData = false,
   isNetConnected = true,
   isShowFilterBtn,
   filterOptions,
@@ -102,6 +108,7 @@ export function FlatListScreen<T>({
   defaultSearchString,
   androidKeyboardVerticalOffset,
   titleTextAlign,
+  getItemLayout,
 }: Props<T>) {
   const navigation = useNavigation<RootNavigationProps>();
   const [searchString, setSearchString] = useState<string>(defaultSearchString || '');
@@ -140,7 +147,8 @@ export function FlatListScreen<T>({
         />
       )}
       {isNetConnected ? (
-        grouping ? (
+        !isLoadingData &&
+        (grouping ? (
           <LazySectionList
             items={items}
             searchString={searchString}
@@ -156,6 +164,7 @@ export function FlatListScreen<T>({
             loading={loading}
             groupBy={grouping.groupBy}
             renderSectionHeader={grouping.renderSectionHeader}
+            getItemLayout={getItemLayout}
           />
         ) : (
           <LazyFlatList
@@ -172,8 +181,9 @@ export function FlatListScreen<T>({
             loading={loading}
             numberColumns={numberColumns}
             isShowListWrapper={isShowListWrapper}
+            getItemLayout={getItemLayout}
           />
-        )
+        ))
       ) : (
         <NoInternetScreen />
       )}

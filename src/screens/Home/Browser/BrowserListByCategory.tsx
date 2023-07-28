@@ -12,6 +12,7 @@ import { getHostName } from 'utils/browser';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
+import { browserListItemHeight, browserListSeparator } from 'constants/itemHeight';
 
 export interface BrowserListByCategoryProps {
   searchString: string;
@@ -21,7 +22,9 @@ type SearchItemType = {
   isSearch?: boolean;
 } & SiteInfo;
 const styles = browserHomeStyle();
-const ITEM_HEIGHT = 72;
+const ITEM_HEIGHT = browserListItemHeight;
+const ITEM_SEPARATOR = browserListSeparator;
+const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route, navigation }) => {
   const { searchString, navigationType } = route.params as BrowserListByCategoryProps;
   const theme = useSubWalletTheme().swThemes;
@@ -76,11 +79,10 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [predefinedData.dapps, searchString, bookmarkedItems]);
 
-  const itemSeparator = () => <View style={styles.itemSeparator} />;
   const getItemLayout = (data: DAppInfo[] | null | undefined, index: number) => ({
     index,
-    length: ITEM_HEIGHT,
-    offset: ITEM_HEIGHT * index,
+    length: TOTAL_ITEM_HEIGHT,
+    offset: TOTAL_ITEM_HEIGHT * index,
   });
   const keyExtractor = (item: DAppInfo) => item.id + item.url;
   const onPressSectionItem = (item: SearchItemType) => {
@@ -116,7 +118,6 @@ const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>
           keyExtractor={keyExtractor}
           style={{ padding: theme.padding, paddingTop: theme.paddingSM }}
           renderItem={renderBrowserItem}
-          ItemSeparatorComponent={itemSeparator}
           getItemLayout={getItemLayout}
         />
       ) : (

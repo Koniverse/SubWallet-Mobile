@@ -1,10 +1,11 @@
+import { browserHomeItemWidth } from 'constants/itemHeight';
 import { StyleSheet } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create({
-    container: { width: 50 },
+    container: { width: browserHomeItemWidth },
     absolute: { position: 'absolute' },
     squircleWrapper: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
     imageWrapper: { alignItems: 'center' },

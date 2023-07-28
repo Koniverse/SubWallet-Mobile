@@ -26,6 +26,7 @@ import { CustomizationModal } from 'screens/Home/Crypto/CustomizationModal';
 import { useToast } from 'react-native-toast-notifications';
 import { TokenSearchModal } from 'screens/Home/Crypto/TokenSearchModal';
 import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
+import { tokenItem } from 'constants/itemHeight';
 
 const renderActionsStyle: StyleProp<any> = {
   flexDirection: 'row',
@@ -105,7 +106,7 @@ export const TokenGroups = () => {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
-      <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: theme.colorBgSecondary }]}>
+      <View key={item.slug} style={[itemWrapperStyle, { backgroundColor: theme.colorBgSecondary, height: tokenItem }]}>
         <TokenGroupBalanceItem onPress={onPressItem(item)} {...item} isShowBalance={isShowBalance} />
       </View>
     ),

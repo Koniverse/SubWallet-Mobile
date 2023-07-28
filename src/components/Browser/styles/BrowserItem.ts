@@ -1,10 +1,11 @@
 import { ThemeTypes } from 'styles/themes';
 import { StyleSheet } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { browserListItemHeight } from 'constants/itemHeight';
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create({
-    container: { flexDirection: 'row', alignItems: 'center' },
+    container: { flexDirection: 'row', alignItems: 'center', height: browserListItemHeight },
 
     contentWrapper: { flexDirection: 'row', flex: 1, overflow: 'hidden' },
 
