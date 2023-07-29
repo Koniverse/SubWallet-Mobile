@@ -19,7 +19,7 @@ function notifyFinish() {
 }
 
 async function runCleanIOS() {
-  return execSync('rm -rf ./build && rm -rf ./dist && pod update hermes-engine --no-repo-update && pod install', 'Clean build');
+  return execSync('rm -rf ./build && rm -rf ./dist && pod update hermes-engine --no-repo-update && pod install --repo-update && pod update MMKV', 'Clean build');
 }
 
 async function runBuildIOS() {
