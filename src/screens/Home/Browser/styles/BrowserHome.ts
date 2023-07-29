@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { FontSemiBold } from 'styles/sharedStyles';
-import { DEVICE } from 'constants/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { browserHomeItemSectionWidth } from 'constants/itemHeight';
 
 const Styles = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -33,7 +33,7 @@ const Styles = () => {
     squircleWrapper: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
     imageItem: { width: 55, height: 55 },
     browserItem: {
-      width: DEVICE.width * 0.78,
+      width: browserHomeItemSectionWidth,
       marginBottom: theme.margin,
     },
     flatListContentContainer: {

@@ -2,7 +2,7 @@ import { NftItem as _NftItem } from '@subwallet/extension-base/background/KoniTy
 import { FlatListScreen } from 'components/FlatListScreen';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import NftItem from './NftItem';
@@ -21,6 +21,16 @@ import useConfirmModal from 'hooks/modal/useConfirmModal';
 import { _isCustomAsset, _isSmartContractToken } from '@subwallet/extension-base/services/chain-service/utils';
 import { useToast } from 'react-native-toast-notifications';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
+import { SectionListData } from 'react-native';
+
+type GetItemLayoutType =
+  | readonly _NftItem[]
+  | SectionListData<_NftItem, SectionListData<_NftItem>>[]
+  | null
+  | undefined;
+const ITEM_HEIGHT = 220;
+const ITEM_SEPARATOR = 16;
+const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 const NftItemListStyle: StyleProp<any> = {
   flex: 1,
@@ -32,6 +42,14 @@ const NftItemsTextStyle: StyleProp<any> = {
   ...FontBold,
   color: ColorMap.light,
 };
+
+const headerContentWrapper: StyleProp<any> = {
+  flexDirection: 'row',
+  width: '100%',
+  justifyContent: 'flex-start',
+  paddingLeft: 32,
+};
+const headerMaxWidth: StyleProp<any> = { maxWidth: 200 };
 
 const filteredNftItem = (items: _NftItem[], searchString: string) => {
   return items.filter(item => {
@@ -51,6 +69,11 @@ const NftItemList = ({
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoadingData(false), 100);
+  }, []);
 
   const collection = useMemo(() => {
     return nftCollections.find(i => collectionId === `${i.collectionName}-${i.collectionId}`);
@@ -61,6 +84,7 @@ const NftItemList = ({
   const _nftItems = useMemo(() => {
     return nftItems.filter(item => item.collectionId === (collection?.collectionId || '__'));
   }, [collection?.collectionId, nftItems]);
+
   const [isRefresh, refresh] = useRefresh();
 
   const goHome = useGoHome({ screen: 'NFTs', params: { screen: 'CollectionList' } });
@@ -114,6 +138,21 @@ const NftItemList = ({
         });
     }
   };
+  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
+    index,
+    length: TOTAL_ITEM_HEIGHT,
+    offset: TOTAL_ITEM_HEIGHT * index,
+  });
+  const headerContent = () => {
+    return (
+      <View style={headerContentWrapper}>
+        <Text numberOfLines={1} style={[NftItemsTextStyle, headerMaxWidth]}>
+          {collection?.collectionName || i18n.title.nftList}
+        </Text>
+        <Text style={NftItemsTextStyle}>{` (${_nftItems.length})`}</Text>
+      </View>
+    );
+  };
 
   const {
     onPress: onPressDelete,
@@ -125,16 +164,7 @@ const NftItemList = ({
   return (
     <View style={NftItemListStyle}>
       <FlatListScreen
-        headerContent={() => {
-          return (
-            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'flex-start', paddingLeft: 32 }}>
-              <Text numberOfLines={1} style={[NftItemsTextStyle, { maxWidth: 200 }]}>
-                {collection?.collectionName || i18n.title.nftList}
-              </Text>
-              <Text style={NftItemsTextStyle}>{` (${_nftItems.length})`}</Text>
-            </View>
-          );
-        }}
+        headerContent={headerContent}
         isShowMainHeader
         isShowPlaceHolder={false}
         needGapWithStatusBar={false}
@@ -144,6 +174,7 @@ const NftItemList = ({
         placeholder={i18n.placeholder.searchNftNameOrId}
         renderListEmptyComponent={renderEmptyNFT}
         searchFunction={filteredNftItem}
+        isLoadingData={isLoadingData}
         rightIconOption={{
           icon: Trash,
           disabled:
@@ -154,6 +185,7 @@ const NftItemList = ({
         items={_nftItems}
         numberColumns={2}
         searchMarginBottom={16}
+        getItemLayout={getItemLayout}
         refreshControl={
           <RefreshControl
             style={{ backgroundColor: ColorMap.dark1 }}

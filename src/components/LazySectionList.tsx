@@ -25,6 +25,12 @@ interface Props<T> {
   sortItemFunction?: SortFunctionInterface<T>;
   sortSectionFunction?: SortFunctionInterface<SectionItem<T>>;
   loading?: boolean;
+  getItemLayout?:
+    | ((
+        data: SectionListData<T, SectionListData<T>>[] | null,
+        index: number,
+      ) => { length: number; offset: number; index: number })
+    | undefined;
 }
 
 export function LazySectionList<T>({
@@ -42,6 +48,7 @@ export function LazySectionList<T>({
   loading,
   sortItemFunction,
   sortSectionFunction,
+  getItemLayout,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const sectionListRef = useRef<SectionList>(null);
@@ -129,11 +136,14 @@ export function LazySectionList<T>({
             onEndReached={onLoadMore}
             renderItem={renderItem}
             renderSectionHeader={renderSectionHeader}
-            onEndReachedThreshold={0.3}
             refreshControl={refreshControl}
             ListFooterComponent={renderLoadingAnimation}
             contentContainerStyle={listStyle}
             sections={lazySections}
+            getItemLayout={getItemLayout}
+            onEndReachedThreshold={0.5}
+            maxToRenderPerBatch={12}
+            initialNumToRender={12}
           />
         </View>
       ) : (

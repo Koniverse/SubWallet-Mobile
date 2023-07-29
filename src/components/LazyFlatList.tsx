@@ -22,6 +22,10 @@ interface Props<T> {
   sortFunction?: SortFunctionInterface<T>;
   loading?: boolean;
   isShowListWrapper?: boolean;
+  getItemLayout?: (
+    data: readonly T[] | null | undefined,
+    index: number,
+  ) => { length: number; offset: number; index: number };
 }
 
 const ItemSeparatorStyle: StyleProp<ViewStyle> = {
@@ -46,6 +50,7 @@ export function LazyFlatList<T>({
   loading,
   sortFunction = defaultSortFunc,
   isShowListWrapper,
+  getItemLayout,
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const flatListRef = useRef<FlatList>(null);
@@ -117,13 +122,16 @@ export function LazyFlatList<T>({
             data={lazyList}
             onEndReached={onLoadMore}
             renderItem={renderItem}
-            onEndReachedThreshold={0.3}
             numColumns={numberColumns}
             refreshControl={refreshControl}
             columnWrapperStyle={numberColumns > 1 ? ColumnWrapperStyle : undefined}
             ListFooterComponent={renderLoadingAnimation}
             ItemSeparatorComponent={renderSeparatorComponent}
             contentContainerStyle={numberColumns > 1 ? { paddingHorizontal: 8, paddingBottom: 16 } : flatListStyle}
+            getItemLayout={getItemLayout}
+            onEndReachedThreshold={0.5}
+            maxToRenderPerBatch={12}
+            initialNumToRender={12}
           />
         </View>
       ) : (

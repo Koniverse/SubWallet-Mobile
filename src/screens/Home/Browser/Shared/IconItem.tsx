@@ -31,7 +31,7 @@ const IconItem: React.FC<IconItemProps> = ({ data, url, defaultData, isWithText,
   }, [assetLogoMap.default, image, url]);
 
   return (
-    <View style={stylesheet.container}>
+    <View style={[stylesheet.container]}>
       <TouchableOpacity style={stylesheet.imageWrapper} onPress={onPress} disabled={!onPress}>
         <Image src={image} onError={onLoadImageError} style={stylesheet.image} shape={'squircle'} squircleSize={44} />
         {isWithText && (

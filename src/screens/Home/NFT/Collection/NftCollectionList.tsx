@@ -1,7 +1,7 @@
 import { NftCollection } from '@subwallet/extension-base/background/KoniTypes';
 import { FlatListScreen } from 'components/FlatListScreen';
 import React, { useCallback, useEffect } from 'react';
-import { ListRenderItemInfo, RefreshControl } from 'react-native';
+import { ListRenderItemInfo, RefreshControl, SectionListData } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
 import { Plus } from 'phosphor-react-native';
@@ -13,11 +13,19 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 
+type GetItemLayoutType =
+  | readonly NftCollection[]
+  | SectionListData<NftCollection, SectionListData<NftCollection>>[]
+  | null
+  | undefined;
 const filteredCollection = (items: NftCollection[], searchString: string) => {
   return items.filter(collection => {
     return collection.collectionName && collection.collectionName.toLowerCase().includes(searchString.toLowerCase());
   });
 };
+const ITEM_HEIGHT = 220;
+const ITEM_SEPARATOR = 16;
+const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 const NftCollectionList = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -44,6 +52,12 @@ const NftCollectionList = () => {
     },
     [navigation],
   );
+
+  const getItemLayout = (data: GetItemLayoutType, index: number) => ({
+    index,
+    length: TOTAL_ITEM_HEIGHT,
+    offset: TOTAL_ITEM_HEIGHT * index,
+  });
 
   return (
     <>
@@ -77,6 +91,7 @@ const NftCollectionList = () => {
         searchMarginBottom={16}
         isShowPlaceHolder={false}
         isShowMainHeader
+        getItemLayout={getItemLayout}
         needGapWithStatusBar={false}
       />
     </>

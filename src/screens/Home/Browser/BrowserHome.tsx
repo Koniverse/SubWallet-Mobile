@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
+import { browserHomeItem, browserHomeItemIconOnly, browserHomeItemWidth } from 'constants/itemHeight';
 
 interface HeaderProps {
   title: string;
@@ -34,8 +35,9 @@ type RecommendedListType = {
 type SearchItemType = {
   isSearch?: boolean;
 } & SiteInfo;
-const ICON_ITEM_HEIGHT = 44;
-const ITEM_HEIGHT = 72;
+const ICON_ITEM_HEIGHT = browserHomeItemIconOnly;
+const ITEM_HEIGHT = browserHomeItem;
+const ITEM_WIDTH = browserHomeItemWidth;
 const SectionHeader: React.FC<HeaderProps> = ({ title, actionTitle, onPress }): JSX.Element => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet();
@@ -133,6 +135,11 @@ const BrowserHome = () => {
       />
     );
   };
+  const getItemLayout = (data: StoredSiteInfo[] | null | undefined, index: number) => ({
+    index,
+    length: ITEM_WIDTH,
+    offset: ITEM_WIDTH * index,
+  });
 
   return (
     <View style={stylesheet.container}>
@@ -153,7 +160,7 @@ const BrowserHome = () => {
               data={historyItems}
               renderItem={renderRecentItem}
               ItemSeparatorComponent={ItemSeparator}
-              getItemLayout={(data, index) => ({ index, length: ICON_ITEM_HEIGHT, offset: ICON_ITEM_HEIGHT * index })}
+              getItemLayout={getItemLayout}
               horizontal
             />
           </>
@@ -173,7 +180,7 @@ const BrowserHome = () => {
               data={bookmarkItems}
               renderItem={renderBookmarkItem}
               ItemSeparatorComponent={ItemSeparator}
-              getItemLayout={(data, index) => ({ index, length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index })}
+              getItemLayout={getItemLayout}
               horizontal
             />
           </>

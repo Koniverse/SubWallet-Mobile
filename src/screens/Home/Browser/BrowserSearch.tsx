@@ -21,6 +21,7 @@ import { addLazy } from '@subwallet/extension-base/utils';
 import { BrowserSearchItem } from 'components/Browser/BrowserSearchItem';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
+import { browserListItemHeight, browserListSeparator } from 'constants/itemHeight';
 
 type SearchItemType = {
   logo?: string;
@@ -61,6 +62,9 @@ function getFirstSearchItem(searchString: string): SearchItemType {
     };
   }
 }
+const ITEM_HEIGHT = browserListItemHeight;
+const ITEM_SEPARATOR = browserListSeparator;
+const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
@@ -182,7 +186,8 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
   useEffect(() => {
     const newItem = getSectionItems();
-    setSectionItems(newItem);
+    const timeout = setTimeout(() => setSectionItems(newItem), 200);
+    return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [historyItems]);
   const onSearch = (value: string) => {
@@ -201,6 +206,11 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
       onPressItem(sectionItems[0].data[0]);
     }
   };
+  const getItemLayout = (data: SectionListData<SearchItemType>[] | null | undefined, index: number) => ({
+    index,
+    length: TOTAL_ITEM_HEIGHT,
+    offset: TOTAL_ITEM_HEIGHT * index,
+  });
 
   return (
     <ContainerWithSubHeader
@@ -231,6 +241,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
           onEndReachedThreshold={0.5}
           maxToRenderPerBatch={12}
           initialNumToRender={12}
+          getItemLayout={getItemLayout}
           contentContainerStyle={stylesheet.listStyle}
           sections={sectionItems}
         />
