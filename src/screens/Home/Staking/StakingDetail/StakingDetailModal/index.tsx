@@ -242,7 +242,7 @@ export const StakingDetailModal = ({
                         color: theme.colorTextTertiary,
                         ...FontMedium,
                       }}>
-                      {getWaitingTime(unstakingData.waitingTime)}
+                      {getWaitingTime(unstakingData.waitingTime, unstakingData.status)}
                     </Typography.Text>
                   )}
                 </View>
@@ -508,7 +508,11 @@ export const StakingDetailModal = ({
                               <MetaInfo.Number
                                 decimals={decimals}
                                 key={`${item.validatorAddress || item.chain}-${item.status}-${item.claimable}-${index}`}
-                                label={getWaitingTime(item.waitingTime) ? getWaitingTime(item.waitingTime) : 'Withdraw'}
+                                label={
+                                  getWaitingTime(item.waitingTime, item.status)
+                                    ? getWaitingTime(item.waitingTime, item.status)
+                                    : 'Withdraw'
+                                }
                                 suffix={staking.nativeToken}
                                 value={item.claimable || ''}
                                 valueColorSchema={'gray'}
