@@ -1,3 +1,10 @@
+## 1.0.13 (205)
+- Fix browser search - bookmark and update language key 'all account' in staking detail (#898)
+- Bump React Native to 0.71.12 (#855)
+- Improve list performance round 2 (#874)
+- Re-check staking feature (#921)
+- web runner 1.5.5 (#925)
+
 ## 1.0.12 (204)
 - Update Web Runner to 1.1.3-0 (#904)
 
