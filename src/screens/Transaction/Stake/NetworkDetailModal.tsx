@@ -33,7 +33,11 @@ export const NetworkDetailModal = ({
   } = chainStakingMetadata;
   const theme = useSubWalletTheme().swThemes;
   return (
-    <SwModal modalVisible={modalVisible} modalTitle={i18n.header.networkDetails} onChangeModalVisible={onCloseModal}>
+    <SwModal
+      modalVisible={modalVisible}
+      modalTitle={i18n.header.networkDetails}
+      onChangeModalVisible={onCloseModal}
+      onBackButtonPress={onCloseModal}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
           {stakingType === StakingType.NOMINATED && (
@@ -90,7 +94,7 @@ export const NetworkDetailModal = ({
                       ...FontMedium,
                       color: theme.colorTextTertiary,
                     }}>
-                    {' after inflation'}
+                    {` ${i18n.stakingScreen.afterInflation}`}
                   </Text>
                 </View>
               )}

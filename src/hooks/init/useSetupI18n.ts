@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { EN_US } from 'utils/i18n/i18n';
-import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18nModule from 'utils/i18n/i18n';
 
 const setupI18n = (userLang: string) => {
   i18nModule.setLanguage(userLang || EN_US);
-  moment.locale(userLang);
 };
 
 export default function useSetupI18n(): { language: string; isI18nReady: boolean } {

@@ -3,12 +3,14 @@ import { RootState } from 'stores/index';
 import { useCallback } from 'react';
 import bcrypt from 'react-native-bcrypt';
 import { updateLockState } from 'stores/AppState';
+import { updateFaceIdEnable, updatePinCode, updatePinCodeEnable } from 'stores/MobileSettings';
 
 export interface UseAppLockOptions {
   isLocked: boolean;
   unlock: (code: string) => boolean;
   unlockWithBiometric: () => void;
   lock: () => void;
+  resetPinCode: () => void;
 }
 
 export default function useAppLock(): UseAppLockOptions {
@@ -33,5 +35,12 @@ export default function useAppLock(): UseAppLockOptions {
     dispatch(updateLockState(true));
   }, [dispatch]);
 
-  return { isLocked, unlock, lock, unlockWithBiometric };
+  const resetPinCode = useCallback(() => {
+    dispatch(updatePinCode(''));
+    dispatch(updateLockState(false));
+    dispatch(updatePinCodeEnable(false));
+    dispatch(updateFaceIdEnable(false));
+  }, [dispatch]);
+
+  return { isLocked, unlock, lock, unlockWithBiometric, resetPinCode };
 }

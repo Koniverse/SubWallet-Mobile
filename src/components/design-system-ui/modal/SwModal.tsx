@@ -1,8 +1,9 @@
 import React from 'react';
-import { SafeAreaView, StyleProp, Text, View, ViewStyle } from 'react-native';
-import { ColorMap } from 'styles/color';
+import { SafeAreaView, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import ModalBase from 'components/Modal/Base/ModalBase';
-import { FontSemiBold } from 'styles/sharedStyles';
+import Typography from '../typography';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+
 export interface SWModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -12,6 +13,11 @@ export interface SWModalProps {
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
   modalTitle?: string;
+  titleTextAlign?: 'left' | 'center';
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  isUseForceHidden?: boolean;
+  onBackButtonPress?: () => void;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -32,7 +38,7 @@ const subWalletModalSeparator: StyleProp<any> = {
   height: 5,
   borderRadius: 100,
   backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  marginBottom: 22,
+  marginBottom: 16,
   textAlign: 'center',
 };
 
@@ -45,7 +51,13 @@ const SwModal = ({
   modalTitle,
   onModalHide,
   isFullHeight = false,
+  titleTextAlign = 'left',
+  contentContainerStyle,
+  titleStyle,
+  isUseForceHidden,
+  onBackButtonPress,
 }: SWModalProps) => {
+  const theme = useSubWalletTheme().swThemes;
   return (
     <ModalBase
       isVisible={modalVisible}
@@ -59,22 +71,34 @@ const SwModal = ({
       animationIn={'slideInUp'}
       animationOut={'slideOutDown'}
       avoidKeyboard={true}
+      onBackButtonPress={onBackButtonPress}
       // useNativeDriver
       hideModalContentWhileAnimating
+      isUseForceHidden={isUseForceHidden}
       propagateSwipe>
       <View style={[getSubWalletModalContainerStyle(!!isFullHeight), modalStyle]}>
         <View
-          style={{
-            width: '100%',
-            paddingBottom: 16,
-            paddingHorizontal: 16,
-            alignItems: 'center',
-            flex: isFullHeight ? 1 : undefined,
-          }}>
+          style={[
+            {
+              width: '100%',
+              paddingBottom: 16,
+              paddingHorizontal: 16,
+              alignItems: 'center',
+              flex: isFullHeight ? 1 : undefined,
+            },
+            contentContainerStyle,
+          ]}>
           <View style={subWalletModalSeparator} />
           {modalTitle && (
-            <View style={{ width: '100%', marginBottom: 30, alignItems: 'center' }}>
-              <Text style={{ fontSize: 20, lineHeight: 28, ...FontSemiBold, color: ColorMap.light }}>{modalTitle}</Text>
+            <View
+              style={{
+                width: '100%',
+                marginBottom: 16,
+                alignItems: titleTextAlign === 'left' ? 'flex-start' : 'center',
+              }}>
+              <Typography.Title level={4} style={[{ color: theme.colorTextLight1 }, titleStyle]}>
+                {modalTitle}
+              </Typography.Title>
             </View>
           )}
 

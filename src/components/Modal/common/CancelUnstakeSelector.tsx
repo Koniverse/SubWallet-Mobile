@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ListRenderItemInfo, TouchableOpacity } from 'react-native';
-import { SwFullSizeModal } from 'components/design-system-ui';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
-import { Warning } from 'components/Warning';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { UnstakingInfo } from '@subwallet/extension-base/background/KoniTypes';
 import { CancelUnstakeSelectorField } from 'components/Field/CancelUnstakeSelector';
 import { CancelUnstakeItem } from 'components/common/CancelUnstakeItem';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 export interface UnstakeItem extends UnstakingInfo {
   key: string;
@@ -27,19 +25,8 @@ const searchFunction = (items: UnstakeItem[], searchString: string) => {
   return items.filter(({ chain }) => chain?.toLowerCase().includes(lowerCaseSearchString));
 };
 
-const renderListEmptyComponent = () => {
-  return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={'No pool available'}
-      isDanger={false}
-    />
-  );
-};
-
 export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue, disabled }: Props) => {
-  const [selectModalVisible, setSelectModalVisible] = useState(false);
+  const cancelUnstakeRef = useRef<ModalRef>();
   const items = useMemo((): UnstakeItem[] => {
     return nominators.map((item, index) => ({ ...item, key: String(index) }));
   }, [nominators]);
@@ -69,7 +56,7 @@ export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue,
           isSelected={item.key === selectedValue}
           onPress={() => {
             onSelectItem && onSelectItem(item.key);
-            setSelectModalVisible(false);
+            cancelUnstakeRef && cancelUnstakeRef.current?.onCloseModal();
           }}
         />
       );
@@ -79,23 +66,20 @@ export const CancelUnstakeSelector = ({ nominators, onSelectItem, selectedValue,
 
   return (
     <>
-      <TouchableOpacity onPress={() => setSelectModalVisible(true)} disabled={disabled}>
-        <CancelUnstakeSelectorField item={selectedItem} label={i18n.inputLabel.selectAnUnstakeRequest} />
-      </TouchableOpacity>
-
-      <SwFullSizeModal modalVisible={selectModalVisible}>
-        <FlatListScreen
-          autoFocus={true}
-          items={items}
-          style={FlatListScreenPaddingTop}
-          title={i18n.header.unstakeRequest}
-          searchFunction={searchFunction}
-          renderItem={renderItem}
-          onPressBack={() => setSelectModalVisible(false)}
-          renderListEmptyComponent={renderListEmptyComponent}
-          isShowFilterBtn={false}
-        />
-      </SwFullSizeModal>
+      <FullSizeSelectModal
+        items={items}
+        selectedValueMap={selectedValue ? { [selectedValue]: true } : {}}
+        selectModalType={'single'}
+        renderCustomItem={renderItem}
+        searchFunc={searchFunction}
+        title={i18n.header.unstakeRequest}
+        disabled={disabled}
+        ref={cancelUnstakeRef}
+        onBackButtonPress={() => cancelUnstakeRef?.current?.onCloseModal()}
+        renderSelected={() => (
+          <CancelUnstakeSelectorField item={selectedItem} label={i18n.inputLabel.selectAnUnstakeRequest} />
+        )}
+      />
     </>
   );
 };

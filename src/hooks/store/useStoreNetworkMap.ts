@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StoreStatus } from 'stores/types';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { addLazy, removeLazy } from 'utils/lazyUpdate';
+import { addLazy, removeLazy } from '@subwallet/extension-base/utils/lazy';
 
 export default function useStoreNetworkMap(): StoreStatus {
   const isWebRunnerReady = useContext(WebRunnerContext).isReady;

@@ -14,12 +14,13 @@ import {
 import {
   ExtrinsicStatus,
   ExtrinsicType,
+  LanguageType,
   TransactionDirection,
   TransactionHistoryItem,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { isTypeStaking, isTypeTransfer } from 'utils/transaction/detectType';
 import { TransactionHistoryDisplayData, TransactionHistoryDisplayItem } from 'types/history';
-import { customFormatDate } from 'utils/customFormatDate';
+import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
@@ -62,7 +63,7 @@ function quickFormatAddressToCompare(address?: string) {
 }
 
 function getIcon(item: TransactionHistoryItem): React.ElementType<IconProps> {
-  if (item.status === ExtrinsicStatus.PROCESSING) {
+  if (item.status === ExtrinsicStatus.PROCESSING || item.status === ExtrinsicStatus.SUBMITTING) {
     return IconMap.processing;
   }
 
@@ -93,7 +94,7 @@ function getDisplayData(
   let displayData: TransactionHistoryDisplayData;
   const time = customFormatDate(item.time, '#hhhh#:#mm#');
 
-  const displayStatus = item.status === ExtrinsicStatus.FAIL ? 'fail' : '';
+  const displayStatus = item.status === ExtrinsicStatus.FAIL ? i18n.historyScreen.label.transactionFail : '';
 
   if (
     item.type === ExtrinsicType.TRANSFER_BALANCE ||
@@ -106,7 +107,7 @@ function getDisplayData(
         className: `-receive -${item.status}`,
         title: titleMap.receive,
         name: nameMap.receive,
-        typeName: `${nameMap.receive} ${displayStatus} - ${time}`,
+        typeName: `${nameMap.receive}${displayStatus} - ${time}`,
         icon: IconMap.receive,
       };
     } else {
@@ -114,7 +115,7 @@ function getDisplayData(
         className: `-send -${item.status}`,
         title: titleMap.send,
         name: nameMap.send,
-        typeName: `${nameMap.send} ${displayStatus} - ${time}`,
+        typeName: `${nameMap.send}${displayStatus} - ${time}`,
         icon: IconMap.send,
       };
     }
@@ -124,17 +125,18 @@ function getDisplayData(
     displayData = {
       className: `-${item.type} -${item.status}`,
       title: titleMap[item.type],
-      typeName: `${typeName} ${displayStatus} - ${time}`,
+      typeName: `${typeName}${displayStatus} - ${time}`,
       name: nameMap[item.type],
       icon: getIcon(item),
     };
   }
 
-  const isProcessing = item.status === ExtrinsicStatus.PROCESSING;
-
-  if (isProcessing) {
-    displayData.className = '-processing';
+  if (item.status === ExtrinsicStatus.PROCESSING) {
     displayData.typeName = nameMap.processing;
+  }
+
+  if (item.status === ExtrinsicStatus.SUBMITTING) {
+    displayData.typeName = nameMap.submitting;
   }
 
   return displayData;
@@ -146,22 +148,6 @@ function getHistoryItemKey(
   return `${item.chain}-${item.address}-${item.transactionId || item.extrinsicHash}`;
 }
 
-const typeTitleMap: Record<string, string> = {
-  default: i18n.historyScreen.title.transaction,
-  send: i18n.historyScreen.title.sendTransaction,
-  receive: i18n.historyScreen.title.receiveTransaction,
-  [ExtrinsicType.SEND_NFT]: i18n.historyScreen.title.nftTransaction,
-  [ExtrinsicType.CROWDLOAN]: i18n.historyScreen.title.crowdloanTransaction,
-  [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.title.stakeTransaction,
-  [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.title.unstakeTransaction,
-  [ExtrinsicType.STAKING_BOND]: i18n.historyScreen.title.bondTransaction,
-  [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.title.unbondTransaction,
-  [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.title.claimRewardTransaction,
-  [ExtrinsicType.STAKING_WITHDRAW]: i18n.historyScreen.title.withdrawTransaction,
-  [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.title.cancelUnstakeTransaction,
-  [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
-};
-
 enum FilterValue {
   SEND = 'send',
   RECEIVED = 'received',
@@ -172,17 +158,6 @@ enum FilterValue {
   SUCCESSFUL = 'successful',
   FAILED = 'failed',
 }
-
-const FILTER_OPTIONS = [
-  { label: 'Send token transaction', value: FilterValue.SEND },
-  { label: 'Receive token transaction', value: FilterValue.RECEIVED },
-  { label: 'NFT transaction', value: FilterValue.NFT },
-  { label: 'Stake transaction', value: FilterValue.STAKE },
-  { label: 'Claim reward transaction', value: FilterValue.CLAIM },
-  // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
-  { label: 'Successful transaction', value: FilterValue.SUCCESSFUL },
-  { label: 'Failed transaction', value: FilterValue.FAILED },
-];
 
 const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[]) => {
   const filteredChainList: TransactionHistoryDisplayItem[] = [];
@@ -252,6 +227,8 @@ function History({
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
+
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -259,6 +236,34 @@ function History({
       return accMap;
     }, {} as Record<string, string>);
   }, [accounts]);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
+    { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
+    { label: i18n.filterOptions.nftTransaction, value: FilterValue.NFT },
+    { label: i18n.filterOptions.stakeTransaction, value: FilterValue.STAKE },
+    { label: i18n.filterOptions.claimStakingReward, value: FilterValue.CLAIM },
+    // { labe t('Crowdloan transaction', value: FilterValue.CROWDLOAN }, // support crowdloan later
+    { label: i18n.filterOptions.successful, value: FilterValue.SUCCESSFUL },
+    { label: i18n.filterOptions.failed, value: FilterValue.FAILED },
+  ];
+  const typeTitleMap: Record<string, string> = useMemo(
+    () => ({
+      default: i18n.historyScreen.title.transaction,
+      send: i18n.historyScreen.title.sendTransaction,
+      receive: i18n.historyScreen.title.receiveTransaction,
+      [ExtrinsicType.SEND_NFT]: i18n.historyScreen.title.nftTransaction,
+      [ExtrinsicType.CROWDLOAN]: i18n.historyScreen.title.crowdloanTransaction,
+      [ExtrinsicType.STAKING_JOIN_POOL]: i18n.historyScreen.title.stakeTransaction,
+      [ExtrinsicType.STAKING_LEAVE_POOL]: i18n.historyScreen.title.unstakeTransaction,
+      [ExtrinsicType.STAKING_BOND]: i18n.historyScreen.title.bondTransaction,
+      [ExtrinsicType.STAKING_UNBOND]: i18n.historyScreen.title.unbondTransaction,
+      [ExtrinsicType.STAKING_CLAIM_REWARD]: i18n.historyScreen.title.claimRewardTransaction,
+      [ExtrinsicType.STAKING_WITHDRAW]: i18n.historyScreen.title.withdrawTransaction,
+      [ExtrinsicType.STAKING_CANCEL_UNSTAKE]: i18n.historyScreen.title.cancelUnstakeTransaction,
+      [ExtrinsicType.EVM_EXECUTE]: i18n.historyScreen.title.evmTransaction,
+    }),
+    [],
+  );
 
   const [historyMap, setHistoryMap] = useState<Record<string, TransactionHistoryDisplayItem>>({});
 
@@ -280,16 +285,17 @@ function History({
       const toName = accountMap[quickFormatAddressToCompare(item.to) || ''];
       const key = getHistoryItemKey(item);
 
+      const txtTypeNameMap = TxTypeNameMap();
       finalHistoryMap[key] = {
         ...item,
         fromName,
         toName,
-        displayData: getDisplayData(item, TxTypeNameMap, typeTitleMap),
+        displayData: getDisplayData(item, txtTypeNameMap, typeTitleMap),
       };
     });
 
     return finalHistoryMap;
-  }, [accountMap, rawHistoryList, currentAccount?.address]);
+  }, [currentAccount?.address, rawHistoryList, accountMap, typeTitleMap]);
 
   useEffect(() => {
     const timeoutID = setTimeout(() => {
@@ -325,7 +331,9 @@ function History({
 
   useEffect(() => {
     if (transactionId && chain && !isOpenByLink) {
-      const existed = historyList.find(item => item.chain === chain && item.transactionId === transactionId);
+      const existed = historyList.find(
+        item => item.chain === chain && (item.transactionId === transactionId || item.extrinsicHash === transactionId),
+      );
 
       setTimeout(() => {
         if (existed) {
@@ -350,7 +358,7 @@ function History({
         <HistoryItem
           style={{ marginTop: theme.marginXS }}
           item={item}
-          key={`${item.transactionId || item.extrinsicHash}-${item.address}`}
+          key={`${item.transactionId || item.extrinsicHash}-${item.address}-${item.direction}`}
           onPress={onOpenDetail(item)}
         />
       );
@@ -386,9 +394,12 @@ function History({
     });
   }, []);
 
-  const groupBy = useCallback((item: TransactionHistoryDisplayItem) => {
-    return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + customFormatDate(item.time, '#MMM# #DD#, #YYYY#');
-  }, []);
+  const groupBy = useCallback(
+    (item: TransactionHistoryDisplayItem) => {
+      return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + formatHistoryDate(item.time, language, 'list');
+    },
+    [language],
+  );
 
   const renderSectionHeader: (info: {
     section: SectionListData<TransactionHistoryDisplayItem>;

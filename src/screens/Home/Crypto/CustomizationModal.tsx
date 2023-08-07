@@ -60,7 +60,17 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
   const chainInfoMap = useChainInfoWithState();
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
 
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (modalVisible) {
+      timeout = setTimeout(() => setIsLoadingData(false), 100);
+    } else {
+      timeout = setTimeout(() => setIsLoadingData(true), 100);
+    }
+    return () => clearTimeout(timeout);
+  }, [modalVisible]);
   useEffect(() => {
     setPendingChainMap(prevPendingChainMap => {
       Object.entries(prevPendingChainMap).forEach(([key, val]) => {
@@ -153,7 +163,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
           backgroundIcon={Wallet}
           backgroundIconColor={theme['green-7']}
           style={{ marginHorizontal: 16 }}
-          label={i18n.customization.showTokensWithZeroBalance}
+          label={i18n.customization.showZeroBalance}
           isEnabled={isShowZeroBalance}
           onValueChange={onChangeZeroBalance}
         />
@@ -183,6 +193,7 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         renderItem={renderItem}
         onPressBack={onCancel}
         renderListEmptyComponent={renderListEmptyComponent}
+        isLoadingData={isLoadingData}
         isShowListWrapper
         isShowPlaceHolder={false}
         needGapWithStatusBar={false}

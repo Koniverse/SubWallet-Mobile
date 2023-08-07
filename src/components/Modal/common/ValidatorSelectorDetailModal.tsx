@@ -3,6 +3,7 @@ import { SwModal } from 'components/design-system-ui';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
 import { ValidatorDataType } from 'hooks/screen/Staking/useGetValidatorList';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   detailModalVisible: boolean;
@@ -26,18 +27,22 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
   } = detailItem;
 
   return (
-    <SwModal modalVisible={detailModalVisible} modalTitle={'Validator details'} onChangeModalVisible={onCancel}>
+    <SwModal
+      modalVisible={detailModalVisible}
+      modalTitle={i18n.header.validatorDetails}
+      onBackButtonPress={onCancel}
+      onChangeModalVisible={onCancel}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
           <MetaInfo.Account
-            label={'Validator'}
+            label={i18n.inputLabel.validator}
             address={validatorAddress}
             name={validatorName}
             networkPrefix={networkPrefix}
           />
           <MetaInfo.Number
             decimals={decimals}
-            label={'Min stake'}
+            label={i18n.inputLabel.minStakeRequire}
             suffix={symbol}
             value={minStake}
             valueColorSchema={'even-odd'}
@@ -45,7 +50,7 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
           {totalStake !== '0' && (
             <MetaInfo.Number
               decimals={decimals}
-              label={'Total stake'}
+              label={i18n.inputLabel.totalStake}
               suffix={symbol}
               value={totalStake}
               valueColorSchema={'even-odd'}
@@ -55,7 +60,7 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
           {ownStake !== '0' && (
             <MetaInfo.Number
               decimals={decimals}
-              label={'Own stake'}
+              label={i18n.inputLabel.ownStake}
               suffix={symbol}
               value={ownStake}
               valueColorSchema={'even-odd'}
@@ -64,7 +69,7 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
           {otherStake !== '0' && (
             <MetaInfo.Number
               decimals={decimals}
-              label={'Other stake'}
+              label={i18n.inputLabel.stakeFromOthers}
               suffix={symbol}
               value={otherStake}
               valueColorSchema={'even-odd'}
@@ -73,13 +78,18 @@ export const ValidatorSelectorDetailModal = ({ detailItem, detailModalVisible, o
 
           {earningEstimated > 0 && earningEstimated !== '' && (
             <MetaInfo.Number
-              label={'Earning estimated'}
+              label={i18n.inputLabel.estimatedApy}
               suffix={'%'}
               value={earningEstimated}
               valueColorSchema={'even-odd'}
             />
           )}
-          <MetaInfo.Number label={'Commission'} suffix={'%'} value={commission} valueColorSchema={'even-odd'} />
+          <MetaInfo.Number
+            label={i18n.inputLabel.commission}
+            suffix={'%'}
+            value={commission}
+            valueColorSchema={'even-odd'}
+          />
         </MetaInfo>
       </View>
     </SwModal>

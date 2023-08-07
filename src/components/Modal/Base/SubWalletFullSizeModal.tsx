@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleProp, View } from 'react-native';
+import { Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
 import ModalBase from 'components/Modal/Base/ModalBase';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 
 interface Props {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ const subWalletModalContainer: StyleProp<any> = {
   flex: 1,
   backgroundColor: ColorMap.dark1,
   alignItems: 'center',
-  paddingTop: 8,
+  paddingTop: Platform.OS === 'android' ? STATUS_BAR_HEIGHT + 8 : 8,
 };
 
 export const SubWalletFullSizeModal = ({
@@ -38,6 +39,7 @@ export const SubWalletFullSizeModal = ({
       useNativeDriver
       backdropColor={backdropColor}
       hideModalContentWhileAnimating
+      statusBarTranslucent
       propagateSwipe>
       <View style={[subWalletModalContainer, modalStyle]}>{children}</View>
     </ModalBase>

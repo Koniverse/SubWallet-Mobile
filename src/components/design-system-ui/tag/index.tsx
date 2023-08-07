@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Icon from '../icon';
 import { TagPropsType } from './PropsType';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { X } from 'phosphor-react-native';
 import { PresetBrandColorTypes, PresetColorTypes, PresetStatusColorTypes } from '@subwallet/react-ui/es/_util/colors';
 import capitalize from '@subwallet/react-ui/es/_util/capitalize';
@@ -19,7 +18,7 @@ export interface TagNativeProps extends TagPropsType {
 
 const Tag: React.FC<TagNativeProps> = props => {
   const {
-    closable = true,
+    closable,
     onClose,
     afterClose,
     style,

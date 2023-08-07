@@ -108,6 +108,7 @@ export const UnlockModal: React.FC<Props> = (props: Props) => {
           </View>
         </>
       }
+      onBackButtonPress={onHideModal}
       onChangeModalVisible={onHideModal}>
       <View style={styles.field}>
         <PasswordField

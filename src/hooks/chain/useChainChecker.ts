@@ -7,6 +7,7 @@ import { enableChain } from 'messaging/index';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 enum ChainStatus {
   NOT_CONNECTED = 'NOT_CONNECTED',
@@ -26,7 +27,7 @@ export default function useChainChecker() {
       chainStateMap[connectingChain.current]?.connectionStatus === _ChainConnectionStatus.CONNECTED
     ) {
       const chainName = chainInfoMap[connectingChain.current].name;
-      setTimeout(() => show(`${chainName} is connected!`), 300);
+      setTimeout(() => show(i18n.common.chainConnected(chainName), { type: 'success' }), 300);
       setChainStatus(ChainStatus.CONNECTED);
     }
   }, [chainInfoMap, chainStateMap, connectingChainStatus, show]);
@@ -61,7 +62,7 @@ export default function useChainChecker() {
       .then(() => {
         setChainStatus(ChainStatus.CONNECTING);
         connectingChain.current = chain;
-        show('Connecting...');
+        show(i18n.common.connecting, { type: 'warning' });
       })
       .catch(console.error);
   }

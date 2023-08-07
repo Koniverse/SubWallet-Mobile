@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
-import { isAccountAll } from '@subwallet/extension-koni-base/utils';
+import { isAccountAll } from '@subwallet/extension-base/utils';
 import { StyleProp, Text, View, ViewStyle } from 'react-native';
 import { Avatar } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -11,6 +11,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   addresses?: string[];
+  avatarSize?: number;
 }
 
 const sizeAva = {
@@ -18,10 +19,10 @@ const sizeAva = {
   large: 24,
 };
 
-const AvatarGroup = ({ addresses: _addresses }: Props) => {
+const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const theme = useSubWalletTheme().swThemes;
-  const _style = AvatarGroupStyle(theme);
+  const _style = AvatarGroupStyle();
   const noAllAccount: string[] = useMemo((): string[] => {
     if (_addresses) {
       return _addresses.filter(a => !isAccountAll(a));
@@ -31,8 +32,8 @@ const AvatarGroup = ({ addresses: _addresses }: Props) => {
   }, [_addresses, accounts]);
 
   const avatarSize: number = useMemo((): number => {
-    return noAllAccount.length > 2 ? sizeAva.default : sizeAva.large;
-  }, [noAllAccount]);
+    return _avatarSize || (noAllAccount.length > 2 ? sizeAva.default : sizeAva.large);
+  }, [_avatarSize, noAllAccount.length]);
 
   const countMore: number = useMemo((): number => {
     return noAllAccount.length - 3;

@@ -1,5 +1,0 @@
-export const ViewStep = {
-  TOKEN_GROUP: 'TOKEN_GROUP',
-  CHAIN_DETAIL: 'CHAIN_DETAIL',
-  TOKEN_HISTORY: 'TOKEN_HISTORY',
-};

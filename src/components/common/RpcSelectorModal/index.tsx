@@ -1,40 +1,29 @@
 import React, { useCallback, useMemo } from 'react';
-import { Button, Icon, SelectItem, SwFullSizeModal } from 'components/design-system-ui';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { ContainerHorizontalPadding, FlatListScreenPaddingTop, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { Button, Icon, SelectItem } from 'components/design-system-ui';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ListRenderItemInfo, View } from 'react-native';
-import { Warning } from 'components/Warning';
 import i18n from 'utils/i18n/i18n';
 import { PlusCircle, ShareNetwork } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
-interface Props {
-  chainSlug: string;
-  modalVisible: boolean;
-  selectedValue: string;
-  onPressBack: () => void;
-  renderEmptyList?: () => JSX.Element;
-  onSelectItem?: (value: string) => void;
-}
-
-interface ProviderItemType {
+export interface ProviderItemType {
   value: string;
   label: string;
 }
 
-const defaultRenderListEmptyComponent = () => {
-  return (
-    <Warning
-      style={{ marginHorizontal: 16 }}
-      title={i18n.warningTitle.warning}
-      message={i18n.errorMessage.noProviderAvailable}
-      isDanger={false}
-    />
-  );
-};
+interface Props {
+  chainSlug: string;
+  selectedValueMap: Record<string, boolean>;
+  onPressBack: () => void;
+  onSelectItem?: (item: ProviderItemType) => void;
+  renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
+  rpcSelectorRef: React.MutableRefObject<ModalRef | undefined>;
+}
 
 const searchFunction = (items: { label: string; value: string }[], searchString: string) => {
   const lowerCaseSearchString = searchString.toLowerCase();
@@ -42,12 +31,12 @@ const searchFunction = (items: { label: string; value: string }[], searchString:
 };
 
 export const RpcSelectorModal = ({
-  modalVisible,
   chainSlug,
-  selectedValue,
-  renderEmptyList,
+  selectedValueMap,
   onPressBack,
   onSelectItem,
+  renderSelectModalBtn,
+  rpcSelectorRef,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
@@ -73,42 +62,40 @@ export const RpcSelectorModal = ({
           icon={ShareNetwork}
           backgroundColor={theme.colorTextLight4}
           label={item.label}
-          isSelected={item.value === selectedValue}
+          isSelected={selectedValueMap[item.value]}
           onPress={() => {
-            onSelectItem && onSelectItem(item.value);
+            onSelectItem && onSelectItem(item);
             onPressBack();
           }}
         />
       </View>
     ),
-    [theme.colorTextLight4, selectedValue, onSelectItem, onPressBack],
+    [theme.colorTextLight4, selectedValueMap, onSelectItem, onPressBack],
   );
 
   return (
-    <SwFullSizeModal modalVisible={modalVisible}>
-      <FlatListScreen
-        autoFocus={true}
-        items={providerList}
-        style={FlatListScreenPaddingTop}
-        title={i18n.header.providers}
-        searchFunction={searchFunction}
-        renderItem={renderItem}
-        onPressBack={onPressBack}
-        renderListEmptyComponent={renderEmptyList ? renderEmptyList : defaultRenderListEmptyComponent}
-        isShowFilterBtn={false}
-        afterListItem={
-          <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
-            <Button
-              icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
-              onPress={() => {
-                onPressBack();
-                !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });
-              }}>
-              {i18n.buttonTitles.addNewProvider}
-            </Button>
-          </View>
-        }
-      />
-    </SwFullSizeModal>
+    <FullSizeSelectModal
+      items={providerList}
+      selectedValueMap={{}}
+      selectModalType={'single'}
+      renderCustomItem={renderItem}
+      renderSelectModalBtn={renderSelectModalBtn}
+      title={i18n.header.providers}
+      ref={rpcSelectorRef}
+      searchFunc={searchFunction}
+      onBackButtonPress={() => rpcSelectorRef?.current?.onCloseModal()}
+      renderAfterListItem={() => (
+        <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
+          <Button
+            icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
+            onPress={() => {
+              onPressBack();
+              !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });
+            }}>
+            {i18n.buttonTitles.addNewProvider}
+          </Button>
+        </View>
+      )}
+    />
   );
 };

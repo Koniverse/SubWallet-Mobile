@@ -6,6 +6,7 @@ import { ConfirmationsQueue } from '@subwallet/extension-base/background/KoniTyp
 import { NftTransferActionStackParamList } from 'routes/nft/transferAction';
 import { SigningActionStackParamList } from 'routes/signing';
 import { TransactionActionStackParamList } from 'routes/transaction/transactionAction';
+import { WrapperParamList } from 'routes/wrapper';
 
 export type RootStackParamList = {
   LockScreen: undefined;
@@ -28,7 +29,7 @@ export type RootStackParamList = {
   MigratePassword: undefined;
   CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };
   QrScanner: undefined;
-  AccountsScreen: undefined;
+  AccountsScreen: { pathName?: string };
   EditAccount: { address: string; name: string };
   RemoveAccount: { address: string };
   RestoreJson: undefined;
@@ -42,17 +43,18 @@ export type RootStackParamList = {
   NetworkSettingDetail: { chainSlug: string };
   ImportNetwork: undefined;
   SendFund: { slug?: string; recipient?: string };
+  Drawer: NavigatorScreenParams<WrapperParamList>;
   Languages: undefined;
   Security: undefined;
   PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   AccountExport: { address: string };
   ExportJson: { address: string };
+  BrowserHome?: NavigatorScreenParams<undefined> | undefined;
   BrowserSearch: { isOpenNewTab: boolean } | undefined;
   BrowserTabsManager: { url?: string; name?: string; isOpenTabs?: boolean };
+  BrowserListByTabview: { type: string };
   ConfirmationPopup: undefined;
   Confirmations: undefined;
-  FavouritesGroupDetail: undefined;
-  HistoryGroupDetail: undefined;
   DAppAccess: undefined;
   DAppAccessDetail: { origin: string; accountAuthType: string };
   WebViewDebugger: undefined;
@@ -80,6 +82,7 @@ export type RootStackParamList = {
     itemId: string;
     owner: string;
   };
+  ManageAddressBook: undefined;
 };
 
 export type NavigationProps = NativeStackScreenProps<RootStackParamList>;
@@ -89,6 +92,7 @@ export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'Cre
 export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
 export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>;
+export type AccountsScreenProps = NativeStackScreenProps<RootStackParamList, 'AccountsScreen'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;
 export type ExportPrivateKeyProps = NativeStackScreenProps<RootStackParamList, 'ExportPrivateKey'>;
@@ -98,6 +102,8 @@ export type RemoveAccountProps = NativeStackScreenProps<RootStackParamList, 'Rem
 export type TransferNftProps = NativeStackScreenProps<RootStackParamList, 'TransferNft'>;
 export type DAppAccessDetailProps = NativeStackScreenProps<RootStackParamList, 'DAppAccessDetail'>;
 export type BrowserTabsManagerProps = NativeStackScreenProps<RootStackParamList, 'BrowserTabsManager'>;
+export type BrowserListByTabviewProps = NativeStackScreenProps<RootStackParamList, 'BrowserListByTabview'>;
+export type BrowserHomeProps = NativeStackScreenProps<RootStackParamList, 'BrowserHome'>;
 export type BrowserSearchProps = NativeStackScreenProps<RootStackParamList, 'BrowserSearch'>;
 export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
@@ -109,4 +115,3 @@ export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'T
 export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddProvider'>;
 export type TransactionActionProps = NativeStackScreenProps<RootStackParamList, 'TransactionAction'>;
 export type HistoryProps = NativeStackScreenProps<RootStackParamList, 'History'>;
-export type SendNFTProps = NativeStackScreenProps<RootStackParamList, 'SendNFT'>;

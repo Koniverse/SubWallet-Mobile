@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import { ColorMap } from 'styles/color';
-import { Alert, Linking, NativeSyntheticEvent, Platform, StyleProp, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, NativeSyntheticEvent, Platform, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { AccountSettingButton } from 'components/AccountSettingButton';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
@@ -22,12 +22,8 @@ import {
   GlobeSimple,
   House,
   IconProps,
-  LockSimple,
-  LockSimpleOpen,
-  MagnifyingGlass,
+  X,
 } from 'phosphor-react-native';
-import { IconButton } from 'components/IconButton';
-import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
 import { WebRunnerContext } from 'providers/contexts';
 import WebView from 'react-native-webview';
 import {
@@ -41,15 +37,21 @@ import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
-import { getHostName } from 'utils/browser';
+import { getHostName, searchDomain } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { SiteInfo } from 'stores/types';
 import { Bar as ProgressBar } from 'react-native-progress';
 import { captureScreen } from 'react-native-view-shot';
 import { EmptyList } from 'components/EmptyList';
-import { BridgeScript, DAppScript, NovaScript } from 'screens/Home/Browser/BrowserScripts';
+import { BridgeScript, DAppScript, ConnectToNovaScript } from 'screens/Home/Browser/BrowserScripts';
 import { NoInternetScreen } from 'components/NoInternetScreen';
+import { Button, Icon, Typography } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import createStylesheet from './styles/BrowserTab';
+import TabIcon from 'screens/Home/Browser/Shared/TabIcon';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -57,30 +59,8 @@ export interface BrowserTabRef {
 
 type Props = {
   tabId: string;
-  tabsNumber: number;
   onOpenBrowserTabs: () => void;
-};
-
-const headerWrapperStyle: StyleProp<any> = {
-  backgroundColor: ColorMap.dark2,
-  paddingBottom: 12,
-  width: '100%',
-  paddingLeft: 60,
-  paddingRight: 60,
-  position: 'relative',
-  height: 56,
-};
-
-const headerLeftSideStyle: StyleProp<any> = {
-  position: 'absolute',
-  left: 16,
-  top: 2,
-};
-
-const headerRightSideStyle: StyleProp<any> = {
-  position: 'absolute',
-  right: 7,
-  top: 2,
+  connectionTrigger: React.ReactNode;
 };
 
 type BrowserActionButtonType = {
@@ -143,67 +123,22 @@ const getJsInjectContent = (showLog?: boolean) => {
   return injectedJS;
 };
 
-const nameSiteTextStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  ...FontSize0,
-  color: ColorMap.disabled,
-  paddingHorizontal: 20,
-  marginTop: -2,
-};
-
-const hostNameTextStyle: StyleProp<any> = {
-  paddingLeft: 4,
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.light,
-};
-
-const tabButtonStyle: StyleProp<any> = {
-  width: 20,
-  height: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderWidth: 2,
-  borderRadius: 4,
-  borderColor: ColorMap.light,
-};
-
-const progressBarStyle: StyleProp<any> = { position: 'absolute', top: 0, right: 0, left: 0, height: 3 };
-
-const bottomButtonAreaStyle: StyleProp<any> = {
-  flexDirection: 'row',
-  width: '100%',
-  justifyContent: 'space-between',
-  paddingHorizontal: 16,
-  backgroundColor: ColorMap.dark1,
-  borderTopColor: ColorMap.dark2,
-  borderTopWidth: 1,
-  paddingVertical: 12,
-  alignItems: 'center',
-};
-
 //todo: Update better style
 const PhishingBlockerLayer = () => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   return (
-    <View
-      style={{
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: ColorMap.modalBackDropDarkColor,
-        position: 'absolute',
-      }}>
-      <View style={{ backgroundColor: ColorMap.modalBackDropDarkColor }}>
-        <Warning isDanger title={i18n.title.phishingDetected} message={i18n.warningMessage.phishingMessage} />
-      </View>
+    <View style={stylesheet.phishingBlockerLayer}>
+      <Warning isDanger title={i18n.title.phishingDetected} message={i18n.warningMessage.phishingMessage} />
     </View>
   );
 };
 
-const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: ForwardedRef<BrowserTabRef>) => {
+const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: ForwardedRef<BrowserTabRef>) => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
+  const historyItems = useSelector((state: RootState) => state.browser.history);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [initWebViewSource, setInitWebViewSource] = useState<string | null>(null);
   const [progressNumber, setProgressNumber] = useState<number>(0);
@@ -220,8 +155,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   const siteName = useRef('');
   const browserOptionModalRef = useRef<BrowserOptionModalRef>(null);
   const hostname = siteUrl.current ? getHostName(siteUrl.current) : null;
-  const isUrlSecure = siteUrl.current ? siteUrl.current.startsWith('https://') : false;
-  const LockIcon = isUrlSecure ? LockSimple : LockSimpleOpen;
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
 
@@ -293,10 +226,17 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       updateSiteInfo({ url: nativeEvent.url, name: nativeEvent.title });
       updateNavigationInfo(nativeEvent);
 
-      updateLatestItemInHistory({
-        url: nativeEvent.url,
-        name: nativeEvent.title || nativeEvent.url,
-      });
+      setTimeout(() => {
+        if (getHostName(nativeEvent.url) !== searchDomain) {
+          const isHistoryItemExisted = historyItems.length > 0 && historyItems[0].url !== nativeEvent.url;
+          if (isHistoryItemExisted) {
+            updateLatestItemInHistory({
+              url: nativeEvent.url,
+              name: nativeEvent.title || nativeEvent.url,
+            });
+          }
+        }
+      }, 800);
       updateBrowserOptionModalRef(nativeEvent);
     }
   };
@@ -309,10 +249,17 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
 
     updateNavigationInfo(nativeEvent);
 
-    addToHistory({
-      url: nativeEvent.url,
-      name: nativeEvent.title || nativeEvent.url,
-    });
+    if (getHostName(nativeEvent.url) !== searchDomain) {
+      const isNotDuplicated =
+        historyItems.length === 0 || (historyItems.length > 0 && historyItems[0].url !== nativeEvent.url);
+      console.log('isNotDuplicated', isNotDuplicated, historyItems[0], nativeEvent.url);
+      if (isNotDuplicated) {
+        addToHistory({
+          url: nativeEvent.url,
+          name: nativeEvent.title || nativeEvent.url,
+        });
+      }
+    }
 
     updateBrowserOptionModalRef(nativeEvent);
 
@@ -357,11 +304,9 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       isDisabled: !canGoForward,
     },
     {
-      key: 'search',
-      icon: MagnifyingGlass,
-      onPress: () => {
-        navigation.navigate('BrowserSearch');
-      },
+      key: 'home',
+      icon: House,
+      onPress: goBack,
     },
     {
       key: 'tabs',
@@ -384,14 +329,6 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       },
     },
     {
-      key: 'reload',
-      icon: ArrowClockwise,
-      onPress: () => {
-        const { current } = webviewRef;
-        current && current.reload && current.reload();
-      },
-    },
-    {
       key: 'more',
       icon: DotsThree,
       isDisabled: !isWebviewReady,
@@ -408,7 +345,8 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
       const injectPageJsContent = await InjectPageJsScript.get();
 
       if (isSync) {
-        const injectScripts = getJsInjectContent(true) + BridgeScript + injectPageJsContent + NovaScript + DAppScript;
+        const injectScripts =
+          getJsInjectContent(true) + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
 
         setInjectedScripts(injectScripts);
       }
@@ -432,29 +370,27 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
   const renderBrowserTabBar = (button: BrowserActionButtonType) => {
     if (!button.icon) {
       if (button.key === 'tabs') {
-        return (
-          <TouchableOpacity
-            key={button.key}
-            onPress={button.onPress}
-            style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
-            <View style={tabButtonStyle}>
-              <Text style={{ color: ColorMap.light, ...FontSize0, ...FontMedium, lineHeight: 16 }}>{tabsNumber}</Text>
-            </View>
-          </TouchableOpacity>
-        );
+        return <TabIcon onPress={button.onPress} />;
       }
 
       return null;
     }
 
     return (
-      <IconButton
+      <Button
+        type={'ghost'}
         key={button.key}
+        size={'sm'}
         disabled={button.isDisabled}
-        color={(button.isDisabled && ColorMap.disabled) || undefined}
-        icon={button.icon}
+        icon={
+          <Icon
+            phosphorIcon={button.icon}
+            weight={'bold'}
+            iconColor={button.isDisabled ? theme.colorTextLight4 : theme.colorTextLight1}
+            size={'md'}
+          />
+        }
         onPress={button.onPress}
-        size={24}
       />
     );
   };
@@ -494,85 +430,96 @@ const Component = ({ tabId, tabsNumber, onOpenBrowserTabs }: Props, ref: Forward
     return true;
   };
 
+  const onOutOfMemmories = () => {
+    webviewRef.current?.reload();
+  };
+
   return (
-    <ScreenContainer backgroundColor={ColorMap.dark2}>
-      <>
-        <View style={headerWrapperStyle}>
-          <View style={{ alignItems: 'center' }}>
-            {hostname && (
-              <>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <LockIcon size={12} color={isUrlSecure ? ColorMap.primary : ColorMap.disabled} weight={'bold'} />
-                  <Text numberOfLines={1} style={hostNameTextStyle}>
-                    {hostname}
-                  </Text>
-                </View>
-                <Text numberOfLines={1} style={nameSiteTextStyle}>
-                  {siteName.current || siteUrl.current}
-                </Text>
-              </>
-            )}
-          </View>
+    <ScreenContainer backgroundColor={theme.colorBgDefault}>
+      <View style={stylesheet.header}>
+        <AccountSettingButton navigation={navigation} style={stylesheet.avatarSelector} />
 
-          <View style={headerLeftSideStyle}>
-            <AccountSettingButton navigation={navigation} />
-          </View>
-
-          <View style={headerRightSideStyle}>
-            <IconButton icon={House} onPress={goBack} />
-          </View>
-        </View>
-        <View style={{ flex: 1, position: 'relative', backgroundColor: ColorMap.dark1 }}>
-          {isNetConnected ? (
-            isWebviewReady ? (
-              <WebView
-                ref={webviewRef}
-                originWhitelist={['*']}
-                source={{ uri: initWebViewSource }}
-                injectedJavaScriptBeforeContentLoaded={injectedScripts}
-                onLoadStart={onLoadStart}
-                onLoad={onLoad}
-                onLoadProgress={onLoadProgress}
-                onMessage={onWebviewMessage}
-                javaScriptEnabled={true}
-                allowFileAccess={true}
-                allowsInlineMediaPlayback={true}
-                allowUniversalAccessFromFileURLs={true}
-                allowFileAccessFromFileURLs={true}
-                domStorageEnabled={true}
-                onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-              />
-            ) : (
-              <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
-            )
-          ) : (
-            <NoInternetScreen />
-          )}
-
-          {isShowPhishingWarning && <PhishingBlockerLayer />}
-          {progressNumber !== 1 && (
-            <View style={progressBarStyle}>
-              <ProgressBar
-                progress={progressNumber}
-                width={null}
-                color={ColorMap.primary}
-                height={3}
-                borderRadius={0}
-                borderWidth={0}
-                useNativeDriver
-              />
-            </View>
-          )}
+        <View style={stylesheet.siteInfoWrapper}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('BrowserSearch');
+            }}
+            style={stylesheet.siteInfoTouchableArea}>
+            <Typography.Text ellipsis style={stylesheet.siteInfoName}>
+              {hostname || ''}
+            </Typography.Text>
+          </TouchableOpacity>
+          {connectionTrigger}
+          <Button
+            type={'ghost'}
+            size={'xs'}
+            style={stylesheet.reloadButton}
+            icon={<Icon phosphorIcon={ArrowClockwise} weight={'bold'} iconColor={theme.colorTextLight3} size={'sm'} />}
+            onPress={() => {
+              const { current } = webviewRef;
+              current && current.reload && current.reload();
+            }}
+          />
         </View>
 
-        <View style={bottomButtonAreaStyle}>{bottomButtonList.map(button => renderBrowserTabBar(button))}</View>
-
-        <BrowserOptionModal
-          ref={browserOptionModalRef}
-          visibleModal={modalVisible}
-          onClose={onCloseBrowserOptionModal}
+        <Button
+          type={'ghost'}
+          size={'xs'}
+          style={stylesheet.closeButton}
+          icon={<Icon phosphorIcon={X} weight={'bold'} iconColor={theme.colorTextLight1} size={'md'} />}
+          onPress={goBack}
         />
-      </>
+      </View>
+      <View style={stylesheet.webViewWrapper}>
+        {isNetConnected ? (
+          isWebviewReady ? (
+            <WebView
+              style={stylesheet.colorBlack}
+              ref={webviewRef}
+              originWhitelist={['*']}
+              source={{ uri: initWebViewSource }}
+              injectedJavaScriptBeforeContentLoaded={injectedScripts}
+              onLoadStart={onLoadStart}
+              onLoad={onLoad}
+              onLoadProgress={onLoadProgress}
+              onMessage={onWebviewMessage}
+              onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+              onContentProcessDidTerminate={onOutOfMemmories}
+              allowFileAccess
+              allowsInlineMediaPlayback
+              allowUniversalAccessFromFileURLs
+              allowFileAccessFromFileURLs
+              domStorageEnabled
+              javaScriptEnabled
+            />
+          ) : (
+            <EmptyList icon={GlobeSimple} title={i18n.common.emptyBrowserMessage} />
+          )
+        ) : (
+          <NoInternetScreen />
+        )}
+
+        {isShowPhishingWarning && <PhishingBlockerLayer />}
+        {progressNumber !== 1 && (
+          <View style={stylesheet.progressBar}>
+            <ProgressBar
+              progress={progressNumber}
+              width={null}
+              color={ColorMap.primary}
+              height={3}
+              borderRadius={0}
+              borderWidth={0}
+              useNativeDriver
+            />
+          </View>
+        )}
+      </View>
+
+      <View style={stylesheet.footer}>{bottomButtonList.map(renderBrowserTabBar)}</View>
+
+      <SafeAreaView style={stylesheet.footerAfter} />
+
+      <BrowserOptionModal ref={browserOptionModalRef} visibleModal={modalVisible} onClose={onCloseBrowserOptionModal} />
     </ScreenContainer>
   );
 };

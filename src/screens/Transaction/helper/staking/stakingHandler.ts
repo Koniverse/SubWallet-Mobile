@@ -1,33 +1,35 @@
-import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import { StakingType, UnstakingStatus } from '@subwallet/extension-base/background/KoniTypes';
 import { getBondingOptions, getNominationPoolOptions } from 'messaging/index';
 import { store } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
+import i18n from 'utils/i18n/i18n';
+import moment from 'moment';
 
 export function getUnstakingPeriod(unstakingPeriod?: number) {
   if (unstakingPeriod) {
     const days = unstakingPeriod / 24;
 
     if (days < 1) {
-      return `${unstakingPeriod} hours`;
+      return `${unstakingPeriod} ${i18n.common.hours}`;
     } else {
-      return `${days} days`;
+      return `${days} ${i18n.common.days}`;
     }
   }
 
   return '';
 }
 
-export function getWaitingTime(waitingTime?: number) {
-  const days = waitingTime ? Number(waitingTime / 24).toFixed(2) : 0;
-
-  if (days < 1) {
-    if (days) {
-      return 'Withdraw in <1 day';
-    } else {
-      return 'Available for withdraw';
-    }
+export function getWaitingTime(waitingTime: number, status: UnstakingStatus) {
+  if (status === UnstakingStatus.CLAIMABLE) {
+    return i18n.inputLabel.availableForWithdraw;
   } else {
-    return `Withdraw in ${days} days`;
+    if (waitingTime > 24) {
+      const days = moment.duration(waitingTime, 'hours').days();
+
+      return i18n.inputLabel.withdrawInXDays(days);
+    } else {
+      return i18n.inputLabel.withdrawInADay;
+    }
   }
 }
 

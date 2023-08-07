@@ -8,6 +8,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { SeedWordDataType } from 'screens/Account/CreateAccount/types';
 import createStyles from './styles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   seedPhrase: string;
@@ -71,7 +72,7 @@ const WordPhrase: React.FC<Props> = (props: Props) => {
           size={'xs'}
           icon={<Icon phosphorIcon={CopySimple} size={'lg'} iconColor={theme.colorTextLight4} />}
           onPress={onCopy}>
-          <Text style={styles.copyText}>Copy to clipboard</Text>
+          <Text style={styles.copyText}>{i18n.common.copyToClipboard}</Text>
         </Button>
       </View>
     </React.Fragment>

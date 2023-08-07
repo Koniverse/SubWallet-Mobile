@@ -6,6 +6,7 @@ const MOBILE_SETTINGS_STORE_DEFAULT: MobileSettingsSlice = {
   pinCode: '',
   pinCodeEnabled: false,
   faceIdEnabled: false,
+  isPreventLock: false,
   autoLockTime: 15 * 1000,
 };
 
@@ -33,9 +34,18 @@ const mobileSettingsSlice = createSlice({
     updateAutoLockTime(state, action: PayloadAction<number | undefined>) {
       state.autoLockTime = action.payload;
     },
+    updatePreventLock(state, action: PayloadAction<boolean>) {
+      state.isPreventLock = action.payload;
+    },
   },
 });
 
-export const { updateLanguage, updatePinCode, updatePinCodeEnable, updateFaceIdEnable, updateAutoLockTime } =
-  mobileSettingsSlice.actions;
+export const {
+  updateLanguage,
+  updatePinCode,
+  updatePinCodeEnable,
+  updateFaceIdEnable,
+  updateAutoLockTime,
+  updatePreventLock,
+} = mobileSettingsSlice.actions;
 export default mobileSettingsSlice.reducer;

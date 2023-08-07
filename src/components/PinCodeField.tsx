@@ -13,16 +13,11 @@ const codeFiledRoot: StyleProp<any> = {
   width: 340,
   marginLeft: 'auto',
   marginRight: 'auto',
+  paddingBottom: 10,
 };
 
-const cellRoot: StyleProp<any> = {
-  width: '100%',
-  height: '100%',
-  // backgroundColor: 'red',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  position: 'absolute',
-};
+const squircleLv1: StyleProp<any> = { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' };
+const squircleLv2: StyleProp<any> = { width: '100%', height: '100%' };
 
 function getCellText(): StyleProp<any> {
   return {
@@ -72,17 +67,9 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
     };
 
     return (
-      <Squircle
-        key={index}
-        customStyle={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        size={'sm'}
-        backgroundColor={getBorderColor()}>
-        <Squircle customStyle={{ position: 'absolute' }} customSize={44} backgroundColor={'#1A1A1A'}>
-          <View
-            // Make sure that you pass onLayout={getCellOnLayoutHandler(index)} prop to root component of "Cell"
-            onLayout={getCellOnLayoutHandler(index)}
-            key={index}
-            style={cellRoot}>
+      <Squircle key={index} containerStyle={squircleLv1} size="sm" backgroundColor={getBorderColor()}>
+        <Squircle customSize={44} backgroundColor={theme.colorBgSecondary} containerStyle={squircleLv2}>
+          <View onLayout={getCellOnLayoutHandler(index)} key={index}>
             <Text style={getCellText()}>{textChild}</Text>
           </View>
         </Squircle>
@@ -93,7 +80,7 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
   useEffect(() => {
     setTimeout(() => {
       pinCodeRef?.current?.focus();
-    }, 600);
+    }, 1000);
   }, [pinCodeRef]);
 
   const onChangeText = useCallback(
@@ -115,7 +102,7 @@ export const PinCodeField = ({ value, setError, setValue, isPinCodeValid, pinCod
       keyboardType="number-pad"
       textContentType="oneTimeCode"
       renderCell={renderCell}
-      autoFocus={true}
+      autoFocus={false}
     />
   );
 };

@@ -4,26 +4,38 @@ import Text from 'components/Text';
 import { ScannerStyles } from 'styles/scanner';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { X } from 'phosphor-react-native';
+import { CaretLeft, ImageSquare } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { BarCodeReadEvent } from 'react-native-camera';
 import i18n from 'utils/i18n/i18n';
-import { getNetworkLogo } from 'utils/index';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { overlayColor, rectDimensions } from 'constants/scanner';
 import { IconButton } from 'components/IconButton';
+import { Warning } from 'components/Warning';
+import { launchImageLibrary } from 'react-native-image-picker';
+import RNQRGenerator from 'rn-qr-generator';
+import { Icon } from 'components/design-system-ui';
 
-interface Props {
+export interface AddressScannerProps {
   onPressCancel: () => void;
   onChangeAddress: (data: string) => void;
   qrModalVisible: boolean;
-  networkKey?: string;
-  token?: string;
-  scanMessage?: string;
+  error?: string;
+  isShowError?: boolean;
 }
 
 const CancelButtonStyle: StyleProp<ViewStyle> = {
+  position: 'absolute',
+  left: 16,
+  zIndex: 10,
+  width: 40,
+  height: 40,
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const LibraryButtonStyle: StyleProp<ViewStyle> = {
   position: 'absolute',
   right: 16,
   zIndex: 10,
@@ -33,28 +45,39 @@ const CancelButtonStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
 };
 
-const BottomContentStyle: StyleProp<ViewStyle> = {
-  flex: 1,
+const BottomSubContentStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
-  justifyContent: 'center',
-  marginHorizontal: 22,
+  justifyContent: 'flex-end',
+  marginHorizontal: 16,
+  flex: 1,
 };
 
 export const AddressScanner = ({
   onPressCancel,
   onChangeAddress,
   qrModalVisible,
-  networkKey,
-  token,
-  scanMessage = i18n.common.toSendFund,
-}: Props) => {
+  error,
+  isShowError = false,
+}: AddressScannerProps) => {
   const onSuccess = (e: BarCodeReadEvent) => {
     try {
       onChangeAddress(e.data);
-      onPressCancel();
+      !isShowError && onPressCancel();
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const onPressLibraryBtn = async () => {
+    const result = await launchImageLibrary({ mediaType: 'photo' });
+    RNQRGenerator.detect({
+      uri: result.assets && result.assets[0]?.uri,
+    })
+      .then(response => {
+        onChangeAddress(response.values[0]);
+        !isShowError && onPressCancel();
+      })
+      .catch(err => console.log(err));
   };
 
   return (
@@ -76,7 +99,12 @@ export const AddressScanner = ({
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
-                <IconButton icon={X} style={CancelButtonStyle} onPress={onPressCancel} />
+                <IconButton icon={CaretLeft} style={CancelButtonStyle} onPress={onPressCancel} />
+                <IconButton
+                  icon={() => <Icon phosphorIcon={ImageSquare} weight={'fill'} size={'sm'} />}
+                  style={LibraryButtonStyle}
+                  onPress={onPressLibraryBtn}
+                />
               </View>
             </View>
             <View style={ScannerStyles.CenterOverlayStyle}>
@@ -94,16 +122,8 @@ export const AddressScanner = ({
               <View style={ScannerStyles.LeftAndRightOverlayStyle} />
             </View>
             <View style={ScannerStyles.BottomOverlayStyle}>
-              <View style={BottomContentStyle}>
-                {networkKey && <View style={ScannerStyles.LogoContainerStyle}>{getNetworkLogo(networkKey, 34)}</View>}
-
-                {token && (
-                  <Text
-                    style={
-                      ScannerStyles.CenterTextStyle
-                    }>{`${i18n.common.scan} ${token} ${i18n.common.address} ${scanMessage}`}</Text>
-                )}
-              </View>
+              <View style={BottomSubContentStyle}>{!!error && <Warning message={error} isDanger />}</View>
+              <View style={BottomSubContentStyle} />
             </View>
           </View>
         }

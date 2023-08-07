@@ -8,8 +8,11 @@ import { HistoryStatusMap, TxTypeNameMap } from '../../shared';
 import { TransactionHistoryDisplayItem } from 'types/history';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-import { customFormatDate } from 'utils/customFormatDate';
+import { formatHistoryDate } from 'utils/customFormatDate';
 import { IconProps } from 'phosphor-react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
@@ -17,16 +20,19 @@ interface Props {
 
 const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const { data } = props;
+  const txtTypeNameMap = TxTypeNameMap();
+  const historyStatusMap = HistoryStatusMap();
+  const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
 
   return (
     <MetaInfo>
-      <MetaInfo.DisplayType label={i18n.historyScreen.label.transactionType} typeName={TxTypeNameMap[data.type]} />
+      <MetaInfo.DisplayType label={i18n.historyScreen.label.transactionType} typeName={txtTypeNameMap[data.type]} />
       <HistoryDetailHeader data={data} />
       <MetaInfo.Status
         label={i18n.historyScreen.label.transactionStatus}
-        statusIcon={HistoryStatusMap[data.status].icon as React.ElementType<IconProps>}
-        statusName={HistoryStatusMap[data.status].name}
-        valueColorSchema={HistoryStatusMap[data.status].schema}
+        statusIcon={historyStatusMap[data.status].icon as React.ElementType<IconProps>}
+        statusName={historyStatusMap[data.status].name}
+        valueColorSchema={historyStatusMap[data.status].schema}
       />
       {data.extrinsicHash && data.extrinsicHash.startsWith('0x') && (
         <MetaInfo.Default label={i18n.historyScreen.label.extrinsicHash}>
@@ -34,7 +40,7 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
         </MetaInfo.Default>
       )}
       <MetaInfo.Default label={i18n.historyScreen.label.transactionTime}>
-        {customFormatDate(data.time, '#hhhh#:#mm# - #MMM# #DD#, #YYYY#')}
+        {formatHistoryDate(data.time, language, 'detail')}
       </MetaInfo.Default>
       <HistoryDetailAmount data={data} />
       <HistoryDetailFee data={data} />

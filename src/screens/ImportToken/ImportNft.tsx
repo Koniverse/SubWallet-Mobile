@@ -1,11 +1,11 @@
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import InputText from 'components/Input/InputText';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Keyboard, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 import { upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
@@ -13,8 +13,6 @@ import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { InputAddress } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
-import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { ChainSelect } from 'screens/ImportToken/ChainSelect';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
@@ -30,10 +28,14 @@ import { Button, Icon } from 'components/design-system-ui';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
-import { PlusCircle } from 'phosphor-react-native';
+import { Plus, PlusCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import AlertBox from 'components/design-system-ui/alert-box';
+import { ModalRef } from 'types/modalRef';
+import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
+import { ChainSelector } from 'components/Modal/common/ChainSelector';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -88,8 +90,9 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const [checking, setChecking] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
   const [isShowQrModalVisible, setShowQrModalVisible] = useState<boolean>(false);
-  const [isShowChainModal, setShowChainModal] = useState<boolean>(false);
-  const [isShowTokenTypeModal, setShowTokenTypeModal] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const tokenTypeRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef>();
   useHandlerHardwareBackPress(loading);
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
@@ -161,17 +164,17 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       .then(resp => {
         if (resp) {
           toast.hideAll();
-          toast.show(i18n.common.addNftSuccess);
+          toast.show(i18n.common.addNftSuccess, { type: 'success' });
           onBack();
         } else {
           toast.hideAll();
-          toast.show(i18n.errorMessage.occurredError);
+          toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
         }
         setLoading(false);
       })
       .catch(() => {
         toast.hideAll();
-        toast.show(i18n.errorMessage.occurredError);
+        toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
         setLoading(false);
       })
       .finally(() => {
@@ -179,13 +182,17 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       });
   };
 
-  const { formState, onChangeValue, onChangeChainValue, onUpdateErrors, onSubmitField } = useTransaction(
-    'import-nft',
-    formConfig,
-    {
-      onSubmitForm: handleAddToken,
-    },
-  );
+  const {
+    formState,
+    onChangeValue,
+    onChangeChainValue,
+    onUpdateErrors,
+    onSubmitField,
+    showPopupEnableChain,
+    checkChainConnected,
+  } = useTransaction('import-nft', formConfig, {
+    onSubmitForm: handleAddToken,
+  });
 
   const { data: formData } = formState;
   const { chain, smartContract, collectionName, selectedNftType } = formData;
@@ -286,17 +293,20 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     loading ||
     !!(formState.errors.smartContract && formState.errors.smartContract.length);
 
-  const onUpdateNftContractAddress = (text: string) => {
-    if (formState.refs.smartContract && formState.refs.smartContract.current) {
-      // @ts-ignore
-      formState.refs.smartContract.current.onChange(text);
-    }
-  };
+  const onUpdateNftContractAddress = useCallback(
+    (text: string) => {
+      if (formState.refs.smartContract && formState.refs.smartContract.current) {
+        // @ts-ignore
+        formState.refs.smartContract.current.onChange(text);
+      }
+    },
+    [formState.refs.smartContract],
+  );
 
   const onSelectNFTType = useCallback(
     (item: AssetTypeOption) => {
       onChangeValue('selectedNftType')(item.value);
-      setShowTokenTypeModal(false);
+      tokenTypeRef && tokenTypeRef.current?.onCloseModal();
     },
     [onChangeValue],
   );
@@ -304,6 +314,19 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   const getSubmitIconBtn = (color: string) => {
     return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
   };
+
+  const onScanContractAddress = useCallback(
+    (data: string) => {
+      if (isAddress(data)) {
+        setError(undefined);
+        setShowQrModalVisible(false);
+        onUpdateNftContractAddress(data);
+      } else {
+        setError(i18n.errorMessage.isNotContractAddress);
+      }
+    },
+    [onUpdateNftContractAddress],
+  );
 
   return (
     <ContainerWithSubHeader
@@ -313,23 +336,32 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
       title={i18n.title.importNft}
       style={ContainerHeaderStyle}>
       <ScrollView style={WrapperStyle} keyboardShouldPersistTaps={'handled'}>
-        <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={() => setShowChainModal(true)}>
-          <NetworkField
-            networkKey={formState.data.chain}
-            label={formState.labels.chain}
-            placeholder={i18n.placeholder.selectNetwork}
-            showIcon
-          />
-        </TouchableOpacity>
+        <ChainSelector
+          items={Object.values(chainInfoMap)}
+          selectedValueMap={{ [formState.data.chain]: true }}
+          chainSelectorRef={chainSelectorRef}
+          renderSelected={() => (
+            <NetworkField
+              networkKey={formState.data.chain}
+              label={formState.labels.chain}
+              placeholder={i18n.placeholder.selectNetwork}
+              showIcon
+            />
+          )}
+          onSelectItem={item => {
+            handleChangeValue('chain')(item.slug);
+            handleChangeValue('selectedNftType')(getNftType(item.slug, chainInfoMap));
+            chainSelectorRef && chainSelectorRef.current?.onCloseModal();
+          }}
+        />
 
         <TokenTypeSelector
           disabled={!formState.data.chain || !nftTypeOptions.length}
-          modalVisible={isShowTokenTypeModal}
           items={nftTypeOptions}
           onSelectItem={onSelectNFTType}
-          selectedValue={selectedNftType}
-          onPress={() => setShowTokenTypeModal(true)}
-          onChangeModalVisible={() => setShowTokenTypeModal(false)}
+          selectedValueMap={selectedNftType ? { [selectedNftType]: true } : {}}
+          tokenTypeRef={tokenTypeRef}
+          renderSelected={() => <TokenTypeSelectField value={selectedNftType} showIcon />}
         />
 
         <InputAddress
@@ -342,7 +374,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChange={(output: string | null, currentValue: string) => {
             handleChangeValue('smartContract')(currentValue);
           }}
-          placeholder={i18n.placeholder.typeOrPasteContractAddress}
+          placeholder={i18n.placeholder.enterOrPasteAnAddress}
         />
 
         {isReady &&
@@ -351,25 +383,15 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
             <Warning key={err} style={{ marginBottom: 8 }} isDanger message={err} />
           ))}
 
-        <ChainSelect
-          items={chainOptions}
-          modalVisible={isShowChainModal}
-          onChangeModalVisible={() => setShowChainModal(false)}
-          onChangeValue={(text: string) => {
-            handleChangeValue('chain')(text);
-            handleChangeValue('selectedNftType')(getNftType(text, chainInfoMap));
-            setShowChainModal(false);
-          }}
-          selectedItem={formState.data.chain}
-        />
-
         <InputText
           ref={formState.refs.collectionName}
           label={formState.labels.collectionName}
           onChangeText={handleChangeValue('collectionName')}
           errorMessages={formState.errors.collectionName}
           value={collectionName}
-          onSubmitField={onSubmitField('collectionName')}
+          onSubmitField={
+            formState.isValidated.smartContract ? onSubmitField('collectionName') : () => Keyboard.dismiss()
+          }
         />
 
         {!isNetConnected && (
@@ -380,13 +402,33 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
         )}
 
+        {chain && !checkChainConnected(chain) && (
+          <>
+            <AlertBox
+              type={'warning'}
+              title={i18n.warningTitle.updateNetwork}
+              description={i18n.warningMessage.enableNetworkMessage}
+            />
+
+            <Button
+              icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
+              style={{ marginTop: 8 }}
+              onPress={() => showPopupEnableChain(chain)}
+              type={'ghost'}>
+              {i18n.buttonTitles.enableNetwork}
+            </Button>
+          </>
+        )}
+
         <AddressScanner
           qrModalVisible={isShowQrModalVisible}
-          onPressCancel={() => setShowQrModalVisible(false)}
-          onChangeAddress={(text: string) => onUpdateNftContractAddress(text)}
-          networkKey={chain || 'default'}
-          token={'contract'}
-          scanMessage={i18n.common.toImportNFT}
+          onPressCancel={() => {
+            setError(undefined);
+            setShowQrModalVisible(false);
+          }}
+          onChangeAddress={onScanContractAddress}
+          isShowError
+          error={error}
         />
       </ScrollView>
 

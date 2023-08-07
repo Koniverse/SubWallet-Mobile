@@ -1,7 +1,6 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { _ChainAsset } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import {
   _getMultiChainAsset,
@@ -9,7 +8,7 @@ import {
   _isChainEvmCompatible,
 } from '@subwallet/extension-base/services/chain-service/utils';
 import { isAccountAll as checkIsAccountAll } from '@subwallet/extension-base/utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -20,6 +19,7 @@ import { HIDE_MODAL_DURATION } from 'constants/index';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { getAccountTypeByTokenGroup } from 'hooks/screen/Home/Crypto/utils';
 import { findAccountByAddress } from 'utils/account';
+import { ModalRef } from 'types/modalRef';
 
 type ReceiveSelectedResult = {
   selectedAccount?: string;
@@ -32,13 +32,21 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
-  const [tokenSelectorItems, setTokenSelectorItems] = useState<_ChainAsset[]>([]);
-  const [isTokenSelectorModalVisible, setTokenSelectorModalVisible] = useState<boolean>(false);
-  const [isAccountSelectorModalVisible, setAccountSelectorModalVisible] = useState<boolean>(false);
+  const [tokenSelectorItems, setTokenSelectorItems] = useState<TokenItemType[]>([]);
   const [isQrModalVisible, setQrModalVisible] = useState<boolean>(false);
   const [{ selectedAccount, selectedNetwork }, setReceiveSelectedResult] = useState<ReceiveSelectedResult>({
     selectedAccount: isAllAccount ? undefined : currentAccount?.address,
   });
+
+  useEffect(() => {
+    if (!isQrModalVisible) {
+      setReceiveSelectedResult({ selectedAccount: isAllAccount ? undefined : currentAccount?.address });
+    }
+  }, [currentAccount?.address, isAllAccount, isQrModalVisible]);
+
+  const accountRef = useRef<ModalRef>();
+  const tokenRef = useRef<ModalRef>();
+  const chainRef = useRef<ModalRef>();
 
   const accountSelectorItems = useMemo<AccountJson[]>(() => {
     if (!isAllAccount) {
@@ -58,8 +66,17 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     return accounts.filter(a => !checkIsAccountAll(a.address));
   }, [isAllAccount, tokenGroupSlug, accounts, assetRegistryMap, chainInfoMap]);
 
+  const selectedAccountMap: Record<string, boolean> = useMemo(() => {
+    let result: Record<string, boolean> = {};
+    accountSelectorItems.forEach(acc => {
+      result[acc.address] = acc.address === selectedAccount;
+    });
+
+    return result;
+  }, [accountSelectorItems, selectedAccount]);
+
   const getTokenSelectorItems = useCallback(
-    (_selectedAccount: string) => {
+    (_selectedAccount: string): TokenItemType[] => {
       // if selectedAccount is not available or is ethereum type
       if (!_selectedAccount) {
         return [];
@@ -107,7 +124,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     }
 
     if (checkIsAccountAll(currentAccount.address)) {
-      setAccountSelectorModalVisible(true);
+      accountRef && accountRef.current?.onOpenModal();
     } else {
       // if currentAccount is ledger type
       if (currentAccount.originGenesisHash) {
@@ -133,8 +150,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
           return;
         }
       }
-
-      setTokenSelectorModalVisible(true);
+      tokenRef && tokenRef.current?.onOpenModal();
     }
   }, [chainInfoMap, currentAccount, getTokenSelectorItems, tokenGroupSlug]);
 
@@ -148,7 +164,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
       if (tokenGroupSlug) {
         if (_tokenSelectorItems.length === 1) {
           setReceiveSelectedResult(prev => ({ ...prev, selectedNetwork: _tokenSelectorItems[0].originChain }));
-          setAccountSelectorModalVisible(false);
+          accountRef && accountRef.current?.onCloseModal();
           actionWithSetTimeout(() => {
             setQrModalVisible(true);
           });
@@ -157,10 +173,7 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
         }
       }
 
-      setAccountSelectorModalVisible(false);
-      actionWithSetTimeout(() => {
-        setTokenSelectorModalVisible(true);
-      });
+      tokenRef && tokenRef.current?.onOpenModal();
     },
     [actionWithSetTimeout, getTokenSelectorItems, tokenGroupSlug],
   );
@@ -168,7 +181,8 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   const openSelectToken = useCallback(
     (value: TokenItemType) => {
       setReceiveSelectedResult(prevState => ({ ...prevState, selectedNetwork: value.originChain }));
-      setTokenSelectorModalVisible(false);
+      tokenRef && tokenRef.current?.onCloseModal();
+      accountRef && accountRef.current?.onCloseModal();
       actionWithSetTimeout(() => {
         setQrModalVisible(true);
       });
@@ -177,11 +191,11 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   );
 
   const onCloseSelectAccount = useCallback(() => {
-    setAccountSelectorModalVisible(false);
+    accountRef && accountRef.current?.onCloseModal();
   }, []);
 
   const onCloseSelectToken = useCallback(() => {
-    setTokenSelectorModalVisible(false);
+    tokenRef && tokenRef.current?.onCloseModal();
   }, []);
 
   const onCloseQrModal = useCallback(() => {
@@ -196,8 +210,6 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
   }, [currentAccount?.address]);
 
   return {
-    isTokenSelectorModalVisible,
-    isAccountSelectorModalVisible,
     isQrModalVisible,
     onOpenReceive,
     openSelectAccount,
@@ -209,5 +221,9 @@ export default function useReceiveQR(tokenGroupSlug?: string) {
     accountSelectorItems,
     tokenSelectorItems,
     selectedNetwork,
+    accountRef,
+    tokenRef,
+    chainRef,
+    selectedAccountMap,
   };
 }

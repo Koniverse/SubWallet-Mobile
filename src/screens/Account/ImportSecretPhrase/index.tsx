@@ -145,7 +145,7 @@ export const ImportSecretPhrase = () => {
       disableRightButton={isBusy}>
       <View style={styles.wrapper}>
         <ScrollView style={styles.container}>
-          <Typography.Text style={styles.title}>{i18n.common.importSecretPhraseTitle}</Typography.Text>
+          <Typography.Text style={styles.title}>{i18n.importAccount.importFromSeedPhraseMessage}</Typography.Text>
           <Textarea
             ref={formState.refs.seed}
             style={styles.textArea}
@@ -156,6 +156,9 @@ export const ImportSecretPhrase = () => {
             editable={!isBusy}
             onSubmitEditing={onSubmitField('seed')}
             errorMessages={formState.errors.seed}
+            placeholderTextColor={theme.colorTextTertiary}
+            placeholder={i18n.placeholder.seedPhrase}
+            autoCapitalize="none"
           />
 
           <SelectAccountType

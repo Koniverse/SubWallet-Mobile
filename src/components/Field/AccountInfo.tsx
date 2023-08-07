@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleProp, Text, View } from 'react-native';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import reformatAddress, { getNetworkLogo, toShort } from 'utils/index';
 import { ColorMap } from 'styles/color';
 import { FontMedium, sharedStyles } from 'styles/sharedStyles';
+import { Avatar } from 'components/design-system-ui';
 
 interface Props {
   address: string;
@@ -11,11 +11,6 @@ interface Props {
   networkKey?: string;
   networkPrefix?: number;
 }
-
-const avatarStyle: StyleProp<any> = {
-  border: 0,
-  marginRight: 6,
-};
 
 const textStyle: StyleProp<any> = {
   ...sharedStyles.mainText,
@@ -37,8 +32,8 @@ export const AccountInfoField = ({ address, name, networkKey, networkPrefix }: P
         alignItems: 'center',
       }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-        <SubWalletAvatar address={address} size={18} style={avatarStyle} />
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Avatar value={address} size={18} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
           <Text numberOfLines={1} style={[{ maxWidth: 100 }, textStyle]}>
             {name}
           </Text>

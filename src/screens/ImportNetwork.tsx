@@ -76,52 +76,52 @@ export const ImportNetwork = () => {
   const formConfig = useMemo(
     () => ({
       provider: {
-        name: 'Provider URL',
+        name: i18n.importNetwork.providerUrl,
         value: '',
         require: true,
       },
       name: {
-        name: 'Chain name',
+        name: i18n.importNetwork.chainName,
         value: '',
         require: true,
       },
       addressPrefix: {
-        name: 'Address prefix',
+        name: i18n.importNetwork.addressPrefix,
         value: '',
       },
       paraId: {
-        name: 'Para Id',
+        name: i18n.importNetwork.paraId,
         value: '',
       },
       evmChainId: {
-        name: 'EVM chain id',
+        name: i18n.importNetwork.evmChainId,
         value: '',
       },
       decimals: {
-        name: 'Decimals',
+        name: i18n.importNetwork.decimal,
         value: '',
       },
       symbol: {
-        name: 'Symbol',
+        name: i18n.importNetwork.symbol,
         value: '',
         require: true,
       },
       priceId: {
-        name: 'Price Id',
+        name: i18n.importNetwork.priceId,
         value: '',
       },
       type: {
-        name: 'Chain type',
+        name: i18n.importNetwork.chainType,
         value: '',
         require: true,
       },
       blockExplorer: {
-        name: 'Block explorer',
+        name: i18n.importNetwork.blockExplorer,
         value: '',
         validateFunc: blockExplorerValidator,
       },
       crowdloanUrl: {
-        name: 'Crowdloan URL',
+        name: i18n.importNetwork.crowdloanUrl,
         value: '',
         validateFunc: crowdloanValidator,
       },
@@ -171,15 +171,15 @@ export const ImportNetwork = () => {
       .then(result => {
         setLoading(false);
         if (result) {
-          toast.show(i18n.notificationMessage.importedChainSuccessfully);
+          toast.show(i18n.notificationMessage.importedChainSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
       })
       .catch(() => {
         setLoading(false);
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
       });
   };
 

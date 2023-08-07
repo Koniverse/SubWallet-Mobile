@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { Linking, ScrollView, StyleProp } from 'react-native';
@@ -37,12 +37,12 @@ import {
   WEBSITE_URL,
   WIKI_URL,
 } from 'constants/index';
-import { useToast } from 'react-native-toast-notifications';
 import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -70,17 +70,11 @@ type settingItemType = {
   backgroundColor: string;
 };
 
-export const Settings = () => {
+export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
-  const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
   const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const { lock } = useAppLock();
-  const onPressComingSoonFeature = useCallback(() => {
-    toast.hideAll();
-    toast.show(i18n.notificationMessage.comingSoon);
-    // navigation.navigate('GeneralSettings');
-  }, [toast]);
   const [hiddenCount, setHiddenCount] = useState(0);
 
   const settingList: settingItemType[][] = useMemo(
@@ -90,7 +84,7 @@ export const Settings = () => {
           icon: GlobeHemisphereWest,
           title: i18n.settings.generalSettings,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: onPressComingSoonFeature,
+          onPress: () => navigation.navigate('GeneralSettings'),
           backgroundColor: '#D92079',
         },
         {
@@ -104,7 +98,7 @@ export const Settings = () => {
           icon: BookBookmark,
           title: i18n.settings.manageAddressBook,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: onPressComingSoonFeature,
+          onPress: () => navigation.navigate('ManageAddressBook'),
           backgroundColor: '#0078D9',
         },
         {
@@ -185,8 +179,14 @@ export const Settings = () => {
         },
       ],
     ],
-    [navigation, onPressComingSoonFeature, theme.colorTextLight3],
+    [navigation, theme.colorTextLight3],
   );
+  //
+  // useEffect(() => {
+  //   if (isEmptyAccounts) {
+  //     drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack();
+  //   }
+  // }, [drawerNavigation, isEmptyAccounts, navigation]);
 
   const onPressVersionNumber = () => {
     if (hiddenCount > 9) {
@@ -197,11 +197,12 @@ export const Settings = () => {
 
   return (
     <SubScreenContainer
-      title={i18n.title.settings}
+      title={i18n.header.settings}
       navigation={navigation}
       icon={<SVGImages.Logo width={24} height={24} />}
       rightIcon={X}
-      onPressRightIcon={() => navigation.goBack()}>
+      onPressLeftBtn={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}
+      onPressRightIcon={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}>
       <>
         <ScrollView
           style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}

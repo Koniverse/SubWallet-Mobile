@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleProp, View } from 'react-native';
+import { Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
-import ModalBase from 'components/Modal/Base/ModalBase';
+import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import ModalBase from 'components/design-system-ui/modal/ModalBase';
 
 interface Props {
   children: React.ReactNode;
@@ -12,16 +13,25 @@ interface Props {
   animationIn?: ModalProps['animationIn'];
   animationOut?: ModalProps['animationOut'];
   backdropColor?: string;
+  onBackButtonPress?: () => void;
 }
 
 const subWalletModalContainer: StyleProp<any> = {
   flex: 1,
   backgroundColor: ColorMap.dark1,
   alignItems: 'center',
-  paddingTop: 8,
+  paddingTop: Platform.OS === 'android' ? STATUS_BAR_HEIGHT + 8 : 8,
 };
 
-const SwFullSizeModal = ({ children, modalVisible, modalStyle, animationIn, animationOut, backdropColor }: Props) => {
+const SwFullSizeModal = ({
+  children,
+  modalVisible,
+  modalStyle,
+  animationIn,
+  animationOut,
+  backdropColor,
+  onBackButtonPress,
+}: Props) => {
   return (
     <ModalBase
       isVisible={modalVisible}
@@ -31,6 +41,8 @@ const SwFullSizeModal = ({ children, modalVisible, modalStyle, animationIn, anim
       useNativeDriver
       backdropColor={backdropColor}
       hideModalContentWhileAnimating
+      statusBarTranslucent
+      onBackButtonPress={onBackButtonPress}
       propagateSwipe>
       <View style={[subWalletModalContainer, modalStyle]}>{children}</View>
     </ModalBase>

@@ -1,71 +1,82 @@
 import React, { useState } from 'react';
-import { SelectScreen } from 'components/SelectScreen';
-import { FlatList, StyleProp, View } from 'react-native';
-import getLanguageOptions from 'utils/getLanguageOptions';
-import { SelectItem } from 'components/SelectItem';
+import { StyleProp, View } from 'react-native';
+import getLanguageOptions, { LanguageOption } from 'utils/getLanguageOptions';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateLanguage } from 'stores/MobileSettings';
 import { RootState } from 'stores/index';
-import { ScrollViewStyle } from 'styles/sharedStyles';
-import moment from 'moment';
-import { Button } from 'components/design-system-ui';
+import { Button, SelectItem } from 'components/design-system-ui';
+import { FlatListScreen } from 'components/FlatListScreen';
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
   marginBottom: 18,
+  paddingHorizontal: 16,
+};
+
+const searchFunc = (items: LanguageOption[], searchString: string) => {
+  return items.filter(item => item.value.toLowerCase().includes(searchString.toLowerCase()));
 };
 
 export const Languages = () => {
   const language = useSelector((state: RootState) => state.mobileSettings.language);
   const navigation = useNavigation<RootNavigationProps>();
-  const languageOptions = getLanguageOptions();
+  const supportedLanguages = i18n.getAvailableLanguages();
+  const languageOptions = getLanguageOptions().filter(lang => supportedLanguages.includes(lang.value));
   const dispatch = useDispatch();
-  const [searchString, setSearchString] = useState<string>('');
   const [selectedLang, setSelectedLang] = useState<string>(language);
-  const filteredLanguageOption = languageOptions.filter(opt => opt.text.includes(searchString));
 
   const onPressDone = () => {
     if (language === selectedLang) {
-      navigation.navigate('Settings');
+      navigation.goBack();
     } else {
       i18n.setLanguage(selectedLang);
-      moment.locale(selectedLang);
-      dispatch(updateLanguage(selectedLang));
       navigation.reset({
-        index: 2,
-        routes: [{ name: 'Home' }, { name: 'Settings' }, { name: 'GeneralSettings' }],
+        index: 1,
+        routes: [{ name: 'Home' }, { name: 'GeneralSettings' }],
       });
+      dispatch(updateLanguage(selectedLang));
     }
   };
 
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
-      <SelectItem
-        label={item.text}
-        isSelected={item.value === selectedLang}
-        onPress={() => setSelectedLang(item.value)}
-      />
+      <View style={{ paddingHorizontal: 16 }}>
+        <SelectItem
+          label={item.text}
+          isSelected={item.value === selectedLang}
+          onPress={() => setSelectedLang(item.value)}
+        />
+      </View>
     );
   };
 
   // Todo: use FlatListScreen instead of SelectScreen
   return (
-    <SelectScreen
-      style={{ paddingTop: 0 }}
-      title={i18n.title.language}
-      searchString={searchString}
-      onChangeSearchText={setSearchString}
-      onPressBack={() => navigation.goBack()}>
-      <View style={{ flex: 1 }}>
-        <FlatList data={filteredLanguageOption} renderItem={renderItem} style={{ ...ScrollViewStyle }} />
+    <FlatListScreen
+      title={i18n.header.language}
+      items={languageOptions}
+      renderItem={renderItem}
+      renderListEmptyComponent={() => (
+        <EmptyList
+          title={i18n.emptyScreen.selectorEmptyTitle}
+          message={i18n.emptyScreen.selectorEmptyMessage}
+          icon={MagnifyingGlass}
+        />
+      )}
+      autoFocus={false}
+      searchFunction={searchFunc}
+      afterListItem={
         <View style={footerAreaStyle}>
-          <Button onPress={onPressDone}>{i18n.common.done}</Button>
+          <Button onPress={onPressDone}>{i18n.buttonTitles.apply}</Button>
         </View>
-      </View>
-    </SelectScreen>
+      }
+      onPressBack={() => navigation.goBack()}
+    />
   );
 };

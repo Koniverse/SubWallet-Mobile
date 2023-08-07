@@ -12,11 +12,12 @@ import { isAccountAll } from 'utils/accountAll';
 import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { AppModalContext } from 'providers/AppModalContext';
+import i18n from 'utils/i18n/i18n';
 
 export const useTransaction = (
   action: string,
   extraFormConfig: FormControlConfig,
-  formControlOption: FormControlOption,
+  formControlOption?: FormControlOption,
 ) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const navigation = useNavigation<RootNavigationProps>();
@@ -66,7 +67,7 @@ export const useTransaction = (
   }, [action]);
 
   const title = useMemo(() => {
-    return TRANSACTION_TITLE_MAP[transactionType];
+    return TRANSACTION_TITLE_MAP()[transactionType];
   }, [transactionType]);
 
   const transactionFormConfig: FormControlConfig = {
@@ -114,8 +115,8 @@ export const useTransaction = (
         setTimeout(() => {
           appModalContext.setConfirmModal({
             visible: true,
-            message: `Your selected chain (${chainInfoMap[chain].name}) is currently disabled, you need to turn it on`,
-            title: 'Enable chain?',
+            message: i18n.common.enableChainMessage(chainInfoMap[chain].name),
+            title: i18n.common.enableChain,
             onCancelModal: () => {
               appModalContext.hideConfirmModal();
             },
@@ -177,5 +178,7 @@ export const useTransaction = (
     onChangeValue,
     onDone,
     onUpdateErrors,
+    showPopupEnableChain,
+    checkChainConnected,
   };
 };

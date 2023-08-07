@@ -29,6 +29,7 @@ import { setBuildNumber } from './stores/AppVersion';
 // import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
 import { getBuildNumber } from 'react-native-device-info';
 import { AppModalContextProvider } from './providers/AppModalContext';
+import { CustomToast } from 'components/design-system-ui/toast';
 
 const viewContainerStyle: StyleProp<any> = {
   position: 'relative',
@@ -46,18 +47,25 @@ const layerScreenStyle: StyleProp<any> = {
 };
 
 AutoLockState.isPreventAutoLock = false;
-const autoLockParams: { pinCodeEnabled: boolean; faceIdEnabled: boolean; autoLockTime?: number; lock: () => void } = {
+const autoLockParams: {
+  pinCodeEnabled: boolean;
+  faceIdEnabled: boolean;
+  autoLockTime?: number;
+  lock: () => void;
+  isPreventLock: boolean;
+} = {
   pinCodeEnabled: false,
   faceIdEnabled: false,
+  isPreventLock: false,
   autoLockTime: undefined,
   lock: () => {},
 };
 let timeout: NodeJS.Timeout | undefined;
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
-  const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock } = autoLockParams;
+  const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock, isPreventLock } = autoLockParams;
 
-  if (state === 'background') {
+  if (state === 'background' && !isPreventLock) {
     keyringLock().catch((e: Error) => console.log(e));
   }
 
@@ -96,7 +104,9 @@ export const AppNew = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
-  const { pinCodeEnabled, faceIdEnabled, autoLockTime } = useSelector((state: RootState) => state.mobileSettings);
+  const { pinCodeEnabled, faceIdEnabled, autoLockTime, isPreventLock } = useSelector(
+    (state: RootState) => state.mobileSettings,
+  );
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
   const { isLocked, lock } = useAppLock();
@@ -119,7 +129,8 @@ export const AppNew = () => {
     autoLockParams.autoLockTime = autoLockTime;
     autoLockParams.pinCodeEnabled = pinCodeEnabled;
     autoLockParams.faceIdEnabled = faceIdEnabled;
-  }, [autoLockTime, faceIdEnabled, lock, pinCodeEnabled]);
+    autoLockParams.isPreventLock = isPreventLock;
+  }, [autoLockTime, faceIdEnabled, isPreventLock, lock, pinCodeEnabled]);
 
   const isRequiredStoresReady = true;
 
@@ -131,7 +142,8 @@ export const AppNew = () => {
 
   useEffect(() => {
     if (buildNumber === 1) {
-      updateShowZeroBalanceState(true);
+      // Set default value on the first time install
+      updateShowZeroBalanceState(false);
       const buildNumberInt = parseInt(getBuildNumber(), 10);
       dispatch(setBuildNumber(buildNumberInt));
     }
@@ -148,6 +160,7 @@ export const AppNew = () => {
       <View style={{ flex: 1 }}>
         <ToastProvider
           duration={TOAST_DURATION}
+          renderToast={toast => <CustomToast toast={toast} />}
           placement="top"
           normalColor={theme.colors.notification}
           textStyle={{ textAlign: 'center', ...FontMedium }}

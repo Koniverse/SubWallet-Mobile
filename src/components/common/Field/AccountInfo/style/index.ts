@@ -11,7 +11,7 @@ export default (theme: ThemeTypes) =>
     container: {
       flexDirection: 'row',
       paddingVertical: 14,
-      paddingHorizontal: 16,
+      paddingHorizontal: 12,
       backgroundColor: theme.colorBgInput,
       borderRadius: 8,
       alignItems: 'center',

@@ -34,33 +34,25 @@ import {
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 
-const confirmationPopupWrapper: StyleProp<any> = {
-  maxHeight: '100%',
-  width: '100%',
-  backgroundColor: ColorMap.dark1,
-  borderTopLeftRadius: 32,
-  borderTopRightRadius: 32,
-  alignItems: 'center',
-  paddingTop: Platform.OS === 'ios' ? 8 : STATUS_BAR_HEIGHT + 8,
+const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
+  return {
+    maxHeight: '100%',
+    width: '100%',
+    backgroundColor: ColorMap.dark1,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    alignItems: 'center',
+    paddingTop: Platform.OS === 'ios' ? 8 : isShowSeparator ? 8 : STATUS_BAR_HEIGHT + 8,
+  };
 };
 
 const subWalletModalSeparator: StyleProp<any> = {
-  width: 56,
-  height: 4,
-  borderRadius: 2,
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  width: 70,
+  height: 5,
+  borderRadius: 100,
+  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  marginBottom: 16,
 };
-
-const titleMap: Record<ConfirmationType, string> = {
-  addNetworkRequest: i18n.header.addNetworkRequest,
-  addTokenRequest: i18n.header.addTokenRequest,
-  authorizeRequest: i18n.header.connectWithSubwallet,
-  evmSendTransactionRequest: i18n.header.transactionRequest,
-  evmSignatureRequest: i18n.header.signatureRequest,
-  metadataRequest: i18n.header.updateMetadata,
-  signingRequest: i18n.header.signatureRequest,
-  switchNetworkRequest: i18n.header.addNetworkRequest,
-} as Record<ConfirmationType, string>;
 
 export const Confirmations = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -70,6 +62,19 @@ export const Confirmations = () => {
   const [index, setIndex] = useState(0);
   const confirmation = confirmationQueue[index] || null;
   useHandlerHardwareBackPress(true);
+  const titleMap = useMemo(
+    () => ({
+      addNetworkRequest: i18n.header.addNetworkRequest,
+      addTokenRequest: i18n.header.addTokenRequest,
+      authorizeRequest: i18n.header.connectWithSubwallet,
+      evmSendTransactionRequest: i18n.header.transactionRequest,
+      evmSignatureRequest: i18n.header.signatureRequest,
+      metadataRequest: i18n.header.updateMetadata,
+      signingRequest: i18n.header.signatureRequest,
+      switchNetworkRequest: i18n.header.addNetworkRequest,
+    }),
+    [],
+  ) as Record<ConfirmationType, string>;
 
   const nextConfirmation = useCallback(() => {
     setIndex(val => Math.min(val + 1, numberOfConfirmations - 1));
@@ -116,7 +121,7 @@ export const Confirmations = () => {
     } else {
       return titleMap[confirmation.type] || '';
     }
-  }, [confirmation, transactionRequest]);
+  }, [confirmation, titleMap, transactionRequest]);
 
   const content = useMemo((): React.ReactNode => {
     if (!confirmation) {
@@ -216,7 +221,7 @@ export const Confirmations = () => {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <View style={confirmationPopupWrapper}>
+        <View style={getConfirmationPopupWrapperStyle(!confirmation || !confirmation.item.isInternal)}>
           {(!confirmation || !confirmation.item.isInternal) && <View style={subWalletModalSeparator} />}
           <ConfirmationHeader
             index={index}

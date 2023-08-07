@@ -40,6 +40,7 @@ import {
   ConfirmationDefinitions,
   ConfirmationsQueue,
   ConfirmationType,
+  CronReloadRequest,
   CronServiceType,
   CrowdloanJson,
   CurrentAccountInfo,
@@ -47,7 +48,6 @@ import {
   NftCollection,
   NftJson,
   NftTransactionRequest,
-  NftTransferExtra,
   NominationPoolInfo,
   NominatorMetadata,
   OptionInputAddress,
@@ -75,11 +75,11 @@ import {
   RequestKeyringExportMnemonic,
   RequestMaxTransferable,
   RequestMigratePassword,
-  RequestNftForceUpdate,
   RequestParseEvmContractInput,
   RequestParseTransactionSubstrate,
   RequestQrSignEvm,
   RequestQrSignSubstrate,
+  RequestResetWallet,
   RequestSettingsType,
   RequestSigningApprovePasswordV2,
   RequestStakeCancelWithdrawal,
@@ -119,6 +119,7 @@ import {
   ResponseQrParseRLP,
   ResponseQrSignEvm,
   ResponseQrSignSubstrate,
+  ResponseResetWallet,
   ResponseSeedCreateV2,
   ResponseSeedValidateV2,
   ResponseUnlockKeyring,
@@ -135,11 +136,10 @@ import {
 } from '@subwallet/extension-base/background/KoniTypes';
 import { Message } from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
-import type { KeyringPairs$Json } from '@subwallet/ui-keyring/types';
+import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 import { MetadataDef } from '@subwallet/extension-inject/types';
-import { SingleAddress } from '@polkadot/ui-keyring/observable/types';
 import {
   SWTransactionResponse,
   SWTransactionResult,
@@ -492,6 +492,10 @@ export async function restartCronAndSubscriptionServices(request: RequestCronAnd
   return sendMessage('mobile(cronAndSubscription.restart)', request);
 }
 
+export async function reloadCron(request: CronReloadRequest): Promise<boolean> {
+  return sendMessage('pri(cron.reload)', request);
+}
+
 export async function startCronServices(request: CronServiceType[]): Promise<void> {
   return sendMessage('mobile(cron.start)', request);
 }
@@ -526,15 +530,12 @@ export async function showAccount(address: string, isShowing: boolean): Promise<
   return sendMessage('pri(accounts.show)', { address, isShowing });
 }
 
-export async function saveCurrentAccountAddress(
-  data: RequestCurrentAccountAddress,
-  callback: (data: CurrentAccountInfo) => void,
-): Promise<boolean> {
-  return sendMessage('pri(currentAccount.saveAddress)', data, callback);
+export async function saveCurrentAccountAddress(data: RequestCurrentAccountAddress): Promise<CurrentAccountInfo> {
+  return sendMessage('pri(currentAccount.saveAddress)', data);
 }
 
 export async function toggleBalancesVisibility(): Promise<boolean> {
-  return sendMessage('pri(settings.changeBalancesVisibility)', null, () => {});
+  return sendMessage('pri(settings.changeBalancesVisibility)', null);
 }
 
 export async function saveAccountAllLogo(
@@ -815,12 +816,16 @@ export async function subscribeAccountsInputAddress(cb: (data: OptionInputAddres
   return sendMessage('pri(accounts.subscribeAccountsInputAddress)', {}, cb);
 }
 
-export async function saveRecentAccountId(accountId: string): Promise<SingleAddress> {
+export async function saveRecentAccountId(accountId: string): Promise<KeyringAddress> {
   return sendMessage('pri(accounts.saveRecent)', { accountId });
 }
 
-export async function triggerAccountsSubscription(): Promise<boolean> {
-  return sendMessage('pri(accounts.triggerSubscription)');
+export async function editContactAddress(address: string, name: string): Promise<boolean> {
+  return sendMessage('pri(accounts.editContact)', { address: address, meta: { name: name } });
+}
+
+export async function removeContactAddress(address: string): Promise<boolean> {
+  return sendMessage('pri(accounts.deleteContact)', { address: address });
 }
 
 export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
@@ -1053,22 +1058,6 @@ export async function subscribeStakingReward(
   callback: (stakingRewardData: StakingRewardJson) => void,
 ): Promise<StakingRewardJson> {
   return sendMessage('pri(stakingReward.getSubscription)', request, callback);
-}
-
-export async function nftForceUpdate(request: RequestNftForceUpdate): Promise<boolean> {
-  return sendMessage('pri(nft.forceUpdate)', request);
-}
-
-export async function getNftTransfer(): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getNftTransfer)', null);
-}
-
-export async function subscribeNftTransfer(callback: (data: NftTransferExtra) => void): Promise<NftTransferExtra> {
-  return sendMessage('pri(nftTransfer.getSubscription)', null, callback);
-}
-
-export async function setNftTransfer(request: NftTransferExtra): Promise<boolean> {
-  return sendMessage('pri(nftTransfer.setNftTransfer)', request);
 }
 
 export async function makeTransfer(request: RequestTransfer): Promise<SWTransactionResponse> {
@@ -1347,6 +1336,10 @@ export async function keyringExportMnemonic(
   request: RequestKeyringExportMnemonic,
 ): Promise<ResponseKeyringExportMnemonic> {
   return sendMessage('pri(keyring.export.mnemonic)', request);
+}
+
+export async function resetWallet(request: RequestResetWallet): Promise<ResponseResetWallet> {
+  return sendMessage('pri(keyring.reset)', request);
 }
 
 /// Derive

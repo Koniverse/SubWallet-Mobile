@@ -1,134 +1,132 @@
-import React, { useCallback, useMemo } from 'react';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import React, { useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { ColorMap } from 'styles/color';
-import { GlobeHemisphereEast, GlobeSimple } from 'phosphor-react-native';
-import { FontMedium, FontSize0, sharedStyles } from 'styles/sharedStyles';
+import { predefinedDApps } from '../../../predefined/dAppSites';
+import { PredefinedDApps } from 'types/browser';
+import BrowserHome from './BrowserHome';
+import BrowserHeader from './Shared/BrowserHeader';
+import BrowserListByCategory from './BrowserListByCategory';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Animated, Dimensions, View } from 'react-native';
+import { useNavigationState } from '@react-navigation/native';
+import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import createStylesheet from './styles';
+import { FontSemiBold } from 'styles/sharedStyles';
+import { Typography } from 'components/design-system-ui';
+import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
-import { BrowserItem } from 'components/BrowserItem';
-import { StoredSiteInfo } from 'stores/types';
-import { Button } from 'components/Button';
-import { BrowserHeader } from 'screens/Home/Browser/Shared/BrowserHeader';
-import { EmptyList } from 'components/EmptyList';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const searchTitleStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  ...FontMedium,
-  color: ColorMap.light,
+type RoutesType = {
+  key: string;
+  title: string;
 };
-
-const groupHeaderWrapperStyle: StyleProp<any> = {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingHorizontal: 16,
-  paddingBottom: 16,
+type TabbarType = {
+  focused: boolean;
 };
-
-const rightHeaderButtonStyle: StyleProp<any> = {
-  width: 40,
-  height: 40,
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginHorizontal: 7,
+const Tab = createMaterialTopTabNavigator();
+const initialLayout = {
+  width: Dimensions.get('window').width,
 };
-
-const rightHeaderButtonTextOutlineStyle: StyleProp<any> = {
-  width: 20,
-  height: 20,
-  borderRadius: 4,
-  borderWidth: 2,
-  borderColor: ColorMap.light,
-  alignItems: 'center',
-  justifyContent: 'center',
-};
-
-const rightHeaderButtonTextStyle: StyleProp<any> = {
-  ...FontSize0,
-  color: ColorMap.light,
-  ...FontMedium,
-  lineHeight: 16,
-};
-
-function renderGroupHeader(title: string, onPressSeeAllBtn: () => void) {
+const transparent = { backgroundColor: 'transparent' };
+const screenOptions = (currentTabIndex: number) => ({
+  tabBarStyle: { height: 28, ...transparent },
+  tabBarItemStyle: {
+    width: 'auto',
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  tabBarIconStyle: { width: 'auto', marginLeft: -2, marginRight: -2, top: -12 },
+  tabBarScrollEnabled: true,
+  lazy: true,
+  tabBarShowLabel: false,
+  swipeEnabled: !!currentTabIndex,
+  tabBarIndicatorStyle: transparent,
+});
+const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
+  const wrapperStyle = {
+    paddingHorizontal: 8,
+    paddingLeft: item.title.toLocaleLowerCase() === 'all' ? 16 : undefined,
+  };
+  const spaceStyle = {
+    height: 2,
+    marginTop: theme.marginXXS,
+    backgroundColor: focused ? theme.colorPrimary : 'transparent',
+  };
   return (
-    <View style={groupHeaderWrapperStyle}>
-      <Text style={searchTitleStyle}>{title}</Text>
-
-      <Button title={i18n.common.seeAll} onPress={onPressSeeAllBtn} />
+    <View style={wrapperStyle}>
+      <Typography.Text style={{ ...FontSemiBold, color: focused ? theme.colorTextLight1 : theme.colorTextLight4 }}>
+        {item.title}
+      </Typography.Text>
+      <View style={spaceStyle} />
     </View>
   );
-}
+};
+export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
+  const theme = useSubWalletTheme().swThemes;
+  const stylesheet = createStylesheet(theme);
+  const [dApps] = useState<PredefinedDApps>(predefinedDApps);
+  const [searchString] = useState<string>('');
+  const categoryTabRoutes = dApps.categories().map(item => ({ key: item.id, title: item.name }));
+  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  const navigationState = useNavigationState(state => state);
+  const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
+  const av = new Animated.Value(0);
+  av.addListener(() => {
+    return;
+  });
 
-export const BrowserScreen = () => {
-  const historyItems = useSelector((state: RootState) => state.browser.history);
-  const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const tabsNumber = useSelector((state: RootState) => state.browser.tabs.length);
-  const navigation = useNavigation<RootNavigationProps>();
-
-  const renderSiteItem = (item: StoredSiteInfo) => {
-    return (
-      <BrowserItem
-        key={item.id}
-        leftIcon={<GlobeHemisphereEast color={ColorMap.light} weight={'bold'} size={20} />}
-        text={item.url}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
-      />
-    );
+  const tabScreenOptions = (item: RoutesType) => {
+    return {
+      tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
+    };
   };
 
-  const onPressSearchBar = useCallback(() => {
-    navigation.navigate('BrowserSearch');
-  }, [navigation]);
-
-  const onOpenBrowserTabs = useCallback(() => {
-    navigation.navigate('BrowserTabsManager', { isOpenTabs: true });
-  }, [navigation]);
-
-  const browserHeaderRightComponent = useMemo(() => {
-    return (
-      <TouchableOpacity style={rightHeaderButtonStyle} onPress={onOpenBrowserTabs}>
-        <View style={rightHeaderButtonTextOutlineStyle}>
-          <Text style={rightHeaderButtonTextStyle}>{tabsNumber}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }, [onOpenBrowserTabs, tabsNumber]);
+  const screenListener = {
+    focus: () => {
+      Animated.timing(av, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    },
+  };
 
   return (
-    <ScreenContainer backgroundColor={ColorMap.dark1}>
+    <ScreenContainer backgroundColor={theme.colorBgDefault}>
       <>
-        <BrowserHeader onPressSearchBar={onPressSearchBar} rightComponent={browserHeaderRightComponent} />
+        <BrowserHeader />
+        {/* @ts-ignore */}
+        <FakeSearchInput style={stylesheet.fakeSearch} onPress={() => navigation.navigate('BrowserSearch')} />
 
-        {!!bookmarkItems.length || !!historyItems.length ? (
-          <ScrollView style={{ flex: 1, marginTop: 16 }} contentContainerStyle={{ paddingBottom: 12 }}>
-            {!!bookmarkItems.length && (
-              <>
-                {renderGroupHeader(i18n.common.favorites, () => navigation.navigate('FavouritesGroupDetail'))}
-
-                {bookmarkItems.slice(0, 15).map(item => renderSiteItem(item))}
-              </>
-            )}
-
-            {!!historyItems.length && (
-              <>
-                {renderGroupHeader(i18n.common.history, () => navigation.navigate('HistoryGroupDetail'))}
-
-                {historyItems.slice(0, 15).map(item => renderSiteItem(item))}
-              </>
-            )}
-          </ScrollView>
-        ) : (
-          <EmptyList
-            icon={GlobeSimple}
-            title={i18n.emptyScreen.browserEmptyTitle}
-            message={i18n.emptyScreen.browserEmptyMessage}
-          />
-        )}
+        <Tab.Navigator
+          initialLayout={initialLayout}
+          sceneContainerStyle={transparent}
+          initialRouteName="TabBrowserHome0"
+          screenListeners={screenListener}
+          screenOptions={screenOptions(currentTabIndex)}>
+          {allTabRoutes.map((item, index) => {
+            if (index === 0) {
+              return (
+                <Tab.Screen
+                  key={'TabBrowserHome0'}
+                  name="TabBrowserHome0"
+                  component={BrowserHome}
+                  options={tabScreenOptions(item)}
+                />
+              );
+            }
+            return (
+              <Tab.Screen
+                key={item.key}
+                name={item.key}
+                initialParams={{ searchString }}
+                component={BrowserListByCategory}
+                options={tabScreenOptions(item)}
+              />
+            );
+          })}
+        </Tab.Navigator>
       </>
     </ScreenContainer>
   );

@@ -1,8 +1,8 @@
 import React from 'react';
-import { GestureResponderEvent, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
+import { GestureResponderEvent, StyleProp, TextStyle, View } from 'react-native';
 import Text from '../components/Text';
 import { SpaceStyle } from 'styles/space';
-import { FontBold, FontSize4, sharedStyles } from 'styles/sharedStyles';
+import { FontSemiBold } from 'styles/sharedStyles';
 import { CaretLeft, IconProps } from 'phosphor-react-native';
 import { ColorMap } from 'styles/color';
 import { Button, Icon } from 'components/design-system-ui';
@@ -21,6 +21,7 @@ export interface SubHeaderProps {
   showLeftBtn?: boolean;
   rightButtonTitle?: string;
   icon?: React.ReactNode;
+  titleTextAlign?: 'left' | 'center';
 }
 
 function getSubHeaderWrapperStyle(backgroundColor: string = '#0C0C0C'): StyleProp<any> {
@@ -35,21 +36,20 @@ function getSubHeaderWrapperStyle(backgroundColor: string = '#0C0C0C'): StylePro
   };
 }
 
-const headerTitleContainer: StyleProp<ViewStyle> = {
-  flexDirection: 'row',
-  flex: 1,
-  justifyContent: 'center',
-  paddingHorizontal: 56,
-};
-
-const headerTitleWrapperStyle: StyleProp<ViewStyle> = {
-  flex: 1,
+const getHeaderTitleContainer = (textAlign?: string, showLeftBtn?: boolean, showRightBtn?: boolean): StyleProp<any> => {
+  return {
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: textAlign === 'left' ? 'flex-start' : 'center',
+    paddingLeft: !!showLeftBtn || textAlign === 'center' ? 32 : 0,
+    paddingRight: !!showRightBtn || textAlign === 'center' ? 32 : 0,
+  };
 };
 
 const subHeaderTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSize4,
-  ...FontBold,
+  fontSize: 20,
+  lineHeight: 28,
+  ...FontSemiBold,
   textAlign: 'center',
   color: ColorMap.light,
 };
@@ -67,6 +67,7 @@ export const SubHeader = ({
   rightButtonTitle = '',
   rightIconColor,
   icon,
+  titleTextAlign = 'center',
 }: SubHeaderProps) => {
   const hideSubHeader = !headerContent && !title && !showLeftBtn && !rightIcon;
 
@@ -79,12 +80,10 @@ export const SubHeader = ({
       {headerContent ? (
         headerContent()
       ) : (
-        <View style={headerTitleContainer}>
-          <View style={headerTitleWrapperStyle}>
-            <Text numberOfLines={1} style={subHeaderTextStyle}>
-              {title}
-            </Text>
-          </View>
+        <View style={getHeaderTitleContainer(titleTextAlign, showLeftBtn, !!rightIcon || !!rightButtonTitle)}>
+          <Text numberOfLines={1} style={subHeaderTextStyle}>
+            {title}
+          </Text>
         </View>
       )}
 

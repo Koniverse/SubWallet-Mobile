@@ -3,7 +3,7 @@ import { getId } from '@subwallet/extension-base/utils/getId';
 import { predefinedDApps } from '../../../predefined/dAppSites';
 import { getHostName } from 'utils/browser';
 
-export const NovaScript = `
+export const ConnectToNovaScript = `
 (function () {  
   class HandlersStore {
     _messageHandlers;

@@ -13,33 +13,27 @@ import { findAccountByAddress } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
-import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { InputAddress } from 'components/Input/InputAddress';
-import { requestCameraPermission } from 'utils/permission/camera';
-import { RESULTS } from 'react-native-permissions';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, View } from 'react-native';
 import { NetworkField } from 'components/Field/Network';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { InputAmount } from 'components/Input/InputAmount';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
-import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ChainInfo } from 'types/index';
-import { isSameAddress } from '@subwallet/extension-base/utils';
+import { addLazy, isSameAddress } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import { getMaxTransfer, makeCrossChainTransfer, makeTransfer } from 'messaging/index';
+import { getMaxTransfer, makeCrossChainTransfer, makeTransfer, saveRecentAccountId } from 'messaging/index';
 import { Button, Icon } from 'components/design-system-ui';
 import { PaperPlaneTilt } from 'phosphor-react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { Warning } from 'components/Warning';
-import { ContainerHorizontalPadding, DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { RootStackParamList, SendFundProps } from 'routes/index';
+import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { RootStackParamList } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -50,6 +44,12 @@ import { BN_ZERO } from 'utils/chainBalances';
 import { formatBalance } from 'utils/number';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import { SendFundProps } from 'routes/transaction/transactionAction';
+import { InputAddress } from 'components/Input/InputAddressV2';
+import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { ChainSelector } from 'components/Modal/common/ChainSelector';
 
 function isAssetTypeValid(
   chainAsset: _ChainAsset,
@@ -223,7 +223,7 @@ export const SendFund = ({
   route: {
     params: { slug: tokenGroupSlug, recipient: scanRecipient },
   },
-}: SendFundProps): React.ReactElement<SendFundProps> => {
+}: SendFundProps) => {
   const theme = useSubWalletTheme().swThemes;
   const { show, hideAll } = useToast();
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
@@ -241,12 +241,10 @@ export const SendFund = ({
   const [forceUpdateMaxValue, setForceUpdateMaxValue] = useState<object | undefined>(undefined);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [isShowQrModalVisible, setIsShowQrModalVisible] = useState(false);
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
-  const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
-  const [chainSelectModalVisible, setChainSelectModalVisible] = useState<boolean>(false);
-
   const [isToAddressDirty, setToAddressDirty] = useState<boolean>(false);
+  const accountSelectorRef = useRef<ModalRef>();
+  const tokenSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef>();
 
   const handleTransferAll = useCallback((value: boolean) => {
     setForceUpdateMaxValue({});
@@ -265,8 +263,10 @@ export const SendFund = ({
   };
 
   const { title, formState, onChangeValue, onUpdateErrors, onDone, onChangeFromValue, onChangeAssetValue } =
-    useTransaction('send-fund', formConfig);
+    useTransaction('send-fund', formConfig, {});
   const { asset, chain, destChain, from, to, value: amount } = formState.data;
+  const destChainNetworkPrefix = useGetChainPrefixBySlug(destChain);
+  const destChainGenesisHash = chainInfoMap[destChain]?.substrateInfo?.genesisHash || '';
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone, handleTransferAll);
   const isDataNotReady = !to || !amount;
 
@@ -343,52 +343,38 @@ export const SendFund = ({
         }
       }
 
-      onUpdateErrors('to')(undefined);
+      onUpdateErrors('to')([]);
       return true;
     },
     [chainInfoMap, onUpdateErrors],
   );
 
-  const onUpdateReceiverInputAddress = useCallback(
-    (text: string) => {
-      setToAddressDirty(true);
-      formState.refs.to.current?.onChange(text);
-      validateRecipientAddress(text, from, chain, destChain);
-    },
-    [chain, destChain, formState.refs.to, from, validateRecipientAddress],
-  );
-
   const onChangeRecipientAddress = useCallback(
-    (recipientAddress: string | null, currentTextValue: string) => {
+    (currentTextValue: string) => {
       setToAddressDirty(true);
       onChangeValue('to')(currentTextValue);
-      validateRecipientAddress(currentTextValue, from, chain, destChain);
+      if (currentTextValue !== to) {
+        validateRecipientAddress(currentTextValue, from, chain, destChain);
+      }
     },
-    [chain, destChain, from, onChangeValue, validateRecipientAddress],
+    [chain, destChain, from, onChangeValue, to, validateRecipientAddress],
   );
 
   useEffect(() => {
     if (scanRecipient) {
-      setTimeout(() => {
-        setToAddressDirty(true);
-        formState.refs.to.current?.onChange(scanRecipient);
-        validateRecipientAddress(scanRecipient, from, chain, destChain);
-      }, 500);
+      setToAddressDirty(true);
+      onChangeValue('to')(scanRecipient);
+      if (isAddress(scanRecipient)) {
+        saveRecentAccountId(scanRecipient).catch(console.error);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onChangeValue, scanRecipient]);
 
-  const onPressQrButton = useCallback(async () => {
-    const result = await requestCameraPermission();
-
-    if (result === RESULTS.GRANTED) {
-      setIsShowQrModalVisible(true);
+  useEffect(() => {
+    if (scanRecipient === to) {
+      validateRecipientAddress(to, from, chain, destChain);
     }
-  }, []);
-
-  const closeQrScan = useCallback(() => {
-    setIsShowQrModalVisible(false);
-  }, []);
+  }, [chain, destChain, from, scanRecipient, to, validateRecipientAddress]);
 
   const validateAmount = useCallback(
     (_amount: string, _maxTransfer: string, isValidInput?: boolean) => {
@@ -425,9 +411,14 @@ export const SendFund = ({
 
   const _onChangeAmount = useCallback(
     (_amount: string, isValidInput: boolean) => {
-      onChangeValue('value')(_amount);
-
-      validateAmount(_amount, maxTransfer, isValidInput);
+      addLazy(
+        'input-amount',
+        () => {
+          onChangeValue('value')(_amount);
+          validateAmount(_amount, maxTransfer, isValidInput);
+        },
+        1000,
+      );
     },
     [maxTransfer, onChangeValue, validateAmount],
   );
@@ -444,7 +435,7 @@ export const SendFund = ({
 
   const onSubmit = useCallback(() => {
     if (chainStateMap[chain].connectionStatus === _ChainConnectionStatus.DISCONNECTED) {
-      show(`${destChain} ${i18n.errorMessage.networkDisconected}`);
+      show(`${destChain} ${i18n.errorMessage.networkDisconected}`, { type: 'danger' });
       return;
     }
 
@@ -478,7 +469,7 @@ export const SendFund = ({
       if (acc?.isHardware) {
         setLoading(false);
         hideAll();
-        show('This feature is not available for Ledger account');
+        show('This feature is not available for Ledger account', { type: 'danger' });
 
         return;
       }
@@ -548,7 +539,7 @@ export const SendFund = ({
             const token = tokenItems.find(item => item.originChain === network.slug);
 
             if (token) {
-              onChangeValue('asset')(token.slug);
+              onChangeAssetValue(tokenItems[0].slug);
               onChangeValue('chain')(assetRegistry[token.slug].originChain);
               onChangeValue('destChain')(assetRegistry[token.slug].originChain);
               pass = true;
@@ -557,7 +548,7 @@ export const SendFund = ({
         }
 
         if (!pass) {
-          onChangeValue('asset')(tokenItems[0].slug);
+          onChangeAssetValue(tokenItems[0].slug);
           onChangeValue('chain')(assetRegistry[tokenItems[0].slug].originChain);
           onChangeValue('destChain')(assetRegistry[tokenItems[0].slug].originChain);
         }
@@ -565,13 +556,13 @@ export const SendFund = ({
         const isSelectedTokenInList = tokenItems.some(i => i.slug === asset);
 
         if (!isSelectedTokenInList) {
-          onChangeValue('asset')(tokenItems[0].slug);
+          onChangeAssetValue(tokenItems[0].slug);
           onChangeValue('chain')(assetRegistry[tokenItems[0].slug].originChain);
           onChangeValue('destChain')(assetRegistry[tokenItems[0].slug].originChain);
         }
       }
     }
-  }, [accounts, tokenItems, assetRegistry, chainInfoMap, asset, from, onChangeValue]);
+  }, [accounts, tokenItems, assetRegistry, chainInfoMap, asset, from, onChangeValue, onChangeAssetValue]);
 
   // Get max transfer value
   useEffect(() => {
@@ -624,10 +615,15 @@ export const SendFund = ({
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
       <ScreenContainer>
         <>
-          <Header />
+          <Header disabled={loading} />
 
           <View style={{ paddingTop: 16 }}>
-            <SubHeader title={title} onPressBack={() => navigation.goBack()} disabled={loading} />
+            <SubHeader
+              title={title}
+              onPressBack={() => navigation.goBack()}
+              disabled={loading}
+              titleTextAlign={'left'}
+            />
           </View>
 
           <>
@@ -635,37 +631,54 @@ export const SendFund = ({
               style={{ ...ContainerHorizontalPadding, paddingTop: theme.size, flex: 1 }}
               keyboardShouldPersistTaps={'handled'}>
               {isAllAccount && (
-                <>
-                  <TouchableOpacity
-                    onPress={() => setAccountSelectModalVisible(true)}
-                    disabled={loading}
-                    style={[{ marginBottom: theme.sizeSM }, loading && DisabledStyle]}>
+                <AccountSelector
+                  items={accountItems}
+                  selectedValueMap={{ [from]: true }}
+                  onSelectItem={item => {
+                    onChangeFromValue(item.address);
+                    setForceUpdateMaxValue(undefined);
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                    setIsTransferAll(false);
+                    isToAddressDirty && validateRecipientAddress(to, item.address, chain, destChain);
+                  }}
+                  renderSelected={() => (
                     <AccountSelectField
                       label={i18n.inputLabel.sendFrom}
                       accountName={senderAccountName}
                       value={from}
                       showIcon
-                      outerStyle={{ marginBottom: 0 }}
+                      outerStyle={{ marginBottom: 8 }}
                     />
-                  </TouchableOpacity>
-                </>
+                  )}
+                  disabled={loading}
+                  accountSelectorRef={accountSelectorRef}
+                />
               )}
 
               <View style={{ flexDirection: 'row', gap: theme.sizeSM, paddingBottom: theme.sizeXXS }}>
                 <View style={{ flex: 1 }}>
-                  <TouchableOpacity
-                    style={[(!tokenItems.length || loading) && DisabledStyle]}
+                  <TokenSelector
+                    items={tokenItems}
+                    selectedValueMap={{ [asset]: true }}
+                    onSelectItem={item => {
+                      onChangeAssetValue(item.slug);
+                      onChangeValue('destChain')(item.originChain);
+                      tokenSelectorRef && tokenSelectorRef.current?.onCloseModal();
+                      setIsTransferAll(false);
+                      setForceUpdateMaxValue(undefined);
+                      isToAddressDirty && validateRecipientAddress(to, from, item.originChain, item.originChain);
+                    }}
+                    tokenSelectorRef={tokenSelectorRef}
+                    renderSelected={() => (
+                      <TokenSelectField
+                        logoKey={currentChainAsset?.symbol || ''}
+                        subLogoKey={currentChainAsset?.originChain || ''}
+                        value={currentChainAsset?.symbol || ''}
+                        showIcon
+                      />
+                    )}
                     disabled={!tokenItems.length || loading}
-                    onPress={() => {
-                      setTokenSelectModalVisible(true);
-                    }}>
-                    <TokenSelectField
-                      logoKey={currentChainAsset?.symbol || ''}
-                      subLogoKey={currentChainAsset?.originChain || ''}
-                      value={currentChainAsset?.symbol || ''}
-                      showIcon
-                    />
-                  </TouchableOpacity>
+                  />
                 </View>
 
                 <View style={{ flex: 1 }}>
@@ -689,22 +702,18 @@ export const SendFund = ({
 
               <InputAddress
                 ref={formState.refs.to}
-                onPressQrButton={onPressQrButton}
                 containerStyle={{ marginBottom: theme.sizeSM }}
                 label={formState.labels.to}
                 value={formState.data.to}
-                onChange={onChangeRecipientAddress}
+                onChangeText={onChangeRecipientAddress}
                 isValidValue={formState.isValidated.recipientAddress}
-                placeholder={i18n.placeholder.enterOrPasteAnAddress}
+                placeholder={i18n.placeholder.accountAddress}
                 disabled={loading}
-                onSubmitField={onSubmit}
-              />
-
-              <AddressScanner
-                qrModalVisible={isShowQrModalVisible}
-                onPressCancel={closeQrScan}
-                onChangeAddress={onUpdateReceiverInputAddress}
-                scanMessage={i18n.common.toSendFund}
+                onSubmitEditing={onSubmit}
+                addressPrefix={destChainNetworkPrefix}
+                networkGenesisHash={destChainGenesisHash}
+                showAddressBook
+                saveAddress
               />
 
               {!!(formState.errors.to && formState.errors.to.length) &&
@@ -712,19 +721,26 @@ export const SendFund = ({
                   <Warning key={index} isDanger message={message} style={{ marginBottom: theme.marginSM }} />
                 ))}
 
-              <TouchableOpacity
-                style={[{ marginBottom: theme.marginSM }, (!destChainItems.length || loading) && DisabledStyle]}
+              <ChainSelector
+                items={destChainItems}
+                selectedValueMap={{ [destChain]: true }}
+                chainSelectorRef={chainSelectorRef}
+                onSelectItem={item => {
+                  onChangeValue('destChain')(item.slug);
+                  setForceUpdateMaxValue(isTransferAll ? {} : undefined);
+                  chainSelectorRef && chainSelectorRef.current?.onCloseModal();
+                  isToAddressDirty && validateRecipientAddress(to, from, chain, item.slug);
+                }}
+                renderSelected={() => (
+                  <NetworkField
+                    networkKey={destChain}
+                    outerStyle={{ marginBottom: 0 }}
+                    placeholder={i18n.placeholder.selectChain}
+                    showIcon
+                  />
+                )}
                 disabled={!destChainItems.length || loading}
-                onPress={() => {
-                  setChainSelectModalVisible(true);
-                }}>
-                <NetworkField
-                  networkKey={destChain}
-                  outerStyle={{ marginBottom: 0 }}
-                  placeholder={i18n.placeholder.selectChain}
-                  showIcon
-                />
-              </TouchableOpacity>
+              />
               <FreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} tokenSlug={asset} />
             </ScrollView>
 
@@ -751,46 +767,6 @@ export const SendFund = ({
             </View>
             <SafeAreaView />
           </>
-
-          <AccountSelector
-            modalVisible={accountSelectModalVisible}
-            onSelectItem={item => {
-              onChangeFromValue(item.address);
-              setForceUpdateMaxValue(undefined);
-              setAccountSelectModalVisible(false);
-              setIsTransferAll(false);
-              isToAddressDirty && validateRecipientAddress(to, item.address, chain, destChain);
-            }}
-            items={accountItems}
-            onCancel={() => setAccountSelectModalVisible(false)}
-            selectedValue={from}
-          />
-          <TokenSelector
-            modalVisible={tokenSelectModalVisible}
-            items={tokenItems}
-            onCancel={() => setTokenSelectModalVisible(false)}
-            onSelectItem={item => {
-              onChangeAssetValue(item.slug);
-              onChangeValue('destChain')(item.originChain);
-              setTokenSelectModalVisible(false);
-              setIsTransferAll(false);
-              setForceUpdateMaxValue(undefined);
-              isToAddressDirty && validateRecipientAddress(to, from, item.originChain, item.originChain);
-            }}
-            selectedValue={asset}
-          />
-          <ChainSelector
-            items={destChainItems}
-            modalVisible={chainSelectModalVisible}
-            onCancel={() => setChainSelectModalVisible(false)}
-            selectedValue={destChain}
-            onSelectItem={item => {
-              onChangeValue('destChain')(item.slug);
-              setForceUpdateMaxValue(isTransferAll ? {} : undefined);
-              setChainSelectModalVisible(false);
-              isToAddressDirty && validateRecipientAddress(to, from, chain, item.slug);
-            }}
-          />
         </>
       </ScreenContainer>
     </KeyboardAvoidingView>

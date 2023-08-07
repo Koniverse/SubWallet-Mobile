@@ -1,6 +1,6 @@
 import React from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { useNavigation } from '@react-navigation/native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { View } from 'react-native';
 import { sharedStyles } from 'styles/sharedStyles';
@@ -10,6 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Icon, SelectItem } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 
+const containerStyle = { ...sharedStyles.layoutContainer, paddingTop: 16 };
 export const GeneralSettings = () => {
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();
@@ -24,9 +25,14 @@ export const GeneralSettings = () => {
     navigation.navigate('Languages');
   };
 
+  const onGoback = () => {
+    navigation.dispatch(DrawerActions.openDrawer());
+    navigation.goBack();
+  };
+
   return (
-    <SubScreenContainer title={i18n.title.security} navigation={navigation}>
-      <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
+    <SubScreenContainer navigation={navigation} title={i18n.header.generalSettings} onPressLeftBtn={onGoback}>
+      <View style={containerStyle}>
         <SelectItem
           icon={Image}
           backgroundColor={theme['geekblue-6']}

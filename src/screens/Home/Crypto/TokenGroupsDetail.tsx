@@ -13,18 +13,15 @@ import { useNavigation } from '@react-navigation/native';
 import { TokenDetailModal } from 'screens/Home/Crypto/TokenDetailModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useReceiveQR from 'hooks/screen/Home/Crypto/useReceiveQR';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
-import { TokenSelector } from 'components/Modal/common/TokenSelector';
 import { ReceiveModal } from 'screens/Home/Crypto/ReceiveModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
-import useBuyToken from 'hooks/screen/Home/Crypto/useBuyToken';
-import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
+import { SelectAccAndTokenModal } from 'screens/Home/Crypto/shared/SelectAccAndTokenModal';
 
 type CurrentSelectToken = {
   symbol: string;
@@ -42,7 +39,6 @@ export const TokenGroupsDetail = ({
   const [tokenDetailVisible, setTokenDetailVisible] = useState<boolean>(false);
   const assetRegistryMap = useSelector((root: RootState) => root.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
-  const [accessBy, setAccessBy] = useState<'buy' | 'receive' | undefined>(undefined);
   const groupSymbol = useMemo<string>(() => {
     if (tokenGroupSlug) {
       if (multiChainAssetMap[tokenGroupSlug]) {
@@ -65,30 +61,13 @@ export const TokenGroupsDetail = ({
     openSelectToken,
     selectedAccount,
     selectedNetwork,
-    isTokenSelectorModalVisible,
-    isAccountSelectorModalVisible,
-    onCloseSelectAccount,
-    onCloseSelectToken,
     onCloseQrModal,
     isQrModalVisible,
     tokenSelectorItems,
+    accountRef,
+    tokenRef,
+    selectedAccountMap,
   } = useReceiveQR(tokenGroupSlug);
-
-  const {
-    isBuyTokenSelectorModalVisible,
-    isBuyAccountSelectorModalVisible,
-    isBuyServiceSelectorModalVisible,
-    onOpenBuyToken,
-    openSelectBuyAccount,
-    openSelectBuyToken,
-    onCloseSelectBuyAccount,
-    onCloseSelectBuyToken,
-    onCloseSelectBuyService,
-    selectedBuyAccount,
-    selectedBuyToken,
-    buyAccountSelectorItems,
-    buyTokenSelectorItems,
-  } = useBuyToken(tokenGroupSlug, groupSymbol);
 
   const toast = useToast();
 
@@ -151,20 +130,10 @@ export const TokenGroupsDetail = ({
     navigation.goBack();
   }, [navigation]);
 
-  const _onOpenReceive = useCallback(() => {
-    setAccessBy('receive');
-    onOpenReceive();
-  }, [onOpenReceive]);
-
-  const onPressBuyToken = useCallback(() => {
-    setAccessBy('buy');
-    onOpenBuyToken();
-  }, [onOpenBuyToken]);
-
   const showNoti = useCallback(
     (text: string) => {
       toast.hideAll();
-      toast.show(text, { textStyle: { textAlign: 'center' } });
+      toast.show(text, { textStyle: { textAlign: 'center' }, type: 'normal' });
     },
     [toast],
   );
@@ -175,21 +144,24 @@ export const TokenGroupsDetail = ({
       return;
     }
 
-    navigation.navigate('SendFund', { slug: tokenGroupSlug });
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: { screen: 'SendFund', params: { slug: tokenGroupSlug } },
+    });
   }, [currentAccount, navigation, showNoti, tokenGroupSlug]);
 
   const listHeaderNode = useMemo(() => {
     return (
       <TokenGroupsDetailUpperBlock
-        onOpenReceive={_onOpenReceive}
-        onOpenBuyTokens={onPressBuyToken}
+        onOpenReceive={onOpenReceive}
         onOpenSendFund={_onOpenSendFund}
         balanceValue={tokenBalanceValue}
         onClickBack={onClickBack}
         groupSymbol={groupSymbol}
+        tokenGroupSlug={tokenGroupSlug}
       />
     );
-  }, [_onOpenReceive, onPressBuyToken, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol]);
+  }, [onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (
@@ -230,33 +202,15 @@ export const TokenGroupsDetail = ({
           onChangeModalVisible={onCloseTokenDetailModal}
         />
 
-        {accessBy && (
-          <AccountSelector
-            modalVisible={accessBy !== 'buy' ? isAccountSelectorModalVisible : isBuyAccountSelectorModalVisible}
-            onCancel={accessBy !== 'buy' ? onCloseSelectAccount : onCloseSelectBuyAccount}
-            items={accessBy !== 'buy' ? accountSelectorItems : buyAccountSelectorItems}
-            onSelectItem={accessBy !== 'buy' ? openSelectAccount : openSelectBuyAccount}
-          />
-        )}
-
-        {accessBy && (
-          <TokenSelector
-            modalVisible={accessBy !== 'buy' ? isTokenSelectorModalVisible : isBuyTokenSelectorModalVisible}
-            items={accessBy !== 'buy' ? tokenSelectorItems : buyTokenSelectorItems}
-            onSelectItem={accessBy !== 'buy' ? openSelectToken : openSelectBuyToken}
-            onCancel={accessBy !== 'buy' ? onCloseSelectToken : onCloseSelectBuyToken}
-          />
-        )}
-
-        {selectedBuyAccount && selectedBuyToken && (
-          <ServiceModal
-            modalVisible={isBuyServiceSelectorModalVisible}
-            onChangeModalVisible={onCloseSelectBuyService}
-            onPressBack={onCloseSelectBuyService}
-            token={selectedBuyToken}
-            address={selectedBuyAccount}
-          />
-        )}
+        <SelectAccAndTokenModal
+          accountRef={accountRef}
+          tokenRef={tokenRef}
+          accountItems={accountSelectorItems}
+          tokenItems={tokenSelectorItems}
+          openSelectAccount={openSelectAccount}
+          openSelectToken={openSelectToken}
+          selectedValueMap={selectedAccountMap}
+        />
 
         <ReceiveModal
           modalVisible={isQrModalVisible}

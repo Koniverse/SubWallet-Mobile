@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { SIGN_MODE } from 'types/signer';
+import { AccountSignMode } from 'types/signer';
 import { getAccountSignMode } from 'utils/account';
 import { useMemo } from 'react';
 
-const useGetAccountSignModeByAddress = (address?: string): SIGN_MODE => {
+const useGetAccountSignModeByAddress = (address?: string): AccountSignMode => {
   const account = useGetAccountByAddress(address);
 
-  return useMemo((): SIGN_MODE => {
+  return useMemo((): AccountSignMode => {
     return getAccountSignMode(account);
   }, [account]);
 };

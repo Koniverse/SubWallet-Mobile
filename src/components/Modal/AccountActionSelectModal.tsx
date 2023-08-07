@@ -1,60 +1,62 @@
 import React from 'react';
-import { SelectItem, SwModal } from 'components/design-system-ui';
-import { View } from 'react-native';
 import { IconProps } from 'phosphor-react-native';
 import Toast from 'react-native-toast-notifications';
 import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import ToastContainer from 'react-native-toast-notifications';
+import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
+import { ModalRef } from 'types/modalRef';
+import { Platform } from 'react-native';
 
-type ActionItemType = {
+export type ActionItemType = {
+  key: string;
   backgroundColor: string;
   icon: React.ElementType<IconProps>;
   label: string;
-  onClickBtn: () => void;
   disabled?: boolean;
 };
 
 export interface AccountActionSelectModalProps {
-  modalVisible: boolean;
-  onChangeModalVisible?: () => void;
   items: ActionItemType[];
   toastRef?: React.RefObject<ToastContainer>;
   modalTitle: string;
+  onSelectItem: (item: ActionItemType) => void;
+  children?: React.ReactNode;
+  accActionRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
-const AccountActionSelectModal = ({
-  modalVisible,
-  onChangeModalVisible,
+export const AccountActionSelectModal = ({
   items,
   toastRef,
   modalTitle,
+  onSelectItem,
+  children,
+  accActionRef,
 }: AccountActionSelectModalProps) => {
   return (
-    <SwModal modalVisible={modalVisible} modalTitle={modalTitle} onChangeModalVisible={onChangeModalVisible}>
-      <View style={{ width: '100%' }}>
-        {items.map(item => (
-          <SelectItem
-            key={item.label}
-            label={item.label}
-            backgroundColor={item.backgroundColor}
-            icon={item.icon}
-            onPress={item.onClickBtn}
-            disabled={item.disabled}
+    <>
+      <BasicSelectModal
+        ref={accActionRef}
+        selectedValueMap={{}}
+        items={items}
+        title={modalTitle}
+        selectModalItemType={'select'}
+        selectModalType={'single'}
+        isShowInput={false}
+        onBackButtonPress={() => accActionRef?.current?.onCloseModal()}
+        onSelectItem={onSelectItem}>
+        <>
+          {children}
+          <Toast
+            duration={TOAST_DURATION}
+            normalColor={ColorMap.notification}
+            ref={toastRef}
+            placement={'bottom'}
+            offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - (Platform.OS === 'android' ? 80 : 120)}
           />
-        ))}
-      </View>
-
-      <Toast
-        duration={TOAST_DURATION}
-        normalColor={ColorMap.notification}
-        ref={toastRef}
-        placement={'bottom'}
-        offsetBottom={deviceHeight - STATUS_BAR_HEIGHT - 80}
-      />
-    </SwModal>
+        </>
+      </BasicSelectModal>
+    </>
   );
 };
-
-export default AccountActionSelectModal;

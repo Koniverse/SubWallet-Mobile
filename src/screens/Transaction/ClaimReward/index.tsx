@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { NominatorMetadata, StakingRewardItem, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootState } from 'stores/index';
@@ -14,7 +14,6 @@ import { submitStakeClaimReward } from 'messaging/index';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import {
@@ -35,6 +34,8 @@ import InputCheckBox from 'components/Input/InputCheckBox';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { ClaimRewardProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -92,13 +93,13 @@ const ClaimReward = ({
     params: { chain: stakingChain, type: _stakingType },
   },
 }: ClaimRewardProps) => {
+  const accountSelectorRef = useRef<ModalRef>();
   const stakingType = _stakingType as StakingType;
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const { stakingRewardMap } = useSelector((state: RootState) => state.staking);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const claimRewardFormConfig = {
     bondReward: {
       name: 'Bond reward',
@@ -164,13 +165,21 @@ const ClaimReward = ({
   }, [accounts, allNominatorInfo, chainInfoMap, rewardList, stakingChain, stakingType]);
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading}>
+    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
-            </TouchableOpacity>
+            <AccountSelector
+              items={accountList}
+              selectedValueMap={{ [from]: true }}
+              onSelectItem={item => {
+                onChangeFromValue(item.address);
+                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+              }}
+              disabled={loading}
+              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
+              accountSelectorRef={accountSelectorRef}
+            />
           )}
 
           <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
@@ -202,17 +211,6 @@ const ClaimReward = ({
             checkBoxSize={20}
           />
         </ScrollView>
-
-        <AccountSelector
-          modalVisible={accountSelectModalVisible}
-          onSelectItem={item => {
-            onChangeFromValue(item.address);
-            setAccountSelectModalVisible(false);
-          }}
-          items={accountList}
-          onCancel={() => setAccountSelectModalVisible(false)}
-          selectedValue={from}
-        />
 
         <View style={{ padding: 16, flexDirection: 'row' }}>
           <Button

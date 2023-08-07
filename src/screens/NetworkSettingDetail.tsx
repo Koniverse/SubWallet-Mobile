@@ -1,11 +1,11 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
 import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { RpcSelectField } from 'components/Field/RpcSelect';
-import { RpcSelectorModal } from 'components/common/RpcSelectorModal';
+import { ProviderItemType, RpcSelectorModal } from 'components/common/RpcSelectorModal';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { NetworkSettingDetailProps, RootNavigationProps } from 'routes/index';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
@@ -35,6 +35,7 @@ import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...sharedStyles.layoutContainer,
@@ -64,13 +65,12 @@ export const NetworkSettingDetail = ({
   const navigation = useNavigation<RootNavigationProps>();
   const toast = useToast();
   const theme = useSubWalletTheme().swThemes;
+  const rpcSelectorRef = useRef<ModalRef>();
 
   const _chainInfo = useFetchChainInfo(chainSlug);
   const [chainInfo, setChainInfo] = useState(_chainInfo);
   const _chainState = useFetchChainState(chainSlug);
   const [chainState, setChainState] = useState(_chainState);
-
-  const [rpcSelectorModalVisible, setRpcSelectorModalVisible] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { decimals, symbol } = useMemo(() => {
@@ -123,19 +123,19 @@ export const NetworkSettingDetail = ({
   const formConfig = useMemo((): FormControlConfig => {
     return {
       currentProvider: {
-        name: 'provider',
+        name: i18n.common.provider.toLowerCase(),
         value: chainState.currentProvider,
         require: true,
       },
       blockExplorer: {
-        name: 'Block explorer',
+        name: i18n.placeholder.blockExplorer,
         value: _blockExplorer || '',
         validateFunc: (value: string) => {
           return validateBlockExplorer(value);
         },
       },
       crowdloanUrl: {
-        name: 'Crowdloan url',
+        name: i18n.placeholder.crowdloanUrl,
         value: _crowdloanUrl,
         validateFunc: (value: string) => {
           return validateCrowdloanUrl(value);
@@ -179,17 +179,17 @@ export const NetworkSettingDetail = ({
         setLoading(false);
         if (result) {
           toast.hideAll();
-          toast.show(i18n.notificationMessage.updatedChainSuccessfully);
+          toast.show(i18n.notificationMessage.updatedChainSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
           toast.hideAll();
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
       })
       .catch(() => {
         setLoading(false);
         toast.hideAll();
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
       });
   };
 
@@ -202,15 +202,15 @@ export const NetworkSettingDetail = ({
     removeChain(chainInfo.slug)
       .then(result => {
         if (result) {
-          toast.show(i18n.notificationMessage.deleteChainSuccessfully);
+          toast.show(i18n.notificationMessage.deleteChainSuccessfully, { type: 'success' });
           navigation.goBack();
         } else {
-          toast.show(i18n.notificationMessage.pleaseTryAgain);
+          toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         }
         setIsDeleting(false);
       })
       .catch(() => {
-        toast.show(i18n.notificationMessage.pleaseTryAgain);
+        toast.show(i18n.notificationMessage.pleaseTryAgain, { type: 'danger' });
         setIsDeleting(false);
       });
   };
@@ -254,14 +254,6 @@ export const NetworkSettingDetail = ({
     isDeleting,
   ]);
 
-  const onPressRpcField = () => {
-    if (Object.keys(chainInfo.providers).length === 1) {
-      navigation.navigate('AddProvider', { slug: chainInfo.slug });
-    } else {
-      setRpcSelectorModalVisible(true);
-    }
-  };
-
   const {
     onPress: onPressDelete,
     onCancelModal: onCancelDelete,
@@ -290,14 +282,33 @@ export const NetworkSettingDetail = ({
       onPressRightIcon={onPressDelete}
       title={i18n.header.networkDetails}>
       <View style={ContainerStyle}>
-        <ScrollView style={{ flex: 1 }}>
-          <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} onPress={onPressRpcField}>
-            <RpcSelectField
-              showRightIcon
-              value={chainInfo.providers[formState.data.currentProvider]}
-              rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
-            />
-          </TouchableOpacity>
+        <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps={'handled'}>
+          <RpcSelectorModal
+            rpcSelectorRef={rpcSelectorRef}
+            chainSlug={chainSlug}
+            selectedValueMap={{ [formState.data.currentProvider]: true }}
+            onPressBack={() => rpcSelectorRef?.current?.onCloseModal()}
+            onSelectItem={(item: ProviderItemType) => {
+              onChangeValue('currentProvider')(item.value);
+            }}
+            renderSelectModalBtn={onOpenModal => (
+              <TouchableOpacity
+                activeOpacity={BUTTON_ACTIVE_OPACITY}
+                onPress={() => {
+                  if (Object.keys(chainInfo.providers).length === 1) {
+                    navigation.navigate('AddProvider', { slug: chainInfo.slug });
+                  } else {
+                    onOpenModal(true);
+                  }
+                }}>
+                <RpcSelectField
+                  showRightIcon
+                  value={chainInfo.providers[formState.data.currentProvider]}
+                  rightIcon={Object.keys(chainInfo.providers).length === 1 ? Plus : CaretDown}
+                />
+              </TouchableOpacity>
+            )}
+          />
 
           <View style={{ flexDirection: 'row', width: '100%' }}>
             <NetworkNameField outerStyle={{ flex: 2, marginRight: 12 }} chain={chainInfo.slug} />
@@ -367,16 +378,6 @@ export const NetworkSettingDetail = ({
           message={i18n.message.deleteNetworkMessage}
           onCompleteModal={onCompleteDeleteModal}
           onCancelModal={onCancelDelete}
-        />
-
-        <RpcSelectorModal
-          chainSlug={chainSlug}
-          modalVisible={rpcSelectorModalVisible}
-          selectedValue={formState.data.currentProvider}
-          onPressBack={() => setRpcSelectorModalVisible(false)}
-          onSelectItem={(value: string) => {
-            onChangeValue('currentProvider')(value);
-          }}
         />
       </View>
     </ContainerWithSubHeader>

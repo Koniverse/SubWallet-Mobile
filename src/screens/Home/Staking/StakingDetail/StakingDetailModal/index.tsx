@@ -41,6 +41,7 @@ import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
 import i18n from 'utils/i18n/i18n';
+import { CustomToast } from 'components/design-system-ui/toast';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -111,18 +112,21 @@ export const StakingDetailModal = ({
   const account = useGetAccountByAddress(staking.address);
   const navigation = useNavigation<RootNavigationProps>();
   const stakingTypeNameMap: Record<string, string> = {
-    nominated: 'Nominated',
-    pooled: 'Pooled',
+    nominated: i18n.filterOptions.nominated,
+    pooled: i18n.filterOptions.pooled,
   };
 
   const onClickStakeMoreBtn = useCallback(() => {
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(() => {
-      navigation.navigate('TransactionAction', {
-        screen: 'Stake',
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
         params: {
-          type: chainStakingMetadata?.type || ALL_KEY,
-          chain: nominatorMetadata?.chain || ALL_KEY,
+          screen: 'Stake',
+          params: {
+            type: chainStakingMetadata?.type || ALL_KEY,
+            chain: nominatorMetadata?.chain || ALL_KEY,
+          },
         },
       });
     }, 300);
@@ -132,11 +136,14 @@ export const StakingDetailModal = ({
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(
       () =>
-        navigation.navigate('TransactionAction', {
-          screen: 'Unbond',
+        navigation.navigate('Drawer', {
+          screen: 'TransactionAction',
           params: {
-            type: chainStakingMetadata?.type || ALL_KEY,
-            chain: chainStakingMetadata?.chain || ALL_KEY,
+            screen: 'Unbond',
+            params: {
+              type: chainStakingMetadata?.type || ALL_KEY,
+              chain: chainStakingMetadata?.chain || ALL_KEY,
+            },
           },
         }),
       300,
@@ -155,19 +162,20 @@ export const StakingDetailModal = ({
   }, []);
 
   const getStakingStatus = useCallback((status: StakingStatus) => {
+    const stakingStatusUi = StakingStatusUi();
     if (status === StakingStatus.EARNING_REWARD) {
-      return StakingStatusUi.active;
+      return stakingStatusUi.active;
     }
 
     if (status === StakingStatus.PARTIALLY_EARNING) {
-      return StakingStatusUi.partialEarning;
+      return stakingStatusUi.partialEarning;
     }
 
     if (status === StakingStatus.WAITING) {
-      return StakingStatusUi.waiting;
+      return stakingStatusUi.waiting;
     }
 
-    return StakingStatusUi.inactive;
+    return stakingStatusUi.inactive;
   }, []);
 
   const _onCloseDetailModal = useCallback(() => {
@@ -234,7 +242,7 @@ export const StakingDetailModal = ({
                         color: theme.colorTextTertiary,
                         ...FontMedium,
                       }}>
-                      {getWaitingTime(unstakingData.waitingTime)}
+                      {getWaitingTime(unstakingData.waitingTime, unstakingData.status)}
                     </Typography.Text>
                   )}
                 </View>
@@ -291,6 +299,7 @@ export const StakingDetailModal = ({
       modalVisible={modalVisible}
       modalTitle={modalTitle}
       onChangeModalVisible={_onCloseDetailModal}
+      onBackButtonPress={_onCloseDetailModal}
       footer={footer()}
       modalStyle={{ maxHeight: '90%' }}>
       <View style={{ width: '100%' }}>
@@ -304,7 +313,7 @@ export const StakingDetailModal = ({
                 {isAccountAll(nominatorMetadata?.address || '') ? (
                   <MetaInfo.AccountGroup
                     label={i18n.inputLabel.account}
-                    content={nominatorMetadata?.address || ''}
+                    content={nominatorMetadata?.address === 'ALL' ? i18n.common.allAccounts : ''}
                     addresses={accounts.map(acc => acc.address)}
                   />
                 ) : (
@@ -318,11 +327,7 @@ export const StakingDetailModal = ({
                 <MetaInfo.DisplayType label={i18n.inputLabel.stakingType} typeName={stakingTypeNameMap[staking.type]} />
 
                 <MetaInfo.Status
-                  label={
-                    nominatorMetadata?.type === StakingType.NOMINATED
-                      ? i18n.inputLabel.nominationStatus
-                      : i18n.inputLabel.pooledStatus
-                  }
+                  label={i18n.inputLabel.stakingStatus}
                   loading={!nominatorMetadata}
                   statusIcon={nominatorMetadata && getStakingStatus(nominatorMetadata.status).icon}
                   statusName={nominatorMetadata && getStakingStatus(nominatorMetadata.status).name}
@@ -503,7 +508,11 @@ export const StakingDetailModal = ({
                               <MetaInfo.Number
                                 decimals={decimals}
                                 key={`${item.validatorAddress || item.chain}-${item.status}-${item.claimable}-${index}`}
-                                label={getWaitingTime(item.waitingTime) ? getWaitingTime(item.waitingTime) : 'Withdraw'}
+                                label={
+                                  getWaitingTime(item.waitingTime, item.status)
+                                    ? getWaitingTime(item.waitingTime, item.status)
+                                    : 'Withdraw'
+                                }
                                 suffix={staking.nativeToken}
                                 value={item.claimable || ''}
                                 valueColorSchema={'gray'}
@@ -533,6 +542,7 @@ export const StakingDetailModal = ({
           ref={toastRef}
           placement={'bottom'}
           offsetBottom={OFFSET_BOTTOM}
+          renderToast={toast => <CustomToast toast={toast} />}
         />
       </View>
     </SwModal>

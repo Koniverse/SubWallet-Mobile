@@ -14,24 +14,27 @@ import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { ThemeTypes } from 'styles/themes';
 import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
   groupSymbol: string;
+  tokenGroupSlug: string;
   onClickBack: () => void;
   onOpenSendFund?: () => void;
-  onOpenBuyTokens?: () => void;
   onOpenReceive?: () => void;
 }
 
 export const TokenGroupsDetailUpperBlock = ({
-  onOpenBuyTokens,
   onOpenReceive,
   onOpenSendFund,
   onClickBack,
   balanceValue,
   groupSymbol,
+  tokenGroupSlug,
 }: Props) => {
+  const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
@@ -87,19 +90,25 @@ export const TokenGroupsDetailUpperBlock = ({
         <ActionButton
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
         <ActionButton
           icon={ButtonIcon.SendFund}
           onPress={onOpenSendFund}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
-        <ActionButton
-          disabled={!isSupportBuyTokens}
-          icon={ButtonIcon.Buy}
-          onPress={onOpenBuyTokens}
-          buttonWrapperStyle={{ paddingHorizontal: theme.marginXS }}
-        />
+        {isSupportBuyTokens && (
+          <ActionButton
+            icon={ButtonIcon.Buy}
+            onPress={() =>
+              navigation.navigate('Drawer', {
+                screen: 'BuyToken',
+                params: { slug: tokenGroupSlug, symbol: groupSymbol },
+              })
+            }
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+          />
+        )}
       </View>
     </View>
   );

@@ -1,22 +1,18 @@
 import { NavigationState } from '@react-navigation/routers';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ComponentType, useCallback, useEffect, useMemo, useState } from 'react';
 import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
 import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySigner';
 import ImportQrCode from 'screens/Account/ImportQrCode';
-import { Home } from 'screens/Home';
 import Login from 'screens/MasterPassword/Login';
 import { NetworksSetting } from 'screens/NetworksSetting';
-import { Settings } from 'screens/Settings';
 import { GeneralSettings } from 'screens/Settings/General';
 import { SendFund } from 'screens/Transaction/SendFund';
-import TransferNftScreen from 'screens/TransferNft/TransferNftScreen';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
-import { FavouritesDetail } from 'screens/Home/Browser/FavouritesDetail';
-import { HistoryDetail } from 'screens/Home/Browser/HistoryDetail';
+import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/Account/CreateAccount';
@@ -42,7 +38,7 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { RootRouteProps, RootStackParamList } from './routes';
 import { THEME_PRESET } from 'styles/themes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { getValidURL } from 'utils/browser';
+import { deeplinks, getValidURL } from 'utils/browser';
 import ErrorBoundary from 'react-native-error-boundary';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
@@ -61,6 +57,14 @@ import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { Platform } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { Home } from 'screens/Home';
+import { deviceWidth } from 'constants/index';
+import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
+import { Settings } from 'screens/Settings';
+import { WrapperParamList } from 'routes/wrapper';
+import { ManageAddressBook } from 'screens/Settings/AddressBook';
+import { BuyToken } from 'screens/Home/Crypto/BuyToken';
+import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
 
 interface Props {
   isAppReady: boolean;
@@ -89,8 +93,32 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
   },
 };
 
+const getSettingsContent = (props: DrawerContentComponentProps) => {
+  return <Settings {...props} />;
+};
+
+const DrawerScreen = () => {
+  const Drawer = createDrawerNavigator<WrapperParamList>();
+  return (
+    <Drawer.Navigator
+      initialRouteName={'TransactionAction'}
+      drawerContent={getSettingsContent}
+      screenOptions={{
+        drawerStyle: {
+          width: deviceWidth,
+        },
+        drawerType: 'front',
+        headerShown: false,
+        swipeEnabled: false,
+      }}>
+      <Drawer.Screen name="TransactionAction" component={TransactionScreen} />
+      <Drawer.Screen name="BuyToken" component={BuyToken} />
+    </Drawer.Navigator>
+  );
+};
+
 const HistoryScreen = (props: JSX.IntrinsicAttributes) => {
-  return withPageWrapper(History, ['transactionHistory'])(props);
+  return withPageWrapper(History as ComponentType, ['transactionHistory'])(props);
 };
 
 const AppNavigator = ({ isAppReady }: Props) => {
@@ -100,7 +128,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
-
+  const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
 
@@ -112,7 +140,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   );
 
   const linking: LinkingOptions<RootStackParamList> = {
-    prefixes: ['subwallet://'],
+    prefixes: deeplinks,
     config,
   };
 
@@ -151,6 +179,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
     };
   }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
 
+  useEffect(() => {
+    if (isEmptyAccounts) {
+      navigationRef.current?.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    }
+  }, [isEmptyAccounts, navigationRef]);
+
   return (
     <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
@@ -172,26 +209,25 @@ const AppNavigator = ({ isAppReady }: Props) => {
           {isAppReady && (
             <>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
-                <Stack.Screen name="Home" component={Home} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
-                <Stack.Screen name="Settings" component={Settings} />
+                <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
                 <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
                 <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="TransferNft" component={TransferNftScreen} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
-                <Stack.Screen name="FavouritesGroupDetail" component={FavouritesDetail} />
-                <Stack.Screen name="HistoryGroupDetail" component={HistoryDetail} />
+                <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
-                <Stack.Screen name="History" component={HistoryScreen} />
+                <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
               </Stack.Group>
-              <Stack.Group screenOptions={{ headerShown: false, animation: 'default' }}>
+              <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+                <Stack.Screen name="History" component={HistoryScreen} />
+                <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen
                   name="CreatePassword"
                   component={CreateMasterPassword}
                   options={{ gestureEnabled: false }}
                 />
+                <Stack.Screen name="ManageAddressBook" component={ManageAddressBook} />
                 <Stack.Screen name="NetworkSettingDetail" component={NetworkSettingDetail} />
                 <Stack.Screen name="ImportNetwork" component={ImportNetwork} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="CreateAccount" component={CreateAccount} />
@@ -237,11 +273,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportQrCode" component={ImportQrCode} />
-                <Stack.Screen
-                  name="TransactionAction"
-                  component={TransactionScreen}
-                  options={{ gestureEnabled: false }}
-                />
               </Stack.Group>
               <Stack.Group
                 screenOptions={{

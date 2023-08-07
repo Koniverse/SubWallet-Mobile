@@ -12,20 +12,18 @@ import { keyringUnlock } from 'messaging/index';
 
 type Props = {};
 
-const formConfig = {
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-};
 const Login: React.FC<Props> = (props: Props) => {
   const {} = props;
-
   const theme = useSubWalletTheme().swThemes;
-
   const [loading, setLoading] = useState<boolean>(false);
+  const formConfig = {
+    password: {
+      name: i18n.common.walletPassword,
+      value: '',
+      validateFunc: validatePassword,
+      require: true,
+    },
+  };
 
   const onSubmit = () => {
     const password = formState.data.password;

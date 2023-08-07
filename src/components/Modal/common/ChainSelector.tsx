@@ -1,75 +1,39 @@
-import React, { useCallback } from 'react';
-import { ListRenderItemInfo } from 'react-native';
-import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
+import React from 'react';
 import i18n from 'utils/i18n/i18n';
-import { FlatListScreen } from 'components/FlatListScreen';
-import { FlatListScreenPaddingTop } from 'styles/sharedStyles';
 import { ChainInfo } from 'types/index';
-import { NetworkSelectItem } from 'components/NetworkSelectItem';
-import { EmptyList } from 'components/EmptyList';
-import { MagnifyingGlass } from 'phosphor-react-native';
+import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
-  modalVisible: boolean;
-  onCancel: () => void;
-  onSelectItem: (item: ChainInfo) => void;
   items: ChainInfo[];
-  title?: string;
-  selectedValue?: string;
+  selectedValueMap: Record<string, boolean>;
+  onSelectItem?: (item: ChainInfo) => void;
+  renderSelected?: () => JSX.Element;
+  disabled?: boolean;
+  chainSelectorRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
-const filterFunction = (items: ChainInfo[], searchString: string) => {
-  const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(({ name }) => name.toLowerCase().includes(lowerCaseSearchString));
-};
-
-const renderListEmptyComponent = () => {
-  return (
-    <EmptyList
-      title={i18n.emptyScreen.selectorEmptyTitle}
-      message={i18n.emptyScreen.selectorEmptyMessage}
-      icon={MagnifyingGlass}
-    />
-  );
-};
-
 export const ChainSelector = ({
-  modalVisible,
-  onCancel,
-  onSelectItem,
   items,
-  selectedValue,
-  title = i18n.title.chain,
+  selectedValueMap,
+  onSelectItem,
+  renderSelected,
+  disabled,
+  chainSelectorRef,
 }: Props) => {
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<ChainInfo>) => {
-      return (
-        <NetworkSelectItem
-          itemName={item.name}
-          itemKey={item.slug}
-          onSelectNetwork={() => onSelectItem(item)}
-          showSeparator={false}
-          iconSize={28}
-          isSelected={item.slug === selectedValue}
-        />
-      );
-    },
-    [onSelectItem, selectedValue],
-  );
-
   return (
-    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
-      <FlatListScreen
-        autoFocus={true}
-        items={items}
-        style={FlatListScreenPaddingTop}
-        title={title}
-        isShowFilterBtn={false}
-        searchFunction={filterFunction}
-        renderItem={renderItem}
-        onPressBack={onCancel}
-        renderListEmptyComponent={renderListEmptyComponent}
-      />
-    </SubWalletFullSizeModal>
+    <FullSizeSelectModal
+      items={items}
+      selectedValueMap={selectedValueMap}
+      selectModalType={'single'}
+      selectModalItemType={'chain'}
+      onSelectItem={onSelectItem}
+      renderSelected={renderSelected}
+      disabled={disabled}
+      placeholder={i18n.placeholder.searchNetwork}
+      ref={chainSelectorRef}
+      onBackButtonPress={() => chainSelectorRef?.current?.onCloseModal()}
+      title={i18n.header.selectNetwork}
+    />
   );
 };

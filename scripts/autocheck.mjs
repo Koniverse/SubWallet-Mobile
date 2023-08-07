@@ -4,10 +4,10 @@
 import {commitMessage, discordHook, execSync, refName} from "./common.mjs";
 
 function notifyStart() {
-  return discordHook.send(`:computer: :computer: :computer: Run autocheck for: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`*====== ${refName}: ${commitMessage} ======*`);
 }
 function notifyFinish() {
-  return discordHook.send(`:white_check_mark: :white_check_mark: :white_check_mark: Finish autocheck for: "${refName}: ${commitMessage}"`);
+  return discordHook.send(`:ok: Finish autocheck for: "${refName}: ${commitMessage}"`);
 }
 
 async function runCheck() {

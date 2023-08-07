@@ -3,66 +3,16 @@ import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { ToggleItem } from 'components/ToggleItem';
-import { StyleProp, View } from 'react-native';
-import Text from 'components/Text';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
+import { View } from 'react-native';
+import { sharedStyles } from 'styles/sharedStyles';
 import { CaretRight, Globe, Key, Password, Scan, ShieldCheck } from 'phosphor-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { updateAutoLockTime, updateFaceIdEnable } from 'stores/MobileSettings';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import i18n from 'utils/i18n/i18n';
-import { ColorMap } from 'styles/color';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Icon, SelectItem } from 'components/design-system-ui';
+import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
-
-const modalTitle: StyleProp<any> = {
-  ...sharedStyles.mediumText,
-  ...FontBold,
-  color: ColorMap.light,
-  paddingBottom: 16,
-  textAlign: 'center',
-};
-
-const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
-  {
-    text: i18n.settings.immediately,
-    value: 0,
-  },
-  {
-    text: i18n.settings.ifLeftFor15Seconds,
-    value: 15 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor30Seconds,
-    value: 30 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor1Minute,
-    value: 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor5Minutes,
-    value: 5 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor15Minutes,
-    value: 15 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor30Minutes,
-    value: 30 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.ifLeftFor1Hour,
-    value: 60 * 60 * 1000,
-  },
-  {
-    text: i18n.settings.whenCloseApp,
-    value: undefined,
-  },
-];
 
 export const Security = () => {
   const theme = useSubWalletTheme().swThemes;
@@ -73,6 +23,44 @@ export const Security = () => {
   const [iShowAutoLockModal, setIsShowAutoLockModal] = useState<boolean>(false);
   const navigation = useNavigation<RootNavigationProps>();
   const dispatch = useDispatch();
+  const AUTO_LOCK_LIST: { text: string; value: number | undefined }[] = [
+    {
+      text: i18n.settings.immediately,
+      value: 0,
+    },
+    {
+      text: i18n.settings.ifLeftFor15Seconds,
+      value: 15 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor30Seconds,
+      value: 30 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor1Minute,
+      value: 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor5Minutes,
+      value: 5 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor15Minutes,
+      value: 15 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor30Minutes,
+      value: 30 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.ifLeftFor1Hour,
+      value: 60 * 60 * 1000,
+    },
+    {
+      text: i18n.settings.whenCloseApp,
+      value: undefined,
+    },
+  ];
 
   const onValueChangePinCode = () => {
     if (!pinCodeEnabled) {
@@ -92,7 +80,12 @@ export const Security = () => {
   };
 
   return (
-    <SubScreenContainer title={i18n.title.security} navigation={navigation}>
+    <SubScreenContainer
+      title={i18n.header.securitySettings}
+      navigation={navigation}
+      onPressLeftBtn={() => {
+        navigation.goBack();
+      }}>
       <View style={{ ...sharedStyles.layoutContainer, paddingTop: 16 }}>
         <ToggleItem
           backgroundIcon={Password}
@@ -167,9 +160,12 @@ export const Security = () => {
           disabled={!pinCode}
         />
 
-        <SubWalletModal modalVisible={iShowAutoLockModal} onChangeModalVisible={() => setIsShowAutoLockModal(false)}>
+        <SwModal
+          modalVisible={iShowAutoLockModal}
+          onChangeModalVisible={() => setIsShowAutoLockModal(false)}
+          onBackButtonPress={() => setIsShowAutoLockModal(false)}
+          modalTitle={i18n.common.autoLock}>
           <View style={{ width: '100%' }}>
-            <Text style={modalTitle}>{i18n.common.autoLock}</Text>
             {AUTO_LOCK_LIST.map(item => (
               <SelectItem
                 key={item.text}
@@ -179,7 +175,7 @@ export const Security = () => {
               />
             ))}
           </View>
-        </SubWalletModal>
+        </SwModal>
       </View>
     </SubScreenContainer>
   );

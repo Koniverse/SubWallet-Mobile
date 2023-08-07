@@ -8,6 +8,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DisabledStyle } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   selectedType: StakingType;
@@ -38,13 +39,13 @@ export const StakingTab = ({ selectedType, onSelectType, from }: Props) => {
         activeOpacity={BUTTON_ACTIVE_OPACITY}
         style={[_style.item, selectedType === StakingType.POOLED && _style.selectedItem, isDisabled && DisabledStyle]}
         onPress={() => _onSelectType(StakingType.POOLED)}>
-        <Text style={_style.itemText}>Pools</Text>
+        <Text style={_style.itemText}>{i18n.common.pools}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         activeOpacity={BUTTON_ACTIVE_OPACITY}
         style={[_style.item, selectedType === StakingType.NOMINATED && _style.selectedItem]}
         onPress={() => _onSelectType(StakingType.NOMINATED)}>
-        <Text style={_style.itemText}>Nominate</Text>
+        <Text style={_style.itemText}>{i18n.common.nominate}</Text>
       </TouchableOpacity>
     </View>
   );

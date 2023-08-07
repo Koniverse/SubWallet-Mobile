@@ -9,16 +9,18 @@ const NftIcon = React.lazy(() => import('./logo-nft.svg'));
 const Logo = React.lazy(() => import('./subwallet-logo.svg'));
 const LogoGradient = React.lazy(() => import('./subwallet-logo-gradient.svg'));
 const MenuBarLogo = React.lazy(() => import('./menu-bar.svg'));
+const IcHalfSquare = React.lazy(() => import('./ic-half-square.svg'));
 
 export const SVGImages = {
   Logo,
   LogoGradient,
-  CheckBoxIcon: CheckBoxIcon,
-  CheckBoxFilledIcon: CheckBoxFilledIcon,
-  NftIcon: NftIcon,
-  SignalIcon: SignalIcon,
-  SignalSplashIcon: SignalSplashIcon,
-  MenuBarLogo: MenuBarLogo,
+  CheckBoxIcon,
+  CheckBoxFilledIcon,
+  NftIcon,
+  SignalIcon,
+  SignalSplashIcon,
+  MenuBarLogo,
+  IcHalfSquare,
 };
 
 export const Images = {
@@ -31,5 +33,6 @@ export const Images = {
   historyEmpty: require('./transaction-history-coming-soon.png'),
   squircleBorder: require('./squircleBorder.png'),
   avatarPlaceholder: require('./avatar-placeholder.png'),
-  subwalletDappLogo: require('./subwallet-dapp-logo.png'),
+  browserBanner: require('./browser-banner.png'),
+  circleRobot: require('./circle-robot.png'),
 };

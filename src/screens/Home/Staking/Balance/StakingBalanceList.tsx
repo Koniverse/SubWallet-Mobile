@@ -1,14 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { StakingDataType } from 'hooks/types';
 import { Plus, Trophy } from 'phosphor-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
 import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
-import { restartCronAndSubscriptionServices } from 'messaging/index';
+import { reloadCron } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
@@ -17,16 +17,12 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootNavigationProps } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
+import { setAdjustPan } from 'rn-android-keyboard-adjust';
 
 enum FilterValue {
   NOMINATED = 'nominated',
   POOLED = 'pooled',
 }
-
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
-  { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
-];
 
 const renderEmpty = (val?: string) => {
   if (val) {
@@ -43,29 +39,26 @@ const renderEmpty = (val?: string) => {
 };
 
 const filterFunction = (items: StakingDataType[], filters: string[]) => {
-  const filteredChainList: StakingDataType[] = [];
-
   if (!filters.length) {
     return items;
   }
 
-  items.forEach(item => {
+  return items.filter(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.NOMINATED:
           if (item.staking.type === StakingType.NOMINATED) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.POOLED:
           if (item.staking.type === StakingType.POOLED) {
-            filteredChainList.push(item);
+            return true;
           }
       }
     }
+    return false;
   });
-
-  return filteredChainList;
 };
 
 const searchFunction = (items: StakingDataType[], searchString: string) => {
@@ -89,6 +82,17 @@ const StakingBalanceList = () => {
       setDetailModalVisible(true);
     };
   }, []);
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
+    { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
+  ];
+
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      setAdjustPan();
+    }
+  }, [isFocused]);
 
   const renderItem = useCallback(
     ({ item: stakingData }: ListRenderItemInfo<StakingDataType>) => {
@@ -106,9 +110,12 @@ const StakingBalanceList = () => {
 
   const handlePressStartStaking = useCallback(
     () =>
-      navigation.navigate('TransactionAction', {
-        screen: 'Stake',
-        params: {},
+      navigation.navigate('Drawer', {
+        screen: 'TransactionAction',
+        params: {
+          screen: 'Stake',
+          params: {},
+        },
       }),
     [navigation],
   );
@@ -125,6 +132,7 @@ const StakingBalanceList = () => {
       <FlatListScreen
         style={{ flex: 1, paddingBottom: 16 }}
         title={i18n.header.staking}
+        titleTextAlign={'left'}
         items={data}
         showLeftBtn={false}
         placeholder={i18n.placeholder.searchToken}
@@ -144,12 +152,7 @@ const StakingBalanceList = () => {
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => {
-              refresh(
-                restartCronAndSubscriptionServices({
-                  cronServices: ['staking'],
-                  subscriptionServices: ['staking'],
-                }),
-              );
+              refresh(reloadCron({ data: 'staking' }));
             }}
           />
         }

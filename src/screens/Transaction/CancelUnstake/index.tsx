@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { NominatorMetadata, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { useNavigation } from '@react-navigation/native';
@@ -9,9 +9,8 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { submitStakeCancelWithdrawal } from 'messaging/index';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
@@ -25,6 +24,8 @@ import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -51,7 +52,6 @@ export const CancelUnstake = ({
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
 
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
@@ -71,6 +71,7 @@ export const CancelUnstake = ({
   const allNominatorInfo = useGetNominatorInfo(stakingChain, stakingType);
   const nominatorInfo = useGetNominatorInfo(stakingChain, stakingType, from);
   const nominatorMetadata = nominatorInfo[0];
+  const accountSelectorRef = useRef<ModalRef>();
 
   useEffect(() => {
     onChangeValue('chain')(stakingChain || '');
@@ -105,13 +106,21 @@ export const CancelUnstake = ({
   }, [chain, from, nominatorMetadata.unstakings, onError, onSuccess, unstakeIndex]);
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading}>
+    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
       <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps={'handled'}>
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
-            </TouchableOpacity>
+            <AccountSelector
+              items={accountList}
+              selectedValueMap={{ [from]: true }}
+              onSelectItem={item => {
+                onChangeFromValue(item.address);
+                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+              }}
+              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
+              accountSelectorRef={accountSelectorRef}
+              disabled={loading}
+            />
           )}
 
           <FreeBalance
@@ -130,17 +139,6 @@ export const CancelUnstake = ({
           />
         </ScrollView>
 
-        <AccountSelector
-          modalVisible={accountSelectModalVisible}
-          onSelectItem={item => {
-            onChangeFromValue(item.address);
-            setAccountSelectModalVisible(false);
-          }}
-          items={accountList}
-          onCancel={() => setAccountSelectModalVisible(false)}
-          selectedValue={from}
-        />
-
         <View style={{ padding: 16, flexDirection: 'row' }}>
           <Button
             disabled={loading}
@@ -155,7 +153,7 @@ export const CancelUnstake = ({
                 iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
               />
             }>
-            Cancel
+            {i18n.buttonTitles.cancel}
           </Button>
           <Button
             style={{ flex: 1, marginLeft: 4 }}
@@ -170,7 +168,7 @@ export const CancelUnstake = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            Continue
+            {i18n.buttonTitles.continue}
           </Button>
         </View>
       </>

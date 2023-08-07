@@ -29,27 +29,6 @@ import createStyles from './styles';
 import { getButtonIcon } from 'utils/button';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 
-const formConfig: FormControlConfig = {
-  file: {
-    name: 'file',
-    value: '',
-  },
-  fileName: {
-    name: 'fileName',
-    value: '',
-  },
-  accountAddress: {
-    name: '',
-    value: '',
-  },
-  password: {
-    require: true,
-    name: i18n.common.currentPassword,
-    value: '',
-    validateFunc: validatePassword,
-  },
-};
-
 const getAccountsInfo = (jsonFile: KeyringPairs$Json) => {
   let currentAccountsInfo: ResponseJsonGetAccountInfo[] = [];
   jsonFile.accounts.forEach(account => {
@@ -76,6 +55,26 @@ function formatJsonFile(jsonFile: any) {
 }
 
 export const RestoreJson = () => {
+  const formConfig: FormControlConfig = {
+    file: {
+      name: 'file',
+      value: '',
+    },
+    fileName: {
+      name: 'fileName',
+      value: '',
+    },
+    accountAddress: {
+      name: '',
+      value: '',
+    },
+    password: {
+      require: true,
+      name: i18n.common.currentPassword,
+      value: '',
+      validateFunc: validatePassword,
+    },
+  };
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const theme = useSubWalletTheme().swThemes;
@@ -270,7 +269,7 @@ export const RestoreJson = () => {
               {accountsInfo.length > 1 ? (
                 <SelectItem
                   leftItemIcon={<AvatarGroup addresses={addresses} />}
-                  label={`Import ${String(accountsInfo.length).padStart(2, '0')} accounts`}
+                  label={i18n.importAccount.importAccounts(String(accountsInfo.length).padStart(2, '0'))}
                   onPress={openModal}
                   rightIcon={<Icon phosphorIcon={DotsThree} size="sm" />}
                 />
@@ -291,7 +290,7 @@ export const RestoreJson = () => {
                   onSubmitField={onSubmitField('password')}
                   showEyeButton={false}
                   outerStyle={styles.passwordField}
-                  placeholder={i18n.placeholder.currentPassword}
+                  placeholder={i18n.placeholder.password}
                   isBusy={isBusy}
                 />
               </View>
@@ -305,11 +304,15 @@ export const RestoreJson = () => {
             icon={getButtonIcon(FileArrowDown)}
             onPress={onPressSubmit(onPressSubmitButton)}
             disabled={isDisabled}>
-            {i18n.buttonTitles.importAccount}
+            {i18n.buttonTitles.importByJsonFile}
           </Button>
         </View>
       </View>
-      <SwModal modalVisible={visible} onChangeModalVisible={hideModal} modalTitle={i18n.header.accounts}>
+      <SwModal
+        modalVisible={visible}
+        onChangeModalVisible={hideModal}
+        modalTitle={i18n.header.accounts}
+        onBackButtonPress={hideModal}>
         <FlatList data={accountsInfo} renderItem={renderAccount} style={styles.accountList} />
       </SwModal>
       <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideModal} />

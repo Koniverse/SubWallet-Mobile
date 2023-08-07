@@ -29,14 +29,6 @@ enum FilterValue {
   EVM = 'evm',
 }
 
-const FILTER_OPTIONS = [
-  { label: i18n.filterOptions.evmChains, value: FilterValue.EVM },
-  { label: i18n.filterOptions.substrateChains, value: FilterValue.SUBSTRATE },
-  { label: i18n.filterOptions.customChains, value: FilterValue.CUSTOM },
-  { label: i18n.filterOptions.enabledChains, value: FilterValue.ENABLED },
-  { label: i18n.filterOptions.disabledChains, value: FilterValue.DISABLED },
-];
-
 const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
   if (!searchString) {
     return items;
@@ -46,44 +38,42 @@ const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
 };
 
 const filterFunction = (items: ChainInfoWithState[], filters: string[]) => {
-  const filteredChainList: ChainInfoWithState[] = [];
-
   if (!filters.length) {
     return items;
   }
 
-  items.forEach(item => {
+  return items.filter(item => {
     for (const filter of filters) {
       switch (filter) {
         case FilterValue.CUSTOM:
           if (_isCustomChain(item.slug)) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.ENABLED:
           if (item.active) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.DISABLED:
           if (!item.active) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.SUBSTRATE:
           if (_isSubstrateChain(item)) {
-            filteredChainList.push(item);
+            return true;
           }
           break;
         case FilterValue.EVM:
           if (_isChainEvmCompatible(item)) {
-            filteredChainList.push(item);
+            return true;
           }
+          break;
       }
     }
+    return false;
   });
-
-  return filteredChainList;
 };
 
 const processChainMap = (
@@ -114,8 +104,16 @@ const processChainMap = (
 export const NetworksSetting = ({}: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useChainInfoWithState();
+  const [isToggleItem, setToggleItem] = useState(false);
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
+  const FILTER_OPTIONS = [
+    { label: i18n.filterOptions.evmChains, value: FilterValue.EVM },
+    { label: i18n.filterOptions.substrateChains, value: FilterValue.SUBSTRATE },
+    { label: i18n.filterOptions.customChains, value: FilterValue.CUSTOM },
+    { label: i18n.filterOptions.enabledChains, value: FilterValue.ENABLED },
+    { label: i18n.filterOptions.disabledChains, value: FilterValue.DISABLED },
+  ];
 
   useEffect(() => {
     setPendingChainMap(prevPendingChainMap => {
@@ -131,14 +129,15 @@ export const NetworksSetting = ({}: Props) => {
   }, [chainInfoMap]);
 
   useEffect(() => {
-    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), true));
-  }, [chainInfoMap, pendingChainMap]);
+    setCurrentChainList(processChainMap(chainInfoMap, Object.keys(pendingChainMap), !isToggleItem));
+  }, [chainInfoMap, isToggleItem, pendingChainMap]);
 
   useEffect(() => {
     cachePendingChainMap = pendingChainMap;
   }, [pendingChainMap]);
 
   const onToggleItem = (item: ChainInfoWithState) => {
+    setToggleItem(true);
     setPendingChainMap({ ...pendingChainMap, [item.slug]: !item.active });
     const reject = () => {
       console.warn('Toggle network request failed!');
@@ -174,7 +173,10 @@ export const NetworksSetting = ({}: Props) => {
         }
         onValueChange={() => onToggleItem(item)}
         showEditButton
-        onPressEditBtn={() => navigation.navigate('NetworkSettingDetail', { chainSlug: item.slug })}
+        onPressEditBtn={() => {
+          navigation.navigate('NetworkSettingDetail', { chainSlug: item.slug });
+          setToggleItem(false);
+        }}
       />
     );
   };
@@ -191,7 +193,13 @@ export const NetworksSetting = ({}: Props) => {
 
   return (
     <FlatListScreen
-      rightIconOption={{ icon: Plus, onPress: () => navigation.navigate('ImportNetwork') }}
+      rightIconOption={{
+        icon: Plus,
+        onPress: () => {
+          navigation.navigate('ImportNetwork');
+          setToggleItem(false);
+        },
+      }}
       items={currentChainList}
       title={i18n.header.manageNetworks}
       placeholder={i18n.placeholder.searchNetwork}

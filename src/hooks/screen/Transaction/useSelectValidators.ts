@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCallback, useState } from 'react';
 import Toast from 'react-native-toast-notifications';
+import i18n from 'utils/i18n/i18n';
 
 export function useSelectValidators(
   maxCount: number,
@@ -27,7 +28,7 @@ export function useSelectValidators(
               if (!defaultSelected.includes(changeVal)) {
                 if (toastRef && toastRef.current) {
                   toastRef.current.hideAll();
-                  toastRef.current.show(`You can only choose ${maxCount} validators`);
+                  toastRef.current.show(i18n.stakingScreen.maximumSelectableValidators(maxCount), { type: 'normal' });
                 }
 
                 return currentChangeValidators;
@@ -39,7 +40,7 @@ export function useSelectValidators(
             if (currentChangeValidators.length >= maxCount) {
               if (toastRef && toastRef.current) {
                 toastRef.current.hideAll();
-                toastRef.current.show(`You can only choose ${maxCount} validators`);
+                toastRef.current.show(i18n.stakingScreen.maximumSelectableValidators(maxCount), { type: 'normal' });
               }
 
               return currentChangeValidators;

@@ -1,10 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
-import { ActivityIndicator, BackgroundIcon, Button, Icon, QRCode } from 'components/design-system-ui';
+import { ActivityIndicator, Avatar, BackgroundIcon, Button, Icon, QRCode } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
-import { SubWalletAvatar } from 'components/SubWalletAvatar';
 import useCopyClipboard from 'hooks/common/useCopyClipboard';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -19,7 +18,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { EditAccountProps, RootNavigationProps } from 'routes/index';
-import { SIGN_MODE } from 'types/signer';
+import { AccountSignMode } from 'types/signer';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
 import { deriveAccountV3, editAccount, forgetAccount } from 'messaging/index';
@@ -40,7 +39,7 @@ export const AccountDetail = ({
   const signMode = useGetAccountSignModeByAddress(currentAddress);
 
   const styles = useMemo(() => createStyle(theme), [theme]);
-  const canExport = useMemo((): boolean => signMode === SIGN_MODE.PASSWORD, [signMode]);
+  const canExport = useMemo((): boolean => signMode === AccountSignMode.PASSWORD, [signMode]);
   const canDerive = useMemo((): boolean => {
     if (account) {
       if (account.isExternal) {
@@ -215,7 +214,7 @@ export const AccountDetail = ({
           value={toShort(currentAddress)}
           isDisabled
           editAccountInputStyle={[styles.inputContainer, styles.addressContainer]}
-          prefix={<SubWalletAvatar address={currentAddress} size={theme.sizeMD} />}
+          prefix={<Avatar value={currentAddress} size={theme.sizeMD} />}
           suffix={
             <Button
               size="xs"

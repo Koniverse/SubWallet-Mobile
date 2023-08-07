@@ -1,0 +1,44 @@
+name: Build Review Version
+on:
+  pull_request: { }
+  push:
+    branches:
+      - koni-dev
+      - upgrade-ui
+jobs:
+  build_preview:
+    name: Build Preview
+    runs-on: mac-worker
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      GH_RELEASE_GITHUB_API_TOKEN: ${{ secrets.GH_PAT }}
+      KS_PASSWORD: ${{ secrets.KS_PASSWORD }}
+      NEXTCLOUD_CONFIG: ${{ secrets.NEXTCLOUD_CONFIG }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      COMMIT_MESSAGE: ${{ github.event.pull_request.title }}
+      REF_NAME: ${{ github.ref_name }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PAT }}
+
+    - name: Cache Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install Dependencies
+      run: yarn install --immutable | grep -v 'YN0013'
+
+    - name: Autocheck
+      run: node ./scripts/autocheck.mjs
+
+    - name: Build Android
+      run: cd ./android && node ../scripts/build-android.mjs
+
+    - name: Build iOS
+      run: cd ./ios && node ../scripts/build-ios.mjs

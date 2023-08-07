@@ -1,5 +1,6 @@
 import {
   ActiveCronAndSubscriptionMap,
+  AddressBookState,
   AssetSetting,
   BalanceItem,
   ChainStakingMetadata,
@@ -82,6 +83,7 @@ export type MobileSettingsSlice = {
   pinCodeEnabled: boolean;
   faceIdEnabled: boolean;
   autoLockTime: number | undefined;
+  isPreventLock: boolean;
 };
 
 export type SiteInfo = {
@@ -135,7 +137,7 @@ export interface AppSettings
   mediaAllowed: boolean;
 }
 
-export interface AccountState extends AccountsContext, KeyringState, BaseReduxStore {
+export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {
   currentAccount: AccountJson | null;
 
   isAllAccount: boolean;

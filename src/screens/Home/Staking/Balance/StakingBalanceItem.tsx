@@ -10,6 +10,7 @@ import { getConvertedBalance } from 'utils/chainBalances';
 import { getNetworkLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   stakingData: StakingDataType;
@@ -53,7 +54,7 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
                     <Icon phosphorIcon={Users} size={'xxs'} weight={'bold'} iconColor={theme.colorSuccess} />
                   )
                 }>
-                {staking.type === StakingType.NOMINATED ? 'Nominated' : 'Pooled'}
+                {staking.type === StakingType.NOMINATED ? i18n.filterOptions.nominated : i18n.filterOptions.pooled}
               </Tag>
             </View>
           </View>

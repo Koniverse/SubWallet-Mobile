@@ -1,3 +1,123 @@
+## 1.0.13 (205)
+- Fix browser search - bookmark and update language key 'all account' in staking detail (#898)
+- Bump React Native to 0.71.12 (#855)
+- Improve list performance round 2 (#874)
+- Re-check staking feature (#921)
+- web runner 1.5.5 (#925)
+
+## 1.0.12 (204)
+- Update Web Runner to 1.1.3-0 (#904)
+
+## 1.0.11 (203)
+- Can't access dapp from specific link when search on browser (#903)
+
+## 1.0.11 (202)
+- Update camera request permission flow
+
+## 1.0.11 (201)
+- Update New SelectModal for PoolSelector and ValidatorSelector (#777)
+- Config universal deeplink (#779)
+- Update multi-language (#56)
+
+## 1.0.11 (200)
+- Update UI - Toast (#808)
+- Bugs when click on actions on header when standing transaction screen (#880)
+- Add support more languages (#56)
+
+## 1.0.10 (199)
+- Autofocus password when create master password & Allow search by address on Manage website access detail screen (#884, #882)
+- Fix browser issue (#873)
+- Update banner, favorites logic filter (#885)
+
+## 1.0.10 (198)
+- Reset wallet feature (#812)
+- Fix bug still show Token detail screen when switch account (#879)
+- Update UI - Add the sort for the Select Pool/Validator/Collator/dApp screen (#875)
+- Implement reload nft and reload staking (#871)
+- Error page in adding watch-only account screen (#833)
+- Do not show the virtual keyboard to enter the PIN in the case that the popup is on before (#830)
+
+## 1.0.9 (197)
+- Browser Home (#692)
+- Browser - Webview (#822)
+- Browser - Browser Home - List (#821)
+- Browser - Connection (#826)
+
+## 1.0.9 (196)
+- Improve performance for token list (#854)
+
+## 1.0.9 (195)
+- Rollback performance issue
+
+## 1.0.9 (194)
+- Improve performance for token list (#854)
+
+## 1.0.9 (193)
+- Allow DApp access to watch-only account (#842)
+- Update UI - Header on list view (#853)
+- Update UI - Change master password (#810)
+- Allow user exported and download the JSON file (#807)
+- Update UI - Buy Token (#764)
+- Upgrade UI Browser - DApp Confirmation (#823)
+- Update web runner, lazy load
+- Improve performance for token list (#854)
+
+## 1.0.8 (192)
+- Browser - Website Access (#797, #824)
+- Upload Image to read QR code (#800)
+- Fix bug show incorrect some information on the XCM history detail (#841)
+
+## 1.0.7 (191)
+- Preview mobile browser (2)
+
+## 1.0.7 (190)
+- Preview mobile browser
+
+## 1.0.7 (189)
+- Consider handling in case validate amount (#621)
+- UI bug in case search haven't data (#806)
+- Continue Update "show zero balance" default value (#846)
+
+## 1.0.7 (188)
+- Update "show zero balance" default value (#846)
+
+## 1.0.7 (187)
+- Fix some issues related to Address book feature (#779)
+- Fix bugs related to the Manage network feature in Build 185 (#881)
+
+## 1.0.7 (186)
+- Update to newer Web Runner
+
+## 1.0.6 (185)
+- Add message turn on chain in import Token and import NFT screen (#785)
+- Bugs related to Web-runner version 1.0.10 (#803)
+- Show duplicate network, token in case apply multi conditions when filter (#792)
+
+## 1.0.6 (184)
+- Bump webrunner to 1.0.10-0
+- Optimize import from @subwallet/libraries
+- Fix problems by wrong import and update @subwallet/extension-koni-ui
+
+## 1.0.6 (183)
+- Error page in case touch Icon account in Browser tab and fix some UI bugs (#796)
+
+## 1.0.6 (182)
+- Fix bug crash app when scan to SendFund (#788)
+- Fix bug in ImportNFT screen and toast for EditContactModal (#794)
+
+## 1.0.6 (181)
+- Do not send token when user standing on the token detail screen (#788)
+- Navigate incorrect screen in case switch account on token detail screen (#789)
+- Fix route for Right header button and some UI bug (#628)
+- Add address book (#691)
+
+## 1.0.6 (180)
+- Fix bug enable chain and scan for SendFund (#628)
+- Use MMKV storage to inhance redux persist performance (#773)
+- Standardization word and sentence entire the app (#696)
+- The effect of opening settings changes to slide right (#697)
+- Prevent the back action on the screen while performing a transaction on an Android device (#753)
+
 ## 1.0.5 (179)
 - Fix open deeplink issue when the app is closed
 - Fix bug can't select token in case change Nominate to Pool when specific account mode (#771)

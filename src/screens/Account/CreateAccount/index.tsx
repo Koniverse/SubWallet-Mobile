@@ -15,7 +15,6 @@ import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
 const ViewStep = {
   INIT_SP: 1,
   VERIFY_SP: 2,
-  CREATE_ACCOUNT: 3,
 };
 
 function getHeaderTitle(viewStep: number) {
@@ -24,7 +23,6 @@ function getHeaderTitle(viewStep: number) {
   } else if (viewStep === ViewStep.VERIFY_SP) {
     return i18n.header.verifySeedPhrase;
   }
-  return i18n.title.nameYourWallet;
 }
 
 const defaultKeyTypes = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
@@ -52,18 +50,12 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
       navigation.goBack();
     } else if (currentViewStep === ViewStep.VERIFY_SP) {
       setCurrentViewStep(ViewStep.INIT_SP);
-    } else if (currentViewStep === ViewStep.CREATE_ACCOUNT) {
-      setCurrentViewStep(ViewStep.VERIFY_SP);
     }
   };
 
   const onPressSubmitInitSecretPhrase = () => {
     setCurrentViewStep(ViewStep.VERIFY_SP);
   };
-
-  // const onPressSubmitVerifySecretPhrase = () => {
-  //   setCurrentViewStep(ViewStep.CREATE_ACCOUNT);
-  // };
 
   const onCreateAccount = () => {
     if (seed) {

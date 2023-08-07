@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { Platform, StyleProp, StyleSheet, TextInput, View } from 'react-native';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { Scan } from 'phosphor-react-native';
@@ -8,6 +8,7 @@ import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
 import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import { setAdjustResize } from 'rn-android-keyboard-adjust';
 
 interface InputProps {
   label?: string;
@@ -55,6 +56,9 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
     () => createStyle(theme, hasLabel, isAddressValid, showAvatar, readonly),
     [theme, hasLabel, isAddressValid, showAvatar, readonly],
   );
+
+  useEffect(() => setAdjustResize(), []);
+
   const onChangeInputText = (rawText: string) => {
     const text = rawText.trim();
     setAddress(text);

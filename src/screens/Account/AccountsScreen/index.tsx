@@ -1,12 +1,12 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { FileArrowDown, MagnifyingGlass, PlusCircle, Swatches } from 'phosphor-react-native';
-import { RootNavigationProps } from 'routes/index';
+import { AccountsScreenProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { saveCurrentAccountAddress } from 'messaging/index';
@@ -17,6 +17,7 @@ import { Button, Icon } from 'components/design-system-ui';
 import { AccountCreationArea } from 'components/common/Account/AccountCreationArea';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
+import { ModalRef } from 'types/modalRef';
 
 const renderListEmptyComponent = () => {
   return (
@@ -36,11 +37,14 @@ const searchFunction = (items: AccountJson[], searchString: string) => {
   );
 };
 
-export const AccountsScreen = () => {
+export const AccountsScreen = ({
+  route: {
+    params: { pathName },
+  },
+}: AccountsScreenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const fullAccounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccountAddress = useSelector((state: RootState) => state.accountState.currentAccount?.address);
-
   const accounts = useMemo(() => {
     if (fullAccounts.length > 2) {
       return fullAccounts;
@@ -49,9 +53,9 @@ export const AccountsScreen = () => {
     return fullAccounts.filter(a => !isAccountAll(a.address));
   }, [fullAccounts]);
 
-  const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
-  const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
-  const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
+  const createAccountRef = useRef<ModalRef>();
+  const importAccountRef = useRef<ModalRef>();
+  const attachAccountRef = useRef<ModalRef>();
 
   const selectAccount = useCallback(
     (accAddress: string) => {
@@ -63,15 +67,24 @@ export const AccountsScreen = () => {
             address: accAddress,
           } as CurrentAccountInfo;
 
-          saveCurrentAccountAddress(accountInfo, () => {}).catch(e => {
+          saveCurrentAccountAddress(accountInfo).catch(e => {
             console.error('There is a problem when set Current Account', e);
           });
         }
       }
 
-      navigation.navigate('Home');
+      if (pathName === 'TokenGroupsDetail') {
+        // need 2x goBack() for going back to TokenGroups because of specific reason
+        navigation.goBack();
+        navigation.goBack();
+      } else if (pathName === 'SendFund') {
+        navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
+        navigation.goBack();
+      } else {
+        navigation.navigate('Home');
+      }
     },
-    [currentAccountAddress, navigation, accounts],
+    [currentAccountAddress, pathName, accounts, navigation],
   );
 
   const renderItem = useCallback(
@@ -110,7 +123,7 @@ export const AccountsScreen = () => {
           icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setCreateAccountModalVisible(true);
+            createAccountRef && createAccountRef.current?.onOpenModal();
           }}>
           {i18n.buttonTitles.createANewAcc}
         </Button>
@@ -119,14 +132,14 @@ export const AccountsScreen = () => {
           icon={<Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setImportAccountModalVisible(true);
+            importAccountRef && importAccountRef.current?.onOpenModal();
           }}
         />
         <Button
           icon={<Icon phosphorIcon={Swatches} size={'lg'} weight={'fill'} />}
           type={'secondary'}
           onPress={() => {
-            setAttachAccountModalVisible(true);
+            attachAccountRef && attachAccountRef.current?.onOpenModal();
           }}
         />
       </View>
@@ -144,16 +157,14 @@ export const AccountsScreen = () => {
         searchFunction={searchFunction}
         autoFocus={false}
         afterListItem={renderFooterComponent()}
+        placeholder={i18n.placeholder.accountName}
       />
 
       <AccountCreationArea
+        createAccountRef={createAccountRef}
+        importAccountRef={importAccountRef}
+        attachAccountRef={attachAccountRef}
         allowToShowSelectType={true}
-        createAccountModalVisible={createAccountModalVisible}
-        importAccountModalVisible={importAccountModalVisible}
-        attachAccountModalVisible={attachAccountModalVisible}
-        onChangeCreateAccountModalVisible={setCreateAccountModalVisible}
-        onChangeImportAccountModalVisible={setImportAccountModalVisible}
-        onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
       />
     </>
   );

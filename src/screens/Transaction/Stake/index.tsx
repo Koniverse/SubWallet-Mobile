@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { StakingTab } from 'components/common/StakingTab';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
@@ -11,7 +11,6 @@ import {
   StakingType,
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountSelectField } from 'components/Field/AccountSelect';
@@ -43,10 +42,12 @@ import { BN_TEN } from 'utils/number';
 import { NetworkDetailModal } from 'screens/Transaction/Stake/NetworkDetailModal';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { StakeProps } from 'routes/transaction/transactionAction';
-import { DisabledStyle, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { accountFilterFunc } from 'screens/Transaction/helper/base';
 import useFetchChainState from 'hooks/screen/useFetchChainState';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 
 export const Stake = ({
   route: {
@@ -57,8 +58,6 @@ export const Stake = ({
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
-  const [tokenSelectModalVisible, setTokenSelectModalVisible] = useState<boolean>(false);
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [poolLoading, setPoolLoading] = useState(false);
   const [detailNetworkModalVisible, setDetailNetworkModalVisible] = useState(false);
@@ -66,6 +65,8 @@ export const Stake = ({
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const isEthAdr = isEthereumAddress(currentAccount?.address);
   const [isBalanceReady, setIsBalanceReady] = useState(true);
+  const accountSelectorRef = useRef<ModalRef>();
+  const tokenSelectorRef = useRef<ModalRef>();
 
   const defaultStakingType: StakingType = useMemo(() => {
     if (isEthAdr) {
@@ -121,6 +122,8 @@ export const Stake = ({
     stakingType: currentStakingType,
     value: currentValue,
   } = formState.data;
+
+  console.log('asset', asset);
   const chainState = useFetchChainState(chain);
   const chainStakingMetadata = useGetChainStakingMetadata(chain);
   const nominatorMetadataList = useGetNominatorInfo(chain, currentStakingType as StakingType, from);
@@ -275,7 +278,7 @@ export const Stake = ({
           {chainStakingMetadata.expectedReturn && (
             <MetaInfo.Number
               label={`${i18n.inputLabel.estimatedEarnings}:`}
-              suffix={'% / year'}
+              suffix={`% / ${i18n.common.year}`}
               value={chainStakingMetadata.expectedReturn}
             />
           )}
@@ -333,7 +336,7 @@ export const Stake = ({
     (item: TokenItemType) => {
       onChangeAssetValue(item.slug);
       tokenRef.current = item.slug;
-      setTokenSelectModalVisible(false);
+      tokenSelectorRef && tokenSelectorRef.current?.onCloseModal();
     },
     [onChangeAssetValue],
   );
@@ -377,13 +380,14 @@ export const Stake = ({
 
   return (
     <TransactionLayout
+      disableMainHeader={loading}
       title={title}
       showRightHeaderButton
       disableLeftButton={loading}
       disableRightButton={!chainStakingMetadata || loading}
       onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps={'handled'}>
+        <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }} keyboardShouldPersistTaps={'handled'}>
           {_stakingType === ALL_KEY && (
             <StakingTab
               from={from}
@@ -393,9 +397,17 @@ export const Stake = ({
           )}
 
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
-            </TouchableOpacity>
+            <AccountSelector
+              items={accountSelectorList}
+              selectedValueMap={{ [from]: true }}
+              accountSelectorRef={accountSelectorRef}
+              onSelectItem={item => {
+                onChangeFromValue(item.address);
+                fromRef.current = item.address;
+                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+              }}
+              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
+            />
           )}
 
           {_stakingType === ALL_KEY && (
@@ -407,20 +419,23 @@ export const Stake = ({
             />
           )}
 
-          <TouchableOpacity
+          <TokenSelector
+            items={tokenList}
+            selectedValueMap={{ [asset]: true }}
+            onSelectItem={onSelectToken}
             disabled={stakingChain !== ALL_KEY || !from || loading}
-            onPress={() => {
-              setTokenSelectModalVisible(true);
-            }}>
-            <TokenSelectField
-              disabled={stakingChain !== ALL_KEY || !from || loading}
-              logoKey={symbol.toLowerCase()}
-              subLogoKey={chain}
-              value={symbol}
-              showIcon
-              outerStyle={(stakingChain !== ALL_KEY || !from || loading) && DisabledStyle}
-            />
-          </TouchableOpacity>
+            defaultValue={asset}
+            acceptDefaultValue={true}
+            renderSelected={() => (
+              <TokenSelectField
+                logoKey={symbol.toLowerCase()}
+                subLogoKey={chain}
+                value={symbol}
+                showIcon
+                outerStyle={stakingChain !== ALL_KEY || !from || loading}
+              />
+            )}
+          />
 
           {_stakingType !== ALL_KEY && (
             <FreeBalance
@@ -470,27 +485,7 @@ export const Stake = ({
             </>
           )}
         </ScrollView>
-        <AccountSelector
-          modalVisible={accountSelectModalVisible}
-          onSelectItem={item => {
-            onChangeFromValue(item.address);
-            fromRef.current = item.address;
-            setAccountSelectModalVisible(false);
-          }}
-          items={accountSelectorList}
-          onCancel={() => setAccountSelectModalVisible(false)}
-          selectedValue={from}
-        />
 
-        <TokenSelector
-          modalVisible={tokenSelectModalVisible}
-          defaultValue={asset}
-          items={tokenList}
-          acceptDefaultValue
-          onCancel={() => setTokenSelectModalVisible(false)}
-          onSelectItem={onSelectToken}
-          selectedValue={asset}
-        />
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button
             disabled={isDisabledButton}
@@ -504,7 +499,7 @@ export const Stake = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            Stake
+            {i18n.buttonTitles.stake}
           </Button>
         </View>
 

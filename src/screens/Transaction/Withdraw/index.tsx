@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import {
@@ -35,6 +34,10 @@ import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { WithdrawProps } from 'routes/transaction/transactionAction';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { getAstarWithdrawable } from '@subwallet/extension-base/koni/api/staking/bonding/astar';
+import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -65,7 +68,6 @@ export const Withdraw = ({
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
   const withDrawFormConfig = {};
   const { title, formState, onDone, onChangeFromValue, onChangeValue } = useTransaction('withdraw', withDrawFormConfig);
   const { from, chain } = formState.data;
@@ -74,6 +76,7 @@ export const Withdraw = ({
   const nominatorMetadata = nominatorInfo[0];
   const accountInfo = useGetAccountByAddress(from);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
+  const accountSelectorRef = useRef<ModalRef>();
 
   useEffect(() => {
     // Trick to trigger validate when case single account
@@ -93,7 +96,10 @@ export const Withdraw = ({
   }, [accounts, allNominatorInfo, chainInfoMap, stakingType]);
 
   const unstakingInfo = useMemo((): UnstakingInfo | undefined => {
-    if (from && !isAccountAll(from)) {
+    if (from && !isAccountAll(from) && !!nominatorMetadata) {
+      if (_STAKING_CHAIN_GROUP.astar.includes(nominatorMetadata.chain)) {
+        return getAstarWithdrawable(nominatorMetadata);
+      }
       return nominatorMetadata.unstakings.filter(data => data.status === UnstakingStatus.CLAIMABLE)[0];
     }
 
@@ -134,13 +140,21 @@ export const Withdraw = ({
   }, [chain, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading}>
+    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
           {isAllAccount && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />
-            </TouchableOpacity>
+            <AccountSelector
+              items={accountList}
+              selectedValueMap={{ [from]: true }}
+              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
+              onSelectItem={item => {
+                onChangeFromValue(item.address);
+                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+              }}
+              accountSelectorRef={accountSelectorRef}
+              disabled={loading}
+            />
           )}
 
           <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
@@ -158,17 +172,6 @@ export const Withdraw = ({
             )}
           </MetaInfo>
         </ScrollView>
-
-        <AccountSelector
-          modalVisible={accountSelectModalVisible}
-          onSelectItem={item => {
-            onChangeFromValue(item.address);
-            setAccountSelectModalVisible(false);
-          }}
-          items={accountList}
-          onCancel={() => setAccountSelectModalVisible(false)}
-          selectedValue={from}
-        />
 
         <View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', ...MarginBottomForSubmitButton }}>
           <Button

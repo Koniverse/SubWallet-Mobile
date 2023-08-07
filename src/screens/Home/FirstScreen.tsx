@@ -1,6 +1,6 @@
 import { Images, SVGImages } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { Suspense, useCallback, useState } from 'react';
+import React, { Suspense, useCallback, useRef } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { ModalRef } from 'types/modalRef';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -62,22 +63,22 @@ const firstScreenNotificationStyle: StyleProp<any> = {
 export const FirstScreen = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const hasMasterPassword = useSelector((state: RootState) => state.accountState.hasMasterPassword);
-  const [importAccountModalVisible, setImportAccountModalVisible] = useState<boolean>(false);
-  const [attachAccountModalVisible, setAttachAccountModalVisible] = useState<boolean>(false);
-  const [createAccountModalVisible, setCreateAccountModalVisible] = useState<boolean>(false);
+  const createAccountRef = useRef<ModalRef>();
+  const importAccountRef = useRef<ModalRef>();
+  const attachAccountRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
 
   const onPressActionButton = useCallback((action: SelectedActionType) => {
     return () => {
       switch (action) {
         case 'createAcc':
-          setCreateAccountModalVisible(true);
+          createAccountRef && createAccountRef.current?.onOpenModal();
           break;
         case 'attachAcc':
-          setAttachAccountModalVisible(true);
+          attachAccountRef && attachAccountRef.current?.onOpenModal();
           break;
         case 'importAcc':
-          setImportAccountModalVisible(true);
+          importAccountRef && importAccountRef.current?.onOpenModal();
           break;
       }
     };
@@ -141,7 +142,7 @@ export const FirstScreen = () => {
               <SVGImages.LogoGradient width={66} height={100} />
             </Suspense>
             <Text style={logoTextStyle}>SubWallet</Text>
-            <Text style={logoSubTextStyle}>Polkadot, Substrate & Ethereum wallet</Text>
+            <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
           </View>
 
           <View style={{ width: '100%' }}>
@@ -164,12 +165,10 @@ export const FirstScreen = () => {
         </Text>
 
         <AccountCreationArea
-          createAccountModalVisible={createAccountModalVisible}
-          importAccountModalVisible={importAccountModalVisible}
-          attachAccountModalVisible={attachAccountModalVisible}
-          onChangeCreateAccountModalVisible={setCreateAccountModalVisible}
-          onChangeImportAccountModalVisible={setImportAccountModalVisible}
-          onChangeAttachAccountModalVisible={setAttachAccountModalVisible}
+          createAccountRef={createAccountRef}
+          importAccountRef={importAccountRef}
+          attachAccountRef={attachAccountRef}
+          allowToShowSelectType={true}
         />
         <SafeAreaView />
       </ImageBackground>

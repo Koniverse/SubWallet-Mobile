@@ -39,6 +39,17 @@ export type BalanceInfo = {
   isReady: boolean;
 };
 
+export type CrowdloanValueInfo = {
+  value: BigN;
+  convertedValue: BigN;
+  symbol: string;
+};
+
+export type CrowdloanContributeValueType = {
+  paraState?: CrowdloanParaState;
+  contribute: CrowdloanValueInfo;
+};
+
 export type CrowdloanItemType = {
   slug: string;
   contribute: string | BigN;
@@ -54,15 +65,6 @@ export enum AccountAddressType {
   ETHEREUM = 'ethereum',
   SUBSTRATE = 'substrate',
   ALL = 'all',
-  UNKNOWN = 'unknown',
-}
-
-export enum AccountSignMode {
-  PASSWORD = 'password',
-  QR = 'qr',
-  LEDGER = 'ledger',
-  READ_ONLY = 'readonly',
-  ALL_ACCOUNT = 'all',
   UNKNOWN = 'unknown',
 }
 

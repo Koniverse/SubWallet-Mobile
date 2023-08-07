@@ -1,12 +1,13 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { ModalRef } from 'types/modalRef';
 
 export function useFilterModal() {
-  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
+  const filterModalRef = useRef<ModalRef>();
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [filterSelectionMap, setFilterSelectionMap] = useState<Record<string, boolean>>({});
 
   const openFilterModal = useCallback(() => {
-    setFilterModalVisible(true);
+    filterModalRef && filterModalRef.current?.onOpenModal();
   }, []);
 
   const onCloseFilterModal = useCallback(() => {
@@ -18,7 +19,7 @@ export function useFilterModal() {
       }, {} as Record<string, boolean>),
     );
 
-    setFilterModalVisible(false);
+    filterModalRef && filterModalRef.current?.onCloseModal();
   }, [selectedFilters]);
 
   const onChangeFilterOption = useCallback((value: string, isCheck: boolean) => {
@@ -29,17 +30,17 @@ export function useFilterModal() {
   }, []);
 
   const onApplyFilter = useCallback(() => {
-    setFilterModalVisible(false);
+    filterModalRef && filterModalRef.current?.onCloseModal();
     setSelectedFilters(Object.keys(filterSelectionMap).filter(o => filterSelectionMap[o]));
   }, [filterSelectionMap]);
 
   return {
     openFilterModal,
-    filterModalVisible,
     onChangeFilterOption,
     onApplyFilter,
     onCloseFilterModal,
     filterSelectionMap,
     selectedFilters,
+    filterModalRef,
   };
 }

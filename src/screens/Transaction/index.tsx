@@ -9,6 +9,7 @@ import { RootNavigationProps, TransactionDoneProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 
 export const TransactionDone = ({
   route: {
@@ -18,6 +19,7 @@ export const TransactionDone = ({
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const _style = TransactionDoneStyle(theme);
+  useHandlerHardwareBackPress(true);
 
   const viewInExplorer = useCallback(() => {
     if (chain && id) {

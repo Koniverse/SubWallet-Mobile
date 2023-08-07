@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { isAccountAll } from '@subwallet/extension-base/utils';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
@@ -18,15 +17,14 @@ import BigN from 'bignumber.js';
 import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
 import { BondedBalance } from 'screens/Transaction/parts/BondedBalance';
 import usePreCheckReadOnly from 'hooks/account/usePreCheckReadOnly';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
-import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { InputAmount } from 'components/Input/InputAmount';
-import { BN_TEN } from 'utils/number';
+import { formatBalance } from 'utils/number';
 import { BN_ZERO } from 'utils/chainBalances';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
@@ -39,6 +37,8 @@ import { FontMedium, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { TransactionLayout } from 'screens/Transaction/parts/TransactionLayout';
 import { UnbondProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
+import { ModalRef } from 'types/modalRef';
+import { AccountSelector } from 'components/Modal/common/AccountSelector';
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -72,14 +72,12 @@ export const Unbond = ({
     }),
     [],
   );
-
+  const accountSelectorRef = useRef<ModalRef>();
   const { title, formState, onChangeValue, onChangeAmountValue, onChangeFromValue, onDone, onUpdateErrors } =
-    useTransaction('unstake', unbondFormConfig);
+    useTransaction('unstake', unbondFormConfig, {});
   const { from, nomination: currentValidator, chain, value: currentValue } = formState.data;
-  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const [accountSelectModalVisible, setAccountSelectModalVisible] = useState<boolean>(false);
-  const isAll = isAccountAll(currentAccount?.address || '');
 
   const { decimals, symbol } = useGetNativeTokenBasicInfo(stakingChain || '');
   const chainStakingMetadata = useGetChainStakingMetadata(stakingChain);
@@ -131,9 +129,9 @@ export const Unbond = ({
         const days = Math.floor(time / 24);
         const hours = time - days * 24;
 
-        return `${days} days${hours ? ` ${hours} 'hours'` : ''}`;
+        return `${days} days${hours ? ` ${hours} ${i18n.common.hours}` : ''}`;
       } else {
-        return `${time} 'hours'`;
+        return `${time} ${i18n.common.hours}`;
       }
     } else {
       return 'unknown time';
@@ -207,7 +205,7 @@ export const Unbond = ({
       const _minValue = new BigN(min);
       const _maxValue = new BigN(max);
       const _middleValue = _maxValue.minus(_minValue);
-      const _maxString = _maxValue.div(BN_TEN.pow(_decimals)).toString();
+      const _maxString = formatBalance(_maxValue, _decimals);
       const val = new BigN(value);
 
       if (val.gt(_maxValue)) {
@@ -220,7 +218,7 @@ export const Unbond = ({
         return;
       }
 
-      if (_middleValue.lt(BN_ZERO) && !val.eq(_maxString)) {
+      if (_middleValue.lt(BN_ZERO) && !val.eq(_maxValue)) {
         onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqual(_maxString, name)]);
         return;
       }
@@ -244,18 +242,28 @@ export const Unbond = ({
   );
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading}>
+    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
       <>
         <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps="handled">
-          {isAll && (
-            <TouchableOpacity onPress={() => setAccountSelectModalVisible(true)} disabled={loading}>
-              <AccountSelectField
-                label={i18n.inputLabel.unstakeFromAcc}
-                accountName={accountInfo?.name || ''}
-                value={from}
-                showIcon
-              />
-            </TouchableOpacity>
+          {isAllAccount && (
+            <AccountSelector
+              items={accountList}
+              selectedValueMap={{ [from]: true }}
+              disabled={loading}
+              onSelectItem={item => {
+                onChangeFromValue(item.address);
+                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+              }}
+              renderSelected={() => (
+                <AccountSelectField
+                  label={i18n.inputLabel.unstakeFromAcc}
+                  accountName={accountInfo?.name || ''}
+                  value={from}
+                  showIcon
+                />
+              )}
+              accountSelectorRef={accountSelectorRef}
+            />
           )}
 
           <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
@@ -293,17 +301,6 @@ export const Unbond = ({
           </Typography.Text>
         </ScrollView>
 
-        <AccountSelector
-          modalVisible={accountSelectModalVisible}
-          onSelectItem={item => {
-            onChangeFromValue(item.address);
-            setAccountSelectModalVisible(false);
-          }}
-          items={accountList}
-          onCancel={() => setAccountSelectModalVisible(false)}
-          selectedValue={from}
-        />
-
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
           <Button
             disabled={!formState.isValidated.value || !formState.data.value || !formState.data.from || loading}
@@ -321,7 +318,7 @@ export const Unbond = ({
               />
             }
             onPress={onPreCheckReadOnly(onSubmit)}>
-            {i18n.buttonTitles.unstake}
+            {i18n.buttonTitles.unbond}
           </Button>
         </View>
       </>

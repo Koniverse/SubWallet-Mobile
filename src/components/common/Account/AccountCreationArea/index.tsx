@@ -1,6 +1,5 @@
 import DeriveAccountModal from 'components/common/Modal/DeriveAccountModal';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import AccountActionSelectModal from 'components/Modal/AccountActionSelectModal';
+import React, { useCallback, useMemo, useRef } from 'react';
 import {
   DeviceTabletCamera,
   Eye,
@@ -12,40 +11,89 @@ import {
   Swatches,
   Wallet,
 } from 'phosphor-react-native';
-import { EVM_ACCOUNT_TYPE, HIDE_MODAL_DURATION } from 'constants/index';
+import { EVM_ACCOUNT_TYPE } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import ToastContainer from 'react-native-toast-notifications';
 import { SelectAccountTypeModal } from 'components/Modal/SelectAccountTypeModal';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { canDerive } from '@subwallet/extension-base/utils';
+import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
+import { ModalRef } from 'types/modalRef';
 
 interface Props {
-  createAccountModalVisible: boolean;
-  importAccountModalVisible: boolean;
-  attachAccountModalVisible: boolean;
-  onChangeCreateAccountModalVisible: (value: boolean) => void;
-  onChangeImportAccountModalVisible: (value: boolean) => void;
-  onChangeAttachAccountModalVisible: (value: boolean) => void;
+  createAccountRef: React.MutableRefObject<ModalRef | undefined>;
+  importAccountRef: React.MutableRefObject<ModalRef | undefined>;
+  attachAccountRef: React.MutableRefObject<ModalRef | undefined>;
   allowToShowSelectType?: boolean;
 }
 
 export const AccountCreationArea = ({
   allowToShowSelectType = false,
-  createAccountModalVisible,
-  importAccountModalVisible,
-  attachAccountModalVisible,
-  onChangeCreateAccountModalVisible,
-  onChangeImportAccountModalVisible,
-  onChangeAttachAccountModalVisible,
+  createAccountRef,
+  importAccountRef,
+  attachAccountRef,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const [selectTypeModalVisible, setSelectTypeModalVisible] = useState<boolean>(false);
-  const [selectAccountDeriveVisible, setSelectAccountDeriveVisible] = useState<boolean>(false);
+  const selectTypeRef = useRef<ModalRef>();
+  const deriveAccModalRef = useRef<ModalRef>();
+  const importAccountActions = [
+    {
+      key: 'secretPhrase',
+      backgroundColor: '#51BC5E',
+      icon: Leaf,
+      label: i18n.importAccount.importFromSeedPhrase,
+    },
+    {
+      key: 'restoreJson',
+      backgroundColor: '#E68F25',
+      icon: FileJs,
+      label: i18n.importAccount.importFromJson,
+    },
+    {
+      key: 'privateKey',
+      backgroundColor: '#4D4D4D',
+      icon: Wallet,
+      label: i18n.importAccount.importByMetaMaskPrivateKey,
+    },
+    {
+      key: 'qrCode',
+      backgroundColor: '#2565E6',
+      icon: QrCode,
+      label: i18n.importAccount.importByQRCode,
+    },
+  ];
+
+  const attachAccountActions = [
+    {
+      key: 'ledger',
+      backgroundColor: '#E68F25',
+      icon: Swatches,
+      label: i18n.attachAccount.connectALedgerDevice,
+    },
+    {
+      key: 'polkadotVault',
+      backgroundColor: '#E6478E',
+      icon: QrCode,
+      label: i18n.attachAccount.connectAPolkadotVaultAcc,
+    },
+    {
+      key: 'keystone',
+      backgroundColor: '#2565E6',
+      icon: DeviceTabletCamera,
+      label: i18n.attachAccount.connectAKeystoneDevice,
+    },
+    {
+      key: 'watchOnly',
+      backgroundColor: '#2DA73F',
+      icon: Eye,
+      label: i18n.attachAccount.attachAWatchOnlyAccount,
+    },
+  ];
 
   const canDerivedAccounts = useMemo(
     () =>
@@ -70,202 +118,118 @@ export const AccountCreationArea = ({
 
   const onSelectAccountTypes = useCallback(
     (keyTypes: KeypairType[]) => {
-      setSelectTypeModalVisible(false);
+      createAccountRef && createAccountRef.current?.onCloseModal();
+      selectTypeRef && selectTypeRef.current?.onCloseModal();
       if (hasMasterPassword) {
         navigation.navigate('CreateAccount', { keyTypes: keyTypes });
       } else {
         navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: keyTypes });
       }
     },
-    [hasMasterPassword, navigation],
+    [createAccountRef, hasMasterPassword, navigation],
   );
 
   const createAccountAction = useMemo(() => {
     return [
       {
+        key: 'createAcc',
         backgroundColor: '#51BC5E',
         icon: PlusCircle,
         label: i18n.createAccount.createWithNewSeedPhrase,
-        onClickBtn: () => {
-          onChangeCreateAccountModalVisible(false);
-
-          if (allowToShowSelectType) {
-            setTimeout(() => setSelectTypeModalVisible(true), HIDE_MODAL_DURATION);
-          } else {
-            if (hasMasterPassword) {
-              navigation.navigate('CreateAccount', {});
-            } else {
-              navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
-            }
-          }
-        },
       },
       {
+        key: 'derive',
         backgroundColor: '#E6478E',
         icon: ShareNetwork,
         label: i18n.createAccount.deriveFromAnExistingAcc,
         disabled: !canDerivedAccounts.length,
-        onClickBtn: () => {
-          onChangeCreateAccountModalVisible(false);
-          setTimeout(() => setSelectAccountDeriveVisible(true), HIDE_MODAL_DURATION);
-        },
       },
     ];
-  }, [
-    allowToShowSelectType,
-    canDerivedAccounts.length,
-    hasMasterPassword,
-    navigation,
-    onChangeCreateAccountModalVisible,
-  ]);
+  }, [canDerivedAccounts.length]);
 
-  const importAccountActions = useMemo(
-    () => [
-      {
-        backgroundColor: '#51BC5E',
-        icon: Leaf,
-        label: i18n.importAccount.importFromSeedPhrase,
-        onClickBtn: () => {
-          onChangeImportAccountModalVisible(false);
-          if (hasMasterPassword) {
-            navigation.navigate('ImportSecretPhrase');
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'ImportSecretPhrase' });
-          }
-        },
-      },
-      {
-        backgroundColor: '#E68F25',
-        icon: FileJs,
-        label: i18n.importAccount.importFromJson,
-        onClickBtn: () => {
-          onChangeImportAccountModalVisible(false);
-          if (hasMasterPassword) {
-            navigation.navigate('RestoreJson');
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'RestoreJson' });
-          }
-        },
-      },
-      {
-        backgroundColor: '#4D4D4D',
-        icon: Wallet,
-        label: i18n.importAccount.importByMetaMaskPrivateKey,
-        onClickBtn: () => {
-          onChangeImportAccountModalVisible(false);
-          if (hasMasterPassword) {
-            navigation.navigate('ImportPrivateKey');
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'ImportPrivateKey' });
-          }
-        },
-      },
-      {
-        backgroundColor: '#2565E6',
-        icon: QrCode,
-        label: i18n.importAccount.importByQRCode,
-        onClickBtn: async () => {
-          onChangeImportAccountModalVisible(false);
-          if (hasMasterPassword) {
-            navigation.navigate('ImportQrCode');
-          } else {
-            navigation.navigate('CreatePassword', { pathName: 'ImportQrCode' });
-          }
-        },
-      },
-    ],
-    [hasMasterPassword, navigation, onChangeImportAccountModalVisible],
-  );
+  const createAccountFunc = (item: ActionItemType) => {
+    if (item.key === 'createAcc') {
+      if (allowToShowSelectType) {
+        selectTypeRef && selectTypeRef.current?.onOpenModal();
+      } else {
+        if (hasMasterPassword) {
+          navigation.navigate('CreateAccount', {});
+        } else {
+          navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
+        }
+      }
+    } else {
+      deriveAccModalRef && deriveAccModalRef.current?.onOpenModal();
+    }
+  };
 
-  const attachAccountActions = useMemo(
-    () => [
-      {
-        backgroundColor: '#E68F25',
-        icon: Swatches,
-        label: i18n.attachAccount.connectALedgerDevice,
-        onClickBtn: () => {
-          show(i18n.notificationMessage.comingSoon);
-        },
-      },
-      {
-        backgroundColor: '#E6478E',
-        icon: QrCode,
-        label: i18n.attachAccount.connectAPolkadotVaultAcc,
-        onClickBtn: async () => {
-          if (hasMasterPassword) {
-            onChangeAttachAccountModalVisible(false);
-            navigation.navigate('ConnectParitySigner');
-          } else {
-            onChangeAttachAccountModalVisible(false);
-            navigation.navigate('CreatePassword', { pathName: 'ConnectParitySigner' });
-          }
-        },
-      },
-      {
-        backgroundColor: '#2565E6',
-        icon: DeviceTabletCamera,
-        label: i18n.attachAccount.connectAKeystoneDevice,
-        onClickBtn: async () => {
-          if (hasMasterPassword) {
-            onChangeAttachAccountModalVisible(false);
-            navigation.navigate('ConnectKeystone');
-          } else {
-            onChangeAttachAccountModalVisible(false);
-            navigation.navigate('CreatePassword', { pathName: 'ConnectKeystone' });
-          }
-        },
-      },
-      {
-        backgroundColor: '#2DA73F',
-        icon: Eye,
-        label: i18n.attachAccount.attachAWatchOnlyAccount,
-        onClickBtn: () => {
-          onChangeAttachAccountModalVisible(false);
-          setTimeout(() => {
-            if (hasMasterPassword) {
-              navigation.navigate('AttachReadOnly');
-            } else {
-              navigation.navigate('CreatePassword', { pathName: 'AttachReadOnly' });
-            }
-          }, 200);
-        },
-      },
-    ],
-    [hasMasterPassword, navigation, onChangeAttachAccountModalVisible, show],
-  );
+  const importAccountActionFunc = (item: ActionItemType) => {
+    let pathName: keyof RootStackParamList;
+    importAccountRef && importAccountRef.current?.onCloseModal();
+    if (item.key === 'secretPhrase') {
+      pathName = 'ImportSecretPhrase';
+    } else if (item.key === 'restoreJson') {
+      pathName = 'RestoreJson';
+    } else if (item.key === 'privateKey') {
+      pathName = 'ImportPrivateKey';
+    } else {
+      pathName = 'ImportQrCode';
+    }
+
+    if (hasMasterPassword) {
+      navigation.navigate(pathName);
+    } else {
+      navigation.navigate('CreatePassword', { pathName: pathName });
+    }
+  };
+
+  const attachAccountFunc = (item: ActionItemType) => {
+    let pathName: keyof RootStackParamList;
+
+    if (item.key === 'ledger') {
+      show(i18n.notificationMessage.comingSoon);
+      return;
+    } else if (item.key === 'polkadotVault') {
+      pathName = 'ConnectParitySigner';
+    } else if (item.key === 'keystone') {
+      pathName = 'ConnectKeystone';
+    } else {
+      pathName = 'AttachReadOnly';
+    }
+
+    attachAccountRef && attachAccountRef.current?.onCloseModal();
+    if (hasMasterPassword) {
+      navigation.navigate(pathName);
+    } else {
+      navigation.navigate('CreatePassword', { pathName: pathName });
+    }
+  };
+
   return (
     <>
       <AccountActionSelectModal
+        accActionRef={createAccountRef}
         modalTitle={i18n.header.createNewAcc}
-        modalVisible={createAccountModalVisible}
-        onChangeModalVisible={() => onChangeCreateAccountModalVisible(false)}
         items={createAccountAction}
-      />
+        onSelectItem={createAccountFunc}>
+        <SelectAccountTypeModal selectTypeRef={selectTypeRef} onConfirm={onSelectAccountTypes} />
+
+        <DeriveAccountModal deriveAccModalRef={deriveAccModalRef} />
+      </AccountActionSelectModal>
 
       <AccountActionSelectModal
+        accActionRef={importAccountRef}
         modalTitle={i18n.header.importAcc}
-        modalVisible={importAccountModalVisible}
-        onChangeModalVisible={() => onChangeImportAccountModalVisible(false)}
         items={importAccountActions}
+        onSelectItem={importAccountActionFunc}
       />
 
       <AccountActionSelectModal
+        accActionRef={attachAccountRef}
         modalTitle={i18n.header.attachAnAcc}
-        modalVisible={attachAccountModalVisible}
-        onChangeModalVisible={() => onChangeAttachAccountModalVisible(false)}
         items={attachAccountActions}
+        onSelectItem={attachAccountFunc}
         toastRef={toastRef}
-      />
-
-      <SelectAccountTypeModal
-        modalVisible={selectTypeModalVisible}
-        onChangeModalVisible={() => setSelectTypeModalVisible(false)}
-        onConfirm={onSelectAccountTypes}
-      />
-
-      <DeriveAccountModal
-        modalVisible={selectAccountDeriveVisible}
-        onChangeModalVisible={() => setSelectAccountDeriveVisible(false)}
       />
     </>
   );

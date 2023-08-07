@@ -41,8 +41,7 @@ const contentWrapper: StyleProp<ViewStyle> = {
   alignItems: 'center',
 };
 const inputStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
-  lineHeight: 20,
+  fontSize: 14,
   paddingTop: 5,
   paddingBottom: 5,
   ...FontMedium,

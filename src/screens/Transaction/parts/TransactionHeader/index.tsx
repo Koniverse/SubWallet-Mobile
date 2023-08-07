@@ -12,6 +12,7 @@ interface Props {
   onPressRightIcon?: () => void;
   disableRightButton?: boolean;
   disableLeftButton?: boolean;
+  disableMainHeader?: boolean;
 }
 
 const TransactionHeader = ({
@@ -21,15 +22,17 @@ const TransactionHeader = ({
   onPressRightIcon,
   disableRightButton,
   disableLeftButton,
+  disableMainHeader,
 }: Props) => {
   return (
     <>
-      <Header />
+      <Header disabled={disableMainHeader} />
 
       <View style={{ marginTop: 16 }}>
         <SubHeader
           onPressBack={() => navigation.goBack()}
           title={title}
+          titleTextAlign={'left'}
           rightIcon={showRightIcon ? Info : undefined}
           onPressRightIcon={onPressRightIcon}
           disableRightButton={disableRightButton}

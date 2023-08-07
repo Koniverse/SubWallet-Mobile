@@ -6,6 +6,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Warning } from 'components/Warning';
 import InputAmountStyles from './style';
 import { DisabledStyle } from 'styles/sharedStyles';
+import { setAdjustResize } from 'rn-android-keyboard-adjust';
+import i18n from 'utils/i18n/i18n';
 
 interface InputAmountProps {
   placeholder?: string;
@@ -70,6 +72,9 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
     onChangeValue(maxValue, true);
     onSetMax?.(true);
   }, [decimals, maxValue, onChangeValue, onSetMax]);
+
+  // for Android keyboard
+  useEffect(() => setAdjustResize(), []);
 
   const getMaxLengthText = useCallback(
     (_value: string) => {
@@ -139,7 +144,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
           autoCorrect={false}
           keyboardType={'decimal-pad'}
           returnKeyType={'done'}
-          placeholder={placeholder || 'Amount'}
+          placeholder={placeholder || i18n.placeholder.amount}
           ref={ref}
           onChangeText={onChangeInput}
           defaultValue={inputValue}
@@ -154,7 +159,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
             externalTextStyle={{ color: theme.colorSuccess }}
             size={'xs'}
             onPress={_onClickMaxBtn}>
-            {'Max'}
+            {i18n.common.max}
           </Button>
         )}
       </View>

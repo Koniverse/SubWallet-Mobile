@@ -26,6 +26,7 @@ export const ConfirmationHeader = ({
       <SubHeader
         onPressBack={onPressPrev}
         title={title}
+        titleTextAlign="center"
         rightIcon={index === numberOfConfirmations - 1 || numberOfConfirmations <= 1 ? undefined : CaretRight}
         onPressRightIcon={onPressNext}
         showLeftBtn={index > 0}

@@ -1,24 +1,27 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ListRenderItemInfo, StyleProp, Switch, View } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, Switch, View } from 'react-native';
 import { FlatListScreen } from 'components/FlatListScreen';
-import { DotsThree, Users } from 'phosphor-react-native';
-import { MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
+import { DotsThree, Plugs, PlugsConnected, Shield, ShieldSlash, Users, X } from 'phosphor-react-native';
+import { MoreOptionItemType, MoreOptionModal } from 'screens/Settings/Security/DAppAccess/MoreOptionModal';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { DAppAccessDetailProps, RootNavigationProps } from 'routes/index';
 import { AccountJson } from '@subwallet/extension-base/background/types';
-import { Account } from 'components/Account';
-import { Divider } from 'components/Divider';
 import { ColorMap } from 'styles/color';
-import { filterNotReadOnlyAccount } from 'utils/account';
 import { changeAuthorization, changeAuthorizationPerAccount, forgetSite, toggleAuthorization } from 'messaging/index';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { updateAuthUrls } from 'stores/updater';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'utils/i18n/i18n';
-import { ContainerHorizontalPadding } from 'styles/sharedStyles';
 import { EmptyList } from 'components/EmptyList';
+import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { BackgroundIcon, Typography } from 'components/design-system-ui';
+import { DisabledStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import DappAccessItem, { getSiteTitle } from 'components/design-system-ui/web3-block/DappAccessItem';
+import { getHostName } from 'utils/browser';
+import { ThemeTypes } from 'styles/themes';
 
 type Props = {
   origin: string;
@@ -26,24 +29,12 @@ type Props = {
   authInfo: AuthUrlInfo;
 };
 
-const itemContainerStyle: StyleProp<any> = {
-  ...ContainerHorizontalPadding,
-  position: 'relative',
-};
-
-const blockLayerStyle: StyleProp<any> = {
-  position: 'absolute',
-  backgroundColor: ColorMap.dark1,
-  opacity: 0.7,
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  zIndex: 10,
-};
-
-const filterFunction = (items: AccountJson[], searchString: string) => {
-  return items.filter(item => item.name?.toLowerCase().includes(searchString.toLowerCase()));
+const searchFunction = (items: AccountJson[], searchString: string) => {
+  return items.filter(
+    item =>
+      item.name?.toLowerCase().includes(searchString.toLowerCase()) ||
+      item.address.toLowerCase().includes(searchString.toLowerCase()),
+  );
 };
 
 const Content = ({ origin, accountAuthType, authInfo }: Props) => {
@@ -51,8 +42,10 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [pendingMap, setPendingMap] = useState<Record<string, boolean>>({});
+  const theme = useSubWalletTheme().swThemes;
+  const hostName = getHostName(authInfo.url);
   const accountItems = useMemo(() => {
-    const accountListWithoutAll = filterNotReadOnlyAccount(accounts.filter(opt => opt.address !== 'ALL'));
+    const accountListWithoutAll = accounts.filter(opt => opt.address !== 'ALL');
 
     if (accountAuthType === 'substrate') {
       return accountListWithoutAll.filter(acc => !isEthereumAddress(acc.address));
@@ -62,23 +55,54 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       return accountListWithoutAll;
     }
   }, [accountAuthType, accounts]);
+  const styles = createStyle(theme);
+  const accountConnectedItems = useMemo(() => {
+    return accountItems.filter(acc => authInfo.isAllowedMap[acc.address]);
+  }, [accountItems, authInfo.isAllowedMap]);
 
-  const dAppAccessDetailMoreOptions = useMemo(() => {
+  const renderBeforeListItem = () => (
+    <>
+      <DappAccessItem
+        containerStyle={{ marginVertical: 16 }}
+        item={authInfo}
+        middleItem={
+          <View style={{ flexDirection: 'row', alignItems: 'stretch', flex: 1, justifyContent: 'space-between' }}>
+            <Typography.Text ellipsis style={styles.dAppAccessDetailName}>
+              {getSiteTitle(hostName, authInfo.origin)}
+            </Typography.Text>
+            <Typography.Text ellipsis style={styles.dAppAccessDetailHostName}>
+              {hostName}
+            </Typography.Text>
+          </View>
+        }
+        rightItem={
+          <BackgroundIcon
+            shape={'circle'}
+            backgroundColor={authInfo.isAllowed ? theme['green-6'] : theme.colorError}
+            phosphorIcon={authInfo.isAllowed ? PlugsConnected : ShieldSlash}
+            weight={'fill'}
+          />
+        }
+      />
+      <Typography.Text style={{ paddingLeft: theme.padding, paddingBottom: 4 }}>
+        <Typography.Text style={styles.dAppAccessDetailConnectedAcc}>
+          {`${('0' + accountConnectedItems.length).slice(-2)}`}
+        </Typography.Text>
+        <Typography.Text style={styles.dAppAccessDetailAllAcc}>
+          {`/${('0' + accountItems.length).slice(-2)} ${i18n.common.accountConnected}`}
+        </Typography.Text>
+      </Typography.Text>
+    </>
+  );
+
+  const dAppAccessDetailMoreOptions: MoreOptionItemType[] = useMemo(() => {
     const isAllowed = authInfo.isAllowed;
 
     const options = [
       {
-        name: isAllowed ? i18n.common.block : i18n.common.unblock,
-        onPress: () => {
-          toggleAuthorization(origin)
-            .then(({ list }) => {
-              updateAuthUrls(list);
-            })
-            .catch(console.error);
-          setModalVisible(false);
-        },
-      },
-      {
+        key: 'forgetSite',
+        icon: X,
+        backgroundColor: theme['yellow-6'],
         name: i18n.common.forgetSite,
         onPress: () => {
           forgetSite(origin, updateAuthUrls).catch(console.error);
@@ -90,14 +114,21 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
     if (isAllowed) {
       options.push(
         {
+          key: 'disconnectAll',
+          icon: Plugs,
           name: i18n.common.disconnectAll,
+          // @ts-ignore
+          backgroundColor: theme['gray-3'],
           onPress: () => {
             changeAuthorization(false, origin, updateAuthUrls).catch(console.error);
             setModalVisible(false);
           },
         },
         {
+          key: 'connectAll',
+          icon: PlugsConnected,
           name: i18n.common.connectAll,
+          backgroundColor: theme['green-6'],
           onPress: () => {
             changeAuthorization(true, origin, updateAuthUrls).catch(console.error);
             setModalVisible(false);
@@ -106,8 +137,24 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       );
     }
 
+    options.push({
+      key: 'blockOrUnblock',
+      name: isAllowed ? i18n.common.block : i18n.common.unblock,
+      icon: isAllowed ? ShieldSlash : Shield,
+      // @ts-ignore
+      backgroundColor: isAllowed ? theme['red-6'] : theme['green-6'],
+      onPress: () => {
+        toggleAuthorization(origin)
+          .then(({ list }) => {
+            updateAuthUrls(list);
+          })
+          .catch(console.error);
+        setModalVisible(false);
+      },
+    });
+
     return options;
-  }, [origin, authInfo, navigation]);
+  }, [authInfo.isAllowed, theme, origin, navigation]);
 
   useEffect(() => {
     setPendingMap(prevMap => {
@@ -149,37 +196,35 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       };
 
       return (
-        <View style={itemContainerStyle}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Account
-              name={item.name || ''}
-              address={item.address}
-              showCopyBtn={false}
-              showSelectedIcon={false}
-              isDisabled={true}
-              showSubIcon={true}
-            />
-            <Switch
-              disabled={pendingMap[item.address] !== undefined}
-              ios_backgroundColor={ColorMap.switchInactiveButtonColor}
-              value={pendingMap[item.address] === undefined ? isEnabled : pendingMap[item.address]}
-              onValueChange={onChangeToggle}
-            />
-          </View>
-          <Divider style={{ paddingLeft: 56 }} color={ColorMap.dark2} />
-          {!authInfo.isAllowed && <View style={blockLayerStyle} />}
-        </View>
+        <>
+          <AccountItemWithName
+            customStyle={{ container: [{ marginHorizontal: theme.margin }, !authInfo.isAllowed && DisabledStyle] }}
+            address={item.address}
+            accountName={item.name}
+            renderRightItem={() => (
+              <Switch
+                disabled={pendingMap[item.address] !== undefined || !authInfo.isAllowed}
+                ios_backgroundColor={ColorMap.switchInactiveButtonColor}
+                value={pendingMap[item.address] === undefined ? isEnabled : pendingMap[item.address]}
+                onValueChange={onChangeToggle}
+              />
+            )}
+          />
+        </>
       );
     },
-    [authInfo, pendingMap, origin],
+    [authInfo.isAllowedMap, authInfo.isAllowed, theme.margin, origin, pendingMap],
   );
 
   return (
     <FlatListScreen
       title={origin}
+      flatListStyle={{ gap: theme.paddingXS }}
       autoFocus={false}
+      beforeListItem={renderBeforeListItem()}
       items={accountItems}
-      searchFunction={filterFunction}
+      searchFunction={searchFunction}
+      placeholder={i18n.placeholder.accountName}
       renderListEmptyComponent={() => (
         <EmptyList
           icon={Users}
@@ -209,3 +254,38 @@ export const DAppAccessDetailScreen = ({
 
   return <>{!!authInfo && <Content accountAuthType={accountAuthType} origin={origin} authInfo={authInfo} />}</>;
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    dAppAccessDetailName: {
+      flex: 1,
+      fontSize: theme.fontSizeLG,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      ...FontSemiBold,
+      color: theme.colorWhite,
+      paddingRight: 30,
+    },
+    dAppAccessDetailHostName: {
+      flex: 1,
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSizeLG * theme.lineHeightLG,
+      ...FontSemiBold,
+      color: theme.colorTextTertiary,
+      textAlign: 'right',
+      paddingLeft: 30,
+      paddingRight: 8,
+    },
+    dAppAccessDetailConnectedAcc: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      ...FontMedium,
+      color: theme.colorWhite,
+    },
+    dAppAccessDetailAllAcc: {
+      fontSize: theme.fontSize,
+      lineHeight: theme.fontSize * theme.lineHeight,
+      ...FontMedium,
+      color: theme.colorTextTertiary,
+    },
+  });
+}

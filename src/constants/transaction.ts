@@ -6,7 +6,7 @@ import { ConfirmationType } from 'stores/base/RequestState';
 import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 import i18n from 'utils/i18n/i18n';
 
-export const TRANSACTION_TITLE_MAP: Record<ExtrinsicTypeMobile, string> = {
+export const TRANSACTION_TITLE_MAP = (): Record<ExtrinsicTypeMobile, string> => ({
   [ExtrinsicType.TRANSFER_BALANCE]: i18n.header.transfer,
   [ExtrinsicType.TRANSFER_XCM]: i18n.header.transfer,
   [ExtrinsicType.TRANSFER_TOKEN]: i18n.header.transfer,
@@ -27,7 +27,7 @@ export const TRANSACTION_TITLE_MAP: Record<ExtrinsicTypeMobile, string> = {
   [ExtrinsicType.STAKING_CANCEL_COMPOUNDING]: 'Cancel Compound',
   [ExtrinsicType.EVM_EXECUTE]: 'Execute',
   [ExtrinsicType.UNKNOWN]: 'Unknown',
-};
+});
 
 export const NEED_SIGN_CONFIRMATION: ConfirmationType[] = [
   'evmSignatureRequest',

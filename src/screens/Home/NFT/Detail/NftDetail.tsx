@@ -183,9 +183,9 @@ const NftDetail = ({
   }, [ownerAccount]);
 
   const show = useCallback(
-    (message: string) => {
+    (message: string, type?: 'normal' | 'success' | 'danger' | 'warning' | '') => {
       toast.hideAll();
-      toast.show(message);
+      toast.show(message, { type: type });
     },
     [toast],
   );
@@ -196,20 +196,26 @@ const NftDetail = ({
 
   const handleClickTransfer = useCallback(() => {
     if (!originChainInfo || !canSend || !data.chain) {
-      show(i18n.common.anErrorHasOccurred);
+      show(i18n.common.anErrorHasOccurred, 'danger');
 
       return;
     }
 
-    navigation.navigate('SendNFT', {
-      itemId: data.id,
-      chain: data.chain,
-      collectionId: collectionRawId,
-      owner: reformatAddress(
-        data.owner || currentAccount?.address || '',
-        _getChainSubstrateAddressPrefix(originChainInfo),
-        false,
-      ),
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'SendNFT',
+        params: {
+          itemId: data.id,
+          chain: data.chain,
+          collectionId: collectionRawId,
+          owner: reformatAddress(
+            data.owner || currentAccount?.address || '',
+            _getChainSubstrateAddressPrefix(originChainInfo),
+            false,
+          ),
+        },
+      },
     });
   }, [canSend, data, originChainInfo, navigation, collectionRawId, currentAccount?.address, show]);
 
@@ -225,6 +231,10 @@ const NftDetail = ({
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
+      titleTextAlign={'left'}
+      isShowPlaceHolder={false}
+      isShowMainHeader={true}
+      needGapWithStatusBar={false}
       title={data.name || i18n.title.nftDetail}
       style={ContainerHeaderStyle}
       onPressBack={() => navigation.goBack()}>

@@ -1,15 +1,12 @@
 import { PasswordField } from 'components/Field/Password';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import React, { useCallback, useContext, useEffect } from 'react';
-import { StyleProp, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
-import { ColorMap } from 'styles/color';
-import { FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
-import { Button } from 'components/design-system-ui';
+import { Button, SwModal } from 'components/design-system-ui';
 
 interface Props {
   visible: boolean;
@@ -25,31 +22,22 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   width: '100%',
 };
 
-const TitleTextStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
-  ...FontSemiBold,
-  textAlign: 'center',
-  color: ColorMap.light,
-  marginBottom: 24,
-};
-
 const PasswordContainerStyle: StyleProp<ViewStyle> = {
   backgroundColor: '#1a1a1a',
   borderRadius: 5,
   marginBottom: 8,
 };
 
-const formConfig: FormControlConfig = {
-  password: {
-    name: i18n.common.walletPassword,
-    value: '',
-    validateFunc: validatePassword,
-    require: true,
-  },
-};
-
 const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setErrorArr, onChangePassword }: Props) => {
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
+  const formConfig: FormControlConfig = {
+    password: {
+      name: i18n.common.walletPassword,
+      value: '',
+      validateFunc: validatePassword,
+      require: true,
+    },
+  };
   const onSubmit = useCallback(
     (formState: FormState) => {
       const password = formState.data.password;
@@ -59,7 +47,7 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
     [onConfirm],
   );
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
 
@@ -91,16 +79,19 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
   const errors = [...formState.errors.password, ...(errorArr && errorArr.length ? errorArr : [])];
 
   return (
-    <SubWalletModal modalVisible={visible} onChangeModalVisible={!isBusy ? closeModal : undefined}>
+    <SwModal
+      modalVisible={visible}
+      modalTitle={i18n.common.enterYourPassword}
+      onBackButtonPress={!isBusy ? closeModal : undefined}
+      onChangeModalVisible={!isBusy ? closeModal : undefined}>
       <View style={ContainerStyle}>
-        <Text style={TitleTextStyle}>{i18n.common.enterYourPassword}</Text>
         <PasswordField
           ref={formState.refs.password}
           label={formState.labels.password}
           defaultValue={formState.data.password}
           onChangeText={handleChangePassword}
           errorMessages={errors}
-          onSubmitField={onSubmitField('password')}
+          onSubmitField={() => onSubmit(formState)}
           style={PasswordContainerStyle}
           isBusy={isBusy}
         />
@@ -113,11 +104,11 @@ const PasswordModal = ({ closeModal, visible, onConfirm, isBusy, errorArr, setEr
           style={{ marginTop: 16 }}
           loading={isBusy}
           onPress={onPress}
-          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected}>
+          disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected || isBusy}>
           {i18n.common.confirm}
         </Button>
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };
 

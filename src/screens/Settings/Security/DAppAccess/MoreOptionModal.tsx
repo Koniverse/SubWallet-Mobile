@@ -1,13 +1,14 @@
 import React from 'react';
-import { SubWalletModal } from 'components/Modal/Base/SubWalletModal';
-import { SelectItem } from 'components/SelectItem';
-import { SafeAreaView, StyleProp, Text, View } from 'react-native';
-import { FontBold, sharedStyles } from 'styles/sharedStyles';
-import { ColorMap } from 'styles/color';
+import { View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
+import { SelectItem, SwModal } from 'components/design-system-ui';
+import { IconProps } from 'phosphor-react-native';
 
-type MoreOptionItemType = {
+export type MoreOptionItemType = {
+  key: string;
   name: string;
+  backgroundColor: string;
+  icon: React.ElementType<IconProps>;
   onPress: () => void;
 };
 
@@ -17,24 +18,23 @@ interface Props {
   onChangeModalVisible: () => void;
 }
 
-const modalTitleStyle: StyleProp<any> = {
-  textAlign: 'center',
-  ...sharedStyles.mediumText,
-  ...FontBold,
-  color: ColorMap.light,
-  paddingBottom: 26,
-};
-
 export const MoreOptionModal = ({ modalVisible, moreOptionList, onChangeModalVisible }: Props) => {
   return (
-    <SubWalletModal modalVisible={modalVisible} onChangeModalVisible={onChangeModalVisible}>
+    <SwModal
+      modalVisible={modalVisible}
+      onChangeModalVisible={onChangeModalVisible}
+      modalTitle={i18n.header.websiteAccessConfig}>
       <View style={{ width: '100%' }}>
-        <Text style={modalTitleStyle}>{i18n.title.moreOptions}</Text>
         {moreOptionList.map(item => (
-          <SelectItem key={item.name} isSelected={false} label={item.name} onPress={item.onPress} />
+          <SelectItem
+            key={item.key}
+            label={item.name}
+            onPress={item.onPress}
+            icon={item.icon}
+            backgroundColor={item.backgroundColor}
+          />
         ))}
-        <SafeAreaView />
       </View>
-    </SubWalletModal>
+    </SwModal>
   );
 };

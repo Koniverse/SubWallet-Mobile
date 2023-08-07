@@ -4,6 +4,7 @@ import { Number } from 'components/design-system-ui';
 import BigN from 'bignumber.js';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   label?: string;
@@ -34,7 +35,7 @@ export const BondedBalance = ({ label, bondedBalance, decimals, symbol }: Props)
           color: theme.colorTextTertiary,
           paddingLeft: theme.paddingXXS,
         }}>
-        {label || 'Bonded'}
+        {label || i18n.stakingScreen.bonded}
       </Text>
     </View>
   );

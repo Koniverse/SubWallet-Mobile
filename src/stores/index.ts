@@ -5,7 +5,17 @@ import appStateReducer from './AppState';
 import appVersionReducer from './AppVersion';
 import browserReducer from './Browser';
 import backgroundServiceReducer from './BackgroundService';
-import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  PersistConfig,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist';
 
 import AccountStateReducer from './base/AccountState';
 import RequestStateReducer from './base/RequestState';
@@ -21,39 +31,22 @@ import StakingReducer from './feature/Staking';
 import TransactionHistoryReducer from './feature/TransactionHistory';
 import PasswordModalReducer from 'stores/PasswordModalState';
 import LogoMap from 'stores/base/LogoMap';
-// import { reduxStorage } from 'utils/storage';
+import { mmkvReduxStore } from 'utils/storage';
+import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
+import { AssetRegistryStore, BalanceStore, BrowserSlice, ChainStore } from './types';
 
-const persistConfig = {
+const persistRootConfig = {
   key: 'root',
-  version: 2,
+  version: 3,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'browser', 'settings', 'appVersion', 'price', 'chainStore', 'assetRegistry', 'balance'],
-  migrate: (state: any) => {
-    const beforeInfo = state?._persist || {};
-    if ((beforeInfo.version || 0) < 2) {
-      console.debug(`Purger persist data after migration from ${beforeInfo.version} to 2`);
-
-      [
-        'price',
-        'chainStore',
-        'assetRegistry',
-        'balance',
-        'accounts',
-        'customToken',
-        'authUrls',
-        'networkMap',
-        'chainRegistry',
-        'nftCollection',
-        'stakeUnlockingInfo',
-        'stakingReward',
-      ].forEach(k => {
-        if (state[k]) {
-          delete state[k];
-        }
-      });
+  whitelist: ['mobileSettings', 'settings', 'appVersion'],
+  blacklist: ['browser', 'price', 'balance', 'chainStore', 'assetRegistry'],
+  migrate: async (state: any) => {
+    if (state?._persist && state._persist.version < 3 && state.browser) {
+      mmkvReduxStore.setItem('persist:browser', JSON.stringify(state.browser));
     }
 
-    return Promise.resolve({ ...state });
+    return state;
   },
 };
 
@@ -61,32 +54,38 @@ const rootReducer = combineReducers({
   // Basic mobile app store
   appState: appStateReducer,
   mobileSettings: mobileSettingsReducer,
-  browser: browserReducer,
+  browser: persistReducer({ key: 'browser', storage: mmkvReduxStore } as PersistConfig<BrowserSlice>, browserReducer),
   backgroundService: backgroundServiceReducer,
   passwordModalState: PasswordModalReducer,
   appVersion: appVersionReducer,
 
-  // // Feature
+  //Feature
   transactionHistory: TransactionHistoryReducer,
   crowdloan: CrowdloanReducer,
   nft: NftReducer,
   staking: StakingReducer,
-  price: PriceReducer,
-  balance: BalanceReducer,
+  price: persistReducer({ key: 'price', storage: mmkvReduxStore } as PersistConfig<PriceJson>, PriceReducer),
+  balance: persistReducer({ key: 'balance', storage: mmkvReduxStore } as PersistConfig<BalanceStore>, BalanceReducer),
   bonding: BondingReducer,
 
-  // // Common
-  chainStore: ChainStoreReducer,
-  assetRegistry: AssetRegistryReducer,
+  //Common
+  chainStore: persistReducer(
+    { key: 'chainStore', storage: mmkvReduxStore } as PersistConfig<ChainStore>,
+    ChainStoreReducer,
+  ),
+  assetRegistry: persistReducer(
+    { key: 'assetRegistry', storage: mmkvReduxStore } as PersistConfig<AssetRegistryStore>,
+    AssetRegistryReducer,
+  ),
 
-  // // Base
+  //Base
   requestState: RequestStateReducer,
   settings: SettingsReducer,
   accountState: AccountStateReducer,
   logoMaps: LogoMap,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistRootConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
