@@ -4,7 +4,7 @@ import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { BackgroundIcon, Button, Icon, Logo } from 'components/design-system-ui';
-import { PencilSimpleLine, WifiHigh, WifiSlash } from 'phosphor-react-native';
+import { CircleNotch, IconProps, PencilSimpleLine, WifiHigh, WifiSlash } from 'phosphor-react-native';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 
 interface Props {
@@ -52,6 +52,19 @@ const itemTextStyle: StyleProp<any> = {
   flex: 1,
 };
 
+const NetworkStatusIconMap: Record<
+  _ChainConnectionStatus,
+  {
+    phosphorIcon: React.ElementType<IconProps>;
+    backgroundColor: string;
+  }
+> = {
+  [_ChainConnectionStatus.CONNECTED]: { phosphorIcon: WifiHigh, backgroundColor: '#2DA73F' },
+  [_ChainConnectionStatus.DISCONNECTED]: { phosphorIcon: WifiSlash, backgroundColor: '#737373' },
+  [_ChainConnectionStatus.CONNECTING]: { phosphorIcon: CircleNotch, backgroundColor: '#D9A33E' },
+  [_ChainConnectionStatus.UNSTABLE]: { phosphorIcon: WifiSlash, backgroundColor: '#E68F25' },
+};
+
 export const NetworkAndTokenToggleItem = ({
   itemKey,
   itemName,
@@ -73,9 +86,8 @@ export const NetworkAndTokenToggleItem = ({
             isShowSubIcon
             subIcon={
               <BackgroundIcon
-                phosphorIcon={connectionStatus === _ChainConnectionStatus.CONNECTED ? WifiHigh : WifiSlash}
+                {...NetworkStatusIconMap[connectionStatus || _ChainConnectionStatus.DISCONNECTED]}
                 size={'xs'}
-                backgroundColor={connectionStatus === _ChainConnectionStatus.CONNECTED ? '#2DA73F' : '#737373'}
                 shape={'circle'}
               />
             }
