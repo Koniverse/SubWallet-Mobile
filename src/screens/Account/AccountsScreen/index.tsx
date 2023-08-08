@@ -1,7 +1,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -108,6 +108,11 @@ export const AccountsScreen = ({
     [currentAccountAddress, navigation, selectAccount],
   );
 
+  const onPressFooterBtn = (action: () => void) => {
+    Keyboard.dismiss();
+    setTimeout(action, 200);
+  };
+
   const renderFooterComponent = () => {
     return (
       <View
@@ -122,25 +127,19 @@ export const AccountsScreen = ({
           block
           icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
           type={'secondary'}
-          onPress={() => {
-            createAccountRef && createAccountRef.current?.onOpenModal();
-          }}>
+          onPress={() => onPressFooterBtn(() => createAccountRef?.current?.onOpenModal())}>
           {i18n.buttonTitles.createANewAcc}
         </Button>
         <Button
           style={{ marginRight: 12 }}
           icon={<Icon phosphorIcon={FileArrowDown} size={'lg'} weight={'fill'} />}
           type={'secondary'}
-          onPress={() => {
-            importAccountRef && importAccountRef.current?.onOpenModal();
-          }}
+          onPress={() => onPressFooterBtn(() => importAccountRef?.current?.onOpenModal())}
         />
         <Button
           icon={<Icon phosphorIcon={Swatches} size={'lg'} weight={'fill'} />}
           type={'secondary'}
-          onPress={() => {
-            attachAccountRef && attachAccountRef.current?.onOpenModal();
-          }}
+          onPress={() => onPressFooterBtn(() => attachAccountRef?.current?.onOpenModal())}
         />
       </View>
     );

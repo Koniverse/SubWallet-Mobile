@@ -253,7 +253,7 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       onBackButtonPress={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
-      <ScrollView style={stylesheet.scrollView}>
+      <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false}>
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{

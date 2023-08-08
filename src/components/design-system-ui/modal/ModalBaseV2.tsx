@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useImperativeHandle } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { Dimensions, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ModalStyles from './styleV2';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT;
@@ -17,6 +18,7 @@ export interface SWModalProps {
   isFullHeight?: boolean;
   level?: number;
   onChangeModalVisible?: () => void;
+  isUseForceHidden?: boolean;
 }
 
 export type SWModalRefProps = {
@@ -27,48 +29,69 @@ export type SWModalRefProps = {
 
 const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
   (
-    { isVisible, setVisible, height, children, wrapperStyle, isFullHeight = false, level = 1, onChangeModalVisible },
+    {
+      isVisible,
+      setVisible,
+      height,
+      children,
+      wrapperStyle,
+      isFullHeight = false,
+      level = 1,
+      onChangeModalVisible,
+      isUseForceHidden,
+    },
     ref,
   ) => {
     const translateY = useSharedValue(0);
     const active = useSharedValue(false);
     const theme = useSubWalletTheme().swThemes;
     const _styles = ModalStyles(theme, level);
+    const { numberOfConfirmations } = useConfirmationsInfo();
+    const [isForcedHidden, setForcedHidden] = useState<boolean>(false);
     useEffect(() => {
-      if (isVisible) {
+      if (isUseForceHidden && !!numberOfConfirmations) {
+        setForcedHidden(true);
+      } else {
+        setForcedHidden(false);
+      }
+    }, [isUseForceHidden, numberOfConfirmations]);
+
+    useEffect(() => {
+      if (!isForcedHidden && isVisible) {
         scrollTo(-height);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isVisible, height]);
-    const timeout = (destination: number) => {
-      setTimeout(() => {
-        if (destination === 0 && setVisible) {
-          setVisible(false);
-          onChangeModalVisible && onChangeModalVisible();
-        }
-      }, 50);
-    };
+    }, [isVisible, height, isForcedHidden]);
+    // const timeout = () => {
+    //   setTimeout(() => {
+    //     setVisible(false);
+    //     onChangeModalVisible && onChangeModalVisible();
+    //   }, 50);
+    // };
     const scrollTo = useCallback((destination: number) => {
       'worklet';
       active.value = destination !== 0;
 
-      runOnJS(timeout)(destination);
+      // if (destination === 0) {
+      //   runOnJS(timeout)();
+      //   runOnJS(setVisible)(false);
+      // }
+
       translateY.value = withTiming(
         destination,
         {
-          duration: 350,
+          duration: 250,
         },
-        () => {
-          destination === 0 && runOnJS(setVisible)(false);
-        },
+        () => {},
       );
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onClose = useCallback(() => {
+      onChangeModalVisible && onChangeModalVisible();
+      setVisible(false);
       scrollTo(0);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [onChangeModalVisible, scrollTo, setVisible]);
 
     const isActive = useCallback(() => {
       return active.value;
@@ -107,13 +130,19 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
 
     return (
       <>
-        {isVisible && (
+        {!isForcedHidden && isVisible && (
           <>
             <TouchableOpacity activeOpacity={0.8} style={_styles.backDropButton} onPress={onClose} />
             <GestureDetector gesture={gesture}>
               {
                 // @ts-ignore
-                <Animated.View style={[_styles.container, wrapperStyle, rSWModalStyle, { borderRadius: 32 }]}>
+                <Animated.View
+                  style={[
+                    _styles.container,
+                    wrapperStyle,
+                    rSWModalStyle,
+                    { borderTopLeftRadius: 32, borderTopRightRadius: 32 },
+                  ]}>
                   {!isFullHeight && <View style={_styles.line} />}
                   {children}
                 </Animated.View>

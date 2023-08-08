@@ -16,6 +16,10 @@ import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import { Minimizer } from '../../../../NativeModules';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   id: string;
@@ -56,7 +60,8 @@ export const EvmSignArea = (props: Props) => {
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
-
+  const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
+  const dispatch = useDispatch();
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
@@ -78,11 +83,16 @@ export const EvmSignArea = (props: Props) => {
   const onApprovePassword = useCallback(() => {
     setLoading(true);
     setTimeout(() => {
-      handleConfirm(type, id, '').finally(() => {
-        setLoading(false);
-      });
+      handleConfirm(type, id, '')
+        .then(() => {
+          isDeepLinkConnect && Minimizer.goBack();
+        })
+        .finally(() => {
+          dispatch(updateIsDeepLinkConnect(false));
+          setLoading(false);
+        });
     }, 1000);
-  }, [id, type]);
+  }, [dispatch, id, isDeepLinkConnect, type]);
 
   const onApproveSignature = useCallback(
     (signature: SigData) => {

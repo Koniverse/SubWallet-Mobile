@@ -98,8 +98,9 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
     setLoading(true);
     handleCancel(request).finally(() => {
       setLoading(false);
+      dispatch(updateIsDeepLinkConnect(false));
     });
-  }, [request]);
+  }, [dispatch, request]);
 
   const onConfirm = useCallback(() => {
     setLoading(true);
@@ -109,15 +110,14 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
 
     handleConfirm(request, selectedAccounts)
       .then(() => {
-        console.log('isDeepLinkConnect', isDeepLinkConnect);
         toast.show('Connect successfully', { type: 'success' });
         isDeepLinkConnect && Minimizer.goBack();
-        dispatch(updateIsDeepLinkConnect(false));
       })
       .catch(e => {
         toast.show((e as Error).message, { type: 'danger' });
       })
       .finally(() => {
+        dispatch(updateIsDeepLinkConnect(false));
         setLoading(false);
       });
   }, [dispatch, isDeepLinkConnect, namespaceAccounts, request, toast]);

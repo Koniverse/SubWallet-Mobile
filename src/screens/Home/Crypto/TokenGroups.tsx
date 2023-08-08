@@ -113,10 +113,6 @@ export const TokenGroups = () => {
     [isShowBalance, onPressItem, theme.colorBgSecondary],
   );
 
-  const onCloseCustomizationModal = useCallback(() => {
-    setCustomizationModalVisible(false);
-  }, []);
-
   const onOpenCustomizationModal = useCallback(() => {
     setCustomizationModalVisible(true);
   }, []);
@@ -263,7 +259,7 @@ export const TokenGroups = () => {
           items={tokenSearchItems}
         />
 
-        <CustomizationModal modalVisible={isCustomizationModalVisible} onCancel={onCloseCustomizationModal} />
+        <CustomizationModal modalVisible={isCustomizationModalVisible} setVisible={setCustomizationModalVisible} />
       </>
     </ScreenContainer>
   );

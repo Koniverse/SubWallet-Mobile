@@ -268,7 +268,6 @@ export const ValidatorSelector = ({
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                style={{ marginTop: 16 }}
                 icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);

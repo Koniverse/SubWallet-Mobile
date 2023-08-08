@@ -32,7 +32,7 @@ export default (theme: ThemeTypes) => {
       gap: theme.sizeSM,
     },
     scrollView: {
-      // maxHeight: (70 * DEVICE.height) / 100,
+      height: '60%',
       width: '100%',
     },
   });

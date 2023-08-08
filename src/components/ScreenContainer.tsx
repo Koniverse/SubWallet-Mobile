@@ -3,6 +3,7 @@ import { Platform, SafeAreaView, StatusBar, StyleProp, StyleSheet, View, ViewSty
 import { ColorMap } from 'styles/color';
 import { sharedStyles, STATUS_BAR_HEIGHT, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import LinearGradient from 'react-native-linear-gradient';
+import DeviceInfo from 'react-native-device-info';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
@@ -39,7 +40,7 @@ export const ScreenContainer = ({
         colors={backgroundColor ? [backgroundColor, backgroundColor] : gradientBackground}
         style={styles.gradientWrapper}
       />
-      <SafeAreaView style={statusBarStyle}>
+      <SafeAreaView style={[statusBarStyle, { marginTop: DeviceInfo.hasNotch() ? 0 : 8 }]}>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
       <View style={styles.contentContainer}>{children}</View>

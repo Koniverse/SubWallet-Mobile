@@ -17,11 +17,7 @@ export const requestCameraPermission = async (onPressCancel?: () => void) => {
       console.log('Images: This feature is not available (on this device / in this context)');
       break;
     case RESULTS.DENIED:
-      request(getCameraPermission()).then(res => {
-        if (res === RESULTS.BLOCKED) {
-          onPressCancel && onPressCancel();
-        }
-      });
+      request(getCameraPermission()).then(() => onPressCancel && onPressCancel());
       console.log('Images: The permission has not been requested / is denied but requestable');
       break;
     case RESULTS.GRANTED:

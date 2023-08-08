@@ -12,7 +12,6 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import { CheckCircle } from 'phosphor-react-native';
 import { ModalRef } from 'types/modalRef';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   selectedAccounts: string[];
@@ -35,7 +34,6 @@ export const WCAccountSelect = ({
   selectedAccounts,
   useModal,
 }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
   const modalRef = useRef<ModalRef>();
 
   const onCloseModal = useCallback(() => {
@@ -91,7 +89,7 @@ export const WCAccountSelect = ({
           renderSelected={() => <WCAccountInput accounts={availableAccounts} selected={appliedAccounts} />}
           renderCustomItem={renderItem}>
           <Button
-            style={{ marginTop: theme.margin }}
+            style={{ marginTop: 16 }}
             disabled={!selectedAccounts.length}
             icon={renderButtonIcon}
             onPress={_onApply}>

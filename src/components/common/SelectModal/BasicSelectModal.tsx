@@ -8,7 +8,6 @@ import { FilterSelectItem } from 'components/common/SelectModal/parts/FilterSele
 import { ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { OptionType } from 'components/common/FilterModal';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props<T> {
@@ -118,7 +117,7 @@ function _BasicSelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>
           style={{
             width: '100%',
             paddingHorizontal: theme.padding,
-            ...MarginBottomForSubmitButton,
+            // ...MarginBottomForSubmitButton,
             marginTop: theme.padding,
           }}
           disabled={applyBtn?.disabled}

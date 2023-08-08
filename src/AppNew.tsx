@@ -5,7 +5,7 @@ import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
 import React, { useEffect } from 'react';
-import { AppState, Dimensions, Platform, StatusBar, StyleProp, View } from 'react-native';
+import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -20,12 +20,11 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
-import { HIDE_MODAL_DURATION, statusBarHeight, TOAST_DURATION } from 'constants/index';
+import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
 import { keyringLock } from 'messaging/index';
 import { updateShowZeroBalanceState } from 'stores/utils';
 import { setBuildNumber } from './stores/AppVersion';
-// import { hasMigratedFromAsyncStorage, migrateFromAsyncStorage } from 'utils/storage';
 import { getBuildNumber } from 'react-native-device-info';
 import { AppModalContextProvider } from './providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
@@ -177,8 +176,10 @@ export const AppNew = () => {
                             position: 'absolute',
                             top: 0,
                             left: 0,
-                            width: Dimensions.get('window').width,
-                            height: Dimensions.get('window').height + (Platform.OS === 'ios' ? 0 : statusBarHeight),
+                            bottom: 0,
+                            right: 0,
+                            width: '100%',
+                            height: '100%',
                             zIndex: 9999,
                           }}>
                           <PortalProvider>

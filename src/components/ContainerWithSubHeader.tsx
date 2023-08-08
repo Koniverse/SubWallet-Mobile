@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'r
 import { SubHeader, SubHeaderProps } from 'components/SubHeader';
 import { Header } from 'components/Header';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import DeviceInfo from 'react-native-device-info';
 
 export interface ContainerWithSubHeaderProps extends SubHeaderProps {
   children: JSX.Element | JSX.Element[];
@@ -20,7 +21,7 @@ const getContainerStyle: (insetTop: number, backgroundColor?: string) => StylePr
   return {
     flex: 1,
     backgroundColor: backgroundColor || '#0C0C0C',
-    paddingTop: insetTop + (Platform.OS === 'ios' ? 0 : 8),
+    paddingTop: insetTop + (DeviceInfo.hasNotch() ? 0 : 8),
   };
 };
 

@@ -1,7 +1,7 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Icon, SwFullSizeModal } from 'components/design-system-ui';
 import { FlatListScreen, RightIconOpt } from 'components/FlatListScreen';
-import { ListRenderItemInfo, Platform, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, Platform, View } from 'react-native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { OptionType } from 'components/common/FilterModal';
 import { AccountSelectItem } from 'components/common/SelectModal/parts/AccountSelectItem';
@@ -141,6 +141,15 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, defaultValue]);
 
+  const _onSelectItem = useCallback(
+    (_item: T) => {
+      selectModalType === 'single' && Keyboard.dismiss();
+      // setTimeout(() => onSelectItem && onSelectItem(_item), 50);
+      onSelectItem && onSelectItem(_item);
+    },
+    [onSelectItem, selectModalType],
+  );
+
   useImperativeHandle(
     ref,
     () => ({
@@ -183,7 +192,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           <AccountSelectItem
             item={item}
             selectedValueMap={selectedValueMap}
-            onSelectItem={onSelectItem}
+            onSelectItem={_onSelectItem}
             onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
           />
         </>
@@ -193,7 +202,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         <_TokenSelectItem
           item={item}
           selectedValueMap={selectedValueMap}
-          onSelectItem={onSelectItem}
+          onSelectItem={_onSelectItem}
           onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
         />
       );
@@ -202,7 +211,7 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         <ChainSelectItem
           item={item}
           selectedValueMap={selectedValueMap}
-          onSelectItem={onSelectItem}
+          onSelectItem={_onSelectItem}
           onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
         />
       );

@@ -130,19 +130,20 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               setVisible={setVisible}
               height={childrenHeight}
               ref={modalBaseV2Ref}
+              isUseForceHidden={Platform.OS === 'android'}
               onChangeModalVisible={onChangeModalVisible}
               level={level}>
               <View
                 style={{ paddingHorizontal: 16, paddingTop: 22 }}
                 onLayout={event => {
                   let { height } = event.nativeEvent.layout;
-                  !!height && setContentHeight(height + (Platform.OS === 'ios' ? 16 : 0));
+                  !!height && setContentHeight(height + (Platform.OS === 'ios' ? 16 : -16));
                 }}>
                 {renderTitle()}
                 {children}
 
                 {footer}
-                {isUseSafeAreaView && <SafeAreaView edges={['bottom']} />}
+                {isUseSafeAreaView && <SafeAreaView edges={['bottom']} style={{ marginBottom: theme.margin }} />}
               </View>
             </ModalBaseV2>
           </Portal>

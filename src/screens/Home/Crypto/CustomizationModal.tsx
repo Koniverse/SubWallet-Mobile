@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import { NetworkAndTokenToggleItem } from 'components/NetworkAndTokenToggleItem';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
 import useChainInfoWithState, { ChainInfoWithState } from 'hooks/chain/useChainInfoWithState';
 import { updateChainActiveState } from 'messaging/index';
-import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import { FlatListScreenPaddingTop, FontSemiBold } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -14,11 +13,12 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass, Wallet } from 'phosphor-react-native';
 import { ToggleItem } from 'components/ToggleItem';
-import { Typography } from 'components/design-system-ui';
+import { SwFullSizeModal, Typography } from 'components/design-system-ui';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   modalVisible: boolean;
-  onCancel?: () => void;
+  setVisible: (arg: boolean) => void;
 }
 
 let chainKeys: Array<string> | undefined;
@@ -54,13 +54,16 @@ const processChainMap = (
   return chainKeys.map(key => chainInfoMap[key]);
 };
 
-export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
+export const CustomizationModal = ({ modalVisible, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const isShowZeroBalance = useSelector((state: RootState) => state.settings.isShowZeroBalance);
   const chainInfoMap = useChainInfoWithState();
   const [pendingChainMap, setPendingChainMap] = useState<Record<string, boolean>>(cachePendingChainMap);
   const [currentChainList, setCurrentChainList] = useState(processChainMap(chainInfoMap));
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+
+  const onCancel = () => modalBaseV2Ref?.current?.close();
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -182,7 +185,12 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
   }, [isShowZeroBalance, onChangeZeroBalance, theme]);
 
   return (
-    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onCancel}>
+    <SwFullSizeModal
+      modalBaseV2Ref={modalBaseV2Ref}
+      isUseModalV2
+      setVisible={setVisible}
+      modalVisible={modalVisible}
+      onBackButtonPress={onCancel}>
       <FlatListScreen
         beforeListItem={beforeList}
         items={currentChainList}
@@ -197,6 +205,6 @@ export const CustomizationModal = ({ modalVisible, onCancel }: Props) => {
         isShowListWrapper
         placeholder={i18n.placeholder.networkName}
       />
-    </SubWalletFullSizeModal>
+    </SwFullSizeModal>
   );
 };
