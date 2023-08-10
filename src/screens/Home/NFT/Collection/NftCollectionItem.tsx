@@ -3,7 +3,7 @@ import ImagePreview from 'components/ImagePreview';
 import React from 'react';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { ColorMap } from 'styles/color';
-import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 interface Props {
   nftCollection: NftCollection;
@@ -12,15 +12,14 @@ interface Props {
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   width: '50%',
+  height: 220,
   paddingHorizontal: 8,
 };
 
 const ContainerStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'relative',
+  flex: 1,
+  justifyContent: 'space-between',
   borderRadius: 8,
-  overflow: 'hidden',
   backgroundColor: ColorMap.dark2,
 };
 
@@ -30,31 +29,28 @@ const LogoStyle: StyleProp<ViewStyle> = {
 };
 
 const InfoStyle: StyleProp<ViewStyle> = {
-  display: 'flex',
   justifyContent: 'space-between',
-  position: 'relative',
   flexDirection: 'row',
-  alignItems: 'center',
+  alignItems: 'flex-end',
   width: '100%',
-  flex: 1,
-  marginTop: 10,
-  marginBottom: 16,
+  marginTop: 5,
+  paddingBottom: 16,
   paddingHorizontal: 12,
 };
 
 const NameStyle: StyleProp<TextStyle> = {
-  ...sharedStyles.mediumText,
   ...FontSemiBold,
-  fontSize: 18,
-  width: '80%',
+  fontSize: 14,
+  lineHeight: 22,
+  flex: 1,
+  marginRight: 2,
   color: ColorMap.light,
 };
 
 const CountStyle: StyleProp<any> = {
-  ...sharedStyles.mainText,
   ...FontMedium,
   textAlign: 'right',
-  width: '20%',
+  paddingLeft: 2,
   color: ColorMap.disabled,
 };
 
