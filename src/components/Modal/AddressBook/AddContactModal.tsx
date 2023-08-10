@@ -1,5 +1,5 @@
 import { Button, Icon, SwModal } from 'components/design-system-ui';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -200,11 +200,7 @@ export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
           name={FormFieldName.ADDRESS}
         />
 
-        <Button
-          style={{ marginBottom: Platform.OS === 'ios' ? 16 : 0 }}
-          icon={ButtonIcon}
-          disabled={isButtonDisabled}
-          onPress={handleSubmit(onSubmit)}>
+        <Button icon={ButtonIcon} disabled={isButtonDisabled} onPress={handleSubmit(onSubmit)}>
           {i18n.buttonTitles.addContact}
         </Button>
       </View>

@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { ModalRef } from 'types/modalRef';
+import { Keyboard } from 'react-native';
 
 export function useFilterModal() {
   const filterModalRef = useRef<ModalRef>();
@@ -7,7 +8,8 @@ export function useFilterModal() {
   const [filterSelectionMap, setFilterSelectionMap] = useState<Record<string, boolean>>({});
 
   const openFilterModal = useCallback(() => {
-    filterModalRef && filterModalRef.current?.onOpenModal();
+    Keyboard.dismiss();
+    setTimeout(() => filterModalRef && filterModalRef.current?.onOpenModal(), 100);
   }, []);
 
   const onCloseFilterModal = useCallback(() => {

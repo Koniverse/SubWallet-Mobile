@@ -115,13 +115,14 @@ export const EvmSignArea = (props: Props) => {
 
   const onSuccess = useCallback(
     (sig: SigData) => {
+      setIsShowQr(false);
       setIsScanning(false);
       onApproveSignature && onApproveSignature(sig);
     },
     [onApproveSignature],
   );
 
-  const { onPress: onConfirmPassword } = useUnlockModal(navigation);
+  const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -137,8 +138,7 @@ export const EvmSignArea = (props: Props) => {
   }, [onApprovePassword, onConfirmPassword, onConfirmQr, signMode]);
 
   const openScanning = useCallback(() => {
-    setIsShowQr(false);
-    setTimeout(() => setIsScanning(true), 300);
+    setIsScanning(true);
   }, []);
 
   return (
@@ -157,9 +157,11 @@ export const EvmSignArea = (props: Props) => {
       {signMode === AccountSignMode.QR && (
         <>
           <DisplayPayloadModal visible={isShowQr} setVisible={setIsShowQr} onOpenScan={openScanning}>
-            <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
+            <>
+              <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
+              <SignatureScanner visible={isScanning} setVisible={setIsScanning} onSuccess={onSuccess} />
+            </>
           </DisplayPayloadModal>
-          <SignatureScanner visible={isScanning} setVisible={setIsScanning} onSuccess={onSuccess} />
         </>
       )}
     </ConfirmationFooter>

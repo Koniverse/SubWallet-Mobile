@@ -1,6 +1,6 @@
 import { QrCode } from 'phosphor-react-native';
 import React, { useCallback, useState } from 'react';
-import { StyleProp, View } from 'react-native';
+import { Keyboard, StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { SpaceStyle } from 'styles/space';
 import { requestCameraPermission } from 'utils/permission/camera';
@@ -87,6 +87,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           size={'xs'}
           icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
+            Keyboard.dismiss();
             drawerNavigation.openDrawer();
           }}
         />

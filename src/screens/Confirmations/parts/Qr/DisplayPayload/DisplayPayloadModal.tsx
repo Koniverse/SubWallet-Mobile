@@ -7,12 +7,12 @@ import useCheckCamera from 'hooks/common/useCheckCamera';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { QrCode } from 'phosphor-react-native';
 import React, { useMemo, useRef } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   children: JSX.Element;
@@ -25,11 +25,9 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
   const { children, onOpenScan, visible, setVisible } = props;
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const onClose = () => setVisible(false);
-
+  const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
-
   const styles = useMemo(() => createStyle(theme), [theme]);
-
   const checkCamera = useCheckCamera();
 
   return (
@@ -37,9 +35,15 @@ const DisplayPayloadModal: React.FC<Props> = (props: Props) => {
       modalBaseV2Ref={modalBaseV2Ref}
       setVisible={setVisible}
       modalVisible={visible}
-      isUseModalV2
+      isUseForceHidden={false}
       onBackButtonPress={onClose}>
-      <SafeAreaView style={{ flex: 1, width: '100%' }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          width: '100%',
+          paddingTop: Platform.OS === 'ios' ? insets.top + 8 : 8,
+          paddingBottom: insets.bottom + theme.padding,
+        }}>
         <View style={styles.container}>
           <SubHeader title={i18n.common.confirm} onPressBack={onClose} />
           <View style={styles.body}>{children}</View>
