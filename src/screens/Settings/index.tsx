@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { Linking, ScrollView, StyleProp } from 'react-native';
+import { Linking, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import {
   ArrowSquareOut,
@@ -39,7 +39,7 @@ import {
 } from 'constants/index';
 import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';
-import { Button, Icon, SelectItem } from 'components/design-system-ui';
+import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -107,6 +107,13 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
           onPress: () => navigation.navigate('History', {}),
           backgroundColor: '#2595E6',
+        },
+        {
+          icon: Clock,
+          title: i18n.header.walletConnect,
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => navigation.navigate('ConnectList', { isDelete: false }),
+          backgroundColor: '#004BFF',
         },
       ],
       [
@@ -207,55 +214,72 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         <ScrollView
           style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}
           contentContainerStyle={{ paddingTop: 16 }}>
-          {settingList[0].map(setting => (
-            <SelectItem
-              rightIcon={setting.rightIcon}
-              key={setting.title}
-              label={setting.title}
-              icon={setting.icon}
-              backgroundColor={setting.backgroundColor}
-              onPress={setting.onPress}
-            />
-          ))}
+          <View style={{ gap: theme.paddingXS }}>
+            {settingList[0].map(setting => (
+              <SelectItem
+                rightIcon={setting.rightIcon}
+                key={setting.title}
+                label={setting.title}
+                icon={setting.icon}
+                backgroundColor={setting.backgroundColor}
+                onPress={setting.onPress}
+              />
+            ))}
+          </View>
 
           <Text style={settingTitleStyle}>{i18n.settings.networksAndTokens.toUpperCase()}</Text>
 
-          {settingList[1].map(setting => (
-            <SelectItem
-              rightIcon={setting.rightIcon}
-              key={setting.title}
-              label={setting.title}
-              icon={setting.icon}
-              backgroundColor={setting.backgroundColor}
-              onPress={setting.onPress}
-            />
-          ))}
+          <View style={{ gap: theme.paddingXS }}>
+            {settingList[1].map(setting => (
+              <SelectItem
+                rightIcon={setting.rightIcon}
+                key={setting.title}
+                label={setting.title}
+                leftItemIcon={
+                  setting.title === i18n.header.walletConnect ? (
+                    <BackgroundIcon
+                      shape={'circle'}
+                      backgroundColor={setting.backgroundColor}
+                      customIcon={<SVGImages.WalletConnect width={16} height={16} color={theme.colorWhite} />}
+                    />
+                  ) : undefined
+                }
+                icon={setting.icon}
+                backgroundColor={setting.backgroundColor}
+                onPress={setting.onPress}
+              />
+            ))}
+          </View>
 
           <Text style={settingTitleStyle}>{i18n.settings.communityAndSupport.toUpperCase()}</Text>
 
-          {settingList[2].map(setting => (
-            <SelectItem
-              rightIcon={setting.rightIcon}
-              key={setting.title}
-              label={setting.title}
-              icon={setting.icon}
-              backgroundColor={setting.backgroundColor}
-              onPress={setting.onPress}
-            />
-          ))}
+          <View style={{ gap: theme.paddingXS }}>
+            {settingList[2].map(setting => (
+              <SelectItem
+                rightIcon={setting.rightIcon}
+                key={setting.title}
+                label={setting.title}
+                icon={setting.icon}
+                backgroundColor={setting.backgroundColor}
+                onPress={setting.onPress}
+              />
+            ))}
+          </View>
 
           <Text style={settingTitleStyle}>{i18n.settings.aboutSubwallet.toUpperCase()}</Text>
 
-          {settingList[3].map(setting => (
-            <SelectItem
-              rightIcon={setting.rightIcon}
-              key={setting.title}
-              label={setting.title}
-              icon={setting.icon}
-              backgroundColor={setting.backgroundColor}
-              onPress={setting.onPress}
-            />
-          ))}
+          <View style={{ gap: theme.paddingXS }}>
+            {settingList[3].map(setting => (
+              <SelectItem
+                rightIcon={setting.rightIcon}
+                key={setting.title}
+                label={setting.title}
+                icon={setting.icon}
+                backgroundColor={setting.backgroundColor}
+                onPress={setting.onPress}
+              />
+            ))}
+          </View>
 
           <Button
             style={{ marginTop: 16 }}

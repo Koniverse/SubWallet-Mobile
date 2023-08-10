@@ -233,11 +233,12 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             <PoolSelectorDetailModal
               detailItem={selectedItem}
               detailModalVisible={detailModalVisible}
-              onCancel={() => setDetailModalVisible(false)}
+              setVisible={setDetailModalVisible}
             />
           )}
 
           <BasicSelectModal
+            level={2}
             ref={sortingModalRef}
             title={i18n.header.sorting}
             items={sortingOptions}
@@ -245,7 +246,6 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                style={{ marginTop: 8 }}
                 icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);

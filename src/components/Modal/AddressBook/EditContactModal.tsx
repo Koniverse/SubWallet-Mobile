@@ -22,11 +22,12 @@ import { deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 type Props = {
   addressJson: AddressJson;
   modalVisible: boolean;
-  onChangeModalVisible: () => void;
+  setModalVisible: (arg: boolean) => void;
 };
 
 enum FormFieldName {
@@ -37,7 +38,7 @@ interface FormValues {
   [FormFieldName.NAME]: string;
 }
 
-export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJson }: Props) => {
+export const EditContactModal = ({ modalVisible, addressJson, setModalVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const { address, name: defaultName = '' } = addressJson;
   const contacts = useSelector((state: RootState) => state.accountState.contacts);
@@ -58,11 +59,14 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
       [FormFieldName.NAME]: defaultName,
     },
   });
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
 
   const { name: nameValue } = {
     ...useWatch<FormValues>({ control }),
     ...getValues(),
   };
+
+  const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 
   const existNames = useMemo(
     () =>
@@ -140,6 +144,7 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
     onCancelModal: onCancelDelete,
     visible: deleteVisible,
     onCompleteModal: onCompleteDelete,
+    setVisible,
   } = useConfirmModal(handeDelete);
 
   useEffect(() => {
@@ -151,10 +156,12 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
   return (
     <>
       <SwModal
+        isUseModalV2
+        modalBaseV2Ref={modalBaseV2Ref}
+        setVisible={setModalVisible}
         modalTitle={i18n.header.editContact}
         modalVisible={modalVisible}
-        onBackButtonPress={onChangeModalVisible}
-        onChangeModalVisible={onChangeModalVisible}>
+        onBackButtonPress={onChangeModalVisible}>
         <View style={stylesheet.formContainer}>
           <FormItem
             control={control}
@@ -203,6 +210,7 @@ export const EditContactModal = ({ modalVisible, onChangeModalVisible, addressJs
           visible={deleteVisible}
           message={i18n.confirmation.deleteContactMessage}
           onCompleteModal={onCompleteDelete}
+          setVisible={setVisible}
           onCancelModal={onCancelDelete}
         />
 

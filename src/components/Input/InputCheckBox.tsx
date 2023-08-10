@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ColorMap } from 'styles/color';
@@ -39,6 +39,17 @@ const LabelStyle: StyleProp<TextStyle> = {
 };
 
 const InputCheckBox = ({ checked, onPress, disable, label, checkBoxSize = 20 }: Props) => {
+  const UncheckedIcon = (
+    <Suspense>
+      <SVGImages.CheckBoxIcon width={checkBoxSize} height={checkBoxSize} />
+    </Suspense>
+  );
+
+  const CheckedIcon = (
+    <Suspense>
+      <SVGImages.CheckBoxFilledIcon width={checkBoxSize} height={checkBoxSize} />
+    </Suspense>
+  );
   return (
     <View style={WrapperStyle}>
       <CheckBox
@@ -48,8 +59,8 @@ const InputCheckBox = ({ checked, onPress, disable, label, checkBoxSize = 20 }: 
         activeOpacity={1}
         onPress={onPress}
         checked={checked}
-        uncheckedIcon={<SVGImages.CheckBoxIcon width={checkBoxSize} height={checkBoxSize} />}
-        checkedIcon={<SVGImages.CheckBoxFilledIcon width={checkBoxSize} height={checkBoxSize} />}
+        uncheckedIcon={UncheckedIcon}
+        checkedIcon={CheckedIcon}
         checkedColor={ColorMap.light}
         uncheckedColor={ColorMap.light}
         disabled={disable}

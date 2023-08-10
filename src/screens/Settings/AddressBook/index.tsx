@@ -20,6 +20,8 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import { Icon } from 'components/design-system-ui';
 import createStylesheet from './style';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 enum AccountGroup {
   CONTACT = 'contact',
@@ -95,6 +97,7 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
 
 export const ManageAddressBook = () => {
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
   const { contacts, recent } = useSelector((state: RootState) => state.accountState);
   const [isShowAddContactModal, setShowAddContactModal] = useState<boolean>(false);
   const [isShowEditContactModal, setShowEditContactModal] = useState<boolean>(false);
@@ -218,14 +221,6 @@ export const ManageAddressBook = () => {
     };
   }, []);
 
-  const closeAddContactModal = useCallback(() => {
-    setShowAddContactModal(false);
-  }, []);
-
-  const closeEditContactModal = useCallback(() => {
-    setShowEditContactModal(false);
-  }, []);
-
   return (
     <>
       <FlatListScreen
@@ -246,15 +241,16 @@ export const ManageAddressBook = () => {
         sortFunction={sortFunction}
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
+        onPressBack={() => navigation.goBack()}
       />
 
-      <AddContactModal modalVisible={isShowAddContactModal} onChangeModalVisible={closeAddContactModal} />
+      <AddContactModal modalVisible={isShowAddContactModal} setModalVisible={setShowAddContactModal} />
 
       {selectedItem && (
         <EditContactModal
           addressJson={selectedItem}
           modalVisible={isShowEditContactModal}
-          onChangeModalVisible={closeEditContactModal}
+          setModalVisible={setShowEditContactModal}
         />
       )}
     </>

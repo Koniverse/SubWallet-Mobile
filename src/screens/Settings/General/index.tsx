@@ -10,7 +10,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Icon, SelectItem } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 
-const containerStyle = { ...sharedStyles.layoutContainer, paddingTop: 16 };
+const containerStyle = { ...sharedStyles.layoutContainer, paddingTop: 16, gap: 8 };
 export const GeneralSettings = () => {
   const theme = useSubWalletTheme().swThemes;
   const toast = useToast();

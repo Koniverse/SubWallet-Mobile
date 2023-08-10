@@ -1,5 +1,4 @@
 import { useNavigation } from '@react-navigation/native';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
@@ -45,7 +44,7 @@ const AttachReadOnly = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [scanError, setScanError] = useState<string | undefined>(undefined);
   const [isBusy, setIsBusy] = useState<boolean>(false);
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
   const accountRef = useRef<QrAccount | null>(null);
 
   useEffect(() => {
@@ -214,7 +213,6 @@ const AttachReadOnly = () => {
           </Button>
         </View>
       </View>
-      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </ContainerWithSubHeader>
   );
 };

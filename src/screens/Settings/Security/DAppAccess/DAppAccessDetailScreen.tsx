@@ -221,6 +221,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
       title={origin}
       flatListStyle={{ gap: theme.paddingXS }}
       autoFocus={false}
+      onPressBack={() => navigation.goBack()}
       beforeListItem={renderBeforeListItem()}
       items={accountItems}
       searchFunction={searchFunction}
@@ -238,7 +239,7 @@ const Content = ({ origin, accountAuthType, authInfo }: Props) => {
         <MoreOptionModal
           modalVisible={modalVisible}
           moreOptionList={dAppAccessDetailMoreOptions}
-          onChangeModalVisible={() => setModalVisible(false)}
+          setModalVisible={setModalVisible}
         />
       }
     />

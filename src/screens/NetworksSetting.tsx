@@ -200,6 +200,7 @@ export const NetworksSetting = ({}: Props) => {
           setToggleItem(false);
         },
       }}
+      onPressBack={() => navigation.goBack()}
       items={currentChainList}
       title={i18n.header.manageNetworks}
       placeholder={i18n.placeholder.searchNetwork}

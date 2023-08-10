@@ -1,4 +1,3 @@
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useState } from 'react';
 import { StyleProp, View } from 'react-native';
@@ -12,11 +11,14 @@ import i18n from 'utils/i18n/i18n';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'routes/index';
 
 interface Props {
   onPressSubmit: () => void;
   seed: string;
   isBusy: boolean;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const bodyAreaStyle: StyleProp<any> = {
@@ -60,7 +62,7 @@ const isCorrectWord = (selectedWords: SelectedWordType[], seed: string) => {
   return selectedWords.map(item => item.word).join(' ') === seed;
 };
 
-export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
+export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: Props) => {
   const [selectedWords, setSelectedWords] = useState<SelectedWordType[]>([]);
   const [shuffleWords, setShuffleWords] = useState<string[] | null>(null);
   const seedWords: string[] = seed.split(' ');
@@ -102,7 +104,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
     );
   };
 
-  const { visible, onPasswordComplete, onPress: onSubmit, onHideModal } = useUnlockModal();
+  const { onPress: onSubmit } = useUnlockModal(navigation);
 
   const getCreateAccBtn = (color: string) => {
     return <Icon phosphorIcon={ArrowCircleRight} size={'lg'} iconColor={color} />;
@@ -133,7 +135,6 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy }: Props) => {
           {i18n.common.continue}
         </Button>
       </View>
-      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </View>
   );
 };

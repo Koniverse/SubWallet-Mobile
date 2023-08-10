@@ -1,4 +1,3 @@
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
@@ -38,7 +37,7 @@ export const ImportPrivateKey = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const accountName = useGetDefaultAccountName();
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   const privateKeyFormConfig: FormControlConfig = {
     privateKey: {
@@ -174,7 +173,6 @@ export const ImportPrivateKey = () => {
             {i18n.buttonTitles.importAccount}
           </Button>
         </View>
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </SubScreenContainer>
   );

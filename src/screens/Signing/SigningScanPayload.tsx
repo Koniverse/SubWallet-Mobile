@@ -3,7 +3,7 @@ import Text from 'components/Text';
 import { Warning } from 'components/Warning';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import { SCANNER_QR_STEP } from 'constants/qr';
-import { overlayColor, rectDimensions } from 'constants/scanner';
+import { rectDimensions } from 'constants/scanner';
 import usePayloadScanner from 'hooks/qr/usePayloadScanner';
 import { ArrowLeft } from 'phosphor-react-native';
 import { ScannerContext } from 'providers/ScannerContext';
@@ -19,6 +19,7 @@ import { FontMedium, FontSize0, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 's
 import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
 import { Button } from 'components/design-system-ui';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 const WrapperStyle: StyleProp<ViewStyle> = {
   flex: 1,
@@ -68,6 +69,7 @@ const ProgressButtonStyle: StyleProp<ViewStyle> = {
 };
 
 const SigningScanPayload = () => {
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const {
     state: { totalFrameCount, completedFramesCount, step },
@@ -96,7 +98,7 @@ const SigningScanPayload = () => {
   return (
     <View style={WrapperStyle}>
       <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
       <QRCodeScanner
         reactivate={true}
         reactivateTimeout={100}
@@ -109,7 +111,7 @@ const SigningScanPayload = () => {
         customMarker={
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
-              <View style={ScannerStyles.HeaderStyle}>
+              <View style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanPayload}</Text>
                 <TouchableOpacity activeOpacity={BUTTON_ACTIVE_OPACITY} style={BackButtonStyle} onPress={goBack}>
                   <ArrowLeft size={20} weight={'bold'} color={'#FFF'} />

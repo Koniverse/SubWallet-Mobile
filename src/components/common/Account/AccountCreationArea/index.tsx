@@ -23,6 +23,7 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import { canDerive } from '@subwallet/extension-base/utils';
 import { AccountActionSelectModal, ActionItemType } from 'components/Modal/AccountActionSelectModal';
 import { ModalRef } from 'types/modalRef';
+import useGoHome from 'hooks/screen/useGoHome';
 
 interface Props {
   createAccountRef: React.MutableRefObject<ModalRef | undefined>;
@@ -41,6 +42,7 @@ export const AccountCreationArea = ({
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const selectTypeRef = useRef<ModalRef>();
   const deriveAccModalRef = useRef<ModalRef>();
+  const goHome = useGoHome();
   const importAccountActions = [
     {
       key: 'secretPhrase',
@@ -120,11 +122,13 @@ export const AccountCreationArea = ({
     (keyTypes: KeypairType[]) => {
       createAccountRef && createAccountRef.current?.onCloseModal();
       selectTypeRef && selectTypeRef.current?.onCloseModal();
-      if (hasMasterPassword) {
-        navigation.navigate('CreateAccount', { keyTypes: keyTypes });
-      } else {
-        navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: keyTypes });
-      }
+      setTimeout(() => {
+        if (hasMasterPassword) {
+          navigation.navigate('CreateAccount', { keyTypes: keyTypes });
+        } else {
+          navigation.navigate('CreatePassword', { pathName: 'CreateAccount', state: keyTypes });
+        }
+      }, 300);
     },
     [createAccountRef, hasMasterPassword, navigation],
   );
@@ -152,11 +156,14 @@ export const AccountCreationArea = ({
       if (allowToShowSelectType) {
         selectTypeRef && selectTypeRef.current?.onOpenModal();
       } else {
-        if (hasMasterPassword) {
-          navigation.navigate('CreateAccount', {});
-        } else {
-          navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
-        }
+        createAccountRef?.current?.onCloseModal();
+        setTimeout(() => {
+          if (hasMasterPassword) {
+            navigation.navigate('CreateAccount', {});
+          } else {
+            navigation.navigate('CreatePassword', { pathName: 'CreateAccount' });
+          }
+        }, 3000);
       }
     } else {
       deriveAccModalRef && deriveAccModalRef.current?.onOpenModal();
@@ -176,11 +183,15 @@ export const AccountCreationArea = ({
       pathName = 'ImportQrCode';
     }
 
-    if (hasMasterPassword) {
-      navigation.navigate(pathName);
-    } else {
-      navigation.navigate('CreatePassword', { pathName: pathName });
-    }
+    setTimeout(() => {
+      if (hasMasterPassword) {
+        // @ts-ignore
+        navigation.navigate(pathName);
+      } else {
+        // @ts-ignore
+        navigation.navigate('CreatePassword', { pathName: pathName });
+      }
+    }, 300);
   };
 
   const attachAccountFunc = (item: ActionItemType) => {
@@ -198,11 +209,15 @@ export const AccountCreationArea = ({
     }
 
     attachAccountRef && attachAccountRef.current?.onCloseModal();
-    if (hasMasterPassword) {
-      navigation.navigate(pathName);
-    } else {
-      navigation.navigate('CreatePassword', { pathName: pathName });
-    }
+    setTimeout(() => {
+      if (hasMasterPassword) {
+        // @ts-ignore
+        navigation.navigate(pathName);
+      } else {
+        // @ts-ignore
+        navigation.navigate('CreatePassword', { pathName: pathName });
+      }
+    }, 300);
   };
 
   return (
@@ -212,10 +227,10 @@ export const AccountCreationArea = ({
         modalTitle={i18n.header.createNewAcc}
         items={createAccountAction}
         onSelectItem={createAccountFunc}>
-        <SelectAccountTypeModal selectTypeRef={selectTypeRef} onConfirm={onSelectAccountTypes} />
-
-        <DeriveAccountModal deriveAccModalRef={deriveAccModalRef} />
+        <DeriveAccountModal deriveAccModalRef={deriveAccModalRef} goHome={goHome} navigation={navigation} />
       </AccountActionSelectModal>
+
+      <SelectAccountTypeModal selectTypeRef={selectTypeRef} onConfirm={onSelectAccountTypes} />
 
       <AccountActionSelectModal
         accActionRef={importAccountRef}

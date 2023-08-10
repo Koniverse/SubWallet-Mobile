@@ -254,12 +254,13 @@ export const ValidatorSelector = ({
             <ValidatorSelectorDetailModal
               detailModalVisible={detailModalVisible}
               detailItem={detailItem}
-              onCancel={() => setDetailModalVisible(false)}
               networkPrefix={networkPrefix}
+              setVisible={setDetailModalVisible}
             />
           )}
 
           <BasicSelectModal
+            level={2}
             ref={sortingModalRef}
             title={i18n.header.sorting}
             items={sortingOptions}
@@ -267,7 +268,6 @@ export const ValidatorSelector = ({
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                style={{ marginTop: 8 }}
                 icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);

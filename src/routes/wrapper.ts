@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type WrapperParamList = {
   Main: NavigatorScreenParams<HomeStackParamList>;
+  FirstScreen: undefined;
   TransactionAction: NavigatorScreenParams<TransactionActionStackParamList>;
   BuyToken: { slug?: string; symbol?: string };
   LoadingScreen: undefined;

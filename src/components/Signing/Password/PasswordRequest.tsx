@@ -146,6 +146,7 @@ const PasswordRequest = ({
       </View>
 
       <SwModal
+        setVisible={setIsVisible}
         modalVisible={isVisible}
         onChangeModalVisible={!isSubmitting ? closeModal : undefined}
         onBackButtonPress={!isSubmitting ? closeModal : undefined}>

@@ -1,6 +1,6 @@
 import Input, { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isAddress } from '@polkadot/util-crypto';
 import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
@@ -119,10 +119,11 @@ const Component = (
   ]);
 
   const onPressQrButton = useCallback(async () => {
+    Keyboard.dismiss();
     const result = await requestCameraPermission();
 
     if (result === RESULTS.GRANTED) {
-      setIsShowQrModalVisible(true);
+      setTimeout(() => setIsShowQrModalVisible(true), 500);
     }
   }, []);
 
@@ -222,10 +223,6 @@ const Component = (
     setIsShowQrModalVisible(false);
   }, []);
 
-  const closeAddressBookModal = useCallback(() => {
-    setShowAddressBookModal(false);
-  }, []);
-
   return (
     <>
       <Input
@@ -258,7 +255,7 @@ const Component = (
           networkGenesisHash={networkGenesisHash}
           onSelect={onSelectAddressBook}
           value={value}
-          onClose={closeAddressBookModal}
+          setVisible={setShowAddressBookModal}
         />
       )}
     </>

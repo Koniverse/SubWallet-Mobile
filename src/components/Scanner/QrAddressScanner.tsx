@@ -10,7 +10,7 @@ import { ScannerStyles } from 'styles/scanner';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { QrAccount } from 'types/qr/attach';
 import i18n from 'utils/i18n/i18n';
-import { overlayColor, rectDimensions } from 'constants/scanner';
+import { rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
 import { getFunctionScan } from 'utils/scanner/attach';
 import ModalBase from 'components/Modal/Base/ModalBase';
@@ -20,6 +20,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
 import { updatePreventLock } from 'stores/MobileSettings';
 import { useDispatch } from 'react-redux';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface Props {
   visible: boolean;
@@ -48,6 +49,7 @@ const BottomSubContentStyle: StyleProp<ViewStyle> = {
 };
 
 const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const [error, setError] = useState<string>('');
   const dispatch = useDispatch();
   const handleRead = useCallback(
@@ -105,7 +107,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
   return (
     <ModalBase isVisible={visible} style={{ flex: 1, width: '100%', margin: 0 }}>
       <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
       <QRCodeScanner
         reactivate={true}
         reactivateTimeout={5000}
@@ -118,7 +120,9 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
               <View style={ScannerStyles.HeaderStyle}>
-                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.header.scanQR}</Text>
+                <Text style={[ScannerStyles.HeaderTitleTextStyle, { backgroundColor: theme.colorBgSecondary }]}>
+                  {i18n.header.scanQR}
+                </Text>
                 <IconButton icon={CaretLeft} style={CancelButtonStyle} onPress={onHideModal} />
                 <IconButton icon={ImageSquare} style={LibraryButtonStyle} onPress={onPressLibraryBtn} />
               </View>

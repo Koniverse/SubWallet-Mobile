@@ -69,21 +69,23 @@ export const SelectAccountType = (props: SelectAccountTypeProps) => {
           <Text style={_style.titleStyle}>{title}</Text>
         </View>
       )}
-      {items.map(item => {
-        const _selected = selectedItems.find(i => i === item.key);
+      <View style={{ gap: 8 }}>
+        {items.map(item => {
+          const _selected = selectedItems.find(i => i === item.key);
 
-        return (
-          <SelectItem
-            disabled={disabled}
-            key={item.label}
-            label={item.label}
-            leftItemIcon={<Logo size={28} network={item.icon} shape={'circle'} />}
-            isSelected={!!_selected}
-            onPress={item.onClick}
-            showUnselect={true}
-          />
-        );
-      })}
+          return (
+            <SelectItem
+              disabled={disabled}
+              key={item.label}
+              label={item.label}
+              leftItemIcon={<Logo size={28} network={item.icon} shape={'circle'} />}
+              isSelected={!!_selected}
+              onPress={item.onClick}
+              showUnselect={true}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 };

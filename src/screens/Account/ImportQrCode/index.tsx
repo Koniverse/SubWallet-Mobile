@@ -4,7 +4,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ImageLogosMap } from 'assets/logo';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Image } from 'components/design-system-ui';
 import { SWImageProps } from 'components/design-system-ui/image';
@@ -108,12 +107,7 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
   );
 
   const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSubmit);
-  const {
-    visible: unlockVisible,
-    onPasswordComplete,
-    onPress: onPressSubmit,
-    onHideModal: onHidePasswordModal,
-  } = useUnlockModal();
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   return (
     <ContainerWithSubHeader title={i18n.header.importByQRCode} onPressBack={onBack}>
@@ -140,7 +134,6 @@ const ImportQrCode: React.FC<Props> = (props: Props) => {
         </Button>
       </View>
       <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.SECRET} />
-      <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHidePasswordModal} />
     </ContainerWithSubHeader>
   );
 };

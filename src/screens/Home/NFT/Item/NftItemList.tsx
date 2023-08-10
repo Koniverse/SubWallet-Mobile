@@ -159,15 +159,15 @@ const NftItemList = ({
     onCancelModal: onCancelDelete,
     visible: deleteVisible,
     onCompleteModal: onCompleteDeleteModal,
+    setVisible,
   } = useConfirmModal(handeDelete);
 
   return (
     <View style={NftItemListStyle}>
       <FlatListScreen
         headerContent={headerContent}
+        onPressBack={() => navigation.goBack()}
         isShowMainHeader
-        isShowPlaceHolder={false}
-        needGapWithStatusBar={false}
         autoFocus={false}
         showLeftBtn={true}
         renderItem={renderItem}
@@ -202,6 +202,7 @@ const NftItemList = ({
         message={i18n.message.deleteNftMessage}
         onCompleteModal={onCompleteDeleteModal}
         onCancelModal={onCancelDelete}
+        setVisible={setVisible}
       />
     </View>
   );

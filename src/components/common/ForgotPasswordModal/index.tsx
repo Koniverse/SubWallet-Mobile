@@ -6,6 +6,7 @@ import { Button, Icon, PageIcon, SwModal, Typography } from 'components/design-s
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { ThemeTypes } from 'styles/themes';
+import { noop } from 'utils/function';
 
 interface Props {
   modalVisible: boolean;
@@ -32,6 +33,7 @@ export const ForgotPasswordModal = ({
   const styles = createStyle(theme);
   return (
     <SwModal
+      setVisible={noop}
       onChangeModalVisible={onCloseModalVisible}
       modalVisible={modalVisible}
       modalTitle={i18n.common.forgotPassword}

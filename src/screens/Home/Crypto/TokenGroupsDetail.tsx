@@ -61,7 +61,7 @@ export const TokenGroupsDetail = ({
     openSelectToken,
     selectedAccount,
     selectedNetwork,
-    onCloseQrModal,
+    setQrModalVisible,
     isQrModalVisible,
     tokenSelectorItems,
     accountRef,
@@ -172,11 +172,6 @@ export const TokenGroupsDetail = ({
     [isShowBalance, onClickItem, theme.colorBgSecondary],
   );
 
-  const onCloseTokenDetailModal = useCallback(() => {
-    setTokenDetailVisible(false);
-    setCurrentTokenInfo(undefined);
-  }, []);
-
   useEffect(() => {
     if (!isTokenGroupComputing && !isAccountBalanceComputing && !tokenBalanceItems.length) {
       navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
@@ -199,7 +194,7 @@ export const TokenGroupsDetail = ({
           currentTokenInfo={currentTokenInfo}
           tokenBalanceMap={tokenBalanceMap}
           modalVisible={tokenDetailVisible}
-          onChangeModalVisible={onCloseTokenDetailModal}
+          setVisible={setTokenDetailVisible}
         />
 
         <SelectAccAndTokenModal
@@ -216,7 +211,7 @@ export const TokenGroupsDetail = ({
           modalVisible={isQrModalVisible}
           address={selectedAccount}
           selectedNetwork={selectedNetwork}
-          onCancel={onCloseQrModal}
+          setModalVisible={setQrModalVisible}
         />
       </>
     </ScreenContainer>

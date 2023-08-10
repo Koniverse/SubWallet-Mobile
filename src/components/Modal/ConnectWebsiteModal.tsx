@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { RootState } from 'stores/index';
@@ -15,14 +15,15 @@ import SwModal from 'components/design-system-ui/modal/SwModal';
 import { ButtonPropsType } from 'components/design-system-ui/button/PropsType';
 import createStylesheet from './style/ConnectWebsiteModal';
 import i18n from 'utils/i18n/i18n';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   modalVisible: boolean;
-  onChangeModalVisible: () => void;
   isNotConnected: boolean;
   isBlocked: boolean;
   authInfo?: AuthUrlInfo;
   url: string;
+  setVisible: (arg: boolean) => void;
 }
 
 type ConnectIcon = {
@@ -37,22 +38,17 @@ const ButtonIconMap = {
 };
 
 // todo: i18n;
-export const ConnectWebsiteModal = ({
-  modalVisible,
-  onChangeModalVisible,
-  isNotConnected,
-  isBlocked,
-  authInfo,
-  url,
-}: Props) => {
+export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, isBlocked, authInfo, url }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
-
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const [allowedMap, setAllowedMap] = useState<Record<string, boolean>>(authInfo?.isAllowedMap || {});
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
+
+  const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 
   const handlerUpdateMap = useCallback((address: string, oldValue: boolean) => {
     return () => {
@@ -248,13 +244,16 @@ export const ConnectWebsiteModal = ({
 
   return (
     <SwModal
+      isUseModalV2
+      setVisible={setVisible}
       modalTitle={i18n.header.connectWebsite}
       modalVisible={modalVisible}
       titleTextAlign="center"
-      onChangeModalVisible={onChangeModalVisible}
+      modalBaseV2Ref={modalBaseV2Ref}
+      onBackButtonPress={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
-      <ScrollView style={stylesheet.scrollView}>
+      <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false}>
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{

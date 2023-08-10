@@ -12,7 +12,12 @@ export interface ModalStyle {
 export default (theme: ThemeTypes) =>
   StyleSheet.create<ModalStyle>({
     container: { width: '100%' },
-    footerModalStyle: { width: '100%', ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton },
+    footerModalStyle: {
+      width: '100%',
+      ...ContainerHorizontalPadding,
+      ...MarginBottomForSubmitButton,
+      paddingTop: theme.paddingXS,
+    },
     deleteModalConfirmationStyle: {
       fontSize: theme.fontSizeLG,
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,

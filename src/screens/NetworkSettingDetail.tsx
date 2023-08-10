@@ -259,6 +259,7 @@ export const NetworkSettingDetail = ({
     onCancelModal: onCancelDelete,
     visible: deleteVisible,
     onCompleteModal: onCompleteDeleteModal,
+    setVisible,
   } = useConfirmModal(handeDeleteCustomToken);
 
   useEffect(() => {
@@ -378,6 +379,7 @@ export const NetworkSettingDetail = ({
           message={i18n.message.deleteNetworkMessage}
           onCompleteModal={onCompleteDeleteModal}
           onCancelModal={onCancelDelete}
+          setVisible={setVisible}
         />
       </View>
     </ContainerWithSubHeader>

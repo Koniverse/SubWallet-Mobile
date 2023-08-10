@@ -296,10 +296,6 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
     [activeTab],
   );
 
-  const onCloseConnectWebsiteModal = useCallback(() => {
-    setConnectWebsiteModalVisible(false);
-  }, []);
-
   const ConnectionTrigger = (
     <Button
       type={'ghost'}
@@ -354,7 +350,7 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
         isBlocked={connectionState === ConnectionStatement.BLOCKED}
         isNotConnected={connectionState === ConnectionStatement.NOT_CONNECTED}
         modalVisible={isConnectWebsiteModalVisible}
-        onChangeModalVisible={onCloseConnectWebsiteModal}
+        setVisible={setConnectWebsiteModalVisible}
         authInfo={currentAuth}
         url={currentUrl || ''}
       />

@@ -1,8 +1,8 @@
 import { isHex } from '@polkadot/util';
 import Text from 'components/Text';
 import { Warning } from 'components/Warning';
-import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { StatusBar, StyleProp, View, ViewStyle } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { ColorMap } from 'styles/color';
@@ -11,15 +11,18 @@ import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { SigData } from 'types/signer';
 import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
-import { overlayColor, rectDimensions } from 'constants/scanner';
+import { rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
-import ModalBase from 'components/Modal/Base/ModalBase';
 import { X } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { SwFullSizeModal } from 'components/design-system-ui';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   visible: boolean;
-  onHideModal: () => void;
+  setVisible: (arg: boolean) => void;
   onSuccess: (result: SigData) => void | Promise<void>;
 }
 
@@ -46,8 +49,12 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   backgroundColor: convertHexColorToRGBA(ColorMap.dark1, 0.5),
 };
 
-const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
+const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const [error, setError] = useState<string>('');
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+
+  const onHideModal = () => modalBaseV2Ref?.current?.close();
 
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
@@ -79,9 +86,14 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
   }, [visible]);
 
   return (
-    <ModalBase isVisible={visible} style={{ flex: 1, width: '100%', margin: 0 }}>
-      <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
+    <SwFullSizeModal
+      modalVisible={visible}
+      setVisible={setVisible}
+      modalBaseV2Ref={modalBaseV2Ref}
+      isUseModalV2
+      onBackButtonPress={onHideModal}>
+      <SafeAreaView edges={['top']} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
       <QRCodeScanner
         reactivate={true}
         reactivateTimeout={5000}
@@ -93,7 +105,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
         customMarker={
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
-              <View style={ScannerStyles.HeaderStyle}>
+              <View style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.approveRequest}</Text>
                 <IconButton icon={X} style={CancelButtonStyle} onPress={onHideModal} />
               </View>
@@ -123,7 +135,7 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
           </View>
         }
       />
-    </ModalBase>
+    </SwFullSizeModal>
   );
 };
 

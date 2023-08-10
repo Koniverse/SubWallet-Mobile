@@ -130,7 +130,13 @@ const Button: React.FC<ButtonProps> = props => {
       onHideUnderlay={_onHideUnderlay}>
       <View style={[_style.container, { paddingVertical: 16 }]}>
         {iconNode}
-        {typeof children === 'string' ? <Text style={textStyle}>{children}</Text> : children}
+        {typeof children === 'string' ? (
+          <Text numberOfLines={1} style={textStyle}>
+            {children}
+          </Text>
+        ) : (
+          children
+        )}
       </View>
     </TouchableHighlight>
   );

@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RootStackParamList } from 'routes/index';
 import { ConfirmationType } from 'stores/base/RequestState';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
-import { KeyboardAvoidingView, Platform, SafeAreaView, StyleProp, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleProp, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { ConfirmationDefinitions, ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
@@ -33,10 +33,14 @@ import {
 } from './variants';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
-    maxHeight: '100%',
+    height: !isShowSeparator ? '100%' : undefined,
+    maxHeight: isShowSeparator ? '80%' : undefined,
     width: '100%',
     backgroundColor: ColorMap.dark1,
     borderTopLeftRadius: 32,
@@ -72,6 +76,7 @@ export const Confirmations = () => {
       metadataRequest: i18n.header.updateMetadata,
       signingRequest: i18n.header.signatureRequest,
       switchNetworkRequest: i18n.header.addNetworkRequest,
+      connectWCRequest: i18n.header.walletConnect,
     }),
     [],
   ) as Record<ConfirmationType, string>;
@@ -193,6 +198,8 @@ export const Confirmations = () => {
         return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
       case 'signingRequest':
         return <SignConfirmation request={confirmation.item as SigningRequest} />;
+      case 'connectWCRequest':
+        return <ConnectWalletConnectConfirmation request={confirmation.item as WalletConnectSessionRequest} />;
     }
 
     return null;
@@ -232,7 +239,7 @@ export const Confirmations = () => {
             isFullHeight={confirmation && confirmation.item.isInternal}
           />
           {content}
-          <SafeAreaView />
+          <SafeAreaView edges={['bottom']} />
         </View>
       </View>
     </KeyboardAvoidingView>

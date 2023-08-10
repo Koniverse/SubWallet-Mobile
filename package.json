@@ -28,6 +28,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-native-fontawesome": "^0.3.0",
+    "@gorhom/portal": "^1.0.14",
     "@polkadot/api": "^10.9.1",
     "@polkadot/react-qr": "^3.5.1",
     "@polkadot/reactnative-identicon": "^3.5.1",

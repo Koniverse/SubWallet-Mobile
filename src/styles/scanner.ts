@@ -33,7 +33,7 @@ const TopOverlayStyle: StyleProp<ViewStyle> = {
   height: topOverlayHeight,
   width: deviceWidth,
   backgroundColor: overlayColor,
-  paddingTop: 13,
+  // paddingTop: 13,
 };
 
 const CenterOverlayStyle: StyleProp<ViewStyle> = {
@@ -83,7 +83,7 @@ const HeaderStyle: StyleProp<ViewStyle> = {
   width: '100%',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 40,
+  height: 56,
 };
 
 const HeaderTitleTextStyle: StyleProp<TextStyle> = {

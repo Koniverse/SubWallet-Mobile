@@ -1,6 +1,5 @@
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { useNavigation } from '@react-navigation/native';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { SelectAccountType } from 'components/common/SelectAccountType';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, Typography } from 'components/design-system-ui';
@@ -39,7 +38,7 @@ export const ImportSecretPhrase = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const goHome = useGoHome();
   const accountName = useGetDefaultAccountName();
-  const { visible, onPasswordComplete, onPress: onPressSubmit, onHideModal } = useUnlockModal();
+  const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   const timeOutRef = useRef<NodeJS.Timer>();
 
@@ -177,7 +176,6 @@ export const ImportSecretPhrase = () => {
             {i18n.buttonTitles.importAccount}
           </Button>
         </View>
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
       </View>
     </ContainerWithSubHeader>
   );

@@ -145,6 +145,7 @@ export const CustomTokenSetting = () => {
           icon: Plus,
           onPress: () => navigation.navigate('ImportToken'),
         }}
+        onPressBack={() => navigation.goBack()}
         isShowFilterBtn
         title={i18n.header.manageTokens}
         items={assetItems}
