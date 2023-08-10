@@ -28,6 +28,7 @@ interface Props extends InputProps {
   addressPrefix?: number;
   saveAddress?: boolean;
   scannerProps?: Omit<AddressScannerProps, 'onChangeAddress' | 'onPressCancel' | 'qrModalVisible'>;
+  onSideEffectChange?: () => void; // callback for address book or scan QR
 }
 
 const Component = (
@@ -40,6 +41,7 @@ const Component = (
     scannerProps = {},
     saveAddress = true,
     value = '',
+    onSideEffectChange,
     ...inputProps
   }: Props,
   ref: ForwardedRef<TextInput>,
@@ -189,11 +191,12 @@ const Component = (
         setError(undefined);
         setIsShowQrModalVisible(false);
         onChangeInputText(data);
+        onSideEffectChange?.();
       } else {
         setError(i18n.errorMessage.isNotAnAddress);
       }
     },
-    [onChangeInputText],
+    [onChangeInputText, onSideEffectChange],
   );
 
   const onInputFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
@@ -209,8 +212,9 @@ const Component = (
   const onSelectAddressBook = useCallback(
     (_value: string) => {
       onChangeInputText(_value);
+      onSideEffectChange?.();
     },
-    [onChangeInputText],
+    [onChangeInputText, onSideEffectChange],
   );
 
   const closeAddressScanner = useCallback(() => {

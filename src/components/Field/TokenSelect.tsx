@@ -1,7 +1,7 @@
 import { FieldBase, FieldBaseProps } from 'components/Field/Base';
 import React, { useMemo } from 'react';
 import { getTokenLogo } from 'utils/index';
-import { StyleProp, StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { FontMedium } from 'styles/sharedStyles';
 import { CaretDown } from 'phosphor-react-native';
 import { ThemeTypes } from 'styles/themes';
@@ -14,7 +14,7 @@ interface Props extends FieldBaseProps {
   subLogoKey?: string;
   disabled?: boolean;
   showIcon?: boolean;
-  outerStyle?: StyleProp<any>;
+  outerStyle?: StyleProp<ViewStyle>;
   value?: string;
 }
 
