@@ -104,7 +104,7 @@ export const SubstrateSignArea = (props: Props) => {
     setIsShowQr(true);
   }, []);
 
-  const { onPress: onConfirmPassword } = useUnlockModal(navigation);
+  const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -121,6 +121,7 @@ export const SubstrateSignArea = (props: Props) => {
 
   const onSuccess = useCallback(
     (sig: SigData) => {
+      setIsShowQr(false);
       setIsScanning(false);
       onApproveSignature && onApproveSignature(sig);
     },
@@ -128,8 +129,8 @@ export const SubstrateSignArea = (props: Props) => {
   );
 
   const openScanning = useCallback(() => {
-    setIsShowQr(false);
-    setTimeout(() => setIsScanning(true), 300);
+    // setIsShowQr(false);
+    setIsScanning(true);
   }, []);
 
   return (
@@ -148,9 +149,11 @@ export const SubstrateSignArea = (props: Props) => {
       {signMode === AccountSignMode.QR && (
         <>
           <DisplayPayloadModal visible={isShowQr} onOpenScan={openScanning} setVisible={setIsShowQr}>
-            <SubstrateQr address={account.address} genesisHash={genesisHash} payload={payload || ''} />
+            <>
+              <SubstrateQr address={account.address} genesisHash={genesisHash} payload={payload || ''} />
+              <SignatureScanner visible={isScanning} onSuccess={onSuccess} setVisible={setIsScanning} />
+            </>
           </DisplayPayloadModal>
-          <SignatureScanner visible={isScanning} onSuccess={onSuccess} setVisible={setIsScanning} />
         </>
       )}
     </ConfirmationFooter>

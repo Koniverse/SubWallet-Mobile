@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IconProps } from 'phosphor-react-native';
-import { ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
+import { Keyboard, ListRenderItemInfo, RefreshControlProps, StyleProp, TextInput, View, ViewStyle } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Search } from 'components/Search';
 import { SortFunctionInterface } from 'types/ui-types';
@@ -209,7 +209,10 @@ export function FlatListScreen<T>({
       style={[{ width: '100%' }, style]}
       showRightBtn={!!rightIconOption?.icon}
       rightIcon={rightIconOption?.icon}
-      onPressRightIcon={rightIconOption?.onPress}
+      onPressRightIcon={() => {
+        Keyboard.dismiss();
+        setTimeout(() => rightIconOption?.onPress(), 100);
+      }}
       rightButtonTitle={rightIconOption?.title}
       disableRightButton={rightIconOption?.disabled}
       rightIconColor={rightIconOption?.color}

@@ -21,7 +21,7 @@ const getContainerStyle: (insetTop: number, backgroundColor?: string) => StylePr
   return {
     flex: 1,
     backgroundColor: backgroundColor || '#0C0C0C',
-    paddingTop: insetTop + (DeviceInfo.hasNotch() ? 0 : 8),
+    paddingTop: insetTop + (Platform.OS === 'ios' && DeviceInfo.hasNotch() ? 0 : 8),
   };
 };
 

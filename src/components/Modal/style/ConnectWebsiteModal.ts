@@ -28,7 +28,7 @@ export default (theme: ThemeTypes) => {
     },
     footer: {
       flexDirection: 'row',
-      paddingVertical: theme.padding,
+      paddingTop: theme.padding,
       gap: theme.sizeSM,
     },
     scrollView: {

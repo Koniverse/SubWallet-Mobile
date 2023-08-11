@@ -3,7 +3,7 @@ import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AddressJson } from '@subwallet/extension-base/background/types';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
-import { ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import Typography from '../../../components/design-system-ui/typography';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -186,8 +186,9 @@ export const ManageAddressBook = () => {
             addressPreLength={9}
             addressSufLength={11}
             onPress={() => {
+              Keyboard.dismiss();
               setSelectedItem(item);
-              setShowEditContactModal(true);
+              setTimeout(() => setShowEditContactModal(true), 100);
             }}
             customStyle={{ address: { ...FontSemiBold, color: theme.colorTextLight4 } }}
             rightItem={ItemRightIcon}
@@ -202,8 +203,9 @@ export const ManageAddressBook = () => {
           address={item.address}
           avatarSize={theme.sizeLG}
           onPress={() => {
+            Keyboard.dismiss();
             setSelectedItem(item);
-            setShowEditContactModal(true);
+            setTimeout(() => setShowEditContactModal(true), 100);
           }}
           rightItem={ItemRightIcon}
         />

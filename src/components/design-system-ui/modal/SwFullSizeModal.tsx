@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View } from 'react-native';
+import { Platform, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { ModalProps } from 'react-native-modal/dist/modal';
 import ModalBase from 'components/design-system-ui/modal/ModalBase';
@@ -53,6 +53,7 @@ const SwFullSizeModal = ({
             isVisible={modalVisible}
             setVisible={setVisible}
             height={deviceHeight}
+            isUseForceHidden={Platform.OS === 'android'}
             isFullHeight>
             <View style={[subWalletModalContainer, modalStyle]}>{children}</View>
           </ModalBaseV2>

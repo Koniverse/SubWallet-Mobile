@@ -119,10 +119,8 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
         customMarker={
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
-              <View style={ScannerStyles.HeaderStyle}>
-                <Text style={[ScannerStyles.HeaderTitleTextStyle, { backgroundColor: theme.colorBgSecondary }]}>
-                  {i18n.header.scanQR}
-                </Text>
+              <View style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
+                <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.scanQrCode}</Text>
                 <IconButton icon={CaretLeft} style={CancelButtonStyle} onPress={onHideModal} />
                 <IconButton icon={ImageSquare} style={LibraryButtonStyle} onPress={onPressLibraryBtn} />
               </View>

@@ -13,7 +13,10 @@ interface Result {
   onHideModal: VoidFunction;
 }
 
-const useUnlockModal = (navigation: NativeStackNavigationProp<RootStackParamList>): Result => {
+const useUnlockModal = (
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+  setLoading?: (arg: boolean) => void,
+): Result => {
   const { isLocked, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const onCompleteRef = useRef<VoidFunction>(noop);
   const promiseRef = useRef<Promise<boolean> | undefined>();
@@ -74,10 +77,11 @@ const useUnlockModal = (navigation: NativeStackNavigationProp<RootStackParamList
   }, []);
 
   const onHideModal = useCallback(() => {
+    setLoading && setLoading(false);
     rejectRef.current?.(new Error('User cancel request'));
     promiseRef.current = undefined;
     onCompleteRef.current = noop;
-  }, []);
+  }, [setLoading]);
 
   return {
     onPress,
