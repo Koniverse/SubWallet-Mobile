@@ -1,9 +1,8 @@
 import { Images } from 'assets/index';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { StyleProp, View, ViewStyle, Image, Platform } from 'react-native';
+import { StyleProp, View, ViewStyle, Image } from 'react-native';
 import { ColorMap } from 'styles/color';
 import Video from 'react-native-video';
-import FastImage from 'react-native-fast-image';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
@@ -163,29 +162,18 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
           onError={handleImageError}
         />
       ) : !imageError ? (
-        //TODO: find solution to make video work on Android device
-        Platform.OS === 'ios' ? (
-          <Video
-            ref={videoRef}
-            paused={false}
-            resizeMode={'contain'}
-            source={{ uri: url }}
-            style={VideoStyle}
-            onError={handleVideoError}
-            onLoad={handleOnLoad}
-            repeat={true}
-            muted={true}
-            ignoreSilentSwitch="ignore"
-          />
-        ) : (
-          <FastImage
-            resizeMode={'contain'}
-            source={url ? { uri: url } : Images.default}
-            style={VideoStyle}
-            onError={handleVideoError}
-            onLoad={handleOnLoad}
-          />
-        )
+        <Video
+          ref={videoRef}
+          paused={false}
+          resizeMode={'contain'}
+          source={{ uri: url }}
+          style={VideoStyle}
+          onError={handleVideoError}
+          onLoad={handleOnLoad}
+          repeat={true}
+          muted={true}
+          ignoreSilentSwitch="ignore"
+        />
       ) : (
         <Image style={ImageStyle} source={Images.default} />
       )}
