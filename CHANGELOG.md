@@ -1,3 +1,14 @@
+## 1.0.14 (207)
+- Update logic for SendFund (#940)
+
+## 1.0.14 (206)
+- Implement Wallet Connect (#281)
+- UI bugs on the NFT list screen (Android device) (#915)
+- Upgrade UI Send Fund (#815)
+- Update latest web-runner (1.1.7)
+- Update UI for Polkadot Vault transaction
+- Bug can not display NFT Video on Android
+
 ## 1.0.13 (205)
 - Fix browser search - bookmark and update language key 'all account' in staking detail (#898)
 - Bump React Native to 0.71.12 (#855)
