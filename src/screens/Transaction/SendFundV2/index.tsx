@@ -575,11 +575,16 @@ export const SendFund = ({
       toValue,
       item.originChain,
     );
-    if (viewStep === 2 && isSameAddress(fromValue, toValue)) {
+
+    if (viewStep === 2) {
       if (currentDestChainItems.some(destChainItem => destChainItem.slug === item.originChain)) {
         setValue('destChain', item.originChain);
       } else {
-        setValue('destChain', '');
+        if (currentDestChainItems.length === 1) {
+          setValue('destChain', currentDestChainItems[0].slug);
+        } else {
+          setValue('destChain', '');
+        }
       }
     } else {
       setValue('destChain', item.originChain);
@@ -880,6 +885,7 @@ export const SendFund = ({
               title={viewStep === 1 ? title : 'Amount'}
               onPressBack={onSubheaderPressBack}
               disabled={loading}
+              titleTextAlign={'left'}
             />
           </View>
 
