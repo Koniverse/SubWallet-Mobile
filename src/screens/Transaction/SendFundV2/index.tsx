@@ -580,11 +580,7 @@ export const SendFund = ({
       if (currentDestChainItems.some(destChainItem => destChainItem.slug === item.originChain)) {
         setValue('destChain', item.originChain);
       } else {
-        if (currentDestChainItems.length === 1) {
-          setValue('destChain', currentDestChainItems[0].slug);
-        } else {
-          setValue('destChain', '');
-        }
+        setValue('destChain', '');
       }
     } else {
       setValue('destChain', item.originChain);
@@ -942,6 +938,7 @@ export const SendFund = ({
                 <View style={stylesheet.rowItem}>
                   <ChainSelector
                     items={viewStep === 1 ? destChainItems : destChainItemsViewStep2}
+                    acceptDefaultValue={viewStep === 2 && destChainItemsViewStep2.length === 1}
                     selectedValueMap={{ [destChainValue]: true }}
                     chainSelectorRef={chainSelectorRef}
                     onSelectItem={_onChangeDestChain}
