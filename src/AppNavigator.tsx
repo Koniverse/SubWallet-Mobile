@@ -54,7 +54,7 @@ import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
 import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import { Platform, StatusBar } from 'react-native';
+import { Keyboard, Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Home } from 'screens/Home';
 import { deviceWidth } from 'constants/index';
@@ -170,8 +170,8 @@ const AppNavigator = ({ isAppReady }: Props) => {
     if (hasConfirmations && currentRoute && amount) {
       if (currentRoute.name !== 'Confirmations' && amount) {
         if (!['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) && amount) {
-          appModalContext.hideConfirmModal();
-          setTimeout(() => navigationRef.current?.navigate('Confirmations'), 1000);
+          Keyboard.dismiss();
+          navigationRef.current?.navigate('Confirmations');
         }
       }
     }

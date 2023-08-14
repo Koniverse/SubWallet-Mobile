@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { CheckCircle, Info } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -116,7 +116,7 @@ const CreateMasterPassword = ({
       disableRightButton={isBusy}
       title={i18n.header.createAPassword}
       style={{ width: '100%' }}>
-      <View style={_style.bodyWrapper}>
+      <ScrollView style={_style.bodyWrapper} keyboardShouldPersistTaps={'handled'} showsVerticalScrollIndicator={false}>
         <Typography.Text style={_style.instructionTextStyle}>
           {i18n.createPassword.createPasswordMessage}
         </Typography.Text>
@@ -149,7 +149,7 @@ const CreateMasterPassword = ({
           description={i18n.warning.warningPasswordMessage}
           title={i18n.warning.warningPasswordTitle}
         />
-      </View>
+      </ScrollView>
 
       <View style={_style.footerAreaStyle}>
         <Button

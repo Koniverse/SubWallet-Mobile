@@ -118,8 +118,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
               appModalContext.hideConfirmModal();
             },
             onCompleteModal: () => {
-              appModalContext.hideConfirmModal();
-              setTimeout(() => turnOnChain(chain), 200);
+              turnOnChain(chain);
+              setTimeout(() => appModalContext.hideConfirmModal(), 300);
             },
             messageIcon: chain,
           });

@@ -35,9 +35,13 @@ const AccountActionButton = ({ item }: Props) => {
       onPress={item.onPress}
       style={{ marginBottom: 8 }}
       contentAlign={'left'}>
-      <View>
-        <Text style={_style.titleStyle}>{item.title}</Text>
-        <Text style={_style.subTitleStyle}>{item.subTitle}</Text>
+      <View style={{ flex: 1 }}>
+        <Text numberOfLines={1} style={_style.titleStyle}>
+          {item.title}
+        </Text>
+        <Text numberOfLines={1} style={_style.subTitleStyle}>
+          {item.subTitle}
+        </Text>
       </View>
     </Button>
   );
