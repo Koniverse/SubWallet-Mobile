@@ -93,13 +93,16 @@ export const TokenGroups = () => {
   );
 
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
-    const result: TokenBalanceItemType[] = [];
+    const balanceItemData: TokenBalanceItemType[] = [];
 
     sortedTokenGroups.forEach(tokenGroupSlug => {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
-        result.push(tokenGroupBalanceMap[tokenGroupSlug]);
+        balanceItemData.push(tokenGroupBalanceMap[tokenGroupSlug]);
       }
     });
+    const result = balanceItemData
+      // @ts-ignore
+      .sort((firstItem, secondItem) => secondItem.total.convertedValue - firstItem.total.convertedValue);
 
     return result;
   }, [sortedTokenGroups, tokenGroupBalanceMap]);
@@ -185,7 +188,12 @@ export const TokenGroups = () => {
       }
     });
 
-    return items;
+    const result = items
+      // @ts-ignore
+      .sort((firstItem, secondItem) => firstItem.total.convertedValue - secondItem.total.convertedValue)
+      .reverse();
+
+    return result;
   }, [sortedTokenSlugs, tokenBalanceMap]);
 
   const listHeaderNode = useMemo(() => {

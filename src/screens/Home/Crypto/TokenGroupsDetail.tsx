@@ -105,7 +105,11 @@ export const TokenGroupsDetail = ({
           }
         });
 
-        return items;
+        return (
+          items
+            // @ts-ignore
+            .sort((firstItem, secondItem) => secondItem.total.convertedValue - firstItem.total.convertedValue)
+        );
       }
 
       if (tokenBalanceMap[tokenGroupSlug]) {
