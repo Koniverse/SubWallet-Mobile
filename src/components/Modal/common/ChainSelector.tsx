@@ -10,6 +10,7 @@ interface Props {
   onSelectItem?: (item: ChainInfo) => void;
   renderSelected?: () => JSX.Element;
   disabled?: boolean;
+  acceptDefaultValue?: boolean;
   chainSelectorRef: React.MutableRefObject<ModalRef | undefined>;
 }
 
@@ -19,6 +20,7 @@ export const ChainSelector = ({
   onSelectItem,
   renderSelected,
   disabled,
+  acceptDefaultValue,
   chainSelectorRef,
 }: Props) => {
   return (
@@ -30,6 +32,7 @@ export const ChainSelector = ({
       onSelectItem={onSelectItem}
       renderSelected={renderSelected}
       disabled={disabled}
+      acceptDefaultValue={acceptDefaultValue}
       placeholder={i18n.placeholder.searchNetwork}
       ref={chainSelectorRef}
       onBackButtonPress={() => chainSelectorRef?.current?.onCloseModal()}
