@@ -60,12 +60,13 @@ export const ConnectionItem = ({ session, onPress }: Props) => {
         }}
         leftItem={<Image src={getImageSource(currentDomain)} shape={'circle'} style={{ width: 28, height: 28 }} />}
         middleItem={
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
-            <Typography.Text ellipsis size={'md'} style={{ ...FontSemiBold, color: theme.colorWhite, maxWidth: 96 }}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'space-between', flex: 1 }}>
+            <Typography.Text ellipsis size={'md'} style={{ ...FontSemiBold, color: theme.colorWhite, flex: 1 }}>
               {dAppInfo.name}
             </Typography.Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-              <Typography.Text ellipsis style={{ ...FontMedium, color: theme.colorTextTertiary, maxWidth: 132 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, justifyContent: 'flex-end', flex: 1 }}>
+              <Typography.Text ellipsis style={{ ...FontMedium, color: theme.colorTextTertiary, maxWidth: '80%' }}>
                 {currentDomain}
               </Typography.Text>
               <Typography.Text size={'md'} style={{ ...FontSemiBold, color: theme.colorWhite }}>

@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 
 export interface ModalStyle {
   container: ViewStyle;
@@ -14,7 +14,6 @@ export default (theme: ThemeTypes) =>
     container: { width: '100%' },
     footerModalStyle: {
       width: '100%',
-      ...ContainerHorizontalPadding,
       ...MarginBottomForSubmitButton,
       paddingTop: theme.paddingXS,
     },

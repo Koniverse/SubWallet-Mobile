@@ -152,6 +152,7 @@ const Component = (props: InputAmountProps, ref: ForwardedRef<any>) => {
         onChangeText={_onInputChange}
         defaultValue={inputValue}
         maxLength={getMaxLengthText(inputValue)}
+        autoFocus={true}
         {...inputProps}
         inputStyle={[stylesheet.input, inputStyle]}
         containerStyle={[stylesheet.container, containerStyle]}

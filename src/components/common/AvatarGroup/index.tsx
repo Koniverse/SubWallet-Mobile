@@ -40,11 +40,15 @@ const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) 
   }, [noAllAccount]);
 
   const getAvatarStyle = useCallback(
-    (index: number) => {
+    (index: number, arrLength: number) => {
       let avatarStyles: StyleProp<ViewStyle> = [_style.avatarContent];
 
       if (index === 0) {
-        avatarStyles.push({ marginLeft: 0, opacity: 0.5 });
+        if (index === arrLength - 1) {
+          avatarStyles.push({ marginLeft: 0, opacity: 1 });
+        } else {
+          avatarStyles.push({ marginLeft: 0, opacity: 0.5 });
+        }
       }
 
       if (index === 2) {
@@ -64,7 +68,7 @@ const AvatarGroup = ({ addresses: _addresses, avatarSize: _avatarSize }: Props) 
     <View style={[_style.container, countMore > 0 && _style.mlStrong]}>
       {noAllAccount.slice(0, 3).map((account, index) => {
         return (
-          <View key={index} style={getAvatarStyle(index)}>
+          <View key={index} style={getAvatarStyle(index, noAllAccount.length)}>
             <Avatar
               size={avatarSize}
               value={account}

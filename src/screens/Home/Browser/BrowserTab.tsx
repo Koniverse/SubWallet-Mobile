@@ -43,6 +43,9 @@ import createStylesheet from './styles/BrowserTab';
 import TabIcon from 'screens/Home/Browser/Shared/TabIcon';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
+import urlParse from 'url-parse';
+import { connectWalletConnect } from 'utils/walletConnect';
+import { useToast } from 'react-native-toast-notifications';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -148,6 +151,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const hostname = siteUrl.current ? getHostName(siteUrl.current) : null;
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
+  const toast = useToast();
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -411,6 +415,34 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       Linking.openURL(url).catch(er => {
         Alert.alert('Failed to open Link: ' + er.message);
       });
+      return false;
+    }
+    const urlParsed = new urlParse(url);
+
+    if (url.startsWith('wc:')) {
+      if (urlParsed.query.startsWith('?requestId')) {
+        return false;
+      }
+      connectWalletConnect(url, toast);
+      return false;
+    }
+
+    if (urlParsed.href.includes('wc?uri=wc')) {
+      Linking.canOpenURL(url)
+        .then(supported => {
+          if (supported) {
+            return Linking.openURL(url);
+          }
+          console.warn(`Can't open url: ${url}`);
+          return null;
+        })
+        .catch(e => {
+          console.warn(`Error opening URL: ${e}`);
+        });
+      return false;
+    }
+
+    if (urlParsed.href.startsWith('itms-appss://')) {
       return false;
     }
 

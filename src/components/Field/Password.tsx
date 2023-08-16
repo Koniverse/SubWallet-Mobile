@@ -104,9 +104,11 @@ export const PasswordField = forwardRef((passwordFieldProps: Props, ref: React.R
         </View>
       </View>
 
-      <View style={{ gap: 8 }}>
+      <View style={{ marginTop: 8 }}>
         {!!(errorMessages && errorMessages.length) &&
-          errorMessages.map((message, index) => <Warning key={index} isDanger message={message} />)}
+          errorMessages.map((message, index) => (
+            <Warning style={{ marginBottom: 8 }} key={index} isDanger message={message} />
+          ))}
       </View>
     </>
   );
@@ -119,7 +121,6 @@ function createStyle(theme: ThemeTypes, hasLabel: boolean, isValid: boolean, rea
       backgroundColor: theme.colorBgSecondary,
       width: '100%',
       position: 'relative',
-      marginBottom: 8,
       height: hasLabel ? 72 : 48,
     },
     inputLabel: {

@@ -7,7 +7,6 @@ import { VoidFunction } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 import { noop } from 'utils/function';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   message: string;
@@ -28,7 +27,6 @@ const ConfirmModal: React.FC<Props> = ({
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
-  const insets = useSafeAreaInsets();
 
   return (
     <SwModal
@@ -37,9 +35,10 @@ const ConfirmModal: React.FC<Props> = ({
       modalVisible={visible}
       modalTitle={title}
       titleTextAlign="center"
+      isUseModalV2
       footer={
         <>
-          <View style={[styles.footerModalStyle, { marginBottom: insets.bottom + 16 }]}>
+          <View style={styles.footerModalStyle}>
             <Button type="secondary" style={{ flex: 1, marginRight: 12 }} onPress={onCancelModal}>
               {i18n.common.cancel}
             </Button>

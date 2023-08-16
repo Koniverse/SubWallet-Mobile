@@ -40,7 +40,8 @@ export const ScreenContainer = ({
         colors={backgroundColor ? [backgroundColor, backgroundColor] : gradientBackground}
         style={styles.gradientWrapper}
       />
-      <SafeAreaView style={[statusBarStyle, { marginTop: DeviceInfo.hasNotch() ? 0 : 8 }]}>
+      <SafeAreaView
+        style={[statusBarStyle, { marginTop: DeviceInfo.hasNotch() ? 0 : Platform.OS === 'android' ? 0 : 8 }]}>
         <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       </SafeAreaView>
       <View style={styles.contentContainer}>{children}</View>

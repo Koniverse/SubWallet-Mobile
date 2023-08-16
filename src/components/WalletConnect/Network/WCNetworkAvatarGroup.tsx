@@ -69,7 +69,23 @@ export const WCNetworkAvatarGroup = ({ networks }: Props) => {
           </View>
         );
       })}
-      {countMore > 0 && <Typography.Text>+{countMore}</Typography.Text>}
+      {countMore > 0 && (
+        <Typography.Text
+          style={{
+            color: theme.colorWhite,
+            ...FontBold,
+            position: 'absolute',
+            right: 4,
+            bottom: 0,
+            textAlign: 'center',
+            shadowOpacity: 1,
+            shadowColor: '#000000',
+            shadowRadius: 5,
+          }}
+          size={'sm'}>
+          +{countMore}
+        </Typography.Text>
+      )}
     </View>
   );
 };
