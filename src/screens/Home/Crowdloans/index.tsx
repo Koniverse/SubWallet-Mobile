@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 import { ListRenderItemInfo } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
@@ -44,6 +44,14 @@ export const CrowdloansScreen = () => {
     { label: i18n.filterOptions.win, value: FilterValue.WINNER },
     { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
   ];
+  const crowdloanData = useMemo(() => {
+    const result = items.sort(
+      // @ts-ignore
+      (firstItem, secondItem) => secondItem.convertedContribute - firstItem.convertedContribute,
+    );
+
+    return result;
+  }, [items]);
 
   useEffect(() => {
     if (isFocused) {
@@ -85,7 +93,7 @@ export const CrowdloansScreen = () => {
         renderListEmptyComponent={renderListEmptyComponent}
         renderItem={renderItem}
         autoFocus={false}
-        items={items}
+        items={crowdloanData}
         showLeftBtn={false}
         searchFunction={doFilterOptions}
         filterOptions={defaultFilterOpts}
