@@ -38,6 +38,7 @@ import { Plus } from 'phosphor-react-native';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
 import { ModalRef } from 'types/modalRef';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 interface TokenTypeOption {
   label: string;
@@ -364,10 +365,6 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
           <TextField placeholder={i18n.placeholder.decimals} disabled={true} text={formState.data.decimals} />
 
-          {!isNetConnected && (
-            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
-          )}
-
           {!isReady && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
           )}
@@ -388,6 +385,12 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
                 {i18n.buttonTitles.enableNetwork}
               </Button>
             </>
+          )}
+
+          {!isNetConnected && (
+            <NoInternetAlertBox
+              marginTop={formState.data.chain && !checkChainConnected(formState.data.chain) ? 8 : 0}
+            />
           )}
 
           <AddressScanner

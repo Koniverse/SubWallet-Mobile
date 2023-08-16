@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -39,6 +39,8 @@ import { UnbondProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -92,6 +94,7 @@ export const Unbond = ({
       return undefined;
     }
   }, [currentValidator, nominatorMetadata]);
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const mustChooseValidator = useMemo(() => {
     return isActionFromValidator(stakingType, stakingChain || '');
@@ -299,6 +302,8 @@ export const Unbond = ({
             }}>
             {i18n.message.unBondMessage(unBondedTime)}
           </Typography.Text>
+
+          {!isNetConnected && <NoInternetAlertBox />}
         </ScrollView>
 
         <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>

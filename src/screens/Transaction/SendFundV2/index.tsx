@@ -14,7 +14,7 @@ import {
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
 import { addLazy, isSameAddress, removeLazy } from '@subwallet/extension-base/utils';
 import BigN from 'bignumber.js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { BN, BN_ZERO } from '@polkadot/util';
 import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -69,6 +69,8 @@ import createStylesheet from './styles';
 import { useGetBalance } from 'hooks/balance';
 import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 import { ModalRef } from 'types/modalRef';
+import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -316,6 +318,7 @@ export const SendFund = ({
   const accountSelectorRef = useRef<ModalRef>();
   const tokenSelectorRef = useRef<ModalRef>();
   const chainSelectorRef = useRef<ModalRef>();
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const {
     title,
@@ -1000,6 +1003,8 @@ export const SendFund = ({
                   )}
                 </View>
               )}
+
+              {!isNetConnected && <NoInternetAlertBox />}
             </ScrollView>
 
             <View style={stylesheet.footer}>

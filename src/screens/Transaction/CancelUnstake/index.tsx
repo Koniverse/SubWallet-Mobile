@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { NominatorMetadata, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { useNavigation } from '@react-navigation/native';
@@ -26,6 +26,8 @@ import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -52,7 +54,7 @@ export const CancelUnstake = ({
   const navigation = useNavigation<StakingScreenNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
-
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
   const cancelUnstakeFormConfig = {
@@ -137,6 +139,8 @@ export const CancelUnstake = ({
             onSelectItem={onChangeValue('unstakeIndex')}
             disabled={loading}
           />
+
+          {!isNetConnected && <NoInternetAlertBox />}
         </ScrollView>
 
         <View style={{ padding: 16, flexDirection: 'row' }}>

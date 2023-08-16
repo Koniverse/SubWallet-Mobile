@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import useFormControl from 'hooks/screen/useFormControl';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Keyboard, View } from 'react-native';
@@ -26,6 +26,8 @@ import { _NetworkUpsertParams } from '@subwallet/extension-base/services/chain-s
 import { useToast } from 'react-native-toast-notifications';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
+import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 interface ValidationInfo {
   status: ValidateStatus;
@@ -43,6 +45,7 @@ export const ImportNetwork = () => {
   const [genesisHash, setGenesisHash] = useState('');
   const [existentialDeposit, setExistentialDeposit] = useState('0');
   const toast = useToast();
+  const { isNetConnected } = useContext(WebRunnerContext);
 
   const handleErrorMessage = useCallback((errorCode: _CHAIN_VALIDATION_ERROR) => {
     switch (errorCode) {
@@ -367,6 +370,8 @@ export const ImportNetwork = () => {
           onSubmitField={onSubmitField('crowdloanUrl')}
           onChangeText={onChangeValue('crowdloanUrl')}
         />
+
+        {!isNetConnected && <NoInternetAlertBox marginTop={0} />}
       </View>
 
       <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton }}>

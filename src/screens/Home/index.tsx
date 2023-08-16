@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
@@ -6,8 +6,8 @@ import { Linking, Platform, StyleSheet, TouchableOpacity, View } from 'react-nat
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
 import { CryptoScreen } from 'screens/Home/Crypto';
-import { FontMedium } from 'styles/sharedStyles';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BOTTOM_BAR_HEIGHT, deviceWidth } from 'constants/index';
 import { ColorMap } from 'styles/color';
 import useCheckEmptyAccounts from 'hooks/useCheckEmptyAccounts';
@@ -20,7 +20,7 @@ import withPageWrapper from 'components/pageWrapper';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ActivityIndicator } from 'components/design-system-ui';
+import { ActivityIndicator, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import useAppLock from 'hooks/useAppLock';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -35,6 +35,7 @@ import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import queryString from 'querystring';
 import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
+import { WebRunnerContext } from 'providers/contexts';
 
 interface tabbarIconColor {
   color: string;
@@ -185,6 +186,17 @@ export const Home = ({ navigation }: Props) => {
   const isFirstOpen = useRef(true);
   const toast = useToast();
   const dispatch = useDispatch();
+  const theme = useSubWalletTheme().swThemes;
+  const { isNetConnected } = useContext(WebRunnerContext);
+  const [showNoInternetAlert, setShowNoInternetAlert] = useState(!isNetConnected);
+
+  useEffect(() => {
+    if (isNetConnected) {
+      setTimeout(() => setShowNoInternetAlert(false), 3000);
+    } else {
+      setShowNoInternetAlert(true);
+    }
+  }, [isNetConnected]);
 
   useEffect(() => {
     if (isReady && isLoading) {
@@ -246,6 +258,14 @@ export const Home = ({ navigation }: Props) => {
     <>
       <Wrapper />
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
+      {showNoInternetAlert && (
+        <View style={{ backgroundColor: isNetConnected ? theme['green-6'] : theme.colorBgDefault, marginTop: -12 }}>
+          <Typography.Text style={{ color: '#fff', textAlign: 'center', ...FontSemiBold }} size={'sm'}>
+            {isNetConnected ? 'Internet connected' : 'No internet connection'}
+          </Typography.Text>
+          <SafeAreaView edges={['bottom']} />
+        </View>
+      )}
     </>
   );
 };

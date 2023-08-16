@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
@@ -38,6 +38,8 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { getAstarWithdrawable } from '@subwallet/extension-base/koni/api/staking/bonding/astar';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
+import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -77,6 +79,7 @@ export const Withdraw = ({
   const accountInfo = useGetAccountByAddress(from);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const accountSelectorRef = useRef<ModalRef>();
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   useEffect(() => {
     // Trick to trigger validate when case single account
@@ -171,6 +174,8 @@ export const Withdraw = ({
               />
             )}
           </MetaInfo>
+
+          {!isNetConnected && <NoInternetAlertBox />}
         </ScrollView>
 
         <View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', ...MarginBottomForSubmitButton }}>

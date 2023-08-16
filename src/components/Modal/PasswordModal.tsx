@@ -4,11 +4,11 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import i18n from 'utils/i18n/i18n';
-import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { Button, SwModal } from 'components/design-system-ui';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import { ModalRefProps } from 'components/design-system-ui/modal/SwModal';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 interface Props {
   visible: boolean;
@@ -114,12 +114,10 @@ const PasswordModal = ({
           isBusy={isBusy}
         />
 
-        {!isNetConnected && (
-          <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
-        )}
+        {!isNetConnected && <NoInternetAlertBox marginTop={0} />}
 
         <Button
-          style={{ marginVertical: 16 }}
+          style={{ marginTop: 16 }}
           loading={isBusy}
           onPress={onPress}
           disabled={!formState.data.password || formState.errors.password.length > 0 || !isNetConnected || isBusy}>

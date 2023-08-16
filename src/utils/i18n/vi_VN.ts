@@ -973,6 +973,7 @@ export const vi = {
     updateNetwork: 'Cập nhật mạng',
     expiredConnectionTitle: 'Connection expired',
     unsupportedNetworkTitle: 'Unsupported network',
+    noInternetConnection: 'No internet connection',
   },
   warningMessage: {
     passwordTooShort: 'Mật khẩu quá ngắn',
@@ -1010,6 +1011,7 @@ export const vi = {
       'Mạng bạn đã chọn chưa được kích hoạt. Vui lòng nhấp vào nút này để bật mạng hoặc chọn mạng khác',
     expiredConnectionMessage: 'Connection expired. Please create a new connection from dApp',
     unsupportedNetworkMessage: 'There is at least 1 chosen network unavailable',
+    noInternetConnectionMessage: 'Please, check your connection or try again later',
   },
   errorMessage: {
     invalidPinCode: 'Mã PIN không hợp lệ',

@@ -1,5 +1,5 @@
 import useConfirmModal from 'hooks/modal/useConfirmModal';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { CaretDown, FloppyDiskBack, Plus, Trash } from 'phosphor-react-native';
 import { ScrollView, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
@@ -36,6 +36,8 @@ import DeleteModal from 'components/common/Modal/DeleteModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
+import { WebRunnerContext } from 'providers/contexts';
 
 const ContainerStyle: StyleProp<ViewStyle> = {
   ...sharedStyles.layoutContainer,
@@ -72,6 +74,7 @@ export const NetworkSettingDetail = ({
   const _chainState = useFetchChainState(chainSlug);
   const [chainState, setChainState] = useState(_chainState);
   const [isDeleting, setIsDeleting] = useState(false);
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const { decimals, symbol } = useMemo(() => {
     return _getChainNativeTokenBasicInfo(chainInfo);
@@ -236,6 +239,7 @@ export const NetworkSettingDetail = ({
       !!formState.errors.blockExplorer.length ||
       !!formState.errors.crowdloanUrl.length ||
       !!formState.errors.currentProvider.length ||
+      !isNetConnected ||
       isDeleting ||
       (formState.data.currentProvider === chainState.currentProvider &&
         formState.data.blockExplorer === _blockExplorer &&
@@ -252,6 +256,7 @@ export const NetworkSettingDetail = ({
     formState.errors.crowdloanUrl.length,
     formState.errors.currentProvider.length,
     isDeleting,
+    isNetConnected,
   ]);
 
   const {
@@ -354,6 +359,8 @@ export const NetworkSettingDetail = ({
             errorMessages={formState.errors.crowdloanUrl}
             placeholder={formState.labels.crowdloanUrl}
           />
+
+          {!isNetConnected && <NoInternetAlertBox marginTop={0} />}
         </ScrollView>
 
         <View style={{ ...MarginBottomForSubmitButton }}>

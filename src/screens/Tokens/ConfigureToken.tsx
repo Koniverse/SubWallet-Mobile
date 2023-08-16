@@ -19,7 +19,6 @@ import i18n from 'utils/i18n/i18n';
 import { useToast } from 'react-native-toast-notifications';
 import useFormControl, { FormState } from 'hooks/screen/useFormControl';
 import { deleteCustomAssets, upsertCustomToken } from '../../messaging';
-import { Warning } from 'components/Warning';
 import { WebRunnerContext } from 'providers/contexts';
 import { _ChainAsset } from '@subwallet/chain-list/types';
 import { Button, Icon, Typography } from 'components/design-system-ui';
@@ -31,6 +30,7 @@ import Tag from '../../components/design-system-ui/tag';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 export const ConfigureToken = ({
   route: {
@@ -213,9 +213,7 @@ export const ConfigureToken = ({
 
           {!!tokenInfo?.priceId && <TextField disabled text={tokenInfo.priceId} />}
 
-          {!isNetConnected && (
-            <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
-          )}
+          {!isNetConnected && <NoInternetAlertBox />}
         </ScrollView>
         {tokenInfo && _isCustomAsset(tokenInfo.slug) && (
           <View style={{ flexDirection: 'row', paddingTop: 27, ...MarginBottomForSubmitButton }}>

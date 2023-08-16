@@ -35,6 +35,7 @@ import { RootNavigationProps } from 'routes/index';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SendNFTProps } from 'routes/transaction/transactionAction';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -248,7 +249,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />
             )}
             <NetworkField label={i18n.inputLabel.network} networkKey={nftItem.chain || ''} />
-            {!isNetConnected && <Warning isDanger message={i18n.warningMessage.noInternetMessage} />}
+            {!isNetConnected && <NoInternetAlertBox />}
           </ScrollView>
 
           <View style={{ ...ContainerHorizontalPadding, marginTop: 16, marginBottom: 16 }}>

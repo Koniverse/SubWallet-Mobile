@@ -1,11 +1,12 @@
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import { _getChainNativeTokenSlug } from '@subwallet/extension-base/services/chain-service/utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { getFreeBalance, updateAssetSetting } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
+import { WebRunnerContext } from 'providers/contexts';
 
 const DEFAULT_BALANCE = { value: '0', symbol: '', decimals: 18 };
 
@@ -24,6 +25,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
   const isChainActive = chainStateMap[chain]?.active;
   const nativeTokenActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
   const isTokenActive = assetSettingMap[tokenSlug]?.visible;
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
 
   const refreshBalance = useCallback(() => {
     setIsRefresh({});
@@ -33,6 +35,10 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
     let cancel = false;
 
     setIsLoading(true);
+
+    if (!isNetConnected) {
+      return;
+    }
     setTokenBalance(DEFAULT_BALANCE);
 
     if (address && chain) {
@@ -126,6 +132,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
     isChainActive,
     isTokenActive,
     nativeTokenActive,
+    isNetConnected,
   ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error };

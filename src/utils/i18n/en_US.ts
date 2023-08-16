@@ -974,6 +974,7 @@ export const en = {
     updateNetwork: 'Update network',
     expiredConnectionTitle: 'Connection expired',
     unsupportedNetworkTitle: 'Unsupported network',
+    noInternetConnection: 'No internet connection',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',
@@ -1011,6 +1012,7 @@ export const en = {
       'The network you selected has not enable. Please enable by click this button or choose other network',
     expiredConnectionMessage: 'Connection expired. Please create a new connection from dApp',
     unsupportedNetworkMessage: 'There is at least 1 chosen network unavailable',
+    noInternetConnectionMessage: 'Please, check your connection or try again later',
   },
   errorMessage: {
     invalidPinCode: 'Invalid PIN Code',

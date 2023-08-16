@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
@@ -36,6 +36,8 @@ import { ClaimRewardProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { WebRunnerContext } from 'providers/contexts';
+import { NoInternetAlertBox } from 'components/NoInternetAlertBox';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -126,6 +128,7 @@ const ClaimReward = ({
   const [isDisabled, setIsDisabled] = useState(true);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const accountInfo = useGetAccountByAddress(from);
+  const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const onSubmit = useCallback(() => {
     setLoading(true);
 
@@ -210,6 +213,8 @@ const ClaimReward = ({
             }}
             checkBoxSize={20}
           />
+
+          {!isNetConnected && <NoInternetAlertBox />}
         </ScrollView>
 
         <View style={{ padding: 16, flexDirection: 'row' }}>

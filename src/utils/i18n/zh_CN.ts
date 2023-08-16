@@ -964,6 +964,7 @@ export const zh = {
     updateNetwork: '更新网络',
     expiredConnectionTitle: 'Connection expired',
     unsupportedNetworkTitle: 'Unsupported network',
+    noInternetConnection: 'No internet connection',
   },
   warningMessage: {
     passwordTooShort: '密码过短',
@@ -996,6 +997,7 @@ export const zh = {
     enableNetworkMessage: '你选择的网络尚未启用。 请点击此按钮启用或选择其他网络',
     expiredConnectionMessage: 'Connection expired. Please create a new connection from dApp',
     unsupportedNetworkMessage: 'There is at least 1 chosen network unavailable',
+    noInternetConnectionMessage: 'Please, check your connection or try again later',
   },
   errorMessage: {
     invalidPinCode: 'PIN码无效',
