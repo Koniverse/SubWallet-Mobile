@@ -56,6 +56,7 @@ export const LockScreen = () => {
           TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
             .then(() => {
               unlockWithBiometric();
+              navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Home');
             })
             .catch(() => {
               setAuthMethod('pinCode');
@@ -64,7 +65,7 @@ export const LockScreen = () => {
         .catch(() => setAuthMethod('pinCode'));
     }
     setAuthMethod(_authMethod);
-  }, [faceIdEnabled, unlockWithBiometric]);
+  }, [faceIdEnabled, navigation, unlockWithBiometric]);
 
   useEffect(() => {
     if (value.length === 6) {
