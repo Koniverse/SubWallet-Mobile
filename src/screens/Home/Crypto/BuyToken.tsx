@@ -48,7 +48,6 @@ export const BuyToken = ({
   } = useBuyToken(tokenGroupSlug, groupSymbol);
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
-  console.log('selectedBuyToken', selectedBuyToken);
   const symbol = useMemo(() => {
     return selectedBuyToken ? PREDEFINED_TRANSAK_TOKEN_BY_SLUG[selectedBuyToken].symbol : '';
   }, [selectedBuyToken]);

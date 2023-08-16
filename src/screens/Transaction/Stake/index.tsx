@@ -123,7 +123,6 @@ export const Stake = ({
     value: currentValue,
   } = formState.data;
 
-  console.log('asset', asset);
   const chainState = useFetchChainState(chain);
   const chainStakingMetadata = useGetChainStakingMetadata(chain);
   const nominatorMetadataList = useGetNominatorInfo(chain, currentStakingType as StakingType, from);

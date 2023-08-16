@@ -11,13 +11,7 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { useSelectValidators } from 'hooks/screen/Transaction/useSelectValidators';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
-import {
-  ArrowCounterClockwise,
-  CheckCircle,
-  MagnifyingGlass,
-  SortAscending,
-  SortDescending,
-} from 'phosphor-react-native';
+import { ArrowsClockwise, CheckCircle, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ValidatorSelectorField } from 'components/Field/ValidatorSelector';
 import { ValidatorSelectorDetailModal } from 'components/Modal/common/ValidatorSelectorDetailModal';
@@ -272,7 +266,7 @@ export const ValidatorSelector = ({
             {
               <Button
                 style={{ marginTop: 16 }}
-                icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
+                icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);
                   sortingModalRef?.current?.onCloseModal();

@@ -96,8 +96,6 @@ const usePayloadScanner = (showAlertMessage: (message: string) => void): Process
         const unsignedData = checkMultiFramesData(parsedData);
 
         if (unsignedData === null) {
-          console.log('Unsigned data is null');
-
           return showAlertMessage('');
         }
 
