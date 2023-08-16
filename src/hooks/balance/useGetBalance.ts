@@ -21,6 +21,9 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
   const [isRefresh, setIsRefresh] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isChainActive = chainStateMap[chain]?.active;
+  const nativeTokenActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
+  const isTokenActive = assetSettingMap[tokenSlug]?.visible;
 
   const refreshBalance = useCallback(() => {
     setIsRefresh({});
@@ -34,11 +37,9 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
 
     if (address && chain) {
       const promiseList = [] as Promise<any>[];
-      const isChainActive = chainStateMap[chain]?.active;
-      const nativeTokenActive = nativeTokenSlug && assetSettingMap[nativeTokenSlug]?.visible;
       let childTokenActive = true;
 
-      if (tokenSlug && tokenSlug !== nativeTokenSlug && !assetSettingMap[tokenSlug]?.visible) {
+      if (tokenSlug && tokenSlug !== nativeTokenSlug && !isTokenActive) {
         childTokenActive = false;
       }
 
@@ -120,10 +121,11 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
     nativeTokenSlug,
     tokenSlug,
     isRefresh,
-    assetSettingMap,
-    chainStateMap,
     assetRegistry,
     chainInfo?.name,
+    isChainActive,
+    isTokenActive,
+    nativeTokenActive,
   ]);
 
   return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error };
