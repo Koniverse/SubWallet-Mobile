@@ -20,7 +20,7 @@ import withPageWrapper from 'components/pageWrapper';
 import RequestCreateMasterPasswordModal from 'screens/MasterPassword/RequestCreateMasterPasswordModal';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { ActivityIndicator } from 'components/design-system-ui';
+import { ActivityIndicator, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { WrapperParamList } from 'routes/wrapper';
@@ -35,6 +35,10 @@ import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { mmkvStore } from 'utils/storage';
 import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
+import UpdateAppModal from 'components/UpdateAppModal';
+import { useInstallation } from 'hooks/useInstallation';
+import { Bar as ProgressBar } from 'react-native-progress';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 interface tabbarIconColor {
   color: string;
@@ -197,12 +201,24 @@ export const Home = ({ navigation }: Props) => {
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
   const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
+  const [updateAppModalVisible, setUpdateAppModalVisible] = useState<boolean>(false);
+  const [updateAppData, setUpdateAppData] = useState<{ title: string; data: string }[]>([]);
+  const { onPressUpdate, setShowProgressBarModal, showProgressModal, progressNumb, onPressCancel } = useInstallation(
+    setUpdateAppModalVisible,
+    setUpdateAppData,
+  );
 
   useEffect(() => {
     if (isReady && isLoading) {
       setTimeout(() => setLoading(false), 1500);
     }
   }, [isReady, isLoading]);
+
+  useEffect(() => {
+    if (progressNumb === 1) {
+      setShowProgressBarModal(false);
+    }
+  }, [progressNumb, setShowProgressBarModal]);
 
   useEffect(() => {
     if (isReady && !isLoading && !isLocked && isFirstOpen.current && hasMasterPassword && !isEmptyAccounts) {
@@ -253,6 +269,41 @@ export const Home = ({ navigation }: Props) => {
           onPressAcceptBtn={onPressAcceptBtn}
           disabledOnPressBackDrop={true}
         />
+      )}
+      {!isLocked && !isEmptyAccounts && (
+        <>
+          <UpdateAppModal
+            visible={updateAppModalVisible}
+            updateAppData={updateAppData}
+            setVisible={setUpdateAppModalVisible}
+            onPressUpdate={onPressUpdate}
+            onPressCancel={onPressCancel}
+          />
+
+          <SwModal
+            isUseModalV2
+            modalVisible={showProgressModal}
+            setVisible={setShowProgressBarModal}
+            modalTitle={'Downloading app'}>
+            <View style={{ gap: 12 }}>
+              <ProgressBar
+                progress={progressNumb}
+                width={null}
+                color={ColorMap.primary}
+                height={3}
+                borderRadius={0}
+                borderWidth={0}
+                useNativeDriver
+                style={{ backgroundColor: '#1C1C1C' }}
+              />
+              <AlertBox
+                type={'warning'}
+                title={'Warning'}
+                description={'Keep the app open while the update is in progress'}
+              />
+            </View>
+          </SwModal>
+        </>
       )}
     </>
   );

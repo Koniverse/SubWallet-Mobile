@@ -22,6 +22,9 @@ export const POLKADOT_VAULT_INSTRUCTION_URL =
 export const KEYSTONE_INSTRUCTION_URL =
   'https://docs.subwallet.app/main/mobile-app-user-guide/account-management/connect-keystone-device';
 export const WEBSITE_URL = 'https://subwallet.app/';
+export const GITHUB_REPOS_URL = 'https://api.github.com/repos/Koniverse/SubWallet-Mobile/releases?per_page=5&page=1';
+export const APPSTORE_URL = 'https://apps.apple.com/us/app/subwallet-polkadot-wallet/id1633050285';
+export const PLAYSTORE_URL = 'https://play.google.com/store/apps/details?id=app.subwallet.mobile';
 export const TELEGRAM_URL = 'https://t.me/subwallet';
 export const TWITTER_URL = 'https://twitter.com/subwalletapp';
 export const DISCORD_URL = 'https://discord.com/invite/vPCN4vdB8v';
