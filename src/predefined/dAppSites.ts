@@ -1166,5 +1166,14 @@ export const predefinedDApps: PredefinedDApps = {
       isSupportSubstrateAccount: false,
       isSupportEthereumAccount: true,
     },
+    {
+      name: 'AZERO.ID – Domain Service on Aleph Zero',
+      icon: 'https://azero.id/favicon.ico',
+      id: 'www.azero.id',
+      url: 'https://azero.id',
+      categories: ['defi', 'evm'],
+      isSupportSubstrateAccount: false,
+      isSupportEthereumAccount: true,
+    },
   ],
 };
