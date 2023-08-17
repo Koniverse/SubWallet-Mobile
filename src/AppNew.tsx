@@ -19,6 +19,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
+import { checkAppInstalledFromAPK } from 'utils/installation';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
@@ -134,6 +135,10 @@ export const AppNew = () => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
+
+    if (Platform.OS === 'android') {
+      checkAppInstalledFromAPK();
+    }
   }, []);
 
   useEffect(() => {
