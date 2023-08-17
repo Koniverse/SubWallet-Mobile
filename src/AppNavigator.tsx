@@ -185,7 +185,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   useEffect(() => {
     let amount = true;
     if (needMigrate && hasMasterPassword && currentRoute && amount) {
-      if (currentRoute.name !== 'MigratePassword' && amount) {
+      if (currentRoute.name !== 'MigratePassword' && currentRoute.name !== 'UnlockModal' && amount) {
         navigationRef.current?.navigate('MigratePassword');
       }
     }

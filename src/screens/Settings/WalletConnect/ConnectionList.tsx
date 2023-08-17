@@ -51,16 +51,18 @@ export const ConnectionList = ({
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    async function checkPermission() {
-      const result = await requestCameraPermission(() => navigation.goBack());
+    if (!items.length) {
+      async function checkPermission() {
+        const result = await requestCameraPermission(() => navigation.goBack());
 
-      if (result !== RESULTS.GRANTED) {
-        setIsScanning(false);
+        if (result !== RESULTS.GRANTED) {
+          setIsScanning(false);
+        }
       }
-    }
 
-    checkPermission();
-  }, [navigation]);
+      checkPermission();
+    }
+  }, [items.length, navigation]);
 
   const renderEmptyList = () => {
     return (

@@ -25,7 +25,7 @@ import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPres
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { SelectedActionType } from 'stores/types';
 import { noop } from 'utils/function';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 
 type PageStep = 'Introduction' | 'Migrate' | 'Done';
@@ -62,6 +62,14 @@ const ApplyMasterPassword = () => {
       validateFunc: validatePassword,
     },
   };
+  const isFocused = useIsFocused();
+  const { onPress, onHideModal } = useUnlockModal(navigation);
+
+  useEffect(() => {
+    if (isFocused) {
+      onHideModal();
+    }
+  }, [isFocused, onHideModal]);
 
   const migratedRef = useRef<AccountJson[]>(
     accounts.filter(acc => acc.address !== ALL_ACCOUNT_KEY && !acc.isExternal && acc.isMasterPassword),
@@ -240,8 +248,6 @@ const ApplyMasterPassword = () => {
       setStep('Migrate');
     }
   }, []);
-
-  const { onPress } = useUnlockModal(navigation);
 
   const onPressActionButton = useCallback(
     (action: SelectedActionType) => {
