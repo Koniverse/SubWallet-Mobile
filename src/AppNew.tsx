@@ -5,7 +5,7 @@ import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
 import React, { useEffect } from 'react';
-import { AppState, Platform, StatusBar, StyleProp, View } from 'react-native';
+import { AppState, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -20,17 +20,16 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
-import { HIDE_MODAL_DURATION, TOAST_DURATION } from 'constants/index';
+import { TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
-import { keyringLock } from 'messaging/index';
-import { updateShowZeroBalanceState } from 'stores/utils';
-import { setBuildNumber } from './stores/AppVersion';
-import { getBuildNumber } from 'react-native-device-info';
 import { AppModalContextProvider } from './providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { PortalProvider } from '@gorhom/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { LockTimeout } from 'stores/types';
+import { keyringLock } from './messaging';
+import { updateAutoLockTime } from 'stores/MobileSettings';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -42,54 +41,65 @@ const layerScreenStyle: StyleProp<any> = {
   zIndex: 10,
 };
 
-AutoLockState.isPreventAutoLock = false;
+const gestureRootStyle: StyleProp<any> = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  bottom: 0,
+  right: 0,
+  width: '100%',
+  height: '100%',
+  zIndex: 9999,
+};
+
+// AutoLockState.isPreventAutoLock = false;
 const autoLockParams: {
-  pinCodeEnabled: boolean;
-  faceIdEnabled: boolean;
-  autoLockTime?: number;
+  hasMasterPassword: boolean;
+  isUseBiometric: boolean;
+  timeAutoLock?: number;
   lock: () => void;
   isPreventLock: boolean;
+  isMasterPasswordLocked: boolean;
 } = {
-  pinCodeEnabled: false,
-  faceIdEnabled: false,
-  isPreventLock: false,
-  autoLockTime: undefined,
+  hasMasterPassword: false,
+  isUseBiometric: false,
+  timeAutoLock: undefined,
   lock: () => {},
+  isPreventLock: false,
+  isMasterPasswordLocked: false,
 };
-let timeout: NodeJS.Timeout | undefined;
+// let timeout: NodeJS.Timeout | undefined;
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
-  const { pinCodeEnabled, faceIdEnabled, autoLockTime, lock, isPreventLock } = autoLockParams;
+  const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
 
-  if (state === 'background' && !isPreventLock) {
-    keyringLock().catch((e: Error) => console.log(e));
-  }
-
-  if (!pinCodeEnabled || autoLockTime === undefined) {
+  if (timeAutoLock === undefined) {
     return;
   }
 
   if (state === 'background') {
-    timeout = setTimeout(() => {
-      if (AutoLockState.isPreventAutoLock) {
-        return;
+    if (timeAutoLock === LockTimeout.ALWAYS) {
+      // Lock master password incase always require
+      keyringLock().catch((e: Error) => console.log(e));
+    }
+    if (AutoLockState.isPreventAutoLock) {
+      return;
+    }
+    if (isUseBiometric) {
+      lockWhenActive = true;
+    } else {
+      lockWhenActive = false;
+      if (isMasterPasswordLocked) {
+        lock();
       }
-      if (faceIdEnabled) {
-        lockWhenActive = true;
-      } else {
-        lockWhenActive = false;
-        Platform.OS === 'android' ? setTimeout(() => lock(), HIDE_MODAL_DURATION) : lock();
-      }
-    }, autoLockTime);
+    }
   } else if (state === 'active') {
     if (lockWhenActive) {
-      if (!AutoLockState.isPreventAutoLock) {
-        Platform.OS === 'android' ? setTimeout(() => lock(), HIDE_MODAL_DURATION) : lock();
+      if (isMasterPasswordLocked) {
+        lock();
       }
       lockWhenActive = false;
     }
-    timeout && clearTimeout(timeout);
-    timeout = undefined;
   }
 });
 
@@ -100,53 +110,54 @@ export const AppNew = () => {
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
-  const { pinCodeEnabled, faceIdEnabled, autoLockTime, isPreventLock } = useSelector(
-    (state: RootState) => state.mobileSettings,
-  );
-  const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const { buildNumber } = useSelector((state: RootState) => state.appVersion);
-  const { lock } = useAppLock();
+  const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
+  const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { lock, unlockApp } = useAppLock();
   const dispatch = useDispatch();
-
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
   useStoreBackgroundService();
 
   // Enable lock screen on the start app
   useEffect(() => {
-    if (!firstTimeCheckPincode && pinCodeEnabled) {
+    if (!firstTimeCheckPincode && isLocked) {
       lock();
     }
+    if (!isLocked) {
+      unlockApp();
+    }
     firstTimeCheckPincode = true;
-  }, [lock, pinCodeEnabled]);
+    autoLockParams.isMasterPasswordLocked = isLocked;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocked]);
 
   useEffect(() => {
     autoLockParams.lock = lock;
-    autoLockParams.autoLockTime = autoLockTime;
-    autoLockParams.pinCodeEnabled = pinCodeEnabled;
-    autoLockParams.faceIdEnabled = faceIdEnabled;
+    autoLockParams.timeAutoLock = timeAutoLock;
+    autoLockParams.hasMasterPassword = hasMasterPassword;
+    autoLockParams.isUseBiometric = isUseBiometric;
     autoLockParams.isPreventLock = isPreventLock;
-  }, [autoLockTime, faceIdEnabled, isPreventLock, lock, pinCodeEnabled]);
+  }, [timeAutoLock, isUseBiometric, isPreventLock, lock, hasMasterPassword]);
 
   const isRequiredStoresReady = true;
+
+  // When update from v1.0.15, time auto lock could be wrong. We can remove this effect later
+  useEffect(() => {
+    if (!Object.values(LockTimeout).includes(timeAutoLock)) {
+      dispatch(updateAutoLockTime(LockTimeout._15MINUTE));
+    }
+  }, [dispatch, timeAutoLock]);
 
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
-  }, []);
 
-  useEffect(() => {
-    if (buildNumber === 1) {
-      // Set default value on the first time install
-      updateShowZeroBalanceState(false);
-      const buildNumberInt = parseInt(getBuildNumber(), 10);
-      dispatch(setBuildNumber(buildNumberInt));
-    }
-    if (hasMasterPassword) {
-      keyringLock().catch((e: Error) => console.log(e));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // if (buildNumber === 1) {
+    // Set default value on the first time install
+    // const buildNumberInt = parseInt(getBuildNumber(), 10);
+    // dispatch(setBuildNumber(buildNumberInt));
+    // }
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
@@ -170,17 +181,7 @@ export const AppNew = () => {
                 <ExternalRequestContextProvider>
                   <QrSignerContextProvider>
                     <ScannerContextProvider>
-                      <GestureHandlerRootView
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          bottom: 0,
-                          right: 0,
-                          width: '100%',
-                          height: '100%',
-                          zIndex: 9999,
-                        }}>
+                      <GestureHandlerRootView style={gestureRootStyle}>
                         <PortalProvider>
                           <AppModalContextProvider>
                             <AppNavigator isAppReady={isAppReady} />

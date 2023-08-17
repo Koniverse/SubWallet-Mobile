@@ -27,6 +27,7 @@ export interface SWModalProps {
   modalBaseV2Ref?: React.RefObject<SWModalRefProps>;
   level?: number;
   isUseSafeAreaView?: boolean;
+  renderHeader?: React.ReactNode;
 }
 
 const getSubWalletModalContainerStyle = (isFullHeight: boolean): StyleProp<any> => {
@@ -77,6 +78,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       modalBaseV2Ref,
       level,
       isUseSafeAreaView = true,
+      renderHeader,
     },
     ref,
   ) => {
@@ -124,7 +126,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
     return (
       <>
         {isUseModalV2 ? (
-          <Portal>
+          <Portal hostName="SimpleModalHost">
             <ModalBaseV2
               isVisible={modalVisible}
               setVisible={setVisible}
@@ -178,7 +180,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
                   contentContainerStyle,
                 ]}>
                 <View style={subWalletModalSeparator} />
-                {renderTitle()}
+                {renderHeader ? renderHeader : renderTitle()}
 
                 {children}
               </View>

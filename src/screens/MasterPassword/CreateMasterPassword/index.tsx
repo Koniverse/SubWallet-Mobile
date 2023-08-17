@@ -15,6 +15,9 @@ import { KeypairType } from '@polkadot/util-crypto/types';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import AlertBox from 'components/design-system-ui/alert-box';
 import i18n from 'utils/i18n/i18n';
+import { RootState } from 'stores/index';
+import { useSelector } from 'react-redux';
+import { createKeychainPassword } from 'utils/account';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -26,6 +29,7 @@ const CreateMasterPassword = ({
   },
 }: CreatePasswordProps) => {
   const navigation = useNavigation<RootNavigationProps>();
+  const { isUseBiometric } = useSelector(({ mobileSettings }: RootState) => mobileSettings);
   const theme = useSubWalletTheme().swThemes;
   const _style = CreateMasterPasswordStyle(theme);
   const [isBusy, setIsBusy] = useState(false);
@@ -79,6 +83,9 @@ const CreateMasterPassword = ({
             } else {
               onComplete();
               // TODO: complete
+              if (isUseBiometric) {
+                createKeychainPassword(password);
+              }
             }
           })
           .catch(e => {

@@ -50,7 +50,6 @@ export type RootStackParamList = {
   Drawer: NavigatorScreenParams<WrapperParamList>;
   Languages: undefined;
   Security: undefined;
-  PinCode: { screen: 'NewPinCode' | 'ChangePinCode' | 'TurnoffPinCode' };
   AccountExport: { address: string };
   ExportJson: { address: string };
   BrowserHome?: NavigatorScreenParams<undefined> | undefined;
@@ -95,7 +94,6 @@ export type RootRouteProps = NavigationProps['route'];
 export type CreateAccountProps = NativeStackScreenProps<RootStackParamList, 'CreateAccount'>;
 export type CreatePasswordProps = NativeStackScreenProps<RootStackParamList, 'CreatePassword'>;
 export type ImportSecretPhraseProps = NativeStackScreenProps<RootStackParamList, 'ImportSecretPhrase'>;
-export type PinCodeProps = NativeStackScreenProps<RootStackParamList, 'PinCode'>;
 export type AccountsScreenProps = NativeStackScreenProps<RootStackParamList, 'AccountsScreen'>;
 export type SendFundProps = NativeStackScreenProps<RootStackParamList, 'SendFund'>;
 export type EditAccountProps = NativeStackScreenProps<RootStackParamList, 'EditAccount'>;

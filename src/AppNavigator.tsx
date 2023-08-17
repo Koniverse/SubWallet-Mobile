@@ -23,7 +23,6 @@ import { DAppAccessScreen } from 'screens/Settings/Security/DAppAccess';
 import { DAppAccessDetailScreen } from 'screens/Settings/Security/DAppAccess/DAppAccessDetailScreen';
 import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
-import { PinCodeScreen } from 'screens/Settings/Security/PinCodeScreen';
 import { AccountExport } from 'screens/Account/AccountExport';
 import { CustomTokenSetting } from 'screens/Tokens';
 import { NetworkConfig } from 'screens/Settings/NetworkConfig';
@@ -68,10 +67,11 @@ import { ConnectionList } from 'screens/Settings/WalletConnect/ConnectionList';
 import { ConnectWalletConnect } from 'screens/Settings/WalletConnect/ConnectWalletConnect';
 import { ConnectionDetail } from 'screens/Settings/WalletConnect/ConnectionDetail';
 import useAppLock from 'hooks/useAppLock';
-import { LockScreen } from 'screens/LockScreen';
+import LoginScreen from 'screens/MasterPassword/Login';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { AppModalContext } from 'providers/AppModalContext';
+import { PortalHost } from '@gorhom/portal';
 
 interface Props {
   isAppReady: boolean;
@@ -143,6 +143,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
   const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { isLocked } = useAppLock();
+  const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
 
   const needMigrate = useMemo(
@@ -179,7 +180,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
     return () => {
       amount = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasConfirmations, navigationRef, currentRoute]);
 
   useEffect(() => {
@@ -195,16 +195,12 @@ const AppNavigator = ({ isAppReady }: Props) => {
   }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
 
   useEffect(() => {
-    let amount = true;
-    if (isLocked && amount) {
+    if (isLocked && !!accounts.length && isNavigationReady) {
       appModalContext.hideConfirmModal();
-      setTimeout(() => navigationRef.current?.navigate('Login'), 500);
+      setTimeout(() => navigationRef.current?.navigate('Login'), 300);
     }
-    return () => {
-      amount = false;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLocked, navigationRef]);
+  }, [isLocked, isNavigationReady, accounts]);
 
   useEffect(() => {
     if (isEmptyAccounts) {
@@ -215,8 +211,17 @@ const AppNavigator = ({ isAppReady }: Props) => {
     }
   }, [isEmptyAccounts, navigationRef]);
 
+  const onNavigationReady = () => {
+    setNavigationReady(true);
+  };
+
   return (
-    <NavigationContainer linking={linking} ref={navigationRef} theme={theme} onStateChange={onUpdateRoute}>
+    <NavigationContainer
+      linking={linking}
+      ref={navigationRef}
+      theme={theme}
+      onStateChange={onUpdateRoute}
+      onReady={onNavigationReady}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
@@ -284,7 +289,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="DAppAccessDetail" component={DAppAccessDetailScreen} />
                 <Stack.Screen name="Languages" component={Languages} />
                 <Stack.Screen name="Security" component={Security} />
-                <Stack.Screen name="PinCode" component={PinCodeScreen} />
                 <Stack.Screen
                   name="ChangePassword"
                   component={ChangeMasterPassword}
@@ -316,13 +320,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
                   component={Confirmations}
                   options={{ gestureEnabled: false, animationDuration: 100 }}
                 />
-                <Stack.Screen name="Login" component={LockScreen} />
-                {<Stack.Screen name={'UnlockModal'} component={UnlockModal} />}
+                {!!accounts.length && <Stack.Screen name="Login" component={LoginScreen} />}
+                <Stack.Screen name={'UnlockModal'} component={UnlockModal} />
               </Stack.Group>
             </>
           )}
           {!isAppReady && <Stack.Screen name="LoadingScreen" component={LoadingScreen} />}
         </Stack.Navigator>
+        <PortalHost name="SimpleModalHost" />
       </ErrorBoundary>
     </NavigationContainer>
   );

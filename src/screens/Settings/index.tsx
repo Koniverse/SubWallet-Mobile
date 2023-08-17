@@ -24,8 +24,6 @@ import {
 } from 'phosphor-react-native';
 import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { useSelector } from 'react-redux';
-import { RootState } from 'stores/index';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import {
@@ -73,7 +71,6 @@ type settingItemType = {
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
-  const pinCodeEnabled = useSelector((state: RootState) => state.mobileSettings.pinCodeEnabled);
   const { lock } = useAppLock();
   const [hiddenCount, setHiddenCount] = useState(0);
 
@@ -285,17 +282,9 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           <Button
             style={{ marginTop: 16 }}
             onPress={lock}
-            disabled={!pinCodeEnabled}
             type={'secondary'}
             block
-            icon={
-              <Icon
-                phosphorIcon={Lock}
-                size={'lg'}
-                weight={'fill'}
-                iconColor={!pinCodeEnabled ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }>
+            icon={<Icon phosphorIcon={Lock} size={'lg'} weight={'fill'} iconColor={theme.colorWhite} />}>
             {i18n.settings.lock}
           </Button>
         </ScrollView>

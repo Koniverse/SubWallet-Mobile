@@ -18,6 +18,9 @@ import useGoHome from 'hooks/screen/useGoHome';
 import i18n from 'utils/i18n/i18n';
 import AlertBox from 'components/design-system-ui/alert-box';
 import { FontSemiBold } from 'styles/sharedStyles';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { createKeychainPassword, resetKeychainPassword } from 'utils/account';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -27,6 +30,7 @@ type PageStep = 'OldPassword' | 'NewPassword';
 
 const ChangeMasterPassword = () => {
   const navigation = useNavigation<RootNavigationProps>();
+  const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
   const theme = useSubWalletTheme().swThemes;
   const goHome = useGoHome();
   const _style = ChangeMasterPasswordStyle(theme);
@@ -62,6 +66,13 @@ const ChangeMasterPassword = () => {
     backToHome(goHome);
   }, [goHome]);
 
+  async function handleUpdateKeychain(password: string) {
+    if (isUseBiometric) {
+      await resetKeychainPassword();
+      createKeychainPassword(password);
+    }
+  }
+
   const onSubmit = () => {
     if (checkValidateForm(formState.isValidated)) {
       const password = formState.data.password;
@@ -78,6 +89,7 @@ const ChangeMasterPassword = () => {
             if (!res.status) {
               setErrors(res.errors);
             } else {
+              handleUpdateKeychain(password);
               _backToHome();
             }
           })

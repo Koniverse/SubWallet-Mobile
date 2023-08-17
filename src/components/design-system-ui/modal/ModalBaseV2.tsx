@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useImperativeHandle, useState } from 'react';
-import { Dimensions, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { DeviceEventEmitter, Dimensions, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ModalStyles from './styleV2';
@@ -27,6 +27,8 @@ export type SWModalRefProps = {
   close: () => void;
 };
 
+export const FORCE_HIDDEN_EVENT = 'modalV2ForceHidden';
+
 const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
   (
     {
@@ -48,6 +50,16 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
     const _styles = ModalStyles(theme, level);
     const { numberOfConfirmations } = useConfirmationsInfo();
     const [isForcedHidden, setForcedHidden] = useState<boolean>(false);
+
+    useEffect(() => {
+      const hiddenEvent = DeviceEventEmitter.addListener(FORCE_HIDDEN_EVENT, (isHidden: boolean) => {
+        setForcedHidden(isHidden);
+      });
+      return () => {
+        hiddenEvent.remove();
+      };
+    }, []);
+
     useEffect(() => {
       if (isUseForceHidden && !!numberOfConfirmations) {
         setForcedHidden(true);

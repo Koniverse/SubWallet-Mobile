@@ -12,6 +12,7 @@ export const en = {
     cannotScanQRCodeWithoutPermission:
       'SubWallet needs access to camera on your device to scan QR code for actions such as account creation, data verification or dApp connection.',
     goToSetting: 'Go to setting',
+    noFaceIdPermission: 'This app use Face ID to unlock password',
     scan: 'Scan',
     toSendFund: 'to send fund',
     toSendAsset: 'to send asset',
@@ -200,6 +201,7 @@ export const en = {
     qrSignerAccount: 'QR signer account',
     watchOnlyAccount: 'Watch-only account',
     unknownAccount: 'Unknown account',
+    tooManyAttemps: 'Too many failed attempts. Please try again later or enter password.',
   },
   title: {
     exportAccount: 'Export account',
@@ -393,6 +395,8 @@ export const en = {
     applyAccounts: (account: number) => `Apply ${account} accounts`,
     createOne: 'Create one',
     reload: 'Reload',
+    unlockWithBiometric: 'Unlock with your biometric',
+    enterMasterPassword: 'Enter master password',
   },
   inputLabel: {
     selectAcc: 'Select account',
@@ -613,6 +617,10 @@ export const en = {
     failToDisconnect: 'Fail to disconnect',
     unableToFetchInformation: (validatorTitle: string) => `Unable to fetch ${validatorTitle} information`,
     unknownNetworks: (unsupportedNumber: number) => `${unsupportedNumber} unknown network`,
+    noticeForNewLoginMethod:
+      'For easier password management, master password will be applied in place of PIN code in previous versions. You need to enter your master password to unlock SubWallet.',
+    migrateMasterPasswordForBiometric:
+      'For easier password management, master password will be applied in place of PIN code in previous versions. To keep using biometric authentication, please enter your master password and verify your biometric again.',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
@@ -954,10 +962,13 @@ export const en = {
     termOfService: 'Terms of service',
     webViewDebugger: 'Web view debugger',
     immediately: 'Immediately',
+    neverRequire: 'Never',
+    alwaysRequire: 'Always',
     ifLeftFor15Seconds: 'If left for 15 seconds',
     ifLeftFor30Seconds: 'If left for 30 seconds',
     ifLeftFor1Minute: 'If left for 1 minute',
     ifLeftFor5Minutes: 'If left for 5 minutes',
+    ifLeftFor10Minutes: 'If left for 10 minutes',
     ifLeftFor15Minutes: 'If left for 15 minutes',
     ifLeftFor30Minutes: 'If left for 30 minutes',
     ifLeftFor1Hour: 'If left for 1 hour',
@@ -971,7 +982,7 @@ export const en = {
     changePassword: 'Change password',
     manageWebsiteAccess: 'Manage website access',
     manageWalletConnectDapp: 'Manage WalletConnect Dapp',
-    appLock: 'App lock',
+    appLock: 'Require unlock',
     walletTheme: 'Wallet theme',
     language: 'Language',
     notifications: 'Notifications',
@@ -1091,6 +1102,7 @@ export const en = {
     deleteChainSuccessfully: 'Deleted chain successfully',
     addProviderSuccessfully: 'Added a provider successfully',
     addTokenSuccessfully: 'Added token successfully',
+    warningNeverRequirePassword: 'Choosing this option can affect your wallet security',
   },
   browser: {
     searchWithDuckduckgo: 'Search with Duckduckgo',
