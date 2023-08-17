@@ -1,3 +1,5 @@
+## 1.0.14 (209)
+- Fix bug not open UnlockModal in ApplyMasterPassword screen
 ## 1.0.14 (208)
 - Fix bug related to SendFund (#939)
 - Re-check re-connect network on transaction screen (#942)
