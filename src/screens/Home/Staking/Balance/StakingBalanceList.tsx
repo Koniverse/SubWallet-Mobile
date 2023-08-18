@@ -86,7 +86,6 @@ const StakingBalanceList = () => {
     { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
   ];
   const stakingList = useMemo(() => {
-    console.log(data);
     if (!data.length) {
       return [];
     }
@@ -100,7 +99,6 @@ const StakingBalanceList = () => {
       const secondValue =
         // @ts-ignore
         new BigNumber(secondItem.staking.balance).dividedBy(BN_TEN.pow(secondItem.decimals)).toFixed() * secondPrice;
-      console.log(firstValue, secondValue);
       return secondValue - firstValue;
     });
     return result;

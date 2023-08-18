@@ -10,7 +10,10 @@ import {
   StakingType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import { _getChainNativeTokenBasicInfo } from '@subwallet/extension-base/services/chain-service/utils';
+import {
+  _getChainNativeTokenBasicInfo,
+  _getChainNativeTokenSlug,
+} from '@subwallet/extension-base/services/chain-service/utils';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -150,16 +153,18 @@ const groupStakingRewardItems = (stakingRewardItems: StakingRewardItem[]): Staki
   return groupedStakingRewardItems;
 };
 
-const getGroupStatus = (earnMapping: Record<string, boolean> = {}): StakingStatus => {
+const getGroupStatus = (earnMapping: Record<string, StakingStatus> = {}): StakingStatus => {
   const list = Object.values(earnMapping);
 
-  if (list.every(value => !value)) {
+  if (list.every(value => value === StakingStatus.NOT_EARNING)) {
     return StakingStatus.NOT_EARNING;
-  } else if (list.every(value => value)) {
-    return StakingStatus.EARNING_REWARD;
-  } else {
-    return StakingStatus.PARTIALLY_EARNING;
   }
+
+  if (list.every(value => value === StakingStatus.EARNING_REWARD)) {
+    return StakingStatus.EARNING_REWARD;
+  }
+
+  return StakingStatus.PARTIALLY_EARNING;
 };
 
 const groupNominatorMetadatas = (nominatorMetadataList: NominatorMetadata[]): NominatorMetadata[] => {
@@ -189,12 +194,12 @@ const groupNominatorMetadatas = (nominatorMetadataList: NominatorMetadata[]): No
     };
 
     let groupedActiveStake = BN_ZERO;
-    const earnMapping: Record<string, boolean> = {};
+    const earnMapping: Record<string, StakingStatus> = {};
 
     for (const nominatorMetadata of nominatorMetadataList) {
       if (nominatorMetadata.chain === chain && nominatorMetadata.type === type) {
         groupedActiveStake = groupedActiveStake.add(new BN(nominatorMetadata.activeStake));
-        earnMapping[nominatorMetadata.address] = nominatorMetadata.status === StakingStatus.EARNING_REWARD;
+        earnMapping[nominatorMetadata.address] = nominatorMetadata.status;
         groupedNominatorMetadata.unstakings = [...groupedNominatorMetadata.unstakings, ...nominatorMetadata.unstakings];
       }
     }
@@ -212,9 +217,9 @@ export default function useGetStakingList() {
   const { chainStakingMetadataList, nominatorMetadataList, stakingMap, stakingRewardMap } = useSelector(
     (state: RootState) => state.staking,
   );
-
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   const isAll = useMemo(() => {
@@ -230,6 +235,8 @@ export default function useGetStakingList() {
 
     stakingMap.forEach(stakingItem => {
       const chainInfo = chainInfoMap[stakingItem.chain];
+      const nativeTokenSlug = _getChainNativeTokenSlug(chainInfo);
+      const chainAsset = assetRegistry[nativeTokenSlug];
 
       if (stakingItem.state === APIItemState.READY) {
         if (
@@ -237,7 +244,7 @@ export default function useGetStakingList() {
           parseFloat(stakingItem.balance) > 0 &&
           Math.round(parseFloat(stakingItem.balance) * 100) / 100 !== 0
         ) {
-          parsedPriceMap[stakingItem.chain] = priceMap[chainInfo.slug || stakingItem.chain];
+          parsedPriceMap[stakingItem.chain] = priceMap[chainAsset.priceId || stakingItem.chain];
           readyStakingItems.push(stakingItem);
         }
       }
@@ -296,7 +303,16 @@ export default function useGetStakingList() {
       data: stakingData,
       priceMap: parsedPriceMap,
     };
-  }, [chainInfoMap, chainStakingMetadataList, isAll, nominatorMetadataList, priceMap, stakingMap, stakingRewardMap]);
+  }, [
+    assetRegistry,
+    chainInfoMap,
+    chainStakingMetadataList,
+    isAll,
+    nominatorMetadataList,
+    priceMap,
+    stakingMap,
+    stakingRewardMap,
+  ]);
 
   return useMemo((): StakingData => ({ ...partResult }), [partResult]);
 }
