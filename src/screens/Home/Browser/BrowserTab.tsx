@@ -418,7 +418,6 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       return false;
     }
     const urlParsed = new urlParse(url);
-
     if (url.startsWith('wc:')) {
       if (urlParsed.query.startsWith('?requestId')) {
         return false;
@@ -439,6 +438,10 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
         .catch(e => {
           console.warn(`Error opening URL: ${e}`);
         });
+      return false;
+    }
+
+    if (urlParsed.href.includes('wc?requestId')) {
       return false;
     }
 
