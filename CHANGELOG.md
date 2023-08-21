@@ -1,3 +1,25 @@
+## 1.0.14 (209)
+- Fix bug not open UnlockModal in ApplyMasterPassword screen
+## 1.0.14 (208)
+- Fix bug related to SendFund (#939)
+- Re-check re-connect network on transaction screen (#942)
+- Support sort token by value (#920)
+- Add dApps to Predefined List (#945)
+- Update web runner 1.1.8 (#953)
+- Fix bug related to WalletConnect feature (#941)
+- Fix bug not open app after unlock with biometric
+
+## 1.0.14 (207)
+- Update logic for SendFund (#940)
+
+## 1.0.14 (206)
+- Implement Wallet Connect (#281)
+- UI bugs on the NFT list screen (Android device) (#915)
+- Upgrade UI Send Fund (#815)
+- Update latest web-runner (1.1.7)
+- Update UI for Polkadot Vault transaction
+- Bug can not display NFT Video on Android
+
 ## 1.0.13 (205)
 - Fix browser search - bookmark and update language key 'all account' in staking detail (#898)
 - Bump React Native to 0.71.12 (#855)

@@ -10,6 +10,7 @@ const Logo = React.lazy(() => import('./subwallet-logo.svg'));
 const LogoGradient = React.lazy(() => import('./subwallet-logo-gradient.svg'));
 const MenuBarLogo = React.lazy(() => import('./menu-bar.svg'));
 const IcHalfSquare = React.lazy(() => import('./ic-half-square.svg'));
+const WalletConnect = React.lazy(() => import('./wallet-connect.svg'));
 
 export const SVGImages = {
   Logo,
@@ -21,6 +22,7 @@ export const SVGImages = {
   SignalSplashIcon,
   MenuBarLogo,
   IcHalfSquare,
+  WalletConnect,
 };
 
 export const Images = {

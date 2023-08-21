@@ -10,7 +10,7 @@ export default (theme: ThemeTypes, gap = 20) => {
   return StyleSheet.create<ComponentStyle>({
     container: {
       paddingHorizontal: theme.padding,
-      paddingTop: theme.padding,
+      marginTop: theme.padding,
       width: '100%',
     },
     content: {

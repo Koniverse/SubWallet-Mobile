@@ -37,10 +37,12 @@ const BaseDetailModal: React.FC<Props> = (props: Props) => {
         {i18n.common.viewDetail}
       </Button>
       <SwModal
+        setVisible={setOpen}
         modalVisible={open}
         modalTitle={title}
         onChangeModalVisible={onClose}
         modalStyle={{ maxHeight: 600 }}
+        isUseForceHidden={false}
         onBackButtonPress={onClose}>
         <View style={{ maxHeight: 400, width: '100%' }}>
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

@@ -73,4 +73,7 @@ export type ChainInfo = {
   name: string;
 };
 
+// follow the counterpart name in source code of extension
+export type ChainItemType = ChainInfo;
+
 export type VoidFunction = () => void;

@@ -6,6 +6,7 @@ interface Result {
   onPress: () => Promise<boolean>;
   onCompleteModal: VoidFunction;
   onCancelModal: VoidFunction;
+  setVisible: (arg: boolean) => void;
 }
 
 const useConfirmModal = (onComplete: VoidFunction): Result => {
@@ -38,7 +39,7 @@ const useConfirmModal = (onComplete: VoidFunction): Result => {
   }, [onComplete]);
 
   const onCancelModal = useCallback(() => {
-    setVisible(false);
+    console.log('8000');
     rejectRef.current?.(new Error('User cancel request'));
     promiseRef.current = undefined;
   }, []);
@@ -48,6 +49,7 @@ const useConfirmModal = (onComplete: VoidFunction): Result => {
     onPress,
     onCompleteModal,
     onCancelModal,
+    setVisible,
   };
 };
 

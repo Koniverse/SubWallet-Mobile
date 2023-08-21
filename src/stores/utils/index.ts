@@ -38,6 +38,8 @@ import { lazySendMessage, lazySubscribeMessage } from 'messaging/index';
 import { AppSettings } from 'stores/types';
 import { store } from '..';
 import { buildHierarchy } from 'utils/buildHierarchy';
+import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import { SessionTypes } from '@walletconnect/types';
 // Setup redux stores
 
 function voidFn() {
@@ -414,6 +416,37 @@ export const subscribeTxHistory = lazySubscribeMessage(
   null,
   updateTxHistory,
   updateTxHistory,
+);
+
+// Wallet connect
+export const updateConnectWCRequests = (data: WalletConnectSessionRequest[]) => {
+  // Convert data to object with key as id
+  const requests = convertConfirmationToMap(data);
+
+  store.dispatch({ type: 'requestState/updateConnectWCRequests', payload: requests });
+};
+
+export const subscribeConnectWCRequests = lazySubscribeMessage(
+  'pri(walletConnect.requests.connect.subscribe)',
+  null,
+  updateConnectWCRequests,
+  updateConnectWCRequests,
+);
+
+export const updateWalletConnectSessions = (data: SessionTypes.Struct[]) => {
+  const payload: Record<string, SessionTypes.Struct> = {};
+
+  data.forEach(session => {
+    payload[session.topic] = session;
+  });
+  store.dispatch({ type: 'walletConnect/updateSessions', payload: payload });
+};
+
+export const subscribeWalletConnectSessions = lazySubscribeMessage(
+  'pri(walletConnect.session.subscribe)',
+  null,
+  updateWalletConnectSessions,
+  updateWalletConnectSessions,
 );
 
 // export const updateChainValidators = (data: ChainValidatorParams) => {

@@ -10,12 +10,12 @@ type Props = {
 };
 
 const ConfirmationContent: React.FC<Props> = (props: Props) => {
-  const { children, gap, isFullHeight } = props;
+  const { children, gap } = props;
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme, gap), [theme, gap]);
 
   return (
-    <ScrollView style={[styles.container, isFullHeight && { height: '100%' }]} contentContainerStyle={styles.content}>
+    <ScrollView style={[styles.container]} contentContainerStyle={styles.content}>
       {children}
     </ScrollView>
   );

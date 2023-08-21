@@ -107,33 +107,35 @@ export const SelectExportType = (props: SelectAccountTypeProps) => {
           <Text style={_style.titleStyle}>{title}</Text>
         </View>
       )}
-      {items.map(item => {
-        const _selected = selectedItems.find(i => i === item.key);
+      <View style={{ gap: theme.marginXS }}>
+        {items.map(item => {
+          const _selected = selectedItems.find(i => i === item.key);
 
-        if (item.hidden) {
-          return null;
-        }
+          if (item.hidden) {
+            return null;
+          }
 
-        return (
-          <SelectItem
-            key={item.label}
-            label={item.label}
-            leftItemIcon={
-              <BackgroundIcon
-                phosphorIcon={item.icon}
-                backgroundColor={item.bgColor}
-                shape="circle"
-                size="sm"
-                weight="fill"
-              />
-            }
-            isSelected={!!_selected}
-            onPress={item.disable || loading ? undefined : item.onClick}
-            showUnselect={true}
-            disabled={item.disable}
-          />
-        );
-      })}
+          return (
+            <SelectItem
+              key={item.label}
+              label={item.label}
+              leftItemIcon={
+                <BackgroundIcon
+                  phosphorIcon={item.icon}
+                  backgroundColor={item.bgColor}
+                  shape="circle"
+                  size="sm"
+                  weight="fill"
+                />
+              }
+              isSelected={!!_selected}
+              onPress={item.disable || loading ? undefined : item.onClick}
+              showUnselect={true}
+              disabled={item.disable}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 };

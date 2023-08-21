@@ -323,7 +323,7 @@ export const AccountExport = ({
 
         <PasswordModal
           visible={modalVisible}
-          closeModal={() => setModalVisible(false)}
+          setModalVisible={setModalVisible}
           isBusy={isBusy}
           onConfirm={onPressSubmit}
           errorArr={errorArr}

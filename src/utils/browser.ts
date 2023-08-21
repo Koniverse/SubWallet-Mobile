@@ -1,11 +1,3 @@
-import { Linking } from 'react-native';
-import urlParse from 'url-parse';
-import queryString from 'querystring';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from 'routes/index';
-
-let prevDeeplinkUrl = '';
-
 export const deeplinks = ['subwallet://', 'https://mobile.subwallet.app'];
 
 export function isValidURL(str: string): boolean {
@@ -46,29 +38,4 @@ export function getValidURL(address: string): string {
   } else {
     return `https://${searchDomain}/?q=${encodeURIComponent(address)}`;
   }
-}
-
-export function handleDeeplinkOnFirstOpen(navigation: NativeStackNavigationProp<RootStackParamList>) {
-  Linking.getInitialURL()
-    .then(url => {
-      if (!url || prevDeeplinkUrl === url) {
-        return;
-      }
-      prevDeeplinkUrl = url;
-      if (getProtocol(url) === 'subwallet') {
-        Linking.openURL(url);
-      } else if (getProtocol(url) === 'https') {
-        const urlParsed = new urlParse(url);
-        if (urlParsed.pathname.split('/')[1] === 'browser') {
-          // Format like: https://subwallet-link.vercel.app/browser?url=https://hackadot.subwallet.app/
-          const finalUrl = queryString.parse(urlParsed.query)['?url'] || '';
-          navigation.navigate('BrowserTabsManager', {
-            url: Array.isArray(finalUrl) ? finalUrl[0] : finalUrl,
-            name: '',
-            isOpenTabs: false,
-          });
-        }
-      }
-    })
-    .catch(e => console.warn('e', e));
 }

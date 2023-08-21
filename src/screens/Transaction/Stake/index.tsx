@@ -509,7 +509,7 @@ export const Stake = ({
             chainStakingMetadata={chainStakingMetadata}
             stakingType={currentStakingType as StakingType}
             minimumActive={{ decimals, value: minStake, symbol }}
-            onCloseModal={() => setDetailNetworkModalVisible(false)}
+            setVisible={setDetailNetworkModalVisible}
           />
         )}
       </>

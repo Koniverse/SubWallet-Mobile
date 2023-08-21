@@ -1,4 +1,3 @@
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -14,8 +13,13 @@ import { getSignMode } from 'utils/account';
 import { AccountSignMode } from 'types/signer';
 import { isEvmMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
-import { HIDE_MODAL_DURATION } from 'constants/index';
 import { getButtonIcon } from 'utils/button';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import { Minimizer } from '../../../../NativeModules';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 interface Props {
   id: string;
@@ -55,7 +59,9 @@ export const EvmSignArea = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
-
+  const navigation = useNavigation<RootNavigationProps>();
+  const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
+  const dispatch = useDispatch();
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
     switch (signMode) {
       case AccountSignMode.QR:
@@ -77,11 +83,16 @@ export const EvmSignArea = (props: Props) => {
   const onApprovePassword = useCallback(() => {
     setLoading(true);
     setTimeout(() => {
-      handleConfirm(type, id, '').finally(() => {
-        setLoading(false);
-      });
+      handleConfirm(type, id, '')
+        .then(() => {
+          isDeepLinkConnect && Minimizer.goBack();
+        })
+        .finally(() => {
+          dispatch(updateIsDeepLinkConnect(false));
+          setLoading(false);
+        });
     }, 1000);
-  }, [id, type]);
+  }, [dispatch, id, isDeepLinkConnect, type]);
 
   const onApproveSignature = useCallback(
     (signature: SigData) => {
@@ -104,13 +115,14 @@ export const EvmSignArea = (props: Props) => {
 
   const onSuccess = useCallback(
     (sig: SigData) => {
+      setIsShowQr(false);
       setIsScanning(false);
       onApproveSignature && onApproveSignature(sig);
     },
     [onApproveSignature],
   );
 
-  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal();
+  const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -126,13 +138,7 @@ export const EvmSignArea = (props: Props) => {
   }, [onApprovePassword, onConfirmPassword, onConfirmQr, signMode]);
 
   const openScanning = useCallback(() => {
-    setIsShowQr(false);
-    setTimeout(() => setIsScanning(true), HIDE_MODAL_DURATION);
-  }, []);
-
-  const hideScanning = useCallback(() => {
-    setIsShowQr(false);
-    setIsScanning(false);
+    setIsScanning(true);
   }, []);
 
   return (
@@ -140,18 +146,24 @@ export const EvmSignArea = (props: Props) => {
       <Button block={true} disabled={loading} icon={getButtonIcon(XCircle)} type={'secondary'} onPress={onCancel}>
         {i18n.common.cancel}
       </Button>
-      <Button block={true} disabled={!canSign} icon={getButtonIcon(approveIcon)} loading={loading} onPress={onConfirm}>
+      <Button
+        block={true}
+        disabled={!canSign || loading}
+        icon={getButtonIcon(approveIcon)}
+        loading={loading}
+        onPress={onConfirm}>
         {i18n.buttonTitles.approve}
       </Button>
       {signMode === AccountSignMode.QR && (
         <>
-          <DisplayPayloadModal visible={isShowQr} onClose={hideScanning} onOpenScan={openScanning}>
-            <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
+          <DisplayPayloadModal visible={isShowQr} setVisible={setIsShowQr} onOpenScan={openScanning}>
+            <>
+              <EvmQr address={account.address} hashPayload={hashPayload} isMessage={isEvmMessage(payload)} />
+              <SignatureScanner visible={isScanning} setVisible={setIsScanning} onSuccess={onSuccess} />
+            </>
           </DisplayPayloadModal>
-          <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />
         </>
       )}
-      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </ConfirmationFooter>
   );
 };

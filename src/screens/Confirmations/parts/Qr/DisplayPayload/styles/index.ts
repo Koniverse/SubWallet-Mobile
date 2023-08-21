@@ -23,7 +23,6 @@ export default (theme: ThemeTypes) => {
     },
     footer: {
       marginTop: theme.margin,
-      marginBottom: theme.margin,
       marginHorizontal: theme.margin,
     },
   });

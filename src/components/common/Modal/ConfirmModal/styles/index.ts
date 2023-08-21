@@ -1,6 +1,6 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
-import { ContainerHorizontalPadding, FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 export interface ModalStyle {
   container: ViewStyle;
@@ -15,8 +15,7 @@ export default (theme: ThemeTypes) =>
     footerModalStyle: {
       width: '100%',
       flexDirection: 'row',
-      ...ContainerHorizontalPadding,
-      ...MarginBottomForSubmitButton,
+      marginTop: theme.margin,
     },
     deleteModalConfirmationStyle: {
       fontSize: theme.fontSizeLG,

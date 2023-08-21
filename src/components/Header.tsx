@@ -1,6 +1,6 @@
 import { QrCode } from 'phosphor-react-native';
 import React, { useCallback, useState } from 'react';
-import { StyleProp, View } from 'react-native';
+import { Keyboard, StyleProp, View } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { SpaceStyle } from 'styles/space';
 import { requestCameraPermission } from 'utils/permission/camera';
@@ -15,6 +15,8 @@ import { isAddress } from '@polkadot/util-crypto';
 import i18n from 'utils/i18n/i18n';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { DisabledStyle } from 'styles/sharedStyles';
+import { validWalletConnectUri } from 'utils/scanner/walletConnect';
+import { addConnection } from 'messaging/index';
 
 export interface HeaderProps {
   rightComponent?: JSX.Element;
@@ -55,8 +57,21 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           screen: 'TransactionAction',
           params: { screen: 'SendFund', params: { recipient: data } },
         });
+      } else if (!validWalletConnectUri(data)) {
+        addConnection({ uri: data })
+          .then(() => {
+            setError(undefined);
+            setIsScanning(false);
+          })
+          .catch(e => {
+            const errMessage = (e as Error).message;
+            const message = errMessage.includes('Pairing already exists')
+              ? i18n.errorMessage.connectionAlreadyExist
+              : i18n.errorMessage.failToAddConnection;
+            setError(message);
+          });
       } else {
-        setError(i18n.errorMessage.isNotAnAddress);
+        setError(i18n.errorMessage.unreadableQrCode);
       }
     },
     [navigation],
@@ -72,6 +87,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           size={'xs'}
           icon={<SVGImages.MenuBarLogo />}
           onPress={() => {
+            Keyboard.dismiss();
             drawerNavigation.openDrawer();
           }}
         />

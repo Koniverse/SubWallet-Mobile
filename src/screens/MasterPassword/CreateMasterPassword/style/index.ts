@@ -21,7 +21,7 @@ export default (theme: ThemeTypes) =>
       paddingBottom: theme.paddingLG,
     },
     footerAreaStyle: {
-      marginTop: theme.marginXS,
+      marginTop: theme.margin,
       marginHorizontal: theme.margin,
       ...MarginBottomForSubmitButton,
     },

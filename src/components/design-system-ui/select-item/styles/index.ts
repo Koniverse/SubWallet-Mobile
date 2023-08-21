@@ -18,7 +18,6 @@ export default (theme: ThemeTypes) => {
       paddingHorizontal: theme.paddingSM,
       paddingVertical: theme.paddingSM + 2,
       backgroundColor: theme.colorBgSecondary,
-      marginBottom: theme.marginXS,
     },
     wrapperDisable: {
       opacity: theme.opacityDisable,

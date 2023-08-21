@@ -16,12 +16,13 @@ import {
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
 import { Button, Icon, QRCode, SwModal, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   modalVisible: boolean;
   address?: string;
   selectedNetwork?: string;
-  onCancel: () => void;
+  setModalVisible: (arg: boolean) => void;
 }
 
 const receiveModalContentWrapper: StyleProp<any> = {
@@ -30,11 +31,12 @@ const receiveModalContentWrapper: StyleProp<any> = {
 };
 
 const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
-export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel }: Props) => {
+export const ReceiveModal = ({ address, selectedNetwork, modalVisible, setModalVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const toastRef = useRef<ToastContainer>(null);
   let svg: { toDataURL: (arg0: (data: any) => void) => void };
   const chainInfo = useFetchChainInfo(selectedNetwork || '');
+  const modalRef = useRef<SWModalRefProps>(null);
 
   const copyToClipboard = (text: string) => {
     return () => {
@@ -91,8 +93,15 @@ export const ReceiveModal = ({ address, selectedNetwork, modalVisible, onCancel 
     });
   };
 
+  const onCancel = () => modalRef?.current?.close();
+
   return (
-    <SwModal modalVisible={modalVisible} onChangeModalVisible={onCancel} onBackButtonPress={onCancel}>
+    <SwModal
+      modalBaseV2Ref={modalRef}
+      setVisible={setModalVisible}
+      isUseModalV2
+      modalVisible={modalVisible}
+      onBackButtonPress={onCancel}>
       <View style={receiveModalContentWrapper}>
         <Typography.Text
           size={'lg'}

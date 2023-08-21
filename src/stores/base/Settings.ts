@@ -26,7 +26,7 @@ const initialState = {
 
   // Media settings
   mediaAllowed: false,
-
+  isDeepLinkConnect: false,
   reduxStatus: ReduxStatus.INIT,
 } as AppSettings;
 
@@ -107,8 +107,15 @@ const settingsSlice = createSlice({
         browserConfirmationType: action.payload,
       };
     },
+    updateIsDeepLinkConnect(state, action: PayloadAction<AppSettings['isDeepLinkConnect']>) {
+      return {
+        ...state,
+        isDeepLinkConnect: action.payload,
+      };
+    },
   },
 });
 
-export const { updateAppSettings, updateAuthUrls, updateUiSettings, updateToggleBalance } = settingsSlice.actions;
+export const { updateAppSettings, updateAuthUrls, updateUiSettings, updateToggleBalance, updateIsDeepLinkConnect } =
+  settingsSlice.actions;
 export default settingsSlice.reducer;

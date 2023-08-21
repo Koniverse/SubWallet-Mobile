@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { ActivityIndicator, Avatar, BackgroundIcon, Button, Icon, QRCode } from 'components/design-system-ui';
 import { EditAccountInputText } from 'components/EditAccountInputText';
 import { SubScreenContainer } from 'components/SubScreenContainer';
@@ -151,18 +150,14 @@ export const AccountDetail = ({
     }
   }, [account?.address, goHome, toast]);
 
-  const {
-    onPress: onPressDerive,
-    onPasswordComplete,
-    visible: unlockVisible,
-    onHideModal: onHideUnlockModal,
-  } = useUnlockModal();
+  const { onPress: onPressDerive } = useUnlockModal(navigation);
 
   const {
     onPress: onPressDelete,
     onCancelModal: onCancelDelete,
     visible: deleteVisible,
     onCompleteModal: onCompleteDeleteModal,
+    setVisible,
   } = useConfirmModal(onDelete);
 
   return (
@@ -279,13 +274,13 @@ export const AccountDetail = ({
             {i18n.buttonTitles.removeThisAcc}
           </Button>
         </View>
-        <UnlockModal onPasswordComplete={onPasswordComplete} visible={unlockVisible} onHideModal={onHideUnlockModal} />
         <DeleteModal
           title={i18n.header.removeThisAcc}
           visible={deleteVisible}
           message={i18n.removeAccount.removeAccountMessage}
           onCancelModal={onCancelDelete}
           onCompleteModal={onCompleteDeleteModal}
+          setVisible={setVisible}
         />
       </View>
     </SubScreenContainer>

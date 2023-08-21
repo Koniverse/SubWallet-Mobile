@@ -152,6 +152,7 @@ export const ConfigureToken = ({
     onCancelModal: onCancelDelete,
     visible: deleteVisible,
     onCompleteModal: onCompleteDeleteModal,
+    setVisible,
   } = useConfirmModal(handleDeleteToken);
 
   return (
@@ -242,6 +243,7 @@ export const ConfigureToken = ({
         message={i18n.message.deleteTokenMessage}
         onCompleteModal={onCompleteDeleteModal}
         onCancelModal={onCancelDelete}
+        setVisible={setVisible}
       />
     </ContainerWithSubHeader>
   );

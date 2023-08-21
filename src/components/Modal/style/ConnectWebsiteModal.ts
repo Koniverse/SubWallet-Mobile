@@ -1,6 +1,5 @@
 import { ThemeTypes } from 'styles/themes';
 import { StyleSheet } from 'react-native';
-import { DEVICE } from 'constants/index';
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create({
@@ -29,12 +28,11 @@ export default (theme: ThemeTypes) => {
     },
     footer: {
       flexDirection: 'row',
-      padding: theme.padding,
+      paddingTop: theme.padding,
       gap: theme.sizeSM,
     },
     scrollView: {
-      maxHeight: (70 * DEVICE.height) / 100,
-      paddingHorizontal: theme.padding,
+      height: '60%',
       width: '100%',
     },
   });

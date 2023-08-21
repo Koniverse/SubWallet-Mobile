@@ -3,7 +3,7 @@ import { Button, Icon, SelectItem } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { NominationPoolInfo, StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import useGetValidatorList, { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
-import { ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { StakingPoolItem } from 'components/common/StakingPoolItem';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
@@ -183,8 +183,11 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             poolSelectorRef && poolSelectorRef.current?.onCloseModal();
           }}
           onPressRightButton={() => {
+            Keyboard.dismiss();
             setSelectedItem(item);
-            setDetailModalVisible(true);
+            setTimeout(() => {
+              setDetailModalVisible(true);
+            }, 100);
           }}
         />
       );
@@ -233,11 +236,12 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             <PoolSelectorDetailModal
               detailItem={selectedItem}
               detailModalVisible={detailModalVisible}
-              onCancel={() => setDetailModalVisible(false)}
+              setVisible={setDetailModalVisible}
             />
           )}
 
           <BasicSelectModal
+            level={2}
             ref={sortingModalRef}
             title={i18n.header.sorting}
             items={sortingOptions}
@@ -245,7 +249,6 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                style={{ marginTop: 8 }}
                 icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);

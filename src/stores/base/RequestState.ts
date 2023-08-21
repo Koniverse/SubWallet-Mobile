@@ -11,12 +11,14 @@ import {
 } from '@subwallet/extension-base/background/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { ReduxStatus, RequestState } from 'stores/types';
+import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 
 const initialState: RequestState = {
   authorizeRequest: {},
   metadataRequest: {},
   signingRequest: {},
   transactionRequest: {},
+  connectWCRequest: {},
 
   // Type of confirmation requets
   addNetworkRequest: {},
@@ -41,6 +43,7 @@ export const CONFIRMATIONS_FIELDS: Array<keyof RequestState> = [
   'switchNetworkRequest',
   'evmSignatureRequest',
   'evmSendTransactionRequest',
+  'connectWCRequest',
 ];
 
 export interface ConfirmationQueueItem {
@@ -105,6 +108,11 @@ const requestStateSlice = createSlice({
     },
     updateTransactionRequests(state, { payload }: PayloadAction<Record<string, SWTransactionResult>>) {
       state.transactionRequest = payload;
+    },
+    updateConnectWCRequests(state, { payload }: PayloadAction<Record<string, WalletConnectSessionRequest>>) {
+      state.connectWCRequest = payload;
+      readyMap.updateConfirmationRequests = true;
+      computeStateSummary(state);
     },
   },
 });

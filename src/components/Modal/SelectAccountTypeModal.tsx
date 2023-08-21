@@ -68,6 +68,7 @@ export const SelectAccountTypeModal = ({ onConfirm, selectTypeRef }: Props) => {
   return (
     <>
       <BasicSelectModal
+        level={2}
         ref={selectTypeRef}
         onBackButtonPress={() => selectTypeRef?.current?.onCloseModal()}
         selectedValueMap={selectedValueMap}

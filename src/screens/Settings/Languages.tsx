@@ -46,7 +46,7 @@ export const Languages = () => {
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
-      <View style={{ paddingHorizontal: 16 }}>
+      <View style={{ paddingHorizontal: 16, marginBottom: 8 }}>
         <SelectItem
           label={item.text}
           isSelected={item.value === selectedLang}

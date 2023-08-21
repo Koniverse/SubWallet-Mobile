@@ -18,6 +18,7 @@ interface BackgroundIconProps {
   iconColor?: string;
   backgroundColor?: string;
   style?: StyleProp<ViewStyle>;
+  customIcon?: React.ReactNode;
 }
 
 const BackgroundIcon: React.FC<BackgroundIconProps> = ({
@@ -30,6 +31,7 @@ const BackgroundIcon: React.FC<BackgroundIconProps> = ({
   weight,
   iconColor,
   backgroundColor,
+  customIcon,
 }) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = BackgroundIconStyles(theme);
@@ -72,14 +74,18 @@ const BackgroundIcon: React.FC<BackgroundIconProps> = ({
 
   return (
     <View style={[{ backgroundColor }, _style[`${shape}Icon`], style]}>
-      <Icon
-        type={type}
-        phosphorIcon={phosphorIcon}
-        fontawesomeIcon={fontawesomeIcon}
-        iconColor={iconColor}
-        customSize={getBackgroundIconSize()}
-        weight={weight}
-      />
+      {customIcon ? (
+        customIcon
+      ) : (
+        <Icon
+          type={type}
+          phosphorIcon={phosphorIcon}
+          fontawesomeIcon={fontawesomeIcon}
+          iconColor={iconColor}
+          customSize={getBackgroundIconSize()}
+          weight={weight}
+        />
+      )}
     </View>
   );
 };

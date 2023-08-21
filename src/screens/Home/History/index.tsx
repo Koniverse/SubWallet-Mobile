@@ -36,9 +36,10 @@ import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
-import { HistoryProps } from 'routes/index';
+import { HistoryProps, RootNavigationProps } from 'routes/index';
 import { SortFunctionInterface } from 'types/ui-types';
 import { SectionItem } from 'components/LazySectionList';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {};
 
@@ -228,6 +229,7 @@ function History({
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
+  const navigation = useNavigation<RootNavigationProps>();
 
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
@@ -463,6 +465,7 @@ function History({
       <FlatListScreen
         autoFocus={false}
         showLeftBtn={true}
+        onPressBack={() => navigation.goBack()}
         items={historyList}
         title={i18n.header.history}
         placeholder={i18n.placeholder.searchHistory}
@@ -478,7 +481,12 @@ function History({
         flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}
       />
 
-      <HistoryDetailModal data={selectedItem} onChangeModalVisible={onCloseDetail} modalVisible={detailModalVisible} />
+      <HistoryDetailModal
+        data={selectedItem}
+        onChangeModalVisible={onCloseDetail}
+        modalVisible={detailModalVisible}
+        setDetailModalVisible={setDetailModalVisible}
+      />
     </>
   );
 }

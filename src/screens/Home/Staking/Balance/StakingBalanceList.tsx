@@ -12,12 +12,12 @@ import { reloadCron } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
 import useGetStakingList from 'hooks/screen/Home/Staking/useGetStakingList';
 import { StakingDetailModal } from 'screens/Home/Staking/StakingDetail/StakingDetailModal';
-import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { RootNavigationProps } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
+import BigNumber from 'bignumber.js';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -74,7 +74,6 @@ const StakingBalanceList = () => {
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
-  const [moreActionModalVisible, setMoreActionModalVisible] = useState<boolean>(false);
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
       Keyboard.dismiss();
@@ -86,6 +85,26 @@ const StakingBalanceList = () => {
     { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
     { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
   ];
+  const stakingList = useMemo(() => {
+    console.log(data);
+    if (!data.length) {
+      return [];
+    }
+    const BN_TEN = new BigNumber(10);
+    const result = data.sort((firstItem, secondItem) => {
+      const firstPrice = priceMap[`${firstItem.staking.chain}`] || 0;
+      const firstValue =
+        // @ts-ignore
+        new BigNumber(firstItem.staking.balance).dividedBy(BN_TEN.pow(firstItem.decimals)).toFixed() * firstPrice;
+      const secondPrice = priceMap[`${secondItem.staking.chain}`] || 0;
+      const secondValue =
+        // @ts-ignore
+        new BigNumber(secondItem.staking.balance).dividedBy(BN_TEN.pow(secondItem.decimals)).toFixed() * secondPrice;
+      console.log(firstValue, secondValue);
+      return secondValue - firstValue;
+    });
+    return result;
+  }, [data, priceMap]);
 
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -133,7 +152,7 @@ const StakingBalanceList = () => {
         style={{ flex: 1, paddingBottom: 16 }}
         title={i18n.header.staking}
         titleTextAlign={'left'}
-        items={data}
+        items={stakingList}
         showLeftBtn={false}
         placeholder={i18n.placeholder.searchToken}
         autoFocus={false}
@@ -156,31 +175,18 @@ const StakingBalanceList = () => {
             }}
           />
         }
-        isShowPlaceHolder={false}
-        needGapWithStatusBar={false}
       />
 
       {selectedItem && (
         <StakingDetailModal
           modalVisible={detailModalVisible}
-          onCloseDetailModal={() => setDetailModalVisible(false)}
-          onOpenMoreActionModal={() => setMoreActionModalVisible(true)}
           chainStakingMetadata={selectedItem.chainStakingMetadata}
           nominatorMetadata={selectedItem.nominatorMetadata}
           rewardItem={selectedItem.reward}
           staking={selectedItem.staking}
+          setDetailModalVisible={setDetailModalVisible}
         />
       )}
-
-      <StakingActionModal
-        closeModal={() => setMoreActionModalVisible(false)}
-        openModal={() => setMoreActionModalVisible(true)}
-        visible={moreActionModalVisible}
-        chainStakingMetadata={selectedItem?.chainStakingMetadata}
-        nominatorMetadata={selectedItem?.nominatorMetadata}
-        staking={selectedItem?.staking}
-        reward={selectedItem?.reward}
-      />
     </>
   );
 };

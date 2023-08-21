@@ -143,6 +143,7 @@ export const DAppAccessScreen = () => {
       title={i18n.header.manageWebsiteAccess}
       autoFocus={false}
       items={dAppItems}
+      onPressBack={() => navigation.goBack()}
       searchFunction={searchFunction}
       flatListStyle={{ gap: 8 }}
       placeholder={i18n.placeholder.searchOrEnterWebsite}
@@ -162,7 +163,7 @@ export const DAppAccessScreen = () => {
         <MoreOptionModal
           modalVisible={modalVisible}
           moreOptionList={dAppAccessMoreOptions}
-          onChangeModalVisible={() => setModalVisible(false)}
+          setModalVisible={setModalVisible}
         />
       }
     />

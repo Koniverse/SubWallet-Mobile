@@ -1,7 +1,7 @@
 import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -17,10 +17,11 @@ import { PlusCircle } from 'phosphor-react-native';
 import { useToast } from 'react-native-toast-notifications';
 import createStylesheet from './style/AddContactModal';
 import { TextInputProps } from 'react-native/Libraries/Components/TextInput/TextInput';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 type Props = {
   modalVisible: boolean;
-  onChangeModalVisible: () => void;
+  setModalVisible: (arg: boolean) => void;
 };
 
 enum FormFieldName {
@@ -56,12 +57,17 @@ const ButtonIcon = (color: string) => {
   return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
 };
 
-export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) => {
+export const AddContactModal = ({ modalVisible, setModalVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const contacts = useSelector((state: RootState) => state.accountState.contacts);
   const [loading, setLoading] = useState(false);
   const { show, hideAll } = useToast();
   const stylesheet = createStylesheet(theme);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+
+  const onChangeModalVisible = useCallback(() => {
+    modalBaseV2Ref?.current?.close();
+  }, []);
 
   const {
     control,
@@ -109,7 +115,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
       setLoading(true);
       editContactAddress(address, name)
         .then(() => {
-          onChangeModalVisible();
+          modalBaseV2Ref?.current?.close();
         })
         .catch((e: Error) => {
           hideAll();
@@ -119,7 +125,7 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
           setLoading(false);
         });
     },
-    [hideAll, onChangeModalVisible, show],
+    [hideAll, show],
   );
 
   // don't use memo with this, or else it will cause bug
@@ -151,10 +157,12 @@ export const AddContactModal = ({ modalVisible, onChangeModalVisible }: Props) =
 
   return (
     <SwModal
+      isUseModalV2
+      modalBaseV2Ref={modalBaseV2Ref}
+      setVisible={setModalVisible}
       modalTitle={i18n.header.addContact}
       modalVisible={modalVisible}
-      onBackButtonPress={onChangeModalVisible}
-      onChangeModalVisible={onChangeModalVisible}>
+      onBackButtonPress={onChangeModalVisible}>
       <View style={stylesheet.formContainer}>
         <FormItem
           control={control}

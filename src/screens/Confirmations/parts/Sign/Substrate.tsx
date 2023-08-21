@@ -1,4 +1,3 @@
-import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import ConfirmationFooter from 'components/common/Confirmation/ConfirmationFooter';
 import SignatureScanner from 'components/Scanner/SignatureScanner';
 import useUnlockModal from 'hooks/modal/useUnlockModal';
@@ -16,8 +15,9 @@ import { isSubstrateMessage } from 'utils/confirmation/confirmation';
 import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-react-native';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
-import { HIDE_MODAL_DURATION } from 'constants/index';
 import { getButtonIcon } from 'utils/button';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 interface Props {
   account: AccountJson;
@@ -35,7 +35,7 @@ const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMo
 
 export const SubstrateSignArea = (props: Props) => {
   const { account, id, payload } = props;
-
+  const navigation = useNavigation<RootNavigationProps>();
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
   const [loading, setLoading] = useState(false);
@@ -104,7 +104,7 @@ export const SubstrateSignArea = (props: Props) => {
     setIsShowQr(true);
   }, []);
 
-  const { onPress: onConfirmPassword, onPasswordComplete, visible, onHideModal } = useUnlockModal();
+  const { onPress: onConfirmPassword } = useUnlockModal(navigation, setLoading);
 
   const onConfirm = useCallback(() => {
     switch (signMode) {
@@ -121,6 +121,7 @@ export const SubstrateSignArea = (props: Props) => {
 
   const onSuccess = useCallback(
     (sig: SigData) => {
+      setIsShowQr(false);
       setIsScanning(false);
       onApproveSignature && onApproveSignature(sig);
     },
@@ -128,13 +129,8 @@ export const SubstrateSignArea = (props: Props) => {
   );
 
   const openScanning = useCallback(() => {
-    setIsShowQr(false);
-    setTimeout(() => setIsScanning(true), HIDE_MODAL_DURATION);
-  }, []);
-
-  const hideScanning = useCallback(() => {
-    setIsShowQr(false);
-    setIsScanning(false);
+    // setIsShowQr(false);
+    setIsScanning(true);
   }, []);
 
   return (
@@ -152,13 +148,14 @@ export const SubstrateSignArea = (props: Props) => {
       </Button>
       {signMode === AccountSignMode.QR && (
         <>
-          <DisplayPayloadModal visible={isShowQr} onClose={hideScanning} onOpenScan={openScanning}>
-            <SubstrateQr address={account.address} genesisHash={genesisHash} payload={payload || ''} />
+          <DisplayPayloadModal visible={isShowQr} onOpenScan={openScanning} setVisible={setIsShowQr}>
+            <>
+              <SubstrateQr address={account.address} genesisHash={genesisHash} payload={payload || ''} />
+              <SignatureScanner visible={isScanning} onSuccess={onSuccess} setVisible={setIsScanning} />
+            </>
           </DisplayPayloadModal>
-          <SignatureScanner visible={isScanning} onHideModal={hideScanning} onSuccess={onSuccess} />
         </>
       )}
-      <UnlockModal onPasswordComplete={onPasswordComplete} visible={visible} onHideModal={onHideModal} />
     </ConfirmationFooter>
   );
 };

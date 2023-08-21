@@ -30,6 +30,8 @@ import {
   subscribeTxHistory,
   subscribeUiSettings,
   subscribeXcmRefMap,
+  subscribeConnectWCRequests,
+  subscribeWalletConnectSessions,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -294,6 +296,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           relatedStores: ['requestState'],
           isStartImmediately: true,
         });
+        _DataContext.addHandler({
+          ...subscribeConnectWCRequests,
+          name: 'subscribeConnectWCRequests',
+          relatedStores: ['requestState'],
+          isStartImmediately: true,
+        });
 
         // Features
         _DataContext.addHandler({
@@ -335,6 +343,11 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeTxHistory,
           name: 'subscribeTxHistory',
           relatedStores: ['transactionHistory'],
+        });
+        _DataContext.addHandler({
+          ...subscribeWalletConnectSessions,
+          name: 'subscribeWalletConnectSessions',
+          relatedStores: ['walletConnect'],
         });
 
         readyFlag.current.isStart = false;

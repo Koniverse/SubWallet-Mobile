@@ -4,7 +4,7 @@ import { StakingType } from '@subwallet/extension-base/background/KoniTypes';
 import { STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { StakingValidatorItem } from 'components/common/StakingValidatorItem';
 import { getValidatorKey } from 'utils/transaction/stake';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
@@ -197,8 +197,11 @@ export const ValidatorSelector = ({
           validatorInfo={item}
           onPress={onChangeSelectedValidator}
           onPressRightButton={() => {
+            Keyboard.dismiss();
             setDetailItem(item);
-            setDetailModalVisible(true);
+            setTimeout(() => {
+              setDetailModalVisible(true);
+            }, 100);
           }}
           isNominated={nominated}
           isSelected={selected}
@@ -254,12 +257,13 @@ export const ValidatorSelector = ({
             <ValidatorSelectorDetailModal
               detailModalVisible={detailModalVisible}
               detailItem={detailItem}
-              onCancel={() => setDetailModalVisible(false)}
               networkPrefix={networkPrefix}
+              setVisible={setDetailModalVisible}
             />
           )}
 
           <BasicSelectModal
+            level={2}
             ref={sortingModalRef}
             title={i18n.header.sorting}
             items={sortingOptions}
@@ -267,7 +271,7 @@ export const ValidatorSelector = ({
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                style={{ marginTop: 8 }}
+                style={{ marginTop: 16 }}
                 icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);

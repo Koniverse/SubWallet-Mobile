@@ -2,24 +2,25 @@ import { isHex } from '@polkadot/util';
 import Text from 'components/Text';
 import { Warning } from 'components/Warning';
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleProp, View, ViewStyle } from 'react-native';
+import { StatusBar, StyleProp, View, ViewStyle, SafeAreaView } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarcodeFinder } from 'screens/Shared/BarcodeFinder';
 import { ColorMap } from 'styles/color';
 import { ScannerStyles } from 'styles/scanner';
-import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { SigData } from 'types/signer';
 import { convertHexColorToRGBA } from 'utils/color';
 import i18n from 'utils/i18n/i18n';
-import { overlayColor, rectDimensions } from 'constants/scanner';
+import { rectDimensions } from 'constants/scanner';
 import { BarCodeReadEvent } from 'react-native-camera';
-import ModalBase from 'components/Modal/Base/ModalBase';
 import { X } from 'phosphor-react-native';
 import { IconButton } from 'components/IconButton';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import ModalBase from 'components/Modal/Base/ModalBase';
 
 interface Props {
   visible: boolean;
-  onHideModal: () => void;
+  setVisible: (arg: boolean) => void;
   onSuccess: (result: SigData) => void | Promise<void>;
 }
 
@@ -46,8 +47,11 @@ const BottomContentStyle: StyleProp<ViewStyle> = {
   backgroundColor: convertHexColorToRGBA(ColorMap.dark1, 0.5),
 };
 
-const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
+const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
+  const theme = useSubWalletTheme().swThemes;
   const [error, setError] = useState<string>('');
+
+  const onHideModal = () => setVisible(false);
 
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
@@ -79,9 +83,13 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
   }, [visible]);
 
   return (
-    <ModalBase isVisible={visible} style={{ flex: 1, width: '100%', margin: 0 }}>
-      <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={overlayColor} translucent={true} />
+    <ModalBase
+      isVisible={visible}
+      style={{ flex: 1, width: '100%', margin: 0 }}
+      isUseForceHidden={false}
+      onBackButtonPress={onHideModal}>
+      <SafeAreaView style={[ScannerStyles.SafeAreaStyle, { backgroundColor: theme.colorBgSecondary }]} />
+      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
       <QRCodeScanner
         reactivate={true}
         reactivateTimeout={5000}
@@ -93,12 +101,9 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess }: Props) => {
         customMarker={
           <View style={ScannerStyles.RectangleContainerStyle}>
             <View style={ScannerStyles.TopOverlayStyle}>
-              <View style={ScannerStyles.HeaderStyle}>
+              <View style={[ScannerStyles.HeaderStyle, { backgroundColor: theme.colorBgSecondary }]}>
                 <Text style={ScannerStyles.HeaderTitleTextStyle}>{i18n.title.approveRequest}</Text>
                 <IconButton icon={X} style={CancelButtonStyle} onPress={onHideModal} />
-              </View>
-              <View style={ScannerStyles.HeaderSubTitleStyle}>
-                <Text style={ScannerStyles.HeaderSubTitleTextStyle}>{i18n.common.scanForApprove}</Text>
               </View>
             </View>
             <View style={ScannerStyles.CenterOverlayStyle}>

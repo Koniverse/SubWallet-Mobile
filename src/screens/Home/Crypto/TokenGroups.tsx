@@ -61,7 +61,7 @@ export const TokenGroups = () => {
     openSelectToken,
     selectedAccount,
     selectedNetwork,
-    onCloseQrModal,
+    setQrModalVisible,
     isQrModalVisible,
     tokenSelectorItems,
     accountRef,
@@ -93,13 +93,16 @@ export const TokenGroups = () => {
   );
 
   const tokenGroupBalanceItems = useMemo<TokenBalanceItemType[]>(() => {
-    const result: TokenBalanceItemType[] = [];
+    const balanceItemData: TokenBalanceItemType[] = [];
 
     sortedTokenGroups.forEach(tokenGroupSlug => {
       if (tokenGroupBalanceMap[tokenGroupSlug]) {
-        result.push(tokenGroupBalanceMap[tokenGroupSlug]);
+        balanceItemData.push(tokenGroupBalanceMap[tokenGroupSlug]);
       }
     });
+    const result = balanceItemData
+      // @ts-ignore
+      .sort((firstItem, secondItem) => secondItem.total.convertedValue - firstItem.total.convertedValue);
 
     return result;
   }, [sortedTokenGroups, tokenGroupBalanceMap]);
@@ -112,10 +115,6 @@ export const TokenGroups = () => {
     ),
     [isShowBalance, onPressItem, theme.colorBgSecondary],
   );
-
-  const onCloseCustomizationModal = useCallback(() => {
-    setCustomizationModalVisible(false);
-  }, []);
 
   const onOpenCustomizationModal = useCallback(() => {
     setCustomizationModalVisible(true);
@@ -189,7 +188,12 @@ export const TokenGroups = () => {
       }
     });
 
-    return items;
+    const result = items
+      // @ts-ignore
+      .sort((firstItem, secondItem) => firstItem.total.convertedValue - secondItem.total.convertedValue)
+      .reverse();
+
+    return result;
   }, [sortedTokenSlugs, tokenBalanceMap]);
 
   const listHeaderNode = useMemo(() => {
@@ -253,7 +257,7 @@ export const TokenGroups = () => {
           modalVisible={isQrModalVisible}
           address={selectedAccount}
           selectedNetwork={selectedNetwork}
-          onCancel={onCloseQrModal}
+          setModalVisible={setQrModalVisible}
         />
 
         <TokenSearchModal
@@ -263,7 +267,7 @@ export const TokenGroups = () => {
           items={tokenSearchItems}
         />
 
-        <CustomizationModal modalVisible={isCustomizationModalVisible} onCancel={onCloseCustomizationModal} />
+        <CustomizationModal modalVisible={isCustomizationModalVisible} setVisible={setCustomizationModalVisible} />
       </>
     </ScreenContainer>
   );

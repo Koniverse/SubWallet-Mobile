@@ -1,6 +1,6 @@
 import Input, { InputProps } from 'components/design-system-ui/input';
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isAddress } from '@polkadot/util-crypto';
 import { Avatar, Button, Icon, Typography } from 'components/design-system-ui';
@@ -28,6 +28,7 @@ interface Props extends InputProps {
   addressPrefix?: number;
   saveAddress?: boolean;
   scannerProps?: Omit<AddressScannerProps, 'onChangeAddress' | 'onPressCancel' | 'qrModalVisible'>;
+  onSideEffectChange?: () => void; // callback for address book or scan QR
 }
 
 const Component = (
@@ -40,6 +41,7 @@ const Component = (
     scannerProps = {},
     saveAddress = true,
     value = '',
+    onSideEffectChange,
     ...inputProps
   }: Props,
   ref: ForwardedRef<TextInput>,
@@ -117,10 +119,11 @@ const Component = (
   ]);
 
   const onPressQrButton = useCallback(async () => {
+    Keyboard.dismiss();
     const result = await requestCameraPermission();
 
     if (result === RESULTS.GRANTED) {
-      setIsShowQrModalVisible(true);
+      setTimeout(() => setIsShowQrModalVisible(true), 500);
     }
   }, []);
 
@@ -189,11 +192,12 @@ const Component = (
         setError(undefined);
         setIsShowQrModalVisible(false);
         onChangeInputText(data);
+        onSideEffectChange?.();
       } else {
         setError(i18n.errorMessage.isNotAnAddress);
       }
     },
-    [onChangeInputText],
+    [onChangeInputText, onSideEffectChange],
   );
 
   const onInputFocus = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
@@ -209,17 +213,14 @@ const Component = (
   const onSelectAddressBook = useCallback(
     (_value: string) => {
       onChangeInputText(_value);
+      onSideEffectChange?.();
     },
-    [onChangeInputText],
+    [onChangeInputText, onSideEffectChange],
   );
 
   const closeAddressScanner = useCallback(() => {
     setError(undefined);
     setIsShowQrModalVisible(false);
-  }, []);
-
-  const closeAddressBookModal = useCallback(() => {
-    setShowAddressBookModal(false);
   }, []);
 
   return (
@@ -254,7 +255,7 @@ const Component = (
           networkGenesisHash={networkGenesisHash}
           onSelect={onSelectAddressBook}
           value={value}
-          onClose={closeAddressBookModal}
+          setVisible={setShowAddressBookModal}
         />
       )}
     </>

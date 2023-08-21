@@ -1,7 +1,7 @@
 import { FlatListScreen } from 'components/FlatListScreen';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { EmptyList } from 'components/EmptyList';
 import { SectionItem } from 'components/LazySectionList';
 import { AbstractAddressJson, AccountJson } from '@subwallet/extension-base/background/types';
@@ -15,19 +15,20 @@ import reformatAddress, { toShort } from 'utils/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
-import { SubWalletFullSizeModal } from 'components/Modal/Base/SubWalletFullSizeModal';
 import useFormatAddress from 'hooks/account/useFormatAddress';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import AccountItemWithName from 'components/common/Account/Item/AccountItemWithName';
 import createStylesheet from './style/AddressBookModal';
+import { SwFullSizeModal } from 'components/design-system-ui';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   modalVisible: boolean;
-  onClose: () => void;
   value?: string;
   addressPrefix?: number;
   onSelect: (val: string) => void;
   networkGenesisHash?: string;
+  setVisible: (arg: boolean) => void;
 }
 
 enum AccountGroup {
@@ -116,14 +117,17 @@ export const AddressBookModal = ({
   addressPrefix,
   networkGenesisHash,
   modalVisible,
-  onClose,
   onSelect,
   value = '',
+  setVisible,
 }: Props) => {
   const { accounts, contacts, recent } = useSelector((state: RootState) => state.accountState);
   const formatAddress = useFormatAddress(addressPrefix);
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
+  const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+
+  const onClose = useCallback(() => modalBaseV2Ref?.current?.close(), []);
   const AccountGroupNameMap = useMemo(
     () => ({
       [AccountGroup.WALLET]: i18n.addressBook.typeWallet,
@@ -236,7 +240,12 @@ export const AddressBookModal = ({
   const BeforeListItem = useMemo(() => <View style={stylesheet.beforeListBlock} />, [stylesheet.beforeListBlock]);
 
   return (
-    <SubWalletFullSizeModal modalVisible={modalVisible} onChangeModalVisible={onClose}>
+    <SwFullSizeModal
+      setVisible={setVisible}
+      modalBaseV2Ref={modalBaseV2Ref}
+      isUseModalV2
+      modalVisible={modalVisible}
+      onBackButtonPress={onClose}>
       <FlatListScreen
         style={FlatListScreenPaddingTop}
         autoFocus
@@ -258,6 +267,6 @@ export const AddressBookModal = ({
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
       />
-    </SubWalletFullSizeModal>
+    </SwFullSizeModal>
   );
 };

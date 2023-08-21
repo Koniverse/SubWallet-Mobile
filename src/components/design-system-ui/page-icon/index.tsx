@@ -4,12 +4,13 @@ import Icon from '../icon';
 import { IconProps } from 'phosphor-react-native';
 
 interface Props {
-  icon: React.ElementType<IconProps>;
+  icon?: React.ElementType<IconProps>;
   color: string;
   backgroundColor?: string;
+  customIcon?: React.ReactNode;
 }
 
-const PageIcon = ({ icon, color, backgroundColor }: Props) => {
+const PageIcon = ({ icon, color, backgroundColor, customIcon }: Props) => {
   return (
     <View
       style={{
@@ -20,7 +21,7 @@ const PageIcon = ({ icon, color, backgroundColor }: Props) => {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <Icon phosphorIcon={icon} iconColor={color} weight={'fill'} customSize={64} />
+      {customIcon ? customIcon : <Icon phosphorIcon={icon} iconColor={color} weight={'fill'} customSize={64} />}
     </View>
   );
 };

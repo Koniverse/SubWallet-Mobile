@@ -26,15 +26,17 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomToast } from 'components/design-system-ui/toast';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   visible: boolean;
-  closeModal: () => void;
   openModal: () => void;
   staking?: StakingItem;
   reward?: StakingRewardItem;
   chainStakingMetadata?: ChainStakingMetadata;
   nominatorMetadata?: NominatorMetadata;
+  setModalVisible: (arg: boolean) => void;
+  stakingDetailModalRef: React.RefObject<SWModalRefProps>;
 }
 
 type ActionListType = {
@@ -49,14 +51,17 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { chainStakingMetadata, nominatorMetadata, closeModal, visible, reward } = props;
+  const { chainStakingMetadata, nominatorMetadata, visible, reward, setModalVisible, stakingDetailModalRef } = props;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
   const [selected, setSelected] = useState<StakingAction | undefined>();
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const onClickButton = usePreCheckReadOnly(toastRef, currentAccount?.address);
+  const modalRef = useRef<SWModalRefProps>(null);
 
+  const closeModal = useCallback(() => modalRef?.current?.close(), []);
   const unStakeAction = useCallback(() => {
+    stakingDetailModalRef?.current?.close();
     closeModal();
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
@@ -68,9 +73,10 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation]);
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation, stakingDetailModalRef]);
 
   const stakeAction = useCallback(() => {
+    stakingDetailModalRef?.current?.close();
     closeModal();
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
@@ -82,7 +88,7 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [chainStakingMetadata?.type, closeModal, navigation, nominatorMetadata?.chain]);
+  }, [chainStakingMetadata?.type, closeModal, navigation, nominatorMetadata?.chain, stakingDetailModalRef]);
 
   const handleWithdrawalAction = useCallback(() => {
     if (!nominatorMetadata) {
@@ -90,6 +96,7 @@ const StakingActionModal = (props: Props) => {
 
       return;
     }
+    stakingDetailModalRef?.current?.close();
     closeModal();
 
     setSelected(undefined);
@@ -103,9 +110,17 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [nominatorMetadata, closeModal, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
+  }, [
+    nominatorMetadata,
+    stakingDetailModalRef,
+    closeModal,
+    navigation,
+    chainStakingMetadata?.type,
+    chainStakingMetadata?.chain,
+  ]);
 
   const cancelUnstakeAction = useCallback(() => {
+    stakingDetailModalRef?.current?.close();
     closeModal();
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
@@ -117,7 +132,7 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation]);
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation, stakingDetailModalRef]);
 
   const handleClaimRewardAction = useCallback(() => {
     if (!nominatorMetadata) {
@@ -127,6 +142,7 @@ const StakingActionModal = (props: Props) => {
     }
 
     setSelected(undefined);
+    stakingDetailModalRef?.current?.close();
     closeModal();
     navigation.navigate('Drawer', {
       screen: 'TransactionAction',
@@ -138,7 +154,14 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, nominatorMetadata, navigation]);
+  }, [
+    nominatorMetadata,
+    stakingDetailModalRef,
+    closeModal,
+    navigation,
+    chainStakingMetadata?.type,
+    chainStakingMetadata?.chain,
+  ]);
 
   const availableActions = useMemo(() => {
     if (!nominatorMetadata) {
@@ -209,9 +232,12 @@ const StakingActionModal = (props: Props) => {
 
   return (
     <SwModal
+      isUseModalV2
+      level={2}
+      modalBaseV2Ref={modalRef}
+      setVisible={setModalVisible}
       modalVisible={visible}
       modalTitle={i18n.header.actions}
-      onChangeModalVisible={closeModal}
       onBackButtonPress={closeModal}>
       {actionList.map(item => {
         const actionDisable = !availableActions.includes(item.action);

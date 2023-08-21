@@ -17,6 +17,8 @@ import { Button, WarningText } from 'components/design-system-ui';
 import { resetWallet } from 'messaging/index';
 import { useToast } from 'react-native-toast-notifications';
 import { ForgotPasswordModal } from 'components/common/ForgotPasswordModal';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 const optionalConfigObject = {
   title: 'Authentication Required', // Android
@@ -42,6 +44,7 @@ export const LockScreen = () => {
   const toast = useToast();
   const [resetAccLoading, setAccLoading] = useState(false);
   const [eraseAllLoading, setEraseAllLoading] = useState(false);
+  const navigation = useNavigation<RootNavigationProps>();
 
   const unlockWithBiometric = useAppLock().unlockWithBiometric;
 
@@ -53,6 +56,7 @@ export const LockScreen = () => {
           TouchID.authenticate(`Sign in with ${currentType}`, optionalConfigObject)
             .then(() => {
               unlockWithBiometric();
+              navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Home');
             })
             .catch(() => {
               setAuthMethod('pinCode');
@@ -61,20 +65,20 @@ export const LockScreen = () => {
         .catch(() => setAuthMethod('pinCode'));
     }
     setAuthMethod(_authMethod);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [faceIdEnabled, unlockWithBiometric]);
+  }, [faceIdEnabled, navigation, unlockWithBiometric]);
 
   useEffect(() => {
     if (value.length === 6) {
       if (unlock(value)) {
         setValue('');
+        navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Home');
       } else {
         setValue('');
         setError(i18n.errorMessage.invalidPinCode);
         ref.current?.focus();
       }
     }
-  }, [ref, unlock, value]);
+  }, [navigation, ref, unlock, value]);
 
   const onReset = useCallback(
     (resetAll: boolean) => {
@@ -91,6 +95,11 @@ export const LockScreen = () => {
               if (!rs.status) {
                 toast.show(rs.errors[0], { type: 'danger' });
               }
+              resetPinCode();
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              });
             })
             .catch((e: Error) => {
               toast.show(e.message, { type: 'danger' });
@@ -98,70 +107,80 @@ export const LockScreen = () => {
             .finally(() => {
               _setLoading(false);
               setModalVisible(false);
-              resetPinCode();
             });
         }, 300);
       };
     },
-    [resetPinCode, toast],
+    [navigation, resetPinCode, toast],
   );
 
   return (
-    <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ ...sharedStyles.layoutContainer, flex: 1, width: '100%', alignItems: 'center', paddingTop: 68 }}>
-          <Suspense>
-            <SVGImages.LogoGradient width={80} height={120} />
-          </Suspense>
+    <View
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        position: 'absolute',
+        backgroundColor: ColorMap.dark1,
+      }}>
+      <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View
+            style={{ ...sharedStyles.layoutContainer, flex: 1, width: '100%', alignItems: 'center', paddingTop: 68 }}>
+            <Suspense>
+              <SVGImages.LogoGradient width={80} height={120} />
+            </Suspense>
 
-          <Text
-            style={{
-              fontSize: 24,
-              lineHeight: 32,
-              ...FontSemiBold,
-              color: ColorMap.light,
-              paddingTop: 32,
-              paddingBottom: 8,
-            }}>
-            {i18n.welcomeScreen.welcomeBackTitle}
-          </Text>
-          {authMethod === 'pinCode' && (
-            <>
-              <Text
-                style={{
-                  fontSize: 14,
-                  lineHeight: 22,
-                  ...FontMedium,
-                  color: theme.colorTextLight4,
-                  paddingBottom: 12,
-                }}>
-                {i18n.common.enterPinToUnlock}
-              </Text>
-              <PinCodeField
-                value={value}
-                setError={setError}
-                setValue={setValue}
-                isPinCodeValid={!error}
-                pinCodeRef={ref}
-              />
-            </>
-          )}
+            <Text
+              style={{
+                fontSize: 24,
+                lineHeight: 32,
+                ...FontSemiBold,
+                color: ColorMap.light,
+                paddingTop: 32,
+                paddingBottom: 8,
+              }}>
+              {i18n.welcomeScreen.welcomeBackTitle}
+            </Text>
+            {authMethod === 'pinCode' && (
+              <>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 22,
+                    ...FontMedium,
+                    color: theme.colorTextLight4,
+                    paddingBottom: 12,
+                  }}>
+                  {i18n.common.enterPinToUnlock}
+                </Text>
+                <PinCodeField
+                  value={value}
+                  setError={setError}
+                  setValue={setValue}
+                  isPinCodeValid={!error}
+                  pinCodeRef={ref}
+                />
+              </>
+            )}
 
-          {!!error && <WarningText isDanger message={error} style={{ marginTop: 24 }} />}
+            {!!error && <WarningText isDanger message={error} style={{ marginTop: 24 }} />}
 
-          <Button type={'ghost'} onPress={() => setModalVisible(true)}>
-            {i18n.welcomeScreen.forgetAccount}
-          </Button>
+            <Button type={'ghost'} onPress={() => setModalVisible(true)}>
+              {i18n.welcomeScreen.forgetAccount}
+            </Button>
 
-          <ForgotPasswordModal
-            modalVisible={modalVisible}
-            onReset={onReset}
-            onCloseModalVisible={() => setModalVisible(false)}
-            resetAccLoading={resetAccLoading}
-            eraseAllLoading={eraseAllLoading}
-          />
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+            <ForgotPasswordModal
+              modalVisible={modalVisible}
+              onReset={onReset}
+              onCloseModalVisible={() => setModalVisible(false)}
+              resetAccLoading={resetAccLoading}
+              eraseAllLoading={eraseAllLoading}
+            />
+          </View>
+        </SafeAreaView>
+      </ImageBackground>
+    </View>
   );
 };

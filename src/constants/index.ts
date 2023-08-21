@@ -22,6 +22,7 @@ export const ALLOW_FONT_SCALING = false;
 export const HIDE_MODAL_DURATION = 1000;
 export const SUBSTRATE_ACCOUNT_TYPE: KeypairType = 'sr25519';
 export const EVM_ACCOUNT_TYPE: KeypairType = 'ethereum';
+export const DEFAULT_ACCOUNT_TYPES: KeypairType[] = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
 const window = Dimensions.get('window');
 export const deviceWidth = window.width;
 export const deviceHeight = window.height;

@@ -3,7 +3,7 @@ import i18n from 'utils/i18n/i18n';
 import React, { useCallback, useMemo, useState } from 'react';
 import { AddressJson } from '@subwallet/extension-base/background/types';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
-import { ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import Typography from '../../../components/design-system-ui/typography';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -20,6 +20,8 @@ import AccountItemWithName from 'components/common/Account/Item/AccountItemWithN
 import AccountItemBase from 'components/common/Account/Item/AccountItemBase';
 import { Icon } from 'components/design-system-ui';
 import createStylesheet from './style';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 enum AccountGroup {
   CONTACT = 'contact',
@@ -95,6 +97,7 @@ const sortFunction = (a: AccountItem, b: AccountItem) => {
 
 export const ManageAddressBook = () => {
   const theme = useSubWalletTheme().swThemes;
+  const navigation = useNavigation<RootNavigationProps>();
   const { contacts, recent } = useSelector((state: RootState) => state.accountState);
   const [isShowAddContactModal, setShowAddContactModal] = useState<boolean>(false);
   const [isShowEditContactModal, setShowEditContactModal] = useState<boolean>(false);
@@ -183,8 +186,9 @@ export const ManageAddressBook = () => {
             addressPreLength={9}
             addressSufLength={11}
             onPress={() => {
+              Keyboard.dismiss();
               setSelectedItem(item);
-              setShowEditContactModal(true);
+              setTimeout(() => setShowEditContactModal(true), 100);
             }}
             customStyle={{ address: { ...FontSemiBold, color: theme.colorTextLight4 } }}
             rightItem={ItemRightIcon}
@@ -199,8 +203,9 @@ export const ManageAddressBook = () => {
           address={item.address}
           avatarSize={theme.sizeLG}
           onPress={() => {
+            Keyboard.dismiss();
             setSelectedItem(item);
-            setShowEditContactModal(true);
+            setTimeout(() => setShowEditContactModal(true), 100);
           }}
           rightItem={ItemRightIcon}
         />
@@ -216,14 +221,6 @@ export const ManageAddressBook = () => {
         setShowAddContactModal(true);
       },
     };
-  }, []);
-
-  const closeAddContactModal = useCallback(() => {
-    setShowAddContactModal(false);
-  }, []);
-
-  const closeEditContactModal = useCallback(() => {
-    setShowEditContactModal(false);
   }, []);
 
   return (
@@ -246,15 +243,16 @@ export const ManageAddressBook = () => {
         sortFunction={sortFunction}
         searchMarginBottom={theme.sizeXS}
         flatListStyle={stylesheet.flatListStyle}
+        onPressBack={() => navigation.goBack()}
       />
 
-      <AddContactModal modalVisible={isShowAddContactModal} onChangeModalVisible={closeAddContactModal} />
+      <AddContactModal modalVisible={isShowAddContactModal} setModalVisible={setShowAddContactModal} />
 
       {selectedItem && (
         <EditContactModal
           addressJson={selectedItem}
           modalVisible={isShowEditContactModal}
-          onChangeModalVisible={closeEditContactModal}
+          setModalVisible={setShowEditContactModal}
         />
       )}
     </>
