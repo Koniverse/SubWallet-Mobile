@@ -748,7 +748,7 @@ export const vi = {
     connectedNetworks: 'Connected networks',
   },
   cryptoScreen: {
-    receive: 'Nhận',
+    receive: 'Địa chỉ',
     send: 'Gửi',
     swap: 'Swap',
     buy: 'Mua',

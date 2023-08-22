@@ -750,7 +750,7 @@ export const en = {
     connectedNetworks: 'Connected networks',
   },
   cryptoScreen: {
-    receive: 'Receive',
+    receive: 'Address',
     send: 'Send',
     swap: 'Swap',
     buy: 'Buy',

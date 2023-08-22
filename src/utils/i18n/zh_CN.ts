@@ -742,7 +742,7 @@ export const zh = {
     connectedNetworks: 'Connected networks',
   },
   cryptoScreen: {
-    receive: '领取',
+    receive: '地址',
     send: '发送',
     swap: '切换',
     buy: '购买',
