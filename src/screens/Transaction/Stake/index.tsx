@@ -48,6 +48,8 @@ import useFetchChainState from 'hooks/screen/useFetchChainState';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { BN, BN_ZERO } from '@polkadot/util';
+import { isSameAddress } from '@subwallet/extension-base/utils';
 
 export const Stake = ({
   route: {
@@ -169,6 +171,28 @@ export const Stake = ({
     return '0';
   }, [assetRegistry, asset]);
 
+  const getSelectedValidators = useCallback(
+    (nominations: string[]) => {
+      const validatorList = validatorInfoMap[chain];
+
+      if (!validatorList) {
+        return [];
+      }
+
+      const result: ValidatorInfo[] = [];
+
+      validatorList.forEach(validator => {
+        if (nominations.some(nomination => isSameAddress(nomination, validator.address))) {
+          // remember the format of the address
+          result.push(validator);
+        }
+      });
+
+      return result;
+    },
+    [chain, validatorInfoMap],
+  );
+
   const maxValue = useMemo(() => {
     const balance = new BigN(nativeTokenBalance.value);
     const ed = new BigN(existentialDeposit);
@@ -262,13 +286,44 @@ export const Stake = ({
     return undefined;
   }, [nominationPoolInfoMap, chain, currentPool]);
 
-  const minStake = useMemo(
-    () =>
-      (currentStakingType === StakingType.POOLED
-        ? chainStakingMetadata?.minJoinNominationPool
-        : chainStakingMetadata?.minStake) || '0',
-    [chainStakingMetadata?.minJoinNominationPool, chainStakingMetadata?.minStake, currentStakingType],
-  );
+  const getValidatorMinStake = useCallback((validatorInfos: ValidatorInfo[]) => {
+    let minStake = BN_ZERO;
+
+    validatorInfos.forEach(validatorInfo => {
+      const bnMinBond = new BN(validatorInfo?.minBond);
+
+      if (bnMinBond.gt(minStake)) {
+        minStake = bnMinBond;
+      }
+    });
+
+    return minStake.toString();
+  }, []);
+
+  const chainMinStake = useMemo(() => {
+    return currentStakingType === StakingType.NOMINATED
+      ? chainStakingMetadata?.minStake || '0'
+      : chainStakingMetadata?.minJoinNominationPool || '0';
+  }, [chainStakingMetadata?.minJoinNominationPool, chainStakingMetadata?.minStake, currentStakingType]);
+
+  const minStake = useMemo(() => {
+    if (currentStakingType === StakingType.NOMINATED) {
+      const validatorInfos = getSelectedValidators(parseNominations(currentValidator));
+      const validatorMinStake = getValidatorMinStake(validatorInfos);
+
+      const nominatedMinStake = BN.max(new BN(validatorMinStake), new BN(chainStakingMetadata?.minStake || '0'));
+      return nominatedMinStake.toString();
+    }
+
+    return chainStakingMetadata?.minJoinNominationPool || '0';
+  }, [
+    chainStakingMetadata?.minJoinNominationPool,
+    chainStakingMetadata?.minStake,
+    currentStakingType,
+    currentValidator,
+    getSelectedValidators,
+    getValidatorMinStake,
+  ]);
 
   const getMetaInfo = useCallback(() => {
     if (chainStakingMetadata) {
@@ -426,13 +481,7 @@ export const Stake = ({
             defaultValue={asset}
             acceptDefaultValue={true}
             renderSelected={() => (
-              <TokenSelectField
-                logoKey={symbol.toLowerCase()}
-                subLogoKey={chain}
-                value={symbol}
-                showIcon
-                outerStyle={stakingChain !== ALL_KEY || !from || loading}
-              />
+              <TokenSelectField logoKey={symbol.toLowerCase()} subLogoKey={chain} value={symbol} showIcon />
             )}
           />
 
@@ -507,7 +556,7 @@ export const Stake = ({
             modalVisible={detailNetworkModalVisible}
             chainStakingMetadata={chainStakingMetadata}
             stakingType={currentStakingType as StakingType}
-            minimumActive={{ decimals, value: minStake, symbol }}
+            minimumActive={{ decimals, value: chainMinStake, symbol }}
             setVisible={setDetailNetworkModalVisible}
           />
         )}

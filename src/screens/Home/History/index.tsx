@@ -31,7 +31,7 @@ import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { FontMedium } from 'styles/sharedStyles';
-import { ListRenderItemInfo, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
 import Typography from '../../../components/design-system-ui/typography';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -320,8 +320,9 @@ function History({
 
   const onOpenDetail = useCallback((item: TransactionHistoryDisplayItem) => {
     return () => {
+      Keyboard.dismiss();
       setSelectedItem(item);
-      setDetailModalVisible(true);
+      setTimeout(() => setDetailModalVisible(true), 200);
     };
   }, []);
 

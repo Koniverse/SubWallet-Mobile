@@ -63,7 +63,7 @@ export function HistoryDetailModal({
 
     if (link) {
       return (
-        <View style={{ alignSelf: 'stretch', marginBottom: 16 }}>
+        <View style={{ alignSelf: 'stretch' }}>
           <Button icon={<Icon phosphorIcon={ArrowSquareUpRight} weight={'fill'} />} onPress={openBlockExplorer(link)}>
             {i18n.common.viewOnExplorer}
           </Button>
