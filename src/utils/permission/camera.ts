@@ -14,14 +14,14 @@ export const requestCameraPermission = async (onPressCancel?: () => void) => {
 
   switch (result) {
     case RESULTS.UNAVAILABLE:
-      console.log('Images: This feature is not available (on this device / in this context)');
+      // Images: This feature is not available (on this device / in this context)
       break;
     case RESULTS.DENIED:
       request(getCameraPermission()).then(() => onPressCancel && onPressCancel());
-      console.log('Images: The permission has not been requested / is denied but requestable');
+      // Images: The permission has not been requested / is denied but requestable
       break;
     case RESULTS.GRANTED:
-      console.log('Images: The permission is granted');
+      // Images: The permission is granted
       return result;
     case RESULTS.BLOCKED:
       Alert.alert(i18n.common.notify, i18n.common.cannotScanQRCodeWithoutPermission, [

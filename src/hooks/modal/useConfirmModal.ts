@@ -39,7 +39,6 @@ const useConfirmModal = (onComplete: VoidFunction): Result => {
   }, [onComplete]);
 
   const onCancelModal = useCallback(() => {
-    console.log('8000');
     rejectRef.current?.(new Error('User cancel request'));
     promiseRef.current = undefined;
   }, []);

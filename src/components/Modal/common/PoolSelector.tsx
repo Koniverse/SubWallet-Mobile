@@ -9,7 +9,7 @@ import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { PREDEFINED_STAKING_POOL } from '@subwallet/extension-base/constants';
 import { PoolSelectorField } from 'components/Field/PoolSelector';
 import { PoolSelectorDetailModal } from 'components/Modal/common/PoolSelectorDetailModal';
-import { ArrowCounterClockwise, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
+import { ArrowsClockwise, MagnifyingGlass, SortAscending, SortDescending } from 'phosphor-react-native';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -249,7 +249,8 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
             renderCustomItem={renderSortingItem}>
             {
               <Button
-                icon={<Icon phosphorIcon={ArrowCounterClockwise} size={'md'} />}
+                style={{ marginTop: 16 }}
+                icon={<Icon phosphorIcon={ArrowsClockwise} size={'md'} />}
                 onPress={() => {
                   setSortSelection(SortKey.DEFAULT);
                   sortingModalRef?.current?.onCloseModal();

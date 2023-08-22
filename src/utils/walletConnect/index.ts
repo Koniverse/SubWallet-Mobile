@@ -100,7 +100,6 @@ export const connectWalletConnect = (wcUrl: string, toast?: ToastType) => {
       runned[wcUrl] = true;
       addConnection({ uri: wcUrl }).catch(e => {
         const errMessage = (e as Error).message;
-        console.log('e----------', errMessage);
         const message = errMessage.includes('Pairing already exists')
           ? i18n.errorMessage.connectionAlreadyExist
           : i18n.errorMessage.failToAddConnection;
