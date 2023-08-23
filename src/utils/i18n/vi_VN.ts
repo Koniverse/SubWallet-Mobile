@@ -385,6 +385,7 @@ export const vi = {
     disconnect: 'Disconnect',
     applyAccounts: (account: number) => `Apply ${account} accounts`,
     createOne: 'Create one',
+    reload: 'Tải lại',
   },
   inputLabel: {
     selectAcc: 'Chọn tài khoản',
@@ -601,6 +602,7 @@ export const vi = {
     connectSuccessfully: 'Connect successfully',
     supportedNetworks: 'Supported networks',
     networkSupported: (networkNumber: number) => `${networkNumber} networks support`,
+    unableToFetchInformation: (validatorTitle: string) => `Không thể lấy thông tin của ${validatorTitle}`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot Parachain',

@@ -1171,7 +1171,7 @@ export const predefinedDApps: PredefinedDApps = {
       icon: 'https://azero.id/favicon.ico',
       id: 'www.azero.id',
       url: 'https://azero.id',
-      categories: ['defi', 'substrate'],
+      categories: ['substrate', 'utilities'],
       isSupportSubstrateAccount: true,
       isSupportEthereumAccount: false,
     },

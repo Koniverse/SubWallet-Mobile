@@ -1,21 +1,38 @@
 import Text from 'components/Text';
-import { View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import React from 'react';
 import { IconProps } from 'phosphor-react-native';
 import { centerStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { PageIcon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { ColorMap } from 'styles/color';
 
 interface Props {
   icon: React.ElementType<IconProps>;
   title: string;
   message?: string;
+  isRefresh?: boolean;
+  onPressReload?: () => void;
 }
 
-export const EmptyList = ({ icon, title, message }: Props) => {
+export const EmptyList = ({ icon, title, message, onPressReload, isRefresh }: Props) => {
   const theme = useSubWalletTheme().swThemes;
+
   return (
-    <View style={[centerStyle, { justifyContent: 'center', alignItems: 'center' }]}>
+    <ScrollView
+      contentContainerStyle={[centerStyle, { justifyContent: 'center', alignItems: 'center' }]}
+      refreshControl={
+        onPressReload ? (
+          <RefreshControl
+            style={{ backgroundColor: ColorMap.dark1 }}
+            tintColor={ColorMap.light}
+            refreshing={!!isRefresh}
+            onRefresh={onPressReload}
+          />
+        ) : (
+          <></>
+        )
+      }>
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
         <PageIcon icon={icon} color={theme.colorTextTertiary} backgroundColor={'rgba(77, 77, 77, 0.1)'} />
         <Text
@@ -40,6 +57,6 @@ export const EmptyList = ({ icon, title, message }: Props) => {
           </Text>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };

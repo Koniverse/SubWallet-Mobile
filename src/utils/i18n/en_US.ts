@@ -386,6 +386,7 @@ export const en = {
     disconnect: 'Disconnect',
     applyAccounts: (account: number) => `Apply ${account} accounts`,
     createOne: 'Create one',
+    reload: 'Reload',
   },
   inputLabel: {
     selectAcc: 'Select account',
@@ -603,6 +604,7 @@ export const en = {
     connectSuccessfully: 'Connect successfully',
     supportedNetworks: 'Supported networks',
     networkSupported: (networkNumber: number) => `${networkNumber} networks support`,
+    unableToFetchInformation: (validatorTitle: string) => `Unable to fetch ${validatorTitle} information`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
