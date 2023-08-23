@@ -14,8 +14,9 @@ import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal
 import { ModalRef } from 'types/modalRef';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import BigN from 'bignumber.js';
-import { EmptyList } from 'components/EmptyList';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
+import { EmptyValidator } from 'components/EmptyValidator';
+import { getValidatorLabel } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 
 interface Props {
   onSelectItem?: (value: string) => void;
@@ -24,6 +25,7 @@ interface Props {
   poolLoading: boolean;
   selectedPool?: NominationPoolInfo;
   disabled?: boolean;
+  setForceFetchValidator: (val: boolean) => void;
 }
 
 interface FilterOption {
@@ -47,16 +49,6 @@ const searchFunction = (items: NominationPoolDataType[], searchString: string) =
   const lowerCaseSearchString = searchString.toLowerCase();
 
   return items.filter(({ name }) => name?.toLowerCase().includes(lowerCaseSearchString));
-};
-
-const renderListEmptyComponent = () => {
-  return (
-    <EmptyList
-      title={i18n.emptyScreen.selectorEmptyTitle}
-      message={i18n.emptyScreen.selectorEmptyMessage}
-      icon={MagnifyingGlass}
-    />
-  );
 };
 
 const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
@@ -88,7 +80,15 @@ const filterFunction = (items: NominationPoolDataType[], filters: string[]) => {
   });
 };
 
-export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedPool, disabled }: Props) => {
+export const PoolSelector = ({
+  chain,
+  onSelectItem,
+  from,
+  poolLoading,
+  selectedPool,
+  disabled,
+  setForceFetchValidator,
+}: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const items = useGetValidatorList(chain, StakingType.POOLED) as NominationPoolDataType[];
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -141,6 +141,19 @@ export const PoolSelector = ({ chain, onSelectItem, from, poolLoading, selectedP
       }
     });
   }, [items, sortSelection]);
+
+  const renderListEmptyComponent = useCallback(() => {
+    return (
+      <EmptyValidator
+        title={i18n.emptyScreen.selectorEmptyTitle}
+        message={i18n.emptyScreen.selectorEmptyMessage}
+        icon={MagnifyingGlass}
+        validatorTitle={getValidatorLabel(chain).toLowerCase()}
+        isDataEmpty={items.length === 0}
+        onClickReload={setForceFetchValidator}
+      />
+    );
+  }, [chain, items.length, setForceFetchValidator]);
 
   useEffect(() => {
     const defaultSelectedPool = nominationPoolValueList[0] || String(PREDEFINED_STAKING_POOL[chain] || '');

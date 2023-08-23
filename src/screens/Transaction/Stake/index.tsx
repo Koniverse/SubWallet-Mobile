@@ -27,7 +27,7 @@ import { PoolSelector } from 'components/Modal/common/PoolSelector';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import { fetchChainValidators } from 'screens/Transaction/helper/staking';
 import { ALL_KEY } from 'constants/index';
-import { ValidatorSelector } from 'components/Modal/common/ValidatorSelector';
+import { ValidatorSelector, ValidatorSelectorRef } from 'components/Modal/common/ValidatorSelector';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { parseNominations } from 'utils/transaction/stake';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -139,28 +139,16 @@ export const Stake = ({
     [accounts, stakingChain, chainInfoMap, currentStakingType],
   );
 
-  useEffect(() => {
-    let unmount = false;
-
-    // fetch validators when change chain
-    // _stakingType is predefined form start
-    if (!!chain && !!from && chainState?.active) {
-      fetchChainValidators(chain, currentStakingType || ALL_KEY, unmount, setPoolLoading, setValidatorLoading);
-    }
-
-    return () => {
-      unmount = true;
-    };
-  }, [from, _stakingType, chain, chainState?.active, currentStakingType]);
   const fromRef = useRef<string>(from);
   const tokenRef = useRef<string>(asset);
-
+  const [forceFetchValidator, setForceFetchValidator] = useState(false);
   const tokenList = useGetSupportedStakingTokens(currentStakingType as StakingType, from, stakingChain);
   const accountInfo = useGetAccountByAddress(from);
   const { nativeTokenBalance } = useGetBalance(chain, from);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const isAllAccount = isAccountAll(currentAccount?.address || '');
+  const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const existentialDeposit = useMemo(() => {
     const assetInfo = assetRegistry[asset];
 
@@ -242,6 +230,25 @@ export const Stake = ({
   useEffect(() => {
     validateAmountInput(formState.data.value);
   }, [formState.data.value, validateAmountInput]);
+
+  useEffect(() => {
+    let unmount = false;
+
+    if ((!!chain && !!from && chainState?.active) || forceFetchValidator) {
+      fetchChainValidators(
+        chain,
+        currentStakingType || ALL_KEY,
+        unmount,
+        setPoolLoading,
+        setValidatorLoading,
+        setForceFetchValidator,
+      );
+    }
+
+    return () => {
+      unmount = true;
+    };
+  }, [from, _stakingType, chain, chainState?.active, currentStakingType, forceFetchValidator]);
 
   const _onChangeAmount = useCallback(
     (text: string) => {
@@ -389,6 +396,7 @@ export const Stake = ({
   const onSelectToken = useCallback(
     (item: TokenItemType) => {
       onChangeAssetValue(item.slug);
+      validatorSelectorRef?.current?.resetValue();
       tokenRef.current = item.slug;
       tokenSelectorRef && tokenSelectorRef.current?.onCloseModal();
     },
@@ -512,6 +520,7 @@ export const Stake = ({
               poolLoading={poolLoading}
               selectedPool={selectedPool}
               disabled={loading}
+              setForceFetchValidator={setForceFetchValidator}
             />
           )}
 
@@ -519,10 +528,12 @@ export const Stake = ({
             <ValidatorSelector
               from={from}
               chain={chain}
+              setForceFetchValidator={setForceFetchValidator}
               validatorLoading={validatorLoading}
               selectedValidator={currentValidator}
               onSelectItem={onChangeValue('validator')}
               disabled={loading}
+              ref={validatorSelectorRef}
             />
           )}
 

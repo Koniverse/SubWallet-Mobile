@@ -158,6 +158,10 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
         !!onModalOpened && onModalOpened();
       },
       onCloseModal: onCloseModal,
+      closeModal: () => {
+        setTimeout(() => setLoadingData(true), LOADING_TIMEOUT);
+        setOpen(false);
+      },
       isModalOpen: isOpen,
     }),
     [isOpen, onCloseModal, onModalOpened],

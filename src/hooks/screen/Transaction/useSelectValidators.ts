@@ -83,7 +83,14 @@ export function useSelectValidators(
     setSelected(_selected);
   }, []);
 
+  const resetValidatorSelector = useCallback(() => {
+    setSelected([]);
+    setChangeValidators([]);
+    onChange && onChange('');
+  }, [onChange]);
+
   return {
+    resetValidatorSelector,
     onChangeSelectedValidator,
     changeValidators,
     onApplyChangeValidators,
