@@ -132,6 +132,7 @@ export function LazyFlatList<T>({
             onEndReachedThreshold={0.5}
             maxToRenderPerBatch={12}
             initialNumToRender={12}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       ) : (
