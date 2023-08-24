@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
-
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Aperture, Database, Globe, Rocket, Wallet } from 'phosphor-react-native';
@@ -29,6 +28,8 @@ import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
 import { isFirstOpen, setIsFirstOpen } from '../../AppNew';
+import { WebRunnerContext } from 'providers/contexts';
+import { useToast } from 'react-native-toast-notifications';
 
 interface tabbarIconColor {
   color: string;
@@ -183,6 +184,28 @@ export const Home = ({ navigation }: Props) => {
   const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
   const [isLoading, setLoading] = useState(true);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
+  const { isNetConnected } = useContext(WebRunnerContext);
+  const isFirstLaunch = useRef(true);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!isFirstLaunch.current) {
+      if (isNetConnected) {
+        toast.hideAll();
+        toast.show(i18n.warningTitle.internetConnected, { type: 'success', duration: 5000 });
+      } else {
+        toast.hideAll();
+        toast.show(i18n.warningTitle.noInternetConnection, { type: 'danger', duration: 5000 });
+      }
+    } else {
+      if (!isNetConnected) {
+        toast.hideAll();
+        toast.show(i18n.warningTitle.noInternetConnection, { type: 'danger', duration: 5000 });
+      }
+      isFirstLaunch.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNetConnected]);
 
   useEffect(() => {
     if (isReady && isLoading) {

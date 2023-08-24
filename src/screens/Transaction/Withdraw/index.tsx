@@ -38,6 +38,7 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { getAstarWithdrawable } from '@subwallet/extension-base/koni/api/staking/bonding/astar';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
+import { useCancelLoading } from 'hooks/transaction/useCancelLoading';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -77,6 +78,7 @@ export const Withdraw = ({
   const accountInfo = useGetAccountByAddress(from);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
   const accountSelectorRef = useRef<ModalRef>();
+  const { isSubmit } = useCancelLoading(setLoading);
 
   useEffect(() => {
     // Trick to trigger validate when case single account
@@ -112,10 +114,10 @@ export const Withdraw = ({
 
   const onSubmit = useCallback(() => {
     setLoading(true);
-
+    isSubmit.current = true;
     if (!unstakingInfo) {
       setLoading(false);
-
+      isSubmit.current = false;
       return;
     }
 
@@ -135,9 +137,10 @@ export const Withdraw = ({
         .catch(onError)
         .finally(() => {
           setLoading(false);
+          isSubmit.current = false;
         });
     }, 300);
-  }, [chain, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
+  }, [chain, isSubmit, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
 
   return (
     <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>

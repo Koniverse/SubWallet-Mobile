@@ -26,6 +26,7 @@ import { CancelUnstakeProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { useCancelLoading } from 'hooks/transaction/useCancelLoading';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -87,10 +88,10 @@ export const CancelUnstake = ({
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
 
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
-
+  const { isSubmit } = useCancelLoading(setLoading);
   const onSubmit = useCallback(() => {
     setLoading(true);
-
+    isSubmit.current = true;
     setTimeout(() => {
       submitStakeCancelWithdrawal({
         address: from,
@@ -101,9 +102,10 @@ export const CancelUnstake = ({
         .catch(onError)
         .finally(() => {
           setLoading(false);
+          isSubmit.current = false;
         });
     }, 300);
-  }, [chain, from, nominatorMetadata.unstakings, onError, onSuccess, unstakeIndex]);
+  }, [chain, from, isSubmit, nominatorMetadata.unstakings, onError, onSuccess, unstakeIndex]);
 
   return (
     <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>

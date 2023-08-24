@@ -39,6 +39,7 @@ import { UnbondProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { useCancelLoading } from 'hooks/transaction/useCancelLoading';
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -140,6 +141,7 @@ export const Unbond = ({
 
   const [loading, setLoading] = useState(false);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
+  const { isSubmit } = useCancelLoading(setLoading);
 
   const accountList = useMemo(() => {
     return accounts.filter(_accountFilterFunc(allNominatorInfo, chainInfoMap, stakingType, stakingChain));
@@ -177,16 +179,17 @@ export const Unbond = ({
     }
 
     setLoading(true);
-
+    isSubmit.current = true;
     setTimeout(() => {
       unbondingPromise
         .then(onSuccess)
         .catch(onError)
         .finally(() => {
           setLoading(false);
+          isSubmit.current = false;
         });
     }, 300);
-  }, [currentValidator, currentValue, mustChooseValidator, nominatorMetadata, onError, onSuccess]);
+  }, [currentValidator, currentValue, isSubmit, mustChooseValidator, nominatorMetadata, onError, onSuccess]);
 
   const nominators = useMemo(() => {
     if (from && nominatorMetadata?.nominations && nominatorMetadata.nominations.length) {
