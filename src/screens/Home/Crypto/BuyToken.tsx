@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { ShoppingCartSimple } from 'phosphor-react-native';
@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { TokenSelectField } from 'components/Field/TokenSelect';
 import { PREDEFINED_TRANSAK_TOKEN_BY_SLUG } from '../../../predefined/transak';
-import { StyleSheet, View } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
@@ -46,6 +46,16 @@ export const BuyToken = ({
     isOpenInAppBrowser,
     serviceUrl,
   } = useBuyToken(tokenGroupSlug, groupSymbol);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      navigation.navigate('Home');
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => backHandler.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
   const symbol = useMemo(() => {
