@@ -105,6 +105,8 @@ import {
   RequestTuringStakeCompound,
   RequestUnbondingSubmit,
   RequestUnlockKeyring,
+  ResolveAddressToDomainRequest,
+  ResolveDomainRequest,
   ResponseAccountCreateSuriV2,
   ResponseAccountCreateWithSecretKey,
   ResponseAccountExportPrivateKey,
@@ -1382,6 +1384,14 @@ export async function rejectWalletConnectSession(request: RequestRejectConnectWa
 
 export async function disconnectWalletConnectConnection(topic: string): Promise<boolean> {
   return sendMessage('pri(walletConnect.session.disconnect)', { topic });
+}
+
+export async function resolveDomainToAddress(request: ResolveDomainRequest) {
+  return sendMessage('pri(accounts.resolveDomainToAddress)', request);
+}
+
+export async function resolveAddressToDomain(request: ResolveAddressToDomainRequest) {
+  return sendMessage('pri(accounts.resolveAddressToDomain)', request);
 }
 
 export async function subscribeTransactions(

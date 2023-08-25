@@ -706,6 +706,8 @@ export const SendFund = ({
     setIsTransferAll(false);
   }, []);
 
+  const reValidate = () => trigger('to');
+
   const renderAmountInput = useCallback(
     ({ field: { onBlur, onChange, value, ref } }: UseControllerReturn<TransferFormValues>) => (
       <>
@@ -967,11 +969,13 @@ export const SendFund = ({
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
+                        reValidate={reValidate}
                         onSideEffectChange={onBlur}
                         placeholder={i18n.placeholder.accountAddress}
                         disabled={loading}
                         addressPrefix={destChainNetworkPrefix}
                         networkGenesisHash={destChainGenesisHash}
+                        chain={chainValue}
                         showAddressBook
                         saveAddress
                       />

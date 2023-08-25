@@ -1,5 +1,5 @@
 import Input, { InputProps } from 'components/design-system-ui/input';
-import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isAddress } from '@polkadot/util-crypto';
@@ -10,7 +10,8 @@ import { AddressBookModal } from 'components/Modal/AddressBook/AddressBookModal'
 import { NativeSyntheticEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import { TextInputFocusEventData } from 'react-native/Libraries/Components/TextInput/TextInput';
 import { AddressScanner, AddressScannerProps } from 'components/Scanner/AddressScanner';
-import { saveRecentAccountId } from 'messaging/index';
+import { CHAINS_SUPPORTED_DOMAIN, isAzeroDomain } from '@subwallet/extension-base/koni/api/dotsama/domain';
+import { saveRecentAccountId, resolveAddressToDomain, resolveDomainToAddress } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
 import createStylesheet from './style/InputAddress';
@@ -21,6 +22,8 @@ import i18n from 'utils/i18n/i18n';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
 
 interface Props extends InputProps {
+  chain?: string;
+  reValidate?: () => void;
   isValidValue?: boolean;
   showAvatar?: boolean;
   showAddressBook?: boolean;
@@ -33,6 +36,7 @@ interface Props extends InputProps {
 
 const Component = (
   {
+    chain,
     isValidValue,
     showAvatar = true,
     showAddressBook,
@@ -41,18 +45,22 @@ const Component = (
     scannerProps = {},
     saveAddress = true,
     value = '',
+    reValidate,
     onSideEffectChange,
     ...inputProps
   }: Props,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ref: ForwardedRef<TextInput>,
 ) => {
   const theme = useSubWalletTheme().swThemes;
+  const [domainName, setDomainName] = useState<string | undefined>(undefined);
   const [isInputBlur, setInputBlur] = useState<boolean>(true);
   const [isShowAddressBookModal, setShowAddressBookModal] = useState<boolean>(false);
   const [isShowQrModalVisible, setIsShowQrModalVisible] = useState<boolean>(false);
   const isAddressValid = isAddress(value) && (isValidValue !== undefined ? isValidValue : true);
   const { accounts, contacts } = useSelector((root: RootState) => root.accountState);
   const [error, setError] = useState<string | undefined>(undefined);
+  const inputRef = useRef<TextInput | null>(null);
 
   const hasLabel = !!inputProps.label;
   const isInputVisible = !isAddressValid || !value || !isInputBlur;
@@ -67,6 +75,60 @@ const Component = (
   );
 
   useEffect(() => setAdjustResize(), []);
+
+  const onChangeInputText = useCallback(
+    (rawText: string) => {
+      const text = rawText.trim();
+
+      if (inputProps.onChangeText) {
+        inputProps.onChangeText(text);
+
+        if (saveAddress && isAddress(text)) {
+          saveRecentAccountId(text).catch(console.error);
+        }
+      }
+    },
+    [inputProps, saveAddress],
+  );
+
+  useEffect(() => {
+    if (chain && value && CHAINS_SUPPORTED_DOMAIN.includes(chain)) {
+      if (isAzeroDomain(value)) {
+        resolveDomainToAddress({
+          chain,
+          domain: value,
+        })
+          .then(result => {
+            if (result) {
+              setDomainName(value);
+              onChangeInputText(result);
+              if (inputRef.current) {
+                if (!inputRef.current.isFocused() && reValidate) {
+                  reValidate();
+                } else {
+                  inputRef.current.blur();
+                }
+              }
+            }
+          })
+          .catch(console.error);
+      } else if (isAddress(value)) {
+        resolveAddressToDomain({
+          chain,
+          address: value,
+        })
+          .then(result => {
+            if (result) {
+              setDomainName(result);
+            }
+          })
+          .catch(console.error);
+      }
+    } else {
+      setDomainName(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain, onChangeInputText, value]);
 
   const _contacts = useMemo(() => [...accounts, ...contacts], [accounts, contacts]);
 
@@ -99,9 +161,9 @@ const Component = (
           </View>
         )}
         <Typography.Text ellipsis style={stylesheet.addressText}>
-          {accountName || toShort(value, 9, 9)}
+          {accountName || domainName || toShort(value, 9, 9)}
         </Typography.Text>
-        {(accountName || addressPrefix !== undefined) && (
+        {(accountName || domainName || addressPrefix !== undefined) && (
           <Typography.Text style={stylesheet.addressAliasText}>({toShort(formattedAddress, 4, 4)})</Typography.Text>
         )}
       </>
@@ -109,6 +171,7 @@ const Component = (
   }, [
     accountName,
     addressPrefix,
+    domainName,
     formattedAddress,
     hasLabel,
     showAvatar,
@@ -171,21 +234,6 @@ const Component = (
     theme.colorTextLight5,
   ]);
 
-  const onChangeInputText = useCallback(
-    (rawText: string) => {
-      const text = rawText.trim();
-
-      if (inputProps.onChangeText) {
-        inputProps.onChangeText(text);
-
-        if (saveAddress && isAddress(text)) {
-          saveRecentAccountId(text).catch(console.error);
-        }
-      }
-    },
-    [inputProps, saveAddress],
-  );
-
   const onScanInputText = useCallback(
     (data: string) => {
       if (isAddress(data)) {
@@ -226,7 +274,11 @@ const Component = (
   return (
     <>
       <Input
-        ref={ref}
+        ref={myRef => {
+          inputRef.current = myRef;
+          // @ts-ignored
+          ref = inputRef.current;
+        }}
         {...inputProps}
         leftPart={LeftPart}
         leftPartStyle={stylesheet.inputLeftPart}
