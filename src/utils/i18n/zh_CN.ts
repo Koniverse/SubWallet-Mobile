@@ -381,6 +381,7 @@ export const zh = {
     disconnect: 'Disconnect',
     applyAccounts: (account: number) => `Apply ${account} accounts`,
     createOne: 'Create one',
+    reload: '重新加载',
   },
   inputLabel: {
     selectAcc: '选择账户',
@@ -595,6 +596,7 @@ export const zh = {
     connectSuccessfully: 'Connect successfully',
     supportedNetworks: 'Supported networks',
     networkSupported: (networkNumber: number) => `${networkNumber} networks support`,
+    unableToFetchInformation: (validatorTitle: string) => `无法获取${validatorTitle}资料`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',

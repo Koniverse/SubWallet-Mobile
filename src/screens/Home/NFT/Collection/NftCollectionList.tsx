@@ -4,14 +4,15 @@ import React, { useCallback, useEffect } from 'react';
 import { ListRenderItemInfo, RefreshControl, SectionListData } from 'react-native';
 import NftCollectionItem from 'screens/Home/NFT/Collection/NftCollectionItem';
 import i18n from 'utils/i18n/i18n';
-import { Plus } from 'phosphor-react-native';
+import { Image, Plus } from 'phosphor-react-native';
 import useFetchNftCollection from 'hooks/screen/Home/Nft/useFetchNftCollection';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { NFTNavigationProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTNavigationProps } from 'screens/Home/NFT/NFTStackScreen';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
+import { EmptyList } from 'components/EmptyList';
 
 type GetItemLayoutType =
   | readonly NftCollection[]
@@ -58,6 +59,24 @@ const NftCollectionList = () => {
     length: TOTAL_ITEM_HEIGHT,
     offset: TOTAL_ITEM_HEIGHT * index,
   });
+
+  const renderEmptyNFT = (searchString?: string) => {
+    if (searchString) {
+      return (
+        <EmptyList title={i18n.emptyScreen.nftEmptyTitle} icon={Image} message={i18n.emptyScreen.nftEmptyMessage} />
+      );
+    } else {
+      return (
+        <EmptyList
+          title={i18n.emptyScreen.nftEmptyTitle}
+          icon={Image}
+          message={i18n.emptyScreen.nftEmptyMessage}
+          onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
+          isRefresh={isRefresh}
+        />
+      );
+    }
+  };
 
   return (
     <>

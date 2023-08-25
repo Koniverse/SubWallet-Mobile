@@ -135,7 +135,7 @@ export function LazyFlatList<T>({
           />
         </View>
       ) : (
-        renderListEmptyComponent('searchString')
+        renderListEmptyComponent(searchString)
       )}
     </>
   );

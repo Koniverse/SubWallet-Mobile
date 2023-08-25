@@ -5,7 +5,6 @@ import { Plus, Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import StakingBalanceItem from 'screens/Home/Staking/Balance/StakingBalanceItem';
-import EmptyStaking from 'screens/Home/Staking/Shared/EmptyStaking';
 import i18n from 'utils/i18n/i18n';
 import { ColorMap } from 'styles/color';
 import { reloadCron } from 'messaging/index';
@@ -23,20 +22,6 @@ enum FilterValue {
   NOMINATED = 'nominated',
   POOLED = 'pooled',
 }
-
-const renderEmpty = (val?: string) => {
-  if (val) {
-    return (
-      <EmptyList
-        title={i18n.emptyScreen.stakingEmptyTitle}
-        icon={Trophy}
-        message={i18n.emptyScreen.stakingEmptyMessage}
-      />
-    );
-  } else {
-    return <EmptyStaking />;
-  }
-};
 
 const filterFunction = (items: StakingDataType[], filters: string[]) => {
   if (!filters.length) {
@@ -103,6 +88,30 @@ const StakingBalanceList = () => {
     });
     return result;
   }, [data, priceMap]);
+
+  const renderEmpty = (val?: string) => {
+    if (val) {
+      return (
+        <EmptyList
+          title={i18n.emptyScreen.stakingEmptyTitle}
+          icon={Trophy}
+          message={i18n.emptyScreen.stakingEmptyMessage}
+        />
+      );
+    } else {
+      return (
+        <EmptyList
+          title={i18n.emptyScreen.stakingEmptyTitle}
+          icon={Trophy}
+          message={i18n.emptyScreen.stakingEmptyMessage}
+          isRefresh={isRefresh}
+          onPressReload={() => {
+            refresh(reloadCron({ data: 'staking' }));
+          }}
+        />
+      );
+    }
+  };
 
   const isFocused = useIsFocused();
   useEffect(() => {

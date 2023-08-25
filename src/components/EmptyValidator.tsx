@@ -3,8 +3,9 @@ import { View } from 'react-native';
 import React from 'react';
 import { IconProps } from 'phosphor-react-native';
 import { centerStyle, FontMedium, FontSemiBold } from 'styles/sharedStyles';
-import { Button, PageIcon } from 'components/design-system-ui';
+import { Button, PageIcon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   icon: React.ElementType<IconProps>;
@@ -45,9 +46,13 @@ export const EmptyValidator = ({ icon, title, message, isDataEmpty, validatorTit
                 color: theme.colorTextLight4,
                 ...FontMedium,
                 paddingTop: 8,
-              }}>{`Unable to fetch ${validatorTitle} information`}</Text>
-            <Button type={'ghost'} size={'xs'} onPress={handleReload}>
-              Reload
+              }}>
+              {i18n.message.unableToFetchInformation(validatorTitle)}
+            </Text>
+            <Button type={'ghost'} size={'sm'} onPress={handleReload}>
+              <Typography.Text style={{ ...FontMedium, color: theme.colorPrimary }}>
+                {i18n.buttonTitles.reload}
+              </Typography.Text>
             </Button>
           </>
         ) : (

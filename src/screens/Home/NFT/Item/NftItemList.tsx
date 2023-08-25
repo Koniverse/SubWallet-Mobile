@@ -7,21 +7,22 @@ import { ListRenderItemInfo, RefreshControl, StyleProp, Text, View } from 'react
 import { RootNavigationProps } from 'routes/index';
 import NftItem from './NftItem';
 import i18n from 'utils/i18n/i18n';
-import { NFTCollectionProps, renderEmptyNFT } from 'screens/Home/NFT/NFTStackScreen';
+import { NFTCollectionProps } from 'screens/Home/NFT/NFTStackScreen';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { FontBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
-import { deleteCustomAssets, restartCronServices } from 'messaging/index';
+import { deleteCustomAssets, reloadCron, restartCronServices } from 'messaging/index';
 import { useRefresh } from 'hooks/useRefresh';
-import { Trash } from 'phosphor-react-native';
+import { Image, Trash } from 'phosphor-react-native';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
 import { _isCustomAsset, _isSmartContractToken } from '@subwallet/extension-base/services/chain-service/utils';
 import { useToast } from 'react-native-toast-notifications';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
 import { SectionListData } from 'react-native';
+import { EmptyList } from 'components/EmptyList';
 
 type GetItemLayoutType =
   | readonly _NftItem[]
@@ -161,6 +162,24 @@ const NftItemList = ({
     onCompleteModal: onCompleteDeleteModal,
     setVisible,
   } = useConfirmModal(handeDelete);
+
+  const renderEmptyNFT = (searchString?: string) => {
+    if (searchString) {
+      return (
+        <EmptyList title={i18n.emptyScreen.nftEmptyTitle} icon={Image} message={i18n.emptyScreen.nftEmptyMessage} />
+      );
+    } else {
+      return (
+        <EmptyList
+          title={i18n.emptyScreen.nftEmptyTitle}
+          icon={Image}
+          message={i18n.emptyScreen.nftEmptyMessage}
+          onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
+          isRefresh={isRefresh}
+        />
+      );
+    }
+  };
 
   return (
     <View style={NftItemListStyle}>
