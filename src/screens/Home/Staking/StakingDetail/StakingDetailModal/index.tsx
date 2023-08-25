@@ -44,6 +44,7 @@ import i18n from 'utils/i18n/i18n';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
+import useGetAccountsByStaking from 'hooks/screen/Staking/useGetAccountsByStaking';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -104,7 +105,7 @@ export const StakingDetailModal = ({
       : i18n.header.poolDetails;
   const theme = useSubWalletTheme().swThemes;
   const [seeMore, setSeeMore] = useState<boolean>(false);
-  const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const toastRef = useRef<ToastContainer>(null);
   const onClickFooterButton = usePreCheckReadOnly(toastRef, currentAccount?.address);
   const chainInfo = useFetchChainInfo(staking.chain);
@@ -117,6 +118,10 @@ export const StakingDetailModal = ({
     pooled: i18n.filterOptions.pooled,
   };
   const modalRef = useRef<SWModalRefProps>(null);
+  const stakingAccounts = useGetAccountsByStaking(
+    nominatorMetadata?.chain || '',
+    nominatorMetadata?.type || StakingType.NOMINATED,
+  );
 
   const onCloseDetailModal = useCallback(() => modalRef?.current?.close(), []);
 
@@ -319,7 +324,7 @@ export const StakingDetailModal = ({
                     <MetaInfo.AccountGroup
                       label={i18n.inputLabel.account}
                       content={nominatorMetadata?.address === 'ALL' ? i18n.common.allAccounts : ''}
-                      addresses={accounts.map(acc => acc.address)}
+                      addresses={stakingAccounts.map(acc => acc.address)}
                     />
                   ) : (
                     <MetaInfo.Account
