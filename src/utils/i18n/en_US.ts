@@ -611,6 +611,7 @@ export const en = {
     networkSupported: (networkNumber: number) => `${networkNumber} networks supported`,
     failToDisconnect: 'Fail to disconnect',
     unableToFetchInformation: (validatorTitle: string) => `Unable to fetch ${validatorTitle} information`,
+    unknownNetworks: (unsupportedNumber: number) => `${unsupportedNumber} unknown network`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',

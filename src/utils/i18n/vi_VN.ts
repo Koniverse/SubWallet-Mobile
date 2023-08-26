@@ -609,6 +609,7 @@ export const vi = {
     networkSupported: (networkNumber: number) => `${networkNumber} mạng đã hỗ trợ`,
     failToDisconnect: 'Ngắt kết nối thất bại',
     unableToFetchInformation: (validatorTitle: string) => `Không thể lấy thông tin của ${validatorTitle}`,
+    unknownNetworks: (unsupportedNumber: number) => `${unsupportedNumber} mạng không xác định`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot Parachain',

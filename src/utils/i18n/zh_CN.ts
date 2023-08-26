@@ -602,6 +602,7 @@ export const zh = {
     networkSupported: (networkNumber: number) => `${networkNumber} 网络支持`,
     failToDisconnect: '断开失败',
     unableToFetchInformation: (validatorTitle: string) => `无法获取${validatorTitle}资料`,
+    unknownNetworks: (unsupportedNumber: number) => `${unsupportedNumber}未知网络`,
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',

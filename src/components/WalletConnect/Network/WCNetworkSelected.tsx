@@ -30,7 +30,7 @@ export const WCNetworkSelected = ({ networks }: Props) => {
           supported: false,
           chainInfo: {
             slug: '',
-            name: `${unSupportNetworks.length} unknown network`,
+            name: i18n.message.unknownNetworks(unSupportNetworks.length),
           },
           slug: '',
         }
