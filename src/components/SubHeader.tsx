@@ -116,6 +116,9 @@ export const SubHeader = ({
             size={'xs'}
             type={'ghost'}
             onPress={onPressRightIcon}
+            externalTextStyle={{
+              color: disableRightButton ? ColorMap.disabledTextColor : rightIconColor || ColorMap.light,
+            }}
             disabled={disableRightButton}>
             {!!rightButtonTitle && rightButtonTitle}
           </Button>
