@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
-import { ListRenderItemInfo } from 'react-native';
-import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 
 import { RocketLaunch } from 'phosphor-react-native';
 import useGetCrowdloanList from 'hooks/screen/Home/Crowdloans/useGetCrowdloanList';
@@ -11,10 +9,10 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useIsFocused } from '@react-navigation/native';
 import { CrowdloanItemType } from 'types/index';
-
-const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
-  return <CrowdloanItem item={item} />;
-};
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { ListRenderItemInfo } from 'react-native';
+import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 
 const renderListEmptyComponent = () => {
   return (
@@ -38,12 +36,18 @@ export const CrowdloansScreen = () => {
   const items: CrowdloanItemType[] = useGetCrowdloanList();
   // const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const defaultFilterOpts = [
     { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
     { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
     { label: i18n.filterOptions.win, value: FilterValue.WINNER },
     { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
   ];
+
+  const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
+    return <CrowdloanItem item={item} isShowBalance={isShowBalance} />;
+  };
+
   const crowdloanData = useMemo(() => {
     const result = items.sort(
       // @ts-ignore

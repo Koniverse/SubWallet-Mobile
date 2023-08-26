@@ -9,9 +9,11 @@ import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CrowdloanItemType } from 'types/index';
 import i18n from 'utils/i18n/i18n';
 import { ThemeTypes } from 'styles/themes';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 interface Props {
   item: CrowdloanItemType;
+  isShowBalance?: boolean;
 }
 
 function getParaStateLabel(paraState: CrowdloanParaState) {
@@ -38,7 +40,7 @@ export function getGroupKey(groupDisplayName: string) {
   }
 }
 
-export const CrowdloanItem = ({ item }: Props) => {
+export const CrowdloanItem = ({ item, isShowBalance }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
 
@@ -91,25 +93,31 @@ export const CrowdloanItem = ({ item }: Props) => {
           </View>
         </View>
         <View style={styleSheet.crowdloanItemPart2}>
-          <Number
-            value={item.contribute}
-            decimal={0}
-            suffix={item.symbol}
-            intColor={styleSheet.text.color as string}
-            decimalColor={styleSheet.subText.color}
-            size={styleSheet.text.fontSize}
-            textStyle={{ ...styleSheet.text }}
-          />
-          <Number
-            value={item.convertedContribute}
-            decimal={0}
-            prefix={'$'}
-            unitColor={styleSheet.subText.color}
-            intColor={styleSheet.subText.color}
-            decimalColor={styleSheet.subText.color}
-            size={styleSheet.subText.fontSize}
-            textStyle={{ ...styleSheet.subText }}
-          />
+          {isShowBalance && (
+            <>
+              <Number
+                value={item.contribute}
+                decimal={0}
+                suffix={item.symbol}
+                intColor={styleSheet.text.color as string}
+                decimalColor={styleSheet.subText.color}
+                size={styleSheet.text.fontSize}
+                textStyle={{ ...styleSheet.text }}
+              />
+              <Number
+                value={item.convertedContribute}
+                decimal={0}
+                prefix={'$'}
+                unitColor={styleSheet.subText.color}
+                intColor={styleSheet.subText.color}
+                decimalColor={styleSheet.subText.color}
+                size={styleSheet.subText.fontSize}
+                textStyle={{ ...styleSheet.subText }}
+              />
+            </>
+          )}
+
+          {!isShowBalance && <HideBalanceItem />}
         </View>
       </View>
     </TouchableOpacity>

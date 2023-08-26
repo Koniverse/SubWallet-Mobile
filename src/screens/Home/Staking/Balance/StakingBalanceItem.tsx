@@ -11,14 +11,16 @@ import { getNetworkLogo } from 'utils/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 interface Props {
   stakingData: StakingDataType;
   priceMap: Record<string, number>;
   onPress: (value: StakingDataType) => () => void;
+  isShowBalance?: boolean;
 }
 
-const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
+const StakingBalanceItem = ({ stakingData, priceMap, onPress, isShowBalance }: Props) => {
   const { staking, decimals } = stakingData;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
@@ -61,18 +63,24 @@ const StakingBalanceItem = ({ stakingData, priceMap, onPress }: Props) => {
         </View>
 
         <View style={styleSheet.balanceInfoContainer}>
-          <Number value={staking.balance || 0} decimal={decimals} suffix={symbol} textStyle={{ ...FontSemiBold }} />
+          {isShowBalance && (
+            <>
+              <Number value={staking.balance || 0} decimal={decimals} suffix={symbol} textStyle={{ ...FontSemiBold }} />
 
-          <Number
-            value={convertedBalanceValue}
-            decimal={decimals}
-            prefix={'$'}
-            size={theme.fontSizeSM}
-            intOpacity={0.45}
-            decimalOpacity={0.45}
-            unitOpacity={0.45}
-            textStyle={{ ...FontMedium, lineHeight: theme.fontSizeSM * theme.lineHeightSM }}
-          />
+              <Number
+                value={convertedBalanceValue}
+                decimal={decimals}
+                prefix={'$'}
+                size={theme.fontSizeSM}
+                intOpacity={0.45}
+                decimalOpacity={0.45}
+                unitOpacity={0.45}
+                textStyle={{ ...FontMedium, lineHeight: theme.fontSizeSM * theme.lineHeightSM }}
+              />
+            </>
+          )}
+
+          {!isShowBalance && <HideBalanceItem />}
         </View>
         <View style={styleSheet.iconWrapper}>
           <Icon phosphorIcon={CaretRight} iconColor={theme.colorTextLight3} size={'sm'} />
