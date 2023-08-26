@@ -239,10 +239,10 @@ const SendNFT: React.FC<SendNFTProps> = ({
               label={formState.labels.recipientAddress}
               value={formState.data.recipientAddress}
               onChangeText={onChangeReceiverAddress}
-              isValidValue={formState.isValidated.recipientAddress}
               placeholder={i18n.placeholder.accountAddress}
               onSubmitEditing={handleSend}
               disabled={loading}
+              chain={nftChain}
             />
             {!!formState.errors.recipientAddress.length && (
               <Warning style={{ marginBottom: 8 }} message={formState.errors.recipientAddress[0]} isDanger />
