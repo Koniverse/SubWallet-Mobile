@@ -82,7 +82,7 @@ export const ConnectionDetail = ({
     setLoading(true);
     disconnectWalletConnectConnection(topic)
       .catch(() => {
-        toast.show('Fail to disconnect', { type: 'danger' });
+        toast.show(i18n.message.failToDisconnect, { type: 'danger' });
       })
       .finally(() => {
         setLoading(false);

@@ -4,6 +4,7 @@
 import useGetAccountSignModeByAddress from 'hooks/screen/useGetAccountSignModeByAddress';
 import { useMemo } from 'react';
 import { AccountSignMode } from 'types/signer';
+import i18n from 'utils/i18n/i18n';
 
 const useGetAccountTitleByAddress = (address?: string): string => {
   const signMode = useGetAccountSignModeByAddress(address);
@@ -11,18 +12,18 @@ const useGetAccountTitleByAddress = (address?: string): string => {
   return useMemo((): string => {
     switch (signMode) {
       case AccountSignMode.LEDGER:
-        return 'Ledger account';
+        return i18n.common.ledgerAccount;
       case AccountSignMode.ALL_ACCOUNT:
-        return 'All account';
+        return i18n.common.allAccounts;
       case AccountSignMode.PASSWORD:
-        return 'Normal account';
+        return i18n.common.normalAccount;
       case AccountSignMode.QR:
-        return 'QR signer account';
+        return i18n.common.qrSignerAccount;
       case AccountSignMode.READ_ONLY:
-        return 'Watch-only account';
+        return i18n.common.watchOnlyAccount;
       case AccountSignMode.UNKNOWN:
       default:
-        return 'Unknown account';
+        return i18n.common.unknownAccount;
     }
   }, [signMode]);
 };

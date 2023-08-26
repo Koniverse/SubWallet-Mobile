@@ -963,7 +963,7 @@ export const SendFund = ({
                     render={({ field: { value, ref, onChange, onBlur } }) => (
                       <InputAddress
                         ref={ref}
-                        label={'Send to'}
+                        label={i18n.inputLabel.sendTo}
                         value={value}
                         onChangeText={onChange}
                         onBlur={onBlur}
@@ -1014,7 +1014,7 @@ export const SendFund = ({
                       }
                     });
                   }}>
-                  Next
+                  {i18n.buttonTitles.next}
                 </Button>
               )}
               {viewStep === 2 && (
@@ -1042,7 +1042,7 @@ export const SendFund = ({
                           }
                         }}
                         style={stylesheet.max}>
-                        {<Typography.Text style={stylesheet.maxText}>Max</Typography.Text>}
+                        {<Typography.Text style={stylesheet.maxText}>{i18n.common.max}</Typography.Text>}
                       </TouchableOpacity>
                     )}
                   </View>

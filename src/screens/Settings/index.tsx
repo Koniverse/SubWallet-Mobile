@@ -212,6 +212,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       onPressRightIcon={() => (drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack())}>
       <>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           style={{ paddingHorizontal: 16, flex: 1, marginBottom: 16 }}
           contentContainerStyle={{ paddingTop: 16 }}>
           <View style={{ gap: theme.paddingXS }}>
@@ -220,6 +221,15 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
                 rightIcon={setting.rightIcon}
                 key={setting.title}
                 label={setting.title}
+                leftItemIcon={
+                  setting.title === i18n.header.walletConnect ? (
+                    <BackgroundIcon
+                      shape={'circle'}
+                      backgroundColor={setting.backgroundColor}
+                      customIcon={<SVGImages.WalletConnect width={16} height={16} color={theme.colorWhite} />}
+                    />
+                  ) : undefined
+                }
                 icon={setting.icon}
                 backgroundColor={setting.backgroundColor}
                 onPress={setting.onPress}
@@ -235,15 +245,6 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
                 rightIcon={setting.rightIcon}
                 key={setting.title}
                 label={setting.title}
-                leftItemIcon={
-                  setting.title === i18n.header.walletConnect ? (
-                    <BackgroundIcon
-                      shape={'circle'}
-                      backgroundColor={setting.backgroundColor}
-                      customIcon={<SVGImages.WalletConnect width={16} height={16} color={theme.colorWhite} />}
-                    />
-                  ) : undefined
-                }
                 icon={setting.icon}
                 backgroundColor={setting.backgroundColor}
                 onPress={setting.onPress}

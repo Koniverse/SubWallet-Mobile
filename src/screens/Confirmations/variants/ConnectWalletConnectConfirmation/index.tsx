@@ -55,8 +55,8 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const nameSpaceNameMap = useMemo(
     (): Record<string, string> => ({
-      [WALLET_CONNECT_EIP155_NAMESPACE]: 'EVM networks',
-      [WALLET_CONNECT_POLKADOT_NAMESPACE]: 'Substrate networks',
+      [WALLET_CONNECT_EIP155_NAMESPACE]: i18n.common.evmNetworks,
+      [WALLET_CONNECT_POLKADOT_NAMESPACE]: i18n.common.substrateNetworks,
     }),
     [],
   );
@@ -110,7 +110,7 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
 
     handleConfirm(request, selectedAccounts)
       .then(() => {
-        toast.show('Connect successfully', { type: 'success' });
+        toast.show(i18n.message.connectSuccessfully, { type: 'success' });
         isDeepLinkConnect && Minimizer.goBack();
       })
       .catch(e => {
@@ -177,7 +177,7 @@ export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
           </>
         )}
         {isSupportCase && (
-          <View>
+          <View style={{ gap: theme.padding }}>
             {Object.entries(namespaceAccounts).map(([namespace, value]) => {
               const { appliedAccounts, availableAccounts, networks, selectedAccounts } = value;
 

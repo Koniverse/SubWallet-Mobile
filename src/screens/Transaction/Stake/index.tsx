@@ -449,7 +449,10 @@ export const Stake = ({
       disableRightButton={!chainStakingMetadata || loading}
       onPressRightHeaderBtn={() => setDetailNetworkModalVisible(true)}>
       <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }} keyboardShouldPersistTaps={'handled'}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1, paddingHorizontal: 16, marginTop: 16 }}
+          keyboardShouldPersistTaps={'handled'}>
           {_stakingType === ALL_KEY && (
             <StakingTab
               from={from}

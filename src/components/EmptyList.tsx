@@ -20,6 +20,7 @@ export const EmptyList = ({ icon, title, message, onPressReload, isRefresh }: Pr
 
   return (
     <ScrollView
+      showsVerticalScrollIndicator={false}
       contentContainerStyle={[centerStyle, { justifyContent: 'center', alignItems: 'center' }]}
       refreshControl={
         onPressReload ? (
