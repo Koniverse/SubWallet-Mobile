@@ -50,6 +50,7 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { BN, BN_ZERO } from '@polkadot/util';
 import { isSameAddress } from '@subwallet/extension-base/utils';
+import { ChainStatus } from 'hooks/chain/useChainChecker';
 
 export const Stake = ({
   route: {
@@ -113,6 +114,7 @@ export const Stake = ({
     onChangeAmountValue,
     onDone,
     onUpdateErrors,
+    connectingChainStatus,
   } = useTransaction('stake', stakeFormConfig, {});
 
   const {
@@ -455,6 +457,7 @@ export const Stake = ({
           keyboardShouldPersistTaps={'handled'}>
           {_stakingType === ALL_KEY && (
             <StakingTab
+              disabled={connectingChainStatus === ChainStatus.CONNECTING}
               from={from}
               selectedType={currentStakingType as StakingType}
               onSelectType={onChangeStakingType}

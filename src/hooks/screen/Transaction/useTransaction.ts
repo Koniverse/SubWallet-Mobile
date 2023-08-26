@@ -22,7 +22,7 @@ export const useTransaction = (
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { turnOnChain, checkChainConnected } = useChainChecker();
+  const { turnOnChain, checkChainConnected, connectingChainStatus } = useChainChecker();
   const appModalContext = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
@@ -180,5 +180,6 @@ export const useTransaction = (
     onUpdateErrors,
     showPopupEnableChain,
     checkChainConnected,
+    connectingChainStatus,
   };
 };

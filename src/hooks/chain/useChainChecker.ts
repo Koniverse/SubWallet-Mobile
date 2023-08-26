@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 import i18n from 'utils/i18n/i18n';
 
-enum ChainStatus {
+export enum ChainStatus {
   NOT_CONNECTED = 'NOT_CONNECTED',
   CONNECTING = 'CONNECTING',
   CONNECTED = 'CONNECTED',
@@ -41,20 +41,7 @@ export default function useChainChecker() {
       return false;
     }
 
-    if (!chainState.active) {
-      // ChainStatus.NOT_CONNECTED
-      return false;
-    }
-
-    if (chainState.connectionStatus === _ChainConnectionStatus.DISCONNECTED) {
-      // ChainStatus.CONNECTED
-      return true;
-    }
-
-    if (chainState.connectionStatus === _ChainConnectionStatus.CONNECTED) {
-      // ChainStatus.CONNECTED
-      return true;
-    }
+    return chainState.active;
   }
 
   function turnOnChain(chain: string) {
@@ -67,5 +54,5 @@ export default function useChainChecker() {
       .catch(console.error);
   }
 
-  return { turnOnChain, checkChainConnected };
+  return { turnOnChain, checkChainConnected, connectingChainStatus };
 }
