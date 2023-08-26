@@ -1,5 +1,23 @@
+## 1.0.14 (210)
+- Upgrade UI - Update sorting modal & remove console log (#935)
+- The of the staking item is displayed incorrectly (#955)
+- Update receive button (#970)
+- Update showing minimum active value on mobile app (#931)
+- Allow reload NFT, staking in case list is empty (#927)
+- Update showing staking account on the Staking detail screen (#932)
+- Update web runner 1.1.9 (#977)
+- Error page in case touch back when buy token (#947)
+- Support multi-language for WalletConnect feature (#973)
+- Support domain name for mobile app (#960)
+- Do not display NFT after import NFT successfully (#965)
+- Bug UI on History screen (#966)
+- Do not navigate to dApp when connect via WalletConnect in case URI begin with "wc?" (#967)
+- Do not show validator on the Select validator screen in case turn on network when stake (#933)
+- Do not reset validator/collator/dApp in case change token to nominate (#956)
+
 ## 1.0.14 (209)
 - Fix bug not open UnlockModal in ApplyMasterPassword screen
+
 ## 1.0.14 (208)
 - Fix bug related to SendFund (#939)
 - Re-check re-connect network on transaction screen (#942)
