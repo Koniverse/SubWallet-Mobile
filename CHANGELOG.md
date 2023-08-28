@@ -1,3 +1,5 @@
+## 1.0.14 (211)
+- Update request camera permission message
 ## 1.0.14 (210)
 - Upgrade UI - Update sorting modal & remove console log (#935)
 - The of the staking item is displayed incorrectly (#955)

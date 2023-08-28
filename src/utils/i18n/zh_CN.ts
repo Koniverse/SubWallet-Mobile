@@ -9,7 +9,8 @@ export const zh = {
     transferFailMessage1: '你的请求存在问题。你可以在记录页面上跟踪其进度。',
     transferFailMessage2: '你的请求存在问题。',
     notify: '通知！',
-    cannotScanQRCodeWithoutPermission: '请授予相机访问权限以扫描二维码',
+    cannotScanQRCodeWithoutPermission:
+      'SubWallet 需要访问您设备上的摄像头来扫描二维码以执行帐户创建、数据验证或 dApp 连接等操作。',
     goToSetting: '前往设置',
     scan: '扫描',
     toSendFund: '以发送资金',

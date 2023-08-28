@@ -9,7 +9,8 @@ export const vi = {
     transferFailMessage1: 'Yêu cầu của bạn có vấn đề. Bạn có thể theo dõi tiến trình của nó trên trang Lịch sử.',
     transferFailMessage2: 'Có vấn đề xảy ra với yêu cầu của bạn.',
     notify: 'Thông báo',
-    cannotScanQRCodeWithoutPermission: 'Vui lòng cấp quyền truy cập máy ảnh để quét mã QR',
+    cannotScanQRCodeWithoutPermission:
+      'SubWallet cần sử dụng máy ảnh trên thiết bị của bạn để quét mã QR nhằm thực hiện các hành động như tạo tài khoản, xác thực dữ liệu hoặc kết nối dApp',
     goToSetting: 'Đi đến Cài đặt',
     scan: 'Quét',
     toSendFund: 'để gửi tài sản ',

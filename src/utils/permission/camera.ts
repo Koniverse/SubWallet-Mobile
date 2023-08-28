@@ -1,4 +1,4 @@
-import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { Alert, Linking, Platform } from 'react-native';
 import { AutoLockState } from 'utils/autoLock';
 import i18n from 'utils/i18n/i18n';
@@ -10,7 +10,8 @@ const getCameraPermission = () => {
 export const requestCameraPermission = async (onPressCancel?: () => void) => {
   try {
     AutoLockState.isPreventAutoLock = true;
-    const result = await request(getCameraPermission());
+    const result =
+      Platform.OS === 'android' ? await request(getCameraPermission()) : await check(getCameraPermission());
     AutoLockState.isPreventAutoLock = false;
 
     switch (result) {

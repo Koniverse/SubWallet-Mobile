@@ -9,7 +9,8 @@ export const en = {
     transferFailMessage1: 'There was a problem with your request. You can track its progress on the History page.',
     transferFailMessage2: 'There was a problem with your request.',
     notify: 'Notification!',
-    cannotScanQRCodeWithoutPermission: 'Please grant Camera access to scan QR code',
+    cannotScanQRCodeWithoutPermission:
+      'SubWallet needs access to camera on your device to scan QR code for actions such as account creation, data verification or dApp connection.',
     goToSetting: 'Go to setting',
     scan: 'Scan',
     toSendFund: 'to send fund',
