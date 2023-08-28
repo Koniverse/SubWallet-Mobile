@@ -101,6 +101,10 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             return;
           }
           unlockApp();
+          // Lock master password incase always require
+          if (timeAutoLock === LockTimeout.ALWAYS) {
+            keyringLock().catch((e: Error) => console.log(e));
+          }
           if (faceIdEnabled && !isUseBiometric) {
             // Deprecated: Migrate use biometrics
             createKeychainPassword(password)
@@ -127,10 +131,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         })
         .finally(() => {
           setLoading(false);
-          // Lock master password incase always require
-          if (timeAutoLock === LockTimeout.ALWAYS) {
-            keyringLock().catch((e: Error) => console.log(e));
-          }
         });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

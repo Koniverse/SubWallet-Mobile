@@ -13,6 +13,30 @@ There are 2 reasons why we do this:
 ### Requirement
 - Install [yarn](https://yarnpkg.com/)
 - Setup [react native development environment](https://reactnative.dev/docs/environment-setup) use React Native CLI.
+- [CMake] is required on the build host for web runner.
+
+  - When building for **Android**, [CMake] should be installed as a part of your
+    _Android SDK_ (open _SDK Manager_, and look for [CMake] within
+    the _SDK Tools_ tab).
+
+  - On **MacOS**, the `pkg-config` dependency is also needed. You can install both via [Homebrew],
+    by executing:
+    ```shell
+    $ brew install cmake pkg-config
+    ```
+    **IMPORTANT:** [Homebrew] should have added `eval "$(/opt/homebrew/bin/brew shellenv)"'`
+    command to your `.zshrc` or `.bashrc`. Although this works for interactive terminals,
+    it might not work for sessions inside of other apps, such as XCode, therefore you might need to
+    manually create symbolic links:
+
+    ```shell
+    $ sudo ln -s $(which cmake) /usr/local/bin/cmake
+    $ sudo ln -s $(which pkg-config) /usr/local/bin/pkg-config
+    ```
+
+    For details read: https://earthly.dev/blog/homebrew-on-m1,
+    and [Issue#29](https://github.com/birdofpreyru/react-native-static-server/issues/29).
+
 
 ### Start development
 - From package folder run `yarn start` to make sure we installed all required packages

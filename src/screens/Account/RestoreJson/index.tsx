@@ -8,7 +8,7 @@ import { InputFile } from 'components/common/Field/InputFile';
 import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { KeyringPairs$Json } from '@polkadot/ui-keyring/types';
 import { DirectoryPickerResponse, DocumentPickerResponse } from 'react-native-document-picker';
-import * as RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { isKeyringPairs$Json } from 'types/typeGuards';
 import { batchRestoreV2, jsonGetAccountInfo, jsonRestoreV2 } from 'messaging/index';
 import { ResponseJsonGetAccountInfo } from '@subwallet/extension-base/background/types';
