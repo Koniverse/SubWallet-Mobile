@@ -1,6 +1,9 @@
-## 1.0.14 (211)
+## 1.1.0 (212)
+- Use Keychain for biometric auth, new login screen, update reset account (#444, #430, #910)
+
+## 1.0.15 (211)
 - Update request camera permission message
-## 1.0.14 (210)
+## 1.0.15 (210)
 - Upgrade UI - Update sorting modal & remove console log (#935)
 - The of the staking item is displayed incorrectly (#955)
 - Update receive button (#970)
