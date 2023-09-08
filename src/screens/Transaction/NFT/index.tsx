@@ -25,7 +25,7 @@ import { WebRunnerContext } from 'providers/contexts';
 import { Warning } from 'components/Warning';
 import { Button } from 'components/design-system-ui';
 import reformatAddress from 'utils/index';
-import { isEthereumAddress } from '@polkadot/util-crypto';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { FormState } from 'hooks/screen/useFormControl';
 import { nftParamsHandler } from '../helper';
 import { SWTransactionResponse } from '@subwallet/extension-base/services/transaction-service/types';
@@ -154,8 +154,21 @@ const SendNFT: React.FC<SendNFTProps> = ({
   }, [navigation]);
 
   const disableSubmit = useMemo(
-    () => !owner || !formState.isValidated.recipientAddress || !isFormValid || !isNetConnected || loading,
-    [formState.isValidated.recipientAddress, isFormValid, isNetConnected, loading, owner],
+    () =>
+      !owner ||
+      !formState.isValidated.recipientAddress ||
+      !isAddress(formState.data.recipientAddress) ||
+      !isFormValid ||
+      !isNetConnected ||
+      loading,
+    [
+      formState.data.recipientAddress,
+      formState.isValidated.recipientAddress,
+      isFormValid,
+      isNetConnected,
+      loading,
+      owner,
+    ],
   );
 
   const onSubmitForm = useCallback(
@@ -203,10 +216,10 @@ const SendNFT: React.FC<SendNFTProps> = ({
   );
 
   const handleSend = useCallback(() => {
-    if (isFormValid) {
+    if (isFormValid && !disableSubmit) {
       onSubmitForm(formState).then();
     }
-  }, [formState, isFormValid, onSubmitForm]);
+  }, [disableSubmit, formState, isFormValid, onSubmitForm]);
 
   useEffect(() => {
     onChangeChainValue(nftItem.chain);
