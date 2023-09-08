@@ -1,3 +1,5 @@
+## 1.1.0 (214)
+- Change password affect transactions flow (#444)
 ## 1.1.0 (213)
 - Update web-runner version 1.1.10 (#993)
 - Bugs related to Send NFT (#986)
