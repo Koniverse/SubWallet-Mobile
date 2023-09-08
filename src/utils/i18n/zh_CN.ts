@@ -12,6 +12,7 @@ export const zh = {
     cannotScanQRCodeWithoutPermission:
       'SubWallet 需要访问您设备上的摄像头来扫描二维码以执行帐户创建、数据验证或 dApp 连接等操作。',
     goToSetting: '前往设置',
+    noFaceIdPermission: 'This app use Face ID to unlock password',
     scan: '扫描',
     toSendFund: '以发送资金',
     toSendAsset: '以发送资产',
@@ -198,6 +199,7 @@ export const zh = {
     qrSignerAccount: '二维码登录的账户',
     watchOnlyAccount: '仅观看账户',
     unknownAccount: '未知账户',
+    tooManyAttemps: '尝试的失败次数过多。请稍后重试或输入密码。',
   },
   title: {
     exportAccount: '导出账户',
@@ -388,6 +390,8 @@ export const zh = {
     applyAccounts: (account: number) => `应用${account}账户`,
     createOne: '创建',
     reload: '重新加载',
+    unlockWithBiometric: '生物识别解锁',
+    enterMasterPassword: '输入主密码',
   },
   inputLabel: {
     selectAcc: '选择账户',
@@ -604,6 +608,10 @@ export const zh = {
     failToDisconnect: '断开失败',
     unableToFetchInformation: (validatorTitle: string) => `无法获取${validatorTitle}资料`,
     unknownNetworks: (unsupportedNumber: number) => `${unsupportedNumber}未知网络`,
+    noticeForNewLoginMethod:
+      '为了更方便地进行密码管理，将使用主密码来代替以前版本中的 PIN 码。 您需要输入主密码才能解锁 SubWallet。',
+    migrateMasterPasswordForBiometric:
+      '为了更方便地进行密码管理，将使用主密码来代替以前版本中的 PIN 码。 要继续使用生物识别身份验证，请输入您的主密码并再次验证您的生物识别。',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',
@@ -943,10 +951,13 @@ export const zh = {
     termOfService: '服务条款',
     webViewDebugger: '网页视图排查者',
     immediately: '立即',
+    neverRequire: '永不',
+    alwaysRequire: '始终',
     ifLeftFor15Seconds: '若离开15秒',
     ifLeftFor30Seconds: '若离开30秒',
     ifLeftFor1Minute: '若离开1分钟',
     ifLeftFor5Minutes: '若离开5分钟',
+    ifLeftFor10Minutes: '若离开10分钟',
     ifLeftFor15Minutes: '若离开15分钟',
     ifLeftFor30Minutes: '若离开30分钟',
     ifLeftFor1Hour: '若离开1小时',
@@ -960,7 +971,7 @@ export const zh = {
     changePassword: '更改密码',
     manageWebsiteAccess: '管理网站访问',
     manageWalletConnectDapp: '管理WalletConnect Dapp',
-    appLock: 'APP封锁',
+    appLock: '解锁要求',
     walletTheme: '钱包主题',
     language: '语言',
     notifications: '通知',
@@ -1073,6 +1084,7 @@ export const zh = {
     deleteChainSuccessfully: '删除链接成功',
     addProviderSuccessfully: '添加提供商成功',
     addTokenSuccessfully: '添加通证成功',
+    warningNeverRequirePassword: '此选项会影响您的钱包安全。',
   },
   browser: {
     searchWithDuckduckgo: '通过Duckduckgo搜索',

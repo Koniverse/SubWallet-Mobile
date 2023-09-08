@@ -3,15 +3,23 @@ import { ThemeTypes } from 'styles/themes';
 import { FontSemiBold } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
+  androidMaskModal: ViewStyle;
+  root: ViewStyle;
   footer: ViewStyle;
   wrapper: ViewStyle;
   separator: ViewStyle;
   header: TextStyle;
   container: ViewStyle;
+  flex1: ViewStyle;
 }
 
 export default (theme: ThemeTypes) => {
   return StyleSheet.create<ComponentStyle>({
+    root: {
+      height: '100%',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+    },
     container: {
       width: '100%',
       backgroundColor: theme.colorBgDefault,
@@ -42,5 +50,7 @@ export default (theme: ThemeTypes) => {
       textAlign: 'center',
       marginBottom: theme.margin,
     },
+    flex1: { flex: 1 },
+    androidMaskModal: { zIndex: 999, backgroundColor: theme.colorBgMask },
   });
 };

@@ -633,6 +633,10 @@ export async function approveSignPasswordV2(request: RequestSigningApprovePasswo
   return sendMessage('pri(signing.approve.passwordV2)', request);
 }
 
+export async function saveAutoLockTime(value: number): Promise<boolean> {
+  return sendMessage('pri(settings.saveAutoLockTime)', { autoLockTime: value });
+}
+
 export async function approveSignSignature(id: string, signature: HexString): Promise<boolean> {
   return sendMessage('pri(signing.approve.signature)', { id, signature });
 }

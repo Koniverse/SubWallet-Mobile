@@ -10,7 +10,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { deriveAccountV3 } from 'messaging/index';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ListRenderItemInfo, Platform, View } from 'react-native';
+import { DeviceEventEmitter, ListRenderItemInfo, Platform, View } from 'react-native';
 import ToastContainer from 'react-native-toast-notifications';
 import Toast from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
+import { OPEN_UNLOCK_FROM_MODAL } from '../UnlockModal';
 
 type Props = {
   deriveAccModalRef: React.MutableRefObject<ModalRef | undefined>;
@@ -92,6 +93,11 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
 
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
+  function onSelectItem(account: AccountJson) {
+    onPressSubmit(onSelectAccount(account))();
+    Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
+  }
+
   const renderItem = useCallback(
     ({ item: account }: ListRenderItemInfo<AccountJson>): JSX.Element => {
       const disabled = !!selected;
@@ -104,7 +110,11 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
             accountName={account.name}
             address={account.address}
             avatarSize={theme.sizeLG}
-            onPress={disabled || isSelected ? undefined : onPressSubmit(onSelectAccount(account))}
+            onPress={() => {
+              if (!disabled && !isSelected) {
+                onSelectItem(account);
+              }
+            }}
             renderRightItem={isSelected ? renderLoaderIcon : undefined}
             customStyle={{
               container: [styles.accountItem, disabled && !isSelected && styles.accountDisable],
@@ -113,7 +123,8 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
         </View>
       );
     },
-    [onPressSubmit, onSelectAccount, selected, styles.accountDisable, styles.accountItem, theme.sizeLG],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selected, styles.accountDisable, styles.accountItem, theme.sizeLG],
   );
 
   return (

@@ -81,12 +81,23 @@ export type ConfirmationSlice = {
 
 export type MobileSettingsSlice = {
   language: string;
-  pinCode: string;
   pinCodeEnabled: boolean;
-  faceIdEnabled: boolean;
-  autoLockTime: number | undefined;
+  faceIdEnabled: boolean; // deprecated
+  isUseBiometric: boolean;
+  timeAutoLock: LockTimeout;
   isPreventLock: boolean;
 };
+
+export enum LockTimeout {
+  NEVER = -1,
+  ALWAYS = 0,
+  _1MINUTE = 1,
+  _5MINUTE = 5,
+  _10MINUTE = 10,
+  _15MINUTE = 15,
+  _30MINUTE = 30,
+  _60MINUTE = 60,
+}
 
 export type SiteInfo = {
   name: string;

@@ -1,6 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Icon, Typography } from 'components/design-system-ui';
-import { DeviceEventEmitter, KeyboardAvoidingView, Platform, TouchableOpacity, View } from 'react-native';
+import {
+  BackHandler,
+  DeviceEventEmitter,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
@@ -10,19 +18,46 @@ import { keyringUnlock } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './style';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootNavigationProps, RootStackParamList } from 'routes/index';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SVGImages } from 'assets/index';
+import { getKeychainPassword } from 'utils/account';
+import { Portal } from '@gorhom/portal';
 
-export const UnlockModal = () => {
+type AuthMethod = 'biometric' | 'master-password';
+const UNLOCK_BIOMETRY_TIMEOUT = Platform.OS === 'ios' ? 0 : 300;
+export const OPEN_UNLOCK_FROM_MODAL = 'openFromModal';
+
+async function handleUnlockPassword(navigation: NativeStackNavigationProp<RootStackParamList>) {
+  try {
+    const password = await getKeychainPassword();
+    if (password) {
+      const unlockData = await keyringUnlock({ password });
+      if (unlockData.status) {
+        DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password });
+        Keyboard.dismiss();
+        navigation.goBack();
+        return true;
+      }
+      throw 'Credential not match';
+    }
+    throw 'Credential not exist';
+  } catch (e) {
+    console.warn('Unlock failed:', e);
+    return false;
+  }
+}
+export const UnlockModal = memo(() => {
+  const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const { isKeyboardVisible } = useKeyboardVisible();
-  useEffect(() => setAdjustResize(), []);
-
   const styles = useMemo(() => createStyle(theme), [theme]);
-
   const formConfig = {
     password: {
       name: i18n.common.walletPassword,
@@ -30,8 +65,44 @@ export const UnlockModal = () => {
       validateFunc: validatePassword,
     },
   };
-
   const [loading, setLoading] = useState<boolean>(false);
+  const [authMethod, setAuthMethod] = useState<AuthMethod>(isUseBiometric ? 'biometric' : 'master-password');
+  const [openFromModal, setOpenFromModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    setAdjustResize();
+    const openFromModalCallback = () => {
+      setOpenFromModal(true);
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', onCancelUnlock);
+    const openFromModalEvent = DeviceEventEmitter.addListener(OPEN_UNLOCK_FROM_MODAL, openFromModalCallback);
+    return () => {
+      backHandler.remove();
+      openFromModalEvent.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (authMethod === 'master-password') {
+      focus('password')();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authMethod]);
+  useEffect(() => {
+    if (!isUseBiometric) {
+      return;
+    }
+    setTimeout(() => {
+      handleUnlockPassword(navigation)
+        .then(result => {
+          if (!result) {
+            setAuthMethod('master-password');
+          }
+        })
+        .catch(() => setAuthMethod('master-password'));
+    }, UNLOCK_BIOMETRY_TIMEOUT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit = () => {
     const password = formState.data.password;
@@ -43,10 +114,11 @@ export const UnlockModal = () => {
         .then(data => {
           if (!data.status) {
             onUpdateErrors('password')([i18n.errorMessage.invalidMasterPassword]);
-          } else {
-            DeviceEventEmitter.emit('unlockModal', { type: 'onComplete' });
-            navigation.goBack();
+            return;
           }
+          DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password });
+          Keyboard.dismiss();
+          navigation.goBack();
         })
         .catch((e: Error) => {
           onUpdateErrors('password')([e.message]);
@@ -57,13 +129,13 @@ export const UnlockModal = () => {
     });
   };
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors } = useFormControl(formConfig, {
+  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });
 
   const isDisabled = useMemo(() => {
-    return loading || !formState.data.password || formState.errors.password.length > 0;
-  }, [formState.data.password, formState.errors.password.length, loading]);
+    return loading || !formState.data.password || formState.errors.password.length > 0 || authMethod === 'biometric';
+  }, [formState.data.password, formState.errors.password.length, loading, authMethod]);
 
   const onChangePassword = useCallback(
     (value: string) => {
@@ -75,56 +147,75 @@ export const UnlockModal = () => {
     [onChangeValue, onUpdateErrors],
   );
 
+  const onCancelUnlock = () => {
+    DeviceEventEmitter.emit('unlockModal', { type: 'onCancel' });
+    Keyboard.dismiss();
+    navigation.goBack();
+    return true;
+  };
+
+  const onTurnOnBiometric = () => {
+    setAuthMethod('biometric');
+    handleUnlockPassword(navigation)
+      .then(result => {
+        if (!result) {
+          setAuthMethod('master-password');
+        }
+      })
+      .catch(() => setAuthMethod('master-password'));
+  };
+
+  const renderMainContent = () => (
+    <View style={[styles.root, Platform.OS === 'ios' ? null : styles.androidMaskModal]}>
+      <TouchableOpacity activeOpacity={1} style={styles.flex1} onPress={onCancelUnlock} />
+      <View style={styles.container}>
+        <View style={styles.separator} />
+        <View style={styles.wrapper}>
+          <Typography.Text size={'lg'} style={styles.header}>
+            {i18n.header.enterPassword}
+          </Typography.Text>
+          <PasswordField
+            ref={formState.refs.password}
+            label={formState.labels.password}
+            defaultValue={formState.data.password}
+            onChangeText={onChangePassword}
+            errorMessages={formState.errors.password}
+            onSubmitField={onSubmitField('password')}
+            autoFocus
+          />
+          <View style={styles.footer}>
+            <Button
+              loading={loading}
+              disabled={isDisabled}
+              icon={
+                <Icon
+                  phosphorIcon={CheckCircle}
+                  size={'lg'}
+                  weight={'fill'}
+                  iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
+                />
+              }
+              onPress={onSubmit}>
+              {i18n.buttonTitles.apply}
+            </Button>
+            {isUseBiometric && (
+              <Button icon={<SVGImages.Fingerprint />} size="xs" type="ghost" onPress={onTurnOnBiometric}>
+                {i18n.buttonTitles.unlockWithBiometric}
+              </Button>
+            )}
+          </View>
+          {!isKeyboardVisible && <SafeAreaView edges={['bottom']} />}
+        </View>
+      </View>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.select({ ios: 0, android: 0 })}
-      style={{ flex: 1 }}>
-      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <TouchableOpacity
-          activeOpacity={1}
-          style={{ flex: 1 }}
-          onPress={() => {
-            DeviceEventEmitter.emit('unlockModal', { type: 'onCancel' });
-            navigation.goBack();
-          }}
-        />
-        <View style={styles.container}>
-          <View style={styles.separator} />
-          <View style={styles.wrapper}>
-            <Typography.Text size={'lg'} style={styles.header}>
-              {i18n.header.enterPassword}
-            </Typography.Text>
-            <PasswordField
-              ref={formState.refs.password}
-              label={formState.labels.password}
-              defaultValue={formState.data.password}
-              onChangeText={onChangePassword}
-              errorMessages={formState.errors.password}
-              onSubmitField={onSubmitField('password')}
-              isBusy={loading}
-              autoFocus
-            />
-            <View style={styles.footer}>
-              <Button
-                loading={loading}
-                disabled={isDisabled}
-                icon={
-                  <Icon
-                    phosphorIcon={CheckCircle}
-                    size={'lg'}
-                    weight={'fill'}
-                    iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
-                  />
-                }
-                onPress={onSubmit}>
-                {i18n.buttonTitles.apply}
-              </Button>
-            </View>
-            {!isKeyboardVisible && <SafeAreaView edges={['bottom']} />}
-          </View>
-        </View>
-      </View>
+      style={styles.flex1}>
+      {Platform.OS === 'android' && openFromModal ? <Portal>{renderMainContent()}</Portal> : renderMainContent()}
     </KeyboardAvoidingView>
   );
-};
+});

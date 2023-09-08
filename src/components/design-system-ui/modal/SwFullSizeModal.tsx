@@ -46,7 +46,7 @@ const SwFullSizeModal = ({
   return (
     <>
       {isUseModalV2 ? (
-        <Portal>
+        <Portal hostName="SimpleModalHost">
           <ModalBaseV2
             level={level}
             ref={modalBaseV2Ref}

@@ -8,13 +8,16 @@ const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
 const NftIcon = React.lazy(() => import('./logo-nft.svg'));
 const Logo = React.lazy(() => import('./subwallet-logo.svg'));
 const LogoGradient = React.lazy(() => import('./subwallet-logo-gradient.svg'));
+const SubwalletStyled = React.lazy(() => import('./subwallet-styled.svg'));
 const MenuBarLogo = React.lazy(() => import('./menu-bar.svg'));
 const IcHalfSquare = React.lazy(() => import('./ic-half-square.svg'));
 const WalletConnect = React.lazy(() => import('./wallet-connect.svg'));
+const Fingerprint = React.lazy(() => import('./fingerprint-simple.svg'));
 
 export const SVGImages = {
   Logo,
   LogoGradient,
+  SubwalletStyled,
   CheckBoxIcon,
   CheckBoxFilledIcon,
   NftIcon,
@@ -23,6 +26,7 @@ export const SVGImages = {
   MenuBarLogo,
   IcHalfSquare,
   WalletConnect,
+  Fingerprint,
 };
 
 export const Images = {

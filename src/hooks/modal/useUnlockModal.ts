@@ -9,13 +9,14 @@ import { RootStackParamList } from 'routes/index';
 
 interface Result {
   onPress: (onComplete: VoidFunction) => () => Promise<boolean> | undefined;
-  onPasswordComplete: VoidFunction;
-  onHideModal: VoidFunction;
+  onHideModal: () => void;
 }
 
 const useUnlockModal = (
   navigation: NativeStackNavigationProp<RootStackParamList>,
   setLoading?: (arg: boolean) => void,
+  onUnlockComplete?: (arg: string) => void,
+  onCloseModal?: () => void,
 ): Result => {
   const { isLocked, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const onCompleteRef = useRef<VoidFunction>(noop);
@@ -26,8 +27,10 @@ const useUnlockModal = (
   useEffect(() => {
     DeviceEventEmitter.addListener('unlockModal', data => {
       if (data.type === 'onComplete') {
+        !!onUnlockComplete && onUnlockComplete(data.password);
         onPasswordComplete();
       } else {
+        !!onCloseModal && onCloseModal();
         onHideModal();
       }
     });
@@ -48,7 +51,7 @@ const useUnlockModal = (
           setTimeout(() => {
             onCompleteRef.current = onComplete;
 
-            if (hasMasterPassword && isLocked) {
+            if ((hasMasterPassword && isLocked) || !!onUnlockComplete) {
               navigation.navigate('UnlockModal');
               promiseRef.current = new Promise<boolean>((resolve, reject) => {
                 resolveRef.current = resolve;
@@ -64,7 +67,8 @@ const useUnlockModal = (
         }
       };
     },
-    [hasMasterPassword, isLocked, navigation],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isLocked],
   );
 
   const onPasswordComplete = useCallback(() => {
@@ -85,7 +89,6 @@ const useUnlockModal = (
 
   return {
     onPress,
-    onPasswordComplete,
     onHideModal,
   };
 };

@@ -8,7 +8,6 @@ import { RootState } from 'stores/index';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { ServiceSelectItem } from 'components/ServiceSelectItem';
 import { HIDE_MODAL_DURATION } from 'constants/index';
-import useAppLock from 'hooks/useAppLock';
 import { PREDEFINED_TRANSAK_TOKEN, PREDEFINED_TRANSAK_TOKEN_BY_SLUG } from '../../../predefined/transak';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
 import { ImageLogosMap } from 'assets/logo';
@@ -77,7 +76,7 @@ export const ServiceModal = ({
       ? address
       : reformatAddress(address, networkPrefix === undefined ? -1 : networkPrefix);
   }, [token, address, networkPrefix]);
-  const { isLocked } = useAppLock();
+  const { isLocked } = useSelector((state: RootState) => state.accountState);
 
   const url = useMemo((): string => {
     const host = HOST.PRODUCTION;

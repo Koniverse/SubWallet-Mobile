@@ -4145,19 +4145,19 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.41.0.tgz#dd18e132f44b73c3cd31cf0db489c10af70bef36"
   integrity sha512-TLz5VkEaJRNFzf1Oiix9gqknKer3aKbLfjK9XHBFCIhdxlQpI+S6lZGu3wT4DHAGXPakYfXb8+9ZIOtWLcQ/2Q==
 
-"@subwallet/chain-list@0.2.10", "@subwallet/chain-list@0.2.11-beta.0", "@subwallet/chain-list@^0.2.10":
-  version "0.2.10"
-  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.10.tgz#9b572ce3b41a3c1f68c6be6f2d8558f132321bde"
-  integrity sha512-SdLi/nxiMquSGTto3GCprD4uvwL4ex0asItNdIokYpd8T2prEVk017xqZHzHQZEcTkBTr0v8kS0m+GPKwIXvKg==
+"@subwallet/chain-list@0.2.12", "@subwallet/chain-list@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.12.tgz#024c90f6998d4cf2e2baeac03156014912a89c16"
+  integrity sha512-LmcZjc/MNJwlocQzF3ym0bkyvwyLl9iOqBDG9WJHGtJkMxobJMo8TxKSb/U1GvWAeOqscqLiNNF2fvJ4Tp8sRw==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^10.2.1"
     eventemitter3 "^4.0.7"
 
-"@subwallet/extension-base@^1.1.9-0":
-  version "1.1.9-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.9-0.tgz#dfc0f38dbd9d6ff1e9b4cf5c53e011fad47ecfdc"
-  integrity sha512-eh+Y1/4QWCSUgdSv5FW0SP5jfUDq4sMd/mN50FB2Vo6Y3RCU7yBBczct/7BwyG+bHNn2E4a2LbVPyWX2gAgm+w==
+"@subwallet/extension-base@^1.1.10-0":
+  version "1.1.10-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.10-0.tgz#d5157680f05962150cc2f056c53646b416733289"
+  integrity sha512-KnqcMt9eHmugxqKMXkRPRXNBVrwEZFBKDQgVV30aCzArU0kW/b7QesjWjxOGQXT36Uyn9IO/ND0Us8+NV2fSPQ==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
@@ -4186,11 +4186,11 @@
     "@reduxjs/toolkit" "^1.9.1"
     "@sora-substrate/type-definitions" "^1.17.7"
     "@substrate/connect" "^0.7.26"
-    "@subwallet/chain-list" "0.2.11-beta.0"
-    "@subwallet/extension-base" "^1.1.9-0"
-    "@subwallet/extension-chains" "^1.1.9-0"
-    "@subwallet/extension-dapp" "^1.1.9-0"
-    "@subwallet/extension-inject" "^1.1.9-0"
+    "@subwallet/chain-list" "0.2.12"
+    "@subwallet/extension-base" "^1.1.10-0"
+    "@subwallet/extension-chains" "^1.1.10-0"
+    "@subwallet/extension-dapp" "^1.1.10-0"
+    "@subwallet/extension-inject" "^1.1.10-0"
     "@subwallet/keyring" "^0.0.10"
     "@subwallet/ui-keyring" "^0.0.10"
     "@walletconnect/sign-client" "^2.8.4"
@@ -4224,31 +4224,31 @@
     web3-eth-contract "^1.10.0"
     web3-utils "^1.10.0"
 
-"@subwallet/extension-chains@^1.1.9-0":
-  version "1.1.9-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.1.9-0.tgz#d89b282b813c4401f3be18e4ee851160ef27b203"
-  integrity sha512-s+hUkK3tBkCuFHIe3tFk9zXk+pkNc9ft3GFJFEVexEmIchLQu1WWnXd9MEGlPBxhGy3iLPvSw0k6tClxiLjlRg==
+"@subwallet/extension-chains@^1.1.10-0":
+  version "1.1.10-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.1.10-0.tgz#529e8dd3dd07929a6db370c844c985a4d8c1a21f"
+  integrity sha512-oaetEoWJnWRYn/9gUYMxMZw1nJXvUIvosL3nz7QFbKXB7icpdTD4sQYRTNWBsTDJKd/NHjJ97HcYbb4oJA+L9A==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/networks" "^12.3.2"
     "@polkadot/util" "^12.3.2"
     "@polkadot/util-crypto" "^12.3.2"
-    "@subwallet/extension-inject" "^1.1.9-0"
+    "@subwallet/extension-inject" "^1.1.10-0"
 
-"@subwallet/extension-dapp@^1.1.9-0":
-  version "1.1.9-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.1.9-0.tgz#2f3f824af672d16f5c784d631c200f0810ee4b44"
-  integrity sha512-PvM39AOX9tfKhJsIWD36e9Rrr0xT295lVSlMndPeHY4QJ6BK9UmafSvvNPuzVXCK6dMI1JKqJjHht9r/VEnEHA==
+"@subwallet/extension-dapp@^1.1.10-0":
+  version "1.1.10-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.1.10-0.tgz#6c9de3d43bf3c4edd0bfc1102166d679ad2c9a5b"
+  integrity sha512-pd3YkyEbT6qKjZgOviPMueuGS9KF1+QXyebLCBtKYWud78KVX7JHyyftgGIlVpN+DLFij3mZYU+cndC2+UjLrw==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/util" "^12.3.2"
     "@polkadot/util-crypto" "^12.3.2"
-    "@subwallet/extension-inject" "^1.1.9-0"
+    "@subwallet/extension-inject" "^1.1.10-0"
 
-"@subwallet/extension-inject@^1.1.9-0":
-  version "1.1.9-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.1.9-0.tgz#e21e11e3a523476285f53bd6250a5711a6ce1201"
-  integrity sha512-22tWVMxlOn+fVdjxDs+isYIBjitQZrILsyRCvqZHswWqZnKpq9iNSqwQoxyYC81nej+M+x0mqMxiXUpdirFocw==
+"@subwallet/extension-inject@^1.1.10-0":
+  version "1.1.10-0"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.1.10-0.tgz#2ceaf936f8d867b705a332802bd2f334555268cb"
+  integrity sha512-3OpOB+2MkoI1zLeh68so3YgsVRs5137fm/vRWsTFaupqdpFhIqs44CVAI8SKcoiPP/ux3QVFwo45zFMOrENVhw==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^10.9.1"
@@ -7802,11 +7802,6 @@ deprecation@^2.0.0, deprecation@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/deprecation/-/deprecation-2.3.1.tgz#6368cbdb40abf3373b525ac87e4a260c3a700919"
   integrity sha512-xmHIy4F3scKVwMsQ4WnVaS8bHOx0DmVwRywosKhaILI0ywMDWPtBSku2HNxRvF7jtwDRsoEwYQSfbxj8b7RlJQ==
-
-dequal@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/dequal/-/dequal-1.0.0.tgz#41c6065e70de738541c82cdbedea5292277a017e"
-  integrity sha512-/Nd1EQbQbI9UbSHrMiKZjFLrXSnU328iQdZKPQf78XQI6C+gutkFUeoHpG5J08Ioa6HeRbRNFpSIclh1xyG0mw==
 
 des.js@^1.0.0:
   version "1.1.0"
@@ -12057,7 +12052,7 @@ lodash@4.17.15:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
-lodash@>4.17.0, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.21:
+lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -15013,13 +15008,6 @@ react-native-codegen@^0.71.5:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
-react-native-collapsible-tab-view@^5.0.0-rc.13:
-  version "5.0.0-rc.13"
-  resolved "https://registry.yarnpkg.com/react-native-collapsible-tab-view/-/react-native-collapsible-tab-view-5.0.0-rc.13.tgz#d0ad05e20a872a52fc259b5fc8914a79fb56a3eb"
-  integrity sha512-8cRh1VmwWdNIdoqfOIvMX5GxZu6ln0tXB45uACQdRW8bEXSrzT4wSw76et1WWkVHJyfTqPw8S6NGyZ7JND+x6Q==
-  dependencies:
-    use-deep-compare "^1.1.0"
-
 react-native-confirmation-code-field@^7.3.1:
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/react-native-confirmation-code-field/-/react-native-confirmation-code-field-7.3.1.tgz#e705ee5b73d7749cac29da287379fa8690904fe6"
@@ -15110,10 +15098,10 @@ react-native-inappbrowser-reborn@^3.7.0:
     invariant "^2.2.4"
     opencollective-postinstall "^2.0.3"
 
-react-native-keychain@^8.1.1:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.1.1.tgz#3bb5e37946b964a7bcf7df2fe470dd244e01a340"
-  integrity sha512-8fxgeHKwGcL657eAYpdBTkDIxNhbIHI+kyyO0Yac2dgVAN184JoIwQcW2z6snahwDaCObQOu0biLFHnsH+4KSg==
+react-native-keychain@^8.1.2:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.1.2.tgz#34291ae472878e5124d081211af5ede7d810e64f"
+  integrity sha512-bhHEui+yMp3Us41NMoRGtnWEJiBE0g8tw5VFpq4mpmXAx6XJYahuM6K3WN5CsUeUl83hYysSL9oFZNKSTPSvYw==
 
 react-native-linear-gradient@^2.6.2:
   version "2.8.0"
@@ -15131,14 +15119,6 @@ react-native-mmkv@^2.10.1:
   version "2.10.1"
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.10.1.tgz#1a4e64edbf9561fe81a5ae3cefde17e88dfc669f"
   integrity sha512-MCrYytUJ3JhSVg7LwVXCj7ExbMHe48FoQdDA1xo1q/M4c1/QyI3M9L9d2dyJUhYPnsSO0+5c2mJICm7v39XA0w==
-
-react-native-modal-popover@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/react-native-modal-popover/-/react-native-modal-popover-2.1.3.tgz#ab7715a9fdb7f6e88ac64c9d11dff04992a49fc0"
-  integrity sha512-2UrLzBNNTlR6uisJTWyDg6qFC0Qi8Fx3a6UrPS0bQBlUpo0MRPRVMCK5t8RIrTI6EoK1FMbnm+u8UOOboBJWgw==
-  dependencies:
-    lodash ">4.17.0"
-    prop-types "^15.8.1"
 
 react-native-modal@^13.0.1:
   version "13.0.1"
@@ -15221,23 +15201,23 @@ react-native-reanimated@^2.14.4:
     setimmediate "^1.0.5"
     string-hash-64 "^1.0.3"
 
-react-native-restart@^0.0.24:
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/react-native-restart/-/react-native-restart-0.0.24.tgz#c7036f25d900d9221b84d3e5129b02d4289d4e94"
-  integrity sha512-pvJNU3NwQk6bCG2gOWcQpZ4IxhtELB0K9gzmtixfsaTFbW1UXXHkJNjk1kHazcbH5hrD7QbUkR63fsAVh8X4VQ==
-
 react-native-safe-area-context@^4.5.0:
   version "4.7.1"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.7.1.tgz#b7be2d68dee909717cfa439bb5c7966042d231e8"
   integrity sha512-X2pJG2ttmAbiGlItWedvDkZg1T1ikmEDiz+7HsiIwAIm2UbFqlhqn+B1JF53mSxPzdNaDcCQVHRNPvj8oFu6Yg==
 
 react-native-screens@^3.19.0:
-  version "3.22.1"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.22.1.tgz#b0eb0696dbf1f9a852061cc71c0f8cdb95ed8e53"
-  integrity sha512-ffzwUdVKf+iLqhWSzN5DXBm0s2w5sN0P+TaHHPAx42LT7+DT0g8PkHT1QDvxpR5vCEPSS1i3EswyVK4HCuhTYg==
+  version "3.25.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.25.0.tgz#cf45e271ce733c9cf782fef8c9b3eb9e53faf01d"
+  integrity sha512-TSC2Ad0hh763I8QT6XxMsPXAagQ+RawDSdFtKRvIz9fCYr96AjRwwaqmYivbqlDywOgcRBkIVynkFtp0ThmlYw==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
+
+react-native-sensitive-info@^6.0.0-alpha.9:
+  version "6.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/react-native-sensitive-info/-/react-native-sensitive-info-6.0.0-alpha.9.tgz#b488fab715d36efdf80b377a21545cfe888ab8d2"
+  integrity sha512-W2R1gUHgBAmy+wVl0BvA7s01SqqTitnG4Sdj2zmck0OS5a54kq+pTnXRqDljMa2NQs4Mue2IHyvd+Tf0X1ZL6Q==
 
 react-native-size-matters@^0.3.1:
   version "0.3.1"
@@ -15293,11 +15273,6 @@ react-native-toast-notifications@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/react-native-toast-notifications/-/react-native-toast-notifications-3.3.1.tgz#c3d6f3b63a4df81c2912560d27878ea056672981"
   integrity sha512-yc1Q2nOdIYvAf0GAIlmg8q42hiwpEHnLxkxJ6P+tN6jpcKZ1qzMXlgnmNdyF9cm9VOyHQexEP8952IKNAv1Olw==
-
-react-native-touch-id@^4.4.1:
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
-  integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
 react-native-vector-icons@^9.2.0:
   version "9.2.0"
@@ -17632,13 +17607,6 @@ usb@2.9.0:
     "@types/w3c-web-usb" "^1.0.6"
     node-addon-api "^6.0.0"
     node-gyp-build "^4.5.0"
-
-use-deep-compare@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/use-deep-compare/-/use-deep-compare-1.1.0.tgz#85580dde751f68400bf6ef7e043c7f986595cef8"
-  integrity sha512-6yY3zmKNCJ1jjIivfZMZMReZjr8e6iC6Uqtp701jvWJ6ejC/usXD+JjmslZDPJQgX8P4B1Oi5XSLHkOLeYSJsA==
-  dependencies:
-    dequal "1.0.0"
 
 use-latest-callback@^0.1.5:
   version "0.1.6"

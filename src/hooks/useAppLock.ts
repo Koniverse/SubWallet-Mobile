@@ -1,33 +1,30 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useCallback } from 'react';
-import bcrypt from 'react-native-bcrypt';
 import { updateLockState } from 'stores/AppState';
-import { updateFaceIdEnable, updatePinCode, updatePinCodeEnable } from 'stores/MobileSettings';
+import { resetBrowserSetting } from 'stores/Browser';
+import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
+import { LockTimeout } from 'stores/types';
 
 export interface UseAppLockOptions {
   isLocked: boolean;
-  unlock: (code: string) => boolean;
-  unlockWithBiometric: () => void;
+  unlock: () => void;
+  unlockApp: () => void;
   lock: () => void;
   resetPinCode: () => void;
 }
 
 export default function useAppLock(): UseAppLockOptions {
   const isLocked = useSelector((state: RootState) => state.appState.isLocked);
-  const { pinCode } = useSelector((state: RootState) => state.mobileSettings);
   const dispatch = useDispatch();
 
-  const unlock = useCallback(
-    (code: string) => {
-      const compareRs = bcrypt.compareSync(code, pinCode);
-      dispatch(updateLockState(!compareRs));
-      return compareRs;
-    },
-    [dispatch, pinCode],
-  );
+  const unlock = useCallback(() => {
+    // const compareRs = bcrypt.compareSync(code, pinCode);
+    // dispatch(updateLockState(!compareRs));
+    // return compareRs;
+  }, []);
 
-  const unlockWithBiometric = useCallback(() => {
+  const unlockApp = useCallback(() => {
     dispatch(updateLockState(false));
   }, [dispatch]);
 
@@ -36,11 +33,11 @@ export default function useAppLock(): UseAppLockOptions {
   }, [dispatch]);
 
   const resetPinCode = useCallback(() => {
-    dispatch(updatePinCode(''));
     dispatch(updateLockState(false));
-    dispatch(updatePinCodeEnable(false));
-    dispatch(updateFaceIdEnable(false));
+    dispatch(updateUseBiometric(false));
+    dispatch(resetBrowserSetting());
+    dispatch(updateAutoLockTime(LockTimeout._15MINUTE));
   }, [dispatch]);
 
-  return { isLocked, unlock, lock, unlockWithBiometric, resetPinCode };
+  return { isLocked, unlock, lock, resetPinCode, unlockApp };
 }

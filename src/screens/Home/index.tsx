@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ActivityIndicator } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import useAppLock from 'hooks/useAppLock';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { WrapperParamList } from 'routes/wrapper';
 import { Settings } from 'screens/Settings';
@@ -179,8 +178,7 @@ interface Props {
 }
 export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
-  const { hasMasterPassword, isReady } = useSelector((state: RootState) => state.accountState);
-  const { isLocked } = useAppLock();
+  const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
   const [isLoading, setLoading] = useState(true);
   const isFirstOpen = useRef(true);
   const toast = useToast();

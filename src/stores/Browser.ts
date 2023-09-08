@@ -117,7 +117,15 @@ const browserSlice = createSlice({
     removeBookmark: (state, { payload }: PayloadAction<SiteInfo>) => {
       state.bookmarks = state.bookmarks.filter(t => t.url !== payload.url);
     },
+    resetBrowserSetting: state => {
+      state.activeTab = null;
+      state.tabs = [];
+      state.whitelist = [];
+      state.history = [];
+      state.bookmarks = [];
+    },
   },
 });
 
+export const { resetBrowserSetting } = browserSlice.actions;
 export default browserSlice.reducer;

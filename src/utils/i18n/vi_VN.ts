@@ -12,6 +12,7 @@ export const vi = {
     cannotScanQRCodeWithoutPermission:
       'SubWallet cần sử dụng máy ảnh trên thiết bị của bạn để quét mã QR nhằm thực hiện các hành động như tạo tài khoản, xác thực dữ liệu hoặc kết nối dApp',
     goToSetting: 'Đi đến Cài đặt',
+    noFaceIdPermission: 'This app use Face ID to unlock password',
     scan: 'Quét',
     toSendFund: 'để gửi tài sản ',
     toSendAsset: 'để gửi tài sản',
@@ -200,6 +201,7 @@ export const vi = {
     qrSignerAccount: 'Tài khoản QR signer',
     watchOnlyAccount: 'Tài khoản chỉ xem',
     unknownAccount: 'Tài khoản không xác định',
+    tooManyAttemps: 'Thất bại quá nhiều lần. Vui lòng thử lại sau hoặc nhập mật khẩu',
   },
   title: {
     exportAccount: 'Xuất tài khoản  ',
@@ -392,6 +394,8 @@ export const vi = {
     applyAccounts: (account: number) => `Kết nối ${account} tài khoản`,
     createOne: 'Tạo tài khoản',
     reload: 'Tải lại',
+    unlockWithBiometric: 'Mở khoá bằng sinh trắc học',
+    enterMasterPassword: 'Nhập master password',
   },
   inputLabel: {
     selectAcc: 'Chọn tài khoản',
@@ -611,6 +615,10 @@ export const vi = {
     failToDisconnect: 'Ngắt kết nối thất bại',
     unableToFetchInformation: (validatorTitle: string) => `Không thể lấy thông tin của ${validatorTitle}`,
     unknownNetworks: (unsupportedNumber: number) => `${unsupportedNumber} mạng không xác định`,
+    noticeForNewLoginMethod:
+      'Để việc quản lý mật khẩu trở nên dễ dàng hơn, master password sẽ được áp dụng thay thế PIN code trong bản cũ. Bạn cần nhập master password để mở khoá ứng dụng.',
+    migrateMasterPasswordForBiometric:
+      'Để việc quản lý mật khẩu trở nên dễ dàng hơn, master password sẽ được áp dụng thay thế PIN code trong bản cũ. Bạn đang sử dụng phương thức mở khóa bằng sinh trắc học, để tiếp tục áp dụng phương thức này, bạn cần nhập master password và xác nhận lại sinh trắc học.',
   },
   filterOptions: {
     polkadotParachain: 'Polkadot Parachain',
@@ -953,10 +961,13 @@ export const vi = {
     termOfService: 'Điều khoản dịch vụ',
     webViewDebugger: 'Trình gỡ lỗi web view',
     immediately: 'Ngay lập tức',
+    neverRequire: 'Không bao giờ',
+    alwaysRequire: 'Luôn luôn',
     ifLeftFor15Seconds: 'Sau 15 giây',
     ifLeftFor30Seconds: 'Sau 30 giây',
     ifLeftFor1Minute: 'Sau 1 phút',
     ifLeftFor5Minutes: 'Sau 5 phút',
+    ifLeftFor10Minutes: 'Sau 10 phút',
     ifLeftFor15Minutes: 'Sau 15 phút',
     ifLeftFor30Minutes: 'Sau 30 phút',
     ifLeftFor1Hour: 'Sau 1 giờ',
@@ -970,7 +981,7 @@ export const vi = {
     changePassword: 'Đổi mật khẩu',
     manageWebsiteAccess: 'Quản lý truy cập',
     manageWalletConnectDapp: 'Quản lý WalletConnect dApp',
-    appLock: 'Khóa tự động',
+    appLock: 'Yêu cầu mở khoá',
     walletTheme: 'Chế độ nền',
     language: 'Ngôn ngữ',
     notifications: 'Thông báo',
@@ -1090,6 +1101,7 @@ export const vi = {
     deleteChainSuccessfully: 'Xóa mạng thành công',
     addProviderSuccessfully: 'Đã thêm một provider thành công',
     addTokenSuccessfully: 'Thêm token thành công',
+    warningNeverRequirePassword: 'Lựa chọn này có thể ảnh hưởng đến bảo mật ví của bạn.',
   },
   browser: {
     searchWithDuckduckgo: 'Tìm trên Duckduckgo',

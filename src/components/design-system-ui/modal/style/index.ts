@@ -7,6 +7,9 @@ export interface ModalStyle {
   footerModalStyle: ViewStyle;
   deleteModalConfirmationStyle: TextStyle;
   deleteModalMessageTextStyle: TextStyle;
+  actionWrapper: ViewStyle;
+  actionContainer: ViewStyle;
+  headerTitle: TextStyle;
 }
 
 export default (theme: ThemeTypes) =>
@@ -28,4 +31,14 @@ export default (theme: ThemeTypes) =>
       ...FontMedium,
       textAlign: 'center',
     },
+    // Action Header
+    actionContainer: {
+      width: '100%',
+      marginBottom: 16,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    actionWrapper: { width: 30 },
+    headerTitle: { color: theme.colorTextLight1 },
   });
