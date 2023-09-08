@@ -9,11 +9,13 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import HistoryItemStyles from './style';
 import { ThemeTypes } from 'styles/themes';
 import { HistoryStatusMap } from 'screens/Home/History/shared';
+import { HideBalanceItem } from 'components/HideBalanceItem';
 
 interface Props {
   item: TransactionHistoryDisplayItem;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  isShowBalance?: boolean;
 }
 
 function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | undefined {
@@ -23,7 +25,7 @@ function getIconColor(status: ExtrinsicStatus, theme: ThemeTypes): string | unde
   return theme[color || ''];
 }
 
-export const HistoryItem = ({ item, onPress, style }: Props) => {
+export const HistoryItem = ({ item, onPress, style, isShowBalance }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const displayData = item.displayData;
   const _style = HistoryItemStyles(theme);
@@ -54,23 +56,29 @@ export const HistoryItem = ({ item, onPress, style }: Props) => {
 
         <View style={_style.rightPart}>
           <View style={{ alignItems: 'flex-end' }}>
-            <Number
-              decimal={item?.amount?.decimals || 0}
-              decimalOpacity={0.45}
-              suffix={item?.amount?.symbol}
-              value={item?.amount?.value || '0'}
-              textStyle={_style.upperText}
-            />
-            <Number
-              decimal={item?.fee?.decimals || 0}
-              decimalOpacity={1}
-              intOpacity={1}
-              suffix={item.fee?.symbol}
-              unitOpacity={1}
-              value={item.fee?.value || '0'}
-              size={theme.fontSizeSM}
-              textStyle={_style.lowerText}
-            />
+            {isShowBalance && (
+              <>
+                <Number
+                  decimal={item?.amount?.decimals || 0}
+                  decimalOpacity={0.45}
+                  suffix={item?.amount?.symbol}
+                  value={item?.amount?.value || '0'}
+                  textStyle={_style.upperText}
+                />
+                <Number
+                  decimal={item?.fee?.decimals || 0}
+                  decimalOpacity={1}
+                  intOpacity={1}
+                  suffix={item.fee?.symbol}
+                  unitOpacity={1}
+                  value={item.fee?.value || '0'}
+                  size={theme.fontSizeSM}
+                  textStyle={_style.lowerText}
+                />
+              </>
+            )}
+
+            {!isShowBalance && <HideBalanceItem />}
           </View>
 
           <View style={_style.arrowWrapper}>

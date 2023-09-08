@@ -17,6 +17,8 @@ import { RootNavigationProps } from 'routes/index';
 import { EmptyList } from 'components/EmptyList';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import BigNumber from 'bignumber.js';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -56,6 +58,7 @@ const StakingBalanceList = () => {
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
   const navigation = useNavigation<RootNavigationProps>();
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
@@ -128,10 +131,11 @@ const StakingBalanceList = () => {
           stakingData={stakingData}
           priceMap={priceMap}
           onPress={handleOnPress}
+          isShowBalance={isShowBalance}
         />
       );
     },
-    [handleOnPress, priceMap],
+    [handleOnPress, isShowBalance, priceMap],
   );
 
   const handlePressStartStaking = useCallback(

@@ -230,7 +230,7 @@ function History({
   const [loading, setLoading] = useState<boolean>(true);
   const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
   const navigation = useNavigation<RootNavigationProps>();
-
+  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -363,10 +363,11 @@ function History({
           item={item}
           key={`${item.transactionId || item.extrinsicHash}-${item.address}-${item.direction}`}
           onPress={onOpenDetail(item)}
+          isShowBalance={isShowBalance}
         />
       );
     },
-    [onOpenDetail, theme.marginXS],
+    [isShowBalance, onOpenDetail, theme.marginXS],
   );
 
   const searchFunc = useCallback((items: TransactionHistoryDisplayItem[], searchText: string) => {
