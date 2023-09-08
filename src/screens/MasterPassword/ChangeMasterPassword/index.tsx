@@ -13,14 +13,12 @@ import { keyringChangeMasterPassword, keyringUnlock } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import ChangeMasterPasswordStyle from './style';
-import { backToHome } from 'utils/navigation';
-import useGoHome from 'hooks/screen/useGoHome';
 import i18n from 'utils/i18n/i18n';
 import AlertBox from 'components/design-system-ui/alert-box';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { createKeychainPassword, resetKeychainPassword } from 'utils/account';
+import { createKeychainPassword } from 'utils/account';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -32,7 +30,6 @@ const ChangeMasterPassword = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
   const theme = useSubWalletTheme().swThemes;
-  const goHome = useGoHome();
   const _style = ChangeMasterPasswordStyle(theme);
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -63,15 +60,11 @@ const ChangeMasterPassword = () => {
   useHandlerHardwareBackPress(isBusy);
 
   const _backToHome = useCallback(() => {
-    backToHome(goHome);
-  }, [goHome]);
-
-  async function handleUpdateKeychain(password: string) {
-    if (isUseBiometric) {
-      await resetKeychainPassword();
-      createKeychainPassword(password);
-    }
-  }
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  }, [navigation]);
 
   const onSubmit = () => {
     if (checkValidateForm(formState.isValidated)) {
@@ -80,28 +73,49 @@ const ChangeMasterPassword = () => {
 
       if (password && oldPassword) {
         setIsBusy(true);
-        keyringChangeMasterPassword({
-          createNew: false,
-          newPassword: password,
-          oldPassword: oldPassword,
-        })
-          .then(res => {
-            if (!res.status) {
-              setErrors(res.errors);
-            } else {
-              handleUpdateKeychain(password);
-              _backToHome();
+        if (isUseBiometric) {
+          (async () => {
+            try {
+              const res = await createKeychainPassword(password);
+              if (!res) {
+                setIsBusy(false);
+                return;
+              }
+              handleUnlock(password, oldPassword);
+            } catch (e) {
+              setIsBusy(false);
             }
-          })
-          .catch(e => {
-            setErrors([e.message]);
-          })
-          .finally(() => {
-            setIsBusy(false);
-          });
+          })();
+        } else {
+          handleUnlock(password, oldPassword);
+        }
       }
     }
   };
+
+  function handleUnlock(password: string, oldPassword: string) {
+    keyringChangeMasterPassword({
+      createNew: false,
+      newPassword: password,
+      oldPassword: oldPassword,
+    })
+      .then(res => {
+        if (!res.status) {
+          setErrors(res.errors);
+          isUseBiometric && createKeychainPassword(password);
+          return;
+        }
+        _backToHome();
+      })
+      .catch(e => {
+        isUseBiometric && createKeychainPassword(password);
+        setErrors([e.message]);
+      })
+      .finally(() => {
+        setIsBusy(false);
+      });
+  }
+
   const { formState, onChangeValue, onUpdateErrors, onSubmitField } = useFormControl(formConfig, {
     onSubmitForm: onSubmit,
   });

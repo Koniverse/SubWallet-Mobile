@@ -174,9 +174,10 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   async function requestUnlockWithBiometric() {
     try {
       const password = await getKeychainPassword();
-      if (password) {
-        onUnlock(password);
+      if (!password) {
+        throw 'Biometry is not available';
       }
+      onUnlock(password);
     } catch (e) {
       console.warn(e);
       if (JSON.stringify(e).indexOf('Biometry is not available') !== -1) {
