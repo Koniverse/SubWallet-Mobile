@@ -1,3 +1,8 @@
+## 1.1.0 (213)
+- Update web-runner version 1.1.10 (#993)
+- Bugs related to Send NFT (#986)
+- Update UI - Update show/hide balance feature (#917)
+
 ## 1.1.0 (212)
 - Use Keychain for biometric auth, new login screen, update reset account (#444, #430, #910)
 
