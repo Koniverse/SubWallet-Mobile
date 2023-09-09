@@ -186,7 +186,7 @@ export const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     if (isReady && isLoading) {
-      setTimeout(() => setLoading(false), 500);
+      setTimeout(() => setLoading(false), 1500);
     }
   }, [isReady, isLoading]);
 

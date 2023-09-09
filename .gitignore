@@ -64,3 +64,5 @@ yarn-error.log
 .metro-health-check*
 .env.development
 .env.production
+# testing
+/coverage

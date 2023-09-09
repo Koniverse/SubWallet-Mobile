@@ -12,7 +12,7 @@ import {
 import { ColorMap } from 'styles/color';
 import { Coins } from 'phosphor-react-native';
 import { EmptyList } from 'components/EmptyList';
-import { ActivityIndicator, AnimatedFlatlist } from 'components/design-system-ui';
+import { ActivityIndicator } from 'components/design-system-ui';
 import Animated, {
   Extrapolate,
   interpolate,
@@ -21,7 +21,7 @@ import Animated, {
   useSharedValue,
   withTiming,
   AnimatedStyleProp,
-  AnimateStyle,
+  AnimatedStyle,
 } from 'react-native-reanimated';
 import { TokenBalanceItemType } from 'types/balance';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -209,7 +209,7 @@ export const TokensLayout = ({
       overflow: 'hidden',
     },
     stickyHeaderInvisibleStyles,
-  ] as StyleProp<AnimateStyle<StyleProp<ViewStyle>>>;
+  ] as StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
   const stickyHeaderFakingGradientStyle = {
     flex: 1,
     marginTop: -(STATUS_BAR_HEIGHT * 2 + 40),
@@ -237,7 +237,7 @@ export const TokensLayout = ({
         </Animated.View>
       )}
 
-      <AnimatedFlatlist
+      <Animated.FlatList
         onScroll={onScrollHandler}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps={'handled'}

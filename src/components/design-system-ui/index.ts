@@ -1,5 +1,4 @@
 export { default as ActivityIndicator } from './activity-indicator';
-export { default as AnimatedFlatlist } from './animated-flatlist';
 export { default as Avatar } from './avatar';
 export { default as Icon } from './icon';
 export { default as Image } from './image';
