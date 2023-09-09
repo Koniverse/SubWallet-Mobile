@@ -1,3 +1,6 @@
+## 1.1.0 (215)
+- Errors when authenticating using biometrics. Show error message when cancel transaction (#1009, #1010)
+
 ## 1.1.0 (214)
 - Change password affect transactions flow (#444)
 ## 1.1.0 (213)
