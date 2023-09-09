@@ -34,8 +34,8 @@ export default function useAppLock(): UseAppLockOptions {
 
   const resetPinCode = useCallback(() => {
     dispatch(updateLockState(false));
-    dispatch(updateUseBiometric(false));
     dispatch(resetBrowserSetting());
+    dispatch(updateUseBiometric(false));
     dispatch(updateAutoLockTime(LockTimeout._15MINUTE));
   }, [dispatch]);
 

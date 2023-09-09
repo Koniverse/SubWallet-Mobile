@@ -26,7 +26,12 @@ import { useToast } from 'react-native-toast-notifications';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
-import { createKeychainPassword, getKeychainPassword, getSupportedBiometryType } from 'utils/account';
+import {
+  createKeychainPassword,
+  getKeychainPassword,
+  getSupportedBiometryType,
+  resetKeychainPassword,
+} from 'utils/account';
 import { updateFaceIdEnable, updateUseBiometric } from 'stores/MobileSettings';
 import { FORCE_HIDDEN_EVENT } from 'components/design-system-ui/modal/ModalBaseV2';
 import MigrateToKeychainPasswordModal from '../MigrateToKeychainPasswordModal';
@@ -132,8 +137,6 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     // Deprecated: Migrate master password for biometric user
     if (!isKeychainEnabled && buildNumber <= BEFORE_KEYCHAIN_BUILD_NUMBER && buildNumber > 1) {
       setModalMigrateVisible(true);
-      dispatch(setBuildNumber(1));
-      mmkvStore.set('isKeychainEnabled', true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -224,16 +227,26 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
             .finally(() => {
               _setLoading(false);
               setModalVisible(false);
-              resetAll && resetPinCode();
+              if (resetAll) {
+                resetPinCode();
+              } else {
+                dispatch(updateUseBiometric(false));
+                resetKeychainPassword();
+              }
             });
         }, 300);
       };
     },
-    [toast, resetPinCode],
+    [toast, resetPinCode, dispatch],
   );
   const onToggleModal = () => setModalVisible(state => !state);
 
   const dismissKeyboard = () => Keyboard.dismiss();
+
+  const neverShowMigrateBiometricModalAgain = () => {
+    dispatch(setBuildNumber(1));
+    mmkvStore.set('isKeychainEnabled', true);
+  };
 
   return (
     <ImageBackground source={Images.backgroundImg} resizeMode={'cover'} style={imageBackgroundStyle}>
@@ -299,6 +312,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           modalVisible={modalMigrateVisible}
           setModalVisible={setModalMigrateVisible}
           isBiometricV1Enabled={faceIdEnabled && !isUseBiometric}
+          onPress={neverShowMigrateBiometricModalAgain}
         />
       )}
     </ImageBackground>

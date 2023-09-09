@@ -227,7 +227,10 @@ export const BrowserTabsManager = ({ route: { params } }: BrowserTabsManagerProp
       if (navigation.canGoBack()) {
         navigation.navigate('Home');
       } else {
-        navigation.replace('Home');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       }
     }
   }, [navigation, isEmptyAccounts]);

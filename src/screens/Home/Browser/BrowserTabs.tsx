@@ -43,7 +43,10 @@ export const BrowserTabs = ({ activeTab, tabs, navigation, onClose, onPressTabIt
     if (navigation.canGoBack()) {
       navigation.navigate('Home', { screen: 'Browser' });
     } else {
-      navigation.replace('Home', { screen: 'Browser' });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home', params: { screen: 'Browser' } }],
+      });
     }
   }, [navigation]);
 

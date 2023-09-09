@@ -12,7 +12,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Keyboard, ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
-import { backToHome } from 'utils/navigation';
 import { readOnlyScan } from 'utils/scanner/attach';
 import { createAccountExternalV2 } from 'messaging/index';
 import i18n from 'utils/i18n/i18n';
@@ -67,8 +66,11 @@ const AttachReadOnly = () => {
   }, [navigation]);
 
   const onComplete = useCallback(() => {
-    backToHome(goHome);
-  }, [goHome]);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  }, [navigation]);
 
   const onCloseScanner = useCallback(() => {
     setScanError(undefined);

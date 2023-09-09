@@ -17,7 +17,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ScrollView, View } from 'react-native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { backToHome } from 'utils/navigation';
 import createStyle from './styles';
 
 const ViewStep = {
@@ -60,7 +59,10 @@ export const ImportSecretPhrase = () => {
       types: keyTypes,
     })
       .then(() => {
-        backToHome(goHome);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       })
       .catch(() => {
         setBusy(false);

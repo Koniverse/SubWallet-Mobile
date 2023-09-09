@@ -6,8 +6,6 @@ import { createAccountSuriV2, createSeedV2 } from 'messaging/index';
 import { useNavigation } from '@react-navigation/native';
 import { CreateAccountProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { backToHome } from 'utils/navigation';
-import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
@@ -32,7 +30,6 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
-  const goHome = useGoHome();
   const accountName = useGetDefaultAccountName();
 
   useHandlerHardwareBackPress(isBusy);
@@ -68,7 +65,10 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
       })
         .then(() => {
           if (!params.isBack) {
-            backToHome(goHome);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Home' }],
+            });
           } else {
             navigation.goBack();
           }
