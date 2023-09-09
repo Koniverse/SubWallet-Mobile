@@ -269,7 +269,10 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
     if (navigation.canGoBack()) {
       navigation.navigate('Home', { screen: 'Browser' });
     } else {
-      navigation.replace('Home', { screen: 'Browser' });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home', params: { screen: 'Browser' } }],
+      });
     }
   };
 

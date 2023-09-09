@@ -9,6 +9,9 @@ export default function useGoHome(
   const navigation = useNavigation<RootNavigationProps>();
 
   return useCallback(() => {
-    navigation.replace('Home', params);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home', params }],
+    });
   }, [navigation, params]);
 }

@@ -8,7 +8,6 @@ import { Keyboard, ScrollView, View } from 'react-native';
 import { createAccountSuriV2, validateMetamaskPrivateKeyV2 } from 'messaging/index';
 import { Textarea } from 'components/Textarea';
 import { EVM_ACCOUNT_TYPE } from 'constants/index';
-import { backToHome } from 'utils/navigation';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import useGoHome from 'hooks/screen/useGoHome';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
@@ -68,7 +67,10 @@ export const ImportPrivateKey = () => {
       types: [EVM_ACCOUNT_TYPE],
     })
       .then(() => {
-        backToHome(goHome);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       })
       .catch((e: Error) => {
         setIsBusy(false);

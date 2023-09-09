@@ -11,14 +11,16 @@ interface Props {
   modalVisible: boolean;
   setModalVisible: (arg: boolean) => void;
   isBiometricV1Enabled: boolean;
+  onPress: () => void;
 }
 
-const MigrateToKeychainPasswordModal = ({ modalVisible, setModalVisible, isBiometricV1Enabled }: Props) => {
+const MigrateToKeychainPasswordModal = ({ modalVisible, setModalVisible, isBiometricV1Enabled, onPress }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = ModalStyle(theme);
 
   const onPressButton = () => {
     setModalVisible(false);
+    !!onPress && onPress();
   };
 
   return (

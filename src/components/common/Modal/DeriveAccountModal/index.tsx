@@ -26,7 +26,6 @@ import { OPEN_UNLOCK_FROM_MODAL } from '../UnlockModal';
 
 type Props = {
   deriveAccModalRef: React.MutableRefObject<ModalRef | undefined>;
-  goHome: () => void;
   navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
@@ -40,7 +39,7 @@ const renderLoaderIcon = (x: React.ReactNode): React.ReactNode => {
 };
 
 const DeriveAccountModal: React.FC<Props> = (props: Props) => {
-  const { deriveAccModalRef, goHome, navigation } = props;
+  const { deriveAccModalRef, navigation } = props;
   const theme = useSubWalletTheme().swThemes;
 
   const { accounts } = useSelector((state: RootState) => state.accountState);
@@ -77,7 +76,10 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
             address: account.address,
           })
             .then(() => {
-              goHome();
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+              });
             })
             .catch((e: Error) => {
               toastError(e.message);
@@ -88,7 +90,7 @@ const DeriveAccountModal: React.FC<Props> = (props: Props) => {
         }, 500);
       };
     },
-    [goHome, toastError],
+    [navigation, toastError],
   );
 
   const { onPress: onPressSubmit } = useUnlockModal(navigation);

@@ -233,6 +233,7 @@ export const AccountDetail = ({
               />
             }
             disabled={!canDerive}
+            style={styles.noPaddingHorizontal}
             contentAlign="left"
             type="secondary"
             loading={deriving}
@@ -241,6 +242,7 @@ export const AccountDetail = ({
           </Button>
           <Button
             disabled={!canExport}
+            style={styles.noPaddingHorizontal}
             icon={
               <BackgroundIcon
                 phosphorIcon={Export}
@@ -267,6 +269,7 @@ export const AccountDetail = ({
               />
             }
             contentAlign="left"
+            style={styles.noPaddingHorizontal}
             type="secondary"
             loading={deleting}
             externalTextStyle={{ color: theme.colorError }}

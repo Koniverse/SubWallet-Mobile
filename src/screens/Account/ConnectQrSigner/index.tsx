@@ -23,7 +23,6 @@ import { Source } from 'react-native-fast-image';
 import { useToast } from 'react-native-toast-notifications';
 import { RootStackParamList } from 'routes/index';
 import { QrAccount } from 'types/qr/attach';
-import { backToHome } from 'utils/navigation';
 import createStyle from './styles';
 import i18n from 'utils/i18n/i18n';
 
@@ -54,8 +53,11 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
   const goHome = useGoHome();
 
   const onComplete = useCallback(() => {
-    backToHome(goHome);
-  }, [goHome]);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  }, [navigation]);
   const onBack = navigation.goBack;
 
   const accountName = useGetDefaultAccountName();

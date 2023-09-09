@@ -17,7 +17,6 @@ import { RootNavigationProps } from 'routes/index';
 import { Warning } from 'components/Warning';
 import { PasswordField } from 'components/Field/Password';
 import i18n from 'utils/i18n/i18n';
-import { backToHome } from 'utils/navigation';
 import { validatePassword } from 'screens/Shared/AccountNamePasswordCreation';
 import useFormControl, { FormControlConfig, FormState } from 'hooks/screen/useFormControl';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
@@ -126,7 +125,10 @@ export const RestoreJson = () => {
         onUpdateErrors('password')([]);
         setAccountsInfo(() => []);
         if (!isMultiple) {
-          backToHome(goHome);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
         }
       })
       .catch(e => {

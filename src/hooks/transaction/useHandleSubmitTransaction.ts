@@ -9,7 +9,7 @@ const useHandleSubmitTransaction = (onDone: (id: string) => void, setIgnoreWarni
     (rs: SWTransactionResponse) => {
       const { errors, id, warnings } = rs;
       if (errors.length || warnings.length) {
-        if (errors[0]?.message !== 'User reject request') {
+        if (errors[0]?.message !== 'Rejected by user') {
           hideAll();
           show(errors[0]?.message || warnings[0]?.message, { type: 'danger' });
         }
