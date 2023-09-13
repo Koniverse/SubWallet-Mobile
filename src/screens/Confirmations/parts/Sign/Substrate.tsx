@@ -16,13 +16,16 @@ import { CheckCircle, IconProps, QrCode, Swatches, XCircle } from 'phosphor-reac
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { DeviceEventEmitter, Platform } from 'react-native';
+import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 
 interface Props {
   account: AccountJson;
   id: string;
   payload: ExtrinsicPayload | string;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const handleConfirm = async (id: string) => await approveSignPasswordV2({ id });
@@ -34,8 +37,7 @@ const handleSignature = async (id: string, { signature }: SigData) => await appr
 const modeCanSignMessage: AccountSignMode[] = [AccountSignMode.QR, AccountSignMode.PASSWORD];
 
 export const SubstrateSignArea = (props: Props) => {
-  const { account, id, payload } = props;
-  const navigation = useNavigation<RootNavigationProps>();
+  const { account, id, payload, navigation } = props;
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
 
   const [loading, setLoading] = useState(false);
@@ -113,6 +115,7 @@ export const SubstrateSignArea = (props: Props) => {
         break;
       default:
         setLoading(true);
+        Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
         onConfirmPassword(onApprovePassword)()?.catch(() => {
           setLoading(false);
         });

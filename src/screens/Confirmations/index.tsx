@@ -36,6 +36,7 @@ import i18n from 'utils/i18n/i18n';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { ConnectWalletConnectConfirmation } from 'screens/Confirmations/variants/ConnectWalletConnectConfirmation';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Portal } from '@gorhom/portal';
 
 const getConfirmationPopupWrapperStyle = (isShowSeparator: boolean): StyleProp<any> => {
   return {
@@ -168,7 +169,7 @@ export const Confirmations = () => {
     }
 
     if (confirmation.item.isInternal) {
-      return <TransactionConfirmation confirmation={confirmation} />;
+      return <TransactionConfirmation confirmation={confirmation} navigation={navigation} />;
     }
 
     switch (confirmation.type) {
@@ -183,6 +184,7 @@ export const Confirmations = () => {
           <EvmSignatureConfirmation
             request={confirmation.item as ConfirmationDefinitions['evmSignatureRequest'][0]}
             type={confirmation.type}
+            navigation={navigation}
           />
         );
       case 'evmSendTransactionRequest':
@@ -190,20 +192,26 @@ export const Confirmations = () => {
           <EvmTransactionConfirmation
             request={confirmation.item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
             type={confirmation.type}
+            navigation={navigation}
           />
         );
       case 'authorizeRequest':
-        return <AuthorizeConfirmation request={confirmation.item as AuthorizeRequest} />;
+        return <AuthorizeConfirmation request={confirmation.item as AuthorizeRequest} navigation={navigation} />;
       case 'metadataRequest':
         return <MetadataConfirmation request={confirmation.item as MetadataRequest} />;
       case 'signingRequest':
-        return <SignConfirmation request={confirmation.item as SigningRequest} />;
+        return <SignConfirmation request={confirmation.item as SigningRequest} navigation={navigation} />;
       case 'connectWCRequest':
-        return <ConnectWalletConnectConfirmation request={confirmation.item as WalletConnectSessionRequest} />;
+        return (
+          <ConnectWalletConnectConfirmation
+            request={confirmation.item as WalletConnectSessionRequest}
+            navigation={navigation}
+          />
+        );
     }
 
     return null;
-  }, [confirmation]);
+  }, [confirmation, navigation]);
 
   useEffect(() => {
     if (numberOfConfirmations) {
@@ -225,23 +233,31 @@ export const Confirmations = () => {
     }
   }, [confirmation, navigation]);
 
+  const renderMainContent = () => (
+    <View
+      style={[
+        { flex: 1, flexDirection: 'column', justifyContent: 'flex-end' },
+        Platform.OS === 'android' && { position: 'absolute', bottom: 0, left: 0, right: 0, top: 0 },
+      ]}>
+      <View style={getConfirmationPopupWrapperStyle(!confirmation || !confirmation.item.isInternal)}>
+        {(!confirmation || !confirmation.item.isInternal) && <View style={subWalletModalSeparator} />}
+        <ConfirmationHeader
+          index={index}
+          numberOfConfirmations={numberOfConfirmations}
+          title={headerTitle}
+          onPressPrev={prevConfirmation}
+          onPressNext={nextConfirmation}
+          isFullHeight={confirmation && confirmation.item.isInternal}
+        />
+        {content}
+        <SafeAreaView edges={['bottom']} />
+      </View>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
-      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <View style={getConfirmationPopupWrapperStyle(!confirmation || !confirmation.item.isInternal)}>
-          {(!confirmation || !confirmation.item.isInternal) && <View style={subWalletModalSeparator} />}
-          <ConfirmationHeader
-            index={index}
-            numberOfConfirmations={numberOfConfirmations}
-            title={headerTitle}
-            onPressPrev={prevConfirmation}
-            onPressNext={nextConfirmation}
-            isFullHeight={confirmation && confirmation.item.isInternal}
-          />
-          {content}
-          <SafeAreaView edges={['bottom']} />
-        </View>
-      </View>
+      {Platform.OS === 'android' ? <Portal>{renderMainContent()}</Portal> : renderMainContent()}
     </KeyboardAvoidingView>
   );
 };

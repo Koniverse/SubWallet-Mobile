@@ -1,7 +1,7 @@
 import { NavigationState } from '@react-navigation/routers';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
 import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { LinkingOptions, NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer, StackActions, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
 import ConnectParitySigner from 'screens/Account/ConnectQrSigner/ConnectParitySigner';
@@ -170,7 +170,11 @@ const AppNavigator = ({ isAppReady }: Props) => {
     let amount = true;
     if (hasConfirmations && currentRoute && amount) {
       if (currentRoute.name !== 'Confirmations' && amount) {
-        if (!['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) && amount) {
+        if (
+          !['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) &&
+          !isLocked &&
+          amount
+        ) {
           Keyboard.dismiss();
           navigationRef.current?.navigate('Confirmations');
         }
@@ -180,7 +184,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
     return () => {
       amount = false;
     };
-  }, [hasConfirmations, navigationRef, currentRoute]);
+  }, [hasConfirmations, navigationRef, currentRoute, isLocked]);
 
   useEffect(() => {
     let amount = true;
@@ -197,10 +201,14 @@ const AppNavigator = ({ isAppReady }: Props) => {
   useEffect(() => {
     if (isLocked && !!accounts.length && isNavigationReady) {
       appModalContext.hideConfirmModal();
-      setTimeout(() => navigationRef.current?.navigate('Login'), 300);
+      if (currentRoute && currentRoute.name === 'Confirmations') {
+        setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
+      } else {
+        setTimeout(() => navigationRef.current?.navigate('Login'), 300);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLocked, isNavigationReady, accounts]);
+  }, [isLocked, isNavigationReady, accounts, currentRoute]);
 
   useEffect(() => {
     if (isEmptyAccounts) {
@@ -223,6 +231,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       onStateChange={onUpdateRoute}
       onReady={onNavigationReady}>
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} translucent={true} backgroundColor={'transparent'} />
+      <PortalHost name="ConfirmationModalHost" />
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={onError}>
         <Stack.Navigator
           screenOptions={{

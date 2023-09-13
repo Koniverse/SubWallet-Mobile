@@ -14,17 +14,20 @@ import { AccountSignMode } from 'types/signer';
 import { isEvmMessage } from 'utils/confirmation/confirmation';
 import i18n from 'utils/i18n/i18n';
 import { getButtonIcon } from 'utils/button';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import { Minimizer } from '../../../../NativeModules';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { DeviceEventEmitter, Platform } from 'react-native';
+import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 
 interface Props {
   id: string;
   type: EvmSignatureSupportType;
   payload: ConfirmationDefinitions[EvmSignatureSupportType][0];
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const handleConfirm = async (type: EvmSignatureSupportType, id: string, payload: string) => {
@@ -51,7 +54,7 @@ const handleSignature = async (type: EvmSignatureSupportType, id: string, signat
 };
 
 export const EvmSignArea = (props: Props) => {
-  const { id, payload, type } = props;
+  const { id, payload, type, navigation } = props;
   const {
     payload: { account, canSign, hashPayload },
   } = payload;
@@ -59,7 +62,6 @@ export const EvmSignArea = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isShowQr, setIsShowQr] = useState(false);
-  const navigation = useNavigation<RootNavigationProps>();
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
   const approveIcon = useMemo((): React.ElementType<IconProps> => {
@@ -131,6 +133,7 @@ export const EvmSignArea = (props: Props) => {
         break;
       default:
         setLoading(true);
+        Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
         onConfirmPassword(onApprovePassword)()?.catch(() => {
           setLoading(false);
         });

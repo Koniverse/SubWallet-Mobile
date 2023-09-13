@@ -1,5 +1,4 @@
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AccountAuthType, AccountJson, AuthorizeRequest } from '@subwallet/extension-base/background/types';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
@@ -12,7 +11,7 @@ import useUnlockModal from 'hooks/modal/useUnlockModal';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { PlusCircle, ShieldSlash, XCircle } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
 import { approveAuthRequestV2, cancelAuthRequestV2, rejectAuthRequestV2 } from 'messaging/index';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from 'routes/index';
@@ -22,9 +21,11 @@ import { isAccountAll } from 'utils/accountAll';
 import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
+import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 
 interface Props {
   request: AuthorizeRequest;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 async function handleConfirm({ id }: AuthorizeRequest, selectedAccounts: string[]) {
@@ -61,9 +62,8 @@ export const filterAuthorizeAccounts = (accounts: AccountJson[], accountAuthType
 };
 
 const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
-  const { request } = props;
+  const { request, navigation } = props;
   const { accountAuthType, allowedAccounts } = request.request;
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useSubWalletTheme().swThemes;
   const { accounts } = useSelector((state: RootState) => state.accountState);
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -231,7 +231,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
             </Button>
             <Button
               block={true}
-              onPress={onPressCreateOne(onAddAccount)}
+              onPress={() => {
+                Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
+                onPressCreateOne(onAddAccount);
+              }}
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
               Create one
             </Button>
