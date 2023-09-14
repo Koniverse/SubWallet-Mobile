@@ -45,6 +45,7 @@ import {
   CrowdloanJson,
   CurrentAccountInfo,
   KeyringState,
+  LanguageType,
   NftCollection,
   NftJson,
   NftTransactionRequest,
@@ -559,6 +560,10 @@ export async function saveBrowserConfirmationType(
 
 export async function saveTheme(theme: ThemeNames, callback: (data: UiSettings) => void): Promise<boolean> {
   return sendMessage('pri(settings.saveTheme)', theme, callback);
+}
+
+export async function saveLanguage(lang: LanguageType): Promise<boolean> {
+  return sendMessage('pri(settings.saveLanguage)', { language: lang });
 }
 
 export async function subscribeSettings(

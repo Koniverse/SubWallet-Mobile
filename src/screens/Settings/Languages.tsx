@@ -4,13 +4,14 @@ import getLanguageOptions, { LanguageOption } from 'utils/getLanguageOptions';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateLanguage } from 'stores/MobileSettings';
+import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Button, SelectItem } from 'components/design-system-ui';
 import { FlatListScreen } from 'components/FlatListScreen';
 import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
+import { saveLanguage } from 'messaging/index';
+import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -23,12 +24,11 @@ const searchFunc = (items: LanguageOption[], searchString: string) => {
 };
 
 export const Languages = () => {
-  const language = useSelector((state: RootState) => state.mobileSettings.language);
+  const language = useSelector((state: RootState) => state.settings.language);
   const navigation = useNavigation<RootNavigationProps>();
   const supportedLanguages = i18n.getAvailableLanguages();
   const languageOptions = getLanguageOptions().filter(lang => supportedLanguages.includes(lang.value));
-  const dispatch = useDispatch();
-  const [selectedLang, setSelectedLang] = useState<string>(language);
+  const [selectedLang, setSelectedLang] = useState<LanguageType>(language);
 
   const onPressDone = () => {
     if (language === selectedLang) {
@@ -39,7 +39,7 @@ export const Languages = () => {
         index: 1,
         routes: [{ name: 'Home' }, { name: 'GeneralSettings' }],
       });
-      dispatch(updateLanguage(selectedLang));
+      saveLanguage(selectedLang);
     }
   };
 

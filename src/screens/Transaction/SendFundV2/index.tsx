@@ -472,11 +472,11 @@ export const SendFund = ({
         { chain, destChain, from }: TransactionFormValues,
       ): Promise<ValidateResult> => {
         if (!_recipientAddress) {
-          return Promise.resolve('Recipient address is required');
+          return Promise.resolve(i18n.errorMessage.recipientAddressIsRequired);
         }
 
         if (!isAddress(_recipientAddress)) {
-          return Promise.resolve('Invalid Recipient address');
+          return Promise.resolve(i18n.errorMessage.invalidRecipientAddress);
         }
 
         if (!from || !chain || !destChain) {
@@ -489,7 +489,7 @@ export const SendFund = ({
 
         if (isOnChain) {
           if (isSameAddress(from, _recipientAddress)) {
-            return Promise.resolve('The recipient address can not be the same as the sender address');
+            return Promise.resolve(i18n.errorMessage.sameAddressError);
           }
 
           const isNotSameAddressType =
@@ -497,14 +497,14 @@ export const SendFund = ({
             (!isEthereumAddress(from) && !!_recipientAddress && isEthereumAddress(_recipientAddress));
 
           if (isNotSameAddressType) {
-            return Promise.resolve('The recipient address must be same type as the current account address.');
+            return Promise.resolve(i18n.errorMessage.notSameAddressTypeError);
           }
         } else {
           const isDestChainEvmCompatible = _isChainEvmCompatible(chainInfoMap[destChain]);
 
           if (isDestChainEvmCompatible !== isEthereumAddress(_recipientAddress)) {
             return Promise.resolve(
-              `The recipient address must be ${isDestChainEvmCompatible ? 'EVM' : 'substrate'} type`,
+              i18n.errorMessage.recipientAddressMustBeType(isDestChainEvmCompatible ? 'EVM' : 'substrate'),
             );
           }
         }
@@ -880,7 +880,7 @@ export const SendFund = ({
 
           <View style={stylesheet.subheader}>
             <SubHeader
-              title={viewStep === 1 ? title : 'Amount'}
+              title={viewStep === 1 ? title : i18n.common.amount}
               onPressBack={onSubheaderPressBack}
               disabled={loading}
               titleTextAlign={'left'}
@@ -1025,7 +1025,14 @@ export const SendFund = ({
                 <>
                   <View style={stylesheet.footerBalanceWrapper}>
                     <FreeBalanceDisplay
-                      label={viewStep === 2 ? 'Balance:' : undefined}
+                      label={
+                        viewStep === 2
+                          ? `${
+                              i18n.customization.balance[0].toUpperCase() +
+                              i18n.customization.balance.slice(1).toLowerCase()
+                            }:`
+                          : undefined
+                      }
                       tokenSlug={assetValue}
                       nativeTokenBalance={nativeTokenBalance}
                       nativeTokenSlug={nativeTokenSlug}

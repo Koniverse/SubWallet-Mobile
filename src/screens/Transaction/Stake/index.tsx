@@ -197,13 +197,13 @@ export const Stake = ({
       const val = new BigN(value);
       if (currentStakingType === StakingType.POOLED) {
         if (val.lte(0)) {
-          onUpdateErrors('value')(['Value must be greater than 0']);
+          onUpdateErrors('value')([i18n.errorMessage.unbondMustBeGreaterThanZero()]);
           return;
         }
       } else {
         if (!nominatorMetadata?.isBondedBefore || !isRelayChain) {
           if (val.lte(0)) {
-            onUpdateErrors('value')(['Value must be greater than 0']);
+            onUpdateErrors('value')([i18n.errorMessage.unbondMustBeGreaterThanZero()]);
             return;
           }
         }
@@ -211,7 +211,7 @@ export const Stake = ({
 
       if (val.gt(nativeTokenBalance.value)) {
         const maxString = new BigN(nativeTokenBalance.value).div(BN_TEN.pow(decimals)).toFixed(6);
-        onUpdateErrors('value')([`Value must be equal or less than ${maxString}`]);
+        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqualOrLessThan(maxString)]);
         return;
       }
 

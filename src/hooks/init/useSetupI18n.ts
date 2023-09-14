@@ -9,7 +9,7 @@ const setupI18n = (userLang: string) => {
 };
 
 export default function useSetupI18n(): { language: string; isI18nReady: boolean } {
-  const language = useSelector((state: RootState) => state.mobileSettings.language);
+  const language = useSelector((state: RootState) => state.settings.language);
   const [isI18nReady, setIsI18nReady] = useState(false);
 
   useEffect(() => {
