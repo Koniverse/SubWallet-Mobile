@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { CaretLeft } from 'phosphor-react-native';
@@ -9,18 +9,21 @@ import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { getAccountType } from 'utils/index';
-import { PREDEFINED_TRANSAK_TOKEN } from '../../../predefined/transak';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { ThemeTypes } from 'styles/themes';
 import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
+import { MAP_PREDEFINED_BUY_TOKEN } from 'constants/buy';
+import { isAccountAll } from 'utils/accountAll';
+import { BuyTokenInfo } from 'types/buy';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
   groupSymbol: string;
   tokenGroupSlug: string;
+  tokenGroupMap: Record<string, string[]>;
   onClickBack: () => void;
   onOpenSendFund?: () => void;
   onOpenReceive?: () => void;
@@ -33,40 +36,57 @@ export const TokenGroupsDetailUpperBlock = ({
   balanceValue,
   groupSymbol,
   tokenGroupSlug,
+  tokenGroupMap,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
-  const isAllAccount = useSelector((state: RootState) => state.accountState.isAllAccount);
+
   const _style = createStyleSheet(theme);
 
-  const isSupportBuyTokens = useMemo(() => {
-    if (Platform.OS === 'ios') {
-      return false;
-    }
-    const transakInfoItems = Object.values(PREDEFINED_TRANSAK_TOKEN);
+  const buyInfos = useMemo(() => {
+    const groupSlug = tokenGroupSlug || '';
+    const slugsMap = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
+    const result: BuyTokenInfo[] = [];
 
-    for (const infoItem of transakInfoItems) {
-      if (infoItem.symbol === groupSymbol) {
-        const supportType = infoItem.support;
+    for (const [slug, buyInfo] of Object.entries(MAP_PREDEFINED_BUY_TOKEN)) {
+      if (slugsMap.includes(slug)) {
+        const supportType = buyInfo.support;
 
-        if (isAllAccount) {
-          for (const account of accounts) {
-            if (supportType === getAccountType(account.address)) {
-              return true;
-            }
+        if (isAccountAll(currentAccount?.address || '')) {
+          const support = accounts.some(account => supportType === getAccountType(account.address));
+
+          if (support) {
+            result.push(buyInfo);
           }
         } else {
           if (currentAccount?.address && supportType === getAccountType(currentAccount?.address)) {
-            return true;
+            result.push(buyInfo);
           }
         }
       }
     }
 
-    return false;
-  }, [accounts, currentAccount?.address, isAllAccount, groupSymbol]);
+    return result;
+  }, [accounts, currentAccount?.address, tokenGroupMap, tokenGroupSlug]);
+
+  const onOpenBuyTokens = useCallback(() => {
+    let symbol = '';
+
+    if (buyInfos.length) {
+      if (buyInfos.length === 1) {
+        symbol = buyInfos[0].slug;
+      } else {
+        symbol = buyInfos[0].symbol;
+      }
+    }
+
+    navigation.navigate('Drawer', {
+      screen: 'BuyToken',
+      params: { symbol },
+    });
+  }, [buyInfos, navigation]);
 
   return (
     <View style={_style.containerStyle} pointerEvents="box-none">
@@ -97,18 +117,12 @@ export const TokenGroupsDetailUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
-        {isSupportBuyTokens && (
-          <ActionButton
-            icon={ButtonIcon.Buy}
-            onPress={() =>
-              navigation.navigate('Drawer', {
-                screen: 'BuyToken',
-                params: { slug: tokenGroupSlug, symbol: groupSymbol },
-              })
-            }
-            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
-          />
-        )}
+        <ActionButton
+          icon={ButtonIcon.Buy}
+          onPress={onOpenBuyTokens}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+          disabled={!buyInfos.length}
+        />
       </View>
     </View>
   );

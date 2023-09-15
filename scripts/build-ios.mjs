@@ -23,7 +23,7 @@ async function runCleanIOS() {
 }
 
 async function runBuildIOS() {
-  return execSync('xcodebuild -workspace ./SubWalletMobile.xcworkspace -scheme SubWalletMobile -sdk iphoneos -configuration Release -quiet -archivePath $PWD/dist/SubWallet.xcarchive clean archive', 'Build Archive');
+  return execSync('xcodebuild -workspace ./SubWalletMobile.xcworkspace -scheme SubWalletMobile-Production -sdk iphoneos -configuration Release -quiet -archivePath $PWD/dist/SubWallet.xcarchive clean archive', 'Build Archive');
 }
 
 async function runExportIOS() {

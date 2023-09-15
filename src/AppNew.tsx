@@ -52,7 +52,6 @@ const gestureRootStyle: StyleProp<any> = {
   zIndex: 9999,
 };
 
-// AutoLockState.isPreventAutoLock = false;
 const autoLockParams: {
   hasMasterPassword: boolean;
   isUseBiometric: boolean;
@@ -68,7 +67,7 @@ const autoLockParams: {
   isPreventLock: false,
   isMasterPasswordLocked: false,
 };
-// let timeout: NodeJS.Timeout | undefined;
+
 let lockWhenActive = false;
 AppState.addEventListener('change', (state: string) => {
   const { isUseBiometric, timeAutoLock, lock, isMasterPasswordLocked } = autoLockParams;
@@ -76,14 +75,14 @@ AppState.addEventListener('change', (state: string) => {
   if (timeAutoLock === undefined) {
     return;
   }
+  if (AutoLockState.isPreventAutoLock) {
+    return;
+  }
 
   if (state === 'background') {
     if (timeAutoLock === LockTimeout.ALWAYS) {
       // Lock master password incase always require
       keyringLock().catch((e: Error) => console.log(e));
-    }
-    if (AutoLockState.isPreventAutoLock) {
-      return;
     }
     if (isUseBiometric) {
       lockWhenActive = true;

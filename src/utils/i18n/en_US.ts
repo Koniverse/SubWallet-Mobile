@@ -397,6 +397,7 @@ export const en = {
     reload: 'Reload',
     unlockWithBiometric: 'Unlock with your biometric',
     enterMasterPassword: 'Enter master password',
+    agree: 'Agree',
   },
   inputLabel: {
     selectAcc: 'Select account',

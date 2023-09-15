@@ -11,6 +11,7 @@ export interface TextProps {
   size?: TextSizeProps;
   style?: StyleProp<TextStyle>;
   children?: React.ReactNode;
+  onPress?: () => void;
 }
 
 const Text: React.FC<TextProps> = ({ ellipsis, monospace, size = 'default', style, children, ...restProps }) => {

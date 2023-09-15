@@ -104,15 +104,6 @@ export const CrowdloansScreen = () => {
         filterFunction={getListByFilterOpt}
         isShowMainHeader
         placeholder={i18n.placeholder.searchProject}
-        // rightIconOption={{ icon: FunnelSimple, onPress: () => setModalVisible(true) }}
-        // refreshControl={
-        //   <RefreshControl
-        //     style={{ backgroundColor: ColorMap.dark1 }}
-        //     tintColor={ColorMap.light}
-        //     refreshing={isRefresh}
-        //     onRefresh={() => refresh(restartSubscriptionServices(['crowdloan']))}
-        //   />
-        // }
       />
     </>
   );

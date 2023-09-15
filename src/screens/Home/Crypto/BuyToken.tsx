@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
 import { ShoppingCartSimple } from 'phosphor-react-native';
@@ -14,22 +14,26 @@ import i18n from 'utils/i18n/i18n';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { TokenSelectField } from 'components/Field/TokenSelect';
-import { PREDEFINED_TRANSAK_TOKEN_BY_SLUG } from '../../../predefined/transak';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { BackHandler, Linking, StyleSheet, View } from 'react-native';
 import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { BuyTokenProps } from 'routes/wrapper';
+import { MAP_PREDEFINED_BUY_TOKEN } from 'constants/buy';
+import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
+import { SupportService } from 'types/buy';
 
+const submitButtonIcon = (iconColor: string) => (
+  <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />
+);
 export const BuyToken = ({
   route: {
-    params: { slug: tokenGroupSlug, symbol: groupSymbol },
+    params: { symbol: groupSymbol },
   },
 }: BuyTokenProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
-  const { isAllAccount } = useSelector((state: RootState) => state.accountState);
   const {
     openSelectBuyAccount,
     openSelectBuyToken,
@@ -43,9 +47,19 @@ export const BuyToken = ({
     onBuyToken,
     onPressItem,
     selectedService,
-    isOpenInAppBrowser,
-    serviceUrl,
-  } = useBuyToken(tokenGroupSlug, groupSymbol);
+    serviceItems,
+    disclaimerData,
+  } = useBuyToken(groupSymbol);
+  const [disclaimerAgree, setDisclaimerAgree] = useState<Record<SupportService, boolean>>({
+    transak: false,
+    banxa: false,
+    onramper: false,
+    moonpay: false,
+    coinbase: false,
+  });
+  const [isVisible, setVisible] = useState(false);
+  const { isAllAccount } = useSelector((state: RootState) => state.accountState);
+  const { contactUrl, name: serviceName, policyUrl, termUrl, url } = disclaimerData;
 
   useEffect(() => {
     const onBackPress = () => {
@@ -59,9 +73,30 @@ export const BuyToken = ({
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
   const symbol = useMemo(() => {
-    return selectedBuyToken ? PREDEFINED_TRANSAK_TOKEN_BY_SLUG[selectedBuyToken].symbol : '';
+    return selectedBuyToken ? MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken].symbol : '';
   }, [selectedBuyToken]);
 
+  const onSubmit = () => {
+    if (selectedService && disclaimerAgree[selectedService]) {
+      onBuyToken();
+      return;
+    }
+    setVisible(true);
+  };
+  const onConfirm = useCallback(
+    (isConfirmed: boolean) => () => {
+      if (isConfirmed && selectedService) {
+        onBuyToken();
+        setDisclaimerAgree(oldState => ({ ...oldState, [selectedService]: true }));
+      }
+      setVisible(false);
+    },
+    [onBuyToken, selectedService],
+  );
+  const openUrl = useCallback(() => Linking.openURL(url), [url]);
+  const opentermUrl = useCallback(() => Linking.openURL(termUrl), [termUrl]);
+  const openpolicyUrl = useCallback(() => Linking.openURL(policyUrl), [policyUrl]);
+  const opencontactUrl = useCallback(() => Linking.openURL(contactUrl), [contactUrl]);
   return (
     <ContainerWithSubHeader
       title={i18n.header.buyToken}
@@ -90,21 +125,8 @@ export const BuyToken = ({
           />
           <View style={styles.tokenAndServiceWrapper}>
             <View style={{ flex: 1 }}>
-              <ServiceModal
-                disabled={!selectedBuyAccount || !selectedBuyToken}
-                onPressItem={onPressItem}
-                selectedService={selectedService}
-                isOpenInAppBrowser={isOpenInAppBrowser}
-                serviceRef={serviceBuyRef}
-                token={selectedBuyToken}
-                address={selectedBuyAccount}
-                onBuyToken={onBuyToken}
-              />
-            </View>
-
-            <View style={{ flex: 1 }}>
               <TokenSelector
-                disabled={!selectedBuyAccount || !!tokenGroupSlug}
+                disabled={!selectedBuyAccount}
                 items={buyTokenSelectorItems}
                 selectedValueMap={selectedBuyToken ? { [selectedBuyToken]: true } : {}}
                 onSelectItem={openSelectBuyToken}
@@ -112,16 +134,54 @@ export const BuyToken = ({
                 renderSelected={() => <TokenSelectField logoKey={symbol} value={symbol} showIcon />}
               />
             </View>
+            <View style={{ flex: 1 }}>
+              <ServiceModal
+                items={serviceItems}
+                disabled={!selectedBuyAccount || !selectedBuyToken}
+                serviceRef={serviceBuyRef}
+                onPressItem={onPressItem}
+                selectedService={selectedService}
+              />
+            </View>
           </View>
           <Typography.Text style={styles.buyTokenText}>{i18n.message.buyMessage}</Typography.Text>
         </View>
         <Button
-          disabled={!serviceUrl || !selectedBuyAccount || !selectedBuyToken}
+          disabled={!selectedBuyAccount || !selectedBuyToken || !selectedService}
           style={{ ...MarginBottomForSubmitButton, marginHorizontal: theme.padding }}
-          onPress={() => onBuyToken()}
-          icon={iconColor => <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />}>
+          onPress={onSubmit}
+          icon={submitButtonIcon}>
           {i18n.buttonTitles.buyNow}
         </Button>
+        <DisclaimerModal
+          modalVisible={isVisible}
+          setVisible={setVisible}
+          onConfirm={onConfirm}
+          content={
+            <Typography.Text style={styles.textAlignBoth}>
+              You are now leaving SubWallet for{' '}
+              <Typography.Text style={styles.link} onPress={openUrl}>
+                {serviceName}
+              </Typography.Text>
+              . Services related to card payments are provided by {serviceName}, a separate third-party platform. By
+              proceeding and procuring services from {serviceName}, you acknowledge that you have read and agreed to{' '}
+              {serviceName}'s{' '}
+              <Typography.Text style={styles.link} onPress={opentermUrl}>
+                Term of service
+              </Typography.Text>{' '}
+              and{' '}
+              <Typography.Text style={styles.link} onPress={openpolicyUrl}>
+                Privacy Pollicy
+              </Typography.Text>{' '}
+              . For any question related to {serviceName}'s services, please visit {serviceName}
+              's{' '}
+              <Typography.Text style={styles.link} onPress={opencontactUrl}>
+                Support site
+              </Typography.Text>{' '}
+              .
+            </Typography.Text>
+          }
+        />
       </>
     </ContainerWithSubHeader>
   );
@@ -156,5 +216,7 @@ function createStyle(theme: ThemeTypes) {
       gap: theme.sizeSM,
       marginBottom: theme.marginSM,
     },
+    link: { color: theme.colorLink },
+    textAlignBoth: { textAlign: 'justify' },
   });
 }
