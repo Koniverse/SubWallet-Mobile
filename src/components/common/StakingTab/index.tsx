@@ -14,9 +14,10 @@ interface Props {
   selectedType: StakingType;
   onSelectType: (type: StakingType) => void;
   from: string;
+  disabled?: boolean;
 }
 
-export const StakingTab = ({ selectedType, onSelectType, from }: Props) => {
+export const StakingTab = ({ selectedType, onSelectType, from, disabled }: Props) => {
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingTabStyle(theme);
@@ -28,8 +29,8 @@ export const StakingTab = ({ selectedType, onSelectType, from }: Props) => {
   };
 
   const isDisabled = useMemo(
-    () => isEthereumAddress(currentAccount?.address) && isEthereumAddress(from),
-    [currentAccount?.address, from],
+    () => (isEthereumAddress(currentAccount?.address) && isEthereumAddress(from)) || disabled,
+    [currentAccount?.address, disabled, from],
   );
 
   return (
