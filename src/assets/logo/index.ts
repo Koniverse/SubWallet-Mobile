@@ -4,8 +4,10 @@ export const ImageLogosMap = {
   keystone: require('./202.keystone.png'),
   subwallet: require('./00.subwallet.png'),
   __qr_code__: require('./203.__qr_code__.png'),
-  transak: require('./204.transak.png'),
-  moonpay: require('./205.moonpay.png'),
-  onramper: require('./206.onramper.png'),
+  transak: require('./transak.png'),
+  moonpay: require('./moonpay.png'),
+  onramper: require('./onramper.png'),
   default: require('./default.png'),
+  banxa: require('./banxa.png'),
+  coinbase: require('./coinbase.png'),
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, View, TouchableOpacity, Platform } from 'react-native';
+import { StyleProp, View, TouchableOpacity } from 'react-native';
 import ActionButton from 'components/ActionButton';
 import i18n from 'utils/i18n/i18n';
 import { Eye, EyeSlash } from 'phosphor-react-native';
@@ -145,14 +145,12 @@ export const TokenGroupsUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
-        {Platform.OS !== 'ios' && (
-          <ActionButton
-            label={i18n.cryptoScreen.buy}
-            icon={ButtonIcon.Buy}
-            onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}
-            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
-          />
-        )}
+        <ActionButton
+          label={i18n.cryptoScreen.buy}
+          icon={ButtonIcon.Buy}
+          onPress={() => navigation.navigate('Drawer', { screen: 'BuyToken', params: {} })}
+          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+        />
       </View>
     </View>
   );

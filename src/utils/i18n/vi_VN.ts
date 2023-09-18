@@ -396,6 +396,7 @@ export const vi = {
     reload: 'Tải lại',
     unlockWithBiometric: 'Mở khoá bằng sinh trắc học',
     enterMasterPassword: 'Nhập master password',
+    agree: 'Agree',
   },
   inputLabel: {
     selectAcc: 'Chọn tài khoản',

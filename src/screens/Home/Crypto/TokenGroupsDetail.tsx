@@ -163,9 +163,10 @@ export const TokenGroupsDetail = ({
         onClickBack={onClickBack}
         groupSymbol={groupSymbol}
         tokenGroupSlug={tokenGroupSlug}
+        tokenGroupMap={tokenGroupMap}
       />
     );
-  }, [onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug]);
+  }, [onOpenReceive, _onOpenSendFund, tokenBalanceValue, onClickBack, groupSymbol, tokenGroupSlug, tokenGroupMap]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<TokenBalanceItemType>) => (

@@ -22,13 +22,11 @@ const accountNameTextStyle: StyleProp<any> = {
   color: 'rgba(255, 255, 255, 0.85)',
 };
 
-const getPlaceholderStyle = (): StyleProp<any> => {
-  return {
-    fontSize: 14,
-    lineHeight: 22,
-    ...FontSemiBold,
-    color: '#FFF',
-  };
+const getPlaceholderStyle: StyleProp<any> = {
+  fontSize: 14,
+  lineHeight: 22,
+  ...FontSemiBold,
+  color: '#FFF',
 };
 
 const blockContentStyle: StyleProp<any> = {
@@ -57,7 +55,7 @@ export const ServiceSelectField = ({
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {!!value && <Image source={source} style={{ width: 24, height: 24, marginRight: 8 }} />}
           {!!value && <Text style={accountNameTextStyle}>{serviceName}</Text>}
-          {!value && <Text style={getPlaceholderStyle()}>{i18n.placeholder.selectService}</Text>}
+          {!value && <Text style={getPlaceholderStyle}>{i18n.placeholder.selectService}</Text>}
         </View>
 
         {!!showIcon && <CaretDown size={20} color={ColorMap.disabled} weight={'bold'} />}

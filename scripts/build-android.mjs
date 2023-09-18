@@ -22,8 +22,12 @@ async function runCleanAndroid() {
   return execSync('./gradlew clean', 'Clean build');
 }
 
+// async function setENV() {
+//   return execSync('export ENVFILE=.env.production', 'Set ENV');
+// }
+
 async function runBuildAndroid() {
-  return execSync('./gradlew assembleRelease', 'Build APK');
+  return execSync('export ENVFILE=.env.production && ./gradlew assembleRelease', 'Build APK');
 }
 
 async function runUploadAndroid() {
@@ -33,7 +37,8 @@ async function runUploadAndroid() {
 }
 
 // await notifyStart();
-await runCleanAndroid()
+await runCleanAndroid();
+// await setENV();
 await runBuildAndroid();
 await runUploadAndroid();
 // await notifyFinish();

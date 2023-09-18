@@ -392,6 +392,7 @@ export const zh = {
     reload: '重新加载',
     unlockWithBiometric: '生物识别解锁',
     enterMasterPassword: '输入主密码',
+    agree: 'Agree',
   },
   inputLabel: {
     selectAcc: '选择账户',
