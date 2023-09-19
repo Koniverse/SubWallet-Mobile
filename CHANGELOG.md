@@ -1,3 +1,10 @@
+## 1.1.0 (216)
+- Update web-runner and chain list (V1.1.11) (#1012)
+- Still show popup turn on network in case change Pool to Nominate (#975)
+- Support fiat on-ramp with Coinbase Pay (#1005)
+- Support fiat on-ramp with Banxa on mobile app (#950)
+- Add I18n config for background (#1003)
+
 ## 1.1.0 (215)
 - Errors when authenticating using biometrics. Show error message when cancel transaction (#1009, #1010)
 
