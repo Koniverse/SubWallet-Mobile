@@ -228,7 +228,7 @@ function History({
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
+  const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const accountMap = useMemo(() => {
@@ -400,6 +400,7 @@ function History({
 
   const groupBy = useCallback(
     (item: TransactionHistoryDisplayItem) => {
+      console.log('language', language);
       return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + formatHistoryDate(item.time, language, 'list');
     },
     [language],

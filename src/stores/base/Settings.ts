@@ -40,6 +40,7 @@ const settingsSlice = createSlice({
       return {
         ...state,
         // todo: will save language, theme, isShowZeroBalance in background
+        language: payload.language,
         browserConfirmationType: payload.browserConfirmationType,
         isShowBalance: payload.isShowBalance,
         accountAllLogo: payload.accountAllLogo,
@@ -116,6 +117,12 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { updateAppSettings, updateAuthUrls, updateUiSettings, updateToggleBalance, updateIsDeepLinkConnect } =
-  settingsSlice.actions;
+export const {
+  updateAppSettings,
+  updateAuthUrls,
+  updateUiSettings,
+  updateToggleBalance,
+  updateIsDeepLinkConnect,
+  updateLanguage,
+} = settingsSlice.actions;
 export default settingsSlice.reducer;

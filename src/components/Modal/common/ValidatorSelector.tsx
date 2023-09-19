@@ -277,6 +277,7 @@ export const ValidatorSelector = forwardRef(
                 detailItem={detailItem}
                 networkPrefix={networkPrefix}
                 setVisible={setDetailModalVisible}
+                chain={chain}
               />
             )}
 

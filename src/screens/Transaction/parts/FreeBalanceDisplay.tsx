@@ -4,6 +4,7 @@ import { ActivityIndicator, Number, Typography } from 'components/design-system-
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
+import i18n from 'utils/i18n/i18n';
 
 interface Props {
   error: string | null;
@@ -32,7 +33,7 @@ export const FreeBalanceDisplay = ({
     <View style={[{ flexDirection: 'row', marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }, style]}>
       {!error && (
         <Text style={{ fontSize: 14, lineHeight: 22, color: theme.colorTextTertiary, ...FontMedium, paddingRight: 4 }}>
-          {label || 'Sender available balance:'}
+          {label || `${i18n.sendToken.senderAvailableBalance}:`}
         </Text>
       )}
       {isLoading && <ActivityIndicator size={14} indicatorColor={theme.colorTextTertiary} />}

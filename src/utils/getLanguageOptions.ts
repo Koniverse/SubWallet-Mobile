@@ -23,6 +23,14 @@ export default function getLanguageOptions(): LanguageOption[] {
       value: 'fr',
     },
     {
+      text: 'Japanese',
+      value: 'ja',
+    },
+    {
+      text: 'Russian',
+      value: 'ru',
+    },
+    {
       text: 'Türkce',
       value: 'tr',
     },
