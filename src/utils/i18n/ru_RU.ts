@@ -773,7 +773,7 @@ export const ru = {
     connectedNetworks: 'Подключенные сети',
   },
   cryptoScreen: {
-    receive: 'Получить',
+    receive: 'Адрес',
     send: 'Перевести',
     swap: 'Cвоп',
     buy: 'Купить',

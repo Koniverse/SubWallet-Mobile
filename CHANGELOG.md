@@ -1,3 +1,6 @@
+## 1.1.0 (217)
+- Update Russian language
+
 ## 1.1.0 (216)
 - Update web-runner and chain list (V1.1.11) (#1012)
 - Still show popup turn on network in case change Pool to Nominate (#975)
