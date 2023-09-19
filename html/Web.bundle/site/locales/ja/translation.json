@@ -729,7 +729,7 @@
   "Unsupported Method": "サポートされていない方法",
   "Network is disconnected": "ネットワークが切断されている",
   "Undefined error. Please contact SubWallet support": "未定義エラーです。SubWallet サポートまでご連絡ください。",
-  "Rejected by user": "ユーザーによる拒否された",
+  "Rejected by user": "",
   "Insufficient balance": "残高不足",
   "Another transaction is in queue. Please try again later": "別のトランザクションがキューに入っています。後で再試行してください",
   "You can unstake from a collator once": "コレーターから一度アンステークできます",
