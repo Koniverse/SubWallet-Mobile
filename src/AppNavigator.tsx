@@ -152,6 +152,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
         .length,
     [accounts],
   );
+  const needMigrateMasterPassword = needMigrate && hasMasterPassword && currentRoute;
 
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: deeplinks,
@@ -187,16 +188,15 @@ const AppNavigator = ({ isAppReady }: Props) => {
   }, [hasConfirmations, navigationRef, currentRoute, isLocked]);
 
   useEffect(() => {
-    let amount = true;
-    if (needMigrate && hasMasterPassword && currentRoute && amount) {
-      if (currentRoute.name !== 'MigratePassword' && currentRoute.name !== 'UnlockModal' && amount) {
-        navigationRef.current?.navigate('MigratePassword');
+    if (needMigrateMasterPassword && !isLocked) {
+      if (!['MigratePassword', 'UnlockModal', 'Login'].includes(currentRoute.name)) {
+        navigationRef.current?.reset({
+          index: 1,
+          routes: [{ name: 'Home' }, { name: 'MigratePassword' }],
+        });
       }
     }
-    return () => {
-      amount = false;
-    };
-  }, [currentRoute, hasMasterPassword, navigationRef, needMigrate]);
+  }, [currentRoute, isLocked, navigationRef, needMigrateMasterPassword]);
 
   useEffect(() => {
     if (isLocked && !!accounts.length && isNavigationReady) {
