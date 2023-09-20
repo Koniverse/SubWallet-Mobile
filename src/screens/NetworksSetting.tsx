@@ -187,6 +187,10 @@ export const NetworksSetting = ({}: Props) => {
         icon={ListChecks}
         title={i18n.emptyScreen.networkSettingsTitle}
         message={i18n.emptyScreen.networkSettingsMessage}
+        addBtnLabel={i18n.header.importNetwork}
+        onPressAddBtn={() => {
+          navigation.navigate('ImportNetwork');
+        }}
       />
     );
   };

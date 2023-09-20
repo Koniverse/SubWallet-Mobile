@@ -92,28 +92,18 @@ const StakingBalanceList = () => {
     return result;
   }, [data, priceMap]);
 
-  const renderEmpty = (val?: string) => {
-    if (val) {
-      return (
-        <EmptyList
-          title={i18n.emptyScreen.stakingEmptyTitle}
-          icon={Trophy}
-          message={i18n.emptyScreen.stakingEmptyMessage}
-        />
-      );
-    } else {
-      return (
-        <EmptyList
-          title={i18n.emptyScreen.stakingEmptyTitle}
-          icon={Trophy}
-          message={i18n.emptyScreen.stakingEmptyMessage}
-          isRefresh={isRefresh}
-          onPressReload={() => {
-            refresh(reloadCron({ data: 'staking' }));
-          }}
-        />
-      );
-    }
+  const renderEmpty = () => {
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.stakingEmptyTitle}
+        icon={Trophy}
+        message={i18n.emptyScreen.stakingEmptyMessage}
+        onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
+        isRefresh={isRefresh}
+        addBtnLabel={i18n.buttonTitles.startStaking}
+        onPressAddBtn={handlePressStartStaking}
+      />
+    );
   };
 
   const isFocused = useIsFocused();

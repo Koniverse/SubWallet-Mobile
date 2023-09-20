@@ -401,6 +401,10 @@ export const ru = {
     reload: 'Reload',
     unlockWithBiometric: 'Unlock with your biometric',
     enterMasterPassword: 'Enter master password',
+    startStaking: 'Start staking',
+    addNft: 'Add NFT',
+    addToken: 'Add token',
+    addNetwork: 'Add network',
   },
   inputLabel: {
     selectAcc: 'Выбрать аккаунт',
@@ -555,6 +559,7 @@ export const ru = {
   emptyScreen: {
     tokenEmptyTitle: 'Токены не найдены ',
     tokenEmptyMessage: 'Добавить токены, чтобы начать',
+    tokenEmptyMessageV2: 'Try searching or importing one',
     nftEmptyTitle: 'NFTs не найдены',
     nftEmptyMessage: 'Нажмите [+] в правом верхнем углу, чтобы импортировать NFT.',
     crowdloanEmptyTitle: 'Нет краудлоуна',

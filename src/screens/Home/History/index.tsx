@@ -400,7 +400,6 @@ function History({
 
   const groupBy = useCallback(
     (item: TransactionHistoryDisplayItem) => {
-      console.log('language', language);
       return customFormatDate(item.time, '#YYYY#-#MM#-#DD#') + '|' + formatHistoryDate(item.time, language, 'list');
     },
     [language],

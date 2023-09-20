@@ -60,22 +60,18 @@ const NftCollectionList = () => {
     offset: TOTAL_ITEM_HEIGHT * index,
   });
 
-  const renderEmptyNFT = (searchString?: string) => {
-    if (searchString) {
-      return (
-        <EmptyList title={i18n.emptyScreen.nftEmptyTitle} icon={Image} message={i18n.emptyScreen.nftEmptyMessage} />
-      );
-    } else {
-      return (
-        <EmptyList
-          title={i18n.emptyScreen.nftEmptyTitle}
-          icon={Image}
-          message={i18n.emptyScreen.nftEmptyMessage}
-          onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
-          isRefresh={isRefresh}
-        />
-      );
-    }
+  const renderEmptyNFT = () => {
+    return (
+      <EmptyList
+        title={i18n.emptyScreen.nftEmptyTitle}
+        icon={Image}
+        message={i18n.emptyScreen.nftEmptyMessage}
+        onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
+        isRefresh={isRefresh}
+        addBtnLabel={i18n.buttonTitles.addNft}
+        onPressAddBtn={() => navigation.navigate('ImportNft')}
+      />
+    );
   };
 
   return (
