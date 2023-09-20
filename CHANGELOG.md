@@ -1,3 +1,9 @@
+## 1.1.0 (218)
+- Recheck bug modal overlapped (#1002)
+- Fix bug reset language when update version (#1003)
+- Show biometric popup two times when import json (multi-account) (#1013)
+- Bug Composable Finance's icon isn't shown in Crowdloan
+
 ## 1.1.0 (217)
 - Update Russian language
 
