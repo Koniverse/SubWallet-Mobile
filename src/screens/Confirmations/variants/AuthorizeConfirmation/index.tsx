@@ -236,7 +236,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
                 onPressCreateOne(onAddAccount);
               }}
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
-              Create one
+              {i18n.buttonTitles.createOne}
             </Button>
           </>
         )}

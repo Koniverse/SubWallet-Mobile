@@ -22,7 +22,7 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
   const { data } = props;
   const txtTypeNameMap = TxTypeNameMap();
   const historyStatusMap = HistoryStatusMap();
-  const language = useSelector((state: RootState) => state.mobileSettings.language) as LanguageType;
+  const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
 
   return (
     <MetaInfo>

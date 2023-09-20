@@ -729,7 +729,7 @@
   "Unsupported Method": "Неподдерживаемый метод.",
   "Network is disconnected": "Сеть отключена.",
   "Undefined error. Please contact SubWallet support": "Неопределенная ошибка. Пожалуйста, обратитесь в службу поддержки SubWallet.",
-  "Rejected by user": "Пользователь отклонил запрос.",
+  "Rejected by user": "",
   "Insufficient balance": "Недостаточный баланс.",
   "Another transaction is in queue. Please try again later": "Другая транзакция находится в очереди. Пожалуйста, попробуйте позже.",
   "You can unstake from a collator once": "Вы можете отменить стейк у коллатора один раз.",
