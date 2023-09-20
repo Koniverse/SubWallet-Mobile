@@ -17,9 +17,12 @@ import { SubstrateSignArea } from 'screens/Confirmations/parts/Sign/Substrate';
 import { EvmSignArea } from 'screens/Confirmations/parts/Sign/Evm';
 import LeavePoolTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/LeavePool';
 import UnbondTransactionConfirmation from 'screens/Confirmations/variants/Transaction/variants/Unbond';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'routes/index';
 
 interface Props {
   confirmation: ConfirmationQueueItem;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTransactionConfirmation => {
@@ -52,6 +55,7 @@ const getTransactionComponent = (extrinsicType: ExtrinsicType): typeof BaseTrans
 export const TransactionConfirmation = (props: Props) => {
   const {
     confirmation: { item, type },
+    navigation,
   } = props;
   const { id } = item;
 
@@ -74,13 +78,19 @@ export const TransactionConfirmation = (props: Props) => {
     <>
       {renderContent(_transaction)}
       {type === 'signingRequest' && (
-        <SubstrateSignArea account={(item as SigningRequest).account} id={item.id} payload={substratePayload} />
+        <SubstrateSignArea
+          account={(item as SigningRequest).account}
+          id={item.id}
+          payload={substratePayload}
+          navigation={navigation}
+        />
       )}
       {type === 'evmSendTransactionRequest' && (
         <EvmSignArea
           id={item.id}
           payload={item as ConfirmationDefinitions['evmSendTransactionRequest'][0]}
           type="evmSendTransactionRequest"
+          navigation={navigation}
         />
       )}
     </>

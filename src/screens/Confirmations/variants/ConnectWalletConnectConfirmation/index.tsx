@@ -9,9 +9,8 @@ import {
 import useSelectWalletConnectAccount from 'hooks/wallet-connect/useSelectWalletConnectAccount';
 import { VoidFunction } from 'types/index';
 import { useToast } from 'react-native-toast-notifications';
-import { useNavigation } from '@react-navigation/native';
 import { convertKeyTypes } from 'utils/index';
-import { RootNavigationProps } from 'routes/index';
+import { RootStackParamList } from 'routes/index';
 import ConfirmationContent from '../../../../components/common/Confirmation/ConfirmationContent';
 import ConfirmationGeneralInfo from '../../../../components/common/Confirmation/ConfirmationGeneralInfo';
 import AlertBox from 'components/design-system-ui/alert-box';
@@ -29,9 +28,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Minimizer } from '../../../../NativeModules';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface Props {
   request: WalletConnectSessionRequest;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const handleConfirm = async ({ id }: WalletConnectSessionRequest, selectedAccounts: string[]) => {
@@ -47,8 +48,7 @@ const handleCancel = async ({ id }: WalletConnectSessionRequest) => {
   });
 };
 
-export const ConnectWalletConnectConfirmation = ({ request }: Props) => {
-  const navigation = useNavigation<RootNavigationProps>();
+export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props) => {
   const { params } = request.request;
   const toast = useToast();
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);

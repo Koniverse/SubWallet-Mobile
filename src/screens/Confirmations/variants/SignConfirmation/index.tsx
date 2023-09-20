@@ -12,13 +12,16 @@ import i18n from 'utils/i18n/i18n';
 import createStyle from './styles';
 
 import { BaseDetailModal, SubstrateMessageDetail, SubstrateTransactionDetail, SubstrateSignArea } from '../../parts';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'routes/index';
 
 interface Props {
   request: SigningRequest;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 const SignConfirmation: React.FC<Props> = (props: Props) => {
-  const { request } = props;
+  const { request, navigation } = props;
   const { id, account } = request;
   const theme = useSubWalletTheme().swThemes;
 
@@ -46,7 +49,7 @@ const SignConfirmation: React.FC<Props> = (props: Props) => {
           )}
         </BaseDetailModal>
       </ConfirmationContent>
-      <SubstrateSignArea payload={payload} account={account} id={id} />
+      <SubstrateSignArea payload={payload} account={account} id={id} navigation={navigation} />
     </React.Fragment>
   );
 };

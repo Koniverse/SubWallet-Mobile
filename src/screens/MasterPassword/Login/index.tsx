@@ -38,6 +38,7 @@ import MigrateToKeychainPasswordModal from '../MigrateToKeychainPasswordModal';
 import { mmkvStore } from 'utils/storage';
 import { setBuildNumber } from 'stores/AppVersion';
 import { LockTimeout } from 'stores/types';
+import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
 
 interface LoginProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -65,12 +66,14 @@ const BEFORE_KEYCHAIN_BUILD_NUMBER = 211;
 const Login: React.FC<LoginProps> = ({ navigation }) => {
   const { faceIdEnabled, isUseBiometric, timeAutoLock } = useSelector((state: RootState) => state.mobileSettings);
   const { buildNumber } = useSelector((state: RootState) => state.appVersion);
+  const { numberOfConfirmations } = useConfirmationsInfo();
   const [loading, setLoading] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalMigrateVisible, setModalMigrateVisible] = useState<boolean>(false);
   const [resetAccLoading, setAccLoading] = useState(false);
   const [eraseAllLoading, setEraseAllLoading] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(isUseBiometric);
+  const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
 
   const toast = useToast();
@@ -110,12 +113,12 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
               })
               .finally(() => {
                 dispatch(updateFaceIdEnable(false));
-                forceCloseModalV2(false);
+                forceCloseModalV2(!!(isDeepLinkConnect || !!numberOfConfirmations));
                 navigation.goBack();
               });
           } else {
             navigation.goBack();
-            forceCloseModalV2(false);
+            forceCloseModalV2(!!(isDeepLinkConnect || !!numberOfConfirmations));
           }
         })
         .catch((e: Error) => {
