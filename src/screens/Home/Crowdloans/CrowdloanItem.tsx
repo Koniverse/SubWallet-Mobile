@@ -41,6 +41,7 @@ export function getGroupKey(groupDisplayName: string) {
 }
 
 export const CrowdloanItem = ({ item, isShowBalance }: Props) => {
+  console.log(item);
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
 
@@ -68,7 +69,7 @@ export const CrowdloanItem = ({ item, isShowBalance }: Props) => {
           <View style={{ position: 'relative' }}>
             <Logo
               size={40}
-              network={item.slug.toLowerCase()}
+              network={item.slug}
               isShowSubLogo
               subNetwork={getGroupKey(item.relayParentDisplayName)}
               subLogoShape="circle"
