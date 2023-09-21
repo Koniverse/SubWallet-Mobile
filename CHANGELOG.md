@@ -1,3 +1,6 @@
+## 1.1.0 (219)
+- Update web-runner and chain list (V1.1.12)
+
 ## 1.1.0 (218)
 - Recheck bug modal overlapped (#1002)
 - Fix bug reset language when update version (#1003)
