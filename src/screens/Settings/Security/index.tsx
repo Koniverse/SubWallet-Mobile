@@ -14,7 +14,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Icon, SelectItem, SwModal } from 'components/design-system-ui';
 import { useToast } from 'react-native-toast-notifications';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
-import useUnlockModal from 'hooks/modal/useUnlockModal';
+import useUnlockModal, { OnCompleteType } from 'hooks/modal/useUnlockModal';
 import { createKeychainPassword, getSupportedBiometryType, resetKeychainPassword } from 'utils/account';
 import { keyringLock, saveAutoLockTime } from 'messaging/index';
 import { requestFaceIDPermission } from 'utils/permission/biometric';
@@ -64,7 +64,10 @@ export const Security = () => {
     },
   ];
 
-  const onPasswordComplete = (password: string) => {
+  const onPasswordComplete: OnCompleteType = (password?: string) => {
+    if (!password) {
+      return;
+    }
     createKeychainPassword(password).then(res => {
       if (res) {
         dispatch(updateUseBiometric(true));
@@ -76,7 +79,7 @@ export const Security = () => {
       keyringLock().catch((e: Error) => console.log(e));
     }
   };
-  const { onPress: onPressSubmit } = useUnlockModal(navigation, () => {}, onPasswordComplete);
+  const { onPress: onPressSubmit } = useUnlockModal(navigation, () => {}, true);
 
   const onValueChangeFaceId = () => {
     if (isUseBiometric) {
@@ -86,13 +89,13 @@ export const Security = () => {
       (async () => {
         const isBiometricEnabled = await getSupportedBiometryType();
         if (isBiometricEnabled) {
-          onPressSubmit(() => {})();
+          onPressSubmit(onPasswordComplete)();
           return;
         }
         // if Face ID permission denied
         const result = await requestFaceIDPermission();
         if (result) {
-          onPressSubmit(() => {})();
+          onPressSubmit(onPasswordComplete)();
         }
       })();
     }
