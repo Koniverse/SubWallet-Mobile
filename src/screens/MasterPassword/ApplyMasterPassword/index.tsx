@@ -191,7 +191,7 @@ const ApplyMasterPassword = () => {
     if (migrateAccount?.address) {
       setDeleting(true);
       setTimeout(() => {
-        forgetAccount(migrateAccount.address)
+        forgetAccount(migrateAccount.address, true)
           .then(() => {
             setIsError(false);
           })
