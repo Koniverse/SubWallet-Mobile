@@ -133,10 +133,10 @@ const ApplyMasterPassword = () => {
   }, [migrateAccount?.address]);
 
   useEffect(() => {
-    if (isLocked) {
+    if (isLocked && needMigrate.length) {
       setStep('Introduction');
     }
-  }, [isLocked]);
+  }, [isLocked, needMigrate.length]);
 
   useEffect(() => {
     onUpdateErrors('password')(undefined);

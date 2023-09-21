@@ -1,3 +1,6 @@
+## 1.1.0 (220)
+- Fix bug go back introduction step after master password migration successful
+  
 ## 1.1.0 (219)
 - Update web-runner and chain list (V1.1.12)
 
