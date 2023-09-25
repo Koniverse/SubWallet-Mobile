@@ -13,9 +13,11 @@ export interface SWModalProps {
   footer?: React.ReactNode;
   modalVisible: boolean;
   onChangeModalVisible?: () => void;
+  onBackdropPress?: () => void;
   modalStyle?: StyleProp<ViewStyle>;
   onModalHide?: () => void; // Auto trigger when close modal
   isFullHeight?: boolean;
+  isAllowSwipeDown?: boolean;
   modalTitle?: string;
   titleTextAlign?: 'left' | 'center';
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -64,6 +66,8 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       footer,
       modalVisible,
       onChangeModalVisible,
+      onBackdropPress,
+      isAllowSwipeDown,
       modalStyle,
       modalTitle,
       onModalHide,
@@ -134,6 +138,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               ref={modalBaseV2Ref}
               isUseForceHidden={Platform.OS === 'android'}
               onChangeModalVisible={onChangeModalVisible}
+              isAllowSwipeDown={isAllowSwipeDown}
               level={level}>
               <View
                 style={{ paddingHorizontal: 16, paddingTop: 22 }}
@@ -158,7 +163,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
             backdropColor={'#1A1A1A'}
             backdropOpacity={0.8}
             onSwipeComplete={onChangeModalVisible}
-            onBackdropPress={onChangeModalVisible}
+            onBackdropPress={onBackdropPress || onChangeModalVisible}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
             avoidKeyboard={true}

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Globe, Info, WifiHigh, WifiSlash } from 'phosphor-react-native';
-import { DeviceEventEmitter, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, StyleProp, ScrollView, View, ViewStyle } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import InputText from 'components/Input/InputText';
 import { AddProviderProps, RootNavigationProps } from 'routes/index';
@@ -21,16 +21,22 @@ import { _CHAIN_VALIDATION_ERROR } from '@subwallet/extension-base/services/chai
 import { ActivityIndicator, Button, Icon } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { isUrl } from 'utils/index';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
+import { MarginBottomForSubmitButton, sharedStyles } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
-import { HIDE_MODAL_DURATION } from 'constants/index';
+import { deviceHeight, HIDE_MODAL_DURATION } from 'constants/index';
+import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { CHANGE_RPC_SELECTOR } from 'screens/NetworkSettingDetail';
 
 interface ValidationInfo {
   status: ValidateStatus;
   message?: string[];
 }
+
+const ContainerStyle: StyleProp<ViewStyle> = {
+  ...sharedStyles.layoutContainer,
+  height: deviceHeight,
+};
 
 function parseProviders(newProvider: string, existingProviders: Record<string, string>) {
   let count = 0;
@@ -151,6 +157,10 @@ export const AddProvider = ({
   });
 
   useEffect(() => {
+    setAdjustPan();
+  }, []);
+
+  useEffect(() => {
     setTimeout(() => {
       focus('provider')();
     }, HIDE_MODAL_DURATION);
@@ -244,9 +254,9 @@ export const AddProvider = ({
       onPressBack={() => navigation.goBack()}
       rightIcon={Info}
       title={i18n.header.addNewProvider}>
-      <>
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={{ ...ContainerHorizontalPadding, paddingTop: 16, flex: 1 }}>
+      <View style={ContainerStyle}>
+        <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps={'handled'}>
+          <View style={{ flex: 1 }}>
             <InputText
               ref={formState.refs.provider}
               value={formState.data.provider}
@@ -257,7 +267,6 @@ export const AddProvider = ({
               onSubmitField={Keyboard.dismiss}
               onBlur={() => providerValidator(formState.data.provider)}
             />
-
             <View style={{ flexDirection: 'row' }}>
               <InputText
                 containerStyle={{ flex: 2, marginRight: 6 }}
@@ -287,9 +296,9 @@ export const AddProvider = ({
               isBusy={true}
             />
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
 
-        <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, flexDirection: 'row' }}>
+        <View style={{ ...MarginBottomForSubmitButton, flexDirection: 'row' }}>
           <Button type={'secondary'} style={{ flex: 1, marginRight: 6 }} onPress={() => navigation.goBack()}>
             {i18n.common.cancel}
           </Button>
@@ -297,7 +306,7 @@ export const AddProvider = ({
             {i18n.common.save}
           </Button>
         </View>
-      </>
+      </View>
     </ContainerWithSubHeader>
   );
 };

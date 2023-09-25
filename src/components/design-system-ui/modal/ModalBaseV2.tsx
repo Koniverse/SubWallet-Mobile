@@ -16,6 +16,7 @@ export interface SWModalProps {
   children?: React.ReactNode;
   wrapperStyle?: StyleProp<ViewStyle>;
   isFullHeight?: boolean;
+  isAllowSwipeDown?: boolean;
   level?: number;
   onChangeModalVisible?: () => void;
   isUseForceHidden?: boolean;
@@ -41,6 +42,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       level = 1,
       onChangeModalVisible,
       isUseForceHidden,
+      isAllowSwipeDown = true,
     },
     ref,
   ) => {
@@ -114,7 +116,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
 
     const context = useSharedValue({ y: 0 });
     const gesture = Gesture.Pan()
-      .enabled(!isFullHeight)
+      .enabled(!isFullHeight && !!isAllowSwipeDown)
       .onStart(() => {
         context.value = { y: translateY.value };
       })
