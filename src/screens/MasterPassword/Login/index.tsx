@@ -145,7 +145,9 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   }, []);
   useEffect(() => {
     if (authMethod === 'master-password') {
-      focus('password')();
+      setTimeout(() => {
+        focus('password')();
+      }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authMethod]);
