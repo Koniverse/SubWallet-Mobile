@@ -1,3 +1,13 @@
+## 1.1.1 (221)
+- Show incorrect provider in case import provider successful (#989)
+- Upgrade UI Select provider (#840)
+- Show popup allows Face ID/Touch ID after sign transaction (#1023)
+- Handle the case of auto lock after importing multi account (#1032)
+- Fix UI bug on Android (#1014)
+- Record the address entered from the view-only account screen attached to the recent address in the address book (#918)
+- Add the button on the empty list (mobile app) (#995)
+
+
 ## 1.1.0 (220)
 - Fix bug go back introduction step after master password migration successful
   

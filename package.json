@@ -1,7 +1,7 @@
 {
   "name": "SubWalletMobile",
-  "version": "1.1.0",
-  "build": "220",
+  "version": "1.1.1",
+  "build": "221",
   "private": true,
   "license": "Apache-2.0",
   "reactNativePermissionsIOS": [
