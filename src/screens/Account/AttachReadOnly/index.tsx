@@ -185,6 +185,7 @@ const AttachReadOnly = () => {
             <PageIcon icon={Eye} color={theme.colorSuccess} />
           </View>
           <InputAddress
+            saveAddress={false}
             ref={formState.refs.address}
             containerStyle={{ marginBottom: theme.sizeSM }}
             label={formState.labels.address}
