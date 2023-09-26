@@ -1,15 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { Button, Icon, SelectItem } from 'components/design-system-ui';
-import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
-import { ListRenderItemInfo, View } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { PlusCircle, ShareNetwork } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import useFetchChainInfo from 'hooks/screen/useFetchChainInfo';
-import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
+import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 
 export interface ProviderItemType {
   value: string;
@@ -24,11 +22,6 @@ interface Props {
   renderSelectModalBtn?: (onOpenModal: React.Dispatch<React.SetStateAction<boolean>>) => JSX.Element;
   rpcSelectorRef: React.MutableRefObject<ModalRef | undefined>;
 }
-
-const searchFunction = (items: { label: string; value: string }[], searchString: string) => {
-  const lowerCaseSearchString = searchString.toLowerCase();
-  return items.filter(item => item.label.toLowerCase().includes(lowerCaseSearchString));
-};
 
 export const RpcSelectorModal = ({
   chainSlug,
@@ -56,25 +49,24 @@ export const RpcSelectorModal = ({
   }, [chainInfo]);
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<{ label: string; value: string }>) => (
-      <View style={{ ...ContainerHorizontalPadding, marginBottom: theme.marginXS }}>
-        <SelectItem
-          icon={ShareNetwork}
-          backgroundColor={theme.colorTextLight4}
-          label={item.label}
-          isSelected={selectedValueMap[item.value]}
-          onPress={() => {
-            onSelectItem && onSelectItem(item);
-            onPressBack();
-          }}
-        />
-      </View>
+    (item: { label: string; value: string }) => (
+      <SelectItem
+        key={item.value}
+        icon={ShareNetwork}
+        backgroundColor={theme.colorTextLight4}
+        label={item.label}
+        isSelected={selectedValueMap[item.value]}
+        onPress={() => {
+          onSelectItem && onSelectItem(item);
+          onPressBack();
+        }}
+      />
     ),
-    [theme.marginXS, theme.colorTextLight4, selectedValueMap, onSelectItem, onPressBack],
+    [theme.colorTextLight4, selectedValueMap, onSelectItem, onPressBack],
   );
 
   return (
-    <FullSizeSelectModal
+    <BasicSelectModal
       items={providerList}
       selectedValueMap={{}}
       selectModalType={'single'}
@@ -82,20 +74,16 @@ export const RpcSelectorModal = ({
       renderSelectModalBtn={renderSelectModalBtn}
       title={i18n.header.providers}
       ref={rpcSelectorRef}
-      searchFunc={searchFunction}
-      onBackButtonPress={() => rpcSelectorRef?.current?.onCloseModal()}
-      renderAfterListItem={() => (
-        <View style={{ ...ContainerHorizontalPadding, ...MarginBottomForSubmitButton, paddingTop: 16 }}>
-          <Button
-            icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
-            onPress={() => {
-              onPressBack();
-              !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });
-            }}>
-            {i18n.buttonTitles.addNewProvider}
-          </Button>
-        </View>
-      )}
-    />
+      onBackButtonPress={() => rpcSelectorRef?.current?.onCloseModal()}>
+      <Button
+        style={{ marginTop: theme.margin }}
+        icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
+        onPress={() => {
+          onPressBack();
+          !!chainInfo && navigation.navigate('AddProvider', { slug: chainInfo.slug });
+        }}>
+        {i18n.buttonTitles.addNewProvider}
+      </Button>
+    </BasicSelectModal>
   );
 };
