@@ -399,6 +399,10 @@ export const ja = {
     reload: 'Reload',
     unlockWithBiometric: 'Unlock with your biometric',
     enterMasterPassword: 'Enter master password',
+    startStaking: 'Start staking',
+    addNft: 'Add NFT',
+    addToken: 'Add token',
+    addNetwork: 'Add network',
   },
   inputLabel: {
     selectAcc: 'アカウントを選択',
@@ -553,6 +557,7 @@ export const ja = {
   emptyScreen: {
     tokenEmptyTitle: 'トークンは見つかりません',
     tokenEmptyMessage: 'トークンを追加して始める',
+    tokenEmptyMessageV2: 'Try searching or importing one',
     nftEmptyTitle: 'NFTsは見つかりません',
     nftEmptyMessage: '右上隅の[+]をクリックしてNFTをインポート',
     crowdloanEmptyTitle: 'クラウドローンはありません',

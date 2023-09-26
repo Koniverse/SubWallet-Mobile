@@ -4,6 +4,10 @@ import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
+import { EmptyList } from 'components/EmptyList';
+import { MagnifyingGlass } from 'phosphor-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { RootNavigationProps } from 'routes/index';
 
 export type TokenItemType = {
   name: string;
@@ -43,6 +47,7 @@ export const TokenSelector = ({
   defaultValue,
   acceptDefaultValue,
 }: Props) => {
+  const navigation = useNavigation<RootNavigationProps>();
   useEffect(() => {
     setAdjustPan();
   }, []);
@@ -65,6 +70,20 @@ export const TokenSelector = ({
       renderCustomItem={renderCustomItem}
       defaultValue={defaultValue}
       acceptDefaultValue={acceptDefaultValue}
+      renderListEmptyComponent={() => {
+        return (
+          <EmptyList
+            icon={MagnifyingGlass}
+            title={i18n.emptyScreen.selectorEmptyTitle}
+            message={i18n.emptyScreen.selectorEmptyMessage}
+            addBtnLabel={i18n.header.importToken}
+            onPressAddBtn={() => {
+              tokenSelectorRef?.current?.onCloseModal();
+              navigation.navigate('ImportToken');
+            }}
+          />
+        );
+      }}
       disabled={disabled}>
       {children}
     </FullSizeSelectModal>

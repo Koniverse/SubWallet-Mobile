@@ -176,7 +176,7 @@ export const TokensLayout = ({
               <EmptyList
                 icon={Coins}
                 title={i18n.emptyScreen.tokenEmptyTitle}
-                message={i18n.emptyScreen.tokenEmptyMessage}
+                message={i18n.emptyScreen.tokenEmptyMessageV2}
               />
               {layoutFooter}
             </>

@@ -160,6 +160,8 @@ export const CustomTokenSetting = () => {
             icon={Coins}
             title={i18n.emptyScreen.tokenEmptyTitle}
             message={i18n.emptyScreen.tokenEmptyMessage}
+            addBtnLabel={i18n.header.importToken}
+            onPressAddBtn={() => navigation.navigate('ImportToken')}
           />
         )}
         isShowListWrapper
