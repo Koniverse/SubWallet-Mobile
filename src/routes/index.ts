@@ -25,7 +25,7 @@ export type RootStackParamList = {
       | 'AttachReadOnly';
     state?: string[];
   };
-  UnlockModal: undefined;
+  UnlockModal: { isUpdateBiometric?: boolean };
   ChangePassword: undefined;
   ConnectList: { isDelete?: boolean };
   ConnectDetail: { topic: string };
@@ -111,6 +111,7 @@ export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>
 export type ConfigureTokenProps = NativeStackScreenProps<RootStackParamList, 'ConfigureToken'>;
 export type ImportTokenProps = NativeStackScreenProps<RootStackParamList, 'ImportToken'>;
 export type ImportNftProps = NativeStackScreenProps<RootStackParamList, 'ImportNft'>;
+export type UnlockModalProps = NativeStackScreenProps<RootStackParamList, 'UnlockModal'>;
 export type ConnectListProps = NativeStackScreenProps<RootStackParamList, 'ConnectList'>;
 export type ConnectDetailProps = NativeStackScreenProps<RootStackParamList, 'ConnectDetail'>;
 export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;

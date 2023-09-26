@@ -18,7 +18,7 @@ import { keyringUnlock } from 'messaging/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStyle from './style';
 import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps, RootStackParamList } from 'routes/index';
+import { RootNavigationProps, RootStackParamList, UnlockModalProps } from 'routes/index';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useKeyboardVisible } from 'hooks/useKeyboardVisible';
 import { setAdjustResize } from 'rn-android-keyboard-adjust';
@@ -33,13 +33,16 @@ type AuthMethod = 'biometric' | 'master-password';
 const UNLOCK_BIOMETRY_TIMEOUT = Platform.OS === 'ios' ? 0 : 300;
 export const OPEN_UNLOCK_FROM_MODAL = 'openFromModal';
 
-async function handleUnlockPassword(navigation: NativeStackNavigationProp<RootStackParamList>) {
+async function handleUnlockPassword(
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+  isUpdateBiometric?: boolean,
+) {
   try {
     const password = await getKeychainPassword();
     if (password) {
       const unlockData = await keyringUnlock({ password });
       if (unlockData.status) {
-        DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password });
+        DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password: isUpdateBiometric ? password : '' });
         Keyboard.dismiss();
         navigation.goBack();
         return true;
@@ -52,7 +55,8 @@ async function handleUnlockPassword(navigation: NativeStackNavigationProp<RootSt
     return false;
   }
 }
-export const UnlockModal = memo(() => {
+export const UnlockModal = memo(({ route: { params } }: UnlockModalProps) => {
+  const { isUpdateBiometric } = params;
   const { isUseBiometric } = useSelector((state: RootState) => state.mobileSettings);
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -93,7 +97,7 @@ export const UnlockModal = memo(() => {
       return;
     }
     setTimeout(() => {
-      handleUnlockPassword(navigation)
+      handleUnlockPassword(navigation, isUpdateBiometric)
         .then(result => {
           if (!result) {
             setAuthMethod('master-password');
@@ -116,7 +120,7 @@ export const UnlockModal = memo(() => {
             onUpdateErrors('password')([i18n.errorMessage.invalidMasterPassword]);
             return;
           }
-          DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password });
+          DeviceEventEmitter.emit('unlockModal', { type: 'onComplete', password: isUpdateBiometric ? password : '' });
           Keyboard.dismiss();
           navigation.goBack();
         })
