@@ -78,9 +78,10 @@ export const EvmSignArea = (props: Props) => {
   const onCancel = useCallback(() => {
     setLoading(true);
     handleCancel(type, id).finally(() => {
+      dispatch(updateIsDeepLinkConnect(false));
       setLoading(false);
     });
-  }, [id, type]);
+  }, [dispatch, id, type]);
 
   const onApprovePassword = useCallback(() => {
     setLoading(true);

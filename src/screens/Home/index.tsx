@@ -191,12 +191,12 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading]);
 
   useEffect(() => {
-    if (isReady && !isLoading) {
+    if (isReady && !isLoading && !isLocked) {
       handleDeeplinkOnFirstOpen(navigation);
       isFirstOpen.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading]);
+  }, [isReady, isLoading, isLocked]);
 
   useEffect(() => {
     if (isReady && !isLoading) {

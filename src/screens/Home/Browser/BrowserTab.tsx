@@ -42,10 +42,11 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles/BrowserTab';
 import TabIcon from 'screens/Home/Browser/Shared/TabIcon';
 import { RootState } from 'stores/index';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import urlParse from 'url-parse';
 import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -152,6 +153,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const isNetConnected = useContext(WebRunnerContext).isNetConnected;
   const isWebviewReady = !!(initWebViewSource && injectedScripts);
   const toast = useToast();
+  const dispatch = useDispatch();
 
   const clearCurrentBrowserSv = () => {
     browserSv.current?.onDisconnect();
@@ -433,7 +435,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       Linking.canOpenURL(url)
         .then(supported => {
           if (supported) {
-            return Linking.openURL(url);
+            return Linking.openURL(url).finally(() => setTimeout(() => dispatch(updateIsDeepLinkConnect(false)), 100));
           }
           console.warn(`Can't open url: ${url}`);
           return null;
