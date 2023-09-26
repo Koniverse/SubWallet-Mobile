@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { Globe, Info, WifiHigh, WifiSlash } from 'phosphor-react-native';
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import useFormControl, { FormControlConfig } from 'hooks/screen/useFormControl';
 import InputText from 'components/Input/InputText';
 import { AddProviderProps, RootNavigationProps } from 'routes/index';
@@ -25,6 +25,7 @@ import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/
 import i18n from 'utils/i18n/i18n';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import { HIDE_MODAL_DURATION } from 'constants/index';
+import { CHANGE_RPC_SELECTOR } from 'screens/NetworkSettingDetail';
 
 interface ValidationInfo {
   status: ValidateStatus;
@@ -125,6 +126,8 @@ export const AddProvider = ({
         providers: newProviders,
       },
     };
+
+    DeviceEventEmitter.emit(CHANGE_RPC_SELECTOR, newProviderKey);
 
     upsertChain(params)
       .then(result => {
