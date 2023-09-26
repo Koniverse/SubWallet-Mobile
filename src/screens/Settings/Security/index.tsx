@@ -142,17 +142,6 @@ export const Security = () => {
             onPress={() => navigation.navigate('DAppAccess')}
             rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
           />
-
-          <SelectItem
-            icon={Globe}
-            backgroundColor={theme['geekblue-6']}
-            label={i18n.settings.manageWalletConnectDapp}
-            onPress={() => {
-              toast.hideAll();
-              toast.show(i18n.notificationMessage.comingSoon);
-            }}
-            rightIcon={<Icon phosphorIcon={CaretRight} size={'sm'} />}
-          />
           <SelectItem
             icon={ShieldCheck}
             backgroundColor={theme['green-6']}

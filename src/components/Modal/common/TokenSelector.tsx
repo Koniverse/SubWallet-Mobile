@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ListRenderItemInfo } from 'react-native';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { ModalRef } from 'types/modalRef';
+import { setAdjustPan } from 'rn-android-keyboard-adjust';
 
 export type TokenItemType = {
   name: string;
@@ -42,6 +43,10 @@ export const TokenSelector = ({
   defaultValue,
   acceptDefaultValue,
 }: Props) => {
+  useEffect(() => {
+    setAdjustPan();
+  }, []);
+
   return (
     <FullSizeSelectModal
       items={items}

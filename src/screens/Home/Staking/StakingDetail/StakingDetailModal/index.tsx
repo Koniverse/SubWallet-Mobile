@@ -308,6 +308,7 @@ export const StakingDetailModal = ({
         modalBaseV2Ref={modalRef}
         modalVisible={modalVisible}
         modalTitle={modalTitle}
+        isAllowSwipeDown={false}
         onChangeModalVisible={() => setSeeMore(false)}
         onBackButtonPress={_onCloseDetailModal}
         footer={footer()}

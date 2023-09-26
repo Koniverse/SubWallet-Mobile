@@ -249,11 +249,12 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
       modalTitle={i18n.header.connectWebsite}
       modalVisible={modalVisible}
       titleTextAlign="center"
+      isAllowSwipeDown={false}
       modalBaseV2Ref={modalBaseV2Ref}
       onBackButtonPress={onChangeModalVisible}
       contentContainerStyle={stylesheet.modalContentContainerStyle}
       footer={<View style={stylesheet.footer}>{actionButtons}</View>}>
-      <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={stylesheet.scrollView} showsVerticalScrollIndicator={false} nestedScrollEnabled>
         <TouchableOpacity activeOpacity={1}>
           <ConfirmationGeneralInfo
             request={{
