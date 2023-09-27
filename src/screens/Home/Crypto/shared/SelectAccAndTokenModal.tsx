@@ -43,6 +43,7 @@ export const SelectAccAndTokenModal = ({
           tokenSelectorRef={tokenRef}
           closeModalAfterSelect={false}
           isShowInput={false}
+          onCloseAccountSelector={() => accountRef.current?.onCloseModal()}
         />
       </AccountSelector>
     </>

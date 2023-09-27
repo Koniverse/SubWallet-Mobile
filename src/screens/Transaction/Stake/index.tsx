@@ -400,7 +400,7 @@ export const Stake = ({
       onChangeAssetValue(item.slug);
       validatorSelectorRef?.current?.resetValue();
       tokenRef.current = item.slug;
-      tokenSelectorRef && tokenSelectorRef.current?.onCloseModal();
+      tokenSelectorRef.current?.onCloseModal();
     },
     [onChangeAssetValue],
   );
@@ -493,7 +493,9 @@ export const Stake = ({
             onSelectItem={onSelectToken}
             disabled={stakingChain !== ALL_KEY || !from || loading}
             defaultValue={asset}
+            showAddBtn={false}
             acceptDefaultValue={true}
+            tokenSelectorRef={tokenSelectorRef}
             renderSelected={() => (
               <TokenSelectField logoKey={symbol.toLowerCase()} subLogoKey={chain} value={symbol} showIcon />
             )}

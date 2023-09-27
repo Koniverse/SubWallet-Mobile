@@ -1000,6 +1000,8 @@ export const ja = {
     clearHistory: '履歴をクリア',
     updateNetwork: 'ネットワークを更新',
     expiredConnectionTitle: '接続期限切れ',
+    noInternetConnection: 'No internet connection',
+    internetConnected: 'Internet connected',
     unsupportedNetworkTitle: 'サポートされていないネットワーク',
   },
   warningMessage: {
@@ -1070,6 +1072,8 @@ export const ja = {
     validateProviderError: 'このプロバイダーの検証エラー',
     cannotConnectToThisProvider: 'このプロバイダーに接続できません',
     thisChainHasAlreadyBeenAdded: 'このチェーンはすでに追加されています',
+    thisProviderHasAlreadyBeenAdded: 'This provider has already been added',
+    thisProviderIsNotForThisNetwork: 'このプロバイダーはこのネットワークの対象外です',
     invalidProviderUrl: 'プロバイダーURLは無効です',
     recipientAddressIsRequired: '受信者アドレスが必要です',
     invalidRecipientAddress: '無効な受信者アドレス',

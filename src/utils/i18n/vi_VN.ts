@@ -554,7 +554,7 @@ export const vi = {
   },
   emptyScreen: {
     tokenEmptyTitle: 'Không tìm thấy token',
-    tokenEmptyMessage: 'Thêm token để bắt đầu',
+    tokenEmptyMessage: 'Vui lòng nhập thủ công',
     tokenEmptyMessageV2: 'Vui lòng thử tìm kiếm hoặc nhập thủ công',
     nftEmptyTitle: 'Không tìm thấy NFT',
     nftEmptyMessage: 'Vui lòng nhập thủ công',
@@ -1067,6 +1067,8 @@ export const vi = {
     validateProviderError: 'Có lỗi xảy ra khi xác nhận nhà cung cấp',
     cannotConnectToThisProvider: 'Không thể kết nối với provider này',
     thisChainHasAlreadyBeenAdded: 'mạng này đã được thêm',
+    thisProviderHasAlreadyBeenAdded: 'This provider has already been added',
+    thisProviderIsNotForThisNetwork: 'Provider này không dành cho mạng này',
     invalidProviderUrl: 'Provider URL  không hợp lệ',
     recipientAddressIsRequired: 'Địa chỉ nhận là bắt buộc',
     invalidRecipientAddress: 'Địa chỉ nhận không hợp lệ',
