@@ -177,9 +177,9 @@ export const AddProvider = ({
       case _CHAIN_VALIDATION_ERROR.CONNECTION_FAILURE:
         return [i18n.errorMessage.cannotConnectToThisProvider];
       case _CHAIN_VALIDATION_ERROR.EXISTED_PROVIDER:
-        return [i18n.errorMessage.thisChainHasAlreadyBeenAdded];
+        return [i18n.errorMessage.thisProviderHasAlreadyBeenAdded];
       case _CHAIN_VALIDATION_ERROR.PROVIDER_NOT_SAME_CHAIN:
-        return [i18n.errorMessage.thisChainHasAlreadyBeenAdded];
+        return [i18n.errorMessage.thisProviderIsNotForThisNetwork];
       default:
         return [i18n.errorMessage.validateProviderError];
     }

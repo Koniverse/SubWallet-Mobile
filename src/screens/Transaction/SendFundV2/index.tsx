@@ -919,6 +919,7 @@ export const SendFund = ({
                     items={viewStep === 1 ? tokenItems : tokenItemsViewStep2}
                     selectedValueMap={{ [assetValue]: true }}
                     onSelectItem={_onChangeAsset}
+                    showAddBtn={false}
                     tokenSelectorRef={tokenSelectorRef}
                     renderSelected={() => (
                       <TokenSelectField

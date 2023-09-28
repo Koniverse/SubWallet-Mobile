@@ -30,6 +30,8 @@ interface Props {
   renderCustomItem?: ({ item }: ListRenderItemInfo<TokenItemType>) => JSX.Element;
   defaultValue?: string;
   acceptDefaultValue?: boolean;
+  onCloseAccountSelector?: () => void;
+  showAddBtn?: boolean;
 }
 
 export const TokenSelector = ({
@@ -46,6 +48,8 @@ export const TokenSelector = ({
   renderCustomItem,
   defaultValue,
   acceptDefaultValue,
+  onCloseAccountSelector,
+  showAddBtn = true,
 }: Props) => {
   const navigation = useNavigation<RootNavigationProps>();
   useEffect(() => {
@@ -76,11 +80,16 @@ export const TokenSelector = ({
             icon={MagnifyingGlass}
             title={i18n.emptyScreen.selectorEmptyTitle}
             message={i18n.emptyScreen.selectorEmptyMessage}
-            addBtnLabel={i18n.header.importToken}
-            onPressAddBtn={() => {
-              tokenSelectorRef?.current?.onCloseModal();
-              navigation.navigate('ImportToken');
-            }}
+            addBtnLabel={showAddBtn ? i18n.header.importToken : undefined}
+            onPressAddBtn={
+              showAddBtn
+                ? () => {
+                    onCloseAccountSelector && onCloseAccountSelector();
+                    tokenSelectorRef?.current?.onCloseModal();
+                    navigation.navigate('ImportToken');
+                  }
+                : undefined
+            }
           />
         );
       }}

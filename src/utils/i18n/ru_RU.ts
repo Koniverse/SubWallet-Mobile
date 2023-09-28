@@ -1004,6 +1004,8 @@ export const ru = {
     clearHistory: 'Очистить историю',
     updateNetwork: 'Обновить сеть',
     expiredConnectionTitle: 'Connection expired',
+    noInternetConnection: 'No internet connection',
+    internetConnected: 'Internet connected',
     unsupportedNetworkTitle: 'Unsupported network',
   },
   warningMessage: {
@@ -1074,6 +1076,8 @@ export const ru = {
     validateProviderError: 'Ошибка проверки этого провайдера',
     cannotConnectToThisProvider: 'Не могу подключиться к этому провайдеру',
     thisChainHasAlreadyBeenAdded: 'Эта цепочка уже добавлена',
+    thisProviderHasAlreadyBeenAdded: 'This provider has already been added',
+    thisProviderIsNotForThisNetwork: 'Этот провайдер не для этой сети',
     invalidProviderUrl: 'URL провайдер недействителен',
     recipientAddressIsRequired: 'Адрес получателя обязателен',
     invalidRecipientAddress: 'Неверный адрес получателя',

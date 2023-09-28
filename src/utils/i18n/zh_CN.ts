@@ -550,7 +550,7 @@ export const zh = {
   },
   emptyScreen: {
     tokenEmptyTitle: '未找到通证',
-    tokenEmptyMessage: '添加通证即可开始',
+    tokenEmptyMessage: '请手动导入',
     tokenEmptyMessageV2: '请搜索或手动导入',
     nftEmptyTitle: '未找到NFTs',
     nftEmptyMessage: '请手动导入',
@@ -1052,6 +1052,8 @@ export const zh = {
     validateProviderError: '验证该提供商时出错',
     cannotConnectToThisProvider: '无法连接到此提供商',
     thisChainHasAlreadyBeenAdded: '已添加此链',
+    thisProviderHasAlreadyBeenAdded: 'This provider has already been added',
+    thisProviderIsNotForThisNetwork: '该提供商不适用于此网络',
     invalidProviderUrl: '提供商URL无效',
     recipientAddressIsRequired: '接收者地址为必须填充',
     invalidRecipientAddress: '接收者地址无效',

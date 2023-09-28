@@ -555,7 +555,7 @@ export const en = {
   },
   emptyScreen: {
     tokenEmptyTitle: 'No tokens found',
-    tokenEmptyMessage: 'Add tokens to get started',
+    tokenEmptyMessage: 'Try adding one manually',
     tokenEmptyMessageV2: 'Try searching or importing one',
     nftEmptyTitle: 'No NFTs found',
     nftEmptyMessage: 'Try adding one manually',
@@ -1069,6 +1069,8 @@ export const en = {
     validateProviderError: 'Error validating this provider',
     cannotConnectToThisProvider: 'Cannot connect to this provider',
     thisChainHasAlreadyBeenAdded: 'This chain has already been added',
+    thisProviderHasAlreadyBeenAdded: 'This provider has already been added',
+    thisProviderIsNotForThisNetwork: 'This provider is not for this network',
     invalidProviderUrl: 'Provider URL is not valid',
     recipientAddressIsRequired: 'Recipient address is required',
     invalidRecipientAddress: 'Invalid recipient address',
