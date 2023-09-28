@@ -28,7 +28,9 @@ let chainKeys: Array<string> | undefined;
 let cachePendingChainMap: Record<string, boolean> = {};
 
 const searchFunction = (items: ChainInfoWithState[], searchString: string) => {
-  return items.filter(network => network.name.toLowerCase().includes(searchString.toLowerCase()));
+  return items.filter(network =>
+    network && network.name ? network.name.toLowerCase().includes(searchString.toLowerCase()) : false,
+  );
 };
 
 const processChainMap = (
