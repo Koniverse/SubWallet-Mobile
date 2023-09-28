@@ -23,7 +23,7 @@ import {
   WebViewNavigationEvent,
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes';
-import * as RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
