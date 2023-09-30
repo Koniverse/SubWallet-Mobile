@@ -1,3 +1,12 @@
+## 1.1.2 (222)
+- Upgrade React Native 0.72.4 (#1007)
+- Bug error page when open Customize access screen (#1041)
+- Bug bug navigate incorrect in case search token to get address (#995)
+- Bug static server to support cors (#988)
+- Bug Need to auto-focus the master password field on Android device (#1020)
+- Bug Biometric failed attempts alert isn't shown in enable biometric/change master password (#1016)
+- Bug Auto back to App previous in case connect wallet connect the fisrt times in app Browser (#1019)
+
 ## 1.1.1 (221)
 - Show incorrect provider in case import provider successful (#989)
 - Upgrade UI Select provider (#840)
