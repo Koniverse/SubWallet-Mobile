@@ -207,13 +207,25 @@ const keychainConfig: RNSensitiveInfoOptions = {
   kSecAttrAccessible: 'kSecAttrAccessibleWhenUnlocked',
   kSecUseOperationPrompt: 'Unlock app using biometric',
 };
-const maxAttempsData = ['Biometry is locked out', 'Quá nhiều lần thử'];
+const maxAttempsData = ['Biometry is locked out', 'Quá nhiều lần thử', 'Too many attempts'];
+function alertFailedAttempts(e: any) {
+  let isFailedAttemps = false;
+  maxAttempsData.map(item => {
+    if (JSON.stringify(e).includes(item)) {
+      isFailedAttemps = true;
+    }
+  });
+  if (isFailedAttemps) {
+    Alert.alert(i18n.buttonTitles.unlockWithBiometric, i18n.common.tooManyAttemps);
+  }
+}
 const username = 'sw-user';
 export const createKeychainPassword = async (password: string) => {
   try {
     await SInfo.setItem(username, password, keychainConfig);
     return true;
   } catch (e) {
+    alertFailedAttempts(e);
     console.warn('set keychain failed', e);
     return false;
   }
@@ -224,15 +236,7 @@ export const getKeychainPassword = async () => {
     const password = await SInfo.getItem(username, keychainConfig);
     return password;
   } catch (e) {
-    let isFailedAttemps = false;
-    maxAttempsData.map(item => {
-      if (JSON.stringify(e).includes(item)) {
-        isFailedAttemps = true;
-      }
-    });
-    if (isFailedAttemps) {
-      Alert.alert(i18n.buttonTitles.unlockWithBiometric, i18n.common.tooManyAttemps);
-    }
+    alertFailedAttempts(e);
     throw e;
   }
 };
