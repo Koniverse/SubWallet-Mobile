@@ -12,6 +12,7 @@ import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import { saveLanguage } from 'messaging/index';
 import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
+import { OneSignal } from 'react-native-onesignal';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -40,6 +41,7 @@ export const Languages = () => {
         routes: [{ name: 'Home' }, { name: 'GeneralSettings' }],
       });
       saveLanguage(selectedLang);
+      OneSignal.User.setLanguage(selectedLang);
     }
   };
 

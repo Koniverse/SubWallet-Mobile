@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "569870677705",
+    "project_id": "subwallet-app",
+    "storage_bucket": "subwallet-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569870677705:android:cbc031f789e9677e38ff18",
+        "android_client_info": {
+          "package_name": "app.subwallet.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBePKienltD3ss-ifbPEuoHOQA-OSigkVY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
