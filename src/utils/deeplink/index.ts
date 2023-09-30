@@ -22,6 +22,20 @@ export function handleDeeplinkOnFirstOpen(
       prevDeeplinkUrl = url;
       if (getProtocol(url) === 'subwallet') {
         const urlParsed = new urlParse(url);
+
+        if (urlParsed.href.split('/')[2] === 'browser') {
+          // Format like: https://subwallet-link.vercel.app/browser?url=https://hackadot.subwallet.app/
+          const finalUrl = queryString.parse(urlParsed.query)['?url'] || '';
+          setTimeout(() => {
+            navigation.navigate('BrowserTabsManager', {
+              url: Array.isArray(finalUrl) ? finalUrl[0] : finalUrl,
+              name: '',
+              isOpenTabs: false,
+            });
+          }, 1000);
+          return;
+        }
+
         if (urlParsed.hostname === 'wc') {
           if (urlParsed.query.startsWith('?requestId')) {
             return;
