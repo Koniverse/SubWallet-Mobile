@@ -496,9 +496,7 @@ export const Stake = ({
             showAddBtn={false}
             acceptDefaultValue={true}
             tokenSelectorRef={tokenSelectorRef}
-            renderSelected={() => (
-              <TokenSelectField logoKey={symbol.toLowerCase()} subLogoKey={chain} value={symbol} showIcon />
-            )}
+            renderSelected={() => <TokenSelectField logoKey={asset} subLogoKey={chain} value={symbol} showIcon />}
           />
 
           {_stakingType !== ALL_KEY && (

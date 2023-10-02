@@ -923,7 +923,7 @@ export const SendFund = ({
                     tokenSelectorRef={tokenSelectorRef}
                     renderSelected={() => (
                       <TokenSelectField
-                        logoKey={currentChainAsset?.symbol || ''}
+                        logoKey={currentChainAsset?.slug || ''}
                         subLogoKey={currentChainAsset?.originChain || ''}
                         value={currentChainAsset?.symbol || ''}
                         outerStyle={{ marginBottom: 0 }}

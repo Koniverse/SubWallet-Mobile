@@ -41,7 +41,6 @@ export function getGroupKey(groupDisplayName: string) {
 }
 
 export const CrowdloanItem = ({ item, isShowBalance }: Props) => {
-  console.log(item);
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
 

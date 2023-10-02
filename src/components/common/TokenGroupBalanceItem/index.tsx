@@ -19,6 +19,7 @@ export const TokenGroupBalanceItem = ({
   total,
   priceChangeStatus,
   isShowBalance,
+  slug,
   ...wrapperProps
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -29,7 +30,7 @@ export const TokenGroupBalanceItem = ({
     <TouchableOpacity style={{ width: '100%' }} {...wrapperProps}>
       <View style={_style.chainBalanceMainArea}>
         <View style={_style.chainBalancePart1}>
-          <Logo size={40} token={symbol.toLowerCase()} />
+          <Logo size={40} token={slug.toLowerCase()} />
         </View>
 
         <View style={_style.chainBalanceMetaWrapper}>

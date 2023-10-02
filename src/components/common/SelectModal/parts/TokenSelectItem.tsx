@@ -19,7 +19,7 @@ export function _TokenSelectItem<T>({ item, selectedValueMap, onSelectItem, onCl
       key={`${symbol}-${originChain}`}
       symbol={symbol}
       chain={`${chainInfoMap[originChain]?.name || ''}`}
-      logoKey={symbol.toLowerCase()}
+      logoKey={slug.toLowerCase()}
       subLogoKey={originChain}
       isSelected={!!selectedValueMap[slug]}
       onSelectNetwork={() => {
