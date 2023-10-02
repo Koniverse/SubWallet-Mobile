@@ -223,6 +223,7 @@ export const en = {
     phishingDetected: 'Phishing detected',
     moreOptions: 'More options',
     scanQrCode: 'Scan QR code',
+    scanQrCodeSubTitle: 'Scan QR code to send or connect to DApp',
     sendTransaction: 'Send transaction',
     staking: 'Staking',
     stakingDetail: 'Staking details',

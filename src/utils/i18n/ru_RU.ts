@@ -227,6 +227,7 @@ export const ru = {
     phishingDetected: 'Фишинг обнаружен',
     moreOptions: 'Больше вариантов',
     scanQrCode: 'Отсканировать QR-код',
+    scanQrCodeSubTitle: 'Scan QR code to send or connect to DApp',
     sendTransaction: 'Отправить транзакцию',
     staking: 'Стейкинг',
     stakingDetail: 'Детали стейкинга',

@@ -221,6 +221,7 @@ export const zh = {
     phishingDetected: '钓鱼骗局',
     moreOptions: '更多选项',
     scanQrCode: '扫描二维码',
+    scanQrCodeSubTitle: 'Scan QR code to send or connect to DApp',
     sendTransaction: '发送交易',
     staking: '质押',
     stakingDetail: '质押详细信息',

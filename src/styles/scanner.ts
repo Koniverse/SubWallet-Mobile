@@ -17,7 +17,7 @@ const ContainerStyle: StyleProp<ViewStyle> = {
   backgroundColor: 'transparent',
 };
 
-const SafeAreaStyle: StyleProp<ViewStyle> = { backgroundColor: ColorMap.buttonOverlayButtonColor };
+const SafeAreaStyle: StyleProp<ViewStyle> = { backgroundColor: 'transparent' };
 
 const CameraStyle: StyleProp<ViewStyle> = {
   height: deviceHeight,

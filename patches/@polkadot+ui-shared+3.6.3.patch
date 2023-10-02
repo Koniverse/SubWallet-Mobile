@@ -1,0 +1,26 @@
+diff --git a/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js b/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
+index 29211ea..9a8e774 100644
+--- a/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
++++ b/node_modules/@polkadot/ui-shared/cjs/icons/polkadot.js
+@@ -20,7 +20,7 @@ const SCHEMES_TOTAL = SCHEMES
+ const OUTER_CIRCLE = {
+     cx: C,
+     cy: C,
+-    fill: '#eee',
++    fill: 'transparent',
+     r: C
+ };
+ let zeroHash = new Uint8Array();
+diff --git a/node_modules/@polkadot/ui-shared/icons/polkadot.js b/node_modules/@polkadot/ui-shared/icons/polkadot.js
+index b7f439d..766c0e0 100644
+--- a/node_modules/@polkadot/ui-shared/icons/polkadot.js
++++ b/node_modules/@polkadot/ui-shared/icons/polkadot.js
+@@ -17,7 +17,7 @@ const SCHEMES_TOTAL = SCHEMES
+ const OUTER_CIRCLE = {
+     cx: C,
+     cy: C,
+-    fill: '#eee',
++    fill: 'trasparent',
+     r: C
+ };
+ let zeroHash = new Uint8Array();

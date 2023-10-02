@@ -223,6 +223,7 @@ export const vi = {
     phishingDetected: 'Đã phát hiện lừa đảo',
     moreOptions: 'Lựa chọn khác',
     scanQrCode: 'Quét mã QR',
+    scanQrCodeSubTitle: 'Scan QR code to send or connect to DApp',
     sendTransaction: 'Giao dịch gửi',
     staking: 'Staking',
     stakingDetail: 'Chi tiết stake',

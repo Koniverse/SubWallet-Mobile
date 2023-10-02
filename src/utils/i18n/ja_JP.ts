@@ -226,6 +226,7 @@ export const ja = {
     phishingDetected: 'フィッシングが検出されました',
     moreOptions: 'その他のオプション',
     scanQrCode: 'QRコードをスキャン',
+    scanQrCodeSubTitle: 'Scan QR code to send or connect to DApp',
     sendTransaction: 'トランザクションを送信',
     staking: 'ステーキング',
     stakingDetail: 'ステーキングの詳細',
