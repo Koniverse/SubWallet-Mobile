@@ -199,7 +199,7 @@ export const Home = ({ navigation }: Props) => {
   }, [isReady, isLoading, isLocked]);
 
   useEffect(() => {
-    if (isReady && !isLoading) {
+    if (isReady && !isLoading && !isLocked) {
       if (isFirstOpen.current) {
         return;
       }
@@ -230,7 +230,7 @@ export const Home = ({ navigation }: Props) => {
       // return () => Linking.removeAllListeners('url');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isLoading]);
+  }, [isReady, isLoading, isLocked]);
 
   if (isLoading) {
     return (
