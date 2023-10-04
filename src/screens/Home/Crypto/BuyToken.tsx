@@ -72,8 +72,11 @@ export const BuyToken = ({
   }, []);
 
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
-  const symbol = useMemo(() => {
-    return selectedBuyToken ? MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken].symbol : '';
+  const selectedBuyTokenInfo = useMemo(() => {
+    return {
+      symbol: selectedBuyToken ? MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken].symbol : '',
+      slug: selectedBuyToken ? MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken].slug : '',
+    };
   }, [selectedBuyToken]);
 
   const onSubmit = () => {
@@ -131,7 +134,9 @@ export const BuyToken = ({
                 selectedValueMap={selectedBuyToken ? { [selectedBuyToken]: true } : {}}
                 onSelectItem={openSelectBuyToken}
                 tokenSelectorRef={tokenBuyRef}
-                renderSelected={() => <TokenSelectField logoKey={symbol} value={symbol} showIcon />}
+                renderSelected={() => (
+                  <TokenSelectField logoKey={selectedBuyTokenInfo.slug} value={selectedBuyTokenInfo.symbol} showIcon />
+                )}
               />
             </View>
             <View style={{ flex: 1 }}>
