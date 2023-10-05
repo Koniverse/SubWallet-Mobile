@@ -30,6 +30,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
+import { OneSignal } from 'react-native-onesignal';
+import { createNotificationConfig } from 'utils/pushNotification';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -51,6 +53,7 @@ const gestureRootStyle: StyleProp<any> = {
   height: '100%',
   zIndex: 9999,
 };
+OneSignal.initialize('b743f89b-7c0d-4ab9-a09c-4aa0ee1eedb7');
 
 const autoLockParams: {
   hasMasterPassword: boolean;
@@ -110,7 +113,8 @@ export const AppNew = () => {
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
 
   const { isUseBiometric, timeAutoLock, isPreventLock } = useSelector((state: RootState) => state.mobileSettings);
-  const { hasMasterPassword, isLocked } = useSelector((state: RootState) => state.accountState);
+  const language = useSelector((state: RootState) => state.settings.language);
+  const { hasMasterPassword, isLocked, accounts } = useSelector((state: RootState) => state.accountState);
   const { lock, unlockApp } = useAppLock();
   const dispatch = useDispatch();
   const isCryptoReady = useCryptoReady();
@@ -148,15 +152,20 @@ export const AppNew = () => {
   }, [dispatch, timeAutoLock]);
 
   useEffect(() => {
+    OneSignal.User.addTag('is_have_account', accounts.length + '');
+  }, [accounts]);
+  useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
     }, 100);
 
+    createNotificationConfig(language);
     // if (buildNumber === 1) {
     // Set default value on the first time install
     // const buildNumberInt = parseInt(getBuildNumber(), 10);
     // dispatch(setBuildNumber(buildNumberInt));
     // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
