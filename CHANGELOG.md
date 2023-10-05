@@ -1,3 +1,8 @@
+## 1.1.2 (223)
+- Update web-runner (v1.1.15) (#1052)
+- Re-check bug static server to support cors (#1051)
+- Update UI Scan QR screen by design (#881)
+
 ## 1.1.2 (222)
 - Upgrade React Native 0.72.4 (#1007)
 - Bug error page when open Customize access screen (#1041)
