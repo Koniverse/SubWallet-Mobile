@@ -103,6 +103,17 @@ AppState.addEventListener('change', (state: string) => {
 });
 
 let firstTimeCheckPincode: boolean | undefined;
+export let prevDeeplinkUrl = '';
+
+export function setPrevDeeplinkUrl(value: string) {
+  prevDeeplinkUrl = value;
+}
+
+export const isFirstOpen = { current: true };
+
+export function setIsFirstOpen(value: boolean) {
+  isFirstOpen.current = value;
+}
 
 export const AppNew = () => {
   const isDarkMode = true;

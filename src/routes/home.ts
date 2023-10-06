@@ -6,7 +6,7 @@ import { BrowserHomeProps, RootStackParamList } from 'routes/index';
 
 export type CryptoStackParamList = {
   TokenGroups: undefined;
-  TokenGroupsDetail: { slug: string };
+  TokenGroupsDetail: { slug: string; address?: string };
 };
 
 export type CryptoNavigationProps = NativeStackScreenProps<CryptoStackParamList & RootStackParamList>['navigation'];

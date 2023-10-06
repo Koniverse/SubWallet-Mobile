@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type StakingScreenStackParamList = {
-  StakingBalances: undefined;
+  StakingBalances: { chain?: string; type?: string };
   Stake: { chain?: string; type?: string };
   Unbond: { chain?: string; type?: string };
   ClaimReward: { chain?: string; type?: string };
