@@ -5,11 +5,10 @@ import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
+import StaticServer from 'react-native-static-server';
 import { listenMessage, restartAllHandlers } from 'messaging/index';
-// @ts-ignore
-import { StaticServer, STATES } from 'components/common/ReactNativeStaticServer';
 import { Message } from '@subwallet/extension-base/types';
-import { MainBundlePath } from '@dr.pogodin/react-native-fs';
+import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
@@ -65,8 +64,7 @@ function isWebRunnerAlive(eventData: NativeSyntheticEvent<WebViewMessage>): bool
 class WebRunnerHandler {
   eventEmitter?: EventEmitter;
   webRef?: React.RefObject<WebView<{}>>;
-  // @ts-ignore
-  server?: typeof StaticServer;
+  server?: StaticServer;
   state?: WebRunnerGlobalState;
   runnerState: WebRunnerState = {};
   lastTimeResponse?: number;
@@ -158,8 +156,7 @@ class WebRunnerHandler {
       return true;
     }
 
-    // @ts-ignore
-    const isRunning = this.server.state === STATES.ACTIVE;
+    const isRunning = await this.server.isRunning();
     if (!isRunning) {
       await this.server.start();
     }
@@ -278,8 +275,7 @@ class WebRunnerHandler {
 
   constructor() {
     if (Platform.OS === 'ios') {
-      // @ts-ignore
-      this.server = new StaticServer({ port: WEB_SERVER_PORT, fileDir: MainBundlePath + '/Web.bundle' });
+      this.server = new StaticServer(WEB_SERVER_PORT, RNFS.MainBundlePath + '/Web.bundle', { localOnly: true });
     }
     AppState.addEventListener('change', (state: string) => {
       const now = new Date().getTime();
@@ -392,7 +388,6 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
           onError={e => console.debug('### WebRunner error', e)}
           onHttpError={e => console.debug('### WebRunner HttpError', e)}
           javaScriptEnabled={true}
-          webviewDebuggingEnabled
           allowFileAccess={true}
           allowUniversalAccessFromFileURLs={true}
           allowFileAccessFromFileURLs={true}

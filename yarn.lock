@@ -1371,25 +1371,6 @@
   resolved "https://registry.yarnpkg.com/@docknetwork/node-types/-/node-types-0.16.0.tgz#23570042c823a6320654ee2c5b8c0da5d7c43d21"
   integrity sha512-VUZB8guX9161hDIEVn/UKJEUlXjIDE6vH5flx6uDHVc0QOhBy1bq6AGLayG4ZH19dCN39ta2sKGIFq9wLO4H2A==
 
-"@dr.pogodin/js-utils@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@dr.pogodin/js-utils/-/js-utils-0.0.6.tgz#60f076dd90b87caa7812ad5aecd98bf960a7ad51"
-  integrity sha512-6DyIS8s+V2d2GKqhW/TOxPugcskKPsKiJt9lFLBEddw012WKGicchPizar9osq+p7ECnNmYMsDUPAC3T+ZkZKw==
-
-"@dr.pogodin/react-native-fs@>=2.21.0-alpha.1":
-  version "2.21.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@dr.pogodin/react-native-fs/-/react-native-fs-2.21.0-alpha.3.tgz#948be09264e57861cf1d5e6b7dd8a15ef3fe5a44"
-  integrity sha512-blM6rbLJVK2KmY4CgcOiP755YFWZGFcp6O332oItUALr4dlfMvF4hWactr6whs4REC89Yrbz86YtvQ6f4HQcvA==
-  dependencies:
-    buffer "^6.0.3"
-
-"@dr.pogodin/react-native-static-server@0.8.3":
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/@dr.pogodin/react-native-static-server/-/react-native-static-server-0.8.3.tgz#67af02deff1c8332a9aaf26f5a29483deb88c322"
-  integrity sha512-yNtdJh1TbjZ/3E8bLOQbKsbNhEMWA6DeF/gNXOLkFto05ZI4jzCBOR9Ubo7M5K/xaqbosLiOgVPeI17DwYnfrw==
-  dependencies:
-    "@dr.pogodin/js-utils" "^0.0.6"
-
 "@edgeware/node-types@3.6.2-wako":
   version "3.6.2-wako"
   resolved "https://registry.yarnpkg.com/@edgeware/node-types/-/node-types-3.6.2-wako.tgz#21463fe18f68d5f3f0675244683d416d45ab0a3d"
@@ -6268,7 +6249,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base-64@0.1.0:
+base-64@0.1.0, base-64@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
   integrity sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==
@@ -14507,6 +14488,14 @@ react-native-fast-image@^8.6.3:
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz#6edc3f9190092a909d636d93eecbcc54a8822255"
   integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
 
+react-native-fs@^2.20.0:
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.20.0.tgz#05a9362b473bfc0910772c0acbb73a78dbc810f6"
+  integrity sha512-VkTBzs7fIDUiy/XajOSNk0XazFE9l+QlMAce7lGuebZcag5CnjszB+u4BdqzwaQOdcYb5wsJIsqq4kxInIRpJQ==
+  dependencies:
+    base-64 "^0.1.0"
+    utf8 "^3.0.0"
+
 react-native-gesture-handler@^2.9.0:
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.13.1.tgz#bad89caacd62c4560b9953b02f85f37ee42d5d4c"
@@ -14671,6 +14660,11 @@ react-native-splash-screen@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.3.0.tgz#3af71ed17afe50fee69590a45aec399d071ead02"
   integrity sha512-rGjt6HkoSXxMqH4SQUJ1gnPQlPJV8+J47+4yhgTIan4bVvAwJhEeJH7wWt9hXSdH4+VfwTS0GTaflj1Tw83IhA==
+
+react-native-static-server@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-static-server/-/react-native-static-server-0.5.0.tgz#4b396082bfe7dfdbba6fe7d7de894de5ba4ebadb"
+  integrity sha512-RGteckPoBZq48p9Y8V67bjZGPxLHKkEOAffLSUJiGC7hkx+H+zuekqCR+04F30NuWB7y+nb8N7Qld2RGjX5DNg==
 
 react-native-status-bar-height@^2.6.0:
   version "2.6.0"
