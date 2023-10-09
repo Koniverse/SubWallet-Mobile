@@ -1131,9 +1131,9 @@ export const predefinedDApps: PredefinedDApps = {
       isSupportEthereumAccount: true,
     },
     {
-      name: 'HEAL-Ⅲ | Health to Earn',
+      name: 'HEAL-Ⅲ',
       icon: 'https://heal3.com/favicon.svg',
-      id: 'www.heal3.com',
+      id: 'heal3.com',
       url: 'https://heal3.com',
       categories: ['defi', 'evm'],
       isSupportSubstrateAccount: false,
@@ -1142,7 +1142,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Oxalus - NFT Social Commerce Platform',
       icon: 'https://oxalus.io/favicon.ico',
-      id: 'www.oxalus.io',
+      id: 'oxalus.io',
       url: 'https://oxalus.io',
       categories: ['defi', 'evm'],
       isSupportSubstrateAccount: false,
@@ -1151,7 +1151,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'Birdeye',
       icon: 'https://birdeye.so/logo.png',
-      id: 'www.birdeye.so',
+      id: 'birdeye.so',
       url: 'https://birdeye.so',
       categories: ['defi', 'evm'],
       isSupportSubstrateAccount: false,
@@ -1160,7 +1160,7 @@ export const predefinedDApps: PredefinedDApps = {
     {
       name: 'AZERO.ID – Domain Service on Aleph Zero',
       icon: 'https://azero.id/favicon.ico',
-      id: 'www.azero.id',
+      id: 'azero.id',
       url: 'https://azero.id',
       categories: ['utilities'],
       isSupportSubstrateAccount: true,
