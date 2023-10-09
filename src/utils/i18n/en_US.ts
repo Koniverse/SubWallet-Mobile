@@ -501,6 +501,8 @@ export const en = {
     hexData: 'Hex data',
     methodData: 'Method data',
     dApp: 'DApp',
+    nftId: 'NFT ID',
+    collectionId: 'Collection ID',
   },
   placeholder: {
     password: 'Password',

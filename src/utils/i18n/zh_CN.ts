@@ -496,6 +496,8 @@ export const zh = {
     hexData: 'HEX数据',
     methodData: '方式数据',
     dApp: 'DApp',
+    nftId: 'NFT ID',
+    collectionId: 'Collection ID',
   },
   placeholder: {
     password: '密码',

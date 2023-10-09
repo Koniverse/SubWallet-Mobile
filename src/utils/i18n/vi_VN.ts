@@ -500,6 +500,8 @@ export const vi = {
     hexData: 'Dữ liệu Hex',
     methodData: 'Method data',
     dApp: 'DApp',
+    nftId: 'NFT ID',
+    collectionId: 'Collection ID',
   },
   placeholder: {
     password: 'Mật khẩu',

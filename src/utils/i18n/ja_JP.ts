@@ -502,6 +502,8 @@ export const ja = {
     hexData: 'Hex データ',
     methodData: 'Method data',
     dApp: 'dApp',
+    nftId: 'NFT ID',
+    collectionId: 'Collection ID',
   },
   placeholder: {
     password: 'パスワード',
