@@ -178,11 +178,13 @@ export default function useBuyToken(currentSymbol?: string) {
   }, [accountType, currentSymbol, ledgerNetwork]);
 
   const openSelectBuyAccount = useCallback((account: AccountJson) => {
+    setSelectedService({ selectedService: undefined });
     setBuyTokenSelectedResult({ selectedBuyAccount: account.address });
   }, []);
 
   const openSelectBuyToken = useCallback((item: TokenItemType) => {
     setBuyTokenSelectedResult(prevState => ({ ...prevState, selectedBuyToken: item.slug }));
+    setSelectedService({ selectedService: undefined });
     tokenBuyRef && tokenBuyRef.current?.onCloseModal();
   }, []);
 
@@ -321,8 +323,8 @@ export default function useBuyToken(currentSymbol?: string) {
       if (!supportedSevices.length) {
         return;
       }
-      const isSelectedServiceSupporting = supportedSevices.find(service => service.key === selectedService);
-      if (!isSelectedServiceSupporting) {
+
+      if (supportedSevices.length === 1) {
         setSelectedService({ selectedService: supportedSevices[0].key });
       }
     }
