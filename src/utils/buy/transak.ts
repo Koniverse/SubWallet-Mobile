@@ -1,7 +1,7 @@
 import { TRANSAK_API_KEY, TRANSAK_URL } from 'constants/buy';
 import { CreateBuyOrderFunction } from 'types/buy';
 import qs from 'querystring';
-console.log('transak url', TRANSAK_URL);
+
 export const createTransakOrder: CreateBuyOrderFunction = (symbol, address, network) => {
   return new Promise(resolve => {
     const params = {

@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
-import { predefinedDApps } from '../../../predefined/dAppSites';
-import { PredefinedDApps } from 'types/browser';
 import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
 import BrowserListByCategory from './BrowserListByCategory';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { MaterialTopTabNavigationOptions, createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Animated, Dimensions, View } from 'react-native';
-import { useNavigationState } from '@react-navigation/native';
+import { ParamListBase, RouteProp, useNavigationState } from '@react-navigation/native';
 import { FakeSearchInput } from 'screens/Home/Browser/Shared/FakeSearchInput';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import createStylesheet from './styles';
@@ -16,6 +14,7 @@ import { Typography } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useGetDAPPCategoriesQuery } from 'stores/API';
 
 type RoutesType = {
   key: string;
@@ -29,7 +28,12 @@ const initialLayout = {
   width: Dimensions.get('window').width,
 };
 const transparent = { backgroundColor: 'transparent' };
-const screenOptions = (currentTabIndex: number) => ({
+const screenOptions = (
+  currentTabIndex: number,
+):
+  | MaterialTopTabNavigationOptions
+  | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => MaterialTopTabNavigationOptions)
+  | undefined => ({
   tabBarStyle: { height: 28, ...transparent },
   tabBarItemStyle: {
     width: 'auto',
@@ -65,9 +69,9 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
-  const [dApps] = useState<PredefinedDApps>(predefinedDApps);
+  const { data: categories } = useGetDAPPCategoriesQuery(undefined);
   const [searchString] = useState<string>('');
-  const categoryTabRoutes = dApps.categories().map(item => ({ key: item.id, title: item.name }));
+  const categoryTabRoutes = categories ? categories.map(item => ({ key: item.slug, title: item.name })) : [];
   const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;

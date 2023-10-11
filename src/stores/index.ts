@@ -35,6 +35,8 @@ import LogoMap from 'stores/base/LogoMap';
 import { mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { AssetRegistryStore, BalanceStore, BrowserSlice, ChainStore } from './types';
+import { browserDAPPs } from './API';
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 const persistRootConfig = {
   key: 'root',
@@ -60,7 +62,7 @@ const rootReducer = combineReducers({
   passwordModalState: PasswordModalReducer,
   appVersion: appVersionReducer,
 
-  //Feature
+  // Feature
   transactionHistory: TransactionHistoryReducer,
   crowdloan: CrowdloanReducer,
   nft: NftReducer,
@@ -70,7 +72,7 @@ const rootReducer = combineReducers({
   bonding: BondingReducer,
   walletConnect: WalletConnectReducer,
 
-  //Common
+  // Common
   chainStore: persistReducer(
     { key: 'chainStore', storage: mmkvReduxStore } as PersistConfig<ChainStore>,
     ChainStoreReducer,
@@ -80,11 +82,14 @@ const rootReducer = combineReducers({
     AssetRegistryReducer,
   ),
 
-  //Base
+  // Base
   requestState: RequestStateReducer,
   settings: SettingsReducer,
   accountState: AccountStateReducer,
   logoMaps: LogoMap,
+
+  // API
+  [browserDAPPs.reducerPath]: browserDAPPs.reducer,
 });
 
 const persistedReducer = persistReducer(persistRootConfig, rootReducer);
@@ -96,8 +101,10 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).concat(browserDAPPs.middleware),
 });
+
+setupListeners(store.dispatch);
 
 export const persistor = persistStore(store);
 

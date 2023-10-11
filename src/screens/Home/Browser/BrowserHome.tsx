@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
-import { predefinedDApps } from '../../../predefined/dAppSites';
 import { CaretRight } from 'phosphor-react-native';
 import createStylesheet from './styles/BrowserHome';
 import FastImage from 'react-native-fast-image';
@@ -9,9 +8,9 @@ import { Icon, Typography } from 'components/design-system-ui';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { DAppInfo, PredefinedDApps } from 'types/browser';
+import { DAppInfo } from 'types/browser';
 import { BrowserItem } from 'components/Browser/BrowserItem';
-import { SiteInfo, StoredSiteInfo } from 'stores/types';
+import { StoredSiteInfo } from 'stores/types';
 import IconItem from './Shared/IconItem';
 import { getHostName } from 'utils/browser';
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +18,8 @@ import { RootNavigationProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { browserHomeItem, browserHomeItemIconOnly, browserHomeItemWidth } from 'constants/itemHeight';
+import { useGetDAPPsQuery } from 'stores/API';
+import { SliderBox } from 'react-native-image-slider-box';
 
 interface HeaderProps {
   title: string;
@@ -32,12 +33,29 @@ interface SectionListProps {
 type RecommendedListType = {
   data: DAppInfo[];
 };
-type SearchItemType = {
-  isSearch?: boolean;
-} & SiteInfo;
 const ICON_ITEM_HEIGHT = browserHomeItemIconOnly;
 const ITEM_HEIGHT = browserHomeItem;
 const ITEM_WIDTH = browserHomeItemWidth;
+const paginationBoxStyle = {
+  position: 'absolute',
+  bottom: -12,
+  right: 0,
+  left: 0,
+  padding: 0,
+  alignItems: 'center',
+  alignSelf: 'center',
+  justifyContent: 'center',
+  paddingVertical: 10,
+};
+const dotStyle = {
+  width: 6,
+  height: 6,
+  borderRadius: 3,
+  marginHorizontal: 0,
+  padding: 0,
+  margin: 0,
+  backgroundColor: 'rgba(128, 128, 128, 0.92)',
+};
 const SectionHeader: React.FC<HeaderProps> = ({ title, actionTitle, onPress }): JSX.Element => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet();
@@ -79,54 +97,62 @@ const ItemSeparator = () => {
 const BrowserHome = () => {
   const stylesheet = createStylesheet();
   const theme = useSubWalletTheme().swThemes;
-  const [dApps] = useState<PredefinedDApps>(predefinedDApps);
+  const { data: dApps, isLoading } = useGetDAPPsQuery(undefined);
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
-  const recommendedList = useMemo((): RecommendedListType[] => {
+  const recommendedList = useMemo((): RecommendedListType[] | [] => {
+    if (!dApps) {
+      return [];
+    }
     const sectionData = [];
     for (let i = 0; i < 20; i += 5) {
       const section = {
-        data: dApps.dapps.slice(i, i + 5),
+        data: dApps.slice(i, i + 5),
       };
       sectionData.push(section);
     }
     return sectionData;
-  }, [dApps.dapps]);
+  }, [dApps]);
 
-  const onPressSectionItem = (item: SearchItemType) => {
-    navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name });
+  const bannerData = useMemo(() => {
+    if (!dApps) {
+      return undefined;
+    }
+
+    return dApps.filter(dApp => dApp.is_featured);
+  }, [dApps]);
+  const getBannerImages = useMemo(() => {
+    if (!bannerData) {
+      return [Images.browserBanner];
+    }
+
+    return bannerData.map(dApp => dApp.preview_image);
+  }, [bannerData]);
+
+  const onPressSectionItem = (item: DAppInfo) => {
+    navigation.navigate('BrowserTabsManager', { url: item.url, name: item.title });
   };
 
-  const renderRecentItem: ListRenderItem<StoredSiteInfo> = ({ item }) => {
-    const data = dApps.dapps.find(dAppItem => item.url.includes(dAppItem.id));
-
-    return (
-      <IconItem
-        data={data}
-        url={item.url}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: data?.name })}
-      />
-    );
-  };
-  const renderBookmarkItem: ListRenderItem<StoredSiteInfo> = ({ item }) => {
-    const data = dApps.dapps.find(dAppItem => item.url.includes(dAppItem.id));
-    return (
-      <IconItem
-        data={data}
-        url={item.url}
-        defaultData={item}
-        onPress={() => navigation.navigate('BrowserTabsManager', { url: item.url, name: item.name })}
-        isWithText
-      />
-    );
-  };
+  const renderRecentItem: ListRenderItem<StoredSiteInfo> = useCallback(
+    ({ item }) => {
+      return <IconItem isLoading={isLoading} data={dApps} itemData={item} />;
+    },
+    [dApps, isLoading],
+  );
+  const renderBookmarkItem: ListRenderItem<StoredSiteInfo> = useCallback(
+    ({ item }) => {
+      return <IconItem isLoading={isLoading} data={dApps} itemData={item} isWithText />;
+    },
+    [dApps, isLoading],
+  );
   const renderSectionItem = (item: DAppInfo) => {
     return (
       <BrowserItem
+        isLoading={isLoading}
         key={item.id}
         style={stylesheet.browserItem}
-        title={item.name}
+        title={item.title}
         subtitle={getHostName(item.url)}
         url={item.url}
         logo={item.icon}
@@ -144,7 +170,21 @@ const BrowserHome = () => {
   return (
     <View style={stylesheet.container}>
       <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-        <FastImage style={stylesheet.banner} resizeMode="cover" source={Images.browserBanner} />
+        <SliderBox
+          ImageComponent={FastImage}
+          images={getBannerImages}
+          sliderBoxHeight={200}
+          onCurrentImagePressed={(index: number) => bannerData && onPressSectionItem(bannerData[index])}
+          dotColor="white"
+          inactiveDotColor="#90A4AE"
+          autoplay
+          resizeMethod={'resize'}
+          resizeMode={'cover'}
+          paginationBoxStyle={paginationBoxStyle}
+          dotStyle={dotStyle}
+          ImageComponentStyle={stylesheet.banner}
+          imageLoadingColor="#2196F3"
+        />
         {historyItems && historyItems.length > 0 && (
           <>
             <SectionHeader

@@ -8,7 +8,7 @@ const Styles = () => {
 
   return StyleSheet.create({
     container: { flex: 1 },
-    banner: { height: 120, borderRadius: theme.borderRadiusLG, margin: theme.margin },
+    banner: { height: 120, borderRadius: theme.borderRadiusLG, margin: theme.margin, width: '92%' },
     sectionContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
