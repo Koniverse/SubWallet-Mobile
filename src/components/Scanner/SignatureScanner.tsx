@@ -9,6 +9,8 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import ModalBase from 'components/Modal/Base/ModalBase';
 import { QrCodeScanner } from 'components/QrCodeScanner';
+import { launchImageLibrary } from 'react-native-image-picker';
+import RNQRGenerator from 'rn-qr-generator';
 
 interface Props {
   visible: boolean;
@@ -51,6 +53,27 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
     }
   }, [visible]);
 
+  const onPressLibraryBtn = async () => {
+    const result = await launchImageLibrary({ mediaType: 'photo' });
+    RNQRGenerator.detect({
+      uri: result.assets && result.assets[0]?.uri,
+    })
+      .then(response => {
+        const signature = `0x${response.values[0]}`;
+        if (isHex(signature)) {
+          setError('');
+          onSuccess({
+            signature: signature,
+          });
+        } else {
+          const message = i18n.errorMessage.scanAgain;
+
+          setError(message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
   return (
     <ModalBase
       isVisible={visible}
@@ -59,7 +82,12 @@ const QrAddressScanner = ({ visible, onSuccess, setVisible }: Props) => {
       onBackButtonPress={onHideModal}>
       <SafeAreaView style={[ScannerStyles.SafeAreaStyle, { backgroundColor: theme.colorBgSecondary }]} />
       <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
-      <QrCodeScanner onPressCancel={onHideModal} onSuccess={handleRead} error={error} />
+      <QrCodeScanner
+        onPressCancel={onHideModal}
+        onPressLibraryBtn={onPressLibraryBtn}
+        onSuccess={handleRead}
+        error={error}
+      />
     </ModalBase>
   );
 };
