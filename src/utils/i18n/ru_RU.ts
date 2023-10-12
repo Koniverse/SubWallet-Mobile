@@ -504,6 +504,8 @@ export const ru = {
     hexData: 'Hex-данные',
     methodData: 'Данные метода',
     dApp: 'dApp',
+    nftId: 'NFT ID',
+    collectionId: 'Collection ID',
   },
   placeholder: {
     password: 'Пароль',

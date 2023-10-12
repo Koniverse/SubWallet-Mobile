@@ -126,7 +126,9 @@ const propDetail = (title: string, valueDict: Record<string, any>, key: number):
       <View style={PropWrapperStyle} key={key}>
         <View style={PropDetailStyle}>
           <Text style={PropTitleStyle}>{title}</Text>
-          <Text style={PropValueStyle}>{valueDict.value}</Text>
+          <Text numberOfLines={1} style={PropValueStyle}>
+            {valueDict.value}
+          </Text>
         </View>
       </View>
     );
@@ -282,17 +284,30 @@ const NftDetail = ({
               <Text style={AttValueStyle}>{data?.rarity}</Text>
             </View>
           )}
-          {!!data.properties && (
-            <View>
-              <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
-              <View style={PropContainerStyle}>
-                {Object.keys(data?.properties).map((key, index) => {
-                  // @ts-ignore
-                  return propDetail(key, data?.properties[key], index);
-                })}
-              </View>
+
+          <View>
+            <Text style={AttTitleStyle}>{i18n.nftScreen.nftDetail.properties}</Text>
+            <View style={PropContainerStyle}>
+              {propDetail(
+                i18n.inputLabel.nftId,
+                { value: data.id },
+                (data?.properties ? Object.keys(data?.properties).length : 0) + 1,
+              )}
+              {propDetail(
+                i18n.inputLabel.collectionId,
+                { value: data.collectionId },
+                (data?.properties ? Object.keys(data?.properties).length : 0) + 2,
+              )}
+              {!!data.properties && (
+                <View>
+                  {Object.keys(data?.properties).map((key, index) => {
+                    // @ts-ignore
+                    return propDetail(key, data?.properties[key], index);
+                  })}
+                </View>
+              )}
             </View>
-          )}
+          </View>
         </ScrollView>
 
         {canSend && (
