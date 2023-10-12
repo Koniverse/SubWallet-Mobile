@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ListRenderItemInfo, View } from 'react-native';
 import { CryptoNavigationProps, TokenGroupsDetailProps } from 'routes/home';
 import { SwNumberProps } from 'components/design-system-ui/number';
@@ -52,6 +52,8 @@ export const TokenGroupsDetail = ({
 
     return '';
   }, [tokenGroupSlug, assetRegistryMap, multiChainAssetMap]);
+
+  console.log('groupSymbol', groupSymbol);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   const {
@@ -176,12 +178,6 @@ export const TokenGroupsDetail = ({
     ),
     [isShowBalance, onClickItem, theme.colorBgSecondary],
   );
-
-  useEffect(() => {
-    if (!isTokenGroupComputing && !isAccountBalanceComputing && !tokenBalanceItems.length) {
-      navigation.navigate('Home', { screen: 'Tokens', params: { screen: 'TokenGroups' } });
-    }
-  }, [isAccountBalanceComputing, isTokenGroupComputing, navigation, tokenBalanceItems]);
 
   return (
     <ScreenContainer gradientBackground={GradientBackgroundColorSet[2]}>

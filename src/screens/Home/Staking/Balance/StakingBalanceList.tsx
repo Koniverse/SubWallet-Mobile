@@ -19,6 +19,7 @@ import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import BigNumber from 'bignumber.js';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { StakingBalancesProps } from 'routes/staking/stakingScreen';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -54,10 +55,15 @@ const searchFunction = (items: StakingDataType[], searchString: string) => {
   });
 };
 
-const StakingBalanceList = () => {
+export const StakingBalanceList = ({
+  route: {
+    params: { chain: _stakingChain, type: _stakingType },
+  },
+}: StakingBalancesProps) => {
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
   const navigation = useNavigation<RootNavigationProps>();
+  const { isLocked } = useSelector((state: RootState) => state.accountState);
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
@@ -73,7 +79,7 @@ const StakingBalanceList = () => {
     { label: i18n.filterOptions.nominated, value: FilterValue.NOMINATED },
     { label: i18n.filterOptions.pooled, value: FilterValue.POOLED },
   ];
-  const stakingList = useMemo(() => {
+  const stakingList: StakingDataType[] = useMemo(() => {
     if (!data.length) {
       return [];
     }
@@ -91,6 +97,23 @@ const StakingBalanceList = () => {
     });
     return result;
   }, [data, priceMap]);
+
+  useEffect(() => {
+    if (detailModalVisible || isLocked) {
+      return;
+    }
+    if (_stakingChain && _stakingType) {
+      const selectedValue = stakingList.find(
+        item => item.chainStakingMetadata?.chain === _stakingChain && item.chainStakingMetadata?.type === _stakingType,
+      );
+
+      if (selectedValue) {
+        setSelectedItem(selectedValue);
+        setDetailModalVisible(true);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderEmpty = () => {
     return (

@@ -1,6 +1,6 @@
 import { NavigationState } from '@react-navigation/routers';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
-import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { ComponentType, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LinkingOptions, NavigationContainer, StackActions, useNavigationContainerRef } from '@react-navigation/native';
 import AttachReadOnly from 'screens/Account/AttachReadOnly';
 import ConnectKeystone from 'screens/Account/ConnectQrSigner/ConnectKeystone';
@@ -47,15 +47,15 @@ import ChangeMasterPassword from 'screens/MasterPassword/ChangeMasterPassword';
 import { ImportNetwork } from 'screens/ImportNetwork';
 import History from 'screens/Home/History';
 import withPageWrapper from 'components/pageWrapper';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AddProvider } from 'screens/AddProvider';
 import TransactionScreen from 'screens/Transaction/TransactionScreen';
 import SendNFT from 'screens/Transaction/NFT';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import { Keyboard, Platform, StatusBar } from 'react-native';
+import { Keyboard, Linking, Platform, StatusBar } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { Home } from 'screens/Home';
+import { AppNavigatorDeepLinkStatus, Home } from 'screens/Home';
 import { deviceWidth } from 'constants/index';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Settings } from 'screens/Settings';
@@ -72,6 +72,17 @@ import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
 import { UnlockModal } from 'components/common/Modal/UnlockModal';
 import { AppModalContext } from 'providers/AppModalContext';
 import { PortalHost } from '@gorhom/portal';
+import { findAccountByAddress } from 'utils/index';
+import { CurrentAccountInfo } from '@subwallet/extension-base/background/KoniTypes';
+import { saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
+import urlParse from 'url-parse';
+import useChainChecker from 'hooks/chain/useChainChecker';
+import { transformUniversalToNative } from 'utils/deeplink';
+import { setPrevDeeplinkUrl } from './AppNew';
+import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import queryString from 'querystring';
+import { connectWalletConnect } from 'utils/walletConnect';
+import { useToast } from 'react-native-toast-notifications';
 
 interface Props {
   isAppReady: boolean;
@@ -95,6 +106,65 @@ const config: LinkingOptions<RootStackParamList>['config'] = {
       stringify: {
         url: url => url,
         name: name => name || '',
+      },
+    },
+    Home: {
+      path: 'home',
+      screens: {
+        Main: {
+          path: 'main',
+          screens: {
+            Tokens: {
+              path: 'tokens',
+              initialRouteName: 'TokenGroups',
+              screens: {
+                TokenGroupsDetail: {
+                  path: 'token-groups-detail',
+                  stringify: {
+                    address: (address: string) => address,
+                    slug: (slug: string) => slug,
+                  },
+                },
+              },
+            },
+            NFTs: {
+              path: 'nfts',
+              screens: {
+                Collection: {
+                  path: 'collection',
+                  stringify: {
+                    collectionId: (collectionId: string) => collectionId,
+                  },
+                },
+                NftDetail: {
+                  path: 'nft-detail',
+                  stringify: {
+                    collectionId: (collectionId: string) => collectionId,
+                    nftId: (nftId: string) => nftId,
+                  },
+                },
+              },
+            },
+            Crowdloans: {
+              path: 'crowdloans',
+            },
+            Staking: {
+              path: 'staking',
+              screens: {
+                StakingBalances: {
+                  path: 'staking-balances',
+                  stringify: {
+                    chain: (chain: string) => chain,
+                    type: (type: string) => type,
+                  },
+                },
+              },
+            },
+            Browser: {
+              path: 'browser-home',
+            },
+          },
+        },
       },
     },
   },
@@ -132,6 +202,10 @@ const ConnectionListScreen = (props: JSX.IntrinsicAttributes) => {
   return withPageWrapper(ConnectionList as ComponentType, ['walletConnect'])(props);
 };
 
+type DeepLinkSubscriptionType = {
+  url: string;
+};
+
 const AppNavigator = ({ isAppReady }: Props) => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
@@ -141,10 +215,81 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const [currentRoute, setCurrentRoute] = useState<RootRouteProps | undefined>(undefined);
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasConfirmations } = useSelector((state: RootState) => state.requestState);
-  const { accounts, hasMasterPassword } = useSelector((state: RootState) => state.accountState);
-  const { isLocked } = useAppLock();
+  const { accounts, hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
+  const { isLocked: isLogin } = useAppLock();
   const [isNavigationReady, setNavigationReady] = useState<boolean>(false);
   const appModalContext = useContext(AppModalContext);
+  const isLockedRef = useRef(isLogin);
+  const { checkChainConnected } = useChainChecker();
+  const toast = useToast();
+  const dispatch = useDispatch();
+  const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
+  const finishLoginProgressRef = useRef<Function | null>(null);
+  const waitForLoginProcessRef = useRef<Promise<boolean> | null>(null);
+  const isPreventDeepLinkRef = useRef(isEmptyAccounts || !hasMasterPassword || hasConfirmations);
+
+  useEffect(() => {
+    if (!isLocked && finishLoginProgressRef.current) {
+      finishLoginProgressRef.current(!isLocked);
+      finishLoginProgressRef.current = null;
+    }
+    if (isLocked) {
+      waitForLoginProcessRef.current = null;
+      finishLoginProgressRef.current = null;
+    }
+  }, [isLocked]);
+
+  useEffect(() => {
+    if (isReady) {
+      const unsubscribe = Linking.addEventListener('url', ({ url }) => {
+        const _url = transformUniversalToNative(url);
+        if (isPreventDeepLinkRef.current) {
+          return;
+        }
+        if (appNavigatorDeepLinkStatus.current === AppNavigatorDeepLinkStatus.BLOCK) {
+          appNavigatorDeepLinkStatus.current = AppNavigatorDeepLinkStatus.RESET;
+        }
+        const urlParsed = new urlParse(_url);
+        setPrevDeeplinkUrl('');
+
+        if (urlParsed.hostname === 'wc') {
+          dispatch(updateIsDeepLinkConnect(true));
+          if (urlParsed.query.startsWith('?requestId')) {
+            return;
+          }
+          const decodedWcUrl = queryString.decode(urlParsed.query.slice(5));
+          const finalWcUrl = Object.keys(decodedWcUrl)[0];
+          connectWalletConnect(finalWcUrl, toast);
+        }
+
+        if (appNavigatorDeepLinkStatus.current === AppNavigatorDeepLinkStatus.AVAILABLE) {
+          waitForLoginProcessRef.current = new Promise(resolve => {
+            finishLoginProgressRef.current = resolve;
+          });
+          (async () => {
+            await waitForLoginProcessRef.current;
+            Linking.openURL(_url);
+            appNavigatorDeepLinkStatus.current = AppNavigatorDeepLinkStatus.BLOCK;
+            waitForLoginProcessRef.current = null;
+            finishLoginProgressRef.current = null;
+          })();
+        }
+        if (appNavigatorDeepLinkStatus.current === AppNavigatorDeepLinkStatus.RESET) {
+          appNavigatorDeepLinkStatus.current = AppNavigatorDeepLinkStatus.AVAILABLE;
+        }
+      });
+      return () => unsubscribe.remove();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]);
+
+  useEffect(() => {
+    isLockedRef.current = isLogin;
+  }, [isLogin]);
+
+  useEffect(() => {
+    isPreventDeepLinkRef.current = isEmptyAccounts || !hasMasterPassword || hasConfirmations;
+  }, [hasConfirmations, hasMasterPassword, isEmptyAccounts]);
 
   const needMigrate = useMemo(
     () =>
@@ -157,6 +302,56 @@ const AppNavigator = ({ isAppReady }: Props) => {
   const linking: LinkingOptions<RootStackParamList> = {
     prefixes: deeplinks,
     config,
+    async getInitialURL() {
+      return null;
+    },
+    subscribe: listener => {
+      const onReceiveURL = ({ url }: DeepLinkSubscriptionType) => {
+        const parseUrl = new urlParse(url);
+        const urlQuery = parseUrl.query.substring(1);
+        const urlQueryMap: Record<string, string> = {};
+        urlQuery.split('&').forEach(item => {
+          const splitItem = item.split('=');
+          urlQueryMap[splitItem[0]] = splitItem[1];
+        });
+
+        const accountByAddress = findAccountByAddress(accounts, urlQueryMap.address);
+        //change account follow url
+        if (accountByAddress) {
+          const accountInfo = {
+            address: urlQueryMap.address,
+          } as CurrentAccountInfo;
+
+          saveCurrentAccountAddress(accountInfo).catch(e => {
+            console.error('There is a problem when set Current Account', e);
+          });
+        } else {
+          saveCurrentAccountAddress({ address: 'ALL' }).catch(e => {
+            console.error('There is a problem when set Current Account', e);
+          });
+        }
+        //enable Network
+        const originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
+        const isChainConnected = checkChainConnected(originChain);
+
+        if (!isChainConnected && originChain) {
+          updateAssetSetting({
+            tokenSlug: urlQueryMap.slug,
+            assetSetting: {
+              visible: true,
+            },
+            autoEnableNativeToken: true,
+          });
+        }
+        if (isLockedRef.current || isPreventDeepLinkRef.current) {
+          return;
+        }
+        listener(url);
+      };
+      const linkingListener = Linking.addEventListener('url', onReceiveURL);
+
+      return () => linkingListener.remove();
+    },
   };
 
   const onError = (error: Error, stackTrace: string) => {
@@ -173,7 +368,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       if (currentRoute.name !== 'Confirmations' && amount) {
         if (
           !['CreateAccount', 'CreatePassword', 'Login', 'UnlockModal'].includes(currentRoute.name) &&
-          !isLocked &&
+          !isLogin &&
           amount
         ) {
           Keyboard.dismiss();
@@ -185,10 +380,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
     return () => {
       amount = false;
     };
-  }, [hasConfirmations, navigationRef, currentRoute, isLocked]);
+  }, [hasConfirmations, navigationRef, currentRoute, isLogin]);
 
   useEffect(() => {
-    if (needMigrateMasterPassword && !isLocked) {
+    if (needMigrateMasterPassword && !isLogin) {
       if (!['MigratePassword', 'UnlockModal', 'Login'].includes(currentRoute.name)) {
         navigationRef.current?.reset({
           index: 1,
@@ -196,10 +391,10 @@ const AppNavigator = ({ isAppReady }: Props) => {
         });
       }
     }
-  }, [currentRoute, isLocked, navigationRef, needMigrateMasterPassword]);
+  }, [currentRoute, isLogin, navigationRef, needMigrateMasterPassword]);
 
   useEffect(() => {
-    if (isLocked && !!accounts.length && isNavigationReady) {
+    if (isLogin && !!accounts.length && isNavigationReady) {
       appModalContext.hideConfirmModal();
       if (currentRoute && currentRoute.name === 'Confirmations') {
         setTimeout(() => navigationRef.current?.dispatch(StackActions.replace('Login')), 300);
@@ -208,7 +403,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLocked, isNavigationReady, accounts, currentRoute]);
+  }, [isLogin, isNavigationReady, accounts, currentRoute]);
 
   useEffect(() => {
     if (isEmptyAccounts) {
