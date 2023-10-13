@@ -89,7 +89,10 @@ const rootReducer = combineReducers({
   logoMaps: LogoMap,
 
   // API
-  [browserDAPPs.reducerPath]: browserDAPPs.reducer,
+  [browserDAPPs.reducerPath]: persistReducer(
+    { key: browserDAPPs.reducerPath, storage: mmkvReduxStore },
+    browserDAPPs.reducer,
+  ),
 });
 
 const persistedReducer = persistReducer(persistRootConfig, rootReducer);

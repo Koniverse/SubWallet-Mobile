@@ -14,6 +14,64 @@ const DEFAULT_SERVICE_INFO: Record<SupportService, BuyService> = {
 };
 
 export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
+  'polkadot-NATIVE-DOT': {
+    serviceInfo: {
+      ...DEFAULT_SERVICE_INFO,
+      transak: {
+        network: 'mainnet',
+        symbol: 'DOT',
+      },
+      banxa: {
+        network: 'DOT',
+        symbol: 'DOT',
+      },
+      coinbase: {
+        network: 'polkadot',
+        symbol: 'DOT',
+      },
+    },
+    network: 'polkadot',
+    slug: 'polkadot-NATIVE-DOT',
+    symbol: 'DOT',
+    support: 'SUBSTRATE',
+    services: ['transak', 'banxa', 'coinbase'],
+  },
+  'aleph-NATIVE-AZERO': {
+    serviceInfo: {
+      ...DEFAULT_SERVICE_INFO,
+      transak: {
+        network: 'alephzero',
+        symbol: 'AZERO',
+      },
+    },
+    network: 'aleph',
+    slug: 'aleph-NATIVE-AZERO',
+    symbol: 'AZERO',
+    support: 'SUBSTRATE',
+    services: ['transak'],
+  },
+  'ethereum-NATIVE-ETH': {
+    serviceInfo: {
+      ...DEFAULT_SERVICE_INFO,
+      transak: {
+        network: 'ethereum',
+        symbol: 'ETH',
+      },
+      banxa: {
+        network: 'ETH',
+        symbol: 'ETH',
+      },
+      coinbase: {
+        network: 'ethereum',
+        symbol: 'ETH',
+      },
+    },
+    network: 'ethereum',
+    slug: 'ethereum-NATIVE-ETH',
+    symbol: 'ETH',
+    support: 'ETHEREUM',
+    services: ['transak', 'banxa', 'coinbase'],
+  },
   'astar-NATIVE-ASTR': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
@@ -45,20 +103,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     symbol: 'AVAX',
     support: 'ETHEREUM',
     services: ['transak', 'coinbase'],
-  },
-  'aleph-NATIVE-AZERO': {
-    serviceInfo: {
-      ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'alephzero',
-        symbol: 'AZERO',
-      },
-    },
-    network: 'aleph',
-    slug: 'aleph-NATIVE-AZERO',
-    symbol: 'AZERO',
-    support: 'SUBSTRATE',
-    services: ['transak'],
   },
   'binance-NATIVE-BNB': {
     serviceInfo: {
@@ -102,28 +146,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     support: 'SUBSTRATE',
     services: ['transak'],
   },
-  'polkadot-NATIVE-DOT': {
-    serviceInfo: {
-      ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'mainnet',
-        symbol: 'DOT',
-      },
-      banxa: {
-        network: 'DOT',
-        symbol: 'DOT',
-      },
-      coinbase: {
-        network: 'polkadot',
-        symbol: 'DOT',
-      },
-    },
-    network: 'polkadot',
-    slug: 'polkadot-NATIVE-DOT',
-    symbol: 'DOT',
-    support: 'SUBSTRATE',
-    services: ['transak', 'banxa', 'coinbase'],
-  },
   'arbitrum_one-NATIVE-ETH': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
@@ -159,28 +181,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     symbol: 'ETH',
     support: 'ETHEREUM',
     services: ['transak', 'coinbase'],
-  },
-  'ethereum-NATIVE-ETH': {
-    serviceInfo: {
-      ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'ethereum',
-        symbol: 'ETH',
-      },
-      banxa: {
-        network: 'ETH',
-        symbol: 'ETH',
-      },
-      coinbase: {
-        network: 'ethereum',
-        symbol: 'ETH',
-      },
-    },
-    network: 'ethereum',
-    slug: 'ethereum-NATIVE-ETH',
-    symbol: 'ETH',
-    support: 'ETHEREUM',
-    services: ['transak', 'banxa', 'coinbase'],
   },
   'optimism-NATIVE-ETH': {
     serviceInfo: {
