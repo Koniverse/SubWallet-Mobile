@@ -20,6 +20,7 @@ export interface SWModalProps {
   level?: number;
   onChangeModalVisible?: () => void;
   isUseForceHidden?: boolean;
+  disabledOnPressBackDrop?: boolean;
 }
 
 export type SWModalRefProps = {
@@ -43,6 +44,7 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       onChangeModalVisible,
       isUseForceHidden,
       isAllowSwipeDown = true,
+      disabledOnPressBackDrop = false,
     },
     ref,
   ) => {
@@ -146,7 +148,12 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       <>
         {!isForcedHidden && isVisible && (
           <>
-            <TouchableOpacity activeOpacity={0.8} style={_styles.backDropButton} onPress={onClose} />
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={_styles.backDropButton}
+              onPress={onClose}
+              disabled={disabledOnPressBackDrop}
+            />
             <GestureDetector gesture={gesture}>
               {
                 // @ts-ignore

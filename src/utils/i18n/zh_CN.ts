@@ -398,6 +398,8 @@ export const zh = {
     addNft: '导入NFT',
     addToken: '导入代币',
     addNetwork: '导入网络',
+    iDontCare: "I don't care",
+    joinNow: 'Join now',
   },
   inputLabel: {
     selectAcc: '选择账户',

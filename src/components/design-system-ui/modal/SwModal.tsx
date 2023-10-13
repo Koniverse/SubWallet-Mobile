@@ -29,6 +29,7 @@ export interface SWModalProps {
   modalBaseV2Ref?: React.RefObject<SWModalRefProps>;
   level?: number;
   isUseSafeAreaView?: boolean;
+  disabledOnPressBackDrop?: boolean;
   renderHeader?: React.ReactNode;
 }
 
@@ -83,6 +84,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
       level,
       isUseSafeAreaView = true,
       renderHeader,
+      disabledOnPressBackDrop,
     },
     ref,
   ) => {
@@ -136,6 +138,7 @@ const SwModal = React.forwardRef<ModalRefProps, SWModalProps>(
               setVisible={setVisible}
               height={childrenHeight}
               ref={modalBaseV2Ref}
+              disabledOnPressBackDrop={disabledOnPressBackDrop}
               isUseForceHidden={Platform.OS === 'android'}
               onChangeModalVisible={onChangeModalVisible}
               isAllowSwipeDown={isAllowSwipeDown}

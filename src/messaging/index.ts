@@ -63,6 +63,7 @@ import {
   RequestAuthorizationBlock,
   RequestAuthorizationPerSite,
   RequestBondingSubmit,
+  RequestCampaignBannerComplete,
   RequestChangeMasterPassword,
   RequestConnectWalletConnect,
   RequestCronAndSubscriptionAction,
@@ -1446,4 +1447,8 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
   }
 
   return null;
+}
+
+export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {
+  return sendMessage('pri(campaign.banner.complete)', request);
 }
