@@ -35,6 +35,7 @@ import { RootNavigationProps } from 'routes/index';
 import { InputAddress } from 'components/Input/InputAddressV2';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { SendNFTProps } from 'routes/transaction/transactionAction';
+import { useCancelLoading } from 'hooks/transaction/useCancelLoading';
 
 const DEFAULT_ITEM: NftItem = {
   collectionId: 'unknown',
@@ -139,7 +140,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
   const [loading, setLoading] = useState(false);
   const { title, formState, onChangeValue, onChangeChainValue, onDone } = useTransaction('send-nft', NFTFormConfig);
   const isFormValid = Object.values(formState.isValidated).every(val => val);
-
+  const { isSubmit } = useCancelLoading(setLoading);
   const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
 
   const onChangeReceiverAddress = useCallback(
@@ -201,6 +202,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
       }
 
       setLoading(true);
+      isSubmit.current = true;
 
       setTimeout(() => {
         // Handle transfer action
@@ -209,10 +211,11 @@ const SendNFT: React.FC<SendNFTProps> = ({
           .catch(onError)
           .finally(() => {
             setLoading(false);
+            isSubmit.current = false;
           });
       }, 300);
     },
-    [nftChain, nftItem, onError, onSuccess, owner],
+    [isSubmit, nftChain, nftItem, onError, onSuccess, owner],
   );
 
   const handleSend = useCallback(() => {

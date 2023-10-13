@@ -515,7 +515,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
               </Stack.Group>
               <Stack.Group
                 screenOptions={{
-                  presentation: 'transparentModal',
+                  presentation: 'containedTransparentModal',
                   contentStyle: { backgroundColor: theme.swThemes.colorBgMask },
                   headerShown: false,
                 }}>

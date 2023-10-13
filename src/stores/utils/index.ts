@@ -42,10 +42,6 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { SessionTypes } from '@walletconnect/types';
 // Setup redux stores
 
-function voidFn() {
-  // do nothing
-}
-
 // Base
 // AccountState store
 export const updateAccountData = (data: AccountsWithCurrentAddress) => {
@@ -124,7 +120,7 @@ export const updateAuthorizeRequests = (data: AuthorizeRequest[]) => {
 export const subscribeAuthorizeRequests = lazySubscribeMessage(
   'pri(authorize.requestsV2)',
   null,
-  voidFn,
+  updateAuthorizeRequests,
   updateAuthorizeRequests,
 );
 
@@ -138,7 +134,7 @@ export const updateMetadataRequests = (data: MetadataRequest[]) => {
 export const subscribeMetadataRequests = lazySubscribeMessage(
   'pri(metadata.requests)',
   null,
-  voidFn,
+  updateMetadataRequests,
   updateMetadataRequests,
 );
 
@@ -152,7 +148,7 @@ export const updateSigningRequests = (data: SigningRequest[]) => {
 export const subscribeSigningRequests = lazySubscribeMessage(
   'pri(signing.requests)',
   null,
-  voidFn,
+  updateSigningRequests,
   updateSigningRequests,
 );
 

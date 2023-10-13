@@ -69,6 +69,7 @@ import createStylesheet from './styles';
 import { useGetBalance } from 'hooks/balance';
 import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 import { ModalRef } from 'types/modalRef';
+import { useCancelLoading } from 'hooks/transaction/useCancelLoading';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -380,6 +381,7 @@ export const SendFund = ({
   const [isBalanceReady, setIsBalanceReady] = useState(true);
   const [forceUpdateValue, setForceUpdateValue] = useState<{ value: string | null } | undefined>(undefined);
   const chainStatus = useMemo(() => chainStateMap[chainValue]?.connectionStatus, [chainValue, chainStateMap]);
+  const { isSubmit } = useCancelLoading(setLoading);
 
   const senderAccountName = useMemo(() => {
     if (!fromValue) {
@@ -616,6 +618,7 @@ export const SendFund = ({
     (values: TransferFormValues) => {
       Keyboard.dismiss();
       setLoading(true);
+      isSubmit.current = true;
       const { chain, destChain, to, value, from, asset } = values;
 
       let sendPromise: Promise<SWTransactionResponse>;
@@ -624,6 +627,7 @@ export const SendFund = ({
 
       if (!account) {
         setLoading(false);
+        isSubmit.current = false;
         hideAll();
         show("Can't find account");
 
@@ -639,6 +643,7 @@ export const SendFund = ({
           if (isEthereum) {
             if (!_isTokenTransferredByEvm(chainAsset)) {
               setLoading(false);
+              isSubmit.current = false;
               hideAll();
               show('Ledger does not support transfer for this token');
 
@@ -659,6 +664,7 @@ export const SendFund = ({
       } else {
         if (isLedger) {
           setLoading(false);
+          isSubmit.current = false;
           hideAll();
           show('This feature is not available for Ledger account');
 
@@ -684,10 +690,11 @@ export const SendFund = ({
           .catch(onError)
           .finally(() => {
             setLoading(false);
+            isSubmit.current = false;
           });
       }, 300);
     },
-    [accounts, assetRegistry, isTransferAll, hideAll, show, onSuccess, onError],
+    [isSubmit, accounts, assetRegistry, hideAll, show, isTransferAll, onSuccess, onError],
   );
 
   const isNextButtonDisable = (() => {

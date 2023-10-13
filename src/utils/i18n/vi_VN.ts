@@ -1003,6 +1003,8 @@ export const vi = {
     updateNetwork: 'Cập nhật mạng',
     expiredConnectionTitle: 'Kết nối đã quá hạn.',
     unsupportedNetworkTitle: 'Mạng không được hỗ trợ',
+    noInternetConnection: 'No internet connection',
+    internetConnected: 'Internet connected',
   },
   warningMessage: {
     passwordTooShort: 'Mật khẩu quá ngắn',

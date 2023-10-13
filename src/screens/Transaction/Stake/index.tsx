@@ -51,6 +51,7 @@ import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { BN, BN_ZERO } from '@polkadot/util';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import { ChainStatus } from 'hooks/chain/useChainChecker';
+import { useCancelLoading } from 'hooks/transaction/useCancelLoading';
 
 export const Stake = ({
   route: {
@@ -70,6 +71,7 @@ export const Stake = ({
   const [isBalanceReady, setIsBalanceReady] = useState(true);
   const accountSelectorRef = useRef<ModalRef>();
   const tokenSelectorRef = useRef<ModalRef>();
+  const { isSubmit } = useCancelLoading(setLoading);
 
   const defaultStakingType: StakingType = useMemo(() => {
     if (isEthAdr) {
@@ -364,6 +366,7 @@ export const Stake = ({
 
   const onSubmit = () => {
     setLoading(true);
+    isSubmit.current = true;
     let bondingPromise: Promise<SWTransactionResponse>;
 
     if (currentPool && currentStakingType === StakingType.POOLED) {
@@ -391,6 +394,7 @@ export const Stake = ({
         .catch(onError)
         .finally(() => {
           setLoading(false);
+          isSubmit.current = false;
         });
     }, 300);
   };

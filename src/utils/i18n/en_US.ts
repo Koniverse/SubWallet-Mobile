@@ -1004,6 +1004,8 @@ export const en = {
     updateNetwork: 'Update network',
     expiredConnectionTitle: 'Connection expired',
     unsupportedNetworkTitle: 'Unsupported network',
+    noInternetConnection: 'No internet connection',
+    internetConnected: 'Internet connected',
   },
   warningMessage: {
     passwordTooShort: 'Password is too short',

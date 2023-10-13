@@ -993,6 +993,8 @@ export const zh = {
     updateNetwork: '更新网络',
     expiredConnectionTitle: '连接已过期',
     unsupportedNetworkTitle: '未支持的网络',
+    noInternetConnection: 'No internet connection',
+    internetConnected: 'Internet connected',
   },
   warningMessage: {
     passwordTooShort: '密码过短',
