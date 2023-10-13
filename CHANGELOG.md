@@ -1,3 +1,11 @@
+## 1.1.2 (224)
+- Implement Browser Predefined Data (#856)
+- Improve deeplink (Add more deeplink type) (#1049)
+- Show collection ID and NFT Id in the NFT detail screen for mobile app (#961)
+- Update UI Scan QR in case sign transaction use Polkadot vault (#1059)
+- Handle the case of supporting multiple services when buy token (#1053)
+- Rollback old static server (#rollback-static-server)
+
 ## 1.1.2 (223)
 - Update web-runner (v1.1.15) (#1052)
 - Re-check bug static server to support cors (#1051)
