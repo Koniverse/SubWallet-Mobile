@@ -66,7 +66,12 @@ export const WebViewDebugger = () => {
         </View>
         <View style={containerStyle}>
           <Input value={input} onChangeText={setInput} style={textStyle} />
-          <AddressScanner qrModalVisible={showQr} onPressCancel={() => setShowQr(false)} onChangeAddress={setInput} />
+          <AddressScanner
+            qrModalVisible={showQr}
+            onPressCancel={() => setShowQr(false)}
+            onChangeAddress={setInput}
+            setQrModalVisible={setShowQr}
+          />
           <Button style={{ marginBottom: 5 }} onPress={openQr}>
             Scan
           </Button>

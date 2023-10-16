@@ -95,7 +95,7 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
     [accountName, onComplete, toast],
   );
 
-  const { onOpenModal, onScan, isScanning, onHideModal } = useModalScanner(onSubmit);
+  const { onOpenModal, onScan, isScanning, onHideModal, setIsScanning } = useModalScanner(onSubmit);
   const { onPress: onPressSubmit } = useUnlockModal(navigation);
 
   return (
@@ -126,7 +126,13 @@ const ConnectQrSigner: React.FC<Props> = (props: Props) => {
           {loading ? i18n.buttonTitles.creating : i18n.buttonTitles.scanQrCode}
         </Button>
       </View>
-      <QrAddressScanner visible={isScanning} onHideModal={onHideModal} onSuccess={onScan} type={SCAN_TYPE.QR_SIGNER} />
+      <QrAddressScanner
+        visible={isScanning}
+        onHideModal={onHideModal}
+        onSuccess={onScan}
+        type={SCAN_TYPE.QR_SIGNER}
+        setQrModalVisible={setIsScanning}
+      />
     </ContainerWithSubHeader>
     // </Layout.WithSubHeaderOnly>
   );

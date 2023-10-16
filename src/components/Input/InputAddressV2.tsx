@@ -30,7 +30,10 @@ interface Props extends InputProps {
   networkGenesisHash?: string;
   addressPrefix?: number;
   saveAddress?: boolean;
-  scannerProps?: Omit<AddressScannerProps, 'onChangeAddress' | 'onPressCancel' | 'qrModalVisible'>;
+  scannerProps?: Omit<
+    AddressScannerProps,
+    'onChangeAddress' | 'onPressCancel' | 'qrModalVisible' | 'setQrModalVisible'
+  >;
   onSideEffectChange?: () => void; // callback for address book or scan QR
 }
 
@@ -298,6 +301,7 @@ const Component = (
         onChangeAddress={onScanInputText}
         isShowError
         error={error}
+        setQrModalVisible={setIsShowQrModalVisible}
       />
 
       {showAddressBook && (

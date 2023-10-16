@@ -117,6 +117,7 @@ export const Header = ({ rightComponent, disabled }: HeaderProps) => {
           setError(undefined);
           setIsScanning(false);
         }}
+        setQrModalVisible={setIsScanning}
         onChangeAddress={onScanAddress}
         error={error}
         isShowError={true}

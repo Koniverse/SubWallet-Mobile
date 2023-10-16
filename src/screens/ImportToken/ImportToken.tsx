@@ -399,6 +399,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             onChangeAddress={onScanContractAddress}
             isShowError
             error={error}
+            setQrModalVisible={setShowQrModalVisible}
           />
         </ScrollView>
 
