@@ -213,6 +213,13 @@ export const PoolSelector = ({
     [disabled, items.length, nominationPoolValueList.length],
   );
 
+  const onPressLightningBtn = useCallback(() => {
+    const poolId = PREDEFINED_STAKING_POOL[chain];
+
+    poolId !== undefined && onSelectItem && onSelectItem(String(poolId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain]);
+
   return (
     <>
       <FullSizeSelectModal
@@ -238,7 +245,8 @@ export const PoolSelector = ({
           <PoolSelectorField
             disabled={isDisabled}
             onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
-            onPressLightningBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
+            onPressLightningBtn={onPressLightningBtn}
+            showLightingBtn={!!PREDEFINED_STAKING_POOL[chain]}
             item={selectedPool}
             label={i18n.inputLabel.selectPool}
             loading={poolLoading}
