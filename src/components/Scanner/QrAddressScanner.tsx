@@ -1,30 +1,28 @@
 import { SCAN_TYPE } from 'constants/qr';
-import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar } from 'react-native';
-import { ScannerStyles } from 'styles/scanner';
-import { STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { QrAccount } from 'types/qr/attach';
 import i18n from 'utils/i18n/i18n';
 import { BarCodeReadEvent } from 'react-native-camera';
 import { getFunctionScan } from 'utils/scanner/attach';
-import ModalBase from 'components/Modal/Base/ModalBase';
 import { launchImageLibrary } from 'react-native-image-picker';
 import RNQRGenerator from 'rn-qr-generator';
 import { updatePreventLock } from 'stores/MobileSettings';
 import { useDispatch } from 'react-redux';
-import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { QrCodeScanner } from 'components/QrCodeScanner';
+import { SwFullSizeModal } from 'components/design-system-ui';
+import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 interface Props {
   visible: boolean;
   onHideModal: () => void;
   onSuccess: (data: QrAccount) => void;
   type: SCAN_TYPE.QR_SIGNER | SCAN_TYPE.SECRET;
+  setQrModalVisible: (value: boolean) => void;
 }
 
-const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
-  const theme = useSubWalletTheme().swThemes;
+const QrAddressScanner = ({ visible, onHideModal, onSuccess, type, setQrModalVisible }: Props) => {
   const [error, setError] = useState<string>('');
+  const addressScannerRef = useRef<SWModalRefProps>(null);
   const dispatch = useDispatch();
   const handleRead = useCallback(
     (event: BarCodeReadEvent) => {
@@ -79,16 +77,18 @@ const QrAddressScanner = ({ visible, onHideModal, onSuccess, type }: Props) => {
   }, [visible]);
 
   return (
-    <ModalBase isVisible={visible} style={{ flex: 1, width: '100%', margin: 0 }}>
-      <SafeAreaView style={ScannerStyles.SafeAreaStyle} />
-      <StatusBar barStyle={STATUS_BAR_LIGHT_CONTENT} backgroundColor={theme.colorBgSecondary} translucent={true} />
+    <SwFullSizeModal
+      isUseModalV2
+      modalVisible={visible}
+      modalBaseV2Ref={addressScannerRef}
+      setVisible={setQrModalVisible}>
       <QrCodeScanner
         onPressCancel={onHideModal}
         onPressLibraryBtn={onPressLibraryBtn}
         onSuccess={handleRead}
         error={error}
       />
-    </ModalBase>
+    </SwFullSizeModal>
   );
 };
 

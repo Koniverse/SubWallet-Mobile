@@ -432,6 +432,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           onChangeAddress={onScanContractAddress}
           isShowError
           error={error}
+          setQrModalVisible={setShowQrModalVisible}
         />
       </ScrollView>
 

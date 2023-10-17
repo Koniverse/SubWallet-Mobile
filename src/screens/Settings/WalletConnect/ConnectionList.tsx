@@ -135,6 +135,7 @@ export const ConnectionList = ({
 
       <AddressScanner
         qrModalVisible={isScanning}
+        setQrModalVisible={setIsScanning}
         onPressCancel={() => {
           setError(undefined);
           setIsScanning(false);

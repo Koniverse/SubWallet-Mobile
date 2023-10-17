@@ -204,6 +204,7 @@ const AttachReadOnly = () => {
             onChangeAddress={onScan}
             isShowError
             error={scanError}
+            setQrModalVisible={setIsScanning}
           />
         </ScrollView>
         <View style={styles.footer}>

@@ -1,4 +1,4 @@
-import { deviceHeight, deviceWidth } from 'constants/index';
+import { deviceWidth } from 'constants/index';
 import {
   bottomOverlayHeight,
   overlayColor,
@@ -20,7 +20,7 @@ const ContainerStyle: StyleProp<ViewStyle> = {
 const SafeAreaStyle: StyleProp<ViewStyle> = { backgroundColor: 'transparent' };
 
 const CameraStyle: StyleProp<ViewStyle> = {
-  height: deviceHeight,
+  height: '100%',
 };
 
 const RectangleContainerStyle: StyleProp<ViewStyle> = {
