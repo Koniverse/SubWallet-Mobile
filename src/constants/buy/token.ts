@@ -17,10 +17,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
   'polkadot-NATIVE-DOT': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'mainnet',
-        symbol: 'DOT',
-      },
       banxa: {
         network: 'DOT',
         symbol: 'DOT',
@@ -34,7 +30,7 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     slug: 'polkadot-NATIVE-DOT',
     symbol: 'DOT',
     support: 'SUBSTRATE',
-    services: ['transak', 'banxa', 'coinbase'],
+    services: ['banxa', 'coinbase'],
   },
   'aleph-NATIVE-AZERO': {
     serviceInfo: {
@@ -132,20 +128,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     support: 'SUBSTRATE',
     services: ['banxa'],
   },
-  'dockPosMainnet-NATIVE-DOCK': {
-    serviceInfo: {
-      ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'mainnet',
-        symbol: 'DOCK',
-      },
-    },
-    network: 'dockPosMainnet',
-    slug: 'dockPosMainnet-NATIVE-DOCK',
-    symbol: 'DOCK',
-    support: 'SUBSTRATE',
-    services: ['transak'],
-  },
   'arbitrum_one-NATIVE-ETH': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
@@ -221,10 +203,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
   'moonbeam-NATIVE-GLMR': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'mainnet',
-        symbol: 'GLMR',
-      },
       banxa: {
         network: 'GLMR',
         symbol: 'GLMR',
@@ -234,15 +212,11 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     slug: 'moonbeam-NATIVE-GLMR',
     symbol: 'GLMR',
     support: 'ETHEREUM',
-    services: ['transak', 'banxa'],
+    services: ['banxa'],
   },
   'kusama-NATIVE-KSM': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'mainnet',
-        symbol: 'KSM',
-      },
       banxa: {
         network: 'KSM',
         symbol: 'KSM',
@@ -256,7 +230,7 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     slug: 'kusama-NATIVE-KSM',
     symbol: 'KSM',
     support: 'SUBSTRATE',
-    services: ['transak', 'banxa', 'coinbase'],
+    services: ['banxa', 'coinbase'],
   },
   'polygon-NATIVE-MATIC': {
     serviceInfo: {
@@ -459,6 +433,10 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
         network: 'ethereum',
         symbol: 'DAI',
       },
+      banxa: {
+        network: 'ETH',
+        symbol: 'DAI',
+      },
       coinbase: {
         network: 'ethereum',
         symbol: 'DAI',
@@ -468,7 +446,7 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     slug: 'ethereum-ERC20-DAI-0x6B175474E89094C44Da98b954EedeAC495271d0F',
     symbol: 'DAI',
     support: 'ETHEREUM',
-    services: ['transak', 'coinbase'],
+    services: ['transak', 'banxa', 'coinbase'],
   },
   'ethereum-ERC20-ENJ-0xF629cBd94d3791C9250152BD8dfBDF380E2a3B9c': {
     serviceInfo: {
@@ -551,10 +529,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
   'ethereum-ERC20-SAND-0x3845badAde8e6dFF049820680d1F14bD3903a5d0': {
     serviceInfo: {
       ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'ethereum',
-        symbol: 'SAND',
-      },
       banxa: {
         network: 'ETH',
         symbol: 'SAND',
@@ -564,7 +538,7 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     slug: 'ethereum-ERC20-SAND-0x3845badAde8e6dFF049820680d1F14bD3903a5d0',
     symbol: 'SAND',
     support: 'ETHEREUM',
-    services: ['transak', 'banxa'],
+    services: ['banxa'],
   },
   'ethereum-ERC20-UNI-0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984': {
     serviceInfo: {
@@ -625,20 +599,6 @@ export const MAP_PREDEFINED_BUY_TOKEN: Record<string, BuyTokenInfo> = {
     symbol: 'USDC',
     support: 'ETHEREUM',
     services: ['transak', 'banxa'],
-  },
-  'optimism-ERC20-USDC-0x7F5c764cBc14f9669B88837ca1490cCa17c31607': {
-    serviceInfo: {
-      ...DEFAULT_SERVICE_INFO,
-      transak: {
-        network: 'optimism',
-        symbol: 'USDC',
-      },
-    },
-    network: 'optimism',
-    slug: 'optimism-ERC20-USDC-0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
-    symbol: 'USDC',
-    support: 'ETHEREUM',
-    services: ['transak'],
   },
   'polygon-ERC20-USDC-0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': {
     serviceInfo: {
