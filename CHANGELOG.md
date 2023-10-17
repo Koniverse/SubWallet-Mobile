@@ -1,3 +1,11 @@
+## 1.1.3 (225)
+- Cache the dApp list when opening the app for the first time (#1074)
+- Update buy token ordering (#1076)
+- The wallet connect confirmation is unable to be shown after opening the app from the browser (#1021)
+- Hide the AutoSelect validator/collator/dApp button if this method is not supported on mobile app (#1079)
+- Fix bug navigate incorrect in case switch account (#1071)
+- Update web-runner (v1.1.17) (#1084)
+
 ## 1.1.2 (224)
 - Implement Browser Predefined Data (#856)
 - Improve deeplink (Add more deeplink type) (#1049)
