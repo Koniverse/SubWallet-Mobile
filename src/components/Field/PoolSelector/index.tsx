@@ -17,6 +17,7 @@ interface Props extends FieldBaseProps {
   disabled?: boolean;
   onPressBookBtn?: () => void;
   onPressLightningBtn?: () => void;
+  showLightingBtn?: boolean;
 }
 
 const accountNameTextStyle: StyleProp<any> = {
@@ -46,6 +47,7 @@ export const PoolSelectorField = ({
   disabled,
   onPressBookBtn,
   onPressLightningBtn,
+  showLightingBtn = true,
   ...fieldBase
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
@@ -83,19 +85,21 @@ export const PoolSelectorField = ({
               }
               onPress={onPressBookBtn}
             />
-            <Button
-              disabled={disabled}
-              size={'xs'}
-              type={'ghost'}
-              icon={
-                <Icon
-                  phosphorIcon={Lightning}
-                  size={'sm'}
-                  iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
-                />
-              }
-              onPress={onPressLightningBtn}
-            />
+            {showLightingBtn && (
+              <Button
+                disabled={disabled}
+                size={'xs'}
+                type={'ghost'}
+                icon={
+                  <Icon
+                    phosphorIcon={Lightning}
+                    size={'sm'}
+                    iconColor={disabled ? theme.colorTextLight5 : theme.colorTextLight3}
+                  />
+                }
+                onPress={onPressLightningBtn}
+              />
+            )}
           </View>
         )}
       </View>
