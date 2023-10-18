@@ -30,6 +30,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
+import { useGetTokenConfigQuery } from 'stores/API';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -127,6 +128,7 @@ export const AppNew = () => {
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
   useStoreBackgroundService();
+  const { refetch } = useGetTokenConfigQuery(undefined, { pollingInterval: 300000 });
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -163,11 +165,13 @@ export const AppNew = () => {
       SplashScreen.hide();
     }, 100);
 
+    refetch();
     // if (buildNumber === 1) {
     // Set default value on the first time install
     // const buildNumberInt = parseInt(getBuildNumber(), 10);
     // dispatch(setBuildNumber(buildNumberInt));
     // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;

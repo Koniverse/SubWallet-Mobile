@@ -1,3 +1,7 @@
+## 1.1.3 (226)
+- Fix bug nft doesn't show
+- Fix bug show unclear message when send nft
+
 ## 1.1.3 (225)
 - Cache the dApp list when opening the app for the first time (#1074)
 - Update buy token ordering (#1076)

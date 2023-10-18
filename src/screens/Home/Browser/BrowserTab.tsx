@@ -346,7 +346,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
 
       if (isSync) {
         const injectScripts =
-          getJsInjectContent(true) + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
+          getJsInjectContent() + BridgeScript + injectPageJsContent + ConnectToNovaScript + DAppScript;
 
         setInjectedScripts(injectScripts);
       }

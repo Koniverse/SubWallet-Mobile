@@ -35,7 +35,7 @@ import LogoMap from 'stores/base/LogoMap';
 import { mmkvReduxStore } from 'utils/storage';
 import { PriceJson } from '@subwallet/extension-base/background/KoniTypes';
 import { AssetRegistryStore, BalanceStore, BrowserSlice, ChainStore } from './types';
-import { browserDAPPs } from './API';
+import { browserDAPPs, tokenConfig } from './API';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
 const persistRootConfig = {
@@ -93,6 +93,10 @@ const rootReducer = combineReducers({
     { key: browserDAPPs.reducerPath, storage: mmkvReduxStore },
     browserDAPPs.reducer,
   ),
+  [tokenConfig.reducerPath]: persistReducer(
+    { key: tokenConfig.reducerPath, storage: mmkvReduxStore },
+    tokenConfig.reducer,
+  ),
 });
 
 const persistedReducer = persistReducer(persistRootConfig, rootReducer);
@@ -104,7 +108,9 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(browserDAPPs.middleware),
+    })
+      .concat(browserDAPPs.middleware)
+      .concat(tokenConfig.middleware),
 });
 
 setupListeners(store.dispatch);

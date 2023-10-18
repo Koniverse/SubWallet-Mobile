@@ -18,6 +18,7 @@ import { RootNavigationProps } from 'routes/index';
 import { MAP_PREDEFINED_BUY_TOKEN } from 'constants/buy';
 import { isAccountAll } from 'utils/accountAll';
 import { BuyTokenInfo } from 'types/buy';
+import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 interface Props {
   balanceValue: SwNumberProps['value'];
@@ -42,6 +43,7 @@ export const TokenGroupsDetailUpperBlock = ({
   const theme = useSubWalletTheme().swThemes;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
+  const isShowBuyToken = useShowBuyToken();
 
   const _style = createStyleSheet(theme);
 
@@ -117,12 +119,14 @@ export const TokenGroupsDetailUpperBlock = ({
           onPress={onOpenSendFund}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
         />
-        <ActionButton
-          icon={ButtonIcon.Buy}
-          onPress={onOpenBuyTokens}
-          buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
-          disabled={!buyInfos.length}
-        />
+        {isShowBuyToken && (
+          <ActionButton
+            icon={ButtonIcon.Buy}
+            onPress={onOpenBuyTokens}
+            buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}
+            disabled={!buyInfos.length}
+          />
+        )}
       </View>
     </View>
   );

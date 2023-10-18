@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
 import { CaretRight } from 'phosphor-react-native';
 import createStylesheet from './styles/BrowserHome';
@@ -97,10 +97,16 @@ const ItemSeparator = () => {
 const BrowserHome = () => {
   const stylesheet = createStylesheet();
   const theme = useSubWalletTheme().swThemes;
-  const { data: dApps, isLoading } = useGetDAPPsQuery(undefined);
+  const { data: dApps, isLoading, refetch } = useGetDAPPsQuery(undefined);
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const recommendedList = useMemo((): RecommendedListType[] | [] => {
     if (!dApps) {
       return [];

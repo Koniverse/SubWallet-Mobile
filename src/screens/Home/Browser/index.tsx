@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
@@ -69,7 +69,7 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
-  const { data: categories } = useGetDAPPCategoriesQuery(undefined);
+  const { data: categories, refetch } = useGetDAPPCategoriesQuery(undefined);
   const [searchString] = useState<string>('');
   const categoryTabRoutes = categories ? categories.map(item => ({ key: item.slug, title: item.name })) : [];
   const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
@@ -85,6 +85,11 @@ export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
       tabBarIcon: ({ focused }: TabbarType) => tabbarIcon(focused, item, theme),
     };
   };
+
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const screenListener = {
     focus: () => {
