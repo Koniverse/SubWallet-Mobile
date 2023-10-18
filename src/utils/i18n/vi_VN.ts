@@ -628,6 +628,9 @@ export const vi = {
       'Để việc quản lý mật khẩu trở nên dễ dàng hơn, master password sẽ được áp dụng thay thế PIN code trong bản cũ. Bạn cần nhập master password để mở khoá ứng dụng.',
     migrateMasterPasswordForBiometric:
       'Để việc quản lý mật khẩu trở nên dễ dàng hơn, master password sẽ được áp dụng thay thế PIN code trong bản cũ. Bạn đang sử dụng phương thức mở khóa bằng sinh trắc học, để tiếp tục áp dụng phương thức này, bạn cần nhập master password và xác nhận lại sinh trắc học.',
+    xcmTransferWarningTitle: 'Pay attention!',
+    xcmTransferWarningMessage:
+      "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
   },
   filterOptions: {
     polkadotParachain: 'Polkadot Parachain',

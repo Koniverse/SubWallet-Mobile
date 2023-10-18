@@ -630,6 +630,9 @@ export const en = {
       'For easier password management, master password will be applied in place of PIN code in previous versions. You need to enter your master password to unlock SubWallet.',
     migrateMasterPasswordForBiometric:
       'For easier password management, master password will be applied in place of PIN code in previous versions. To keep using biometric authentication, please enter your master password and verify your biometric again.',
+    xcmTransferWarningTitle: 'Pay attention!',
+    xcmTransferWarningMessage:
+      "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
   },
   filterOptions: {
     polkadotParachain: 'Polkadot parachain',
