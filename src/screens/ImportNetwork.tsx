@@ -27,7 +27,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { HIDE_MODAL_DURATION } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
 
-interface ValidationInfo {
+export interface ValidationInfo {
   status: ValidateStatus;
   message?: string[];
 }
