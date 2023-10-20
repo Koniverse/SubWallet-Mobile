@@ -366,7 +366,7 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
   const renderBrowserTabBar = (button: BrowserActionButtonType) => {
     if (!button.icon) {
       if (button.key === 'tabs') {
-        return <TabIcon onPress={button.onPress} />;
+        return <TabIcon key={button.key} onPress={button.onPress} />;
       }
 
       return null;

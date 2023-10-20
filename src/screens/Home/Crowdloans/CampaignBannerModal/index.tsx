@@ -1,14 +1,12 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { Button, Icon, SwModal } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import ModalStyle from './style';
 import { Linking, View } from 'react-native';
-import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
 import FastImage from 'react-native-fast-image';
-import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { BrowserOptions } from 'utils/buy';
 import { CampaignBanner, CampaignButton } from '@subwallet/extension-base/background/KoniTypes';
 import { completeBannerCampaign } from 'messaging/index';
+import { getBannerButtonIcon } from 'utils/campaign';
 
 interface Props {
   visible: boolean;
@@ -18,28 +16,14 @@ interface Props {
 
 export type ButtonSchema = 'primary' | 'secondary' | 'warning' | 'danger' | 'ghost';
 
-enum ButtonIcon {
-  // @ts-ignore
-  xCircle = XCircle,
-  // @ts-ignore
-  arrowCircleRight = ArrowCircleRight,
-}
-
 const CampaignBannerModal = ({ visible, banner, setVisible }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = ModalStyle(theme);
-  const isOpenInAppBrowser = useRef(false);
 
   const onPressJoinNow = async (url?: string) => {
     if (url) {
-      if (await InAppBrowser.isAvailable()) {
-        isOpenInAppBrowser.current = true;
-        await InAppBrowser.open(url, BrowserOptions);
-
-        isOpenInAppBrowser.current = false;
-      } else {
-        Linking.openURL(url);
-      }
+      const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
+      Linking.openURL(transformUrl);
     }
   };
 
@@ -85,15 +69,20 @@ const CampaignBannerModal = ({ visible, banner, setVisible }: Props) => {
         />
 
         <View style={_style.footerAreaStyle}>
-          {banner.buttons.map(item => (
-            <Button
-              type={item.color as ButtonSchema}
-              style={{ flex: 1 }}
-              onPress={onPressBtn(item)}
-              icon={<Icon phosphorIcon={item.icon ? ButtonIcon[item.icon] : undefined} size={'lg'} weight={'fill'} />}>
-              {item.name}
-            </Button>
-          ))}
+          {banner.buttons.map((item, index) => {
+            const icon = getBannerButtonIcon(item.icon);
+
+            return (
+              <Button
+                key={index}
+                type={item.color as ButtonSchema}
+                style={{ flex: 1 }}
+                onPress={onPressBtn(item)}
+                icon={<Icon phosphorIcon={icon} size={'lg'} weight={'fill'} />}>
+                {item.name}
+              </Button>
+            );
+          })}
         </View>
       </View>
     </SwModal>

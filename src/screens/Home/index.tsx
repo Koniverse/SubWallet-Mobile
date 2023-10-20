@@ -30,7 +30,6 @@ import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
 import { isFirstOpen, setIsFirstOpen } from '../../AppNew';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
-import { mmkvStore } from 'utils/storage';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 
@@ -187,8 +186,7 @@ export const Home = ({ navigation }: Props) => {
   const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
   const [isLoading, setLoading] = useState(true);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
-  const banners = useGetBannerByScreen('tokens');
-  console.log('banners', banners);
+  const banners = useGetBannerByScreen('home');
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
 

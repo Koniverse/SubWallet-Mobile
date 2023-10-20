@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import i18n from 'utils/i18n/i18n';
 
 import { RocketLaunch } from 'phosphor-react-native';
@@ -14,10 +14,7 @@ import { RootState } from 'stores/index';
 import { Linking, ListRenderItemInfo, TouchableOpacity } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 import FastImage from 'react-native-fast-image';
-import { Images } from 'assets/index';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
-import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { BrowserOptions } from 'utils/buy';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 
@@ -51,20 +48,13 @@ export const CrowdloansScreen = () => {
     { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
   ];
   const banners = useGetBannerByScreen('crowdloan');
-  const isOpenInAppBrowser = useRef(false);
   const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
     return <CrowdloanItem item={item} isShowBalance={isShowBalance} />;
   };
 
   const openBanner = async (url: string) => {
-    if (await InAppBrowser.isAvailable()) {
-      isOpenInAppBrowser.current = true;
-      await InAppBrowser.open(url, BrowserOptions);
-
-      isOpenInAppBrowser.current = false;
-    } else {
-      Linking.openURL(url);
-    }
+    const transformUrl = `subwallet://browser?url=${encodeURIComponent(url)}`;
+    Linking.openURL(transformUrl);
   };
 
   const onPressBanner = useCallback((item: CampaignBanner) => {
@@ -96,7 +86,6 @@ export const CrowdloansScreen = () => {
 
   const doFilterOptions = useCallback((itemList: CrowdloanItemType[], searchKeyword: string) => {
     const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
-    // const result = getListByFilterOpt(itemList, filterOpts);
     if (searchKeyword.length > 0) {
       return itemList.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchKeyword));
     }

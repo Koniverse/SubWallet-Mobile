@@ -140,7 +140,7 @@
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
     "@subwallet/chain-list": "^0.2.16-beta.4",
-    "@subwallet/extension-base": "^1.1.17-0",
+    "@subwallet/extension-base": "^1.1.18-0",
     "@tsconfig/react-native": "^3.0.0",
     "@types/jest": "^29.2.3",
     "@types/react": "^18.0.25",
@@ -187,7 +187,7 @@
     "@polkadot/util": "^12.2.1",
     "@polkadot/api": "^10.7.2",
     "@polkadot/util-crypto": "^12.2.1",
-    "@subwallet/extension-base": "^1.1.17-0",
+    "@subwallet/extension-base": "^1.1.18-0",
     "@subwallet/chain-list": "0.2.16-beta.4",
     "react-native-svg": "^13.6.0"
   },
