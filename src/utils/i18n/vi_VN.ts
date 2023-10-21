@@ -402,6 +402,8 @@ export const vi = {
     addNft: 'Nhập NFT',
     addToken: 'Nhập token',
     addNetwork: 'Nhập mạng',
+    iDontCare: "I don't care",
+    joinNow: 'Join now',
   },
   inputLabel: {
     selectAcc: 'Chọn tài khoản',

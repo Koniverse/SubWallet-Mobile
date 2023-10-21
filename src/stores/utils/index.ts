@@ -9,6 +9,7 @@ import {
   AllLogoMap,
   AssetSetting,
   BalanceJson,
+  CampaignBanner,
   ChainStakingMetadata,
   ConfirmationsQueue,
   CrowdloanJson,
@@ -448,6 +449,21 @@ export const subscribeWalletConnectSessions = lazySubscribeMessage(
   updateWalletConnectSessions,
   updateWalletConnectSessions,
 );
+
+/* Campaign */
+export const updateBanner = (data: CampaignBanner[]) => {
+  const filtered = data.filter(item => !item.isDone);
+
+  store.dispatch({ type: 'campaign/updateBanner', payload: filtered });
+};
+
+export const subscribeProcessingCampaign = lazySubscribeMessage(
+  'pri(campaign.banner.subscribe)',
+  null,
+  updateBanner,
+  updateBanner,
+);
+/* Campaign */
 
 // export const updateChainValidators = (data: ChainValidatorParams) => {
 //   store.dispatch({ type: 'bonding/updateChainValidators', payload: data });

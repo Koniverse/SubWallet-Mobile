@@ -41,4 +41,6 @@ export const Images = {
   avatarPlaceholder: require('./avatar-placeholder.png'),
   browserBanner: require('./browser-banner.png'),
   circleRobot: require('./circle-robot.png'),
+  crowdloanBanner: require('./crowdloan-banner.png'),
+  crowdloanAdvertisingBanner: require('./crowdloan-advertising-banner.png'),
 };

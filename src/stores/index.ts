@@ -22,6 +22,7 @@ import RequestStateReducer from './base/RequestState';
 import SettingsReducer from './base/Settings';
 import BalanceReducer from './feature/Balance';
 import BondingReducer from './feature/Bonding';
+import CampaignReducer from './feature/Campaign';
 import AssetRegistryReducer from './feature/common/AssetRegistry';
 import ChainStoreReducer from './feature/common/ChainStore';
 import CrowdloanReducer from './feature/Crowdloan';
@@ -42,7 +43,7 @@ const persistRootConfig = {
   key: 'root',
   version: 3,
   storage: AsyncStorage,
-  whitelist: ['mobileSettings', 'settings', 'appVersion'],
+  whitelist: ['mobileSettings', 'settings', 'appVersion', 'campaign'],
   blacklist: ['browser', 'price', 'balance', 'chainStore', 'assetRegistry'],
   migrate: async (state: any) => {
     if (state?._persist && state._persist.version < 3 && state.browser) {
@@ -71,6 +72,7 @@ const rootReducer = combineReducers({
   balance: persistReducer({ key: 'balance', storage: mmkvReduxStore } as PersistConfig<BalanceStore>, BalanceReducer),
   bonding: BondingReducer,
   walletConnect: WalletConnectReducer,
+  campaign: CampaignReducer,
 
   // Common
   chainStore: persistReducer(

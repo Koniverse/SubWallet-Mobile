@@ -403,6 +403,8 @@ export const en = {
     addNft: 'Add NFT',
     addToken: 'Add token',
     addNetwork: 'Add network',
+    iDontCare: "I don't care",
+    joinNow: 'Join now',
   },
   inputLabel: {
     selectAcc: 'Select account',

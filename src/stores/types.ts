@@ -3,6 +3,7 @@ import {
   AddressBookState,
   AssetSetting,
   BalanceItem,
+  CampaignBanner,
   ChainStakingMetadata,
   ConfirmationDefinitions,
   ConfirmationsQueue,
@@ -187,6 +188,10 @@ export interface ChainStore extends BaseReduxStore {
 
 export interface BalanceStore extends BaseReduxStore {
   balanceMap: Record<string, BalanceItem>;
+}
+
+export interface CampaignStore extends BaseReduxStore {
+  banners: CampaignBanner[];
 }
 
 export type PriceStore = PriceJson;

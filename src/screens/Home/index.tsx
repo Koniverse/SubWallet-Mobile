@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StakingScreen from './Staking/StakingScreen';
 
@@ -29,6 +29,9 @@ import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
 import { isFirstOpen, setIsFirstOpen } from '../../AppNew';
+import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
+import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
+import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 
 interface tabbarIconColor {
   color: string;
@@ -183,6 +186,9 @@ export const Home = ({ navigation }: Props) => {
   const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
   const [isLoading, setLoading] = useState(true);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
+  const banners = useGetBannerByScreen('home');
+  const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
+  const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if (isReady && isLoading) {
@@ -198,6 +204,12 @@ export const Home = ({ navigation }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady, isLoading, isLocked]);
 
+  useEffect(() => {
+    if (firstBanner) {
+      setCampaignModalVisible(true);
+    }
+  }, [firstBanner]);
+
   if (isLoading) {
     return (
       <View style={styles.indicatorWrapper}>
@@ -209,7 +221,11 @@ export const Home = ({ navigation }: Props) => {
   return (
     <>
       <Wrapper />
+
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
+      {!isLocked && firstBanner && !isEmptyAccounts && (
+        <CampaignBannerModal visible={campaignModalVisible} banner={firstBanner} setVisible={setCampaignModalVisible} />
+      )}
     </>
   );
 };

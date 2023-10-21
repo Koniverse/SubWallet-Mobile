@@ -11,11 +11,10 @@ import { AccountType } from 'types/ui-types';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { ColorMap } from 'styles/color';
 import { Linking, Platform } from 'react-native';
 import { ServiceItem, baseServiceItems } from 'screens/Home/Crypto/ServiceModal';
 import { BuyServiceInfo, CreateBuyOrderFunction, SupportService } from 'types/buy';
-import { createBanxaOrder, createCoinbaseOrder, createTransakOrder } from 'utils/buy';
+import { BrowserOptions, createBanxaOrder, createCoinbaseOrder, createTransakOrder } from 'utils/buy';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
 import useAppLock from 'hooks/useAppLock';
@@ -201,7 +200,7 @@ export default function useBuyToken(currentSymbol?: string) {
   }, []);
 
   const onBuyToken = useCallback(
-    async (currentUrl?: string, animated = true) => {
+    async (currentUrl?: string) => {
       if (!selectedBuyAccount || !selectedBuyToken || !selectedService) {
         console.warn(
           'no: selectedBuyAccount || selectedBuyToken || selectedService',
@@ -243,39 +242,7 @@ export default function useBuyToken(currentSymbol?: string) {
         if (await InAppBrowser.isAvailable()) {
           // A delay to change the StatusBar when the browser is opened
           isOpenInAppBrowser.current = true;
-          await InAppBrowser.open(currentUrl || url, {
-            // iOS Properties
-            dismissButtonStyle: 'done',
-            preferredBarTintColor: ColorMap.dark1,
-            preferredControlTintColor: ColorMap.light,
-            animated,
-            modalEnabled: true,
-            enableBarCollapsing: false,
-            // Android Properties
-            showTitle: true,
-            toolbarColor: ColorMap.dark1,
-            secondaryToolbarColor: ColorMap.dark1,
-            navigationBarColor: ColorMap.dark1,
-            navigationBarDividerColor: 'white',
-            enableUrlBarHiding: true,
-            enableDefaultShare: true,
-            forceCloseOnRedirection: false,
-            // Specify full animation resource identifier(package:anim/name)
-            // or only resource name(in case of animation bundled with app).
-            animations: {
-              startEnter: 'slide_in_right',
-              startExit: 'slide_out_left',
-              endEnter: 'slide_in_left',
-              endExit: 'slide_out_right',
-            },
-            headers: {
-              'my-custom-header': 'my custom header value',
-            },
-            hasBackButton: true,
-            browserPackage: undefined,
-            showInRecents: true,
-            includeReferrer: true,
-          });
+          await InAppBrowser.open(currentUrl || url, BrowserOptions);
 
           isOpenInAppBrowser.current = false;
         } else {
