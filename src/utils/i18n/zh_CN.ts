@@ -623,6 +623,9 @@ export const zh = {
       '为了更方便地进行密码管理，将使用主密码来代替以前版本中的 PIN 码。 您需要输入主密码才能解锁 SubWallet。',
     migrateMasterPasswordForBiometric:
       '为了更方便地进行密码管理，将使用主密码来代替以前版本中的 PIN 码。 要继续使用生物识别身份验证，请输入您的主密码并再次验证您的生物识别。',
+    xcmTransferWarningTitle: 'Pay attention!',
+    xcmTransferWarningMessage:
+      "You'll need to pay an additional fee for the destination network in a cross-chain transfer. This fee cannot be calculated in advance.",
   },
   filterOptions: {
     polkadotParachain: 'Polkadot平行链',

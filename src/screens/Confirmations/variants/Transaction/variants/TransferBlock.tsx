@@ -12,6 +12,7 @@ import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import i18n from 'utils/i18n/i18n';
+import AlertBox from 'components/design-system-ui/alert-box';
 
 type Props = BaseTransactionConfirmationProps;
 
@@ -63,6 +64,14 @@ const TransferBlock: React.FC<Props> = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
+
+      {transaction.extrinsicType === ExtrinsicType.TRANSFER_XCM && (
+        <AlertBox
+          type={'warning'}
+          title={i18n.message.xcmTransferWarningTitle}
+          description={i18n.message.xcmTransferWarningMessage}
+        />
+      )}
     </ConfirmationContent>
   );
 };
