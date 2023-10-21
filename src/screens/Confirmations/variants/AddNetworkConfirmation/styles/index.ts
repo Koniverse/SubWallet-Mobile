@@ -1,10 +1,12 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { ThemeTypes } from 'styles/themes';
+import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 
 export interface ComponentStyle {
   title: TextStyle;
   text: TextStyle;
   textField: ViewStyle;
+  networkUrlField: ViewStyle;
   row: ViewStyle;
   row1column1: ViewStyle;
   row1column2: ViewStyle;
@@ -20,10 +22,19 @@ export default (theme: ThemeTypes) => {
       alignItems: 'center',
       gap: theme.sizeXS,
     },
+    networkUrlField: {
+      display: 'flex',
+      flexDirection: 'row',
+      padding: theme.paddingSM,
+      alignItems: 'center',
+      gap: theme.sizeXS,
+      justifyContent: 'space-between',
+    },
     text: {
       color: theme.colorText,
       fontSize: theme.fontSizeHeading6,
       lineHeight: theme.fontSizeHeading6 * theme.lineHeightHeading6,
+      ...FontMedium,
     },
     title: {
       color: theme.colorTextBase,
@@ -31,6 +42,7 @@ export default (theme: ThemeTypes) => {
       width: '100%',
       fontSize: theme.fontSizeHeading4,
       lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
+      ...FontSemiBold,
     },
     row: {
       display: 'flex',
