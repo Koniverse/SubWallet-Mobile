@@ -41,8 +41,6 @@ export default (theme: ThemeTypes) =>
     },
     label: {
       ...FontMedium,
-      fontSize: theme.fontSize,
-      lineHeight: theme.lineHeight * theme.fontSize,
       textAlign: 'left',
     },
     value: {

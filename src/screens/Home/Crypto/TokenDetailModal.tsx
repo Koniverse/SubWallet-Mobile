@@ -1,6 +1,6 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Number, SwModal, Typography } from 'components/design-system-ui';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import BigN from 'bignumber.js';
 import { ThemeTypes } from 'styles/themes';
@@ -8,13 +8,42 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { SwTab } from 'components/design-system-ui/tab';
+import { AccountTokenDetail } from 'components/AccountTokenDetail';
+import { useSelector } from 'react-redux';
+import { RootState } from 'stores/index';
+import { APIItemState } from '@subwallet/extension-base/background/KoniTypes';
+import { isAccountAll } from 'utils/accountAll';
+import { isSameAddress } from '@subwallet/extension-base/utils';
+import { BalanceItem } from '@subwallet/extension-base/types';
+import { deviceHeight } from 'constants/index';
 
-type ItemType = {
+export type ItemType = {
   symbol: string;
   label: string;
   key: string;
   value: BigN;
 };
+
+export type TokenDetailsTab = {
+  label: string;
+  onPress: () => void;
+  value: 'tokenDetails' | 'accountDetails';
+  disabled?: boolean;
+};
+
+const tokenDetailTabs: TokenDetailsTab[] = [
+  {
+    label: 'Token details',
+    onPress: () => {},
+    value: 'tokenDetails',
+  },
+  {
+    label: 'Account details',
+    onPress: () => {},
+    value: 'accountDetails',
+  },
+];
 
 export interface Props {
   modalVisible: boolean;
@@ -30,6 +59,8 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
   const theme = useSubWalletTheme().swThemes;
   const _style = createStyleSheet(theme);
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+  const { isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { balanceMap } = useSelector((state: RootState) => state.balance);
   const items: ItemType[] = useMemo(() => {
     const symbol = currentTokenInfo?.symbol || '';
     const balanceInfo = currentTokenInfo ? tokenBalanceMap[currentTokenInfo.slug] : undefined;
@@ -50,6 +81,44 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
     ];
   }, [currentTokenInfo, tokenBalanceMap]);
   const onChangeModalVisible = () => modalBaseV2Ref?.current?.close();
+  const [selectedTab, setSelectedTab] = useState<'tokenDetails' | 'accountDetails'>('tokenDetails');
+
+  const _onSelectType = (value: string) => {
+    setSelectedTab(value as 'tokenDetails' | 'accountDetails');
+  };
+
+  const accountItems = useMemo((): BalanceItem[] => {
+    if (!currentTokenInfo?.slug) {
+      return [];
+    }
+
+    const result: BalanceItem[] = [];
+
+    const filterAddress = (address: string) => {
+      if (isAllAccount) {
+        return !isAccountAll(address);
+      } else {
+        return isSameAddress(address, currentAccount?.address || '');
+      }
+    };
+
+    for (const [address, info] of Object.entries(balanceMap)) {
+      if (filterAddress(address)) {
+        const item = info[currentTokenInfo.slug];
+
+        if (item && item.state === APIItemState.READY) {
+          result.push(item);
+        }
+      }
+    }
+
+    return result.sort((a, b) => {
+      const aTotal = new BigN(a.free).plus(BigN(a.locked));
+      const bTotal = new BigN(b.free).plus(BigN(b.locked));
+
+      return bTotal.minus(aTotal).toNumber();
+    });
+  }, [balanceMap, currentAccount?.address, currentTokenInfo?.slug, isAllAccount]);
 
   return (
     <SwModal
@@ -58,26 +127,50 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
       modalTitle={i18n.header.tokenDetails}
+      onChangeModalVisible={() => setSelectedTab('tokenDetails')}
       onBackButtonPress={onChangeModalVisible}>
-      <View style={_style.blockContainer}>
-        {items.map(item => (
-          <View key={item.key} style={_style.row}>
-            <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>{item.label}</Typography.Text>
+      <>
+        {isAllAccount && (
+          <SwTab
+            tabs={tokenDetailTabs}
+            onSelectType={_onSelectType}
+            tabType={'tokenDetail'}
+            selectedValue={selectedTab}
+          />
+        )}
+        {selectedTab === 'tokenDetails' ? (
+          <View style={_style.blockContainer}>
+            {items.map(item => (
+              <View key={item.key} style={_style.row}>
+                <Typography.Text style={{ ...FontSemiBold, color: theme.colorTextLight1 }}>
+                  {item.label}
+                </Typography.Text>
 
-            <Number
-              style={_style.value}
-              textStyle={{ ...FontMedium }}
-              decimal={0}
-              decimalOpacity={0.45}
-              intOpacity={0.85}
-              size={14}
-              suffix={item.symbol}
-              unitOpacity={0.85}
-              value={item.value}
-            />
+                <Number
+                  style={_style.value}
+                  textStyle={{ ...FontMedium }}
+                  decimal={0}
+                  decimalOpacity={0.45}
+                  intOpacity={0.85}
+                  size={14}
+                  suffix={item.symbol}
+                  unitOpacity={0.85}
+                  value={item.value}
+                />
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: deviceHeight * 0.6 }}
+            contentContainerStyle={{ gap: theme.paddingSM }}>
+            {accountItems.map(item => (
+              <AccountTokenDetail key={item.address} item={item} />
+            ))}
+          </ScrollView>
+        )}
+      </>
     </SwModal>
   );
 };
@@ -90,7 +183,6 @@ function createStyleSheet(theme: ThemeTypes) {
       alignSelf: 'stretch',
       paddingTop: theme.sizeSM,
       paddingBottom: theme.sizeXS,
-      marginBottom: theme.margin,
     },
     row: {
       flexDirection: 'row',
