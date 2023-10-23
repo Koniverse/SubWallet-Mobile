@@ -1,3 +1,9 @@
+## 1.1.4 (227)
+- Add banner crowdloan unlock in Crowdloan tab (#1068)
+- Add the warning message in case XCM transfer (#843)
+- Still allow add network from dApp in case cannot connect to this provider (#813)
+- Update web runner 1.1.18-1 (#1090)
+
 ## 1.1.3 (226)
 - Fix bug nft doesn't show
 - Fix bug show unclear message when send nft
