@@ -45,6 +45,7 @@ const getServiceItems = (tokenSlug: string | undefined): ServiceItem[] => {
 
 export default function useBuyToken(currentSymbol?: string) {
   const { accounts, isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { isLocked } = useAppLock();
   const { walletReference } = useSelector((state: RootState) => state.settings);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
@@ -155,7 +156,7 @@ export default function useBuyToken(currentSymbol?: string) {
       if (ledgerNetwork) {
         if (info.network === ledgerNetwork) {
           result.push({
-            name: info.symbol,
+            name: assetRegistry[info.slug].name,
             slug: info.slug,
             symbol: info.symbol,
             originChain: info.network,
@@ -164,7 +165,7 @@ export default function useBuyToken(currentSymbol?: string) {
       } else {
         if (accountType === 'ALL' || accountType === info.support) {
           result.push({
-            name: info.symbol,
+            name: assetRegistry[info.slug].name,
             slug: info.slug,
             symbol: info.symbol,
             originChain: info.network,
@@ -174,7 +175,7 @@ export default function useBuyToken(currentSymbol?: string) {
     });
 
     return result;
-  }, [accountType, currentSymbol, ledgerNetwork]);
+  }, [accountType, assetRegistry, currentSymbol, ledgerNetwork]);
 
   const openSelectBuyAccount = useCallback((account: AccountJson) => {
     setSelectedService({ selectedService: undefined });

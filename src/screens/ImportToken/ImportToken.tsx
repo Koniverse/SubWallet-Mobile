@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } 
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportTokenProps, RootNavigationProps } from 'routes/index';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import { FormState } from 'hooks/screen/useFormControl';
@@ -38,6 +38,8 @@ import { Plus } from 'phosphor-react-native';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
 import { ModalRef } from 'types/modalRef';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
+import { ThemeTypes } from 'styles/themes';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 
 interface TokenTypeOption {
   label: string;
@@ -91,6 +93,8 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const { isNetConnected, isReady } = useContext(WebRunnerContext);
   const [name, setName] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
+  const theme = useSubWalletTheme().swThemes;
+  const styles = useMemo(() => createStyle(theme), [theme]);
 
   const formConfig = {
     chain: {
@@ -108,6 +112,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     decimals: {
       name: i18n.common.decimals,
       value: tokenInfo ? String(tokenInfo?.decimals) : '',
+    },
+    tokenName: {
+      name: 'Token name',
+      value: tokenInfo ? String(tokenInfo?.name) : '',
     },
     contractAddress: {
       require: true,
@@ -220,6 +228,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               } else {
                 onUpdateErrors('contractAddress')(undefined);
                 onChangeValue('symbol')(resp.symbol);
+                onChangeValue('tokenName')(resp.name);
                 setName(resp.name);
                 if (resp.decimals) {
                   onChangeValue('decimals')(String(resp.decimals));
@@ -360,9 +369,22 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             <Warning isDanger message={formState.errors.contractAddress[0]} style={{ marginBottom: 8 }} />
           )}
 
-          <TextField placeholder={i18n.placeholder.symbol} text={formState.data.symbol} />
+          <View style={styles.row}>
+            <TextField
+              outerStyle={{ flex: 1, marginBottom: 0 }}
+              placeholder={i18n.placeholder.symbol}
+              text={formState.data.symbol}
+            />
 
-          <TextField placeholder={i18n.placeholder.decimals} disabled={true} text={formState.data.decimals} />
+            <TextField
+              outerStyle={{ flex: 1, marginBottom: 0 }}
+              placeholder={i18n.placeholder.decimals}
+              disabled={true}
+              text={formState.data.decimals}
+            />
+          </View>
+
+          <TextField placeholder={'Token name'} disabled={true} text={formState.data.tokenName} />
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
@@ -419,3 +441,13 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
     </ContainerWithSubHeader>
   );
 };
+
+function createStyle(theme: ThemeTypes) {
+  return StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      gap: theme.sizeSM,
+      marginBottom: theme.marginXS,
+    },
+  });
+}
