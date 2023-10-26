@@ -128,7 +128,7 @@ const Button: React.FC<ButtonProps> = props => {
       onPressOut={_onPressOut}
       onShowUnderlay={_onShowUnderlay}
       onHideUnderlay={_onHideUnderlay}>
-      <View style={[_style.container, { maxWidth: '100%', paddingHorizontal: theme.padding - 4 }]}>
+      <View style={[_style.container, { maxWidth: '100%', paddingHorizontal: children ? theme.padding - 4 : 0 }]}>
         {iconNode}
         {typeof children === 'string' ? (
           <Text numberOfLines={1} style={[textStyle]}>

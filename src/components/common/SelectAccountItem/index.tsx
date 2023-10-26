@@ -55,7 +55,6 @@ export const SelectAccountItem = ({
         paddingLeft: 12,
         paddingRight: 4,
         backgroundColor: theme.colorBgSecondary,
-        marginBottom: theme.marginXS,
         borderRadius: theme.borderRadiusLG,
       }}
       onPress={() => onSelectAccount && onSelectAccount(address)}>
