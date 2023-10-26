@@ -28,7 +28,9 @@ export function useSelectValidators(
               if (!defaultSelected.includes(changeVal)) {
                 if (toastRef && toastRef.current) {
                   toastRef.current.hideAll();
-                  toastRef.current.show(i18n.stakingScreen.maximumSelectableValidators(maxCount), { type: 'normal' });
+                  toastRef.current.show(i18n.formatString(i18n.stakingScreen.maximumSelectableValidators, maxCount), {
+                    type: 'normal',
+                  });
                 }
 
                 return currentChangeValidators;
@@ -40,7 +42,9 @@ export function useSelectValidators(
             if (currentChangeValidators.length >= maxCount) {
               if (toastRef && toastRef.current) {
                 toastRef.current.hideAll();
-                toastRef.current.show(i18n.stakingScreen.maximumSelectableValidators(maxCount), { type: 'normal' });
+                toastRef.current.show(i18n.formatString(i18n.stakingScreen.maximumSelectableValidators, maxCount), {
+                  type: 'normal',
+                });
               }
 
               return currentChangeValidators;

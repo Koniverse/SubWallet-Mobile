@@ -272,7 +272,10 @@ export const RestoreJson = () => {
               {accountsInfo.length > 1 ? (
                 <SelectItem
                   leftItemIcon={<AvatarGroup addresses={addresses} />}
-                  label={i18n.importAccount.importAccounts(String(accountsInfo.length).padStart(2, '0'))}
+                  label={i18n.formatString(
+                    i18n.importAccount.importAccounts,
+                    String(accountsInfo.length).padStart(2, '0'),
+                  )}
                   onPress={openModal}
                   rightIcon={<Icon phosphorIcon={DotsThree} size="sm" />}
                 />

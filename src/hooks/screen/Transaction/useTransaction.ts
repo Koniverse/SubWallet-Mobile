@@ -115,7 +115,7 @@ export const useTransaction = (
         setTimeout(() => {
           appModalContext.setConfirmModal({
             visible: true,
-            message: i18n.common.enableChainMessage(chainInfoMap[chain].name),
+            message: i18n.formatString(i18n.common.enableChainMessage, chainInfoMap[chain].name),
             title: i18n.common.enableChain,
             onCancelModal: () => {
               appModalContext.hideConfirmModal();

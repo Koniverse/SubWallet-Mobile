@@ -45,7 +45,7 @@ export const ValidatorSelectorDetailModal = ({
       modalBaseV2Ref={modalBaseV2Ref}
       setVisible={setVisible}
       modalVisible={detailModalVisible}
-      modalTitle={i18n.common.stakingValidatorDetail(getValidatorLabel(chain))}
+      modalTitle={i18n.formatString(i18n.common.stakingValidatorDetail, getValidatorLabel(chain))}
       onBackButtonPress={onCancel}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>

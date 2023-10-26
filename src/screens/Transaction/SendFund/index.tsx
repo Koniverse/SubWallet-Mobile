@@ -337,7 +337,10 @@ export const SendFund = ({
 
         if (isDestChainEvmCompatible !== isEthereumAddress(_recipientAddress)) {
           onUpdateErrors('to')([
-            i18n.errorMessage.recipientAddressMustBeType(isDestChainEvmCompatible ? 'EVM' : 'substrate'),
+            i18n.formatString(
+              i18n.errorMessage.recipientAddressMustBeType,
+              isDestChainEvmCompatible ? 'EVM' : 'substrate',
+            ),
           ]);
           return false;
         }
@@ -398,7 +401,7 @@ export const SendFund = ({
 
       if (new BigN(_amount).gt(new BigN(_maxTransfer))) {
         const maxString = formatBalance(_maxTransfer, decimals);
-        onUpdateErrors('value')([i18n.errorMessage.amountMustBeEqualOrLessThan(maxString)]);
+        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.amountMustBeEqualOrLessThan, maxString)]);
 
         return false;
       }

@@ -27,7 +27,7 @@ export default function useChainChecker() {
       chainStateMap[connectingChain.current]?.connectionStatus === _ChainConnectionStatus.CONNECTED
     ) {
       const chainName = chainInfoMap[connectingChain.current].name;
-      setTimeout(() => show(i18n.common.chainConnected(chainName), { type: 'success' }), 300);
+      setTimeout(() => show(i18n.formatString(i18n.common.chainConnected, chainName), { type: 'success' }), 300);
       setChainStatus(ChainStatus.CONNECTED);
     }
   }, [chainInfoMap, chainStateMap, connectingChainStatus, show]);

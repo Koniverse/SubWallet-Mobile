@@ -30,7 +30,7 @@ export const WCAccountInput = ({ accounts, selected }: Props) => {
       leftItem={<AvatarGroup addresses={selectedAccounts.map(acc => acc.address)} />}
       middleItem={
         <Typography.Text style={{ color: theme.colorWhite, ...FontMedium }}>
-          {countSelected ? i18n.message.connectedAccounts(countSelected) : i18n.inputLabel.selectAcc}
+          {countSelected ? i18n.formatString(i18n.message.connectedAccounts, countSelected) : i18n.inputLabel.selectAcc}
         </Typography.Text>
       }
       rightItem={<Icon phosphorIcon={DotsThree} weight={'fill'} />}

@@ -73,7 +73,7 @@ export const WCAccountSelect = ({
       {!availableAccounts.length ? (
         <AlertBox
           title={i18n.common.noAvailableAccount}
-          description={i18n.common.youDonotHaveAnyAcc('')}
+          description={i18n.formatString(i18n.common.youDonotHaveAnyAcc, '')}
           type={'warning'}
         />
       ) : useModal ? (
@@ -93,7 +93,7 @@ export const WCAccountSelect = ({
             disabled={!selectedAccounts.length}
             icon={renderButtonIcon}
             onPress={_onApply}>
-            {i18n.buttonTitles.applyAccounts(selectedAccounts.length)}
+            {i18n.formatString(i18n.buttonTitles.applyAccounts, selectedAccounts.length)}
           </Button>
         </BasicSelectModal>
       ) : (

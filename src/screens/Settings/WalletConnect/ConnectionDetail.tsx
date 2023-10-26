@@ -124,7 +124,7 @@ export const ConnectionDetail = ({
                         ...FontMedium,
                         color: theme.colorTextTertiary,
                       }}>
-                      {i18n.message.connectedNetworks(chains.length)}
+                      {i18n.formatString(i18n.message.connectedNetworks, chains.length)}
                     </Typography.Text>
                     <Icon phosphorIcon={Info} weight={'fill'} size={'sm'} iconColor={theme.colorTextTertiary} />
                   </TouchableOpacity>
@@ -138,7 +138,7 @@ export const ConnectionDetail = ({
                   paddingTop: theme.padding,
                   paddingBottom: theme.paddingXXS,
                 }}>
-                {i18n.message.connectedAccounts(accountItems.length)}
+                {i18n.formatString(i18n.message.connectedAccounts, accountItems.length)}
               </Typography.Text>
 
               <View style={{ gap: theme.paddingXS }}>

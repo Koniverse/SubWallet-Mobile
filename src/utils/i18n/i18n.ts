@@ -1,9 +1,9 @@
 import LocalizedStrings from 'react-native-localization';
-import { en } from './en_US';
-import { vi } from './vi_VN';
-import { zh } from './zh_CN';
-import { ja } from './ja_JP';
-import { ru } from './ru_RU';
+import en from './en_US.json';
+import vi from './vi_VN.json';
+import zh from './zh_CN.json';
+import ja from './ja_JP.json';
+import ru from './ru_RU.json';
 const i18n = new LocalizedStrings({
   en,
   vi,

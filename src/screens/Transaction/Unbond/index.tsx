@@ -201,7 +201,13 @@ export const Unbond = ({
   }, [onChangeValue, stakingChain]);
 
   const validateAmountInput = useCallback(
-    (value: string, min: number | string | BigN, max: number | string | BigN, _decimals: number, name?: string) => {
+    (
+      value: string,
+      min: number | string | BigN,
+      max: number | string | BigN,
+      _decimals: number,
+      name: string = 'Value',
+    ) => {
       const _minValue = new BigN(min);
       const _maxValue = new BigN(max);
       const _middleValue = _maxValue.minus(_minValue);
@@ -209,17 +215,17 @@ export const Unbond = ({
       const val = new BigN(value);
 
       if (val.gt(_maxValue)) {
-        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqualOrLessThan(_maxString, name)]);
+        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, name, _maxString)]);
         return;
       }
 
       if (val.lte(BN_ZERO)) {
-        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeGreaterThanZero(name)]);
+        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, name)]);
         return;
       }
 
       if (_middleValue.lt(BN_ZERO) && !val.eq(_maxValue)) {
-        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqual(_maxString, name)]);
+        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeEqual, name, _maxString)]);
         return;
       }
 
@@ -297,7 +303,7 @@ export const Unbond = ({
               color: theme.colorTextTertiary,
               ...FontMedium,
             }}>
-            {i18n.message.unBondMessage(unBondedTime)}
+            {i18n.formatString(i18n.message.unBondMessage, unBondedTime)}
           </Typography.Text>
         </ScrollView>
 

@@ -47,7 +47,7 @@ export const EmptyValidator = ({ icon, title, message, isDataEmpty, validatorTit
                 ...FontMedium,
                 paddingTop: 8,
               }}>
-              {i18n.message.unableToFetchInformation(validatorTitle)}
+              {i18n.formatString(i18n.message.unableToFetchInformation, validatorTitle)}
             </Text>
             <Button type={'ghost'} size={'sm'} onPress={handleReload}>
               <Typography.Text style={{ ...FontMedium, color: theme.colorPrimary }}>

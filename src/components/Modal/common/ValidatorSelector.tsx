@@ -239,7 +239,7 @@ export const ValidatorSelector = forwardRef(
           disabled={!chain || !from || disabled}
           applyBtn={{
             icon: CheckCircle,
-            label: i18n.buttonTitles.applyValidators(changeValidators.length),
+            label: i18n.formatString(i18n.buttonTitles.applyValidators, changeValidators.length),
             onPressApplyBtn: () => {
               onApplyChangeValidators();
               validatorSelectModalRef?.current?.closeModal && validatorSelectModalRef?.current?.closeModal();
@@ -257,9 +257,12 @@ export const ValidatorSelector = forwardRef(
               onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
               onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
               value={selectedValidator}
-              label={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
+              label={i18n.formatString(i18n.common.selectStakingValidator, getValidatorLabel(chain).toLowerCase())}
               loading={validatorLoading}
-              placeholder={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}
+              placeholder={i18n.formatString(
+                i18n.common.selectStakingValidator,
+                getValidatorLabel(chain).toLowerCase(),
+              )}
             />
           )}
           rightIconOption={{
@@ -268,8 +271,8 @@ export const ValidatorSelector = forwardRef(
           }}
           renderCustomItem={renderItem}
           searchFunc={searchFunction}
-          placeholder={i18n.common.searchStakingValidator(getValidatorLabel(chain).toLowerCase())}
-          title={i18n.common.selectStakingValidator(getValidatorLabel(chain).toLowerCase())}>
+          placeholder={i18n.formatString(i18n.common.searchStakingValidator, getValidatorLabel(chain).toLowerCase())}
+          title={i18n.formatString(i18n.common.selectStakingValidator, getValidatorLabel(chain).toLowerCase())}>
           <>
             {detailItem && (
               <ValidatorSelectorDetailModal
