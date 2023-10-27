@@ -1,11 +1,10 @@
-name: Internal builds
+name: Release builds
 
 on:
-  pull_request:
-    branches: [ "koni-dev", "upgrade-ui" ]
+  push:
+    tags: [ "*" ]
 
 jobs:
-  # iOS build workflow
   build-ios:
     name: iOS builds
     runs-on: macos-latest
@@ -76,41 +75,24 @@ jobs:
       uses: yukiarrr/ios-build-action@v1.11.0
       with:
         project-path: ios/SubWalletMobile.xcodeproj
-        export-method: 'ad-hoc'
+        export-method: 'app-store'
         p12-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         certificate-password: ${{ secrets.P12_PASSWORD }}
-        mobileprovision-base64: ${{ secrets.BUILD_ADHOC_PROVISION_PROFILE_BASE64 }}
+        mobileprovision-base64: ${{ secrets.BUILD_APPSTORE_PROVISION_PROFILE_BASE64 }}
         code-signing-identity: 'Apple Distribution: CDM SOFTWARE DEVELOPMENT COMPANY LIMITED (ZUZ7T3GQMT)'
         team-id: ${{ secrets.APPLE_TEAM_ID }}
         workspace-path: ios/SubWalletMobile.xcworkspace
         scheme: SubWalletMobile-Production
 
-    - name: Prepare Release Notes
-      id: release-notes
-      run: |
-        PR_ID="${{ github.event.number }}"
-        PR_TITLE="${{ github.event.pull_request.title }}"
-        PR_LINK="${{ github.event.pull_request._links.html.href }}"
-        
-        if [ -z "$PR_ID" ]; then PR_ID="Default branch"; fi
-        if [ -z "$PR_TITLE" ]; then PR_TITLE="Default commit"; fi
-        if [ -z "$PR_LINK" ]; then PR_LINK="Default"; fi
-
-        RELEASE_NOTES="PR #${PR_ID} - $PR_TITLE - $PR_LINK"
-
-        echo "::set-output name=releaseNotes::${RELEASE_NOTES}"
-
-    # Upload IPA file to Firebase App Distribution
-    - name: Upload build file
-      uses: nickwph/firebase-app-distribution-action@v1
+    - name: 'Upload app to TestFlight'
+      uses: apple-actions/upload-testflight-build@v1
       with:
-        app: ${{ secrets.FB_IOS_APP_ID }}
-        credentials: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-        groups: subwallet-team
-        file: output.ipa
-        release-notes: ${{ steps.release-notes.outputs.releaseNotes }}
+        app-path: 'output.ipa'
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
-    # Notify Discord
+    # Notify to Discord
     - name: Notify to Discord
       uses: sarisia/actions-status-discord@v1
       if: always()
@@ -120,10 +102,9 @@ jobs:
         username: GitHub Actions Test Notifier
         title: ${{ github.workflow }}
         description: |
-          iOS: The Deployment has been completed.
-          Commit message: ${{ github.event.head_commit.message }}
+          iOS: Published on Appstore!
+          Click [here](https://appstoreconnect.apple.com/apps/1633050285/testflight) to check TestFlight
 
-  # Android build workflow
   build-android:
     name: Android builds
     runs-on: macos-latest
@@ -137,6 +118,7 @@ jobs:
       REF_NAME: ${{ github.ref_name }}
       TRANSAK_API_KEY: ${{ secrets.TRANSAK_API_KEY }}
       COINBASE_PAY_ID: ${{ secrets.COINBASE_PAY_ID }}
+      BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
     steps:
     - uses: actions/checkout@v4
       with:
@@ -190,35 +172,25 @@ jobs:
       run: |
         echo "${{ secrets.ANDROID_KEY_STORE_BASE64 }}" | base64 --decode > android/app/${{ secrets.MYAPP_UPLOAD_STORE_FILE }}
 
-    # Build APK file
-    - name: Generate App APK
+        recent_tag=$(git describe --tags --abbrev=0)
+        commit_messages=$(git log --pretty=format:"%s" $recent_tag..HEAD)
+        filtered_messages=$(echo "$commit_messages" | grep -oE '\[issue-[0-9]+\] .+' | sed -E 's/\[issue-([0-9]+)\] (.+)/- \2 (#\1)/')
+        echo "$filtered_messages" > whatsNewDirectory/whatsnew-en-US
+
+    # Build AAB file
+    - name: Generate App AAB
       run: |
-        cd android && export ENVFILE=.env.production && ./gradlew assembleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
+        cd android && export ENVFILE=.env.production && ./gradlew bundleRelease -PMYAPP_UPLOAD_STORE_FILE=${{ secrets.MYAPP_UPLOAD_STORE_FILE }} -PMYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEY_STORE_PASSWORD }} -PMYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }} -PMYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_ALIAS }}
 
-    - name: Prepare Release Notes
-      id: release-notes
-      run: |
-        PR_ID="${{ github.event.number }}"
-        PR_TITLE="${{ github.event.pull_request.title }}"
-        PR_LINK="${{ github.event.pull_request._links.html.href }}"
-        
-        if [ -z "$PR_ID" ]; then PR_ID="Default branch"; fi
-        if [ -z "$PR_TITLE" ]; then PR_TITLE="Default commit"; fi
-        if [ -z "$PR_LINK" ]; then PR_LINK="Default"; fi
-
-        RELEASE_NOTES="PR #${PR_ID} - $PR_TITLE - $PR_LINK"
-
-        echo "::set-output name=releaseNotes::${RELEASE_NOTES}"
-
-    # Upload APK to Firebase App Distribution
-    - name: Upload build file
-      uses: nickwph/firebase-app-distribution-action@v1
+    - name: Upload to Play Store Internal Testing
+      uses: r0adkll/upload-google-play@v1
       with:
-        app: ${{ secrets.FB_ANDROID_APP_ID }}
-        credentials: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-        groups: subwallet-team
-        file: android/app/build/outputs/apk/release/app-release.apk
-        release-notes: ${{ steps.release-notes.outputs.releaseNotes }}
+        serviceAccountJson: ${{ secrets.SERVICE_ACCOUNT_JSON_CONTENT }}
+        packageName: app.subwallet.mobile
+        releaseFiles: app/build/outputs/bundle/release/*.aab
+        track: internal
+        status: completed
+        whatsNewDirectory: whatsNewDirectory
 
     # Notify to Discord
     - name: Notify to Discord
@@ -230,5 +202,5 @@ jobs:
         username: GitHub Actions Test Notifier
         title: ${{ github.workflow }}
         description: |
-          Android: The Deployment has been completed.
-          Commit message: ${{ github.event.head_commit.message }}
+          Android: Published on Play Console.
+          Click [here](https://play.google.com/console/u/0/developers/5178189030889328266/app/4973509903908456575/tracks/internal-testing) to check internal testing
