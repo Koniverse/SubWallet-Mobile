@@ -233,7 +233,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
               block={true}
               onPress={() => {
                 Platform.OS === 'android' && setTimeout(() => DeviceEventEmitter.emit(OPEN_UNLOCK_FROM_MODAL), 250);
-                onPressCreateOne(onAddAccount);
+                onPressCreateOne(onAddAccount)();
               }}
               icon={<Icon phosphorIcon={PlusCircle} weight="fill" />}>
               {i18n.buttonTitles.createOne}
