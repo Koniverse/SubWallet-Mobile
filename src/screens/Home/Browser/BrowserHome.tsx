@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
 import { CaretRight } from 'phosphor-react-native';
 import createStylesheet from './styles/BrowserHome';
@@ -20,6 +20,9 @@ import i18n from 'utils/i18n/i18n';
 import { browserHomeItem, browserHomeItemIconOnly, browserHomeItemWidth } from 'constants/itemHeight';
 import { useGetDAPPsQuery } from 'stores/API';
 import { SliderBox } from 'react-native-image-slider-box';
+import { MissionPoolItem } from 'components/MissionPoolItem';
+import { MissionInfo } from 'types/missionPool';
+import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
 
 interface HeaderProps {
   title: string;
@@ -30,6 +33,12 @@ interface SectionListProps {
   data: RecommendedListType[];
   renderItem: (item: DAppInfo) => JSX.Element;
 }
+
+interface MissionPoolSectionListProps {
+  data: MissionInfo[];
+  renderItem: (item: MissionInfo) => JSX.Element;
+}
+
 type RecommendedListType = {
   data: DAppInfo[];
 };
@@ -90,6 +99,20 @@ const SectionList: React.FC<SectionListProps> = ({ data, renderItem }): JSX.Elem
     </ScrollView>
   );
 };
+
+const MissionPoolSectionList: React.FC<MissionPoolSectionListProps> = ({ data, renderItem }): JSX.Element => {
+  const stylesheet = createStylesheet();
+  return (
+    <ScrollView
+      horizontal
+      style={{ marginBottom: 24 }}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={stylesheet.missionPoolListContentContainer}>
+      {data.map(item => renderItem(item))}
+    </ScrollView>
+  );
+};
 const ItemSeparator = () => {
   const stylesheet = createStylesheet();
   return <View style={stylesheet.flatListSeparator} />;
@@ -97,19 +120,38 @@ const ItemSeparator = () => {
 const BrowserHome = () => {
   const stylesheet = createStylesheet();
   const theme = useSubWalletTheme().swThemes;
-  const { data: dApps, isLoading } = useGetDAPPsQuery(undefined);
+  const { data: dApps, isLoading, refetch } = useGetDAPPsQuery(undefined);
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
+  const { missions } = useSelector((state: RootState) => state.missionPool);
+  const [selectedMissionPool, setSelectedMissionPool] = useState<MissionInfo | undefined>(undefined);
+  const [loadingDataLv1, setLoadingDataLv1] = useState<boolean>(true);
+  const [loadingDataLv2, setLoadingDataLv2] = useState<boolean>(true);
+  const [visible, setVisible] = useState<boolean>(false);
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoadingDataLv1(false);
+    }, 100);
+
+    setTimeout(() => {
+      setLoadingDataLv2(false);
+    }, 200);
+  }, []);
 
   const recommendedList = useMemo((): RecommendedListType[] | [] => {
     if (!dApps) {
       return [];
     }
     const sectionData = [];
-    for (let i = 0; i < 20; i += 5) {
+    for (let i = 0; i < 15; i += 3) {
       const section = {
-        data: dApps.slice(i, i + 5),
+        data: dApps.slice(i, i + 3),
       };
       sectionData.push(section);
     }
@@ -162,6 +204,16 @@ const BrowserHome = () => {
       />
     );
   };
+
+  const onPressMissionPoolItem = (data: MissionInfo) => {
+    setSelectedMissionPool(data);
+    setVisible(true);
+  };
+
+  const renderMissionPoolItem = (item: MissionInfo) => (
+    <MissionPoolItem key={item.id} data={item} onPressItem={() => onPressMissionPoolItem(item)} />
+  );
+
   const getItemLayout = (data: StoredSiteInfo[] | null | undefined, index: number) => ({
     index,
     length: ITEM_WIDTH,
@@ -186,52 +238,71 @@ const BrowserHome = () => {
           ImageComponentStyle={stylesheet.banner}
           imageLoadingColor="#2196F3"
         />
-        {historyItems && historyItems.length > 0 && (
+        {!loadingDataLv1 && (
           <>
+            {historyItems && historyItems.length > 0 && (
+              <>
+                <SectionHeader
+                  title={i18n.browser.recent}
+                  actionTitle={i18n.browser.seeAll}
+                  onPress={() => navigation.navigate('BrowserSearch')}
+                />
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                  style={{ maxHeight: ICON_ITEM_HEIGHT, marginBottom: theme.marginSM }}
+                  contentContainerStyle={stylesheet.flatListContentContainer}
+                  data={historyItems}
+                  renderItem={renderRecentItem}
+                  ItemSeparatorComponent={ItemSeparator}
+                  getItemLayout={getItemLayout}
+                  horizontal
+                />
+              </>
+            )}
+            {bookmarkItems && bookmarkItems.length > 0 && (
+              <>
+                <SectionHeader
+                  title={i18n.browser.favorite}
+                  actionTitle={i18n.browser.seeAll}
+                  onPress={() => navigation.navigate('BrowserListByTabview', { type: 'BOOKMARK' })}
+                />
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  showsHorizontalScrollIndicator={false}
+                  style={{ maxHeight: ITEM_HEIGHT, marginBottom: theme.marginSM }}
+                  contentContainerStyle={stylesheet.flatListContentContainer}
+                  data={bookmarkItems}
+                  renderItem={renderBookmarkItem}
+                  ItemSeparatorComponent={ItemSeparator}
+                  getItemLayout={getItemLayout}
+                  horizontal
+                />
+              </>
+            )}
             <SectionHeader
-              title={i18n.browser.recent}
+              title={i18n.browser.recommended}
               actionTitle={i18n.browser.seeAll}
-              onPress={() => navigation.navigate('BrowserSearch')}
+              onPress={() => navigation.navigate('BrowserListByTabview', { type: 'RECOMMENDED' })}
             />
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              style={{ maxHeight: ICON_ITEM_HEIGHT, marginBottom: theme.marginSM }}
-              contentContainerStyle={stylesheet.flatListContentContainer}
-              data={historyItems}
-              renderItem={renderRecentItem}
-              ItemSeparatorComponent={ItemSeparator}
-              getItemLayout={getItemLayout}
-              horizontal
-            />
+            <SectionList data={recommendedList} renderItem={renderSectionItem} />
           </>
         )}
-        {bookmarkItems && bookmarkItems.length > 0 && (
+
+        {!loadingDataLv2 && (
           <>
             <SectionHeader
-              title={i18n.browser.favorite}
+              title={i18n.browser.missionPool}
               actionTitle={i18n.browser.seeAll}
-              onPress={() => navigation.navigate('BrowserListByTabview', { type: 'BOOKMARK' })}
+              onPress={() => navigation.navigate('MissionPoolsByTabview', { type: 'all' })}
             />
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              style={{ maxHeight: ITEM_HEIGHT, marginBottom: theme.marginSM }}
-              contentContainerStyle={stylesheet.flatListContentContainer}
-              data={bookmarkItems}
-              renderItem={renderBookmarkItem}
-              ItemSeparatorComponent={ItemSeparator}
-              getItemLayout={getItemLayout}
-              horizontal
-            />
+            <MissionPoolSectionList data={missions.slice(0, 7)} renderItem={renderMissionPoolItem} />
+
+            {selectedMissionPool && (
+              <MissionPoolDetailModal modalVisible={visible} data={selectedMissionPool} setVisible={setVisible} />
+            )}
           </>
         )}
-        <SectionHeader
-          title={i18n.browser.recommended}
-          actionTitle={i18n.browser.seeAll}
-          onPress={() => navigation.navigate('BrowserListByTabview', { type: 'RECOMMENDED' })}
-        />
-        <SectionList data={recommendedList} renderItem={renderSectionItem} />
       </ScrollView>
     </View>
   );

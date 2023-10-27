@@ -5,6 +5,7 @@ export { default as DataItem } from './DataItem';
 export { default as DefaultItem } from './DefaultItem';
 export { default as DisplayTypeItem } from './DisplayTypeItem';
 export { default as NumberItem } from './NumberItem';
+export { default as TextItem } from './TextItem';
 export { default as StatusItem } from './StatusItem';
 export { default as TotalItem } from './TotalItem';
 export { default as TransferItem } from './TransferItem';

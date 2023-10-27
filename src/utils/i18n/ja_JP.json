@@ -498,7 +498,11 @@
     "methodData": "Method data",
     "dApp": "dApp",
     "nftId": "NFT ID",
-    "collectionId": "Collection ID"
+    "collectionId": "Collection ID",
+    "name": "Name",
+    "totalSupply": "Total supply",
+    "totalWinner": "Total winner",
+    "timeline": "Time line"
   },
   "placeholder": {
     "password": "パスワード",
@@ -550,7 +554,8 @@
     "searchAddressBook": "アカウント名",
     "selectService": "サービスを選択",
     "searchWebsite": "検索またはWebサイトを入力",
-    "connectWalletPlaceholder": "URIを入力または貼り付けてください。"
+    "connectWalletPlaceholder": "URIを入力または貼り付けてください。",
+    "campaignName": "Campaign name"
   },
   "emptyScreen": {
     "tokenEmptyTitle": "トークンは見つかりません",
@@ -576,7 +581,9 @@
     "manageDAppEmptyMessage": "承認されたdAppsのリストはここに表示されます。",
     "categoryItemEmpty": "このカテゴリは空です",
     "walletConnectDetailEmptyTitle": "dAppが見つからりません",
-    "walletConnectEmptyDetailMessage": "承認されたdAppはここに表示されます。"
+    "walletConnectEmptyDetailMessage": "承認されたdAppはここに表示されます。",
+    "missionPoolsEmptyTitle": "No mission found",
+    "missionPoolsEmptyMessage": "Your missions will show up here"
   },
   "warning": {
     "warningAccTitle": "警告：この鍵を開示しないでください",
@@ -766,7 +773,8 @@
     "newPassword": "新しいパスワード",
     "walletConnect": "WalletConnect",
     "disconnect": "切断",
-    "connectedNetworks": "接続されたネットワーク"
+    "connectedNetworks": "接続されたネットワーク",
+    "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
     "receive": "受信",
@@ -1115,6 +1123,7 @@
     "crowdloans": "クラウドローン",
     "staking": "ステーキング",
     "test": "テスト",
-    "data": "データ"
+    "data": "データ",
+    "missionPool": "Mission pool"
   }
 }

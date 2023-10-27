@@ -46,10 +46,8 @@ export default (theme: ThemeTypes) =>
       textAlign: 'left',
     },
     value: {
-      ...FontMedium,
       fontSize: theme.fontSize,
       lineHeight: theme.lineHeight * theme.fontSize,
-      fontWeight: theme.bodyFontWeight,
     },
     valueWrapper: {
       flexDirection: 'row',

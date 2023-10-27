@@ -499,7 +499,11 @@
     "methodData": "Method data",
     "dApp": "DApp",
     "nftId": "NFT ID",
-    "collectionId": "Collection ID"
+    "collectionId": "Collection ID",
+    "name": "Name",
+    "totalSupply": "Total supply",
+    "totalWinner": "Total winner",
+    "timeline": "Time line"
   },
   "placeholder": {
     "password": "Mật khẩu",
@@ -551,7 +555,8 @@
     "searchAddressBook": "Tên tài khoản",
     "selectService": "Chọn dịch vụ",
     "searchWebsite": "Tìm kiếm hoặc nhập trang web",
-    "connectWalletPlaceholder": "Please type or paste URI"
+    "connectWalletPlaceholder": "Please type or paste URI",
+    "campaignName": "Campaign name"
   },
   "emptyScreen": {
     "tokenEmptyTitle": "Không tìm thấy token",
@@ -577,7 +582,9 @@
     "manageDAppEmptyMessage": "DApp của bạn sẽ hiển thị tại đây",
     "categoryItemEmpty": "Không có dApp",
     "walletConnectDetailEmptyTitle": "Không tìm thấy dApp",
-    "walletConnectEmptyDetailMessage": "DApp của bạn sẽ hiển thị tại đây"
+    "walletConnectEmptyDetailMessage": "DApp của bạn sẽ hiển thị tại đây",
+    "missionPoolsEmptyTitle": "No mission found",
+    "missionPoolsEmptyMessage": "Your missions will show up here"
   },
   "warning": {
     "warningAccTitle": "Cảnh báo: Không bao giờ tiết lộ seed phrase này.",
@@ -767,7 +774,8 @@
     "newPassword": "Mật khẩu mới",
     "walletConnect": "WalletConnect",
     "disconnect": "Ngắt kết nối",
-    "connectedNetworks": "Connected networks"
+    "connectedNetworks": "Connected networks",
+    "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
     "receive": "Nhận",
@@ -1114,6 +1122,7 @@
     "crowdloans": "Crowdloan",
     "staking": "Staking",
     "test": "Test",
-    "data": "Dữ liệu"
+    "data": "Dữ liệu",
+    "missionPool": "Mission pool"
   }
 }

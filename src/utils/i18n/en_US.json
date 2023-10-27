@@ -499,7 +499,11 @@
     "methodData": "Method data",
     "dApp": "DApp",
     "nftId": "NFT ID",
-    "collectionId": "Collection ID"
+    "collectionId": "Collection ID",
+    "name": "Name",
+    "totalSupply": "Total supply",
+    "totalWinner": "Total winner",
+    "timeline": "Time line"
   },
   "placeholder": {
     "password": "Password",
@@ -551,7 +555,8 @@
     "searchAddressBook": "Account name",
     "selectService": "Select service",
     "searchWebsite": "Search or enter website",
-    "connectWalletPlaceholder": "Please type or paste URI"
+    "connectWalletPlaceholder": "Please type or paste URI",
+    "campaignName": "Campaign name"
   },
   "emptyScreen": {
     "tokenEmptyTitle": "No tokens found",
@@ -577,7 +582,9 @@
     "manageDAppEmptyMessage": "Your dApps will show up here",
     "categoryItemEmpty": "This category is empty",
     "walletConnectDetailEmptyTitle": "No dApps found",
-    "walletConnectEmptyDetailMessage": "Your dApps will show up here"
+    "walletConnectEmptyDetailMessage": "Your dApps will show up here",
+    "missionPoolsEmptyTitle": "No mission found",
+    "missionPoolsEmptyMessage": "Your missions will show up here"
   },
   "warning": {
     "warningAccTitle": "Warning: Never disclose this key",
@@ -767,7 +774,8 @@
     "newPassword": "New password",
     "walletConnect": "WalletConnect",
     "disconnect": "Disconnect",
-    "connectedNetworks": "Connected networks"
+    "connectedNetworks": "Connected networks",
+    "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
     "receive": "Address",
@@ -1114,6 +1122,7 @@
     "crowdloans": "Crowdloan",
     "staking": "Staking",
     "test": "Test",
-    "data": "Data"
+    "data": "Data",
+    "missionPool": "Mission pool"
   }
 }

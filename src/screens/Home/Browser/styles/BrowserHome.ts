@@ -46,6 +46,10 @@ const Styles = () => {
     recommendListContentContainer: {
       paddingHorizontal: theme.padding,
     },
+    missionPoolListContentContainer: {
+      paddingHorizontal: theme.padding,
+      gap: theme.paddingSM,
+    },
     recommendListSeparator: {
       marginRight: theme.marginSM,
     },

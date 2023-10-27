@@ -7,6 +7,7 @@ import { FontMedium } from 'styles/sharedStyles';
 
 export interface TextProps {
   ellipsis?: boolean;
+  numberOfLines?: number;
   monospace?: boolean;
   size?: TextSizeProps;
   style?: StyleProp<TextStyle>;
@@ -14,12 +15,20 @@ export interface TextProps {
   onPress?: () => void;
 }
 
-const Text: React.FC<TextProps> = ({ ellipsis, monospace, size = 'default', style, children, ...restProps }) => {
+const Text: React.FC<TextProps> = ({
+  ellipsis,
+  monospace,
+  size = 'default',
+  style,
+  children,
+  numberOfLines = 1,
+  ...restProps
+}) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = TypographyStyles(theme);
   const allStyle = [FontMedium, monospace && _style?.monospace, size && _style[`${size}Text`], style];
   return (
-    <RNText style={allStyle} numberOfLines={ellipsis ? 1 : undefined} {...restProps}>
+    <RNText style={allStyle} numberOfLines={ellipsis ? numberOfLines : undefined} {...restProps}>
       {children}
     </RNText>
   );
