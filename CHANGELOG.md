@@ -1,7 +1,7 @@
 ## 1.1.5 (228)
-- Setup CI/CD - Update script for release - fix whatsNewDirectory is not created (#1056)
+- Fix bug can not Send Sub0 NFT (#1088)
+- Swipe to delete/copy account (#1066)
 - Update web-runner (v1.1.19) (#1104)
-- Setup CI/CD - Update script for release (#1056)
 - Setup CI/CD (#1056)
 
 ## 1.1.4 (227)
