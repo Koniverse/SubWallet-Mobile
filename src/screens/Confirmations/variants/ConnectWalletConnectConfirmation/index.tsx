@@ -49,7 +49,8 @@ const handleCancel = async ({ id }: WalletConnectSessionRequest) => {
 };
 
 export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props) => {
-  const { params } = request.request;
+  const { params, verifyContext } = request.request;
+  console.log('123123', verifyContext, params);
   const toast = useToast();
   const { hasMasterPassword } = useSelector((state: RootState) => state.accountState);
   const { isDeepLinkConnect } = useSelector((state: RootState) => state.settings);
@@ -203,6 +204,7 @@ export const ConnectWalletConnectConfirmation = ({ request, navigation }: Props)
                     onApply={onApplyModal(namespace)}
                     onCancel={onCancelModal(namespace)}
                     onSelectAccount={_onSelectAccount(namespace)}
+                    namespace={namespace}
                   />
                 </View>
               );

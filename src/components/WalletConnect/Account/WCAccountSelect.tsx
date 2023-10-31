@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { VoidFunction } from 'types/index';
@@ -21,6 +21,7 @@ interface Props {
   useModal: boolean;
   onApply: () => void;
   onCancel: () => void;
+  namespace: string;
 }
 
 const renderButtonIcon = (color: string) => <Icon phosphorIcon={CheckCircle} weight={'fill'} iconColor={color} />;
@@ -33,6 +34,7 @@ export const WCAccountSelect = ({
   onSelectAccount,
   selectedAccounts,
   useModal,
+  namespace,
 }: Props) => {
   const modalRef = useRef<ModalRef>();
 
@@ -68,14 +70,32 @@ export const WCAccountSelect = ({
     [onSelectAccount, selectedAccounts],
   );
 
+  const noAccountTitle = useMemo(() => {
+    switch (namespace) {
+      case 'polkadot':
+        return i18n.formatString(i18n.common.noAvailableAccount, 'Substrate') as string;
+      case 'eip155':
+        return i18n.formatString(i18n.common.noAvailableAccount, 'EVM') as string;
+      default:
+        return i18n.formatString(i18n.common.noAvailableAccount, '') as string;
+    }
+  }, [namespace]);
+
+  const noAccountDescription = useMemo(() => {
+    switch (namespace) {
+      case 'polkadot':
+        return i18n.common.youDonotHaveAnyAcc('Substrate') as string;
+      case 'eip155':
+        return i18n.common.youDonotHaveAnyAcc('EVM') as string;
+      default:
+        return i18n.formatString(i18n.common.noAvailableAccount, '') as string;
+    }
+  }, [namespace]);
+
   return (
     <View style={{ width: '100%' }}>
       {!availableAccounts.length ? (
-        <AlertBox
-          title={i18n.common.noAvailableAccount}
-          description={i18n.formatString(i18n.common.youDonotHaveAnyAcc, '')}
-          type={'warning'}
-        />
+        <AlertBox title={noAccountTitle} description={noAccountDescription} type={'warning'} />
       ) : useModal ? (
         <BasicSelectModal
           isUseModalV2={false}
