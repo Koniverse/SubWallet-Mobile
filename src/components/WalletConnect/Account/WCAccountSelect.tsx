@@ -84,11 +84,11 @@ export const WCAccountSelect = ({
   const noAccountDescription = useMemo(() => {
     switch (namespace) {
       case 'polkadot':
-        return i18n.common.youDonotHaveAnyAcc('Substrate') as string;
+        return i18n.formatString(i18n.common.youDonotHaveAnyAcc, 'Substrate') as string;
       case 'eip155':
-        return i18n.common.youDonotHaveAnyAcc('EVM') as string;
+        return i18n.formatString(i18n.common.youDonotHaveAnyAcc, 'EVM') as string;
       default:
-        return i18n.formatString(i18n.common.noAvailableAccount, '') as string;
+        return i18n.formatString(i18n.common.youDonotHaveAnyAcc, '') as string;
     }
   }, [namespace]);
 
