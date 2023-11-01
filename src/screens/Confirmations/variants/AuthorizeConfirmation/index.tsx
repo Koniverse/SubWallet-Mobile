@@ -174,10 +174,10 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
           <Text style={styles.text}>{i18n.common.chooseAccount}</Text>
         ) : (
           <>
-            <Text style={styles.noAccountTextStyle}>{i18n.common.noAvailableAccount}</Text>
-            <Text style={styles.textCenter}>
-              {i18n.formatString(i18n.common.youDonotHaveAnyAcc, accountTypeMessage || '')}
+            <Text style={styles.noAccountTextStyle}>
+              {i18n.formatString(i18n.common.noAvailableAccount, accountTypeMessage || '')}
             </Text>
+            <Text style={styles.textCenter}>{i18n.common.youDonotHaveAnyAcc(accountTypeMessage || '')}</Text>
           </>
         )}
         <View style={styles.contentContainer}>
