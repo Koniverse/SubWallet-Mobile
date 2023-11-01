@@ -73,7 +73,7 @@ export const ValidatorSelectorField = ({
     const valueList = value.split(',');
 
     if (valueList.length > 1) {
-      return <Text style={textStyle}>{i18n.message.selectedXValidator(valueList.length)}</Text>;
+      return <Text style={textStyle}>{i18n.formatString(i18n.message.selectedXValidator, valueList.length)}</Text>;
     }
 
     return <Text style={textStyle}>{valueList[0].split('___')[1] || toShort(valueList[0].split('___')[0])}</Text>;

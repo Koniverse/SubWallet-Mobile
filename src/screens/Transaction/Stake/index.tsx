@@ -199,13 +199,13 @@ export const Stake = ({
       const val = new BigN(value);
       if (currentStakingType === StakingType.POOLED) {
         if (val.lte(0)) {
-          onUpdateErrors('value')([i18n.errorMessage.unbondMustBeGreaterThanZero()]);
+          onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, 'Value')]);
           return;
         }
       } else {
         if (!nominatorMetadata?.isBondedBefore || !isRelayChain) {
           if (val.lte(0)) {
-            onUpdateErrors('value')([i18n.errorMessage.unbondMustBeGreaterThanZero()]);
+            onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, 'Value')]);
             return;
           }
         }
@@ -213,7 +213,7 @@ export const Stake = ({
 
       if (val.gt(nativeTokenBalance.value)) {
         const maxString = new BigN(nativeTokenBalance.value).div(BN_TEN.pow(decimals)).toFixed(6);
-        onUpdateErrors('value')([i18n.errorMessage.unbondMustBeEqualOrLessThan(maxString)]);
+        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, 'Value', maxString)]);
         return;
       }
 

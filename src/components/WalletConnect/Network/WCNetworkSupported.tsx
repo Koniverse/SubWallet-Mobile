@@ -37,7 +37,11 @@ export const WCNetworkSupported = ({ networks }: Props) => {
       isShowInput={true}
       disabled={!networkNumber}
       renderSelected={() => (
-        <WCNetworkInput networks={networks} content={i18n.message.networkSupported(networkNumber)} onPress={() => {}} />
+        <WCNetworkInput
+          networks={networks}
+          content={i18n.formatString(i18n.message.networkSupported, networkNumber)}
+          onPress={() => {}}
+        />
       )}
       beforeListItem={
         <Typography.Text
@@ -46,7 +50,7 @@ export const WCNetworkSupported = ({ networks }: Props) => {
             color: theme.colorWhite,
             paddingBottom: theme.paddingXS,
           }}>
-          {i18n.message.networkSupported(networkNumber)}
+          {i18n.formatString(i18n.message.networkSupported, networkNumber)}
         </Typography.Text>
       }
       renderCustomItem={renderItem}

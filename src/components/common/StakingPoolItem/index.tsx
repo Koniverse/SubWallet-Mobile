@@ -39,7 +39,7 @@ export const StakingPoolItem = ({
 
       <View style={{ flex: 1 }}>
         <Text numberOfLines={1} style={_style.poolNameTextStyle}>
-          {name || i18n.message.poolId(id)}
+          {name || i18n.formatString(i18n.message.poolId, id)}
         </Text>
         <View style={_style.contentWrapper}>
           <Text style={_style.bondedAmountLabelTextStyle}>{i18n.message.bonded}</Text>

@@ -27,7 +27,7 @@ export function getWaitingTime(waitingTime: number, status: UnstakingStatus) {
     if (waitingTime > 24) {
       const days = moment.duration(waitingTime, 'hours').days();
 
-      return i18n.inputLabel.withdrawInXDays(days);
+      return i18n.formatString(i18n.inputLabel.withdrawInXDays, days);
     } else {
       return i18n.inputLabel.withdrawInADay;
     }

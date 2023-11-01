@@ -101,7 +101,10 @@ const SendNFT: React.FC<SendNFTProps> = ({
     }
 
     if (isEthereumAddress(recipientAddress) !== isEthereumAddress(owner)) {
-      const message = i18n.errorMessage.recipientAddressMustBeType(isEthereumAddress(owner) ? 'evm' : 'substrate');
+      const message = i18n.formatString(
+        i18n.errorMessage.recipientAddressMustBeType,
+        isEthereumAddress(owner) ? 'evm' : 'substrate',
+      );
 
       return [message];
     }

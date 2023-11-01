@@ -106,7 +106,8 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
         !cancel && setNativeTokenBalance(DEFAULT_BALANCE);
         !cancel && setTokenBalance(DEFAULT_BALANCE);
         !cancel && setIsLoading(false);
-        !cancel && setError(i18n.message.enableTokenOnChain(tokenNames.join(', '), chainInfo?.name || ''));
+        !cancel &&
+          setError(i18n.formatString(i18n.message.enableTokenOnChain, tokenNames.join(', '), chainInfo?.name || ''));
       }
     }
 
