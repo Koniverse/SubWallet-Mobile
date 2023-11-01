@@ -13,10 +13,11 @@ interface Props<T> {
 
 export function _TokenSelectItem<T>({ item, selectedValueMap, onSelectItem, onCloseModal }: Props<T>) {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { symbol, originChain, slug } = item as TokenItemType;
+  const { symbol, originChain, slug, name } = item as TokenItemType;
   return (
     <TokenSelectItem
       key={`${symbol}-${originChain}`}
+      name={name}
       symbol={symbol}
       chain={`${chainInfoMap[originChain]?.name || ''}`}
       logoKey={slug.toLowerCase()}

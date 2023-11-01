@@ -53,7 +53,6 @@ export const TokenGroupsDetail = ({
     return '';
   }, [tokenGroupSlug, assetRegistryMap, multiChainAssetMap]);
 
-  console.log('groupSymbol', groupSymbol);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   const {

@@ -206,12 +206,20 @@ export const ConfigureToken = ({
               />
             )}
 
+            {tokenInfo && tokenInfo.name && (
+              <TextField disabled text={tokenInfo.name.toString()} outerStyle={{ flex: 1, marginBottom: 0 }} />
+            )}
+          </View>
+
+          <View style={styles.row}>
+            {!!tokenInfo?.priceId && (
+              <TextField outerStyle={{ flex: 1, marginBottom: 0 }} disabled text={tokenInfo.priceId} />
+            )}
+
             {tokenInfo && tokenInfo.decimals && (
               <TextField disabled text={tokenInfo.decimals.toString()} outerStyle={{ flex: 1, marginBottom: 0 }} />
             )}
           </View>
-
-          {!!tokenInfo?.priceId && <TextField disabled text={tokenInfo.priceId} />}
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
