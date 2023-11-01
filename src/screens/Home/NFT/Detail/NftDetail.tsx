@@ -8,7 +8,7 @@ import useGoHome from 'hooks/screen/useGoHome';
 import useHandleGoHome from 'hooks/screen/useHandleGoHome';
 import useScanExplorerAddressUrl from 'hooks/screen/useScanExplorerAddressUrl';
 import { SlidersHorizontal } from 'phosphor-react-native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, ScrollView, StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -22,9 +22,13 @@ import i18n from 'utils/i18n/i18n';
 import reformatAddress from 'utils/index';
 import { NFTDetailProps } from 'screens/Home/NFT/NFTStackScreen';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Button } from 'components/design-system-ui';
+import { ActivityIndicator, Button } from 'components/design-system-ui';
 import useFetchChainInfo from 'hooks/common/useFetchChainInfo';
 import { _getChainSubstrateAddressPrefix } from '@subwallet/extension-base/services/chain-service/utils';
+import WebView from 'react-native-webview';
+import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
+import { deviceWidth } from 'constants/index';
+import { SHOW_3D_MODELS_CHAIN } from 'constants/nft';
 
 const ContainerHeaderStyle: StyleProp<any> = {
   width: '100%',
@@ -120,6 +124,18 @@ const ResourceTitleStyle: StyleProp<TextStyle> = {
   color: ColorMap.light,
 };
 
+const LoadingIconWrapperStyle: StyleProp<ViewStyle> = {
+  position: 'absolute',
+  backgroundColor: '#1A1A1A',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 14.32,
+};
+
 const propDetail = (title: string, valueDict: Record<string, any>, key: number): JSX.Element => {
   if (!valueDict.type || valueDict.type === 'string') {
     return (
@@ -142,10 +158,10 @@ const NftDetail = ({
     params: { collectionId, nftId },
   },
 }: NFTDetailProps) => {
+  const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
-
   const toast = useToast();
-
+  const [isLoading3dNft, setIsLoading3dNft] = useState(true);
   const nftCollections = useSelector((state: RootState) => state.nft.nftCollections);
   const nftItems = useSelector((state: RootState) => state.nft.nftItems);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
@@ -230,6 +246,10 @@ const NftDetail = ({
     };
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => setIsLoading3dNft(false), 1000);
+  }, []);
+
   return (
     <ContainerWithSubHeader
       showLeftBtn={true}
@@ -239,16 +259,36 @@ const NftDetail = ({
       style={ContainerHeaderStyle}
       onPressBack={() => navigation.goBack()}>
       <>
-        <ScrollView style={ContainerDetailStyle}>
-          <View style={ImageContainerStyle}>
-            <ImagePreview
-              style={ImageStyle}
-              mainUrl={data.image}
-              backupUrl={collectionImage}
-              borderRadius={14.32}
-              borderPlace={'full'}
-            />
-          </View>
+        <ScrollView style={ContainerDetailStyle} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+          {SHOW_3D_MODELS_CHAIN.includes(chain) ? (
+            <View style={{ width: deviceWidth - 32, height: deviceWidth - 32, position: 'relative' }}>
+              <WebView
+                style={{ borderRadius: 14.32, flex: 1, backgroundColor: theme.colorBgSecondary }}
+                webviewDebuggingEnabled
+                scrollEnabled
+                source={{
+                  html:
+                    `<html><head><script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script><style>body, html { background-color: ${theme.colorBgSecondary} }</style>\n` +
+                    `</head><body><model-viewer id="model-viewer" src="${data.image}" alt="model-viewer" ar-status="not-presenting" auto-rotate="true" auto-rotate-delay="100" rotation-per-second="30deg" bounds="tight" disable-pan="true" disable-scroll="true" disable-tap="true" disable-zoom="true" environment-image="neutral" interaction-prompt="none" loading="eager" style="width: 100%; height: 100%" touch-action="none"></model-viewer></body></html>`,
+                }}
+              />
+              {isLoading3dNft && (
+                <View style={LoadingIconWrapperStyle}>
+                  <ActivityIndicator size={32} />
+                </View>
+              )}
+            </View>
+          ) : (
+            <View style={ImageContainerStyle}>
+              <ImagePreview
+                style={ImageStyle}
+                mainUrl={data.image}
+                backupUrl={collectionImage}
+                borderRadius={14.32}
+                borderPlace={'full'}
+              />
+            </View>
+          )}
           {!!data.description && (
             <View>
               <Text style={AttTitleStyle}>{i18n.inputLabel.nftDetails}</Text>
