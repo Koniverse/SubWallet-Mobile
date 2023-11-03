@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AuthUrlInfo } from '@subwallet/extension-base/background/handlers/State';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { Keyboard, ScrollView, TouchableOpacity, View } from 'react-native';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { changeAuthorizationBlock, changeAuthorizationPerSite } from 'messaging/index';
@@ -47,6 +47,7 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const [loading, setLoading] = useState(false);
   const _isNotConnected = isNotConnected || !authInfo;
+  Keyboard.dismiss();
 
   const onChangeModalVisible = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 

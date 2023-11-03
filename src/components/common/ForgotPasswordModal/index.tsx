@@ -55,6 +55,7 @@ export const ForgotPasswordModal = ({
             onPress={onReset(false)}
             loading={resetAccLoading}
             disabled={resetAccLoading || eraseAllLoading}
+            externalTextStyle={{ flex: 1 }}
             icon={renderLeftBtnIcon}>
             {i18n.common.resetAccount}
           </Button>
