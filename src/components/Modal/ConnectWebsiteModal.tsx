@@ -153,13 +153,13 @@ export const ConnectWebsiteModal = ({ setVisible, modalVisible, isNotConnected, 
           icon={ButtonIconMap.CheckCircle}
           style={{ flex: 1 }}
           loading={loading}
-          disabled={loading}
+          disabled={loading || Object.values(allowedMap).every(value => !value)}
           onPress={handlerSubmit}>
           {i18n.buttonTitles.confirm}
         </Button>
       </>
     );
-  }, [_isNotConnected, handlerSubmit, handlerUnblock, isBlocked, loading, onChangeModalVisible]);
+  }, [_isNotConnected, allowedMap, handlerSubmit, handlerUnblock, isBlocked, loading, onChangeModalVisible]);
 
   const connectIconProps = useMemo<ConnectIcon>(() => {
     if (_isNotConnected) {
