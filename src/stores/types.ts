@@ -36,6 +36,7 @@ import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
 import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
+import { MissionInfo } from 'types/missionPool';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -233,4 +234,8 @@ export type TransactionHistoryReducerType = {
 
 export interface WalletConnectStore extends BaseReduxStore {
   sessions: Record<string, SessionTypes.Struct>;
+}
+
+export interface MissionPoolStore extends BaseReduxStore {
+  missions: MissionInfo[];
 }

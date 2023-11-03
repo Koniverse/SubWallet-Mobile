@@ -498,7 +498,11 @@
     "methodData": "Данные метода",
     "dApp": "dApp",
     "nftId": "NFT ID",
-    "collectionId": "Collection ID"
+    "collectionId": "Collection ID",
+    "name": "Name",
+    "totalSupply": "Total supply",
+    "totalWinner": "Total winner",
+    "timeline": "Time line"
   },
   "placeholder": {
     "password": "Пароль",
@@ -550,7 +554,8 @@
     "searchAddressBook": "Имя аккаунта",
     "selectService": "Выбрать услуг ",
     "searchWebsite": "Найдите или введите веб-сайт",
-    "connectWalletPlaceholder": "Please type or paste URI"
+    "connectWalletPlaceholder": "Please type or paste URI",
+    "campaignName": "Campaign name"
   },
   "emptyScreen": {
     "tokenEmptyTitle": "Токены не найдены ",
@@ -576,7 +581,9 @@
     "manageDAppEmptyMessage": "Ваш список утвержденных dApps появится здесь.",
     "categoryItemEmpty": "Эта категория пуста",
     "walletConnectDetailEmptyTitle": "DApp не найден",
-    "walletConnectEmptyDetailMessage": "Ваши одобренные dApp будут отображаться здесь"
+    "walletConnectEmptyDetailMessage": "Ваши одобренные dApp будут отображаться здесь",
+    "missionPoolsEmptyTitle": "No mission found",
+    "missionPoolsEmptyMessage": "Your missions will show up here"
   },
   "warning": {
     "warningAccTitle": "Предупреждение: никогда не разглашайте этот ключ",
@@ -766,7 +773,8 @@
     "newPassword": "Новый пароль ",
     "walletConnect": "WalletConnect",
     "disconnect": "Отключить",
-    "connectedNetworks": "Подключенные сети"
+    "connectedNetworks": "Подключенные сети",
+    "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
     "receive": "Адрес",
@@ -1115,6 +1123,7 @@
     "crowdloans": "Краудлоун",
     "staking": "Стейкинг",
     "test": "Тест",
-    "data": "Данные"
+    "data": "Данные",
+    "missionPool": "Mission pool"
   }
 }

@@ -10,6 +10,7 @@ import {
   StatusItem,
   TotalItem,
   TransferItem,
+  TextItem,
 } from './parts';
 import { InfoItemGeneralProps } from 'components/MetaInfo/types';
 import { StyleProp, View } from 'react-native';
@@ -79,6 +80,7 @@ type CompoundedComponent = React.ForwardRefExoticComponent<Props> & {
   Chain: typeof ChainItem;
   DisplayType: typeof DisplayTypeItem;
   Number: typeof NumberItem;
+  Text: typeof TextItem;
   Total: typeof TotalItem;
   Default: typeof DefaultItem;
 };
@@ -93,6 +95,7 @@ MetaInfo.Transfer = TransferItem;
 MetaInfo.Chain = ChainItem;
 MetaInfo.DisplayType = DisplayTypeItem;
 MetaInfo.Number = NumberItem;
+MetaInfo.Text = TextItem;
 MetaInfo.Total = TotalItem;
 MetaInfo.Default = DefaultItem;
 

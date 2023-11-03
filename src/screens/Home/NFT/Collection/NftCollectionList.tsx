@@ -13,6 +13,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useRefresh } from 'hooks/useRefresh';
 import { reloadCron } from 'messaging/index';
 import { EmptyList } from 'components/EmptyList';
+import { deviceWidth } from 'constants/index';
 
 type GetItemLayoutType =
   | readonly NftCollection[]
@@ -24,7 +25,7 @@ const filteredCollection = (items: NftCollection[], searchString: string) => {
     return collection.collectionName && collection.collectionName.toLowerCase().includes(searchString.toLowerCase());
   });
 };
-const ITEM_HEIGHT = 220;
+const ITEM_HEIGHT = (deviceWidth - 32) / 2 + 32;
 const ITEM_SEPARATOR = 16;
 const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 

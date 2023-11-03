@@ -33,6 +33,7 @@ import {
   subscribeConnectWCRequests,
   subscribeWalletConnectSessions,
   subscribeProcessingCampaign,
+  getMissionPoolData,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -355,6 +356,12 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...subscribeWalletConnectSessions,
           name: 'subscribeWalletConnectSessions',
           relatedStores: ['walletConnect'],
+        });
+        _DataContext.addHandler({
+          ...getMissionPoolData,
+          name: 'getMissionPoolData',
+          relatedStores: ['missionPool'],
+          isStartImmediately: true,
         });
 
         readyFlag.current.isStart = false;

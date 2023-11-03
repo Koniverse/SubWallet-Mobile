@@ -11,7 +11,6 @@ import { GeneralSettings } from 'screens/Settings/General';
 import { SendFund } from 'screens/Transaction/SendFundV2';
 import { BrowserSearch } from 'screens/Home/Browser/BrowserSearch';
 import { BrowserTabsManager } from 'screens/Home/Browser/BrowserTabsManager';
-import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
 import { AccountsScreen } from 'screens/Account/AccountsScreen';
 import CreateMasterPassword from 'screens/MasterPassword/CreateMasterPassword';
 import { CreateAccount } from 'screens/Account/CreateAccount';
@@ -83,6 +82,8 @@ import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import queryString from 'querystring';
 import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
+import { BrowserListByTabview } from 'screens/Home/Browser/BrowserListByTabview';
+import { MissionPoolsByTabview } from 'screens/Home/Browser/MissionPool';
 
 interface Props {
   isAppReady: boolean;
@@ -453,6 +454,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
                 <Stack.Screen name="BrowserTabsManager" component={BrowserTabsManager} />
                 <Stack.Screen name="BrowserListByTabview" component={BrowserListByTabview} />
+                <Stack.Screen name="MissionPoolsByTabview" component={MissionPoolsByTabview} />
                 <Stack.Screen name="AccountsScreen" component={AccountsScreen} />
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
               </Stack.Group>

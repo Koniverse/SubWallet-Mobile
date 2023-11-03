@@ -499,7 +499,11 @@
     "methodData": "方式数据",
     "dApp": "DApp",
     "nftId": "NFT ID",
-    "collectionId": "Collection ID"
+    "collectionId": "Collection ID",
+    "name": "Name",
+    "totalSupply": "Total supply",
+    "totalWinner": "Total winner",
+    "timeline": "Time line"
   },
   "placeholder": {
     "password": "密码",
@@ -551,7 +555,8 @@
     "searchAddressBook": "账户名字",
     "selectService": "选择服务",
     "searchWebsite": "搜索或输入网站",
-    "connectWalletPlaceholder": "Please type or paste URI"
+    "connectWalletPlaceholder": "Please type or paste URI",
+    "campaignName": "Campaign name"
   },
   "emptyScreen": {
     "tokenEmptyTitle": "未找到通证",
@@ -577,7 +582,9 @@
     "manageDAppEmptyMessage": "您的dApp将在此处出现",
     "categoryItemEmpty": "这类别空白",
     "walletConnectDetailEmptyTitle": "未找到dApp",
-    "walletConnectEmptyDetailMessage": "您的dApp将在此处出现"
+    "walletConnectEmptyDetailMessage": "您的dApp将在此处出现",
+    "missionPoolsEmptyTitle": "No mission found",
+    "missionPoolsEmptyMessage": "Your missions will show up here"
   },
   "warning": {
     "warningAccTitle": "警告：切勿泄露此私钥",
@@ -767,7 +774,8 @@
     "newPassword": "新密码",
     "walletConnect": "连接钱包",
     "disconnect": "断开",
-    "connectedNetworks": "Connected networks"
+    "connectedNetworks": "Connected networks",
+    "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
     "receive": "领取",
@@ -1114,6 +1122,7 @@
     "crowdloans": "众贷",
     "staking": "质押",
     "test": "试用",
-    "data": "数据"
+    "data": "数据",
+    "missionPool": "Mission pool"
   }
 }
