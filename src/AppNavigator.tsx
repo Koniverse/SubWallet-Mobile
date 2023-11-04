@@ -24,8 +24,6 @@ import { Languages } from 'screens/Settings/Languages';
 import { Security } from 'screens/Settings/Security';
 import { AccountExport } from 'screens/Account/AccountExport';
 import { CustomTokenSetting } from 'screens/Tokens';
-import { NetworkConfig } from 'screens/Settings/NetworkConfig';
-import { NetworkConfigDetail } from 'screens/Settings/NetworkConfigDetail';
 import { ConfigureToken } from 'screens/Tokens/ConfigureToken';
 import { ImportToken } from 'screens/ImportToken/ImportToken';
 import ImportNft from 'screens/ImportToken/ImportNft';
@@ -502,8 +500,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 />
                 <Stack.Screen name="AccountExport" component={AccountExport} />
                 <Stack.Screen name="CustomTokenSetting" component={CustomTokenSetting} />
-                <Stack.Screen name="NetworkConfig" component={NetworkConfig} />
-                <Stack.Screen name="NetworkConfigDetail" component={NetworkConfigDetail} />
                 <Stack.Screen name="ConfigureToken" component={ConfigureToken} />
                 <Stack.Screen name="ImportToken" component={ImportToken} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ImportNft" component={ImportNft} options={{ gestureEnabled: false }} />
