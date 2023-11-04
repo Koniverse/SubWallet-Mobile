@@ -2,13 +2,9 @@ export const deeplinks = ['subwallet://', 'https://mobile.subwallet.app'];
 
 export function isValidURL(str: string): boolean {
   const pattern = new RegExp(
-    '^(https?:\\/\\/)?' + // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-      '(\\:\\d+)?(\\/[-a-z\\d%_.~+#@]*)*' + // port and path
-      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$',
-    'i',
+    '^(https?://)?' + // protocol
+      '([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.' + // domain name
+      '[a-z]{2,}', // top-level domain (TLD)
   ); // fragment locator
   return pattern.test(str);
 }

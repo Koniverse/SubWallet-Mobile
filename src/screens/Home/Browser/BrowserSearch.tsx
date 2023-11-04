@@ -33,17 +33,8 @@ type SearchItemType = {
 
 type SectionItem = { title: string; data: SearchItemType[]; type: string };
 
-// const recommendItems: SearchItemType[] = predefinedDApps.dapps.map(i => ({
-//   id: i.id,
-//   logo: i.icon,
-//   tags: i.categories,
-//   url: i.url,
-//   name: i.name,
-//   subtitle: getHostName(i.url),
-// }));
-
 function getFirstSearchItem(searchString: string): SearchItemType {
-  const url = getValidURL(searchString);
+  const url = getValidURL(decodeURIComponent(searchString));
 
   if (url.startsWith(`https://${searchDomain}`)) {
     return {
@@ -76,7 +67,7 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const [searchString, setSearchString] = useState<string>('');
   const searchStringRef = useRef('');
   const [sectionItems, setSectionItems] = useState<SectionItem[]>([]);
-  const isOpenNewTab = params && params.isOpenNewTab;
+  const isOpenNewTab = params?.isOpenNewTab;
 
   const onPressItem = (item: SearchItemType) => {
     if (isOpenNewTab) {

@@ -67,7 +67,6 @@ export type RootStackParamList = {
   ImportToken: { payload: ConfirmationsQueue['addTokenRequest'][0] } | undefined;
   TransactionDone: { chainType: string; chain: string; id: string; path: string };
   NetworkConfig: undefined;
-  NetworkConfigDetail: { key: string };
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
   WebViewModal: undefined;
   History: { chain?: string; extrinsicHash?: string; transactionId?: string };
@@ -113,7 +112,6 @@ export type ImportNftProps = NativeStackScreenProps<RootStackParamList, 'ImportN
 export type UnlockModalProps = NativeStackScreenProps<RootStackParamList, 'UnlockModal'>;
 export type ConnectListProps = NativeStackScreenProps<RootStackParamList, 'ConnectList'>;
 export type ConnectDetailProps = NativeStackScreenProps<RootStackParamList, 'ConnectDetail'>;
-export type NetworkConfigDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkConfigDetail'>;
 export type NetworkSettingDetailProps = NativeStackScreenProps<RootStackParamList, 'NetworkSettingDetail'>;
 export type TransactionDoneProps = NativeStackScreenProps<RootStackParamList, 'TransactionDone'>;
 export type AddProviderProps = NativeStackScreenProps<RootStackParamList, 'AddProvider'>;
