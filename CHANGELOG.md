@@ -1,3 +1,6 @@
+## 1.1.6 (231)
+- Crash app in case select token when send fund (#1122)
+
 ## 1.1.6 (230)
 - Bug show duckduckgo instead of show dapp in browser in case deeplink containing special charactors (#1119)
 - Still enable "Confirm" button although do not select account in case reconnect after unblock dApp (#1115)
