@@ -908,7 +908,7 @@
     "requestWithAccount": "You are approving a request with account",
     "messageDetail": "Message details",
     "transactionDetail": "Transaction details",
-    "lifeTimeContent": "mortal, valid from {{0}} to {{1}}",
+    "lifeTimeContent": "mortal, valid from {0} to {1}",
     "addNetworkRequest": "Add network request",
     "addTokenRequest": "Add token request",
     "providerUrl": "Provider URL",

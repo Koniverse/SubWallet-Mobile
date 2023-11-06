@@ -55,9 +55,11 @@ const mortalityAsString = (era: ExtrinsicEra, hexBlockNumber: string): string =>
   const blockNumber = bnToBn(hexBlockNumber);
   const mortal = era.asMortalEra;
 
-  return i18n.confirmation.lifeTimeContent
-    .replace('{{birth}}', formatNumber(mortal.birth(blockNumber)))
-    .replace('{{death}}', formatNumber(mortal.death(blockNumber)));
+  return i18n.formatString(
+    i18n.confirmation.lifeTimeContent,
+    formatNumber(mortal.birth(blockNumber)),
+    formatNumber(mortal.death(blockNumber)),
+  );
 };
 
 const SubstrateTransactionDetail: React.FC<Props> = (props: Props) => {
