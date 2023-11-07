@@ -4,18 +4,20 @@ import { View } from 'react-native';
 import { Button, PageIcon, Typography } from 'components/design-system-ui';
 import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import TransactionDoneStyle from './TransactionDone/style';
-import { RootNavigationProps, TransactionDoneProps } from 'routes/index';
+import TransactionDoneStyle from './style';
+import { RootNavigationProps } from 'routes/index';
 import { useNavigation } from '@react-navigation/native';
 import { MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
+import { TransactionDoneInfo } from 'hooks/screen/Transaction/useTransactionV2';
 
-export const TransactionDone = ({
-  route: {
-    params: { chain, id, path },
-  },
-}: TransactionDoneProps) => {
+interface Props {
+  transactionDoneInfo: TransactionDoneInfo;
+}
+
+export const TransactionDone = ({ transactionDoneInfo }: Props) => {
+  const { id, path, chain } = transactionDoneInfo;
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const _style = TransactionDoneStyle(theme);

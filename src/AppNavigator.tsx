@@ -38,7 +38,6 @@ import ErrorBoundary from 'react-native-error-boundary';
 import ApplyMasterPassword from 'screens/MasterPassword/ApplyMasterPassword';
 import { NetworkSettingDetail } from 'screens/NetworkSettingDetail';
 import { Confirmations } from 'screens/Confirmations';
-import { TransactionDone } from 'screens/Transaction';
 import ErrorFallback from 'components/common/ErrorFallbackScreen';
 import ChangeMasterPassword from 'screens/MasterPassword/ChangeMasterPassword';
 import { ImportNetwork } from 'screens/ImportNetwork';
@@ -505,7 +504,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="ImportNft" component={ImportNft} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="WebViewDebugger" component={WebViewDebugger} />
                 <Stack.Screen name="SigningAction" component={SigningScreen} options={{ gestureEnabled: false }} />
-                <Stack.Screen name="TransactionDone" component={TransactionDone} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="ConnectParitySigner" component={ConnectParitySigner} />
                 <Stack.Screen name="ConnectKeystone" component={ConnectKeystone} />
                 <Stack.Screen name="AttachReadOnly" component={AttachReadOnly} options={{ gestureEnabled: false }} />
