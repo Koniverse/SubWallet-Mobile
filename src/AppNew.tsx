@@ -129,8 +129,8 @@ export const AppNew = () => {
   const isI18nReady = useSetupI18n().isI18nReady;
   useStoreBackgroundService();
   const { refetch } = useGetTokenConfigQuery(undefined, { pollingInterval: 300000 });
-  const { refetch: refetchDAPPs } = useGetDAPPsQuery(undefined, { pollingInterval: 300000 });
-  const { refetch: refetchDAPPCategories } = useGetDAPPCategoriesQuery(undefined, { pollingInterval: 300000 });
+  const { refetch: refetchDAPPs } = useGetDAPPsQuery(undefined);
+  const { refetch: refetchDAPPCategories } = useGetDAPPCategoriesQuery(undefined);
 
   // Enable lock screen on the start app
   useEffect(() => {

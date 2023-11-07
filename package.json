@@ -100,7 +100,7 @@
     "react-native-modal": "^13.0.1",
     "react-native-navigation-bar-color": "^2.0.2",
     "react-native-pager-view": "^6.2.0",
-    "react-native-permissions": "^3.8.0",
+    "react-native-permissions": "^3.10.1",
     "react-native-picker-select": "^8.0.4",
     "react-native-progress": "^5.0.0",
     "react-native-qrcode-scanner": "^1.5.5",
