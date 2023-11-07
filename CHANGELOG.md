@@ -1,3 +1,6 @@
+## 1.1.7 (233)
+- Update text when select validator (#1129)
+
 ## 1.1.7 (232)
 - Update web-runner (v1.1.20) (#1124)
 - Fix some UI bug on Android (#1108)
