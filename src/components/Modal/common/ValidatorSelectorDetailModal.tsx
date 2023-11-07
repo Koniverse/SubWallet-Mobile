@@ -45,12 +45,12 @@ export const ValidatorSelectorDetailModal = ({
       modalBaseV2Ref={modalBaseV2Ref}
       setVisible={setVisible}
       modalVisible={detailModalVisible}
-      modalTitle={i18n.formatString(i18n.common.stakingValidatorDetail, getValidatorLabel(chain))}
+      modalTitle={i18n.formatString(i18n.common.stakingValidatorDetail, getValidatorLabel(chain)) as string}
       onBackButtonPress={onCancel}>
       <View style={{ width: '100%' }}>
         <MetaInfo hasBackgroundWrapper>
           <MetaInfo.Account
-            label={i18n.inputLabel.validator}
+            label={getValidatorLabel(chain)}
             address={validatorAddress}
             name={validatorName}
             networkPrefix={networkPrefix}

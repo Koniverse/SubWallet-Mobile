@@ -134,6 +134,30 @@ export const ValidatorSelector = forwardRef(
       return result;
     }, [hasReturn]);
     const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
+    const fewValidators = changeValidators.length > 1;
+    const applyLabel = useMemo(() => {
+      const label = getValidatorLabel(chain);
+
+      if (!fewValidators) {
+        switch (label) {
+          case 'dApp':
+            return i18n.formatString(i18n.buttonTitles.applyDApp, changeValidators.length) as string;
+          case 'Collator':
+            return i18n.formatString(i18n.buttonTitles.applyCollator, changeValidators.length) as string;
+          case 'Validator':
+            return i18n.formatString(i18n.buttonTitles.applyValidator, changeValidators.length) as string;
+        }
+      } else {
+        switch (label) {
+          case 'dApp':
+            return i18n.formatString(i18n.buttonTitles.applyDApps, changeValidators.length) as string;
+          case 'Collator':
+            return i18n.formatString(i18n.buttonTitles.applyCollators, changeValidators.length) as string;
+          case 'Validator':
+            return i18n.formatString(i18n.buttonTitles.applyValidators, changeValidators.length) as string;
+        }
+      }
+    }, [chain, changeValidators.length, fewValidators]);
 
     const resultList = useMemo(() => {
       return [...items].sort((a: ValidatorDataType, b: ValidatorDataType) => {
@@ -158,7 +182,9 @@ export const ValidatorSelector = forwardRef(
           message={i18n.emptyScreen.selectorEmptyMessage}
           icon={MagnifyingGlass}
           isDataEmpty={items.length === 0}
-          validatorTitle={getValidatorLabel(chain).toLowerCase()}
+          validatorTitle={
+            getValidatorLabel(chain) === 'dApp' ? getValidatorLabel(chain) : getValidatorLabel(chain).toLowerCase()
+          }
           onClickReload={setForceFetchValidator}
         />
       );
@@ -239,7 +265,7 @@ export const ValidatorSelector = forwardRef(
           disabled={!chain || !from || disabled}
           applyBtn={{
             icon: CheckCircle,
-            label: i18n.formatString(i18n.buttonTitles.applyValidators, changeValidators.length),
+            label: applyLabel,
             onPressApplyBtn: () => {
               onApplyChangeValidators();
               validatorSelectModalRef?.current?.closeModal && validatorSelectModalRef?.current?.closeModal();
@@ -257,12 +283,23 @@ export const ValidatorSelector = forwardRef(
               onPressLightningBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
               onPressBookBtn={() => validatorSelectModalRef?.current?.onOpenModal()}
               value={selectedValidator}
-              label={i18n.formatString(i18n.common.selectStakingValidator, getValidatorLabel(chain).toLowerCase())}
+              label={
+                i18n.formatString(
+                  i18n.common.selectStakingValidator,
+                  getValidatorLabel(chain) === 'dApp'
+                    ? getValidatorLabel(chain)
+                    : getValidatorLabel(chain).toLowerCase(),
+                ) as string
+              }
               loading={validatorLoading}
-              placeholder={i18n.formatString(
-                i18n.common.selectStakingValidator,
-                getValidatorLabel(chain).toLowerCase(),
-              )}
+              placeholder={
+                i18n.formatString(
+                  i18n.common.selectStakingValidator,
+                  getValidatorLabel(chain) === 'dApp'
+                    ? getValidatorLabel(chain)
+                    : getValidatorLabel(chain).toLowerCase(),
+                ) as string
+              }
             />
           )}
           rightIconOption={{
@@ -271,8 +308,18 @@ export const ValidatorSelector = forwardRef(
           }}
           renderCustomItem={renderItem}
           searchFunc={searchFunction}
-          placeholder={i18n.formatString(i18n.common.searchStakingValidator, getValidatorLabel(chain).toLowerCase())}
-          title={i18n.formatString(i18n.common.selectStakingValidator, getValidatorLabel(chain).toLowerCase())}>
+          placeholder={
+            i18n.formatString(
+              i18n.common.selectStakingValidator,
+              getValidatorLabel(chain) === 'dApp' ? getValidatorLabel(chain) : getValidatorLabel(chain).toLowerCase(),
+            ) as string
+          }
+          title={
+            i18n.formatString(
+              i18n.common.selectStakingValidator,
+              getValidatorLabel(chain) === 'dApp' ? getValidatorLabel(chain) : getValidatorLabel(chain).toLowerCase(),
+            ) as string
+          }>
           <>
             {detailItem && (
               <ValidatorSelectorDetailModal

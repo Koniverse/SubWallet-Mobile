@@ -11,7 +11,10 @@ import {
   UnstakingInfo,
   UnstakingStatus,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { isShowNominationByValidator } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
+import {
+  getValidatorLabel,
+  isShowNominationByValidator,
+} from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useSelector } from 'react-redux';
@@ -197,7 +200,7 @@ export const StakingDetailModal = ({
         <MetaInfo style={{ marginTop: 8 }} hasBackgroundWrapper spaceSize={'sm'}>
           <MetaInfo.Account
             address={item.validatorAddress}
-            label={i18n.inputLabel.validator}
+            label={getValidatorLabel(item.chain)}
             name={item.validatorIdentity || toShort(item.validatorAddress)}
             networkPrefix={networkPrefix}
           />
