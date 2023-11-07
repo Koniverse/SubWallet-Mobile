@@ -279,6 +279,7 @@ export const AccountsScreen = ({
           block
           icon={<Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} />}
           type={'secondary'}
+          externalTextStyle={{ flex: 1 }}
           onPress={() => onPressFooterBtn(() => createAccountRef?.current?.onOpenModal())}>
           {i18n.buttonTitles.createANewAcc}
         </Button>
