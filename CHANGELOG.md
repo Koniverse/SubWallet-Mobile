@@ -1,3 +1,7 @@
+## 1.1.7 (232)
+- Update web-runner (v1.1.20) (#1124)
+- Fix some UI bug on Android (#1108)
+
 ## 1.1.6 (231)
 - Crash app in case select token when send fund (#1122)
 
