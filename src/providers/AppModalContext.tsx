@@ -10,6 +10,7 @@ export type ConfirmModalInfo = {
   title?: string;
   message?: string;
   messageIcon?: string;
+  completeBtnTitle?: string;
   onCancelModal?: () => void | undefined;
   onCompleteModal?: () => void | undefined;
 };
@@ -32,6 +33,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           ...prevState,
           title: '',
           message: '',
+          completeBtnTitle: '',
           messageIcon: undefined,
           onCancelModal: undefined,
           onCompleteModal: undefined,
@@ -50,6 +52,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         messageIcon={confirmModal.messageIcon}
         onCancelModal={confirmModal.onCancelModal}
         onCompleteModal={confirmModal.onCompleteModal}
+        completeBtnTitle={confirmModal.completeBtnTitle}
       />
     </AppModalContext.Provider>
   );

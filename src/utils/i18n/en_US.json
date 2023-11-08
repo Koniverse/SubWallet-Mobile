@@ -185,8 +185,8 @@
     "eraseAll": " Erase all",
     "connecting": "Connecting...",
     "chainConnected": "{0} is connected!",
-    "enableChain": "Enable chain?",
-    "enableChainMessage": "Your selected chain ({0}) is currently disabled, you need to turn it on",
+    "enableChain": "Enable network?",
+    "enableChainMessage": "Your selected network is currently disabled. Enable it to start using.",
     "provider": "Provider",
     "pools": "Pool",
     "nominate": "Nominate",
@@ -404,7 +404,8 @@
     "addToken": "Add token",
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
-    "joinNow": "Join now"
+    "joinNow": "Join now",
+    "enable": "Enable"
   },
   "inputLabel": {
     "selectAcc": "Select account",

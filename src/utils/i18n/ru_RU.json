@@ -403,7 +403,8 @@
     "addToken": "Add token",
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
-    "joinNow": "Join now"
+    "joinNow": "Join now",
+    "enable": "Enable"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",
