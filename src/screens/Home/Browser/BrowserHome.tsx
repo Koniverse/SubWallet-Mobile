@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
 import { CaretRight } from 'phosphor-react-native';
 import createStylesheet from './styles/BrowserHome';
-import FastImage from 'react-native-fast-image';
 import { Images } from 'assets/index';
 import { Icon, Typography } from 'components/design-system-ui';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -19,10 +18,10 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { browserHomeItem, browserHomeItemIconOnly, browserHomeItemWidth } from 'constants/itemHeight';
 import { useGetDAPPsQuery } from 'stores/API';
-import { SliderBox } from 'react-native-image-slider-box';
 import { MissionPoolItem } from 'components/MissionPoolItem';
 import { MissionInfo } from 'types/missionPool';
 import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
+import ImageSlider from 'components/common/ImageSlider';
 
 interface HeaderProps {
   title: string;
@@ -45,26 +44,6 @@ type RecommendedListType = {
 const ICON_ITEM_HEIGHT = browserHomeItemIconOnly;
 const ITEM_HEIGHT = browserHomeItem;
 const ITEM_WIDTH = browserHomeItemWidth;
-const paginationBoxStyle = {
-  position: 'absolute',
-  bottom: -12,
-  right: 0,
-  left: 0,
-  padding: 0,
-  alignItems: 'center',
-  alignSelf: 'center',
-  justifyContent: 'center',
-  paddingVertical: 10,
-};
-const dotStyle = {
-  width: 6,
-  height: 6,
-  borderRadius: 3,
-  marginHorizontal: 0,
-  padding: 0,
-  margin: 0,
-  backgroundColor: 'rgba(128, 128, 128, 0.92)',
-};
 const SectionHeader: React.FC<HeaderProps> = ({ title, actionTitle, onPress }): JSX.Element => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet();
@@ -143,6 +122,10 @@ const BrowserHome = () => {
       setLoadingDataLv2(false);
     }, 200);
   }, []);
+
+  const onPressImageSliderItem = (index: number) => {
+    !!bannerData && onPressSectionItem(bannerData[index]);
+  };
 
   const recommendedList = useMemo((): RecommendedListType[] | [] => {
     if (!dApps) {
@@ -223,21 +206,7 @@ const BrowserHome = () => {
   return (
     <View style={stylesheet.container}>
       <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-        <SliderBox
-          ImageComponent={FastImage}
-          images={getBannerImages}
-          sliderBoxHeight={200}
-          onCurrentImagePressed={(index: number) => bannerData && onPressSectionItem(bannerData[index])}
-          dotColor="white"
-          inactiveDotColor="#90A4AE"
-          autoplay
-          resizeMethod={'resize'}
-          resizeMode={'cover'}
-          paginationBoxStyle={paginationBoxStyle}
-          dotStyle={dotStyle}
-          ImageComponentStyle={stylesheet.banner}
-          imageLoadingColor="#2196F3"
-        />
+        <ImageSlider data={getBannerImages} onPressItem={onPressImageSliderItem} />
         {!loadingDataLv1 && (
           <>
             {historyItems && historyItems.length > 0 && (
