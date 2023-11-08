@@ -14,6 +14,7 @@ import { RootState } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
 import { AccountAddressType } from 'types/index';
 import { findAccountByAddress, getAccountAddressType } from 'utils/account';
+import useChainAssets from 'hooks/chain/useChainAssets';
 
 const isChainTypeValid = (chainInfo: _ChainInfo, accounts: AccountJson[], address?: string): boolean => {
   const addressType = getAccountAddressType(address);
@@ -43,7 +44,7 @@ export default function useGetSupportedStakingTokens(
   chain?: string,
 ): _ChainAsset[] {
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
 
   return useMemo(() => {

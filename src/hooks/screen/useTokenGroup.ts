@@ -5,6 +5,7 @@ import { RootState } from 'stores/index';
 import { isTokenAvailable } from 'utils/chainAndAsset';
 import { TokenGroupHookType } from 'types/hook';
 import { AssetRegistryStore, ChainStore } from 'stores/types';
+import useChainAssets from 'hooks/chain/useChainAssets';
 
 function sortTokenSlugs(tokenSlugs: string[]) {
   tokenSlugs.sort((a, b) => {
@@ -98,7 +99,7 @@ const DEFAULT_RESULT = {
 } as TokenGroupHookType;
 
 export default function useTokenGroup(filteredChains?: string[], lazy?: boolean): TokenGroupHookType {
-  const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
+  const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const assetSettingMap = useSelector((state: RootState) => state.assetRegistry.assetSettingMap);
   const chainStateMap = useSelector((state: RootState) => state.chainStore.chainStateMap);
   const [result, setResult] = useState<TokenGroupHookType>(

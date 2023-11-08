@@ -165,7 +165,7 @@ export default function useBuyToken(currentSymbol?: string) {
       } else {
         if (accountType === 'ALL' || accountType === info.support) {
           result.push({
-            name: assetRegistry[info.slug].name,
+            name: assetRegistry[info.slug]?.name || '',
             slug: info.slug,
             symbol: info.symbol,
             originChain: info.network,
