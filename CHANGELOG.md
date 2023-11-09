@@ -1,3 +1,10 @@
+## 1.1.7 (234)
+- Update web runner 1.1.21 (#1124)
+- Hide the token of the Inactive chain on mobile app (#1133)
+- Update text on Enable network screen (#1136)
+- New image slider for browser tab (#1072)
+- Follow up show dApp logo in svg in Browser and dApp confirmations (#980)
+
 ## 1.1.7 (233)
 - Update text when select validator (#1129)
 
@@ -13,7 +20,6 @@
 - Still enable "Confirm" button although do not select account in case reconnect after unblock dApp (#1115)
 - Mission pools feature (#1096)
 - Support 3D NFT display (#295)
-- Update message on the Create on account (#1110)
 - Update message on the Create on account (#1110)
 - Add token name to the Token Details and Import Token screen for mobile app (#1097)
 - Update web-runner (v1.1.19) - Update load data timing (#1104)
