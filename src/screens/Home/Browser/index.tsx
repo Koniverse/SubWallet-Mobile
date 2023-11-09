@@ -34,7 +34,19 @@ const screenOptions = (
   | MaterialTopTabNavigationOptions
   | ((props: { route: RouteProp<ParamListBase, string>; navigation: any }) => MaterialTopTabNavigationOptions)
   | undefined => ({
-  tabBarStyle: { height: 28, ...transparent },
+  tabBarIndicatorContainerStyle: {
+    shadowColor: '#000',
+    elevation: 5,
+  },
+  tabBarStyle: {
+    height: 28,
+    backgroundColor: 'black',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    marginBottom: 2
+  },
   tabBarItemStyle: {
     width: 'auto',
     paddingLeft: 0,
