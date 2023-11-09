@@ -1,5 +1,5 @@
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Avatar, Button, Field, Icon, Typography } from 'components/design-system-ui';
 import { toShort } from 'utils/index';
 import React, { useCallback } from 'react';
@@ -23,7 +23,7 @@ export const ReadonlyAddressField = ({ address, label, showAvatar = true, toastR
 
   const copyToClipboard = useCallback(() => {
     toastRef?.current?.hideAll();
-    toastRef?.current?.show(i18n.common.copiedToClipboard);
+    Platform.OS === 'ios' && toastRef?.current?.show(i18n.common.copiedToClipboard);
     Clipboard.setString(address);
   }, [address, toastRef]);
 

@@ -1,7 +1,7 @@
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { SelectAccountItem } from 'components/common/SelectAccountItem';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Keyboard, ListRenderItemInfo, Share, StyleProp, View } from 'react-native';
+import { Keyboard, ListRenderItemInfo, Platform, Share, StyleProp, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -127,7 +127,7 @@ export const AccountsScreen = ({
   const copyToClipboard = useCallback(
     (text: string) => {
       toast.hideAll();
-      toast.show(i18n.common.copiedToClipboard);
+      Platform.OS === 'ios' && toast.show(i18n.common.copiedToClipboard);
       Clipboard.setString(text);
     },
     [toast],
