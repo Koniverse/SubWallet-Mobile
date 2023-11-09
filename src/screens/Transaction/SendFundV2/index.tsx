@@ -69,6 +69,7 @@ import createStylesheet from './styles';
 import { useGetBalance } from 'hooks/balance';
 import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 import { ModalRef } from 'types/modalRef';
+import useChainAssets from 'hooks/chain/useChainAssets';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -363,9 +364,8 @@ export const SendFund = ({
   } = useGetBalance(chainValue, fromValue, assetValue);
 
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
-  const { assetRegistry, assetSettingMap, multiChainAssetMap, xcmRefMap } = useSelector(
-    (root: RootState) => root.assetRegistry,
-  );
+  const { assetSettingMap, multiChainAssetMap, xcmRefMap } = useSelector((root: RootState) => root.assetRegistry);
+  const assetRegistry = useChainAssets().chainAssetRegistry;
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const [maxTransfer, setMaxTransfer] = useState<string>('0');
   const checkAction = usePreCheckAction(
