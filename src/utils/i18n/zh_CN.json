@@ -185,8 +185,8 @@
     "eraseAll": "删除全部",
     "connecting": "正在连接...",
     "chainConnected": "{0}网络已连接",
-    "enableChain": "启用网络",
-    "enableChainMessage": "你已选择的({0})网络现在断开, 你必须开启",
+    "enableChain": "启用网络?",
+    "enableChainMessage": "你选择的网络已断开。请启用",
     "provider": "提供商",
     "pools": "矿池",
     "nominate": "提名",
@@ -404,7 +404,8 @@
     "addToken": "导入代币",
     "addNetwork": "导入网络",
     "iDontCare": "I don't care",
-    "joinNow": "Join now"
+    "joinNow": "Join now",
+    "enable": "启用"
   },
   "inputLabel": {
     "selectAcc": "选择账户",

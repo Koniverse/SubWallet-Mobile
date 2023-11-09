@@ -112,7 +112,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
         setTimeout(() => {
           appModalContext.setConfirmModal({
             visible: true,
-            message: i18n.formatString(i18n.common.enableChainMessage, chainInfoMap[chain].name),
+            completeBtnTitle: i18n.buttonTitles.enable,
+            message: i18n.common.enableChainMessage,
             title: i18n.common.enableChain,
             onCancelModal: () => {
               appModalContext.hideConfirmModal();
