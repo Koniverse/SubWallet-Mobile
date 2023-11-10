@@ -15,7 +15,6 @@ import { ThemeTypes } from 'styles/themes';
 import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { MAP_PREDEFINED_BUY_TOKEN } from 'constants/buy';
 import { isAccountAll } from 'utils/accountAll';
 import { BuyTokenInfo } from 'types/buy';
 import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
@@ -44,7 +43,7 @@ export const TokenGroupsDetailUpperBlock = ({
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const isShowBuyToken = useShowBuyToken();
-
+  const { tokens } = useSelector((state: RootState) => state.buyService);
   const _style = createStyleSheet(theme);
 
   const buyInfos = useMemo(() => {
@@ -52,7 +51,7 @@ export const TokenGroupsDetailUpperBlock = ({
     const slugsMap = tokenGroupMap[groupSlug] ? tokenGroupMap[groupSlug] : [groupSlug];
     const result: BuyTokenInfo[] = [];
 
-    for (const [slug, buyInfo] of Object.entries(MAP_PREDEFINED_BUY_TOKEN)) {
+    for (const [slug, buyInfo] of Object.entries(tokens)) {
       if (slugsMap.includes(slug)) {
         const supportType = buyInfo.support;
 
@@ -71,7 +70,7 @@ export const TokenGroupsDetailUpperBlock = ({
     }
 
     return result;
-  }, [accounts, currentAccount?.address, tokenGroupMap, tokenGroupSlug]);
+  }, [accounts, currentAccount?.address, tokenGroupMap, tokenGroupSlug, tokens]);
 
   const onOpenBuyTokens = useCallback(() => {
     let symbol = '';

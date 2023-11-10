@@ -34,6 +34,8 @@ import {
   subscribeWalletConnectSessions,
   subscribeProcessingCampaign,
   getMissionPoolData,
+  subscribeBuyTokens,
+  subscribeBuyServices,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -361,6 +363,18 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           ...getMissionPoolData,
           name: 'getMissionPoolData',
           relatedStores: ['missionPool'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeBuyTokens,
+          name: 'subscribeBuyTokens',
+          relatedStores: ['buyService'],
+          isStartImmediately: true,
+        });
+        _DataContext.addHandler({
+          ...subscribeBuyServices,
+          name: 'subscribeBuyServices',
+          relatedStores: ['buyService'],
           isStartImmediately: true,
         });
 

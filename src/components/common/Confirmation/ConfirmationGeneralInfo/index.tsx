@@ -10,6 +10,7 @@ import { ImageLogosMap } from 'assets/logo';
 import { isWalletConnectRequest } from '@subwallet/extension-base/services/wallet-connect-service/helpers';
 import { SVGImages } from 'assets/index';
 import { useGetDAPPsQuery } from 'stores/API';
+import { getHostName } from 'utils/browser';
 
 interface Props {
   request: ConfirmationRequestBase;
@@ -32,7 +33,7 @@ const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {
   }, [domain, rightLogo]);
 
   useEffect(() => {
-    const dApp = dApps?.find(app => request.url.includes(app.url));
+    const dApp = dApps?.find(app => request.url.includes(getHostName(app.url)));
 
     if (dApp && dApp.icon) {
       setRightLogo(dApp.icon);

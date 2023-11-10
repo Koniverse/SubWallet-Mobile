@@ -19,7 +19,6 @@ import { ServiceModal } from 'screens/Home/Crypto/ServiceModal';
 import { FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import { BuyTokenProps } from 'routes/wrapper';
-import { MAP_PREDEFINED_BUY_TOKEN } from 'constants/buy';
 import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
 import { SupportService } from 'types/buy';
 
@@ -34,6 +33,7 @@ export const BuyToken = ({
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
+  const { tokens } = useSelector((state: RootState) => state.buyService);
   const {
     openSelectBuyAccount,
     openSelectBuyToken,
@@ -74,10 +74,10 @@ export const BuyToken = ({
   const selectedAccount = useGetAccountByAddress(selectedBuyAccount);
   const selectedBuyTokenInfo = useMemo(() => {
     return {
-      symbol: selectedBuyToken ? MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken].symbol : '',
-      slug: selectedBuyToken ? MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken].slug : '',
+      symbol: selectedBuyToken ? tokens[selectedBuyToken].symbol : '',
+      slug: selectedBuyToken ? tokens[selectedBuyToken].slug : '',
     };
-  }, [selectedBuyToken]);
+  }, [selectedBuyToken, tokens]);
 
   const onSubmit = () => {
     if (selectedService && disclaimerAgree[selectedService]) {

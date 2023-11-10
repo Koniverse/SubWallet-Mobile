@@ -42,6 +42,7 @@ import { buildHierarchy } from 'utils/buildHierarchy';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { SessionTypes } from '@walletconnect/types';
 import { MissionInfo } from 'types/missionPool';
+import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
 // Setup redux stores
 
 function voidFn() {
@@ -509,6 +510,28 @@ export const getMissionPoolData = (() => {
 
   return rs;
 })();
+
+export const updateBuyTokens = (data: Record<string, BuyTokenInfo>) => {
+  store.dispatch({ type: 'buyService/updateBuyTokens', payload: data });
+};
+
+export const subscribeBuyTokens = lazySubscribeMessage(
+  'pri(buyService.tokens.subscribe)',
+  null,
+  updateBuyTokens,
+  updateBuyTokens,
+);
+
+export const updateBuyServices = (data: Record<string, BuyServiceInfo>) => {
+  store.dispatch({ type: 'buyService/updateBuyServices', payload: data });
+};
+
+export const subscribeBuyServices = lazySubscribeMessage(
+  'pri(buyService.services.subscribe)',
+  null,
+  updateBuyServices,
+  updateBuyServices,
+);
 
 // export const updateChainValidators = (data: ChainValidatorParams) => {
 //   store.dispatch({ type: 'bonding/updateChainValidators', payload: data });
