@@ -1,3 +1,6 @@
+## 1.1.7 (235)
+- Show duplicate popup Enable network (#1143)
+
 ## 1.1.7 (234)
 - Update web runner 1.1.21 (#1124)
 - Hide the token of the Inactive chain on mobile app (#1133)
