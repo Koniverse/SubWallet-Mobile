@@ -1,5 +1,8 @@
-## 1.1.7 (236)
+## 1.1.7 (237)
+- Manual release for ios
 
+## 1.1.7 (236)
+- Fix bug wallet connect
 
 ## 1.1.7 (235)
 - Show duplicate popup Enable network (#1143)
