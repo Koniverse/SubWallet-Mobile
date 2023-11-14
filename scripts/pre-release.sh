@@ -37,7 +37,7 @@ increment_version() {
   rm -f android/app/build.gradle-e
 
   echo "Version incremented to v$NEW_VERSION ($NEW_BUILD_NUMBER)"
-}
+} 
 
 # Function to add new release notes to CHANGELOG.md
 update_changelog() {
