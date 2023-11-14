@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScreenContainer } from 'components/ScreenContainer';
 import BrowserHome from './BrowserHome';
 import BrowserHeader from './Shared/BrowserHeader';
@@ -15,6 +15,7 @@ import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useGetDAPPCategoriesQuery } from 'stores/API';
+import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 type RoutesType = {
   key: string;
@@ -83,10 +84,18 @@ export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const stylesheet = createStylesheet(theme);
   const { data: categories } = useGetDAPPCategoriesQuery(undefined);
   const [searchString] = useState<string>('');
-  const categoryTabRoutes = categories ? categories.map(item => ({ key: item.slug, title: item.name })) : [];
-  const allTabRoutes = [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
+  const isShowBuyToken = useShowBuyToken();
+  const allTabRoutes = useMemo(() => {
+    const categoryTabRoutes = categories ? categories?.map(item => ({ key: item.slug, title: item.name })) : [];
+    let newCategoryTabroutes = [...categoryTabRoutes];
+    // Fillter out NFT
+    if (!isShowBuyToken) {
+      newCategoryTabroutes = categoryTabRoutes?.filter(item => item.key !== 'nft');
+    }
+    return [{ key: 'all', title: i18n.common.all }, ...newCategoryTabroutes];
+  }, [categories, isShowBuyToken]);
   const av = new Animated.Value(0);
   av.addListener(() => {
     return;

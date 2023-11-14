@@ -51,7 +51,7 @@ update_changelog() {
   commit_messages=$(git log --pretty=format:"%s" $recent_tag..HEAD)
 
   # Filter and format commit messages, example: "- Messages (#123)"
-  filtered_messages=$(echo "$commit_messages" | grep -oE '\[issue-[0-9]+\] .+' | sed -E 's/\[issue-([0-9]+)\] (.+)/- \2 (#\1)/')
+  filtered_messages=$(echo "$commit_messages" | grep -oE '\[issue-[0-9a-zA-Z]+\] .+' | sed -E 's/\[issue-([0-9a-zA-Z]+)\] (.+)/- \2 (#\1)/')
 
   # Update CHANGELOG.md
   changelog_file="CHANGELOG.md"

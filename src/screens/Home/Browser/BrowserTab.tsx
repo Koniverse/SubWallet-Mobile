@@ -28,7 +28,7 @@ import { DEVICE } from 'constants/index';
 import { BrowserService } from 'screens/Home/Browser/BrowserService';
 import { BrowserOptionModal, BrowserOptionModalRef } from 'screens/Home/Browser/BrowserOptionModal';
 import { addToHistory, updateLatestItemInHistory, updateTab, updateTabScreenshot } from 'stores/updater';
-import { getHostName, searchDomain } from 'utils/browser';
+import { deeplinks, getHostName, searchDomain } from 'utils/browser';
 import i18n from 'utils/i18n/i18n';
 import { Warning } from 'components/Warning';
 import { SiteInfo } from 'stores/types';
@@ -47,6 +47,7 @@ import urlParse from 'url-parse';
 import { connectWalletConnect } from 'utils/walletConnect';
 import { useToast } from 'react-native-toast-notifications';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
+import { transformUniversalToNative } from 'utils/deeplink';
 
 export interface BrowserTabRef {
   goToSite: (siteInfo: SiteInfo) => void;
@@ -431,13 +432,18 @@ const Component = ({ tabId, onOpenBrowserTabs, connectionTrigger }: Props, ref: 
       return false;
     }
 
-    if (urlParsed.href.includes('wc?uri=wc')) {
-      Linking.canOpenURL(url)
+    if (urlParsed.href.startsWith(deeplinks[0]) || urlParsed.href.startsWith(deeplinks[1])) {
+      let nativeDeeplink = transformUniversalToNative(url);
+      nativeDeeplink = nativeDeeplink.replace(`${deeplinks[0]}/`, `${deeplinks[0]}`);
+
+      Linking.canOpenURL(nativeDeeplink)
         .then(supported => {
           if (supported) {
-            return Linking.openURL(url).finally(() => setTimeout(() => dispatch(updateIsDeepLinkConnect(false)), 100));
+            return Linking.openURL(nativeDeeplink).finally(() =>
+              setTimeout(() => dispatch(updateIsDeepLinkConnect(false)), 100),
+            );
           }
-          console.warn(`Can't open url: ${url}`);
+          console.warn(`Can't open url: ${nativeDeeplink}`);
           return null;
         })
         .catch(e => {
