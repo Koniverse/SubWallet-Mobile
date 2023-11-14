@@ -1,3 +1,6 @@
+## 1.1.8 (238)
+- Fix open deeplink from browser inapp, config for category and tag, update create change log config (#hotfix)
+
 ## 1.1.7 (237)
 - Manual release for ios
 
