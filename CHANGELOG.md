@@ -1,3 +1,9 @@
+## 1.1.8 (239)
+- Update web-runner v1.1.22 & Update browser dapp config (#1155)
+- Migrate useTransaction from v1 to v2 (#1121)
+- Update token list with static content in Buy Token (#1127)
+- Fix some UI bug on Android (#1130)
+
 ## 1.1.8 (238)
 - Fix open deeplink from browser inapp, config for category and tag, update create change log config (#hotfix)
 
