@@ -12,7 +12,6 @@ import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
 import { useGetDAPPCategoriesQuery } from 'stores/API';
 import { ParamListBase, RouteProp } from '@react-navigation/native';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 type RoutesType = {
   key: string;
@@ -61,18 +60,12 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabviewProps) => {
   const theme = useSubWalletTheme().swThemes;
   const [searchString] = useState<string>('');
-  const isShowBuyToken = useShowBuyToken();
   const { data: categories } = useGetDAPPCategoriesQuery(undefined);
 
   const allTabRoutes = useMemo(() => {
     const categoryTabRoutes = categories ? categories?.map(item => ({ key: item.slug, title: item.name })) : [];
-    let newCategoryTabroutes = [...categoryTabRoutes];
-    if (!isShowBuyToken) {
-      // Fillter out NFT
-      newCategoryTabroutes = categoryTabRoutes?.filter(item => item.key !== 'nft');
-    }
-    return [{ key: 'all', title: i18n.common.all }, ...newCategoryTabroutes];
-  }, [categories, isShowBuyToken]);
+    return [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  }, [categories]);
 
   const navigationType: Record<string, string> = {
     BOOKMARK: i18n.browser.favorite,

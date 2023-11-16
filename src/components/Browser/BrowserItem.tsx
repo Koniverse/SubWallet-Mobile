@@ -1,5 +1,5 @@
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Icon, Image, Tag, Typography } from 'components/design-system-ui';
 import { Star } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -10,7 +10,6 @@ import { addBookmark, removeBookmark } from 'stores/updater';
 import createStylesheet from './styles/BrowserItem';
 import { getHostName, searchDomain } from 'utils/browser';
 import { useGetDAPPCategoriesQuery } from 'stores/API';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 interface Props {
   logo?: string;
@@ -31,19 +30,10 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
   const { data: categories } = useGetDAPPCategoriesQuery(undefined);
   const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
   const [image, setImage] = useState<string>(assetLogoMap.default);
-  const isShowBuyToken = useShowBuyToken();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const bookmarks = useSelector((state: RootState) => state.browser.bookmarks);
   const _isSiteBookmark = isSiteBookmark(url, bookmarks);
-
-  const dAppTags = useMemo(() => {
-    if (!isShowBuyToken) {
-      // Fillter out NFT
-      return tags?.filter(tag => tag !== 'nft') || [];
-    }
-    return tags;
-  }, [isShowBuyToken, tags]);
 
   useEffect(() => {
     if (isLoading) {
@@ -96,7 +86,7 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
             <Typography.Text ellipsis style={stylesheet.title}>
               {title}
             </Typography.Text>
-            {!!dAppTags && !!dAppTags.length && <View style={stylesheet.tagContainer}>{dAppTags.map(renderTag)}</View>}
+            {!!tags && !!tags.length && <View style={stylesheet.tagContainer}>{tags.map(renderTag)}</View>}
           </View>
           <View>
             <Typography.Text style={stylesheet.subtitle} ellipsis>
