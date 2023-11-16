@@ -32,6 +32,7 @@ import { isFirstOpen, setIsFirstOpen } from '../../AppNew';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
+import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 interface tabbarIconColor {
   color: string;
@@ -58,6 +59,7 @@ const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
+  const isShowBuyToken = useShowBuyToken();
   const tabbarButtonStyle = (props: BottomTabBarButtonProps) => {
     let customStyle = {
       flexDirection: 'column',
@@ -141,14 +143,16 @@ const MainScreen = () => {
           tabBarIcon: stakingTabbarIcon,
         }}
       />
-      <Tab.Screen
-        name={'Browser'}
-        component={BrowserScreen}
-        options={{
-          tabBarLabel: i18n.tabName.browser,
-          tabBarIcon: browserTabbarIcon,
-        }}
-      />
+      {isShowBuyToken && (
+        <Tab.Screen
+          name={'Browser'}
+          component={BrowserScreen}
+          options={{
+            tabBarLabel: i18n.tabName.browser,
+            tabBarIcon: browserTabbarIcon,
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 };

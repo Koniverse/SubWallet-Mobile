@@ -15,7 +15,6 @@ import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useGetDAPPCategoriesQuery } from 'stores/API';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 type RoutesType = {
   key: string;
@@ -86,16 +85,10 @@ export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const [searchString] = useState<string>('');
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
-  const isShowBuyToken = useShowBuyToken();
   const allTabRoutes = useMemo(() => {
     const categoryTabRoutes = categories ? categories?.map(item => ({ key: item.slug, title: item.name })) : [];
-    let newCategoryTabroutes = [...categoryTabRoutes];
-    // Fillter out NFT
-    if (!isShowBuyToken) {
-      newCategoryTabroutes = categoryTabRoutes?.filter(item => item.key !== 'nft');
-    }
-    return [{ key: 'all', title: i18n.common.all }, ...newCategoryTabroutes];
-  }, [categories, isShowBuyToken]);
+    return [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
+  }, [categories]);
   const av = new Animated.Value(0);
   av.addListener(() => {
     return;
