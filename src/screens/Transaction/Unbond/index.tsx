@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -39,6 +39,14 @@ import { UnbondProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { useWatch } from 'react-hook-form';
+import { ValidateResult } from 'react-hook-form/dist/types/validator';
+import { FormItem } from 'components/common/FormItem';
+import { TransactionDone } from 'screens/Transaction/TransactionDone';
+
+interface UnstakeFormValues extends TransactionFormValues {
+  nomination: string;
+}
 
 const _accountFilterFunc = (
   allNominator: NominatorMetadata[],
@@ -63,28 +71,45 @@ export const Unbond = ({
 }: UnbondProps) => {
   const theme = useSubWalletTheme().swThemes;
   const stakingType = _stakingType as StakingType;
-  const unbondFormConfig = useMemo(
-    () => ({
-      nomination: {
-        name: 'Nomination',
-        value: '',
-      },
-    }),
-    [],
-  );
   const accountSelectorRef = useRef<ModalRef>();
-  const { title, formState, onChangeValue, onChangeAmountValue, onChangeFromValue, onDone, onUpdateErrors } =
-    useTransaction('unstake', unbondFormConfig, {});
-  const { from, nomination: currentValidator, chain, value: currentValue } = formState.data;
+  const {
+    title,
+    form: {
+      setValue,
+      getValues,
+      control,
+      formState: { errors },
+    },
+    onChangeChainValue: setChain,
+    onChangeFromValue: setFrom,
+    onTransactionDone: onDone,
+    transactionDoneInfo,
+  } = useTransaction<UnstakeFormValues>('unstake', {
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      nomination: '',
+    },
+  });
+  const {
+    from: fromValue,
+    nomination: currentValidator,
+    chain: chainValue,
+    value: currentValue,
+  } = {
+    ...useWatch<UnstakeFormValues>({ control }),
+    ...getValues(),
+  };
+
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-
+  const [isTransactionDone, setTransactionDone] = useState(false);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(stakingChain || '');
   const chainStakingMetadata = useGetChainStakingMetadata(stakingChain);
   const allNominatorInfo = useGetNominatorInfo(stakingChain, stakingType);
-  const nominatorInfo = useGetNominatorInfo(stakingChain, stakingType, from);
+  const nominatorInfo = useGetNominatorInfo(stakingChain, stakingType, fromValue);
   const nominatorMetadata = nominatorInfo[0];
-  const accountInfo = useGetAccountByAddress(from);
+  const accountInfo = useGetAccountByAddress(fromValue);
   const selectedValidator = useMemo((): NominationInfo | undefined => {
     if (nominatorMetadata) {
       return nominatorMetadata.nominations.find(item => item.validatorAddress === currentValidator);
@@ -139,7 +164,7 @@ export const Unbond = ({
   }, [chainStakingMetadata]);
 
   const [loading, setLoading] = useState(false);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
+  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
 
   const accountList = useMemo(() => {
     return accounts.filter(_accountFilterFunc(allNominatorInfo, chainInfoMap, stakingType, stakingChain));
@@ -149,7 +174,7 @@ export const Unbond = ({
     return <BondedBalance bondedBalance={bondedValue} decimals={decimals} symbol={symbol} />;
   }, [bondedValue, decimals, symbol]);
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
   const onSubmit = useCallback(() => {
     let unbondingPromise: Promise<SWTransactionResponse>;
@@ -189,145 +214,148 @@ export const Unbond = ({
   }, [currentValidator, currentValue, mustChooseValidator, nominatorMetadata, onError, onSuccess]);
 
   const nominators = useMemo(() => {
-    if (from && nominatorMetadata?.nominations && nominatorMetadata.nominations.length) {
+    if (fromValue && nominatorMetadata?.nominations && nominatorMetadata.nominations.length) {
       return nominatorMetadata.nominations.filter(n => new BigN(n.activeStake || '0').gt(BN_ZERO));
     }
 
     return [];
-  }, [from, nominatorMetadata?.nominations]);
+  }, [fromValue, nominatorMetadata?.nominations]);
 
   useEffect(() => {
-    onChangeValue('chain')(stakingChain || '');
-  }, [onChangeValue, stakingChain]);
+    setChain(stakingChain || '');
+  }, [setChain, stakingChain]);
 
-  const validateAmountInput = useCallback(
-    (
-      value: string,
-      min: number | string | BigN,
-      max: number | string | BigN,
-      _decimals: number,
-      name: string = 'Value',
-    ) => {
-      const _minValue = new BigN(min);
-      const _maxValue = new BigN(max);
-      const _middleValue = _maxValue.minus(_minValue);
-      const _maxString = formatBalance(_maxValue, _decimals);
-      const val = new BigN(value);
+  const amountInputRules = useMemo(
+    () => ({
+      validate: (value: string): Promise<ValidateResult> => {
+        const _minValue = new BigN(minValue);
+        const _maxValue = new BigN(bondedValue);
+        const _middleValue = _maxValue.minus(_minValue);
+        const _maxString = formatBalance(_maxValue, decimals);
+        const val = new BigN(value);
+        const name = 'Value';
 
-      if (val.gt(_maxValue)) {
-        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, name, _maxString)]);
-        return;
-      }
+        if (val.gt(_maxValue)) {
+          return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeEqualOrLessThan, name, _maxString));
+        }
 
-      if (val.lte(BN_ZERO)) {
-        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, name)]);
-        return;
-      }
+        if (val.lte(BN_ZERO)) {
+          return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeGreaterThanZero, name));
+        }
 
-      if (_middleValue.lt(BN_ZERO) && !val.eq(_maxValue)) {
-        onUpdateErrors('value')([i18n.formatString(i18n.errorMessage.unbondMustBeEqual, name, _maxString)]);
-        return;
-      }
+        if (_middleValue.lt(BN_ZERO) && !val.eq(_maxValue)) {
+          return Promise.resolve(i18n.formatString(i18n.errorMessage.unbondMustBeEqual, name, _maxString));
+        }
 
-      if (val.gt(_middleValue) && val.lt(_maxValue)) {
-        onUpdateErrors('value')([i18n.errorMessage.unbondInvalidAmount]);
-        return;
-      }
+        if (val.gt(_middleValue) && val.lt(_maxValue)) {
+          return Promise.resolve(i18n.errorMessage.unbondInvalidAmount);
+        }
 
-      onUpdateErrors('value')([]);
-    },
-    [onUpdateErrors],
+        return Promise.resolve(undefined);
+      },
+    }),
+    [bondedValue, decimals, minValue],
   );
 
-  const _onChangeAmount = useCallback(
-    (text: string) => {
-      onChangeAmountValue(text);
-      validateAmountInput(text, minValue, bondedValue, decimals);
-    },
-    [bondedValue, decimals, minValue, onChangeAmountValue, validateAmountInput],
+  const onChangeNominator = (value: string) => {
+    setValue('nomination', value);
+  };
+
+  const isDisableSubmitBtn = useMemo(
+    () => !!errors.value || !currentValue || !fromValue || loading,
+    [currentValue, errors.value, fromValue, loading],
   );
 
   return (
-    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
-      <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps="handled">
-          {isAllAccount && (
-            <AccountSelector
-              items={accountList}
-              selectedValueMap={{ [from]: true }}
-              disabled={loading}
-              onSelectItem={item => {
-                onChangeFromValue(item.address);
-                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-              }}
-              renderSelected={() => (
-                <AccountSelectField
-                  label={i18n.inputLabel.unstakeFromAcc}
-                  accountName={accountInfo?.name || ''}
-                  value={from}
-                  showIcon
+    <>
+      {!isTransactionDone ? (
+        <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
+          <>
+            <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps="handled">
+              {isAllAccount && (
+                <AccountSelector
+                  items={accountList}
+                  selectedValueMap={{ [fromValue]: true }}
+                  disabled={loading}
+                  onSelectItem={item => {
+                    setFrom(item.address);
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                  }}
+                  renderSelected={() => (
+                    <AccountSelectField
+                      label={i18n.inputLabel.unstakeFromAcc}
+                      accountName={accountInfo?.name || ''}
+                      value={fromValue}
+                      showIcon
+                    />
+                  )}
+                  accountSelectorRef={accountSelectorRef}
                 />
               )}
-              accountSelectorRef={accountSelectorRef}
-            />
-          )}
 
-          <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
+              <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={fromValue} chain={chainValue} />
 
-          {mustChooseValidator && (
-            <>
-              <NominationSelector
-                selectedValue={currentValidator}
-                onSelectItem={onChangeValue('nomination')}
-                nominators={nominators}
-                disabled={!from || loading}
+              {mustChooseValidator && (
+                <>
+                  <NominationSelector
+                    selectedValue={currentValidator}
+                    onSelectItem={onChangeNominator}
+                    nominators={nominators}
+                    disabled={!fromValue || loading}
+                  />
+                  {renderBounded()}
+                </>
+              )}
+
+              <FormItem
+                control={control}
+                rules={amountInputRules}
+                render={({ field: { onChange, value, ref } }) => (
+                  <InputAmount
+                    ref={ref}
+                    value={value}
+                    maxValue={bondedValue}
+                    onChangeValue={onChange}
+                    decimals={decimals}
+                    disable={loading}
+                    showMaxButton={!!fromValue}
+                  />
+                )}
+                name={'value'}
               />
-              {renderBounded()}
-            </>
-          )}
 
-          <InputAmount
-            value={currentValue}
-            maxValue={bondedValue}
-            onChangeValue={_onChangeAmount}
-            decimals={decimals}
-            errorMessages={formState.errors.value}
-            disable={loading}
-            showMaxButton={!!from}
-          />
+              {!mustChooseValidator && renderBounded()}
 
-          {!mustChooseValidator && renderBounded()}
+              <Typography.Text
+                style={{
+                  color: theme.colorTextTertiary,
+                  ...FontMedium,
+                }}>
+                {i18n.formatString(i18n.message.unBondMessage, unBondedTime)}
+              </Typography.Text>
+            </ScrollView>
 
-          <Typography.Text
-            style={{
-              color: theme.colorTextTertiary,
-              ...FontMedium,
-            }}>
-            {i18n.formatString(i18n.message.unBondMessage, unBondedTime)}
-          </Typography.Text>
-        </ScrollView>
-
-        <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
-          <Button
-            disabled={!formState.isValidated.value || !formState.data.value || !formState.data.from || loading}
-            loading={loading}
-            icon={
-              <Icon
-                phosphorIcon={MinusCircle}
-                weight={'fill'}
-                size={'lg'}
-                iconColor={
-                  !formState.isValidated.value || !formState.data.value || !formState.data.from
-                    ? theme.colorTextLight5
-                    : theme.colorWhite
+            <View style={{ paddingHorizontal: 16, paddingTop: 16, ...MarginBottomForSubmitButton }}>
+              <Button
+                disabled={isDisableSubmitBtn}
+                loading={loading}
+                icon={
+                  <Icon
+                    phosphorIcon={MinusCircle}
+                    weight={'fill'}
+                    size={'lg'}
+                    iconColor={isDisableSubmitBtn ? theme.colorTextLight5 : theme.colorWhite}
+                  />
                 }
-              />
-            }
-            onPress={onPreCheckReadOnly(onSubmit)}>
-            {i18n.buttonTitles.unbond}
-          </Button>
-        </View>
-      </>
-    </TransactionLayout>
+                onPress={onPreCheckReadOnly(onSubmit)}>
+                {i18n.buttonTitles.unbond}
+              </Button>
+            </View>
+          </>
+        </TransactionLayout>
+      ) : (
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+      )}
+    </>
   );
 };

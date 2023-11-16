@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
+import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, View } from 'react-native';
@@ -36,6 +36,12 @@ import { ClaimRewardProps } from 'routes/transaction/transactionAction';
 import i18n from 'utils/i18n/i18n';
 import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
+import { useWatch } from 'react-hook-form';
+import { TransactionDone } from 'screens/Transaction/TransactionDone';
+
+interface ClaimRewardFormValues extends TransactionFormValues {
+  bondReward: string;
+}
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -100,39 +106,57 @@ const ClaimReward = ({
   const { isAllAccount, accounts } = useSelector((state: RootState) => state.accountState);
   const { stakingRewardMap } = useSelector((state: RootState) => state.staking);
   const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
-  const claimRewardFormConfig = {
-    bondReward: {
-      name: 'Bond reward',
-      value: '1',
+
+  const {
+    title,
+    onTransactionDone: onDone,
+    onChangeFromValue: setFrom,
+    onChangeChainValue: setChain,
+    form: {
+      setValue,
+      getValues,
+      control,
+      formState: { errors },
     },
+    transactionDoneInfo,
+  } = useTransaction<ClaimRewardFormValues>('claim-reward', {
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      bondReward: '1',
+    },
+  });
+  const {
+    chain: chainValue,
+    from: fromValue,
+    bondReward,
+  } = {
+    ...useWatch<ClaimRewardFormValues>({ control }),
+    ...getValues(),
   };
-
-  const { title, formState, onDone, onChangeValue, onChangeFromValue } = useTransaction(
-    'claim-reward',
-    claimRewardFormConfig,
-  );
-  const { from, chain, bondReward } = formState.data;
   const allNominatorInfo = useGetNominatorInfo(stakingChain, stakingType);
-  const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
-
+  const { decimals, symbol } = useGetNativeTokenBasicInfo(chainValue);
+  const [isTransactionDone, setTransactionDone] = useState(false);
   const reward = useMemo((): StakingRewardItem | undefined => {
-    return stakingRewardMap.find(item => item.chain === chain && item.address === from && item.type === stakingType);
-  }, [chain, from, stakingRewardMap, stakingType]);
+    return stakingRewardMap.find(
+      item => item.chain === chainValue && item.address === chainValue && item.type === stakingType,
+    );
+  }, [chainValue, stakingRewardMap, stakingType]);
 
   const rewardList = useMemo((): StakingRewardItem[] => {
-    return stakingRewardMap.filter(item => item.chain === chain && item.type === stakingType);
-  }, [chain, stakingRewardMap, stakingType]);
+    return stakingRewardMap.filter(item => item.chain === chainValue && item.type === stakingType);
+  }, [chainValue, stakingRewardMap, stakingType]);
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone);
-  const accountInfo = useGetAccountByAddress(from);
+  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
+  const accountInfo = useGetAccountByAddress(fromValue);
   const onSubmit = useCallback(() => {
     setLoading(true);
 
     setTimeout(() => {
       submitStakeClaimReward({
-        address: from,
-        chain: chain,
+        address: fromValue,
+        chain: chainValue,
         bondReward: !!bondReward,
         stakingType: stakingType,
         unclaimedReward: reward?.unclaimedReward,
@@ -143,109 +167,121 @@ const ClaimReward = ({
           setLoading(false);
         });
     }, 300);
-  }, [bondReward, chain, from, onError, onSuccess, reward?.unclaimedReward, stakingType]);
+  }, [bondReward, chainValue, fromValue, onError, onSuccess, reward?.unclaimedReward, stakingType]);
 
-  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, from);
+  const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
 
   useEffect(() => {
-    onChangeValue('chain')(stakingChain || '');
-  }, [onChangeValue, stakingChain]);
+    setChain(stakingChain || '');
+  }, [setChain, stakingChain]);
 
   useEffect(() => {
     // Trick to trigger validate when case single account
     setTimeout(() => {
-      if (from || !formState.errors.from) {
+      if (fromValue || !errors.from) {
         setIsDisabled(false);
       }
     }, 500);
-  }, [formState.errors.from, from]);
+  }, [errors.from, fromValue]);
 
   const accountList = useMemo(() => {
     return accounts.filter(filterAccount(chainInfoMap, allNominatorInfo, rewardList, stakingType, stakingChain));
   }, [accounts, allNominatorInfo, chainInfoMap, rewardList, stakingChain, stakingType]);
 
+  const onChangeBondReward = (value: string) => {
+    setValue('bondReward', value);
+  };
+
   return (
-    <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
-      <>
-        <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
-          {isAllAccount && (
-            <AccountSelector
-              items={accountList}
-              selectedValueMap={{ [from]: true }}
-              onSelectItem={item => {
-                onChangeFromValue(item.address);
-                accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-              }}
-              disabled={loading}
-              renderSelected={() => <AccountSelectField accountName={accountInfo?.name || ''} value={from} showIcon />}
-              accountSelectorRef={accountSelectorRef}
-            />
-          )}
+    <>
+      {!isTransactionDone ? (
+        <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
+          <>
+            <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+              {isAllAccount && (
+                <AccountSelector
+                  items={accountList}
+                  selectedValueMap={{ [fromValue]: true }}
+                  onSelectItem={item => {
+                    setFrom(item.address);
+                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                  }}
+                  disabled={loading}
+                  renderSelected={() => (
+                    <AccountSelectField accountName={accountInfo?.name || ''} value={fromValue} showIcon />
+                  )}
+                  accountSelectorRef={accountSelectorRef}
+                />
+              )}
 
-          <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={from} chain={chain} />
+              <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={fromValue} chain={chainValue} />
 
-          <MetaInfo hasBackgroundWrapper>
-            <MetaInfo.Chain chain={chain} label={i18n.inputLabel.network} />
+              <MetaInfo hasBackgroundWrapper>
+                <MetaInfo.Chain chain={chainValue} label={i18n.inputLabel.network} />
 
-            {reward?.unclaimedReward && (
-              <MetaInfo.Number
-                decimals={decimals}
-                label={i18n.inputLabel.rewardAmount}
-                suffix={symbol}
-                value={reward.unclaimedReward}
+                {reward?.unclaimedReward && (
+                  <MetaInfo.Number
+                    decimals={decimals}
+                    label={i18n.inputLabel.rewardAmount}
+                    suffix={symbol}
+                    value={reward.unclaimedReward}
+                  />
+                )}
+              </MetaInfo>
+
+              <InputCheckBox
+                checked={!!bondReward}
+                label={i18n.inputLabel.bondRewardAfterClaim}
+                disable={loading}
+                onPress={() => {
+                  if (!bondReward) {
+                    onChangeBondReward('1');
+                  } else {
+                    onChangeBondReward('');
+                  }
+                }}
+                checkBoxSize={20}
               />
-            )}
-          </MetaInfo>
+            </ScrollView>
 
-          <InputCheckBox
-            checked={!!bondReward}
-            label={i18n.inputLabel.bondRewardAfterClaim}
-            disable={loading}
-            onPress={() => {
-              if (!bondReward) {
-                onChangeValue('bondReward')('1');
-              } else {
-                onChangeValue('bondReward')('');
-              }
-            }}
-            checkBoxSize={20}
-          />
-        </ScrollView>
-
-        <View style={{ padding: 16, flexDirection: 'row' }}>
-          <Button
-            disabled={loading}
-            style={{ flex: 1, marginRight: 4 }}
-            type={'secondary'}
-            onPress={() => navigation.goBack()}
-            icon={
-              <Icon
-                phosphorIcon={XCircle}
-                weight={'fill'}
-                size={'lg'}
-                iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }>
-            {i18n.buttonTitles.cancel}
-          </Button>
-          <Button
-            style={{ flex: 1, marginLeft: 4 }}
-            disabled={isDisabled || loading}
-            loading={loading}
-            icon={
-              <Icon
-                phosphorIcon={ArrowCircleRight}
-                weight={'fill'}
-                size={'lg'}
-                iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
-              />
-            }
-            onPress={onPreCheckReadOnly(onSubmit)}>
-            {i18n.buttonTitles.continue}
-          </Button>
-        </View>
-      </>
-    </TransactionLayout>
+            <View style={{ padding: 16, flexDirection: 'row' }}>
+              <Button
+                disabled={loading}
+                style={{ flex: 1, marginRight: 4 }}
+                type={'secondary'}
+                onPress={() => navigation.goBack()}
+                icon={
+                  <Icon
+                    phosphorIcon={XCircle}
+                    weight={'fill'}
+                    size={'lg'}
+                    iconColor={loading ? theme.colorTextLight5 : theme.colorWhite}
+                  />
+                }>
+                {i18n.buttonTitles.cancel}
+              </Button>
+              <Button
+                style={{ flex: 1, marginLeft: 4 }}
+                disabled={isDisabled || loading}
+                loading={loading}
+                icon={
+                  <Icon
+                    phosphorIcon={ArrowCircleRight}
+                    weight={'fill'}
+                    size={'lg'}
+                    iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                  />
+                }
+                onPress={onPreCheckReadOnly(onSubmit)}>
+                {i18n.buttonTitles.continue}
+              </Button>
+            </View>
+          </>
+        </TransactionLayout>
+      ) : (
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+      )}
+    </>
   );
 };
 

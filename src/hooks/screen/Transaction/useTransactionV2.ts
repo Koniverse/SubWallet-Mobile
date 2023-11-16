@@ -1,8 +1,6 @@
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { TRANSACTION_TITLE_MAP } from 'constants/transaction';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isEthereumAddress } from '@polkadot/util-crypto';
@@ -22,15 +20,21 @@ export interface TransactionFormValues extends FieldValues {
   value: string;
 }
 
+export interface TransactionDoneInfo {
+  id: string;
+  chainType: string;
+  chain: string;
+  path: string;
+}
+
 export const useTransaction = <T extends TransactionFormValues = TransactionFormValues, TContext = any>(
   action: string,
   formOptions: UseFormProps<T, TContext> = {},
 ) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
-  const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const { turnOnChain, checkChainConnected } = useChainChecker();
+  const { turnOnChain, checkChainConnected, connectingChainStatus } = useChainChecker();
   const appModalContext = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
@@ -89,6 +93,12 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       ...formOptions.defaultValues,
     } as UseFormProps<T, TContext>['defaultValues'],
   });
+  const [transactionDoneInfo, setTransactionDoneInfo] = useState<TransactionDoneInfo>({
+    id: '',
+    chainType: '',
+    chain: '',
+    path: '',
+  });
 
   const { getValues, setValue } = form;
 
@@ -96,10 +106,9 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     (id: string) => {
       const { from, chain } = getValues();
       const chainType = isEthereumAddress(from) ? 'ethereum' : 'substrate';
-
-      navigation.navigate('TransactionDone', { chainType, chain, id, path: homePath });
+      setTransactionDoneInfo({ id, chain, chainType, path: homePath });
     },
-    [getValues, homePath, navigation],
+    [getValues, homePath],
   );
 
   const showPopupEnableChain = useCallback(
@@ -140,7 +149,8 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
 
   const onChangeAssetValue = useCallback(
     (value: string) => {
-      const chain = assetRegistry[value].originChain;
+      const chain = assetRegistry[value]?.originChain;
+
       setValue('asset' as FieldPath<T>, value as FieldPathValue<T, FieldPath<T>>);
       setValue('chain' as FieldPath<T>, chain as FieldPathValue<T, FieldPath<T>>);
       showPopupEnableChain(chain);
@@ -174,5 +184,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     onTransactionDone,
     showPopupEnableChain,
     checkChainConnected,
+    transactionDoneInfo,
+    connectingChainStatus,
   };
 };
