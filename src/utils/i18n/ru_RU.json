@@ -187,6 +187,7 @@
     "chainConnected": "{0} подключена!",
     "enableChain": "Активировать цепь?",
     "enableChainMessage": "Ваша выбранная цепь ({0}) в настоящее время отключена, вам нужно включить ее",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider.",
     "provider": "Поставщик",
     "pools": "Пул",
     "nominate": "Номинировать",
@@ -404,7 +405,8 @@
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Enable"
+    "enable": "Enable",
+    "update": "Update"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",
@@ -780,7 +782,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "Отключить",
     "connectedNetworks": "Подключенные сети",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Update chain"
   },
   "cryptoScreen": {
     "receive": "Адрес",

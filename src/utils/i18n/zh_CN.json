@@ -187,6 +187,7 @@
     "chainConnected": "{0}网络已连接",
     "enableChain": "启用网络?",
     "enableChainMessage": "你选择的网络已断开。请启用",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider.",
     "provider": "提供商",
     "pools": "矿池",
     "nominate": "提名",
@@ -405,7 +406,8 @@
     "addNetwork": "导入网络",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "启用"
+    "enable": "启用",
+    "update": "Update"
   },
   "inputLabel": {
     "selectAcc": "选择账户",
@@ -781,7 +783,8 @@
     "walletConnect": "连接钱包",
     "disconnect": "断开",
     "connectedNetworks": "Connected networks",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Update chain"
   },
   "cryptoScreen": {
     "receive": "领取",

@@ -187,6 +187,7 @@
     "chainConnected": "Mạng {0} đã kết nối!",
     "enableChain": "Bạn cần bật mạng",
     "enableChainMessage": "Mạng bạn chọn đang tắt. Vui lòng bật mạng để sử dụng.",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider.",
     "provider": "Provider",
     "pools": "Pool",
     "nominate": "Nominate",
@@ -405,7 +406,8 @@
     "addNetwork": "Nhập mạng",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Bật mạng"
+    "enable": "Bật mạng",
+    "update": "Update"
   },
   "inputLabel": {
     "selectAcc": "Chọn tài khoản",
@@ -781,7 +783,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "Ngắt kết nối",
     "connectedNetworks": "Connected networks",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Update chain"
   },
   "cryptoScreen": {
     "receive": "Nhận",

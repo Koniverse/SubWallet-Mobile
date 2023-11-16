@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ConfirmModal from 'components/common/Modal/ConfirmModal';
+import { IconProps, IconWeight } from 'phosphor-react-native';
 
 interface AppModalContextProviderProps {
   children?: React.ReactElement;
@@ -10,6 +11,7 @@ export type ConfirmModalInfo = {
   title?: string;
   message?: string;
   messageIcon?: string;
+  customIcon?: { icon: React.ElementType<IconProps>; color: string; weight: IconWeight };
   completeBtnTitle?: string;
   onCancelModal?: () => void | undefined;
   onCompleteModal?: () => void | undefined;
@@ -35,6 +37,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
           message: '',
           completeBtnTitle: '',
           messageIcon: undefined,
+          customIcon: undefined,
           onCancelModal: undefined,
           onCompleteModal: undefined,
         })),
@@ -50,6 +53,7 @@ export const AppModalContextProvider = ({ children }: AppModalContextProviderPro
         title={confirmModal.title || ''}
         message={confirmModal.message || ''}
         messageIcon={confirmModal.messageIcon}
+        customIcon={confirmModal.customIcon}
         onCancelModal={confirmModal.onCancelModal}
         onCompleteModal={confirmModal.onCompleteModal}
         completeBtnTitle={confirmModal.completeBtnTitle}

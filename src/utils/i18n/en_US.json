@@ -187,6 +187,7 @@
     "chainConnected": "{0} is connected!",
     "enableChain": "Enable network?",
     "enableChainMessage": "Your selected network is currently disabled. Enable it to start using.",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider.",
     "provider": "Provider",
     "pools": "Pool",
     "nominate": "Nominate",
@@ -405,7 +406,8 @@
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Enable"
+    "enable": "Enable",
+    "update": "Update"
   },
   "inputLabel": {
     "selectAcc": "Select account",
@@ -781,7 +783,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "Disconnect",
     "connectedNetworks": "Connected networks",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Update chain"
   },
   "cryptoScreen": {
     "receive": "Address",
