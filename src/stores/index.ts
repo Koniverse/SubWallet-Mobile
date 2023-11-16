@@ -24,6 +24,7 @@ import BalanceReducer from './feature/Balance';
 import BondingReducer from './feature/Bonding';
 import CampaignReducer from './feature/Campaign';
 import MissionPoolReducer from './feature/MissionPool';
+import BuyServiceReducer from './feature/Buy';
 import AssetRegistryReducer from './feature/common/AssetRegistry';
 import ChainStoreReducer from './feature/common/ChainStore';
 import CrowdloanReducer from './feature/Crowdloan';
@@ -74,6 +75,7 @@ const rootReducer = combineReducers({
   bonding: BondingReducer,
   walletConnect: WalletConnectReducer,
   campaign: CampaignReducer,
+  buyService: BuyServiceReducer,
   // mission pool
   missionPool: MissionPoolReducer,
 

@@ -239,3 +239,8 @@ export interface WalletConnectStore extends BaseReduxStore {
 export interface MissionPoolStore extends BaseReduxStore {
   missions: MissionInfo[];
 }
+
+export interface BuyServiceStore extends BaseReduxStore {
+  tokens: Record<string, BuyTokenInfo>;
+  services: Record<string, BuyServiceInfo>;
+}

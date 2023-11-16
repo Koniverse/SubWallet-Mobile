@@ -6,58 +6,41 @@ import { reformatAddress } from '@subwallet/extension-base/utils';
 import { getAccountType } from 'utils/index';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
 import { findAccountByAddress } from 'utils/account';
-import { BUY_SERVICE_CONTACTS, LIST_PREDEFINED_BUY_TOKEN, MAP_PREDEFINED_BUY_TOKEN } from 'constants/buy';
 import { AccountType } from 'types/ui-types';
 import { TokenItemType } from 'components/Modal/common/TokenSelector';
 import { ModalRef } from 'types/modalRef';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 import { ServiceItem, baseServiceItems } from 'screens/Home/Crypto/ServiceModal';
-import { BuyServiceInfo, CreateBuyOrderFunction, SupportService } from 'types/buy';
+import { BuyServiceInfo, BuyTokenInfo, CreateBuyOrderFunction, SupportService } from 'types/buy';
 import { BrowserOptions, createBanxaOrder, createCoinbaseOrder, createTransakOrder } from 'utils/buy';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
 import useAppLock from 'hooks/useAppLock';
+import { _isAssetFungibleToken } from '@subwallet/extension-base/services/chain-service/utils';
 
 type BuyTokenSelectedResult = {
   selectedBuyAccount?: string;
   selectedBuyToken?: string;
 };
 
-const getServiceItems = (tokenSlug: string | undefined): ServiceItem[] => {
-  if (!tokenSlug) {
-    return [];
-  }
-  const buyInfo = MAP_PREDEFINED_BUY_TOKEN[tokenSlug];
-  const result: ServiceItem[] = [];
-
-  for (const serviceItem of baseServiceItems) {
-    const temp: ServiceItem = {
-      ...serviceItem,
-      disabled: buyInfo ? !buyInfo.services.includes(serviceItem.key) : true,
-    };
-
-    result.push(temp);
-  }
-
-  return result;
-};
+const convertChainActivePriority = (active?: boolean) => (active ? 1 : 0);
 
 export default function useBuyToken(currentSymbol?: string) {
   const { accounts, isAllAccount, currentAccount } = useSelector((state: RootState) => state.accountState);
   const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const { isLocked } = useAppLock();
   const { walletReference } = useSelector((state: RootState) => state.settings);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
+  const { services, tokens } = useSelector((state: RootState) => state.buyService);
   const fixedTokenKey = useMemo((): string | undefined => {
     if (currentSymbol) {
-      return LIST_PREDEFINED_BUY_TOKEN.filter(
-        value => value.slug === currentSymbol || value.symbol === currentSymbol,
-      )[0]?.slug;
+      return Object.values(tokens).filter(value => value.slug === currentSymbol || value.symbol === currentSymbol)[0]
+        ?.slug;
     } else {
       return undefined;
     }
-  }, [currentSymbol]);
+  }, [currentSymbol, tokens]);
   const [{ selectedBuyAccount, selectedBuyToken }, setBuyTokenSelectedResult] = useState<BuyTokenSelectedResult>({
     selectedBuyAccount: isAllAccount ? undefined : currentAccount?.address,
     selectedBuyToken: fixedTokenKey || '',
@@ -65,16 +48,39 @@ export default function useBuyToken(currentSymbol?: string) {
   const [{ selectedService }, setSelectedService] = useState<{ selectedService: SupportService | undefined }>({
     selectedService: undefined,
   });
+
+  const getServiceItems = useCallback(
+    (tokenSlug: string | undefined): ServiceItem[] => {
+      if (!tokenSlug) {
+        return [];
+      }
+      const buyInfo = tokens[tokenSlug];
+      const result: ServiceItem[] = [];
+
+      for (const serviceItem of baseServiceItems) {
+        const temp: ServiceItem = {
+          ...serviceItem,
+          disabled: buyInfo ? !buyInfo.services.includes(serviceItem.key) : true,
+        };
+
+        result.push(temp);
+      }
+
+      return result;
+    },
+    [tokens],
+  );
+
   const isCloseByLockScreen = useRef(false);
   const isOpenInAppBrowser = useRef(false);
   const sleep = (timeout: number) => new Promise<void>(resolve => setTimeout(resolve, timeout));
-  const serviceItems = useMemo(() => getServiceItems(selectedBuyToken), [selectedBuyToken]);
+  const serviceItems = useMemo(() => getServiceItems(selectedBuyToken), [getServiceItems, selectedBuyToken]);
   const disclaimerData = useMemo((): BuyServiceInfo => {
     if (!selectedService) {
       return { name: '', url: '', contactUrl: '', policyUrl: '', termUrl: '' };
     }
-    return BUY_SERVICE_CONTACTS[selectedService] || { name: '', url: '', contactUrl: '', policyUrl: '', termUrl: '' };
-  }, [selectedService]);
+    return services[selectedService] || { name: '', url: '', contactUrl: '', policyUrl: '', termUrl: '' };
+  }, [selectedService, services]);
 
   const accountBuyRef = useRef<ModalRef>();
   const tokenBuyRef = useRef<ModalRef>();
@@ -84,7 +90,7 @@ export default function useBuyToken(currentSymbol?: string) {
     if (currentSymbol) {
       let result: AccountType = '' as AccountType;
 
-      const list = LIST_PREDEFINED_BUY_TOKEN.filter(
+      const list = Object.values(tokens).filter(
         value => value.slug === currentSymbol || value.symbol === currentSymbol,
       );
 
@@ -104,7 +110,7 @@ export default function useBuyToken(currentSymbol?: string) {
     } else {
       return 'ALL';
     }
-  }, [currentSymbol]);
+  }, [currentSymbol, tokens]);
 
   const accountsFilter = useCallback(
     (account: AccountJson) => {
@@ -143,39 +149,73 @@ export default function useBuyToken(currentSymbol?: string) {
     return undefined;
   }, [accounts, chainInfoMap, selectedBuyAccount]);
 
-  const buyTokenSelectorItems = useMemo<TokenItemType[]>(() => {
+  const tokenItems = useMemo<TokenItemType[]>(() => {
     const result: TokenItemType[] = [];
 
-    const list = [...LIST_PREDEFINED_BUY_TOKEN];
+    const list = [...Object.values(tokens)];
 
     const filtered = currentSymbol
       ? list.filter(value => value.slug === currentSymbol || value.symbol === currentSymbol)
       : list;
 
+    const convertToItem = (info: BuyTokenInfo): TokenItemType => {
+      return {
+        name: assetRegistry[info.slug]?.name || info.symbol,
+        slug: info.slug,
+        symbol: info.symbol,
+        originChain: info.network,
+      };
+    };
+
     filtered.forEach(info => {
+      const item = convertToItem(info);
+
       if (ledgerNetwork) {
         if (info.network === ledgerNetwork) {
-          result.push({
-            name: assetRegistry[info.slug].name,
-            slug: info.slug,
-            symbol: info.symbol,
-            originChain: info.network,
-          });
+          result.push(item);
         }
       } else {
         if (accountType === 'ALL' || accountType === info.support) {
-          result.push({
-            name: assetRegistry[info.slug]?.name || '',
-            slug: info.slug,
-            symbol: info.symbol,
-            originChain: info.network,
-          });
+          result.push(item);
         }
       }
     });
 
     return result;
-  }, [accountType, assetRegistry, currentSymbol, ledgerNetwork]);
+  }, [accountType, assetRegistry, currentSymbol, ledgerNetwork, tokens]);
+
+  const isSupportBuyTokens = useMemo(() => {
+    if (selectedService && selectedBuyAccount && selectedBuyToken) {
+      const buyInfo = tokens[selectedBuyToken];
+      const _accountType = getAccountType(selectedBuyAccount);
+
+      return (
+        buyInfo &&
+        buyInfo.support === _accountType &&
+        buyInfo.services.includes(selectedService) &&
+        tokenItems.find(item => item.slug === selectedBuyToken)
+      );
+    }
+
+    return false;
+  }, [selectedService, selectedBuyAccount, selectedBuyToken, tokens, tokenItems]);
+
+  const buyTokenSelectorItems = useMemo<TokenItemType[]>(() => {
+    const raw = tokenItems.filter(item => {
+      const chainAsset = assetRegistry[item.slug];
+
+      return chainAsset ? _isAssetFungibleToken(chainAsset) : false;
+    });
+
+    raw.sort((a, b) => {
+      return (
+        convertChainActivePriority(chainStateMap[b.originChain]?.active) -
+        convertChainActivePriority(chainStateMap[a.originChain]?.active)
+      );
+    });
+
+    return raw;
+  }, [assetRegistry, chainStateMap, tokenItems]);
 
   const openSelectBuyAccount = useCallback((account: AccountJson) => {
     setSelectedService({ selectedService: undefined });
@@ -228,7 +268,7 @@ export default function useBuyToken(currentSymbol?: string) {
         console.warn('no urlPromise');
         return;
       }
-      const buyInfo = MAP_PREDEFINED_BUY_TOKEN[selectedBuyToken];
+      const buyInfo = tokens[selectedBuyToken];
       const serviceInfo = buyInfo.serviceInfo[selectedService];
       if (!serviceInfo) {
         console.warn('no serviceInfo');
@@ -255,7 +295,7 @@ export default function useBuyToken(currentSymbol?: string) {
         console.log('error message for buy feature', errorMessage);
       }
     },
-    [chainInfoMap, selectedBuyAccount, selectedBuyToken, selectedService, walletReference],
+    [chainInfoMap, selectedBuyAccount, selectedBuyToken, selectedService, tokens, walletReference],
   );
 
   const onPressItem = (currentValue: SupportService) => {
@@ -331,5 +371,6 @@ export default function useBuyToken(currentSymbol?: string) {
     selectedService,
     serviceItems,
     disclaimerData,
+    isSupportBuyTokens,
   };
 }
