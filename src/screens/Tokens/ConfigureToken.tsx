@@ -6,7 +6,7 @@ import { AddressField } from 'components/Field/Address';
 import { NetworkField } from 'components/Field/Network';
 import InputText from 'components/Input/InputText';
 import { TextField } from 'components/Field/Text';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import {
   _getContractAddressOfToken,
   _isCustomAsset,
@@ -108,7 +108,7 @@ export const ConfigureToken = ({
   const copyToClipboard = (text: string) => {
     Clipboard.setString(text);
     toast.hideAll();
-    toast.show(i18n.common.copiedToClipboard);
+    Platform.OS === 'ios' && toast.show(i18n.common.copiedToClipboard);
   };
 
   const tagNode = useMemo(() => {

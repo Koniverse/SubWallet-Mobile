@@ -143,9 +143,11 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
         <View>
           <FieldBase>
             <View style={styles.networkUrlField}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.sizeXS, flex: 1 }}>
                 <Icon iconColor={theme['gray-3']} size="md" phosphorIcon={ShareNetwork} />
-                <Text style={[styles.text, !!errorMessage && { color: theme.colorError }]}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.text, { flex: 1 }, !!errorMessage && { color: theme.colorError }]}>
                   {chainEditInfo.providers[chainEditInfo.currentProvider] || i18n.confirmation.providerUrl}
                 </Text>
               </View>
