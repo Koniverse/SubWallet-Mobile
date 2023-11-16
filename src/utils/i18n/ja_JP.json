@@ -187,6 +187,7 @@
     "chainConnected": "{0} は接続されました",
     "enableChain": "チェーンを有効にしますか？",
     "enableChainMessage": "選択したチェーン  ({0})は現在無効になっています。あなたはそれを有効にする必要があります",
+    "updateChainMessage": "Your selected network has lost connection. Update it by re-enabling it or changing network provider.",
     "provider": "プロバイダー",
     "pools": "プール",
     "nominate": "ノミネート",
@@ -404,7 +405,8 @@
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Enable"
+    "enable": "Enable",
+    "update": "Update"
   },
   "inputLabel": {
     "selectAcc": "アカウントを選択",
@@ -780,7 +782,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "切断",
     "connectedNetworks": "接続されたネットワーク",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "updateChain": "Update chain"
   },
   "cryptoScreen": {
     "receive": "受信",

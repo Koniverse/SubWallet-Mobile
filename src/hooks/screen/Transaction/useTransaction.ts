@@ -13,6 +13,8 @@ import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { AppModalContext } from 'providers/AppModalContext';
 import i18n from 'utils/i18n/i18n';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
+import { WifiX } from 'phosphor-react-native';
 
 export const useTransaction = (
   action: string,
@@ -22,7 +24,7 @@ export const useTransaction = (
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
-  const { turnOnChain, checkChainConnected, connectingChainStatus } = useChainChecker();
+  const { turnOnChain, checkChainConnected, checkChainStatus, updateChain, connectingChainStatus } = useChainChecker();
   const appModalContext = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
@@ -111,6 +113,7 @@ export const useTransaction = (
         return;
       }
       const isConnected = checkChainConnected(chain);
+      const chainStatus = checkChainStatus(chain);
       if (!isConnected) {
         setTimeout(() => {
           appModalContext.setConfirmModal({
@@ -126,6 +129,27 @@ export const useTransaction = (
               setTimeout(() => turnOnChain(chain), 200);
             },
             messageIcon: chain,
+          });
+        }, 700);
+
+        return;
+      }
+
+      if (chainStatus === _ChainConnectionStatus.UNSTABLE) {
+        setTimeout(() => {
+          appModalContext.setConfirmModal({
+            visible: true,
+            completeBtnTitle: i18n.buttonTitles.update,
+            message: i18n.common.updateChainMessage,
+            title: i18n.header.updateChain,
+            customIcon: { icon: WifiX, color: '#D9D9D9', weight: 'bold' },
+            onCancelModal: () => {
+              appModalContext.hideConfirmModal();
+            },
+            onCompleteModal: () => {
+              updateChain(navigation);
+              setTimeout(() => appModalContext.hideConfirmModal(), 300);
+            },
           });
         }, 700);
       }

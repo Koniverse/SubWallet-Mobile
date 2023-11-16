@@ -14,6 +14,8 @@ import { FieldValues, UseFormProps } from 'react-hook-form/dist/types';
 import { FieldPath, useForm } from 'react-hook-form';
 import { FieldPathValue } from 'react-hook-form/dist/types/path';
 import i18n from 'utils/i18n/i18n';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
+import { WifiX } from 'phosphor-react-native';
 
 export interface TransactionFormValues extends FieldValues {
   from: string;
@@ -30,7 +32,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
   const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const { turnOnChain, checkChainConnected } = useChainChecker();
+  const { turnOnChain, checkChainConnected, checkChainStatus, updateChain, connectingChainStatus } = useChainChecker();
   const appModalContext = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
     switch (action) {
@@ -107,6 +109,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
       if (!chainInfoMap[chain]) {
         return;
       }
+      const chainStatus = checkChainStatus(chain);
       const isConnected = checkChainConnected(chain);
       if (!isConnected) {
         setTimeout(() => {
@@ -123,6 +126,27 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
               setTimeout(() => appModalContext.hideConfirmModal(), 300);
             },
             messageIcon: chain,
+          });
+        }, 700);
+
+        return;
+      }
+
+      if (chainStatus === _ChainConnectionStatus.UNSTABLE) {
+        setTimeout(() => {
+          appModalContext.setConfirmModal({
+            visible: true,
+            completeBtnTitle: i18n.buttonTitles.update,
+            message: i18n.common.updateChainMessage,
+            title: i18n.header.updateChain,
+            customIcon: { icon: WifiX, color: '#D9D9D9', weight: 'bold' },
+            onCancelModal: () => {
+              appModalContext.hideConfirmModal();
+            },
+            onCompleteModal: () => {
+              updateChain(navigation);
+              setTimeout(() => appModalContext.hideConfirmModal(), 300);
+            },
           });
         }, 700);
       }
@@ -174,5 +198,6 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     onTransactionDone,
     showPopupEnableChain,
     checkChainConnected,
+    connectingChainStatus,
   };
 };
