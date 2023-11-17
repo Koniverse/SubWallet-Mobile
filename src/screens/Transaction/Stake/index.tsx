@@ -417,6 +417,17 @@ export const Stake = ({
     ],
   );
 
+  useEffect(() => {
+    const isTokenIncludeTokenList = !!tokenList.find(item => item.slug === asset);
+    if (tokenList && tokenList.length) {
+      if (!isTokenIncludeTokenList) {
+        setAsset(tokenList[0].slug);
+      }
+    } else {
+      setAsset('');
+    }
+  }, [asset, setAsset, tokenList]);
+
   const onChangeStakingType = useCallback(
     (type: StakingType) => {
       setValue('stakingType', type);
