@@ -77,11 +77,7 @@ const getIdFromUrl = (url?: string) => {
 };
 
 const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: Props) => {
-  const [imageState, dispatchImageState] = useReducer(
-    handleReducer,
-    { ...DEFAULT_IMAGE_STATE, url: backupUrl },
-    handleIntState,
-  );
+  const [imageState, dispatchImageState] = useReducer(handleReducer, { ...DEFAULT_IMAGE_STATE }, handleIntState);
   const { url, showImage, imageError, loading } = imageState;
   const theme = useSubWalletTheme().swThemes;
 
@@ -157,7 +153,7 @@ const ImagePreview = ({ style, mainUrl, backupUrl, borderPlace, borderRadius }: 
       {showImage ? (
         <Image
           style={ImageStyle}
-          source={mainUrl ? (url ? { uri: url } : Images.default) : Images.default}
+          source={{ uri: url !== '' ? url : undefined }}
           onLoad={handleOnLoad}
           onError={handleImageError}
         />

@@ -6,6 +6,7 @@ import { FontSemiBold } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { CaretDown } from 'phosphor-react-native';
 import i18n from 'utils/i18n/i18n';
+import { Typography } from 'components/design-system-ui';
 
 interface Props extends FieldBaseProps {
   showIcon?: boolean;
@@ -20,6 +21,7 @@ const accountNameTextStyle: StyleProp<any> = {
   lineHeight: 22,
   ...FontSemiBold,
   color: 'rgba(255, 255, 255, 0.85)',
+  flex: 1,
 };
 
 const getPlaceholderStyle: StyleProp<any> = {
@@ -52,9 +54,13 @@ export const ServiceSelectField = ({
   return (
     <FieldBase label={label} {...fieldBase} outerStyle={outerStyle}>
       <View style={[blockContentStyle, !label && { paddingTop: 12 }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
           {!!value && <Image source={source} style={{ width: 24, height: 24, marginRight: 8 }} />}
-          {!!value && <Text style={accountNameTextStyle}>{serviceName}</Text>}
+          {!!value && (
+            <Typography.Text ellipsis style={accountNameTextStyle}>
+              {serviceName}
+            </Typography.Text>
+          )}
           {!value && <Text style={getPlaceholderStyle}>{i18n.placeholder.selectService}</Text>}
         </View>
 

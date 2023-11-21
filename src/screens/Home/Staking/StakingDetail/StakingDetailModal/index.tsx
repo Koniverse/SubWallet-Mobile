@@ -296,7 +296,11 @@ export const StakingDetailModal = ({
           onPress={onClickFooterButton(onClickUnstakeBtn)}>
           {i18n.buttonTitles.unstake}
         </Button>
-        <Button style={{ flex: 1, marginLeft: 6 }} type={'primary'} onPress={onClickFooterButton(onClickStakeMoreBtn)}>
+        <Button
+          disabled={!chainStakingMetadata}
+          style={{ flex: 1, marginLeft: 6 }}
+          type={'primary'}
+          onPress={onClickFooterButton(onClickStakeMoreBtn)}>
           {i18n.buttonTitles.stakeMore}
         </Button>
       </View>
@@ -566,16 +570,18 @@ export const StakingDetailModal = ({
         </View>
       </SwModal>
 
-      <StakingActionModal
-        stakingDetailModalRef={modalRef}
-        setModalVisible={setMoreActionModalVisible}
-        openModal={() => setMoreActionModalVisible(true)}
-        visible={moreActionModalVisible}
-        chainStakingMetadata={chainStakingMetadata}
-        nominatorMetadata={nominatorMetadata}
-        staking={staking}
-        reward={rewardItem}
-      />
+      {chainStakingMetadata && (
+        <StakingActionModal
+          stakingDetailModalRef={modalRef}
+          setModalVisible={setMoreActionModalVisible}
+          openModal={() => setMoreActionModalVisible(true)}
+          visible={moreActionModalVisible}
+          chainStakingMetadata={chainStakingMetadata}
+          nominatorMetadata={nominatorMetadata}
+          staking={staking}
+          reward={rewardItem}
+        />
+      )}
     </>
   );
 };
