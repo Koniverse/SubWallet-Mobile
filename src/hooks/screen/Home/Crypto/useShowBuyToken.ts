@@ -1,20 +1,32 @@
-import { useMemo } from 'react';
 import { Platform } from 'react-native';
-import { useGetTokenConfigQuery } from 'stores/API';
 import { getVersion } from 'react-native-device-info';
+import axios from 'axios';
+import { TOKEN_CONFIG_URL } from 'constants/index';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateIsShowByToken } from 'stores/base/Settings';
+import { RootState } from 'stores/index';
 
 export function useShowBuyToken() {
-  const { data: tokenConfig } = useGetTokenConfigQuery(undefined, { pollingInterval: 60000 });
-  const isShowBuyToken = useMemo(() => {
-    if (Platform.OS === 'android') {
-      return true;
-    }
-    const currentAppVersion = getVersion();
-    if (tokenConfig?.buy?.includes(currentAppVersion)) {
-      return true;
-    }
-    return false;
-  }, [tokenConfig]);
+  const isShowBuyToken = useSelector((state: RootState) => state.settings.isShowBuyToken);
+  const dispatch = useDispatch();
 
-  return isShowBuyToken;
+  const checkIsShowBuyToken = () => {
+    const currentAppVersion = getVersion();
+    axios.get(TOKEN_CONFIG_URL).then(res => {
+      const tokenConfig = res.data;
+      if (Platform.OS === 'android') {
+        dispatch(updateIsShowByToken(true));
+        return;
+      }
+
+      if (tokenConfig?.buy?.includes(currentAppVersion)) {
+        dispatch(updateIsShowByToken(true));
+        return;
+      }
+
+      dispatch(updateIsShowByToken(false));
+    });
+  };
+
+  return { isShowBuyToken, checkIsShowBuyToken };
 }

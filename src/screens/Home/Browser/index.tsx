@@ -40,7 +40,7 @@ const screenOptions = (
   },
   tabBarStyle: {
     height: 28,
-    backgroundColor: 'black',
+    backgroundColor: '#0C0C0C',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.4,
