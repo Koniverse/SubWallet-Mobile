@@ -1,3 +1,6 @@
+## 1.1.10 (240)
+- Turn off campaign on Android manually
+
 ## 1.1.9 (239)
 - Update web-runner v1.1.22 & Update browser dapp config (#1155)
 - Migrate useTransaction from v1 to v2 (#1121)
