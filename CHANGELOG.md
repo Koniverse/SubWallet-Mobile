@@ -1,3 +1,6 @@
+## 1.1.10 (240)
+- Update rtk query with fetch for Buy Token (#1179)
+
 ## 1.1.9 (239)
 - Update web-runner v1.1.22 & Update browser dapp config (#1155)
 - Migrate useTransaction from v1 to v2 (#1121)
