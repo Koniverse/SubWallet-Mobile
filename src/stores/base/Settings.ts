@@ -27,6 +27,7 @@ const initialState = {
   // Media settings
   mediaAllowed: false,
   isDeepLinkConnect: false,
+  isShowBuyToken: false,
   reduxStatus: ReduxStatus.INIT,
 } as AppSettings;
 
@@ -114,6 +115,12 @@ const settingsSlice = createSlice({
         isDeepLinkConnect: action.payload,
       };
     },
+    updateIsShowByToken(state, action: PayloadAction<AppSettings['isShowBuyToken']>) {
+      return {
+        ...state,
+        isShowBuyToken: action.payload,
+      };
+    },
   },
 });
 
@@ -123,6 +130,7 @@ export const {
   updateUiSettings,
   updateToggleBalance,
   updateIsDeepLinkConnect,
+  updateIsShowByToken,
   updateLanguage,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

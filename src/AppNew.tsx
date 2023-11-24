@@ -31,6 +31,7 @@ import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
 import { useGetDAPPCategoriesQuery, useGetDAPPsQuery, useGetTokenConfigQuery } from 'stores/API';
+import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -131,6 +132,7 @@ export const AppNew = () => {
   const { refetch } = useGetTokenConfigQuery(undefined, { pollingInterval: 300000 });
   const { refetch: refetchDAPPs } = useGetDAPPsQuery(undefined);
   const { refetch: refetchDAPPCategories } = useGetDAPPCategoriesQuery(undefined);
+  const { checkIsShowBuyToken } = useShowBuyToken();
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -144,6 +146,10 @@ export const AppNew = () => {
     autoLockParams.isMasterPasswordLocked = isLocked;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocked]);
+
+  useEffect(() => {
+    checkIsShowBuyToken();
+  }, [checkIsShowBuyToken]);
 
   useEffect(() => {
     autoLockParams.lock = lock;

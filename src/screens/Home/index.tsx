@@ -59,7 +59,7 @@ const MainScreen = () => {
   const Tab = createBottomTabNavigator<HomeStackParamList>();
   const insets = useSafeAreaInsets();
   const theme = useSubWalletTheme().swThemes;
-  const isShowBuyToken = useShowBuyToken();
+  const { isShowBuyToken } = useShowBuyToken();
   const tabbarButtonStyle = (props: BottomTabBarButtonProps) => {
     let customStyle = {
       flexDirection: 'column',
