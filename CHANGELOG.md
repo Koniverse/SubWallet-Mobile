@@ -1,3 +1,8 @@
+## 1.1.11 (241)
+- Bug reset data on version IOS 17.1.1 (#1157)
+- Fix some UI bug (#1148)
+- Fix bug do not reset token selected in case change Nominate to Pool (#1159)
+
 ## 1.1.10 (240)
 - Update rtk query with fetch for Buy Token (#1179)
 
