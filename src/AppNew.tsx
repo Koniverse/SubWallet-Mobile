@@ -30,8 +30,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
-import { useGetDAPPCategoriesQuery, useGetDAPPsQuery, useGetTokenConfigQuery } from 'stores/API';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -129,10 +129,8 @@ export const AppNew = () => {
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
   useStoreBackgroundService();
-  const { refetch } = useGetTokenConfigQuery(undefined, { pollingInterval: 300000 });
-  const { refetch: refetchDAPPs } = useGetDAPPsQuery(undefined);
-  const { refetch: refetchDAPPCategories } = useGetDAPPCategoriesQuery(undefined);
   const { checkIsShowBuyToken } = useShowBuyToken();
+  const { getDAppsData } = useGetDAppList();
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -146,10 +144,6 @@ export const AppNew = () => {
     autoLockParams.isMasterPasswordLocked = isLocked;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLocked]);
-
-  useEffect(() => {
-    checkIsShowBuyToken();
-  }, [checkIsShowBuyToken]);
 
   useEffect(() => {
     autoLockParams.lock = lock;
@@ -173,9 +167,8 @@ export const AppNew = () => {
       SplashScreen.hide();
     }, 100);
 
-    refetch();
-    refetchDAPPs();
-    refetchDAPPCategories();
+    checkIsShowBuyToken();
+    getDAppsData();
     // if (buildNumber === 1) {
     // Set default value on the first time install
     // const buildNumberInt = parseInt(getBuildNumber(), 10);

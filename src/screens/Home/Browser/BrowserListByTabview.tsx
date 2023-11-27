@@ -10,8 +10,8 @@ import { Typography } from 'components/design-system-ui';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
-import { useGetDAPPCategoriesQuery } from 'stores/API';
 import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 type RoutesType = {
   key: string;
@@ -60,12 +60,14 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 export const BrowserListByTabview = ({ route, navigation }: BrowserListByTabviewProps) => {
   const theme = useSubWalletTheme().swThemes;
   const [searchString] = useState<string>('');
-  const { data: categories } = useGetDAPPCategoriesQuery(undefined);
+  const {
+    browserDApps: { dAppCategories },
+  } = useGetDAppList();
 
   const allTabRoutes = useMemo(() => {
-    const categoryTabRoutes = categories ? categories?.map(item => ({ key: item.slug, title: item.name })) : [];
+    const categoryTabRoutes = dAppCategories ? dAppCategories?.map(item => ({ key: item.slug, title: item.name })) : [];
     return [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
-  }, [categories]);
+  }, [dAppCategories]);
 
   const navigationType: Record<string, string> = {
     BOOKMARK: i18n.browser.favorite,

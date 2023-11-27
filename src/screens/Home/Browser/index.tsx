@@ -14,7 +14,7 @@ import { Typography } from 'components/design-system-ui';
 import { ThemeTypes } from 'styles/themes';
 import i18n from 'utils/i18n/i18n';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useGetDAPPCategoriesQuery } from 'stores/API';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 type RoutesType = {
   key: string;
@@ -81,14 +81,16 @@ const tabbarIcon = (focused: boolean, item: RoutesType, theme: ThemeTypes) => {
 export const BrowserScreen = ({ navigation }: NativeStackScreenProps<{}>) => {
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
-  const { data: categories } = useGetDAPPCategoriesQuery(undefined);
+  const {
+    browserDApps: { dAppCategories },
+  } = useGetDAppList();
   const [searchString] = useState<string>('');
   const navigationState = useNavigationState(state => state);
   const currentTabIndex = navigationState.routes[navigationState.routes.length - 1].state?.index || 0;
   const allTabRoutes = useMemo(() => {
-    const categoryTabRoutes = categories ? categories?.map(item => ({ key: item.slug, title: item.name })) : [];
+    const categoryTabRoutes = dAppCategories ? dAppCategories?.map(item => ({ key: item.slug, title: item.name })) : [];
     return [{ key: 'all', title: i18n.common.all }, ...categoryTabRoutes];
-  }, [categories]);
+  }, [dAppCategories]);
   const av = new Animated.Value(0);
   av.addListener(() => {
     return;

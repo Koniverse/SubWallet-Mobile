@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import { isAccountAll } from 'utils/accountAll';
 import { BuyTokenInfo } from 'types/buy';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 
 interface Props {
   balanceValue: SwNumberProps['value'];

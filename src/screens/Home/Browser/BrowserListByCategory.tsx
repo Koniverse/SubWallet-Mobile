@@ -11,7 +11,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { CategoryEmptyList } from 'screens/Home/Browser/Shared/CategoryEmptyList';
 import { browserListItemHeight, browserListSeparator } from 'constants/itemHeight';
-import { useGetDAPPsQuery } from 'stores/API';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 export interface BrowserListByCategoryProps {
   searchString: string;
@@ -26,7 +26,9 @@ const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 const BrowserListByCategory: React.FC<NativeStackScreenProps<RootStackParamList>> = ({ route, navigation }) => {
   const { searchString, navigationType } = route.params as BrowserListByCategoryProps;
   const theme = useSubWalletTheme().swThemes;
-  const { data: dApps } = useGetDAPPsQuery(undefined);
+  const {
+    browserDApps: { dApps },
+  } = useGetDAppList();
   const bookmarkedItems = useSelector((state: RootState) => state.browser.bookmarks);
 
   const listByCategory = useMemo((): DAppInfo[] => {

@@ -9,8 +9,8 @@ import createStyle from './styles';
 import { ImageLogosMap } from 'assets/logo';
 import { isWalletConnectRequest } from '@subwallet/extension-base/services/wallet-connect-service/helpers';
 import { SVGImages } from 'assets/index';
-import { useGetDAPPsQuery } from 'stores/API';
 import { getHostName } from 'utils/browser';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 interface Props {
   request: ConfirmationRequestBase;
@@ -24,7 +24,9 @@ const ConfirmationGeneralInfo: React.FC<Props> = (props: Props) => {
   const isWCRequest = useMemo(() => isWalletConnectRequest(request.id), [request.id]);
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme, gap), [theme, gap]);
-  const { data: dApps } = useGetDAPPsQuery(undefined);
+  const {
+    browserDApps: { dApps },
+  } = useGetDAppList();
   const onLoadImageError = useCallback(() => {
     if (rightLogo.includes('.ico')) {
       setRightLogo(`https://icons.duckduckgo.com/ip2/${domain}.png`);
