@@ -361,6 +361,8 @@ interface Props {
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
 }
+// iOS 17.1 have critical issue with webview. LocalStorage have cleared after restart the app serveral times
+const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
 
 export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
   const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
@@ -369,17 +371,16 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     stateRef: webRunnerStateRef,
     eventEmitter: webRunnerEventEmitter,
   });
-  const osVersion = getSystemVersion();
-  const isIOS = Platform.OS === 'ios';
+
   webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
   webRunnerHandler.active();
 
   const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
-    if (osVersion.startsWith('17') && isIOS) {
+    if (isIOS17) {
       try {
         const webData = JSON.parse(eventData.nativeEvent.data);
         if (webData?.backupStorage && Object.keys(webData?.backupStorage || {})?.length > 0) {
-          // console.log('eventData.nativeEvent.data', eventData.nativeEvent.data);
+          console.log('eventData.nativeEvent.data', eventData.nativeEvent.data);
           const isAccount = Object.keys(webData.backupStorage).find((item: string) => item.startsWith('account:'));
           if (isAccount && webData.backupStorage['keyring:subwallet']) {
             mmkvStore.set('backupStorage', JSON.stringify(webData.backupStorage));
@@ -390,8 +391,49 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
         console.log('parse json failed', e);
       }
     }
+
     webRunnerHandler.onRunnerMessage(eventData);
   };
+
+  const onLoadStart = () => {
+    // if (isIOS17) {
+    //   const data = mmkvStore.getString('backupStorage');
+    //   // console.log('start  =================', data);
+    //   const newData = data ? JSON.parse(data) : {};
+    //   if (webRunnerRef.current && !!data && Object.keys(newData).length > 0) {
+    //     const keys = Object.keys(newData);
+    //     keys.forEach(key => {
+    //       webRunnerRef.current?.injectJavaScript(`window.localStorage.setItem('${key}', '${newData[key]}');`);
+    //     });
+    //   }
+    // }
+    if (webRunnerRef.current) {
+      webRunnerRef.current.injectJavaScript(
+        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+      );
+    }
+  };
+  const onLoadProgress = () => {
+    if (isIOS17) {
+      if (webRunnerRef.current) {
+        webRunnerRef.current.injectJavaScript(
+          'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+        );
+      }
+    }
+    if (isIOS17) {
+      const data = mmkvStore.getString('backupStorage');
+      // console.log('start  =================', data);
+      const newData = data ? JSON.parse(data) : {};
+      if (webRunnerRef.current && !!data && Object.keys(newData).length > 0) {
+        const keys = Object.keys(newData);
+        keys.forEach(key => {
+          webRunnerRef.current?.injectJavaScript(`window.localStorage.setItem('${key}', '${newData[key]}');`);
+        });
+      }
+    }
+  };
+  const onLoadEnd = () => {};
 
   return (
     <View style={{ height: 0 }}>
@@ -403,41 +445,9 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
           originWhitelist={['*']}
           injectedJavaScript={runnerGlobalState.injectScript}
           webviewDebuggingEnabled
-          onLoadStart={() => {
-            if (osVersion.startsWith('17') && isIOS) {
-              const data = mmkvStore.getString('backupStorage');
-              // console.log('start  =================', data);
-              const newData = data ? JSON.parse(data) : {};
-              if (webRunnerRef.current && !!data && Object.keys(newData).length > 0) {
-                const keys = Object.keys(newData);
-                keys.forEach(key => {
-                  webRunnerRef.current.injectJavaScript(`window.localStorage.setItem('${key}', '${newData[key]}');`);
-                });
-              }
-            }
-          }}
-          onLoadProgress={() => {
-            if (osVersion.startsWith('17') && isIOS) {
-              if (webRunnerRef.current) {
-                webRunnerRef.current.injectJavaScript(
-                  'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage}));',
-                );
-              }
-            }
-          }}
-          onLoadEnd={() => {
-            if (osVersion.startsWith('17') && isIOS) {
-              const data = mmkvStore.getString('backupStorage');
-              // console.log('start  =================', data);
-              const newData = data ? JSON.parse(data) : {};
-              if (webRunnerRef.current && !!data && Object.keys(newData).length > 0) {
-                const keys = Object.keys(newData);
-                keys.forEach(key => {
-                  webRunnerRef.current.injectJavaScript(`window.localStorage.setItem('${key}', '${newData[key]}');`);
-                });
-              }
-            }
-          }}
+          onLoadStart={onLoadStart}
+          onLoadProgress={onLoadProgress}
+          onLoadEnd={onLoadEnd}
           onError={e => console.debug('### WebRunner error', e)}
           onHttpError={e => console.debug('### WebRunner HttpError', e)}
           javaScriptEnabled={true}

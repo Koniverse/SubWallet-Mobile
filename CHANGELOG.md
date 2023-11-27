@@ -4,7 +4,7 @@
 - Fix bug do not reset token selected in case change Nominate to Pool (#1159)
 
 ## 1.1.10 (240)
-- Update rtk query with fetch for Buy Token (#1179)
+- Update rtk query with fetch (#1179)
 
 ## 1.1.9 (239)
 - Update web-runner v1.1.22 & Update browser dapp config (#1155)
