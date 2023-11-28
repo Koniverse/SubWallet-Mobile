@@ -9,7 +9,7 @@ import { StoredSiteInfo } from 'stores/types';
 import { addBookmark, removeBookmark } from 'stores/updater';
 import createStylesheet from './styles/BrowserItem';
 import { getHostName, searchDomain } from 'utils/browser';
-import { useGetDAPPCategoriesQuery } from 'stores/API';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 interface Props {
   logo?: string;
@@ -27,7 +27,9 @@ function isSiteBookmark(url: string, bookmarks: StoredSiteInfo[]) {
 }
 
 export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, isLoading }: Props) => {
-  const { data: categories } = useGetDAPPCategoriesQuery(undefined);
+  const {
+    browserDApps: { dAppCategories },
+  } = useGetDAppList();
   const assetLogoMap = useSelector((state: RootState) => state.logoMaps.assetLogoMap);
   const [image, setImage] = useState<string>(assetLogoMap.default);
   const theme = useSubWalletTheme().swThemes;
@@ -58,7 +60,7 @@ export const BrowserItem = ({ logo, title, url, style, onPress, subtitle, tags, 
   };
 
   const renderTag = (tagId: string) => {
-    const tagInfo = categories?.find(category => category.slug === tagId);
+    const tagInfo = dAppCategories?.find(category => category.slug === tagId);
 
     return (
       <Tag key={tagId} bgType={tagInfo ? 'default' : 'gray'} color={tagInfo?.color || 'default'}>

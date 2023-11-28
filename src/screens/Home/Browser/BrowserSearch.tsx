@@ -22,7 +22,7 @@ import { BrowserSearchItem } from 'components/Browser/BrowserSearchItem';
 import { Button } from 'components/design-system-ui';
 import i18n from 'utils/i18n/i18n';
 import { browserListItemHeight, browserListSeparator } from 'constants/itemHeight';
-import { useGetDAPPsQuery } from 'stores/API';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 type SearchItemType = {
   logo?: string;
@@ -60,7 +60,9 @@ const TOTAL_ITEM_HEIGHT = ITEM_HEIGHT + ITEM_SEPARATOR;
 
 export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
   const historyItems = useSelector((state: RootState) => state.browser.history);
-  const { data: dApps, isLoading } = useGetDAPPsQuery(undefined);
+  const {
+    browserDApps: { dApps },
+  } = useGetDAppList();
   const theme = useSubWalletTheme().swThemes;
   const stylesheet = createStylesheet(theme);
   const navigation = useNavigation<RootNavigationProps>();
@@ -89,7 +91,6 @@ export const BrowserSearch = ({ route: { params } }: BrowserSearchProps) => {
 
     return (
       <BrowserItem
-        isLoading={isLoading}
         key={item.id}
         logo={item.logo}
         title={item.name}

@@ -32,7 +32,7 @@ import { isFirstOpen, setIsFirstOpen } from '../../AppNew';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 
 interface tabbarIconColor {
   color: string;

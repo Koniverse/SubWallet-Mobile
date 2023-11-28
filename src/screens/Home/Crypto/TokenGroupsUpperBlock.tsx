@@ -15,7 +15,7 @@ import { ButtonIcon } from 'screens/Home/Crypto/shared/Button';
 import { updateToggleBalance } from 'stores/base/Settings';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
-import { useShowBuyToken } from 'hooks/screen/Home/Crypto/useShowBuyToken';
+import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 
 interface Props {
   totalValue: SwNumberProps['value'];

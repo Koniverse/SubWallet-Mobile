@@ -8,7 +8,7 @@ import { SWImageProps } from 'components/design-system-ui/image';
 import { ImageLogosMap } from 'assets/logo';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { getHostName } from 'utils/browser';
-import { useGetDAPPsQuery } from 'stores/API';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 interface Props {
   request: ConfirmationRequestBase;
@@ -27,7 +27,9 @@ export const ConfirmationGeneralInfo = ({ linkIcon, linkIconBg, request, style }
   const theme = useSubWalletTheme().swThemes;
   const domain = getDomainFromUrl(request.url);
   const [rightLogo, setRightLogo] = useState(`https://icons.duckduckgo.com/ip2/${domain}.ico`);
-  const { data: dApps } = useGetDAPPsQuery(undefined);
+  const {
+    browserDApps: { dApps },
+  } = useGetDAppList();
 
   useEffect(() => {
     const dApp = dApps?.find(app => request.url.includes(getHostName(app.url)));

@@ -37,6 +37,7 @@ import { _ChainState } from '@subwallet/extension-base/services/chain-service/ty
 import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
+import { DAPPCategory, DAppInfo } from 'types/browser';
 
 export type StoreStatus = 'INIT' | 'CACHED' | 'SYNCED' | 'WAITING';
 
@@ -152,6 +153,10 @@ export interface AppSettings
   mediaAllowed: boolean;
   isDeepLinkConnect: boolean;
   isShowBuyToken: boolean;
+  browserDApps: {
+    dApps: DAppInfo[] | undefined;
+    dAppCategories: DAPPCategory[] | undefined;
+  };
 }
 
 export interface AccountState extends AccountsContext, KeyringState, AddressBookState, BaseReduxStore {

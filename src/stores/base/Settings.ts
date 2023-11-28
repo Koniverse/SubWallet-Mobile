@@ -28,6 +28,10 @@ const initialState = {
   mediaAllowed: false,
   isDeepLinkConnect: false,
   isShowBuyToken: false,
+  browserDApps: {
+    dApps: undefined,
+    dAppCategories: undefined,
+  },
   reduxStatus: ReduxStatus.INIT,
 } as AppSettings;
 
@@ -121,6 +125,12 @@ const settingsSlice = createSlice({
         isShowBuyToken: action.payload,
       };
     },
+    updateBrowserDApps(state, action: PayloadAction<AppSettings['browserDApps']>) {
+      return {
+        ...state,
+        browserDApps: { ...action.payload },
+      };
+    },
   },
 });
 
@@ -131,6 +141,7 @@ export const {
   updateToggleBalance,
   updateIsDeepLinkConnect,
   updateIsShowByToken,
+  updateBrowserDApps,
   updateLanguage,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

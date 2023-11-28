@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, ListRenderItem, ScrollView, View } from 'react-native';
 import { CaretRight } from 'phosphor-react-native';
 import createStylesheet from './styles/BrowserHome';
-import { Images } from 'assets/index';
 import { Icon, Typography } from 'components/design-system-ui';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
@@ -17,11 +16,11 @@ import { RootNavigationProps } from 'routes/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { browserHomeItem, browserHomeItemIconOnly, browserHomeItemWidth } from 'constants/itemHeight';
-import { useGetDAPPsQuery } from 'stores/API';
 import { MissionPoolItem } from 'components/MissionPoolItem';
 import { MissionInfo } from 'types/missionPool';
 import { MissionPoolDetailModal } from 'screens/Home/Browser/MissionPool/MissionPoolDetailModal/MissionPoolDetailModal';
 import ImageSlider from 'components/common/ImageSlider';
+import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
 
 interface HeaderProps {
   title: string;
@@ -99,7 +98,9 @@ const ItemSeparator = () => {
 const BrowserHome = () => {
   const stylesheet = createStylesheet();
   const theme = useSubWalletTheme().swThemes;
-  const { data: dApps, isLoading, refetch } = useGetDAPPsQuery(undefined);
+  const {
+    browserDApps: { dApps },
+  } = useGetDAppList();
   const navigation = useNavigation<RootNavigationProps>();
   const historyItems = useSelector((state: RootState) => state.browser.history);
   const bookmarkItems = useSelector((state: RootState) => state.browser.bookmarks);
@@ -108,10 +109,6 @@ const BrowserHome = () => {
   const [loadingDataLv1, setLoadingDataLv1] = useState<boolean>(true);
   const [loadingDataLv2, setLoadingDataLv2] = useState<boolean>(true);
   const [visible, setVisible] = useState<boolean>(false);
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -150,7 +147,7 @@ const BrowserHome = () => {
   }, [dApps]);
   const getBannerImages = useMemo(() => {
     if (!bannerData) {
-      return [Images.browserBanner];
+      return [];
     }
 
     return bannerData.map(dApp => dApp.preview_image);
@@ -162,20 +159,19 @@ const BrowserHome = () => {
 
   const renderRecentItem: ListRenderItem<StoredSiteInfo> = useCallback(
     ({ item }) => {
-      return <IconItem isLoading={isLoading} data={dApps} itemData={item} />;
+      return <IconItem data={dApps} itemData={item} />;
     },
-    [dApps, isLoading],
+    [dApps],
   );
   const renderBookmarkItem: ListRenderItem<StoredSiteInfo> = useCallback(
     ({ item }) => {
-      return <IconItem isLoading={isLoading} data={dApps} itemData={item} isWithText />;
+      return <IconItem data={dApps} itemData={item} isWithText />;
     },
-    [dApps, isLoading],
+    [dApps],
   );
   const renderSectionItem = (item: DAppInfo) => {
     return (
       <BrowserItem
-        isLoading={isLoading}
         key={item.id}
         style={stylesheet.browserItem}
         title={item.title}
