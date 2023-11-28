@@ -1,3 +1,7 @@
+## 1.1.12 (242)
+- Fix bug do not display dApps that have been added to predefined lists on Strapi (#1183)
+- Bug reset data on version IOS 17.1.1 (round 2) (#1182)
+
 ## 1.1.11 (241)
 - Bug reset data on version IOS 17.1.1 (#1157)
 - Fix some UI bug (#1148)
