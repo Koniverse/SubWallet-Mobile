@@ -1,3 +1,6 @@
+## 1.1.13 (243)
+- Bug reset data on iOS version 17.1.1 (round 3) - Update web runner 1.1.24 (#2272)
+
 ## 1.1.12 (242)
 - Fix bug do not display dApps that have been added to predefined lists on Strapi (#1183)
 - Bug reset data on version IOS 17.1.1 (round 2) (#1182)
