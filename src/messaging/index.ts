@@ -46,6 +46,7 @@ import {
   CurrentAccountInfo,
   KeyringState,
   LanguageType,
+  MobileData,
   NftCollection,
   NftJson,
   NftTransactionRequest,
@@ -313,7 +314,7 @@ export const postMessage = ({ id, message, request, origin }, supportRestart = f
     throw new WebviewError('Webview is not init');
   }
 
-  if (status === 'crypto_ready') {
+  if (status === 'crypto_ready' || (message.startsWith('mobile') && status === 'require_restore')) {
     _post();
   } else {
     const eventHandle = (stt: string) => {
@@ -525,6 +526,12 @@ export async function stopSubscriptionServices(request: SubscriptionServiceType[
 
 export async function restartSubscriptionServices(request: SubscriptionServiceType[]): Promise<void> {
   return sendMessage('mobile(subscription.restart)', request);
+}
+export async function mobileBackup(): Promise<MobileData> {
+  return sendMessage('mobile(storage.backup)');
+}
+export async function mobileRestore(request: Partial<MobileData>): Promise<null> {
+  return sendMessage('mobile(storage.restore)', request);
 }
 
 // Logic messages
