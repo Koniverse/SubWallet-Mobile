@@ -1,6 +1,4 @@
 import { mobileBackup, mobileRestore } from 'messaging/index';
-import { Platform } from 'react-native';
-import { getSystemVersion } from 'react-native-device-info';
 import { MMKV } from 'react-native-mmkv';
 import { Storage } from 'redux-persist';
 
