@@ -35,7 +35,7 @@ import {
 import { updateFaceIdEnable, updateUseBiometric } from 'stores/MobileSettings';
 import { FORCE_HIDDEN_EVENT } from 'components/design-system-ui/modal/ModalBaseV2';
 import MigrateToKeychainPasswordModal from '../MigrateToKeychainPasswordModal';
-import { mmkvStore } from 'utils/storage';
+import { backupStorageData, mmkvStore } from 'utils/storage';
 import { setBuildNumber } from 'stores/AppVersion';
 import { LockTimeout } from 'stores/types';
 import useConfirmationsInfo from 'hooks/screen/Confirmation/useConfirmationsInfo';
@@ -238,6 +238,8 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 dispatch(updateUseBiometric(false));
                 resetKeychainPassword();
               }
+              // BACKUP-003: Back up local storage after reset account
+              backupStorageData(true);
             });
         }, 300);
       };

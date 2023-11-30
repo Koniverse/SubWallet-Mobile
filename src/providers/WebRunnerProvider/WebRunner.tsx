@@ -1,7 +1,7 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 import { Alert, AppState, Linking, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
@@ -209,6 +209,8 @@ class WebRunnerHandler {
           }
           this.shouldReloadHandler = true;
           this.startPing();
+          // BACKUP-003: Back up local storage for reload web runner after 10 seconds
+          setTimeout(() => backupStorageData(), 10000);
         } else {
           this.stopPing();
         }
@@ -351,6 +353,12 @@ interface Props {
   webRunnerStateRef: React.RefObject<WebRunnerState>;
   webRunnerEventEmitter: EventEmitter;
 }
+const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
+if (oldLocalStorageBackUpData) {
+  // BACKUP-001: Migrate backed up local storage from 1.1.12 and remove old key
+  mmkvStore.set('backup-localstorage', oldLocalStorageBackUpData);
+  mmkvStore.delete('backupStorage');
+}
 
 export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunnerEventEmitter }: Props) => {
   const [runnerGlobalState, dispatchRunnerGlobalState] = useReducer(webRunnerReducer, {
@@ -360,14 +368,42 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     eventEmitter: webRunnerEventEmitter,
   });
 
+  useEffect(() => {
+    // BACKUP-003: Back up local storage every 30 seconds
+    const interval = setInterval(() => backupStorageData(), 30000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
   webRunnerHandler.active();
 
   const onMessage = (eventData: NativeSyntheticEvent<WebViewMessage>) => {
+    try {
+      // BACKUP-002: Check is account & keyring exist to back up
+      const webData = JSON.parse(eventData.nativeEvent.data);
+      if (webData?.backupStorage && Object.keys(webData?.backupStorage || {})?.length > 0) {
+        const isAccount = Object.keys(webData.backupStorage).find((item: string) => item.startsWith('account:'));
+        if (isAccount && webData.backupStorage['keyring:subwallet']) {
+          mmkvStore.set('backup-localstorage', JSON.stringify(webData.backupStorage));
+        }
+        return;
+      }
+    } catch (e) {
+      console.log('parse json failed', e);
+    }
     webRunnerHandler.onRunnerMessage(eventData);
   };
 
   const onLoadStart = () => {
+    // BACKUP-002: Back up local storage for first open app purpose
+    if (webRunnerRef.current) {
+      webRunnerRef.current.injectJavaScript(
+        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+      );
+    }
+    // BACKUP-003: Back up local storage for reload web runner purpose
     backupStorageData();
   };
 

@@ -23,25 +23,25 @@ export const mmkvReduxStore: Storage = {
   },
 };
 
-// Backup and restore data on iOS 17
-const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
-export const backupStorageData = () => {
-  if (isIOS17) {
-    mobileBackup()
-      .then(response => {
+// Backup and restore data
+export const backupStorageData = (forceBackup?: boolean) => {
+  mobileBackup()
+    .then(response => {
+      if (typeof response.storage !== 'string') {
+        return;
+      }
+      const preBackupData = JSON.parse(response.storage);
+      const isAccount = Object.keys(preBackupData).find((item: string) => item.startsWith('account:'));
+      if ((isAccount && preBackupData['keyring:subwallet']) || forceBackup) {
         mmkvStore.set('backup-indexedDB', response.indexedDB);
         mmkvStore.set('backup-localstorage', response.storage);
-      })
-      .catch(e => console.debug('** Backup storage data error:', e));
-  }
+      }
+    })
+    .catch(e => console.debug('** Backup storage data error:', e));
 };
 
 export const restoreStorageData = () => {
-  if (isIOS17) {
-    const indexedDB = mmkvStore.getString('backup-indexedDB');
-    const localstorage = mmkvStore.getString('backup-localstorage');
-    mobileRestore({ indexedDB, storage: localstorage }).catch(e => console.debug('** Restore storage data error:', e));
-  } else {
-    mobileRestore({});
-  }
+  const indexedDB = mmkvStore.getString('backup-indexedDB');
+  const localstorage = mmkvStore.getString('backup-localstorage');
+  mobileRestore({ indexedDB, storage: localstorage }).catch(e => console.debug('** Restore storage data error:', e));
 };
