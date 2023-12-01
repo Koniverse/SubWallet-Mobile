@@ -15,6 +15,7 @@ import { useMissionPools } from 'hooks/useMissionPools';
 import { MissionPoolFooter } from 'components/MissionPoolHorizontalItem/MissionPoolFooter';
 import i18n from 'utils/i18n/i18n';
 import LogoGroup from 'components/common/LogoGroup';
+import { Platform } from 'react-native';
 
 interface Props {
   modalVisible: boolean;
@@ -22,6 +23,7 @@ interface Props {
   data: MissionInfo;
 }
 
+const isAndroid = Platform.OS === 'android';
 export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props) => {
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
   const theme = useSubWalletTheme().swThemes;
@@ -33,10 +35,10 @@ export const MissionPoolDetailModal = ({ modalVisible, setVisible, data }: Props
       <ContainerWithSubHeader title={data.name as string} style={{ flex: 1 }} onPressBack={() => setVisible(false)}>
         <ScrollView style={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
           <Image key={'blurryImage'} src={{ uri: data.backdrop_image }} style={styles.backdropImgStyle} />
-          <BlurView style={styles.backdropImgBlurView} blurType={'dark'} blurAmount={8} />
+          {!isAndroid && <BlurView style={styles.backdropImgBlurView} blurType={'dark'} blurAmount={8} />}
           <LinearGradient
-            locations={[0, 0.035, 0.3]}
-            colors={['#0C0C0C', 'transparent', '#0C0C0C']}
+            locations={isAndroid ? [0, 0.03, 0.07] : [0, 0.035, 0.3]}
+            colors={['#0C0C0C', isAndroid ? theme.colorBgMask : 'transparent', '#0C0C0C']}
             style={styles.linerGradientStyle}
           />
           <View style={styles.contentContainer}>
