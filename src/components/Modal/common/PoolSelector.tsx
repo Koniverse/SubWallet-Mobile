@@ -100,6 +100,7 @@ export const PoolSelector = ({
   }, [nominatorMetadata]);
   const poolSelectorRef = useRef<ModalRef>();
   const sortingModalRef = useRef<ModalRef>();
+  const defaultSelectPool = Object.assign({}, PREDEFINED_STAKING_POOL, { vara_network: 29 })[chain];
   const sortingOptions: SortOption[] = [
     {
       desc: false,
@@ -156,7 +157,7 @@ export const PoolSelector = ({
   }, [chain, items.length, setForceFetchValidator]);
 
   useEffect(() => {
-    const defaultSelectedPool = nominationPoolValueList[0] || String(PREDEFINED_STAKING_POOL[chain] || '');
+    const defaultSelectedPool = nominationPoolValueList[0] || String(defaultSelectPool || '');
 
     onSelectItem && onSelectItem(defaultSelectedPool);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,7 +215,7 @@ export const PoolSelector = ({
   );
 
   const onPressLightningBtn = useCallback(() => {
-    const poolId = PREDEFINED_STAKING_POOL[chain];
+    const poolId = defaultSelectPool;
 
     poolId !== undefined && onSelectItem && onSelectItem(String(poolId));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -246,7 +247,7 @@ export const PoolSelector = ({
             disabled={isDisabled}
             onPressBookBtn={() => poolSelectorRef && poolSelectorRef.current?.onOpenModal()}
             onPressLightningBtn={onPressLightningBtn}
-            showLightingBtn={!!PREDEFINED_STAKING_POOL[chain]}
+            showLightingBtn={!!defaultSelectPool}
             item={selectedPool}
             label={i18n.inputLabel.selectPool}
             loading={poolLoading}
