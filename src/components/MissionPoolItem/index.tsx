@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { Icon, Image, Tag, Typography } from 'components/design-system-ui';
 import { BlurView } from '@react-native-community/blur';
 import { Coin, DiceSix, IconWeight, MagicWand, SelectionBackground, User } from 'phosphor-react-native';
@@ -30,6 +30,7 @@ interface Props {
   onPressItem: () => void;
 }
 
+const isAndroid = Platform.OS === 'android';
 export const MissionPoolItem = ({ data, onPressItem }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = createStyles(theme);
@@ -94,10 +95,12 @@ export const MissionPoolItem = ({ data, onPressItem }: Props) => {
   return (
     <TouchableOpacity onPress={onPressItem} activeOpacity={1} style={styles.missionItemWrapper}>
       <Image key={'blurryImage'} src={{ uri: data.backdrop_image }} style={styles.backdropImgStyle} />
-      <BlurView style={styles.backdropImgBlurView} blurType="dark" blurAmount={10} overlayColor="transparent" />
+      {!isAndroid && (
+        <BlurView style={styles.backdropImgBlurView} blurType="dark" blurAmount={10} overlayColor="transparent" />
+      )}
       <LinearGradient
         locations={[0, 0.4]}
-        colors={['transparent', theme.colorBgSecondary]}
+        colors={isAndroid ? [theme.colorBgMask, theme.colorBgBase] : ['transparent', theme.colorBgSecondary]}
         style={styles.linerGradientStyle}
       />
       <View style={styles.missionItemContent}>
