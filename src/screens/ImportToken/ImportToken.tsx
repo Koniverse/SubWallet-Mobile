@@ -1,10 +1,11 @@
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
 import { ImportTokenProps, RootNavigationProps } from 'routes/index';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ContainerHorizontalPadding, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import i18n from 'utils/i18n/i18n';
+import { FormState } from 'hooks/screen/useFormControl';
 import { NetworkField } from 'components/Field/Network';
 import useGetContractSupportedChains from 'hooks/screen/ImportNft/useGetContractSupportedChains';
 import { TextField } from 'components/Field/Text';
@@ -31,7 +32,7 @@ import { ConfirmationResult } from '@subwallet/extension-base/background/KoniTyp
 import { useToast } from 'react-native-toast-notifications';
 import { TokenTypeSelector } from 'components/Modal/common/TokenTypeSelector';
 import { AssetTypeOption } from 'types/asset';
-import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
+import { useTransaction } from 'hooks/screen/Transaction/useTransaction';
 import AlertBox from 'components/design-system-ui/alert-box';
 import { Plus } from 'phosphor-react-native';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
@@ -39,17 +40,6 @@ import { ModalRef } from 'types/modalRef';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';
 import { ThemeTypes } from 'styles/themes';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
-import { useWatch } from 'react-hook-form';
-import { ValidateResult } from 'react-hook-form/dist/types/validator';
-import { FormItem } from 'components/common/FormItem';
-
-interface ImportTokenFormValues extends TransactionFormValues {
-  selectedTokenType: string;
-  symbol: string;
-  decimals: string;
-  tokenName: string;
-  contractAddress: string;
-}
 
 interface TokenTypeOption {
   label: string;
@@ -105,50 +95,45 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   const [error, setError] = useState<string | undefined>(undefined);
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
-  const [isValidContract, setIsValidContract] = useState<boolean>(true);
 
-  const {
-    title,
-    form: {
-      control,
-      getValues,
-      setValue,
-      formState: { errors },
+  const formConfig = {
+    chain: {
+      name: i18n.common.network,
+      value: tokenInfo?.originChain || '',
     },
-    onChangeChainValue: setChain,
-    showPopupEnableChain,
-    checkChainConnected,
-  } = useTransaction<ImportTokenFormValues>('import-token', {
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      chain: tokenInfo?.originChain || '',
-      selectedTokenType: getTokenType(tokenInfo?.originChain || '', chainInfoMap),
-      symbol: tokenInfo?.symbol || '',
-      decimals: tokenInfo ? String(tokenInfo?.decimals) : '',
-      tokenName: tokenInfo ? String(tokenInfo?.name) : '',
-      contractAddress: tokenInfo?.contractAddress || '',
+    selectedTokenType: {
+      name: i18n.common.network,
+      value: getTokenType(tokenInfo?.originChain || '', chainInfoMap),
     },
-  });
-
-  const {
-    chain,
-    selectedTokenType: selectedTokenTypeData,
-    contractAddress,
-    symbol,
-    decimals,
-    tokenName,
-  } = {
-    ...useWatch<ImportTokenFormValues>({ control }),
-    ...getValues(),
+    symbol: {
+      name: i18n.common.symbol,
+      value: tokenInfo?.symbol || '',
+    },
+    decimals: {
+      name: i18n.common.decimals,
+      value: tokenInfo ? String(tokenInfo?.decimals) : '',
+    },
+    tokenName: {
+      name: 'Token name',
+      value: tokenInfo ? String(tokenInfo?.name) : '',
+    },
+    contractAddress: {
+      require: true,
+      name: i18n.importToken.contractAddress,
+      value: tokenInfo?.contractAddress || '',
+    },
   };
 
-  const onSubmit = () => {
-    if (!contractAddress || !chain || !decimals || !symbol || !selectedTokenTypeData) {
+  const onSubmit = (formState: FormState) => {
+    const { contractAddress, chain, decimals, symbol, selectedTokenType } = formState.data;
+
+    if (!contractAddress || !chain || !decimals || !symbol || !selectedTokenType) {
       return;
     }
 
     setBusy(true);
+
+    onUpdateErrors('contractAddress')(undefined);
 
     if (payload) {
       completeConfirmation('addTokenRequest', {
@@ -170,7 +155,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
       decimals: parseInt(decimals),
       priceId: null,
       minAmount: null,
-      assetType: selectedTokenTypeData as _AssetType,
+      assetType: selectedTokenType as _AssetType,
       metadata: _parseMetadataForSmartContractAsset(contractAddress),
       multiChainAsset: null,
       hasValue: _isChainTestNet(chainInfoMap[chain]),
@@ -181,84 +166,107 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           toast.show(i18n.notificationMessage.addTokenSuccessfully, { type: 'success' });
           _goBack();
         } else {
-          toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
+          onUpdateErrors('contractAddress')([i18n.errorMessage.occurredError]);
           setBusy(false);
         }
       })
       .catch(() => {
-        toast.show(i18n.errorMessage.occurredError, { type: 'danger' });
+        onUpdateErrors('contractAddress')([i18n.errorMessage.occurredError]);
         setBusy(false);
       });
   };
 
+  const {
+    formState,
+    onChangeValue,
+    onChangeChainValue,
+    onUpdateErrors,
+    onSubmitField,
+    showPopupEnableChain,
+    checkChainConnected,
+  } = useTransaction('import-token', formConfig, {
+    onSubmitForm: onSubmit,
+  });
   const tokenTypeRef = useRef<ModalRef>();
   const chainSelectorRef = useRef<ModalRef>();
+  const { selectedTokenType: selectedTokenTypeData } = formState.data;
+
   const tokenTypeOptions = useMemo(() => {
-    return getTokenTypeSupported(chainInfoMap[chain]);
-  }, [chainInfoMap, chain]);
+    return getTokenTypeSupported(chainInfoMap[formState.data.chain]);
+  }, [chainInfoMap, formState.data.chain]);
 
-  const contractAddressRules = useMemo(
-    () => ({
-      validate: (value: string): Promise<ValidateResult> => {
-        if (value !== '') {
-          const isValidContractCaller = isValidSubstrateAddress(currentAccount?.address || '');
-          const isValidEvmContract =
-            [_AssetType.ERC20].includes(selectedTokenTypeData as _AssetType) && isEthereumAddress(value);
-          const isValidWasmContract =
-            [_AssetType.PSP22].includes(selectedTokenTypeData as _AssetType) && isValidSubstrateAddress(value);
+  useEffect(() => {
+    const currentContractAddress = formState.data.contractAddress;
+    const currentChain = formState.data.chain;
+    if (currentContractAddress !== '') {
+      let tokenType: _AssetType | undefined;
+      const isValidContractCaller = isValidSubstrateAddress(currentAccount?.address || '');
 
-          if (isValidEvmContract || isValidWasmContract) {
-            setValue('symbol', '');
-            setValue('decimals', '');
-            setIsValidContract(false);
-            return Promise.resolve(i18n.errorMessage.invalidContractForSelectedChain);
-          } else {
-            return validateCustomToken({
-              contractAddress: value,
-              originChain: chain,
-              type: selectedTokenTypeData as _AssetType,
-              contractCaller: isValidContractCaller ? value : undefined,
-            })
-              .then(resp => {
-                if (resp.isExist) {
-                  setIsValidContract(false);
-                  return Promise.resolve(i18n.errorMessage.tokenAlreadyAdded);
-                } else {
-                  if (resp.contractError) {
-                    setIsValidContract(false);
-                    return Promise.resolve(i18n.errorMessage.invalidContractForSelectedChain);
-                  } else {
-                    setValue('symbol', resp.symbol);
-                    setValue('tokenName', resp.name);
-                    setName(resp.name);
-                    if (resp.decimals) {
-                      setValue('decimals', String(resp.decimals));
-                    }
+      if (isEthereumAddress(currentContractAddress)) {
+        tokenType = _AssetType.ERC20;
+      } else if (isValidSubstrateAddress(currentContractAddress)) {
+        tokenType = _AssetType.PSP22;
+      }
 
-                    return Promise.resolve(undefined);
-                  }
+      if (!tokenType) {
+        onChangeValue('symbol')('');
+        onChangeValue('decimals')('');
+        onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
+      } else {
+        validateCustomToken({
+          contractAddress: currentContractAddress,
+          originChain: currentChain,
+          type: tokenType,
+          contractCaller: isValidContractCaller ? currentContractAddress : undefined,
+        })
+          .then(resp => {
+            if (resp.isExist) {
+              onUpdateErrors('contractAddress')([i18n.errorMessage.tokenAlreadyAdded]);
+            } else {
+              if (resp.contractError) {
+                onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
+              } else {
+                onUpdateErrors('contractAddress')(undefined);
+                onChangeValue('symbol')(resp.symbol);
+                onChangeValue('tokenName')(resp.name);
+                setName(resp.name);
+                if (resp.decimals) {
+                  onChangeValue('decimals')(String(resp.decimals));
                 }
-              })
-              .catch(() => {
-                setValue('symbol', '');
-                setValue('decimals', '');
-                setIsValidContract(false);
-                return Promise.resolve(i18n.errorMessage.invalidContractForSelectedChain);
-              });
-          }
-        } else {
-          return Promise.resolve(i18n.warningMessage.requireMessage);
-        }
-      },
-    }),
-    [currentAccount?.address, selectedTokenTypeData, setValue, chain],
-  );
+              }
+            }
+          })
+          .catch(() => {
+            onChangeValue('symbol')('');
+            onChangeValue('decimals')('');
+            onUpdateErrors('contractAddress')([i18n.errorMessage.invalidContractForSelectedChain]);
+          });
+      }
+    }
+  }, [currentAccount?.address, formState.data.chain, formState.data.contractAddress, onChangeValue, onUpdateErrors]);
 
   const onUpdateContractAddress = useCallback(
     (text: string) => {
-      setValue('contractAddress', text);
+      if (formState.refs.contractAddress && formState.refs.contractAddress.current) {
+        // @ts-ignore
+        formState.refs.contractAddress.current.onChange(text);
+      }
     },
-    [setValue],
+    [formState.refs.contractAddress],
+  );
+
+  const handleChangeValue = useCallback(
+    (key: string) => {
+      return (text: string) => {
+        onUpdateErrors(key)(undefined);
+        if (key === 'chain') {
+          onChangeChainValue(text);
+          return;
+        }
+        onChangeValue(key)(text);
+      };
+    },
+    [onChangeChainValue, onChangeValue, onUpdateErrors],
   );
 
   const onScanContractAddress = useCallback(
@@ -276,10 +284,10 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
 
   const onSelectTokenType = useCallback(
     (item: AssetTypeOption) => {
-      setValue('selectedTokenType', item.value);
+      onChangeValue('selectedTokenType')(item.value);
       tokenTypeRef && tokenTypeRef.current?.onCloseModal();
     },
-    [setValue],
+    [onChangeValue],
   );
 
   const _goBack = () => {
@@ -302,26 +310,32 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
   };
 
   const addTokenButtonDisabled =
-    !contractAddress || !!errors.contractAddress || !symbol || !decimals || !isNetConnected || !isReady || isBusy;
+    !formState.data.contractAddress ||
+    !!formState.errors.contractAddress.length ||
+    !formState.data.symbol ||
+    !formState.data.decimals ||
+    !isNetConnected ||
+    !isReady ||
+    isBusy;
 
   return (
-    <ContainerWithSubHeader onPressBack={_goBack} title={title} disabled={isBusy}>
+    <ContainerWithSubHeader onPressBack={_goBack} title={i18n.header.importToken} disabled={isBusy}>
       <View style={{ flex: 1, ...ContainerHorizontalPadding, paddingTop: 16 }}>
         <ScrollView style={{ width: '100%', flex: 1 }} keyboardShouldPersistTaps={'handled'}>
           <ChainSelector
             items={Object.values(chainInfoMap)}
-            selectedValueMap={{ [chain]: true }}
+            selectedValueMap={{ [formState.data.chain]: true }}
             chainSelectorRef={chainSelectorRef}
             onSelectItem={item => {
-              setChain(item.slug);
-              setValue('selectedTokenType', getTokenType(item.slug, chainInfoMap));
+              handleChangeValue('chain')(item.slug);
+              handleChangeValue('selectedTokenType')(getTokenType(item.slug, chainInfoMap));
               setName('');
               chainSelectorRef && chainSelectorRef.current?.onCloseModal();
             }}
             renderSelected={() => (
               <NetworkField
-                networkKey={chain}
-                label={i18n.common.network}
+                networkKey={formState.data.chain}
+                label={formState.labels.chain}
                 placeholder={i18n.placeholder.searchNetwork}
                 showIcon
               />
@@ -329,7 +343,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
           />
 
           <TokenTypeSelector
-            disabled={!!chain || !tokenTypeOptions.length}
+            disabled={!formState.data.chain || !tokenTypeOptions.length}
             items={tokenTypeOptions}
             onSelectItem={onSelectTokenType}
             selectedValueMap={selectedTokenTypeData ? { [selectedTokenTypeData]: true } : {}}
@@ -337,37 +351,40 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             renderSelected={() => <TokenTypeSelectField value={selectedTokenTypeData} showIcon />}
           />
 
-          <FormItem
-            style={{ marginBottom: 8 }}
-            control={control}
-            rules={contractAddressRules}
-            render={({ field: { ref, value, onChange } }) => (
-              <InputAddress
-                disabled={!chain}
-                ref={ref}
-                label={i18n.importToken.contractAddress}
-                value={value}
-                onChange={(output: string | null, currentValue: string) => onChange(currentValue)}
-                placeholder={i18n.placeholder.typeOrPasteContractAddress}
-                onPressQrButton={onPressQrButton}
-                isValidValue={isValidContract}
-              />
-            )}
-            name={'contractAddress'}
+          <InputAddress
+            containerStyle={{ marginBottom: 8 }}
+            disabled={!formState.data.chain}
+            ref={formState.refs.contractAddress}
+            label={formState.labels.contractAddress}
+            value={formState.data.contractAddress}
+            onChange={(output: string | null, currentValue: string) => {
+              onChangeValue('contractAddress')(currentValue);
+            }}
+            placeholder={i18n.placeholder.typeOrPasteContractAddress}
+            onPressQrButton={onPressQrButton}
+            onSubmitField={addTokenButtonDisabled ? undefined : onSubmitField('contractAddress')}
           />
 
+          {isReady && !!formState.errors.contractAddress.length && (
+            <Warning isDanger message={formState.errors.contractAddress[0]} style={{ marginBottom: 8 }} />
+          )}
+
           <View style={styles.row}>
-            <TextField outerStyle={{ flex: 1, marginBottom: 0 }} placeholder={i18n.placeholder.symbol} text={symbol} />
+            <TextField
+              outerStyle={{ flex: 1, marginBottom: 0 }}
+              placeholder={i18n.placeholder.symbol}
+              text={formState.data.symbol}
+            />
 
             <TextField
               outerStyle={{ flex: 1, marginBottom: 0 }}
               placeholder={i18n.placeholder.decimals}
               disabled={true}
-              text={decimals}
+              text={formState.data.decimals}
             />
           </View>
 
-          <TextField placeholder={'Token name'} disabled={true} text={tokenName} />
+          <TextField placeholder={'Token name'} disabled={true} text={formState.data.tokenName} />
 
           {!isNetConnected && (
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.noInternetMessage} />
@@ -377,7 +394,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             <Warning style={{ marginBottom: 8 }} isDanger message={i18n.warningMessage.webRunnerDeadMessage} />
           )}
 
-          {chain && !checkChainConnected(chain) && (
+          {formState.data.chain && !checkChainConnected(formState.data.chain) && (
             <>
               <AlertBox
                 type={'warning'}
@@ -388,7 +405,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
               <Button
                 icon={iconColor => <Icon phosphorIcon={Plus} size={'lg'} iconColor={iconColor} weight={'bold'} />}
                 style={{ marginTop: 8 }}
-                onPress={() => showPopupEnableChain(chain)}
+                onPress={() => showPopupEnableChain(formState.data.chain)}
                 type={'ghost'}>
                 {i18n.buttonTitles.enableNetwork}
               </Button>
@@ -416,7 +433,7 @@ export const ImportToken = ({ route: { params: routeParams } }: ImportTokenProps
             disabled={addTokenButtonDisabled}
             loading={isBusy}
             style={{ flex: 1, marginLeft: 6 }}
-            onPress={onSubmit}>
+            onPress={() => onSubmit(formState)}>
             {i18n.common.addToken}
           </Button>
         </View>

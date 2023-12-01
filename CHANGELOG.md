@@ -1,3 +1,7 @@
+## 1.1.14 (249)
+- The default pool settng for Vara is SubWallet Official (#2291)
+- Do not show list dApp, Mission pool when see all on Android (#1189)
+
 ## 1.1.13 (248)
 
 
