@@ -20,6 +20,8 @@ import BigNumber from 'bignumber.js';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { StakingBalancesProps } from 'routes/staking/stakingScreen';
+import { InstructionModal } from '../InstructionModal';
+import { mmkvStore } from 'utils/storage';
 
 enum FilterValue {
   NOMINATED = 'nominated',
@@ -60,6 +62,7 @@ export const StakingBalanceList = ({
     params: { chain: _stakingChain, type: _stakingType },
   },
 }: StakingBalancesProps) => {
+  const shownVaraInstruction = mmkvStore.getBoolean('shown-vara-instruction') ?? false;
   const theme = useSubWalletTheme().swThemes;
   const { data, priceMap } = useGetStakingList();
   const navigation = useNavigation<RootNavigationProps>();
@@ -68,6 +71,8 @@ export const StakingBalanceList = ({
   const [isRefresh, refresh] = useRefresh();
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+  const [instructionModalVisible, setInstructionModalVisible] = useState(!shownVaraInstruction);
+
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
       Keyboard.dismiss();
@@ -97,6 +102,9 @@ export const StakingBalanceList = ({
     });
     return result;
   }, [data, priceMap]);
+  const varaStaked = useMemo(() => {
+    return stakingList.some(item => item.staking.chain === 'vara_network');
+  }, [stakingList]);
 
   useEffect(() => {
     if (detailModalVisible || isLocked) {
@@ -209,6 +217,26 @@ export const StakingBalanceList = ({
           rewardItem={selectedItem.reward}
           staking={selectedItem.staking}
           setDetailModalVisible={setDetailModalVisible}
+        />
+      )}
+      {varaStaked && (
+        <InstructionModal
+          setDetailModalVisible={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+          }}
+          modalVisible={
+            instructionModalVisible &&
+            selectedItem &&
+            selectedItem.staking.chain === 'vara_network' &&
+            selectedItem.staking.type === 'pooled'
+          }
+          modalTitle="Stake in Vara nomination pools easily with SubWallet"
+          onPressStake={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+            // handlePressStartStaking();
+          }}
         />
       )}
     </>

@@ -55,6 +55,8 @@ import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
+import { InstructionModal } from 'screens/Home/Staking/InstructionModal';
+import { mmkvStore } from 'utils/storage';
 
 interface StakeFormValues extends TransactionFormValues {
   stakingType: StakingType;
@@ -62,11 +64,13 @@ interface StakeFormValues extends TransactionFormValues {
   validator: string;
 }
 
+// mmkvStore.set('shown-vara-instruction', false)
 export const Stake = ({
   route: {
     params: { chain: stakingChain = ALL_KEY, type: _stakingType = ALL_KEY },
   },
 }: StakeProps) => {
+  const shownVaraInstruction = mmkvStore.getBoolean('shown-vara-instruction') ?? false;
   const theme = useSubWalletTheme().swThemes;
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
@@ -147,6 +151,7 @@ export const Stake = ({
     [accounts, stakingChain, chainInfoMap, currentStakingType],
   );
 
+  const [instructionModalVisible, setInstructionModalVisible] = useState(!shownVaraInstruction);
   const fromRef = useRef<string>(from);
   const tokenRef = useRef<string>(asset);
   const [forceFetchValidator, setForceFetchValidator] = useState(false);
@@ -387,6 +392,7 @@ export const Stake = ({
 
   const onSelectToken = useCallback(
     (item: TokenItemType) => {
+      console.log(item.originChain);
       setAsset(item.slug);
       validatorSelectorRef?.current?.resetValue();
       tokenRef.current = item.slug;
@@ -594,6 +600,20 @@ export const Stake = ({
         </TransactionLayout>
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+      )}
+      {chain === 'vara_network' && (
+        <InstructionModal
+          setDetailModalVisible={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+          }}
+          modalVisible={instructionModalVisible}
+          modalTitle="Stake in Vara nomination pools easily with SubWallet"
+          onPressStake={() => {
+            setInstructionModalVisible(false);
+            mmkvStore.set('shown-vara-instruction', true);
+          }}
+        />
       )}
     </>
   );
