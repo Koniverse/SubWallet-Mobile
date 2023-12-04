@@ -1,7 +1,7 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 import { Alert, AppState, Linking, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
-import React, { useEffect, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
@@ -12,7 +12,7 @@ import RNFS from 'react-native-fs';
 import i18n from 'utils/i18n/i18n';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { backupStorageData, mmkvStore, restoreStorageData } from 'utils/storage';
+import { mmkvStore, restoreStorageData } from 'utils/storage';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 300000; //5*60*1000
@@ -209,8 +209,6 @@ class WebRunnerHandler {
           }
           this.shouldReloadHandler = true;
           this.startPing();
-          // BACKUP-003: Back up local storage for reload web runner after 10 seconds
-          setTimeout(() => backupStorageData(), 10000);
         } else {
           this.stopPing();
         }
@@ -368,14 +366,6 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     eventEmitter: webRunnerEventEmitter,
   });
 
-  useEffect(() => {
-    // BACKUP-003: Back up local storage every 30 seconds
-    const interval = setInterval(() => backupStorageData(), 30000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
   webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
   webRunnerHandler.active();
 
@@ -403,8 +393,6 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
         'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
       );
     }
-    // BACKUP-003: Back up local storage for reload web runner purpose
-    backupStorageData();
   };
 
   return (

@@ -161,6 +161,9 @@ import {
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { _getKnownHashes } from 'utils/defaultChains';
+import { backupStorageData, needBackup } from 'utils/storage';
+import { addLazy } from '@subwallet/extension-base/utils/lazy';
+import {Alert} from "react-native";
 
 interface Handler {
   resolve: (data: any) => void;
@@ -308,6 +311,19 @@ export const postMessage = ({ id, message, request, origin }, supportRestart = f
   const _post = () => {
     const injection = 'window.postMessage(' + JSON.stringify({ id, message, request, origin }) + ')';
     webviewRef.current?.injectJavaScript(injection);
+
+    if (needBackup(message)) {
+      addLazy(
+        'backupStorageData',
+        () => {
+          Alert.alert(`*** Backup storage after ${message}`);
+          backupStorageData();
+        },
+        3000,
+        9000,
+        false,
+      );
+    }
   };
 
   if (!webviewRef || !webviewEvents) {
