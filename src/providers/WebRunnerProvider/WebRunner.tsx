@@ -14,7 +14,10 @@ import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { mmkvStore, restoreStorageData } from 'utils/storage';
 
-const WEB_SERVER_PORT = 9135;
+const WEB_SERVER_PORT = mmkvStore.getNumber('web-port') || 9135;
+mmkvStore.set('web-port', WEB_SERVER_PORT + 1);
+
+console.log('### Web Server Port:', WEB_SERVER_PORT);
 const LONG_TIMEOUT = 300000; //5*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 
