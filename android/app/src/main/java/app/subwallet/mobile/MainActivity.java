@@ -8,13 +8,19 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 public class MainActivity extends ReactActivity {
+    static {
+        System.loadLibrary("avail_light");
+    }
     // Add this method.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         SplashScreen.show(this);
         super.onCreate(null);
+        System.out.println("thuc" + startNode("abc"));
     }
+
+    public native boolean startNode(String config);
 
   /**
    * Returns the name of the main component registered from JavaScript. This is used to schedule
