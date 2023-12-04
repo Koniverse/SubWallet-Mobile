@@ -51,11 +51,13 @@ export const BACKUP_WHITELIST: string[] = [
   'pri(authorize.forgetSite)',
   'pri(authorize.forgetAllSite)',
   'pri(authorize.rejectV2)',
+  'pri(authorize.toggle)',
   'pri(accounts.create.suriV2)',
   'pri(accounts.create.externalV2)',
   'pri(accounts.create.hardwareV2)',
   'pri(accounts.create.hardwareMultiple)',
   'pri(accounts.create.withSecret)',
+  'pri(accounts.forget)',
   // 'pri(accounts.inject.add)',
   // 'pri(accounts.inject.remove)',
   'pri(derivation.createV2)',
@@ -96,12 +98,14 @@ export const BACKUP_WHITELIST: string[] = [
 
   // WalletConnect events
   'pri(walletConnect.session.approve)',
+  'pri(walletConnect.session.disconnect)',
 
   // Others
   'pri(campaign.banner.complete)',
 ];
 
 export const needBackup = (message: string): boolean => {
+  console.debug('** needBackup:', message);
   return BACKUP_WHITELIST.includes(message);
 };
 
