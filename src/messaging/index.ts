@@ -163,7 +163,7 @@ import { AuthUrls } from '@subwallet/extension-base/services/request-service/typ
 import { _getKnownHashes } from 'utils/defaultChains';
 import { backupStorageData, needBackup } from 'utils/storage';
 import { addLazy } from '@subwallet/extension-base/utils/lazy';
-import {Alert} from "react-native";
+import { Alert } from 'react-native';
 
 interface Handler {
   resolve: (data: any) => void;
