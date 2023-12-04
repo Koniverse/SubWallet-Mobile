@@ -10,6 +10,7 @@ import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import {
+  AmountData,
   NominatorMetadata,
   RequestStakeWithdrawal,
   StakingType,
@@ -40,6 +41,8 @@ import { getAstarWithdrawable } from '@subwallet/extension-base/koni/api/staking
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { useGetBalance } from 'hooks/balance';
+import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -94,8 +97,35 @@ export const Withdraw = ({
   const nominatorInfo = useGetNominatorInfo(stakingChain, stakingType, fromValue);
   const nominatorMetadata = nominatorInfo[0];
   const accountInfo = useGetAccountByAddress(fromValue);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
+
   const accountSelectorRef = useRef<ModalRef>();
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
+  const existentialDeposit = useMemo(() => {
+    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
+    if (assetInfo) {
+      return assetInfo.minAmount || '0';
+    }
+
+    return '0';
+  }, [assetRegistry, chainValue]);
+  const handleDataForInsufficientAlert = useCallback(
+    (estimateFee: AmountData) => {
+      return {
+        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
+        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        symbol: estimateFee.symbol,
+      };
+    },
+    [existentialDeposit, nativeTokenBalance.value],
+  );
+  const { onError, onSuccess } = useHandleSubmitTransaction(
+    onDone,
+    setTransactionDone,
+    undefined,
+    undefined,
+    chainValue === 'vara_network' && stakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+  );
 
   useEffect(() => {
     // Trick to trigger validate when case single account

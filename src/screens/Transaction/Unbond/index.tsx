@@ -6,6 +6,7 @@ import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import useGetChainStakingMetadata from 'hooks/screen/Staking/useGetChainStakingMetadata';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
 import {
+  AmountData,
   NominationInfo,
   NominatorMetadata,
   RequestStakePoolingUnbonding,
@@ -43,6 +44,8 @@ import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { useGetBalance } from 'hooks/balance';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -103,6 +106,7 @@ export const Unbond = ({
 
   const { accounts, isAllAccount } = useSelector((state: RootState) => state.accountState);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
   const [isTransactionDone, setTransactionDone] = useState(false);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(stakingChain || '');
   const chainStakingMetadata = useGetChainStakingMetadata(stakingChain);
@@ -117,6 +121,15 @@ export const Unbond = ({
       return undefined;
     }
   }, [currentValidator, nominatorMetadata]);
+  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
+  const existentialDeposit = useMemo(() => {
+    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
+    if (assetInfo) {
+      return assetInfo.minAmount || '0';
+    }
+
+    return '0';
+  }, [assetRegistry, chainValue]);
 
   const mustChooseValidator = useMemo(() => {
     return isActionFromValidator(stakingType, stakingChain || '');
@@ -164,8 +177,6 @@ export const Unbond = ({
   }, [chainStakingMetadata]);
 
   const [loading, setLoading] = useState(false);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
-
   const accountList = useMemo(() => {
     return accounts.filter(_accountFilterFunc(allNominatorInfo, chainInfoMap, stakingType, stakingChain));
   }, [accounts, allNominatorInfo, chainInfoMap, stakingChain, stakingType]);
@@ -174,7 +185,24 @@ export const Unbond = ({
     return <BondedBalance bondedBalance={bondedValue} decimals={decimals} symbol={symbol} />;
   }, [bondedValue, decimals, symbol]);
 
+  const handleDataForInsufficientAlert = useCallback(
+    (estimateFee: AmountData) => {
+      return {
+        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
+        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        symbol: estimateFee.symbol,
+      };
+    },
+    [existentialDeposit, nativeTokenBalance.value],
+  );
   const onPreCheckReadOnly = usePreCheckReadOnly(undefined, fromValue);
+  const { onError, onSuccess } = useHandleSubmitTransaction(
+    onDone,
+    setTransactionDone,
+    undefined,
+    undefined,
+    chainValue === 'vara_network' && stakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+  );
 
   const onSubmit = useCallback(() => {
     let unbondingPromise: Promise<SWTransactionResponse>;
