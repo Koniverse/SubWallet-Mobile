@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +18,9 @@ export const WebViewDebugger = () => {
   const [input, setInput] = useState('');
   const [notification, setNotification] = useState('');
   const themeColors = useSubWalletTheme().colors;
+  const [lastBackup, setLastBackup] = useState('');
+  const [lastRestore, setLastRestore] = useState('');
+  const [lastMigration, setLastMigration] = useState('');
 
   const [showQr, setShowQr] = useState(false);
   const containerStyle = { marginBottom: 30 };
@@ -55,6 +58,22 @@ export const WebViewDebugger = () => {
     setNotification("OK, Let's restart app!");
   };
 
+  useEffect(() => {
+    const fetchData = () => {
+      setLastBackup(mmkvStore.getString('webRunnerLastBackupTime') || '');
+      setLastRestore(mmkvStore.getString('webRunnerLastRestoreTime') || '');
+      setLastMigration(mmkvStore.getString('webRunnerLastMigrationTime') || '');
+    };
+
+    fetchData();
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <ContainerWithSubHeader onPressBack={onPressBack} title={i18n.settings.webViewDebugger}>
       <ScrollView style={{ ...sharedStyles.layoutContainer }}>
@@ -62,6 +81,9 @@ export const WebViewDebugger = () => {
           <Text style={textStyle}>{`${i18n.common.status}${webState.status}`}</Text>
           <Text style={textStyle}>{`${i18n.common.url}${webState.url}`}</Text>
           <Text style={textStyle}>{`${i18n.common.version}${webState.version}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.lastBackup}${lastBackup}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.lastRestore}${lastRestore}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.lastMigration}${lastMigration}`}</Text>
           <Button onPress={onPressReload}>{i18n.common.reloadBackground}</Button>
         </View>
         <View style={containerStyle}>
