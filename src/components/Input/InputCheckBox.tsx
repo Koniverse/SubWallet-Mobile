@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ColorMap } from 'styles/color';
@@ -10,16 +10,19 @@ interface Props {
   onPress: () => void;
   disable?: boolean;
   checkBoxSize?: number;
+  labelStyle?: StyleProp<TextStyle>;
+  wrapperStyle?: StyleProp<ViewStyle>;
   label: string;
+  style?: StyleProp<ViewStyle>;
 }
 
-const WrapperStyle: StyleProp<ViewStyle> = {
+const ContainerStyle: StyleProp<ViewStyle> = {
   marginLeft: -10.2,
   marginRight: -10,
   // marginBottom: -5,
 };
 
-const ContainerProps: StyleProp<ViewStyle> = {
+const WrapperStyle: StyleProp<ViewStyle> = {
   backgroundColor: 'transparent',
   paddingHorizontal: 0,
   paddingVertical: 12,
@@ -38,7 +41,16 @@ const LabelStyle: StyleProp<TextStyle> = {
   color: '#fff',
 };
 
-const InputCheckBox = ({ checked, onPress, disable, label, checkBoxSize = 20 }: Props) => {
+const InputCheckBox = ({
+  checked,
+  onPress,
+  disable,
+  label,
+  labelStyle,
+  wrapperStyle,
+  checkBoxSize = 20,
+  style,
+}: Props) => {
   const UncheckedIcon = (
     <Suspense>
       <SVGImages.CheckBoxIcon width={checkBoxSize} height={checkBoxSize} />
@@ -50,12 +62,25 @@ const InputCheckBox = ({ checked, onPress, disable, label, checkBoxSize = 20 }: 
       <SVGImages.CheckBoxFilledIcon width={checkBoxSize} height={checkBoxSize} />
     </Suspense>
   );
+
+  const containerStyle = useMemo(() => {
+    return [ContainerStyle, style];
+  }, [style]);
+
+  const checkBoxTextStyle = useMemo(() => {
+    return [LabelStyle, labelStyle];
+  }, [labelStyle]);
+
+  const checkBoxWrapperStyle = useMemo(() => {
+    return [WrapperStyle, wrapperStyle];
+  }, [wrapperStyle]);
+
   return (
-    <View style={WrapperStyle}>
+    <View style={containerStyle}>
       <CheckBox
         title={label}
-        containerStyle={ContainerProps}
-        textStyle={LabelStyle}
+        containerStyle={checkBoxWrapperStyle}
+        textStyle={checkBoxTextStyle}
         activeOpacity={1}
         onPress={onPress}
         checked={checked}
