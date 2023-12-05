@@ -4,7 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, View } from 'react-native';
 import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
-import { NominatorMetadata, StakingRewardItem, StakingType } from '@subwallet/extension-base/background/KoniTypes';
+import {
+  AmountData,
+  NominatorMetadata,
+  StakingRewardItem,
+  StakingType,
+} from '@subwallet/extension-base/background/KoniTypes';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
@@ -38,6 +43,8 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { useGetBalance } from 'hooks/balance';
+import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
   bondReward: string;
@@ -142,13 +149,39 @@ const ClaimReward = ({
       item => item.chain === chainValue && item.address === chainValue && item.type === stakingType,
     );
   }, [chainValue, stakingRewardMap, stakingType]);
+  const { assetRegistry } = useSelector((state: RootState) => state.assetRegistry);
+  const { nativeTokenBalance } = useGetBalance(chainValue, fromValue);
+  const existentialDeposit = useMemo(() => {
+    const assetInfo = Object.values(assetRegistry).find(v => v.originChain === chainValue);
+    if (assetInfo) {
+      return assetInfo.minAmount || '0';
+    }
+
+    return '0';
+  }, [assetRegistry, chainValue]);
+  const handleDataForInsufficientAlert = useCallback(
+    (estimateFee: AmountData) => {
+      return {
+        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
+        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        symbol: estimateFee.symbol,
+      };
+    },
+    [existentialDeposit, nativeTokenBalance.value],
+  );
+  const { onError, onSuccess } = useHandleSubmitTransaction(
+    onDone,
+    setTransactionDone,
+    undefined,
+    undefined,
+    chainValue === 'vara_network' && stakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+  );
 
   const rewardList = useMemo((): StakingRewardItem[] => {
     return stakingRewardMap.filter(item => item.chain === chainValue && item.type === stakingType);
   }, [chainValue, stakingRewardMap, stakingType]);
   const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
   const accountInfo = useGetAccountByAddress(fromValue);
   const onSubmit = useCallback(() => {
     setLoading(true);
