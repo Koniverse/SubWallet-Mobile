@@ -1,12 +1,17 @@
 import { Alert, AlertButton, Linking } from 'react-native';
 import i18n from 'utils/i18n/i18n';
-
-let isNotified = false;
+import { mmkvStore } from 'utils/storage';
 
 export function notifyUnstable() {
-  if (isNotified) {
+  const now = new Date().getTime();
+  const appIsSetup = mmkvStore.getBoolean('app-is-setup');
+  const nextNotifyTime = mmkvStore.getNumber('unstable-next-notify-time') || now;
+
+  // If is first time install, or the next notify time is not reached, do not notify.
+  if (!appIsSetup || nextNotifyTime > now) {
     return;
   }
+
   const title = i18n.notifyUnstable.title;
   const message = i18n.notifyUnstable.message;
   const buttons: AlertButton[] = [
@@ -21,18 +26,22 @@ export function notifyUnstable() {
     },
     {
       text: i18n.notifyUnstable.buttonCancel,
+      style: 'default',
+      onPress: () => {
+        // Remind again after 24 hours.
+        mmkvStore.set('unstable-next-notify-time', new Date().getTime() + 86400000);
+      },
+    },
+    {
+      text: i18n.notifyUnstable.buttonReject,
       style: 'destructive',
       onPress: () => {
-        setTimeout(() => {
-          isNotified = false;
-        }, 60 * 60000);
+        mmkvStore.set('unstable-next-notify-time', 999999999999999);
       },
     },
   ];
 
   setTimeout(() => {
     Alert.alert(title, message, buttons);
-  }, 6000);
-
-  isNotified = true;
+  }, 9000);
 }

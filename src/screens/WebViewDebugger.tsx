@@ -69,7 +69,7 @@ export const WebViewDebugger = () => {
 
     const interval = setInterval(() => {
       fetchData();
-    }, 10000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);

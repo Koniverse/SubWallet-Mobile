@@ -113,7 +113,7 @@ export const needBackup = (message: string): boolean => {
 const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
 
 // Backup and restore data
-export const backupStorageData = (forceBackup?: boolean) => {
+export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: boolean = true) => {
   // Todo: Consider to remove this condition
   if (!isIOS17) {
     return;
@@ -130,6 +130,7 @@ export const backupStorageData = (forceBackup?: boolean) => {
         mmkvStore.set('backup-indexedDB', response.indexedDB);
         mmkvStore.set('backup-localstorage', response.storage);
         mmkvStore.set('webRunnerLastBackupTime', new Date().toString());
+        mmkvStore.set('app-is-setup', markAppIsSetup);
         // console.debug('** Backup storage data success');
       }
     })

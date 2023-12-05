@@ -12,7 +12,7 @@ import RNFS from 'react-native-fs';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { mmkvStore, restoreStorageData } from 'utils/storage';
-import {notifyUnstable} from "providers/WebRunnerProvider/nofifyUnstable";
+import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 300000; //5*60*1000
