@@ -9,6 +9,8 @@ import i18n from 'utils/i18n/i18n';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import { EVM_ACCOUNT_TYPE, SUBSTRATE_ACCOUNT_TYPE } from 'constants/index';
 import useGetDefaultAccountName from 'hooks/useGetDefaultAccountName';
+import { TnCSeedPhraseModal } from './TnCSeedPhraseModal';
+import { mmkvStore } from 'utils/storage';
 
 const ViewStep = {
   INIT_SP: 1,
@@ -26,7 +28,9 @@ function getHeaderTitle(viewStep: number) {
 const defaultKeyTypes = [SUBSTRATE_ACCOUNT_TYPE, EVM_ACCOUNT_TYPE];
 
 export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
+  const isInstructionAccepted = mmkvStore.getBoolean('seed-phrase-instruction-accepted');
   const [currentViewStep, setCurrentViewStep] = useState<number>(ViewStep.INIT_SP);
+  const [seedPhraseInstruction, setSeedPhraseInstruction] = useState<boolean>(!isInstructionAccepted);
   const [seed, setSeed] = useState<null | string>(null);
   const [isBusy, setIsBusy] = useState(false);
   const navigation = useNavigation<RootNavigationProps>();
@@ -93,6 +97,11 @@ export const CreateAccount = ({ route: { params } }: CreateAccountProps) => {
             )}
           </>
         )}
+        {/* <TnCSeedPhraseModal 
+          modalTitle=""
+          setDetailModalVisible={}
+          modalVisible={seedPhraseInstruction}
+        onPressContinue /> */}
       </>
     </ContainerWithSubHeader>
   );
