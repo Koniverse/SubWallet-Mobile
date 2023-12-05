@@ -1,6 +1,6 @@
 import { Images, SVGImages } from 'assets/index';
 import { FileArrowDown, PlusCircle, Swatches } from 'phosphor-react-native';
-import React, { Suspense, useCallback, useRef } from 'react';
+import React, { Suspense, useCallback, useRef, useState } from 'react';
 import { ImageBackground, Platform, SafeAreaView, StatusBar, StyleProp, View } from 'react-native';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold, sharedStyles, STATUS_BAR_LIGHT_CONTENT } from 'styles/sharedStyles';
@@ -16,6 +16,8 @@ import { RootNavigationProps } from 'routes/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { ModalRef } from 'types/modalRef';
+import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
+import { mmkvStore } from 'utils/storage';
 
 const imageBackgroundStyle: StyleProp<any> = {
   flex: 1,
@@ -67,9 +69,13 @@ export const FirstScreen = () => {
   const importAccountRef = useRef<ModalRef>();
   const attachAccountRef = useRef<ModalRef>();
   const theme = useSubWalletTheme().swThemes;
+  const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
+  const [selectedActionType, setSelectedActionType] = useState<SelectedActionType>('createAcc');
+  const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
 
   const onPressActionButton = useCallback((action: SelectedActionType) => {
     return () => {
+      setSelectedActionType(action);
       switch (action) {
         case 'createAcc':
           createAccountRef && createAccountRef.current?.onOpenModal();
@@ -92,6 +98,13 @@ export const FirstScreen = () => {
     Linking.openURL('https://docs.subwallet.app/main/privacy-and-security/privacy-policy');
   };
 
+  const onShowGeneralTermModal = (action: SelectedActionType) => {
+    return () => {
+      setSelectedActionType(action);
+      setGeneralTermVisible(true);
+    };
+  };
+
   const onCreate = useCallback(() => {
     if (hasMasterPassword) {
       navigation.navigate('CreateAccount', {});
@@ -106,23 +119,39 @@ export const FirstScreen = () => {
       icon: PlusCircle,
       title: i18n.welcomeScreen.createAccLabel,
       subTitle: i18n.welcomeScreen.createAccMessage,
-      onPress: onCreate,
+      onPress: !isOpenGeneralTermFirstTime ? onShowGeneralTermModal('createAcc') : onCreate,
     },
     {
       key: 'import',
       icon: FileArrowDown,
       title: i18n.welcomeScreen.importAccLabel,
       subTitle: i18n.welcomeScreen.importAccMessage,
-      onPress: onPressActionButton('importAcc'),
+      onPress: !isOpenGeneralTermFirstTime ? onShowGeneralTermModal('importAcc') : onPressActionButton('importAcc'),
     },
     {
       key: 'attach',
       icon: Swatches,
       title: i18n.welcomeScreen.attachAccLabel,
       subTitle: i18n.welcomeScreen.attachAccMessage,
-      onPress: onPressActionButton('attachAcc'),
+      onPress: !isOpenGeneralTermFirstTime ? onShowGeneralTermModal('importAcc') : onPressActionButton('attachAcc'),
     },
   ];
+
+  const onPressAcceptBtn = () => {
+    mmkvStore.set('isOpenGeneralTermFirstTime', true);
+    setGeneralTermVisible(false);
+    switch (selectedActionType) {
+      case 'createAcc':
+        onCreate();
+        break;
+      case 'importAcc':
+        onPressActionButton('importAcc')();
+        break;
+      case 'attachAcc':
+        onPressActionButton('attachAcc')();
+        break;
+    }
+  };
 
   return (
     <View style={{ width: '100%', flex: 1 }}>
@@ -169,6 +198,11 @@ export const FirstScreen = () => {
           importAccountRef={importAccountRef}
           attachAccountRef={attachAccountRef}
           allowToShowSelectType={true}
+        />
+        <GeneralTermModal
+          modalVisible={generalTermVisible}
+          setVisible={setGeneralTermVisible}
+          onPressAcceptBtn={onPressAcceptBtn}
         />
         <SafeAreaView />
       </ImageBackground>

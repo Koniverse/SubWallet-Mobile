@@ -12,7 +12,7 @@ export default (theme: ThemeTypes) =>
   StyleSheet.create<CreateMasterPasswordStyle>({
     bodyWrapper: { paddingHorizontal: theme.padding, flex: 1 },
     instructionTextStyle: {
-      color: theme.colorTextLight4,
+      color: theme.colorWarning,
       fontSize: theme.fontSize,
       lineHeight: theme.fontSize * theme.lineHeight,
       ...FontSemiBold,

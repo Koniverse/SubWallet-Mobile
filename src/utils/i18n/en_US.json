@@ -309,7 +309,7 @@
     "attachWatchOnlyAccMessage": "Track the activity of any wallet without a private key"
   },
   "createPassword": {
-    "createPasswordMessage": "Use this password to unlock your account."
+    "createPasswordMessage": "This password can only unlock your SubWallet on this device"
   },
   "applyMasterPassword": {
     "applyMasterPassword": "Apply master password",
@@ -596,7 +596,7 @@
     "warningAccTitle": "Warning: Never disclose this key",
     "warningAccMessage": "Anyone with your key can use any assets held in your account",
     "warningPasswordTitle": "Always choose a strong password!",
-    "warningPasswordMessage": "6 characters at least. Uppercase, numbers, and special characters are recommended",
+    "warningPasswordMessage": "Passwords should be at least 6 characters in length, including letters and numbers",
     "warningCreatePasswordTitle": "Always choose a strong password!"
   },
   "message": {

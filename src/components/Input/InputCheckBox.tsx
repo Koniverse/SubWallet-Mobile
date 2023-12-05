@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from 'react';
+import React, { ReactElement, Suspense, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import { ColorMap } from 'styles/color';
@@ -12,7 +12,7 @@ interface Props {
   checkBoxSize?: number;
   labelStyle?: StyleProp<TextStyle>;
   wrapperStyle?: StyleProp<ViewStyle>;
-  label: string;
+  label: string | ReactElement;
   style?: StyleProp<ViewStyle>;
 }
 

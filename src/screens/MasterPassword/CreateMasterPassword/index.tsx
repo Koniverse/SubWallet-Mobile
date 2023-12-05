@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ScrollView, View } from 'react-native';
+import { Linking, ScrollView, Text, View } from 'react-native';
 import { CheckCircle, Info } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -13,11 +13,11 @@ import { CreatePasswordProps, RootNavigationProps } from 'routes/index';
 import CreateMasterPasswordStyle from './style';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
-import AlertBox from 'components/design-system-ui/alert-box';
 import i18n from 'utils/i18n/i18n';
 import { RootState } from 'stores/index';
 import { useSelector } from 'react-redux';
 import { createKeychainPassword } from 'utils/account';
+import InputCheckBox from 'components/Input/InputCheckBox';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -34,6 +34,8 @@ const CreateMasterPassword = ({
   const _style = CreateMasterPasswordStyle(theme);
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [checked, setChecked] = useState<boolean>(false);
+
   useHandlerHardwareBackPress(true);
   const formConfig: FormControlConfig = {
     password: {
@@ -110,9 +112,9 @@ const CreateMasterPassword = ({
   };
 
   const isDisabled = useMemo(() => {
-    return !checkValidateForm(formState.isValidated) || (errors && errors.length > 0) || isBusy;
+    return !checkValidateForm(formState.isValidated) || (errors && errors.length > 0) || isBusy || !checked;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errors, formState.isValidated.password, formState.isValidated.repeatPassword, isBusy]);
+  }, [errors, formState.isValidated.password, formState.isValidated.repeatPassword, isBusy, checked]);
 
   return (
     <ContainerWithSubHeader
@@ -151,10 +153,34 @@ const CreateMasterPassword = ({
           isBusy={isBusy}
         />
 
-        <AlertBox
-          type={'warning'}
-          description={i18n.warning.warningPasswordMessage}
-          title={i18n.warning.warningPasswordTitle}
+        <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+          {i18n.warning.warningPasswordMessage}
+        </Typography.Text>
+
+        <InputCheckBox
+          labelStyle={{ flex: 1 }}
+          checked={checked}
+          label={
+            <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS }}>
+              I understand that SubWallet can't recover this password for me.{' '}
+              <Text
+                style={{
+                  textDecorationStyle: 'solid',
+                  textDecorationLine: 'underline',
+                  color: theme.colorPrimary,
+                  textDecorationColor: theme.colorPrimary,
+                }}
+                onPress={() =>
+                  Linking.openURL(
+                    'https://docs.subwallet.app/main/mobile-app-user-guide/getting-started/create-apply-change-and-what-to-do-when-forgot-password',
+                  )
+                }>
+                {'Learn more.'}
+              </Text>
+            </Typography.Text>
+          }
+          onPress={() => setChecked(!checked)}
+          checkBoxSize={20}
         />
       </ScrollView>
 
