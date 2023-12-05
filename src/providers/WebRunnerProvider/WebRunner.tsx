@@ -59,7 +59,7 @@ class WebRunnerHandler {
   lastActiveTime?: number;
   pingTimeout?: NodeJS.Timeout;
   outOfResponseTimeTimeout?: NodeJS.Timeout;
-  pingInterval?: NodeJS.Timer;
+  pingInterval?: NodeJS.Timeout;
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
   shouldReloadHandler: boolean = false;
