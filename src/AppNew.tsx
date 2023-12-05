@@ -240,7 +240,7 @@ export const AppNew = () => {
                       <GestureHandlerRootView style={gestureRootStyle}>
                         <PortalProvider>
                           <AppModalContextProvider>
-                            <AppNavigator isAppReady={isAppReady} />
+                            {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
                           </AppModalContextProvider>
                         </PortalProvider>
                       </GestureHandlerRootView>
