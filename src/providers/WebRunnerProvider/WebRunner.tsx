@@ -13,6 +13,7 @@ import i18n from 'utils/i18n/i18n';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { mmkvStore, restoreStorageData } from 'utils/storage';
+import {notifyUnstable} from "providers/WebRunnerProvider/nofifyUnstable";
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 300000; //5*60*1000
@@ -203,6 +204,7 @@ class WebRunnerHandler {
 
         if (webViewStatus === 'require_restore') {
           restoreStorageData();
+          notifyUnstable();
         } else if (webViewStatus === 'crypto_ready') {
           if (this.shouldReloadHandler) {
             restartAllHandlers();
