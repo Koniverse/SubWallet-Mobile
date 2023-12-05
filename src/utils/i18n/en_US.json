@@ -1011,7 +1011,8 @@
     "clearHistory": "Clear history",
     "updateNetwork": "Update network",
     "expiredConnectionTitle": "Connection expired",
-    "unsupportedNetworkTitle": "Unsupported network"
+    "unsupportedNetworkTitle": "Unsupported network",
+    "insufficientBalance": "Insufficient balance"
   },
   "warningMessage": {
     "passwordTooShort": "Password is too short",
@@ -1042,7 +1043,8 @@
     "tokenExists": "The token already exists.",
     "enableNetworkMessage": "The network you selected has not enable. Please enable by click this button or choose other network",
     "expiredConnectionMessage": "Connection expired. Please create a new connection from dApp",
-    "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable"
+    "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable",
+    "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed."
   },
   "errorMessage": {
     "invalidPinCode": "Invalid PIN Code",

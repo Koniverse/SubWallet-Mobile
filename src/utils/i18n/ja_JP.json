@@ -1012,7 +1012,8 @@
     "expiredConnectionTitle": "接続期限切れ",
     "noInternetConnection": "No internet connection",
     "internetConnected": "Internet connected",
-    "unsupportedNetworkTitle": "サポートされていないネットワーク"
+    "unsupportedNetworkTitle": "サポートされていないネットワーク",
+    "insufficientBalance": "Insufficient balance"
   },
   "warningMessage": {
     "passwordTooShort": "パスワードが短すぎます",
@@ -1043,7 +1044,8 @@
     "tokenExists": "そのトークンはすでに存在しています。",
     "enableNetworkMessage": "選択したネットワークが有効になっていません。このボタンをクリックして有効にするか、他のネットワークを選択してください",
     "expiredConnectionMessage": "接続の有効期限が切れました。dAppから新しい接続を作成してください。",
-    "unsupportedNetworkMessage": "少なくとも選択された1つのネットワークが利用できない"
+    "unsupportedNetworkMessage": "少なくとも選択された1つのネットワークが利用できない",
+    "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed."
   },
   "errorMessage": {
     "invalidPinCode": "無効なPIN コード",

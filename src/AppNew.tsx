@@ -1,15 +1,13 @@
-// Copyright 2019-2022 @subwallet/extension authors & contributors
-// SPDX-License-Identifier: Apache-2.0
 import { ExternalRequestContextProvider } from 'providers/ExternalRequestContext';
 import { QrSignerContextProvider } from 'providers/QrSignerContext';
 import { ScannerContextProvider } from 'providers/ScannerContext';
 import { SigningContextProvider } from 'providers/SigningContext';
-import React, { useEffect } from 'react';
-import { AppState, StatusBar, StyleProp, View } from 'react-native';
+import React, { Suspense, useEffect, useState } from 'react';
+import { AppState, DeviceEventEmitter, ImageBackground, Linking, StatusBar, StyleProp, View } from 'react-native';
 import { ThemeContext } from 'providers/contexts';
 import { THEME_PRESET } from 'styles/themes';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { FontMedium, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import useAppLock from 'hooks/useAppLock';
@@ -20,18 +18,24 @@ import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
 import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
-import { TOAST_DURATION } from 'constants/index';
+import { deviceHeight, deviceWidth, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
 import { AppModalContextProvider } from './providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { PortalProvider } from '@gorhom/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { LockTimeout } from 'stores/types';
 import { keyringLock } from './messaging';
 import { updateAutoLockTime } from 'stores/MobileSettings';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
 import { useGetDAppList } from 'hooks/static-content/useGetDAppList';
+import { NEED_UPDATE_CHROME } from 'providers/WebRunnerProvider/WebRunner';
+import { Button, Icon, PageIcon, Typography } from 'components/design-system-ui';
+import { Warning } from 'phosphor-react-native';
+import { Images, SVGImages } from 'assets/index';
+import Text from 'components/Text';
+import i18n from 'utils/i18n/i18n';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -54,6 +58,22 @@ const gestureRootStyle: StyleProp<any> = {
   zIndex: 9999,
 };
 
+const logoTextStyle: StyleProp<any> = {
+  fontSize: 38,
+  lineHeight: 46,
+  ...FontSemiBold,
+  color: ColorMap.light,
+  paddingTop: 9,
+};
+
+const logoSubTextStyle: StyleProp<any> = {
+  fontSize: 16,
+  lineHeight: 24,
+  ...FontMedium,
+  color: 'rgba(255, 255, 255, 0.65)',
+  paddingTop: 12,
+};
+
 const autoLockParams: {
   hasMasterPassword: boolean;
   isUseBiometric: boolean;
@@ -68,6 +88,14 @@ const autoLockParams: {
   lock: () => {},
   isPreventLock: false,
   isMasterPasswordLocked: false,
+};
+
+const imageBackgroundStyle: StyleProp<any> = {
+  justifyContent: 'flex-end',
+  position: 'relative',
+  width: deviceWidth,
+  height: deviceHeight,
+  backgroundColor: 'black',
 };
 
 let lockWhenActive = false;
@@ -131,6 +159,7 @@ export const AppNew = () => {
   useStoreBackgroundService();
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
+  const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -169,6 +198,10 @@ export const AppNew = () => {
 
     checkIsShowBuyToken();
     getDAppsData();
+
+    DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
+      setNeedUpdateChrome(data);
+    });
     // if (buildNumber === 1) {
     // Set default value on the first time install
     // const buildNumberInt = parseInt(getBuildNumber(), 10);
@@ -178,6 +211,12 @@ export const AppNew = () => {
   }, []);
 
   const isAppReady = isRequiredStoresReady && isCryptoReady && isI18nReady;
+
+  const onPressUpdateWebView = () => {
+    Linking.canOpenURL('market://details?id=com.google.android.webview').then(() =>
+      Linking.openURL('market://details?id=com.google.android.webview'),
+    );
+  };
 
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
@@ -201,7 +240,7 @@ export const AppNew = () => {
                       <GestureHandlerRootView style={gestureRootStyle}>
                         <PortalProvider>
                           <AppModalContextProvider>
-                            <AppNavigator isAppReady={isAppReady} />
+                            {!needUpdateChrome ? <AppNavigator isAppReady={isAppReady} /> : <></>}
                           </AppModalContextProvider>
                         </PortalProvider>
                       </GestureHandlerRootView>
@@ -215,6 +254,81 @@ export const AppNew = () => {
         {!isAppReady && (
           <View style={layerScreenStyle}>
             <LoadingScreen />
+          </View>
+        )}
+        {needUpdateChrome && (
+          <View style={{ width: deviceWidth, height: deviceHeight, justifyContent: 'flex-end' }}>
+            <ImageBackground source={Images.backgroundImg} resizeMode={'contain'} style={imageBackgroundStyle}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'flex-end',
+                  paddingBottom: 40,
+                  alignItems: 'center',
+                  backgroundColor: theme.swThemes.colorBgSecondary,
+                  opacity: 0.8,
+                  marginBottom: -32,
+                }}>
+                <Suspense>
+                  <SVGImages.LogoGradient width={66} height={100} />
+                </Suspense>
+                <Text style={logoTextStyle}>SubWallet</Text>
+                <Text style={logoSubTextStyle}>{i18n.title.slogan}</Text>
+              </View>
+              <View
+                style={{
+                  maxHeight: deviceHeight * 0.6,
+                  backgroundColor: theme.swThemes.colorBgDefault,
+                  borderTopLeftRadius: theme.swThemes.borderRadiusXXL,
+                  borderTopRightRadius: theme.swThemes.borderRadiusXXL,
+                }}>
+                <View
+                  style={{
+                    paddingTop: theme.swThemes.paddingXS,
+                    paddingHorizontal: theme.swThemes.padding,
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      width: 70,
+                      height: 5,
+                      borderRadius: 100,
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      marginBottom: 16,
+                    }}
+                  />
+                  <Typography.Title
+                    style={{
+                      color: theme.swThemes.colorWhite,
+                      fontSize: theme.swThemes.fontSizeXL,
+                      lineHeight: theme.swThemes.fontSizeXL * theme.swThemes.lineHeightHeading4,
+                      paddingBottom: theme.swThemes.paddingXL,
+                    }}>
+                    {'Outdated Webview'}
+                  </Typography.Title>
+                  <PageIcon
+                    customIcon={<Icon phosphorIcon={Warning} iconColor={theme.swThemes.colorWarning} customSize={64} />}
+                    color={theme.swThemes.colorWarning}
+                    backgroundColor={'rgba(217, 197, 0, 0.1)'}
+                  />
+                  <Typography.Text
+                    style={{
+                      color: theme.swThemes.colorTextLight4,
+                      textAlign: 'center',
+                      paddingTop: theme.swThemes.paddingMD,
+                      ...FontMedium,
+                    }}>
+                    {
+                      "Your Webview version is outdated and doesn't support SubWallet. Update to a new version and try again."
+                    }
+                  </Typography.Text>
+                </View>
+                <Button onPress={onPressUpdateWebView} style={{ margin: 16 }}>
+                  Update Webview
+                </Button>
+                <SafeAreaView edges={['bottom']} />
+              </View>
+            </ImageBackground>
           </View>
         )}
       </>

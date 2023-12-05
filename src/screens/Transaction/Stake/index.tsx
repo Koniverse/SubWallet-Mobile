@@ -6,6 +6,7 @@ import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelec
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import useGetSupportedStakingTokens from 'hooks/screen/Staking/useGetSupportedStakingTokens';
 import {
+  AmountData,
   NominationPoolInfo,
   NominatorMetadata,
   StakingType,
@@ -57,6 +58,7 @@ import { ValidateResult } from 'react-hook-form/dist/types/validator';
 import { FormItem } from 'components/common/FormItem';
 import { InstructionModal } from 'screens/Home/Staking/InstructionModal';
 import { mmkvStore } from 'utils/storage';
+import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 
 interface StakeFormValues extends TransactionFormValues {
   stakingType: StakingType;
@@ -159,7 +161,6 @@ export const Stake = ({
   const accountInfo = useGetAccountByAddress(from);
   const { nativeTokenBalance } = useGetBalance(chain, from);
   const { decimals, symbol } = useGetNativeTokenBasicInfo(chain);
-  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone);
   const isAllAccount = isAccountAll(currentAccount?.address || '');
   const validatorSelectorRef = useRef<ValidatorSelectorRef>(null);
   const existentialDeposit = useMemo(() => {
@@ -171,7 +172,24 @@ export const Stake = ({
 
     return '0';
   }, [assetRegistry, asset]);
+  const handleDataForInsufficientAlert = useCallback(
+    (estimateFee: AmountData) => {
+      return {
+        existentialDeposit: getInputValuesFromString(existentialDeposit, estimateFee.decimals),
+        availableBalance: getInputValuesFromString(nativeTokenBalance.value, estimateFee.decimals),
+        symbol: estimateFee.symbol,
+      };
+    },
+    [existentialDeposit, nativeTokenBalance.value],
+  );
 
+  const { onError, onSuccess } = useHandleSubmitTransaction(
+    onDone,
+    setTransactionDone,
+    undefined,
+    undefined,
+    chain === 'vara_network' && currentStakingType === StakingType.POOLED ? handleDataForInsufficientAlert : undefined,
+  );
   const getSelectedValidators = useCallback(
     (nominations: string[]) => {
       const validatorList = validatorInfoMap[chain];

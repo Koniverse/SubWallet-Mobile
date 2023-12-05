@@ -1011,7 +1011,8 @@
     "clearHistory": "Xóa lịch sử",
     "updateNetwork": "Cập nhật mạng",
     "expiredConnectionTitle": "Kết nối đã quá hạn.",
-    "unsupportedNetworkTitle": "Mạng không được hỗ trợ"
+    "unsupportedNetworkTitle": "Mạng không được hỗ trợ",
+    "insufficientBalance": "Insufficient balance"
   },
   "warningMessage": {
     "passwordTooShort": "Mật khẩu quá ngắn",
@@ -1042,7 +1043,8 @@
     "tokenExists": "Token đã tồn tại",
     "enableNetworkMessage": "Mạng bạn đã chọn chưa được kích hoạt. Vui lòng nhấp vào nút này để bật mạng hoặc chọn mạng khác",
     "expiredConnectionMessage": "Kết nối đã quá hạn. Vui lòng kết nối lại với dApp",
-    "unsupportedNetworkMessage": "Có ít nhất 1 mạng đã chọn không khả dụng"
+    "unsupportedNetworkMessage": "Có ít nhất 1 mạng đã chọn không khả dụng",
+    "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed."
   },
   "errorMessage": {
     "invalidPinCode": "Mã PIN không hợp lệ",

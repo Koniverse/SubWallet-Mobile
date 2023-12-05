@@ -1012,7 +1012,8 @@
     "expiredConnectionTitle": "Connection expired",
     "noInternetConnection": "No internet connection",
     "internetConnected": "Internet connected",
-    "unsupportedNetworkTitle": "Unsupported network"
+    "unsupportedNetworkTitle": "Unsupported network",
+    "insufficientBalance": "Insufficient balance"
   },
   "warningMessage": {
     "passwordTooShort": "Пароль слишком короткий",
@@ -1043,7 +1044,8 @@
     "tokenExists": "Токен уже существует.",
     "enableNetworkMessage": "Выбранная вами сеть не включена. Включите, нажав эту кнопку, или выберите другую сеть",
     "expiredConnectionMessage": "Connection expired. Please create a new connection from dApp",
-    "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable"
+    "unsupportedNetworkMessage": "There is at least 1 chosen network unavailable",
+    "insufficientBalanceMessage": "Your available balance is {0} {1}, you need to leave {2} {1} as minimal balance (existential deposit) and pay network fees. Make sure you have at least {3} {1} in your transferable balance to proceed."
   },
   "errorMessage": {
     "invalidPinCode": "Неверный PIN-код",
