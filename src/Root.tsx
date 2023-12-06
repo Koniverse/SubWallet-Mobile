@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { WebRunnerProvider } from 'providers/WebRunnerProvider/WebRunnerProvider';
 import { DataContextProvider } from 'providers/DataContext';
 import App from './App';
+import codePush from 'react-native-code-push';
+import { Platform } from 'react-native';
+import env from 'react-native-config';
+
+export const ANDROID_CODEPUSH_KEY = env.ANDROID_CODEPUSH_KEY;
+export const IOS_CODEPUSH_KEY = env.IOS_CODEPUSH_KEY;
 
 export const Root = () => {
+  useEffect(() => {
+    codePush.sync({
+      deploymentKey: Platform.OS === 'ios' ? IOS_CODEPUSH_KEY : ANDROID_CODEPUSH_KEY,
+    });
+  }, []);
   return (
     <WebRunnerProvider>
       <DataContextProvider>
@@ -12,5 +23,5 @@ export const Root = () => {
     </WebRunnerProvider>
   );
 };
-
-export default Root;
+const codePushOption = { checkFrequency: codePush.CheckFrequency.MANUAL };
+export default codePush(codePushOption)(Root);

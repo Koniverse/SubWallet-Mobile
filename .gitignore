@@ -67,5 +67,6 @@ yarn-error.log
 .metro-health-check*
 .env.development
 .env.production
+app-center-private.pem
 # testing
 /coverage

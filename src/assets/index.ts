@@ -32,15 +32,9 @@ export const SVGImages = {
 export const Images = {
   ...ImageLogosMap,
   loading: require('./loading.gif'),
-  stackingEmptyList: require('./stacking-empty-list.png'),
-  successStatusImg: require('./success-status.png'),
-  failStatusImg: require('./fail-status.png'),
   backgroundImg: require('./subwallet-background-img.png'),
   historyEmpty: require('./transaction-history-coming-soon.png'),
   squircleBorder: require('./squircleBorder.png'),
   avatarPlaceholder: require('./avatar-placeholder.png'),
-  browserBanner: require('./browser-banner.png'),
   circleRobot: require('./circle-robot.png'),
-  crowdloanBanner: require('./crowdloan-banner.png'),
-  crowdloanAdvertisingBanner: require('./crowdloan-advertising-banner.png'),
 };
