@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useGetBalance } from 'hooks/balance';
-import { StyleProp, Text, View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay';
 import i18n from 'utils/i18n/i18n';
-import { FontMedium } from 'styles/sharedStyles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { Typography } from 'components/design-system-ui';
 

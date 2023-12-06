@@ -16,7 +16,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { InputAmount } from 'components/Input/InputAmount';
 import { useGetBalance } from 'hooks/balance';
 import BigN from 'bignumber.js';
