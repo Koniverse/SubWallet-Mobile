@@ -22,7 +22,6 @@ import { ScrollView, View } from 'react-native';
 import { MinusCircle } from 'phosphor-react-native';
 import { AccountSelectField } from 'components/Field/AccountSelect';
 import useGetAccountByAddress from 'hooks/screen/useGetAccountByAddress';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { NominationSelector } from 'components/Modal/common/NominationSelector';
 import { InputAmount } from 'components/Input/InputAmount';
 import { formatBalance } from 'utils/number';
@@ -46,6 +45,7 @@ import { FormItem } from 'components/common/FormItem';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 import { useGetBalance } from 'hooks/balance';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface UnstakeFormValues extends TransactionFormValues {
   nomination: string;
@@ -321,7 +321,7 @@ export const Unbond = ({
                 />
               )}
 
-              <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} />
 
               {mustChooseValidator && (
                 <>
@@ -359,7 +359,10 @@ export const Unbond = ({
                   color: theme.colorTextTertiary,
                   ...FontMedium,
                 }}>
-                {i18n.formatString(i18n.message.unBondMessage, unBondedTime)}
+                {/*todo: i18n this */}
+                Once unbonded, your funds will be available for withdrawal after around {unBondedTime}. Keep in mind
+                that you need to withdraw manually.
+                {/*{i18n.formatString(i18n.message.unBondMessage, unBondedTime)}*/}
               </Typography.Text>
             </ScrollView>
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   APIItemState,
   ChainStakingMetadata,
@@ -12,8 +12,10 @@ import {
   UnstakingStatus,
 } from '@subwallet/extension-base/background/KoniTypes';
 import {
+  getStakingAvailableActionsByNominator,
   getValidatorLabel,
   isShowNominationByValidator,
+  StakingAction,
 } from '@subwallet/extension-base/koni/api/staking/bonding/utils';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -32,7 +34,7 @@ import { StakingStatusUi } from 'constants/stakingStatusUi';
 import MetaInfo from 'components/MetaInfo';
 import { toShort } from 'utils/index';
 import { getUnstakingPeriod, getWaitingTime } from 'screens/Transaction/helper/staking';
-import { ScrollView, TouchableHighlight, View } from 'react-native';
+import { Alert, ScrollView, TouchableHighlight, View } from 'react-native';
 import { Avatar, Button, Icon, Number, SwModal, Typography } from 'components/design-system-ui';
 import { ArrowCircleUpRight, DotsThree } from 'phosphor-react-native';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
@@ -48,6 +50,7 @@ import { CustomToast } from 'components/design-system-ui/toast';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import useGetAccountsByStaking from 'hooks/screen/Staking/useGetAccountsByStaking';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -128,6 +131,23 @@ export const StakingDetailModal = ({
 
   const onCloseDetailModal = useCallback(() => modalRef?.current?.close(), []);
 
+  const availableActions = useMemo(() => {
+    if (!nominatorMetadata) {
+      return [];
+    }
+
+    // @ts-ignore
+    return getStakingAvailableActionsByNominator(nominatorMetadata, rewardItem?.unclaimedReward);
+  }, [nominatorMetadata, rewardItem?.unclaimedReward]);
+
+  const isActionWithdrawAvailable = useMemo(() => {
+    return availableActions.includes(StakingAction.WITHDRAW);
+  }, [availableActions]);
+
+  const isActiveStakeZero = useMemo(() => {
+    return BN_ZERO.eq(nominatorMetadata?.activeStake || '0');
+  }, [nominatorMetadata?.activeStake]);
+
   const onClickStakeMoreBtn = useCallback(() => {
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(() => {
@@ -145,6 +165,24 @@ export const StakingDetailModal = ({
   }, [chainStakingMetadata?.type, navigation, nominatorMetadata?.chain, onCloseDetailModal]);
 
   const onClickUnstakeBtn = useCallback(() => {
+    if (isActiveStakeZero) {
+      // todo: i18n this
+      Alert.alert(
+        'Unstaking not available',
+        "You don't have any staked funds left to unstake. Check withdrawal status (how long left until the unstaking period ends) by scrolling down in the Details screen. Keep in mind that you need to withdraw manually.",
+        [
+          {
+            text: 'Check withdraw status',
+            onPress: () => {
+              setSeeMore(true);
+            },
+          },
+        ],
+      );
+
+      return;
+    }
+
     onCloseDetailModal && onCloseDetailModal();
     setTimeout(
       () =>
@@ -160,7 +198,26 @@ export const StakingDetailModal = ({
         }),
       300,
     );
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, navigation, onCloseDetailModal]);
+  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, isActiveStakeZero, navigation, onCloseDetailModal]);
+
+  const onClickWithdrawaBtn = useCallback(() => {
+    onCloseDetailModal && onCloseDetailModal();
+
+    if (!nominatorMetadata) {
+      return;
+    }
+
+    navigation.navigate('Drawer', {
+      screen: 'TransactionAction',
+      params: {
+        screen: 'Withdraw',
+        params: {
+          type: chainStakingMetadata?.type || ALL_KEY,
+          chain: chainStakingMetadata?.chain || ALL_KEY,
+        },
+      },
+    });
+  }, [onCloseDetailModal, nominatorMetadata, navigation, chainStakingMetadata?.type, chainStakingMetadata?.chain]);
 
   const onClickMoreAction = useCallback(() => {
     setMoreActionModalVisible(true);
@@ -290,12 +347,23 @@ export const StakingDetailModal = ({
           onPress={onClickMoreAction}
           icon={<Icon phosphorIcon={DotsThree} size={'lg'} iconColor={theme.colorWhite} />}
         />
-        <Button
-          style={{ flex: 1, marginHorizontal: 6 }}
-          type={'secondary'}
-          onPress={onClickFooterButton(onClickUnstakeBtn)}>
-          {i18n.buttonTitles.unstake}
-        </Button>
+        {isActionWithdrawAvailable ? (
+          <Button
+            style={{ flex: 1, marginHorizontal: 6 }}
+            type={'secondary'}
+            onPress={onClickFooterButton(onClickWithdrawaBtn)}>
+            {/* todo: 118n this */}
+            Withdraw
+          </Button>
+        ) : (
+          <Button
+            style={{ flex: 1, marginHorizontal: 6 }}
+            type={'secondary'}
+            onPress={onClickFooterButton(onClickUnstakeBtn)}>
+            {i18n.buttonTitles.unstake}
+          </Button>
+        )}
+
         <Button
           disabled={!chainStakingMetadata}
           style={{ flex: 1, marginLeft: 6 }}
@@ -580,6 +648,7 @@ export const StakingDetailModal = ({
           nominatorMetadata={nominatorMetadata}
           staking={staking}
           reward={rewardItem}
+          onSeeMoreStakingDetailModal={onClickSeeMoreBtn}
         />
       )}
     </>

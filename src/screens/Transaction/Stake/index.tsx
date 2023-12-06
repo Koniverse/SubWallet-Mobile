@@ -59,6 +59,7 @@ import { FormItem } from 'components/common/FormItem';
 import { InstructionModal } from 'screens/Home/Staking/InstructionModal';
 import { mmkvStore } from 'utils/storage';
 import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface StakeFormValues extends TransactionFormValues {
   stakingType: StakingType;
@@ -508,12 +509,7 @@ export const Stake = ({
               )}
 
               {_stakingType === ALL_KEY && (
-                <FreeBalance
-                  label={`${i18n.inputLabel.availableBalance}:`}
-                  address={from}
-                  chain={chain}
-                  onBalanceReady={setIsBalanceReady}
-                />
+                <GeneralFreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
               )}
 
               <TokenSelector
@@ -529,12 +525,7 @@ export const Stake = ({
               />
 
               {_stakingType !== ALL_KEY && (
-                <FreeBalance
-                  label={`${i18n.inputLabel.availableBalance}:`}
-                  address={from}
-                  chain={chain}
-                  onBalanceReady={setIsBalanceReady}
-                />
+                <GeneralFreeBalance address={from} chain={chain} onBalanceReady={setIsBalanceReady} />
               )}
 
               <FormItem

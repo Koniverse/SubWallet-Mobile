@@ -6,9 +6,11 @@ import { RequestBondingSubmit, StakingType } from '@subwallet/extension-base/bac
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
+import AlertBox from 'components/design-system-ui/alert-box';
 
 type Props = BaseTransactionConfirmationProps;
 
+// todo: i18n AlertBox
 const BondTransactionConfirmation = ({ transaction }: Props) => {
   const data = transaction.data as RequestBondingSubmit;
   const { decimals, symbol } = useGetNativeTokenBasicInfo(transaction.chain);
@@ -18,7 +20,7 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
     <ConfirmationContent isFullHeight>
       <CommonTransactionInfo address={transaction.address} network={transaction.chain} />
 
-      <MetaInfo style={{ marginTop: 12 }} hasBackgroundWrapper>
+      <MetaInfo hasBackgroundWrapper>
         <MetaInfo.AccountGroup
           addresses={addressList}
           content={i18n.formatString(i18n.common.selectedValidators, data.selectedValidators.length)}
@@ -33,6 +35,14 @@ const BondTransactionConfirmation = ({ transaction }: Props) => {
           value={transaction.estimateFee?.value || 0}
         />
       </MetaInfo>
+
+      <AlertBox
+        title={'Your staked funds will be locked'}
+        description={
+          'Once staked, your funds will be locked and become non-transferable. To unlock your funds, you need to unstake manually, wait for the unstaking period to end and then withdraw manually.'
+        }
+        type={'warning'}
+      />
     </ConfirmationContent>
   );
 };

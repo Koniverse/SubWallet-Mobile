@@ -16,7 +16,6 @@ import { _ChainInfo } from '@subwallet/chain-list/types';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import { accountFilterFunc } from 'screens/Transaction/helper/staking';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import { CancelUnstakeSelector } from 'components/Modal/common/CancelUnstakeSelector';
 import { Button, Icon } from 'components/design-system-ui';
 import { ArrowCircleRight, XCircle } from 'phosphor-react-native';
@@ -28,6 +27,7 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface CancelUnstakeFormValues extends TransactionFormValues {
   unstakeIndex: string;
@@ -151,12 +151,7 @@ export const CancelUnstake = ({
                 />
               )}
 
-              <FreeBalance
-                label={`${i18n.inputLabel.availableBalance}:`}
-                address={fromValue}
-                chain={chainValue}
-                onBalanceReady={setIsBalanceReady}
-              />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} onBalanceReady={setIsBalanceReady} />
 
               <CancelUnstakeSelector
                 chain={chainValue}

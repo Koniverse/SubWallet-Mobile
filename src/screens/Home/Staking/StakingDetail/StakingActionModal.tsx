@@ -8,7 +8,7 @@ import {
 import { ALL_KEY, deviceHeight, TOAST_DURATION } from 'constants/index';
 import { ArrowArcLeft, ArrowCircleDown, IconProps, MinusCircle, PlusCircle, Wallet } from 'phosphor-react-native';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import Toast from 'react-native-toast-notifications';
 import ToastContainer from 'react-native-toast-notifications';
 import { ColorMap } from 'styles/color';
@@ -27,6 +27,7 @@ import { RootState } from 'stores/index';
 import i18n from 'utils/i18n/i18n';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { BN_ZERO } from 'utils/chainBalances';
 
 interface Props {
   visible: boolean;
@@ -37,6 +38,7 @@ interface Props {
   nominatorMetadata?: NominatorMetadata;
   setModalVisible: (arg: boolean) => void;
   stakingDetailModalRef: React.RefObject<SWModalRefProps>;
+  onSeeMoreStakingDetailModal?: () => void;
 }
 
 type ActionListType = {
@@ -51,7 +53,15 @@ const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const StakingActionModal = (props: Props) => {
   const theme = useSubWalletTheme().swThemes;
-  const { chainStakingMetadata, nominatorMetadata, visible, reward, setModalVisible, stakingDetailModalRef } = props;
+  const {
+    chainStakingMetadata,
+    nominatorMetadata,
+    visible,
+    onSeeMoreStakingDetailModal,
+    reward,
+    setModalVisible,
+    stakingDetailModalRef,
+  } = props;
   const toastRef = useRef<ToastContainer>(null);
   const navigation = useNavigation<RootNavigationProps>();
   const [selected, setSelected] = useState<StakingAction | undefined>();
@@ -60,7 +70,31 @@ const StakingActionModal = (props: Props) => {
   const modalRef = useRef<SWModalRefProps>(null);
 
   const closeModal = useCallback(() => modalRef?.current?.close(), []);
+
+  const isActiveStakeZero = useMemo(() => {
+    return BN_ZERO.eq(nominatorMetadata?.activeStake || '0');
+  }, [nominatorMetadata?.activeStake]);
+
   const unStakeAction = useCallback(() => {
+    if (isActiveStakeZero) {
+      // todo: i18n this
+      Alert.alert(
+        'Unstaking not available',
+        "You don't have any staked funds left to unstake. Check withdrawal status (how long left until the unstaking period ends) by scrolling down in the Details screen. Keep in mind that you need to withdraw manually.",
+        [
+          {
+            text: 'Check withdraw status',
+            onPress: () => {
+              closeModal();
+              onSeeMoreStakingDetailModal?.();
+            },
+          },
+        ],
+      );
+
+      return;
+    }
+
     stakingDetailModalRef?.current?.close();
     closeModal();
     navigation.navigate('Drawer', {
@@ -73,7 +107,15 @@ const StakingActionModal = (props: Props) => {
         },
       },
     });
-  }, [chainStakingMetadata?.chain, chainStakingMetadata?.type, closeModal, navigation, stakingDetailModalRef]);
+  }, [
+    chainStakingMetadata?.chain,
+    chainStakingMetadata?.type,
+    closeModal,
+    isActiveStakeZero,
+    navigation,
+    onSeeMoreStakingDetailModal,
+    stakingDetailModalRef,
+  ]);
 
   const stakeAction = useCallback(() => {
     stakingDetailModalRef?.current?.close();
@@ -168,7 +210,17 @@ const StakingActionModal = (props: Props) => {
       return [];
     }
     // @ts-ignore
-    return getStakingAvailableActionsByNominator(nominatorMetadata, reward?.unclaimedReward);
+    const result = getStakingAvailableActionsByNominator(nominatorMetadata, reward?.unclaimedReward);
+
+    if (
+      BN_ZERO.eq(nominatorMetadata?.activeStake || '0') &&
+      !result.includes(StakingAction.WITHDRAW) &&
+      !result.includes(StakingAction.UNSTAKE)
+    ) {
+      result.push(StakingAction.UNSTAKE);
+    }
+
+    return result;
   }, [nominatorMetadata, reward?.unclaimedReward]);
 
   const actionList: ActionListType[] = useMemo(() => {

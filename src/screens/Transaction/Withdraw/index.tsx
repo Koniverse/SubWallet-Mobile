@@ -20,7 +20,6 @@ import {
 import { accountFilterFunc } from 'screens/Transaction/helper/staking';
 import { _ChainInfo } from '@subwallet/chain-list/types';
 import useGetNominatorInfo from 'hooks/screen/Staking/useGetNominatorInfo';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import MetaInfo from 'components/MetaInfo';
 import { isAccountAll } from 'utils/accountAll';
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
@@ -43,6 +42,7 @@ import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { useGetBalance } from 'hooks/balance';
 import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 const filterAccount = (
   chainInfoMap: Record<string, _ChainInfo>,
@@ -210,7 +210,7 @@ export const Withdraw = ({
                 />
               )}
 
-              <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} />
 
               <MetaInfo hasBackgroundWrapper>
                 <MetaInfo.Chain chain={chainValue} label={i18n.inputLabel.network} />
@@ -245,14 +245,14 @@ export const Withdraw = ({
               </Button>
               <Button
                 style={{ flex: 1, marginLeft: 4 }}
-                disabled={isDisabled || loading}
+                disabled={!fromValue || isDisabled || loading}
                 loading={loading}
                 icon={
                   <Icon
                     phosphorIcon={ArrowCircleRight}
                     weight={'fill'}
                     size={'lg'}
-                    iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                    iconColor={!fromValue || isDisabled ? theme.colorTextLight5 : theme.colorWhite}
                   />
                 }
                 onPress={onPreCheckReadOnly(onSubmit)}>

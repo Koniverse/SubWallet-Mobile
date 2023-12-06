@@ -6,7 +6,7 @@ export interface ComponentStyle {
   content: ViewStyle;
 }
 
-export default (theme: ThemeTypes, gap = 20) => {
+export default (theme: ThemeTypes, gap = 12) => {
   return StyleSheet.create<ComponentStyle>({
     container: {
       paddingHorizontal: theme.padding,

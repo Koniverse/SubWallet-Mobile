@@ -40,6 +40,7 @@ export function InstructionModal({ setDetailModalVisible, modalRef, modalVisible
             {
               icon: Aperture,
               color: 'rgba(230, 71, 142, 1)',
+              id: 'ins_1',
               title: 'Mint an NFT before staking',
               content:
                 "If you're participating in the Coinbase - Vara quests, be sure to mint an NFT before staking to qualify for Coinbase rewards.",
@@ -47,6 +48,7 @@ export function InstructionModal({ setDetailModalVisible, modalRef, modalVisible
             {
               icon: Coins,
               color: 'rgba(230, 220, 37, 1)',
+              id: 'state_2',
               title: 'Unstake and withdraw',
               content:
                 'Once staked, your funds will be locked. Unstake your funds anytime and withdraw after a 7-day period. Keep in mind that these actions are not automated and will incur network fees.',
@@ -54,6 +56,7 @@ export function InstructionModal({ setDetailModalVisible, modalRef, modalVisible
             {
               icon: CheckCircle,
               color: 'rgba(76, 234, 172, 1)',
+              id: 'state_3',
               title: 'Keep your free balance',
               content:
                 'Ensure that your free balance (transferrable balance) includes a minimum of 12 VARA to cover your existential deposit and network fees associated with staking, unstaking, and withdrawals.',
@@ -61,18 +64,20 @@ export function InstructionModal({ setDetailModalVisible, modalRef, modalVisible
             {
               icon: Eye,
               color: 'rgba(78, 180, 242, 1)',
+              id: 'state_4',
               title: 'Track your stake',
               content: 'Keep an eye on your stake periodically, as rewards and staking status can fluctuate over time.',
             },
             {
               icon: ThumbsUp,
               color: 'rgba(170, 218, 98, 1)',
+              id: 'state_5',
               title: 'Select active pool',
               content:
                 'It is recommended that you select an active pool. Check out the list of active pools in our FAQ.',
             },
           ].map(item => (
-            <InstructionItem {...item} />
+            <InstructionItem {...item} key={item.id} />
           ))}
         </ScrollView>
         <Typography.Text

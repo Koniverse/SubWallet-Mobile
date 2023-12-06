@@ -3,7 +3,6 @@ import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/
 import { useNavigation } from '@react-navigation/native';
 import { StakingScreenNavigationProps } from 'routes/staking/stakingScreen';
 import { ScrollView, View } from 'react-native';
-import { FreeBalance } from 'screens/Transaction/parts/FreeBalance';
 import {
   AmountData,
   NominatorMetadata,
@@ -45,6 +44,7 @@ import { useWatch } from 'react-hook-form';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { useGetBalance } from 'hooks/balance';
 import { getInputValuesFromString } from 'components/Input/InputAmountV2';
+import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
 
 interface ClaimRewardFormValues extends TransactionFormValues {
   bondReward: string;
@@ -247,7 +247,7 @@ const ClaimReward = ({
                 />
               )}
 
-              <FreeBalance label={`${i18n.inputLabel.availableBalance}:`} address={fromValue} chain={chainValue} />
+              <GeneralFreeBalance address={fromValue} chain={chainValue} />
 
               <MetaInfo hasBackgroundWrapper>
                 <MetaInfo.Chain chain={chainValue} label={i18n.inputLabel.network} />
@@ -295,14 +295,14 @@ const ClaimReward = ({
               </Button>
               <Button
                 style={{ flex: 1, marginLeft: 4 }}
-                disabled={isDisabled || loading}
+                disabled={!fromValue || isDisabled || loading}
                 loading={loading}
                 icon={
                   <Icon
                     phosphorIcon={ArrowCircleRight}
                     weight={'fill'}
                     size={'lg'}
-                    iconColor={isDisabled ? theme.colorTextLight5 : theme.colorWhite}
+                    iconColor={!fromValue || isDisabled ? theme.colorTextLight5 : theme.colorWhite}
                   />
                 }
                 onPress={onPreCheckReadOnly(onSubmit)}>
