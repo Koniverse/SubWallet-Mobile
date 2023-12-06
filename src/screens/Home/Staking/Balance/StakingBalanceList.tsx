@@ -72,6 +72,7 @@ export const StakingBalanceList = ({
   const [selectedItem, setSelectedItem] = useState<StakingDataType | undefined>(undefined);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [instructionModalVisible, setInstructionModalVisible] = useState(!shownVaraInstruction);
+  const modalRef = React.useRef(null);
 
   const handleOnPress = useCallback((stakingData: StakingDataType): (() => void) => {
     return () => {
@@ -129,7 +130,7 @@ export const StakingBalanceList = ({
         title={i18n.emptyScreen.stakingEmptyTitle}
         icon={Trophy}
         message={i18n.emptyScreen.stakingEmptyMessage}
-        onPressReload={() => refresh(reloadCron({ data: 'nft' }))}
+        onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
         addBtnLabel={i18n.buttonTitles.startStaking}
         onPressAddBtn={handlePressStartStaking}
@@ -221,6 +222,7 @@ export const StakingBalanceList = ({
       )}
       {varaStaked && (
         <InstructionModal
+          modalRef={modalRef}
           setDetailModalVisible={() => {
             setInstructionModalVisible(false);
             mmkvStore.set('shown-vara-instruction', true);

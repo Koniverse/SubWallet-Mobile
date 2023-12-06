@@ -1,7 +1,7 @@
 // Create web view with solution suggested in https://medium0.com/@caphun/react-native-load-local-static-site-inside-webview-2b93eb1c4225
 import { AppState, DeviceEventEmitter, NativeSyntheticEvent, Platform, View } from 'react-native';
 import EventEmitter from 'eventemitter3';
-import React, { useEffect, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import WebView from 'react-native-webview';
 import { WebViewMessage } from 'react-native-webview/lib/WebViewTypes';
 import { WebRunnerState, WebRunnerStatus } from 'providers/contexts';
@@ -11,7 +11,8 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { backupStorageData, mmkvStore, restoreStorageData } from 'utils/storage';
+import { mmkvStore, restoreStorageData } from 'utils/storage';
+import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;
 const LONG_TIMEOUT = 300000; //5*60*1000
@@ -59,7 +60,7 @@ class WebRunnerHandler {
   lastActiveTime?: number;
   pingTimeout?: NodeJS.Timeout;
   outOfResponseTimeTimeout?: NodeJS.Timeout;
-  pingInterval?: NodeJS.Timer;
+  pingInterval?: NodeJS.Timeout;
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
   shouldReloadHandler: boolean = false;
@@ -203,14 +204,13 @@ class WebRunnerHandler {
 
         if (webViewStatus === 'require_restore') {
           restoreStorageData();
+          notifyUnstable();
         } else if (webViewStatus === 'crypto_ready') {
           if (this.shouldReloadHandler) {
             restartAllHandlers();
           }
           this.shouldReloadHandler = true;
           this.startPing();
-          // BACKUP-003: Back up local storage for reload web runner after 10 seconds
-          setTimeout(() => backupStorageData(), 10000);
         } else {
           this.stopPing();
         }
@@ -332,6 +332,7 @@ const oldLocalStorageBackUpData = mmkvStore.getString('backupStorage');
 if (oldLocalStorageBackUpData) {
   // BACKUP-001: Migrate backed up local storage from 1.1.12 and remove old key
   mmkvStore.set('backup-localstorage', oldLocalStorageBackUpData);
+  mmkvStore.set('webRunnerLastMigrationTime', new Date().toString());
   mmkvStore.delete('backupStorage');
 }
 
@@ -342,14 +343,6 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     stateRef: webRunnerStateRef,
     eventEmitter: webRunnerEventEmitter,
   });
-
-  useEffect(() => {
-    // BACKUP-003: Back up local storage every 30 seconds
-    const interval = setInterval(() => backupStorageData(), 30000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
 
   webRunnerHandler.update(runnerGlobalState, dispatchRunnerGlobalState);
   webRunnerHandler.active();
@@ -378,8 +371,6 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
         'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
       );
     }
-    // BACKUP-003: Back up local storage for reload web runner purpose
-    backupStorageData();
   };
 
   return (

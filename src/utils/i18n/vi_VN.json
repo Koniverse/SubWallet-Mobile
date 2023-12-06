@@ -51,6 +51,9 @@
     "ok": "Đồng ý",
     "reloadBackground": "Tải lại nền",
     "status": "Trạng thái: ",
+    "lastBackup": "Last backup: ",
+    "lastRestore": "Last restore: ",
+    "lastMigration": "Last migration: ",
     "url": "URL: ",
     "version": "Phiên bản:",
     "allAccounts": "Tất cả tài khoản",
@@ -1132,5 +1135,12 @@
     "test": "Test",
     "data": "Dữ liệu",
     "missionPool": "Mission pool"
+  },
+  "notifyUnstable": {
+    "title": "Back up your seed phrase",
+    "message": "Due to the instability of iOS 17, we highly recommend that you back up your seed phrase and reinstall SubWallet for better performance",
+    "buttonRead": "Learn how to back up",
+    "buttonCancel": "Remind me later",
+    "buttonReject": "Don't show again"
   }
 }

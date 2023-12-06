@@ -51,6 +51,9 @@
     "ok": "是的",
     "reloadBackground": "重新加载背景",
     "status": "状态: ",
+    "lastBackup": "Last backup: ",
+    "lastRestore": "Last restore: ",
+    "lastMigration": "Last migration: ",
     "url": "URL: ",
     "version": "版本：",
     "allAccounts": "所有账户",
@@ -1132,5 +1135,12 @@
     "test": "试用",
     "data": "数据",
     "missionPool": "Mission pool"
+  },
+  "notifyUnstable": {
+    "title": "Back up your seed phrase",
+    "message": "Due to the instability of iOS 17, we highly recommend that you back up your seed phrase and reinstall SubWallet for better performance",
+    "buttonRead": "Learn how to back up",
+    "buttonCancel": "Remind me later",
+    "buttonReject": "Don't show again"
   }
 }

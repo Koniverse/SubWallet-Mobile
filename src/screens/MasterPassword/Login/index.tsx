@@ -239,7 +239,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                 resetKeychainPassword();
               }
               // BACKUP-003: Back up local storage after reset account
-              backupStorageData(true);
+              backupStorageData(true, false);
             });
         }, 300);
       };
