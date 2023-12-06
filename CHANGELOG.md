@@ -1,3 +1,7 @@
+## 1.1.15 (260)
+- Add Update webview popup in case Android app takes forever to load (#1190)
+- Add instruction for Staking feature on mobile app (#2294)
+
 ## 1.1.14 (249)
 - The default pool settng for Vara is SubWallet Official (#2291)
 - Do not show list dApp, Mission pool when see all on Android (#1189)
