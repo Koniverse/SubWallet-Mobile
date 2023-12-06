@@ -140,6 +140,8 @@ export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: 
 export const restoreStorageData = () => {
   // Todo: Consider to remove this condition
   if (!isIOS17) {
+    // Restore empty storage
+    mobileRestore({}).catch(console.error);
     return;
   }
 
