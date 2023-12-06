@@ -10,7 +10,7 @@ import createStyles from './styles';
 interface Props {
   type?: 'info' | 'warning' | 'error';
   title: string;
-  description: string;
+  description: React.ReactNode;
 }
 
 interface ColorText {

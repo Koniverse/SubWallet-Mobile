@@ -2,7 +2,7 @@ import { Warning } from 'components/Warning';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { ScrollView, View } from 'react-native';
+import { Keyboard, Linking, ScrollView, Text, View } from 'react-native';
 import { ArrowCircleRight, CheckCircle, Info } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -14,11 +14,11 @@ import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProps } from 'routes/index';
 import ChangeMasterPasswordStyle from './style';
 import i18n from 'utils/i18n/i18n';
-import AlertBox from 'components/design-system-ui/alert-box';
 import { FontSemiBold } from 'styles/sharedStyles';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { createKeychainPassword } from 'utils/account';
+import InputCheckBox from 'components/Input/InputCheckBox';
 
 function checkValidateForm(isValidated: Record<string, boolean>) {
   return isValidated.password && isValidated.repeatPassword;
@@ -34,6 +34,7 @@ const ChangeMasterPassword = () => {
   const [isBusy, setIsBusy] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [step, setStep] = useState<PageStep>('OldPassword');
+  const [checked, setChecked] = useState<boolean>(false);
   const formConfig = {
     curPassword: {
       name: i18n.inputLabel.currentPassword,
@@ -170,7 +171,8 @@ const ChangeMasterPassword = () => {
         (errors && errors.length > 0) ||
         isBusy ||
         !formState.data.password ||
-        !formState.data.repeatPassword
+        !formState.data.repeatPassword ||
+        !checked
       );
     }
 
@@ -182,6 +184,7 @@ const ChangeMasterPassword = () => {
     formState.isValidated.repeatPassword,
     formState.isValidated.curPassword,
     isBusy,
+    checked,
   ]);
 
   return (
@@ -209,17 +212,17 @@ const ChangeMasterPassword = () => {
         style={{
           fontSize: theme.fontSize,
           lineHeight: theme.fontSize * theme.lineHeight,
-          color: theme.colorTextTertiary,
+          color: theme.colorWarning,
           ...FontSemiBold,
           textAlign: 'center',
           paddingTop: theme.padding,
           paddingBottom: theme.paddingLG,
           paddingHorizontal: theme.padding,
         }}>
-        {step === 'OldPassword' ? i18n.message.changeMasterPasswordMessage1 : i18n.message.changeMasterPasswordMessage2}
+        {step === 'OldPassword' ? i18n.message.changeMasterPasswordMessage1 : i18n.createPassword.createPasswordMessage}
       </Typography.Text>
 
-      <ScrollView style={_style.bodyWrapper} showsVerticalScrollIndicator={false}>
+      <ScrollView style={_style.bodyWrapper} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'handled'}>
         {step === 'OldPassword' && (
           <PasswordField
             ref={formState.refs.curPassword}
@@ -252,14 +255,37 @@ const ChangeMasterPassword = () => {
               defaultValue={formState.data.repeatPassword}
               onChangeText={onChangeField('repeatPassword')}
               errorMessages={formState.errors.repeatPassword}
-              onSubmitField={onSubmitField('repeatPassword')}
+              onSubmitField={checked ? onSubmitField('repeatPassword') : () => Keyboard.dismiss()}
               isBusy={isBusy}
             />
 
-            <AlertBox
-              title={i18n.warning.warningPasswordTitle}
-              description={i18n.warning.warningPasswordMessage}
-              type={'warning'}
+            <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
+              {i18n.warning.warningPasswordMessage}
+            </Typography.Text>
+            <InputCheckBox
+              labelStyle={{ flex: 1 }}
+              checked={checked}
+              label={
+                <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>
+                  I understand that SubWallet can't recover this password for me.{' '}
+                  <Text
+                    style={{
+                      textDecorationStyle: 'solid',
+                      textDecorationLine: 'underline',
+                      color: theme.colorPrimary,
+                      textDecorationColor: theme.colorPrimary,
+                    }}
+                    onPress={() =>
+                      Linking.openURL(
+                        'https://docs.subwallet.app/main/mobile-app-user-guide/getting-started/create-apply-change-and-what-to-do-when-forgot-password',
+                      )
+                    }>
+                    {'Learn more.'}
+                  </Text>
+                </Typography.Text>
+              }
+              onPress={() => setChecked(!checked)}
+              checkBoxSize={20}
             />
           </>
         )}

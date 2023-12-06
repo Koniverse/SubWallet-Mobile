@@ -9,7 +9,7 @@ import { getWordKey, SeedPhraseArea, SelectedWordType } from 'components/SeedPhr
 import { shuffleArray } from 'utils/index';
 import i18n from 'utils/i18n/i18n';
 import { Button, Icon } from 'components/design-system-ui';
-import { ArrowCircleRight } from 'phosphor-react-native';
+import { CheckCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'routes/index';
@@ -107,7 +107,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
   const { onPress: onSubmit } = useUnlockModal(navigation);
 
   const getCreateAccBtn = (color: string) => {
-    return <Icon phosphorIcon={ArrowCircleRight} size={'lg'} iconColor={color} />;
+    return <Icon phosphorIcon={CheckCircle} size={'lg'} iconColor={color} weight={'fill'} />;
   };
 
   return (
@@ -132,7 +132,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
           disabled={!isCorrectWord(selectedWords, seed) || isBusy}
           onPress={onSubmit(onPressSubmit)}
           loading={isBusy}>
-          {i18n.common.continue}
+          {i18n.common.finish}
         </Button>
       </View>
     </View>

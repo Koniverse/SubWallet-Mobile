@@ -33,6 +33,8 @@ import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
 import { useShowBuyToken } from 'hooks/static-content/useShowBuyToken';
+import { mmkvStore } from 'utils/storage';
+import { GeneralTermModal } from 'components/Modal/GeneralTermModal';
 
 interface tabbarIconColor {
   color: string;
@@ -189,10 +191,12 @@ export const Home = ({ navigation }: Props) => {
   const isEmptyAccounts = useCheckEmptyAccounts();
   const { hasMasterPassword, isReady, isLocked } = useSelector((state: RootState) => state.accountState);
   const [isLoading, setLoading] = useState(true);
+  const [generalTermVisible, setGeneralTermVisible] = useState<boolean>(false);
   const appNavigatorDeepLinkStatus = useRef<AppNavigatorDeepLinkStatus>(AppNavigatorDeepLinkStatus.AVAILABLE);
   const banners = useGetBannerByScreen('home');
   const firstBanner = useMemo((): CampaignBanner | undefined => banners[0], [banners]);
   const [campaignModalVisible, setCampaignModalVisible] = useState<boolean>(false);
+  const isOpenGeneralTermFirstTime = mmkvStore.getBoolean('isOpenGeneralTermFirstTime');
 
   useEffect(() => {
     if (isReady && isLoading) {
@@ -214,6 +218,18 @@ export const Home = ({ navigation }: Props) => {
     }
   }, [firstBanner]);
 
+  useEffect(() => {
+    if (!isOpenGeneralTermFirstTime) {
+      setGeneralTermVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onPressAcceptBtn = () => {
+    mmkvStore.set('isOpenGeneralTermFirstTime', true);
+    setGeneralTermVisible(false);
+  };
+
   if (isLoading) {
     return (
       <View style={styles.indicatorWrapper}>
@@ -229,6 +245,14 @@ export const Home = ({ navigation }: Props) => {
       {!isLocked && <RequestCreateMasterPasswordModal visible={!hasMasterPassword && !isEmptyAccounts} />}
       {!isLocked && firstBanner && !isEmptyAccounts && (
         <CampaignBannerModal visible={campaignModalVisible} banner={firstBanner} setVisible={setCampaignModalVisible} />
+      )}
+      {!isLocked && !isOpenGeneralTermFirstTime && (
+        <GeneralTermModal
+          modalVisible={generalTermVisible}
+          setVisible={setGeneralTermVisible}
+          onPressAcceptBtn={onPressAcceptBtn}
+          disabledOnPressBackDrop={true}
+        />
       )}
     </>
   );
