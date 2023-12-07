@@ -82,11 +82,24 @@ export const AccountsScreen = ({
   const toastRef = useRef<ToastContainer>(null);
   const accounts = useMemo(() => {
     if (fullAccounts.length > 2) {
-      return fullAccounts;
+      const foundAccountAll = fullAccounts.find(a => isAccountAll(a.address));
+      const foundCurrentAccount = fullAccounts.find(a => a.address === currentAccountAddress);
+
+      const result = fullAccounts.filter(a => !(isAccountAll(a.address) || a.address === currentAccountAddress));
+
+      if (foundCurrentAccount && !isAccountAll(currentAccountAddress)) {
+        result.unshift(foundCurrentAccount);
+      }
+
+      if (foundAccountAll) {
+        result.unshift(foundAccountAll);
+      }
+
+      return result;
     }
 
     return fullAccounts.filter(a => !isAccountAll(a.address));
-  }, [fullAccounts]);
+  }, [fullAccounts, currentAccountAddress]);
 
   const createAccountRef = useRef<ModalRef>();
   const importAccountRef = useRef<ModalRef>();
