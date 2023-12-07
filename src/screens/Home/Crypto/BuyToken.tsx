@@ -21,6 +21,7 @@ import { ThemeTypes } from 'styles/themes';
 import { BuyTokenProps } from 'routes/wrapper';
 import { DisclaimerModal } from 'components/Buy/DisclaimerModal';
 import { SupportService } from 'types/buy';
+import useChainChecker from 'hooks/chain/useChainChecker';
 
 const submitButtonIcon = (iconColor: string) => (
   <Icon phosphorIcon={ShoppingCartSimple} weight={'fill'} iconColor={iconColor} />
@@ -60,6 +61,24 @@ export const BuyToken = ({
   const [isVisible, setVisible] = useState(false);
   const { isAllAccount } = useSelector((state: RootState) => state.accountState);
   const { contactUrl, name: serviceName, policyUrl, termUrl, url } = disclaimerData;
+  const { checkChainConnected } = useChainChecker();
+  const sortedBuyTokenSelectorItems = useMemo(() => {
+    return buyTokenSelectorItems.sort((a, b) => {
+      if (checkChainConnected(a.originChain)) {
+        if (checkChainConnected(b.originChain)) {
+          return 0;
+        } else {
+          return -1;
+        }
+      } else {
+        if (checkChainConnected(b.originChain)) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }, [buyTokenSelectorItems, checkChainConnected]);
 
   useEffect(() => {
     const onBackPress = () => {
@@ -130,7 +149,7 @@ export const BuyToken = ({
             <View style={{ flex: 1 }}>
               <TokenSelector
                 disabled={!selectedBuyAccount}
-                items={buyTokenSelectorItems}
+                items={sortedBuyTokenSelectorItems}
                 selectedValueMap={selectedBuyToken ? { [selectedBuyToken]: true } : {}}
                 onSelectItem={openSelectBuyToken}
                 tokenSelectorRef={tokenBuyRef}

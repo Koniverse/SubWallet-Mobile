@@ -337,6 +337,7 @@ export const SendFund = ({
     onChangeChainValue: setChain,
     onTransactionDone: onDone,
     transactionDoneInfo,
+    checkChainConnected,
   } = useTransaction<TransferFormValues>('send-fund', {
     mode: 'onBlur',
     reValidateMode: 'onBlur',
@@ -466,16 +467,53 @@ export const SendFund = ({
       assetSettingMap,
       multiChainAssetMap,
       tokenGroupSlug,
-    );
-  }, [accounts, assetRegistry, assetSettingMap, chainInfoMap, fromValue, multiChainAssetMap, tokenGroupSlug]);
+    ).sort((a, b) => {
+      if (checkChainConnected(a.originChain)) {
+        if (checkChainConnected(b.originChain)) {
+          return 0;
+        } else {
+          return -1;
+        }
+      } else {
+        if (checkChainConnected(b.originChain)) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }, [
+    accounts,
+    assetRegistry,
+    assetSettingMap,
+    chainInfoMap,
+    checkChainConnected,
+    fromValue,
+    multiChainAssetMap,
+    tokenGroupSlug,
+  ]);
 
   const tokenItemsViewStep2 = useMemo(() => {
     if (viewStep !== 2 || !fromValue || !toValue) {
       return [];
     }
 
-    return getTokenItemsForViewStep2(tokenItems, xcmRefMap, chainInfoMap, fromValue, toValue);
-  }, [chainInfoMap, fromValue, toValue, tokenItems, viewStep, xcmRefMap]);
+    return getTokenItemsForViewStep2(tokenItems, xcmRefMap, chainInfoMap, fromValue, toValue).sort((a, b) => {
+      if (checkChainConnected(a.originChain)) {
+        if (checkChainConnected(b.originChain)) {
+          return 0;
+        } else {
+          return -1;
+        }
+      } else {
+        if (checkChainConnected(b.originChain)) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }, [chainInfoMap, checkChainConnected, fromValue, toValue, tokenItems, viewStep, xcmRefMap]);
 
   const recipientAddressRules = useMemo(
     () => ({

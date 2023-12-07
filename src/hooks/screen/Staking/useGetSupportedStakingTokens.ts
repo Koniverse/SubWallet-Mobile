@@ -15,6 +15,7 @@ import { ALL_KEY } from 'constants/index';
 import { AccountAddressType } from 'types/index';
 import { findAccountByAddress, getAccountAddressType } from 'utils/account';
 import useChainAssets from 'hooks/chain/useChainAssets';
+import useChainChecker from 'hooks/chain/useChainChecker';
 
 const isChainTypeValid = (chainInfo: _ChainInfo, accounts: AccountJson[], address?: string): boolean => {
   const addressType = getAccountAddressType(address);
@@ -46,7 +47,7 @@ export default function useGetSupportedStakingTokens(
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const assetRegistryMap = useChainAssets().chainAssetRegistry;
   const accounts = useSelector((state: RootState) => state.accountState.accounts);
-
+  const { checkChainConnected } = useChainChecker();
   return useMemo(() => {
     const result: _ChainAsset[] = [];
 
@@ -83,6 +84,20 @@ export default function useGetSupportedStakingTokens(
       });
     }
 
-    return result;
-  }, [accounts, type, chainInfoMap, assetRegistryMap, address, chain]);
+    return result.sort((a, b) => {
+      if (checkChainConnected(a.originChain)) {
+        if (checkChainConnected(b.originChain)) {
+          return 0;
+        } else {
+          return -1;
+        }
+      } else {
+        if (checkChainConnected(b.originChain)) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }, [type, chainInfoMap, assetRegistryMap, accounts, address, chain, checkChainConnected]);
 }
