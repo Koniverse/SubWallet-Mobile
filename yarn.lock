@@ -4264,19 +4264,19 @@
   resolved "https://registry.yarnpkg.com/@substrate/ss58-registry/-/ss58-registry-1.44.0.tgz#54f214e2a44f450b7bbc9252891c1879a54e0606"
   integrity sha512-7lQ/7mMCzVNSEfDS4BCqnRnKCFKpcOaPrxMeGTXHX1YQzM/m2BBHjbK2C3dJvjv7GYxMiaTq/HdWQj1xS6ss+A==
 
-"@subwallet/chain-list@0.2.28", "@subwallet/chain-list@^0.2.28":
-  version "0.2.28"
-  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.28.tgz#98adb025d78efb69a02958d38faa5e639c3d9aec"
-  integrity sha512-sWHakLpl2HnbeiQ4yfIbst3Tck9PcvrbN02FM3Rq80mEBEgiyNQseTxLqTjZJ9YR1Z0tLVVl8wKJQ7oVhnc8ZQ==
+"@subwallet/chain-list@0.2.29", "@subwallet/chain-list@^0.2.29":
+  version "0.2.29"
+  resolved "https://registry.yarnpkg.com/@subwallet/chain-list/-/chain-list-0.2.29.tgz#f7505aedd7163481f99adbdf02a7342570b5d959"
+  integrity sha512-GGfuCDTgjD5zqj8Yk0gR0FXzm2MWWXV2A7x++PW8fjLFj6DzgX+3EdchZAOsc612lQUH0zJSGfS5Eusft63oeQ==
   dependencies:
     "@polkadot/dev" "0.67.167"
     "@polkadot/util" "^12.5.1"
     eventemitter3 "^5.0.1"
 
-"@subwallet/extension-base@^1.1.25-0":
-  version "1.1.25-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.25-0.tgz#466b9b54fb1ce66684a0e7e2c3acc4ba53e80e77"
-  integrity sha512-EERLm6/qMhShaYyjyDzsf+bTrb1FaPslTqZtTgwu52VIMkn/DImrHqnUdalK4q6hJ8AGpvvkJu2e1fw784/mtg==
+"@subwallet/extension-base@^1.1.25-1":
+  version "1.1.25-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.25-1.tgz#9f93a56ccdce33d360ca241280fc00140604ed6f"
+  integrity sha512-jpdhqOHWywv4Dsnz5l3ljunjShJmwNDO8eEkBsyum6kmaRUojC7FckArjyq0Y2hNXmzthGt/nTebkIlus0PaZA==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
@@ -4305,11 +4305,11 @@
     "@reduxjs/toolkit" "^1.9.1"
     "@sora-substrate/type-definitions" "^1.17.7"
     "@substrate/connect" "^0.7.26"
-    "@subwallet/chain-list" "0.2.28"
-    "@subwallet/extension-base" "^1.1.25-0"
-    "@subwallet/extension-chains" "^1.1.25-0"
-    "@subwallet/extension-dapp" "^1.1.25-0"
-    "@subwallet/extension-inject" "^1.1.25-0"
+    "@subwallet/chain-list" "0.2.29"
+    "@subwallet/extension-base" "^1.1.25-1"
+    "@subwallet/extension-chains" "^1.1.25-1"
+    "@subwallet/extension-dapp" "^1.1.25-1"
+    "@subwallet/extension-inject" "^1.1.25-1"
     "@subwallet/keyring" "^0.1.1"
     "@subwallet/ui-keyring" "^0.1.1"
     "@walletconnect/sign-client" "^2.8.4"
@@ -4347,31 +4347,31 @@
     web3-eth-contract "^1.10.0"
     web3-utils "^1.10.0"
 
-"@subwallet/extension-chains@^1.1.25-0":
-  version "1.1.25-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.1.25-0.tgz#be99c58c263995ccd55ccc5ebb0088735191ef0f"
-  integrity sha512-2bXNFbrecIk274c5nJGLDbKxAn+W1ggQgHvK13QLt8KWPefkw7LA7tNJpX06Hu3v7mFIgCCGYA1v4mlzZqzTfw==
+"@subwallet/extension-chains@^1.1.25-1":
+  version "1.1.25-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-chains/-/extension-chains-1.1.25-1.tgz#e4e15998142703ff6ad3d4a3b47c673b0241993f"
+  integrity sha512-fc2wZbCFzubxqkX5w3H5ob9aTsno68j9oGnOyDOW5GG7NxakclHMK8IEm/cAN2cqSjGYR62YHdwVFZ3G+71mnA==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/networks" "^12.3.2"
     "@polkadot/util" "^12.3.2"
     "@polkadot/util-crypto" "^12.3.2"
-    "@subwallet/extension-inject" "^1.1.25-0"
+    "@subwallet/extension-inject" "^1.1.25-1"
 
-"@subwallet/extension-dapp@^1.1.25-0":
-  version "1.1.25-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.1.25-0.tgz#98f3931f07020007d14cca047dffb1ea3b9d13a3"
-  integrity sha512-2Jgsvte9KmoT89korGRBXYVaAE1zZze5oYabravazBqD4kjKBZKs92BwtIwx4JZniCT2/XnItIe5MWQ+M1cIvg==
+"@subwallet/extension-dapp@^1.1.25-1":
+  version "1.1.25-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-dapp/-/extension-dapp-1.1.25-1.tgz#0ff88785c593141eec985f0afa84ba813fbe30cb"
+  integrity sha512-4IoQXhh2ZmH8tc/4zkInqtTmYP2FFm6LNb9LgzDSeiAwKRXELWiOSj+eYIYOM+BNgTaeFMdDZcONH70k4B5DcA==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/util" "^12.3.2"
     "@polkadot/util-crypto" "^12.3.2"
-    "@subwallet/extension-inject" "^1.1.25-0"
+    "@subwallet/extension-inject" "^1.1.25-1"
 
-"@subwallet/extension-inject@^1.1.25-0":
-  version "1.1.25-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.1.25-0.tgz#7791aa3e8be5503ad3655710b0780067e9929309"
-  integrity sha512-9OnXsBOohDCzPKl8ZE5MkfgV+WcQyvBA1rONL+7K6CEj3AQ6UjAEABhu+LBQj80gHnt1sJuLgaeqQNxABFCueg==
+"@subwallet/extension-inject@^1.1.25-1":
+  version "1.1.25-1"
+  resolved "https://registry.yarnpkg.com/@subwallet/extension-inject/-/extension-inject-1.1.25-1.tgz#fd55fca9449af214362f5334d21fa3c6e0077634"
+  integrity sha512-Z+pHJuzUykW3YYuFGE46xFSC8oHYX1l8tpBv+sRSLsKo7aY+q268Gq9FJlIBSMQYoGTaBA4BnusOukyrPfJxPQ==
   dependencies:
     "@babel/runtime" "^7.20.6"
     "@polkadot/rpc-provider" "^10.9.1"
