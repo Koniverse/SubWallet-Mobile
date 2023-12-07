@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Avatar, Button, Icon, Number } from 'components/design-system-ui';
+import { Avatar, Button, Icon, Number, Typography } from 'components/design-system-ui';
 import { FontMedium } from 'styles/sharedStyles';
 import { DotsThree } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -17,6 +17,7 @@ interface Props {
   bondedAmount: string;
   onPress?: () => void;
   onPressRightButton?: () => void;
+  isProfitable: boolean;
 }
 
 export const StakingPoolItem = ({
@@ -28,6 +29,7 @@ export const StakingPoolItem = ({
   decimals,
   onPress,
   onPressRightButton,
+  isProfitable,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = StakingPoolItemStyle(theme);
@@ -53,6 +55,25 @@ export const StakingPoolItem = ({
             intOpacity={0.45}
             unitOpacity={0.45}
           />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Typography.Text
+              style={{
+                fontSize: theme.fontSizeSM,
+                lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+                color: theme.colorTextLight4,
+              }}>
+              {' '}
+              -{' '}
+            </Typography.Text>
+            <Typography.Text
+              style={{
+                fontSize: theme.fontSizeSM,
+                lineHeight: theme.fontSizeSM * theme.lineHeightSM,
+                color: isProfitable ? theme.colorSuccess : theme.colorError,
+              }}>
+              {isProfitable ? 'Earning' : 'Not earning'}
+            </Typography.Text>
+          </View>
         </View>
       </View>
       <Button
