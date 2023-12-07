@@ -188,6 +188,12 @@ export const Withdraw = ({
     }, 300);
   }, [chainValue, nominatorMetadata, onError, onSuccess, stakingType, unstakingInfo]);
 
+  useEffect(() => {
+    if (!fromValue && accountList.length === 1) {
+      setFrom(accountList[0].address);
+    }
+  }, [accountList, fromValue, setFrom]);
+
   return (
     <>
       {!isTransactionDone ? (

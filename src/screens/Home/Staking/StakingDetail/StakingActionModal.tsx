@@ -38,7 +38,7 @@ interface Props {
   nominatorMetadata?: NominatorMetadata;
   setModalVisible: (arg: boolean) => void;
   stakingDetailModalRef: React.RefObject<SWModalRefProps>;
-  onSeeMoreStakingDetailModal?: () => void;
+  onConfirmUnstakeWarning?: () => void;
 }
 
 type ActionListType = {
@@ -57,7 +57,7 @@ const StakingActionModal = (props: Props) => {
     chainStakingMetadata,
     nominatorMetadata,
     visible,
-    onSeeMoreStakingDetailModal,
+    onConfirmUnstakeWarning,
     reward,
     setModalVisible,
     stakingDetailModalRef,
@@ -86,7 +86,7 @@ const StakingActionModal = (props: Props) => {
             text: 'Check withdraw status',
             onPress: () => {
               closeModal();
-              onSeeMoreStakingDetailModal?.();
+              onConfirmUnstakeWarning?.();
             },
           },
         ],
@@ -113,7 +113,7 @@ const StakingActionModal = (props: Props) => {
     closeModal,
     isActiveStakeZero,
     navigation,
-    onSeeMoreStakingDetailModal,
+    onConfirmUnstakeWarning,
     stakingDetailModalRef,
   ]);
 

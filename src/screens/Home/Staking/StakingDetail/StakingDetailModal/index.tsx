@@ -119,6 +119,7 @@ export const StakingDetailModal = ({
   const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
   const account = useGetAccountByAddress(staking.address);
   const navigation = useNavigation<RootNavigationProps>();
+  const scrollRef = useRef<ScrollView>();
   const stakingTypeNameMap: Record<string, string> = {
     nominated: i18n.filterOptions.nominated,
     pooled: i18n.filterOptions.pooled,
@@ -175,6 +176,10 @@ export const StakingDetailModal = ({
             text: 'Check withdraw status',
             onPress: () => {
               setSeeMore(true);
+
+              setTimeout(() => {
+                scrollRef.current?.scrollToEnd();
+              }, 300);
             },
           },
         ],
@@ -248,6 +253,13 @@ export const StakingDetailModal = ({
     setSeeMore(false);
     onCloseDetailModal && onCloseDetailModal();
   }, [onCloseDetailModal]);
+
+  const onConfirmUnstakeWarning = useCallback(() => {
+    setSeeMore(true);
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd();
+    }, 300);
+  }, []);
 
   const renderUnstakingInfo = useCallback(
     (item: NominationInfo, index: number) => {
@@ -390,6 +402,7 @@ export const StakingDetailModal = ({
         modalStyle={{ maxHeight: '90%' }}>
         <View style={{ width: '100%' }}>
           <ScrollView
+            ref={scrollRef}
             style={{ maxHeight: deviceHeight * 0.6 }}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}>
@@ -648,7 +661,7 @@ export const StakingDetailModal = ({
           nominatorMetadata={nominatorMetadata}
           staking={staking}
           reward={rewardItem}
-          onSeeMoreStakingDetailModal={onClickSeeMoreBtn}
+          onConfirmUnstakeWarning={onConfirmUnstakeWarning}
         />
       )}
     </>
