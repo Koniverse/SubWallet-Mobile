@@ -181,13 +181,14 @@ export const PoolSelector = ({
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<NominationPoolDataType>) => {
-      const { address, name, id, bondedAmount, symbol, decimals } = item;
+      const { address, name, id, bondedAmount, symbol, decimals, isProfitable } = item;
 
       return (
         <StakingPoolItem
           address={address}
           decimals={decimals}
           id={id}
+          isProfitable={isProfitable}
           bondedAmount={bondedAmount}
           name={name}
           symbol={symbol}
