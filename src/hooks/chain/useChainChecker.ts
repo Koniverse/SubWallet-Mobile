@@ -1,7 +1,7 @@
 // Copyright 2019-2023 Koniverse/SubWallet-mobile authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 import { enableChain } from 'messaging/index';
 import { RootState } from 'stores/index';
@@ -27,22 +27,28 @@ export default function useChainChecker() {
       chainStateMap[connectingChain.current]?.connectionStatus === _ChainConnectionStatus.CONNECTED
     ) {
       const chainName = chainInfoMap[connectingChain.current].name;
-      setTimeout(() => show(i18n.formatString(i18n.common.chainConnected, chainName), { type: 'success' }), 300);
+      setTimeout(
+        () => show(i18n.formatString(i18n.common.chainConnected, chainName) as string, { type: 'success' }),
+        300,
+      );
       setChainStatus(ChainStatus.CONNECTED);
     }
   }, [chainInfoMap, chainStateMap, connectingChainStatus, show]);
 
-  function checkChainConnected(chain: string) {
-    connectingChain.current = chain;
-    const chainState = chainStateMap[chain];
+  const checkChainConnected = useCallback(
+    (chain: string) => {
+      connectingChain.current = chain;
+      const chainState = chainStateMap[chain];
 
-    if (!chainState) {
-      // Couldn't get chain state
-      return false;
-    }
+      if (!chainState) {
+        // Couldn't get chain state
+        return false;
+      }
 
-    return chainState.active;
-  }
+      return chainState.active;
+    },
+    [chainStateMap],
+  );
 
   function turnOnChain(chain: string) {
     enableChain(chain, false)
