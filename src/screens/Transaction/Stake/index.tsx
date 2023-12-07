@@ -467,6 +467,12 @@ export const Stake = ({
     [currentStakingType, from, isAllAccount, setAsset, setFrom, setValue],
   );
 
+  useEffect(() => {
+    if (!from && accountSelectorList.length === 1) {
+      setFrom(accountSelectorList[0].address);
+    }
+  }, [accountSelectorList, from, setFrom]);
+
   return (
     <>
       {!isTransactionDone ? (
