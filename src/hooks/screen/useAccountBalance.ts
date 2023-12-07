@@ -20,6 +20,7 @@ import { AccountBalanceHookType } from 'types/hook';
 import { TokenBalanceItemType } from 'types/balance';
 import { AssetRegistryStore, BalanceStore, ChainStore, PriceStore } from 'stores/types';
 import { useEffect, useState } from 'react';
+import { SubstrateBalance } from '@subwallet/extension-base/types';
 
 const BN_0 = new BigN(0);
 const BN_10 = new BigN(10);
@@ -52,6 +53,7 @@ function getDefaultBalanceItem(slug: string, symbol: string, logoKey: string): T
     },
     isReady: false,
     isTestnet: false,
+    isNotSupport: true,
     price24hValue: 0,
     priceValue: 0,
     logoKey,
@@ -85,6 +87,7 @@ function getDefaultTokenBalance(tokenSlug: string, chainAsset: _ChainAsset): Tok
 }
 
 function getAccountBalance(
+  address: string,
   tokenGroupMap: Record<string, string[]>,
   balanceMap: BalanceStore['balanceMap'],
   priceMap: PriceStore['priceMap'],
@@ -106,7 +109,8 @@ function getAccountBalance(
   const tokenGroupBalanceMap: Record<string, TokenBalanceItemType> = {};
 
   Object.keys(tokenGroupMap).forEach(tokenGroupKey => {
-    let isTokenGroupBalanceReady = false;
+    const tokenGroupBalanceReady: boolean[] = [];
+    const tokenGroupNotSupport: boolean[] = [];
     // note: multiChainAsset may be undefined due to tokenGroupKey may be a tokenSlug
     const multiChainAsset: _MultiChainAsset | undefined = multiChainAssetMap[tokenGroupKey];
     const tokenGroupBalance = getDefaultTokenGroupBalance(tokenGroupKey, assetRegistryMap, multiChainAsset);
@@ -115,22 +119,28 @@ function getAccountBalance(
       const chainAsset = assetRegistryMap[tokenSlug];
 
       if (!chainAsset) {
+        console.warn('Not found chain asset for token slug: ', tokenSlug);
+
         return;
       }
 
       const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset);
       const originChain = _getAssetOriginChain(chainAsset);
-      const balanceItem = balanceMap[tokenSlug];
+      const balanceItem = balanceMap[address]?.[tokenSlug];
       const decimals = _getAssetDecimals(chainAsset);
 
-      const isTokenBalanceReady = !!balanceItem && balanceItem.state === APIItemState.READY;
+      const isTokenBalanceReady = !!balanceItem && balanceItem.state !== APIItemState.PENDING;
+      const isTokenNotSupport = !!balanceItem && balanceItem.state === APIItemState.NOT_SUPPORT;
+
+      tokenGroupNotSupport.push(isTokenNotSupport);
+      tokenGroupBalanceReady.push(isTokenBalanceReady);
 
       if (!isShowZeroBalance && !isTokenBalanceReady) {
         return;
       }
 
       tokenBalance.isReady = isTokenBalanceReady;
-      isTokenGroupBalanceReady = isTokenBalanceReady;
+      tokenBalance.isNotSupport = isTokenNotSupport;
 
       tokenBalance.chain = originChain;
       tokenBalance.chainDisplayName = _getChainName(chainInfoMap[originChain]);
@@ -146,6 +156,23 @@ function getAccountBalance(
         tokenGroupBalance.locked.value = tokenGroupBalance.locked.value.plus(tokenBalance.locked.value);
 
         tokenBalance.total.value = tokenBalance.free.value.plus(tokenBalance.locked.value);
+
+        if (balanceItem?.substrateInfo) {
+          const mergeData = (key: keyof SubstrateBalance) => {
+            const newValue = balanceItem?.substrateInfo?.[key];
+
+            if (newValue) {
+              const value = getBalanceValue(newValue, decimals);
+
+              tokenBalance[key] = new BigN(tokenBalance[key] || '0').plus(value).toString();
+              tokenGroupBalance[key] = new BigN(tokenGroupBalance[key] || '0').plus(value).toString();
+            }
+          };
+
+          mergeData('reserved');
+          mergeData('miscFrozen');
+          mergeData('feeFrozen');
+        }
 
         if (!isShowZeroBalance && tokenBalance.total.value.eq(BN_0)) {
           return;
@@ -213,10 +240,15 @@ function getAccountBalance(
         }
       }
 
-      tokenBalanceMap[tokenSlug] = tokenBalance;
+      if (!tokenBalance.isNotSupport) {
+        tokenBalanceMap[tokenSlug] = tokenBalance;
+      }
     });
 
+    const isTokenGroupBalanceReady = tokenGroupBalanceReady.every(e => e);
+
     tokenGroupBalance.isReady = isTokenGroupBalanceReady;
+    tokenGroupBalance.isNotSupport = tokenGroupNotSupport.every(e => e);
 
     if (!isShowZeroBalance && (!isTokenGroupBalanceReady || tokenGroupBalance.total.value.eq(BN_0))) {
       return;
@@ -293,6 +325,7 @@ export default function useAccountBalance(
   tokenGroupMap: Record<string, string[]>,
   lazy?: boolean,
 ): AccountBalanceHookType {
+  const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
@@ -304,6 +337,7 @@ export default function useAccountBalance(
     lazy
       ? DEFAULT_RESULT
       : getAccountBalance(
+          currentAccount?.address || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -319,6 +353,7 @@ export default function useAccountBalance(
     const timeoutID = setTimeout(() => {
       setResult(
         getAccountBalance(
+          currentAccount?.address || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -335,6 +370,7 @@ export default function useAccountBalance(
     assetRegistryMap,
     balanceMap,
     chainInfoMap,
+    currentAccount,
     isShowZeroBalance,
     multiChainAssetMap,
     price24hMap,

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BigN from 'bignumber.js';
+import { SubstrateBalance } from '@subwallet/extension-base/types';
 
 export type BalanceValueInfo = {
   value: BigN;
@@ -11,13 +12,14 @@ export type BalanceValueInfo = {
 
 export type PriceChangeStatus = 'increase' | 'decrease';
 
-export type TokenBalanceItemType = {
+export interface TokenBalanceItemType extends SubstrateBalance {
   slug: string;
   logoKey: string;
   symbol: string;
   chain?: string;
   chainDisplayName?: string;
   isTestnet: boolean;
+  isNotSupport: boolean;
   priceValue: number;
   price24hValue: number;
   priceChangeStatus?: PriceChangeStatus;
@@ -25,4 +27,4 @@ export type TokenBalanceItemType = {
   locked: BalanceValueInfo;
   total: BalanceValueInfo;
   isReady: boolean;
-};
+}
