@@ -642,7 +642,8 @@
   "filterOptions": {
     "polkadotParachain": "Polkadot парачейн",
     "kusamaParachain": "Kusama парачейн",
-    "win": "Победа",
+    "won": "Won",
+    "inAuction": "In auction",
     "fail": "Провал",
     "pooled": "Пул",
     "nominated": "Номинировано",

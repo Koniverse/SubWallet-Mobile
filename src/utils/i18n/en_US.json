@@ -643,7 +643,8 @@
   "filterOptions": {
     "polkadotParachain": "Polkadot parachain",
     "kusamaParachain": "Kusama parachain",
-    "win": "Win",
+    "won": "Won",
+    "inAuction": "In auction",
     "fail": "Fail",
     "pooled": "Pooled",
     "nominated": "Nominated",

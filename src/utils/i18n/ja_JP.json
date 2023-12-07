@@ -642,7 +642,8 @@
   "filterOptions": {
     "polkadotParachain": "Polkadot パラチェーン",
     "kusamaParachain": "Kusama パラチェーン",
-    "win": "勝つ",
+    "won": "Won",
+    "inAuction": "In auction",
     "fail": "失敗",
     "pooled": "プール",
     "nominated": "ノミネーション",

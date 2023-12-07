@@ -643,7 +643,8 @@
   "filterOptions": {
     "polkadotParachain": "Polkadot平行链",
     "kusamaParachain": "KSM平行链",
-    "win": "赢",
+    "won": "Won",
+    "inAuction": "In auction",
     "fail": "输",
     "pooled": "集合",
     "nominated": "提名",

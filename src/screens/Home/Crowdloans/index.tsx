@@ -8,7 +8,7 @@ import { EmptyList } from 'components/EmptyList';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useIsFocused } from '@react-navigation/native';
-import { CrowdloanItemType } from 'types/index';
+import { _CrowdloanItemType } from 'types/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { Linking, ListRenderItemInfo, TouchableOpacity } from 'react-native';
@@ -31,24 +31,24 @@ const renderListEmptyComponent = () => {
 enum FilterValue {
   POLKADOT_PARACHAIN = 'Polkadot parachain',
   KUSAMA_PARACHAIN = 'Kusama parachain',
-  WINNER = 'completed',
-  FAIL = 'failed',
+  WON = 'won',
+  IN_AUCTION = 'in_auction',
 }
 
 export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
-  const items: CrowdloanItemType[] = useGetCrowdloanList();
+  const items: _CrowdloanItemType[] = useGetCrowdloanList();
   // const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const defaultFilterOpts = [
     { label: i18n.filterOptions.polkadotParachain, value: FilterValue.POLKADOT_PARACHAIN },
     { label: i18n.filterOptions.kusamaParachain, value: FilterValue.KUSAMA_PARACHAIN },
-    { label: i18n.filterOptions.win, value: FilterValue.WINNER },
-    { label: i18n.filterOptions.fail, value: FilterValue.FAIL },
+    { label: i18n.filterOptions.won, value: FilterValue.WON },
+    { label: i18n.filterOptions.inAuction, value: FilterValue.IN_AUCTION },
   ];
   const banners = useGetBannerByScreen('crowdloan');
-  const renderItem = ({ item }: ListRenderItemInfo<CrowdloanItemType>) => {
+  const renderItem = ({ item }: ListRenderItemInfo<_CrowdloanItemType>) => {
     return <CrowdloanItem item={item} isShowBalance={isShowBalance} />;
   };
 
@@ -84,21 +84,21 @@ export const CrowdloansScreen = () => {
     }
   }, [isFocused]);
 
-  const doFilterOptions = useCallback((itemList: CrowdloanItemType[], searchKeyword: string) => {
+  const doFilterOptions = useCallback((itemList: _CrowdloanItemType[], searchKeyword: string) => {
     const lowerCaseSearchKeyword = searchKeyword.toLowerCase();
     if (searchKeyword.length > 0) {
-      return itemList.filter(({ chainDisplayName }) => chainDisplayName.toLowerCase().includes(lowerCaseSearchKeyword));
+      return itemList.filter(({ chainName }) => chainName.toLowerCase().includes(lowerCaseSearchKeyword));
     }
     return itemList;
   }, []);
 
-  function getListByFilterOpt(crowdloanItems: CrowdloanItemType[], filterOptions: string[]) {
+  function getListByFilterOpt(crowdloanItems: _CrowdloanItemType[], filterOptions: string[]) {
     if (filterOptions.length === 0) {
       return crowdloanItems;
     }
-    let result: CrowdloanItemType[];
-    result = crowdloanItems.filter(({ relayParentDisplayName, paraState = '' }) => {
-      if (filterOptions.includes(relayParentDisplayName) || filterOptions.includes(paraState)) {
+    let result: _CrowdloanItemType[];
+    result = crowdloanItems.filter(({ chainName, fundStatus = '' }) => {
+      if (filterOptions.includes(chainName) || filterOptions.includes(fundStatus)) {
         return true;
       }
       return false;
