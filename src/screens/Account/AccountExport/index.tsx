@@ -169,7 +169,6 @@ export const AccountExport = ({
   );
 
   const copyPrivateKey = useCopyClipboard(privateKey);
-  const copyQr = useCopyClipboard(qrData);
 
   const onPressDone = () => {
     navigation.goBack();
@@ -265,15 +264,6 @@ export const AccountExport = ({
                       innerEyesRadius={5}
                       pieceBorderRadius={2}
                     />
-                  </View>
-                  <View style={styles.copyArea}>
-                    <Button
-                      type="ghost"
-                      size="xs"
-                      onPress={copyQr}
-                      icon={<Icon phosphorIcon={CopySimple} size="md" iconColor={theme.colorTextLight4} />}>
-                      {i18n.common.copyToClipboard}
-                    </Button>
                   </View>
                 </View>
               )}
