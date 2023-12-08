@@ -147,6 +147,9 @@ jobs:
     - name: Install dependencies
       run: yarn install --immutable | grep -v 'YN0013'
 
+    - name: Autocheck
+      run: node ./scripts/autocheck.mjs
+
     - uses: actions/setup-java@v1
       with:
         java-version: '11'
