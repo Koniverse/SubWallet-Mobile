@@ -17,10 +17,9 @@ import SplashScreen from 'react-native-splash-screen';
 import { LoadingScreen } from 'screens/LoadingScreen';
 import { ColorMap } from 'styles/color';
 import { AutoLockState } from 'utils/autoLock';
-import useStoreBackgroundService from 'hooks/store/useStoreBackgroundService';
 import { deviceHeight, deviceWidth, TOAST_DURATION } from 'constants/index';
 import AppNavigator from './AppNavigator';
-import { AppModalContextProvider } from './providers/AppModalContext';
+import { AppModalContextProvider } from 'providers/AppModalContext';
 import { CustomToast } from 'components/design-system-ui/toast';
 import { PortalProvider } from '@gorhom/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -145,7 +144,7 @@ export function setIsFirstOpen(value: boolean) {
   isFirstOpen.current = value;
 }
 
-export const AppNew = () => {
+export const App = () => {
   const isDarkMode = true;
   const theme = isDarkMode ? THEME_PRESET.dark : THEME_PRESET.light;
   StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
@@ -156,7 +155,6 @@ export const AppNew = () => {
   const dispatch = useDispatch();
   const isCryptoReady = useCryptoReady();
   const isI18nReady = useSetupI18n().isI18nReady;
-  useStoreBackgroundService();
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
@@ -336,4 +334,4 @@ export const AppNew = () => {
   );
 };
 
-export default AppNew;
+export default App;

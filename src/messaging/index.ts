@@ -9,7 +9,6 @@ import { WebviewError, WebviewNotReadyError, WebviewResponseError } from '../err
 import EventEmitter from 'eventemitter3';
 import type {
   AccountJson,
-  AllowedPath,
   AuthorizeRequest,
   MessageTypes,
   MessageTypesWithNoSubscriptions,
@@ -34,7 +33,6 @@ import {
   ActiveCronAndSubscriptionMap,
   AmountData,
   AssetSettingUpdateReq,
-  BalanceJson,
   BrowserConfirmationType,
   ChainStakingMetadata,
   ConfirmationDefinitions,
@@ -142,7 +140,7 @@ import {
   ValidateNetworkResponse,
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { Message } from '@subwallet/extension-base/types';
+import { BalanceJson, Message } from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
@@ -162,6 +160,7 @@ import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { _getKnownHashes } from 'utils/defaultChains';
 import { needBackup, triggerBackup } from 'utils/storage';
+import { WindowOpenParams } from '@subwallet/extension-base/background/types';
 
 interface Handler {
   resolve: (data: any) => void;
@@ -564,15 +563,12 @@ export async function saveAccountAllLogo(
   return sendMessage('pri(settings.saveAccountAllLogo)', accountAllLogo, callback);
 }
 
-export async function saveBrowserConfirmationType(
-  type: BrowserConfirmationType,
-  callback: (data: RequestSettingsType) => void,
-): Promise<boolean> {
-  return sendMessage('pri(settings.saveBrowserConfirmationType)', type, callback);
+export async function saveBrowserConfirmationType(type: BrowserConfirmationType): Promise<boolean> {
+  return sendMessage('pri(settings.saveBrowserConfirmationType)', type);
 }
 
-export async function saveTheme(theme: ThemeNames, callback: (data: UiSettings) => void): Promise<boolean> {
-  return sendMessage('pri(settings.saveTheme)', theme, callback);
+export async function saveTheme(theme: ThemeNames): Promise<boolean> {
+  return sendMessage('pri(settings.saveTheme)', theme);
 }
 
 export async function saveLanguage(lang: LanguageType): Promise<boolean> {
@@ -859,7 +855,9 @@ export async function subscribeAuthorizeRequests(cb: (accounts: AuthorizeRequest
   return sendMessage('pri(authorize.requests)', null, cb);
 }
 
-export async function subscribeAuthorizeRequestsV2(cb: (accounts: AuthorizeRequest[]) => void): Promise<boolean> {
+export async function subscribeAuthorizeRequestsV2(
+  cb: (accounts: AuthorizeRequest[]) => void,
+): Promise<AuthorizeRequest[]> {
   return sendMessage('pri(authorize.requestsV2)', null, cb);
 }
 
@@ -915,11 +913,11 @@ export async function forgetAllSite(callback: (data: AuthUrls) => void): Promise
   return sendMessage('pri(authorize.forgetAllSite)', null, callback);
 }
 
-export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<boolean> {
+export async function subscribeMetadataRequests(cb: (accounts: MetadataRequest[]) => void): Promise<MetadataRequest[]> {
   return sendMessage('pri(metadata.requests)', null, cb);
 }
 
-export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<boolean> {
+export async function subscribeSigningRequests(cb: (accounts: SigningRequest[]) => void): Promise<SigningRequest[]> {
   return sendMessage('pri(signing.requests)', null, cb);
 }
 
@@ -969,8 +967,8 @@ export async function deriveAccountV2(
   return sendMessage('pri(derivation.createV2)', { genesisHash, name, parentAddress, suri, isAllowed });
 }
 
-export async function windowOpen(path: AllowedPath): Promise<boolean> {
-  return sendMessage('pri(window.open)', path);
+export async function windowOpen(params: WindowOpenParams): Promise<boolean> {
+  return sendMessage('pri(window.open)', params);
 }
 
 export async function jsonGetAccountInfo(json: KeyringPair$Json): Promise<ResponseJsonGetAccountInfo> {

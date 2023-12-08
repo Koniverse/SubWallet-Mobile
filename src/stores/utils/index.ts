@@ -8,7 +8,6 @@ import {
   AddressBookInfo,
   AllLogoMap,
   AssetSetting,
-  BalanceJson,
   CampaignBanner,
   ChainStakingMetadata,
   ConfirmationsQueue,
@@ -43,6 +42,7 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { SessionTypes } from '@walletconnect/types';
 import { MissionInfo } from 'types/missionPool';
 import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
+import { BalanceJson } from '@subwallet/extension-base/types';
 // Setup redux stores
 
 function voidFn() {

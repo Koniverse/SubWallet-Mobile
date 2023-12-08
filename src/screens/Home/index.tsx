@@ -28,7 +28,7 @@ import { Settings } from 'screens/Settings';
 import i18n from 'utils/i18n/i18n';
 import { RootStackParamList } from 'routes/index';
 import { handleTriggerDeeplinkAfterLogin } from 'utils/deeplink';
-import { isFirstOpen, setIsFirstOpen } from '../../AppNew';
+import { isFirstOpen, setIsFirstOpen } from '../../App';
 import CampaignBannerModal from 'screens/Home/Crowdloans/CampaignBannerModal';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';

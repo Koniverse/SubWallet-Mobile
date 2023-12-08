@@ -74,7 +74,7 @@ import { saveCurrentAccountAddress, updateAssetSetting } from 'messaging/index';
 import urlParse from 'url-parse';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { transformUniversalToNative } from 'utils/deeplink';
-import { setPrevDeeplinkUrl } from './AppNew';
+import { setPrevDeeplinkUrl } from './App';
 import { updateIsDeepLinkConnect } from 'stores/base/Settings';
 import queryString from 'querystring';
 import { connectWalletConnect } from 'utils/walletConnect';
