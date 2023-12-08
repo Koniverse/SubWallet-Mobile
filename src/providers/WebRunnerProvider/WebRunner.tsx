@@ -11,7 +11,7 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import { mmkvStore, restoreStorageData } from 'utils/storage';
+import {mmkvStore, restoreStorageData, triggerBackup, triggerBackupOnInit} from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;
@@ -64,6 +64,7 @@ class WebRunnerHandler {
   status: 'inactive' | 'activating' | 'active' = 'inactive';
   dispatch?: React.Dispatch<WebRunnerControlAction>;
   shouldReloadHandler: boolean = false;
+  isBackupOnInit = false;
 
   update(globalState: WebRunnerGlobalState, dispatch: React.Dispatch<WebRunnerControlAction>) {
     this.state = globalState;
@@ -211,6 +212,11 @@ class WebRunnerHandler {
           }
           this.shouldReloadHandler = true;
           this.startPing();
+
+          if (!this.isBackupOnInit) {
+            triggerBackupOnInit();
+            this.isBackupOnInit = true;
+          }
         } else {
           this.stopPing();
         }

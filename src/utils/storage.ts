@@ -3,6 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { Storage } from 'redux-persist';
 import { Platform } from 'react-native';
 import { getSystemVersion } from 'react-native-device-info';
+import { addLazy } from '@subwallet/extension-base/utils/lazy';
 
 const storage = new MMKV();
 
@@ -110,15 +111,8 @@ export const needBackup = (message: string): boolean => {
   return BACKUP_WHITELIST.includes(message);
 };
 
-const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
-
 // Backup and restore data
 export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: boolean = true) => {
-  // Todo: Consider to remove this condition
-  if (!isIOS17) {
-    return;
-  }
-
   mobileBackup()
     .then(response => {
       if (typeof response.storage !== 'string') {
@@ -127,14 +121,48 @@ export const backupStorageData = (forceBackup: boolean = false, markAppIsSetup: 
       const preBackupData = JSON.parse(response.storage);
       const isAccount = Object.keys(preBackupData).find((item: string) => item.startsWith('account:'));
       if ((isAccount && preBackupData['keyring:subwallet']) || forceBackup) {
+        const lastBackupTime = new Date();
         mmkvStore.set('backup-indexedDB', response.indexedDB);
         mmkvStore.set('backup-localstorage', response.storage);
-        mmkvStore.set('webRunnerLastBackupTime', new Date().toString());
+        mmkvStore.set('webRunnerLastBackupTime', lastBackupTime.toString());
+        mmkvStore.set('webRunnerLastBackupTimestamp', lastBackupTime.getTime());
         mmkvStore.set('app-is-setup', markAppIsSetup);
         // console.debug('** Backup storage data success');
       }
     })
     .catch(e => console.debug('** Backup storage data error:', e));
+};
+
+const isIOS17 = Platform.OS === 'ios' && getSystemVersion().startsWith('17');
+
+export const triggerBackup = (message = '*** Backup storage') => {
+  // Backup logic with device not ios 17
+  if (!isIOS17) {
+    const now = new Date().getTime();
+    const lastBackupTimestamp = mmkvStore.getNumber('webRunnerLastBackupTimestamp');
+    if (lastBackupTimestamp && now - lastBackupTimestamp < 3600000) {
+      return;
+    }
+  }
+
+  addLazy(
+    'backupStorageData',
+    () => {
+      console.debug(message);
+      backupStorageData();
+    },
+    3000,
+    9000,
+    false,
+  );
+};
+
+export const triggerBackupOnInit = () => {
+  const lastBackupTimestamp = mmkvStore.getNumber('webRunnerLastBackupTimestamp');
+  // Backup logic with device not ios 17
+  if (!lastBackupTimestamp) {
+    triggerBackup('*** Backup storage on init');
+  }
 };
 
 export const restoreStorageData = () => {
