@@ -25,6 +25,7 @@ ios/.xcode.env.local
 # Android/IntelliJ
 #
 build/
+dist/
 web-build/
 .idea
 .yarn
