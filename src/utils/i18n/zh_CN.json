@@ -787,6 +787,7 @@
     "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
+    "address": "地址",
     "receive": "领取",
     "send": "发送",
     "swap": "切换",

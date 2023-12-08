@@ -136,7 +136,7 @@ export const TokenGroupsUpperBlock = ({
 
       <View style={[actionButtonWrapper]} pointerEvents="box-none">
         <ActionButton
-          label={i18n.cryptoScreen.receive}
+          label={i18n.cryptoScreen.address}
           icon={ButtonIcon.Receive}
           onPress={onOpenReceive}
           buttonWrapperStyle={{ paddingHorizontal: theme.paddingSM }}

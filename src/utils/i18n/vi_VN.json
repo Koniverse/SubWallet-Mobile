@@ -787,6 +787,7 @@
     "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
+    "address": "Địa chỉ",
     "receive": "Nhận",
     "send": "Gửi",
     "swap": "Swap",

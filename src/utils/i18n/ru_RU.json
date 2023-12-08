@@ -786,7 +786,8 @@
     "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
-    "receive": "Адрес",
+    "address": "Адрес",
+    "receive": "Получать",
     "send": "Перевести",
     "swap": "Cвоп",
     "buy": "Купить"

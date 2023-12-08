@@ -787,7 +787,8 @@
     "missionPools": "Mission Pools"
   },
   "cryptoScreen": {
-    "receive": "Address",
+    "address": "Address",
+    "receive": "Receive",
     "send": "Send",
     "swap": "Swap",
     "buy": "Buy"
