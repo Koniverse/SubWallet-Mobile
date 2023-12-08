@@ -11,6 +11,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import { isSameAddress } from '@subwallet/extension-base/utils';
 import {
   AmountData,
+  ExtrinsicType,
   NominatorMetadata,
   RequestStakeWithdrawal,
   StakingType,
@@ -268,7 +269,7 @@ export const Withdraw = ({
           </>
         </TransactionLayout>
       ) : (
-        <TransactionDone transactionDoneInfo={transactionDoneInfo} />
+        <TransactionDone transactionDoneInfo={transactionDoneInfo} extrinsicType={ExtrinsicType.STAKING_WITHDRAW} />
       )}
     </>
   );

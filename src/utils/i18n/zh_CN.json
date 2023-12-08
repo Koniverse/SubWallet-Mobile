@@ -202,7 +202,9 @@
     "watchOnlyAccount": "附加仅观看的帐户",
     "unknownAccount": "未知账户",
     "noFaceIdPermission": "This app use Face ID to unlock password",
-    "tooManyAttemps": "尝试的失败次数过多。请稍后重试或输入密码。"
+    "tooManyAttemps": "尝试的失败次数过多。请稍后重试或输入密码。",
+    "ratingAlertTitle": "Rate our app!",
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
   },
   "title": {
     "exportAccount": "导出账户",
@@ -408,7 +410,10 @@
     "addNetwork": "导入网络",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "启用"
+    "enable": "启用",
+    "rateSubwallet": "Rate SubWallet",
+    "sendFeedback": "Send feedback",
+    "notNow": "Not now"
   },
   "inputLabel": {
     "selectAcc": "选择账户",
@@ -979,6 +984,7 @@
     "twitter": "推特",
     "discord": "Discord",
     "termOfService": "服务条款",
+    "termOfUse": "Terms of use",
     "webViewDebugger": "网页视图排查者",
     "immediately": "立即",
     "ifLeftFor15Seconds": "若离开15秒",

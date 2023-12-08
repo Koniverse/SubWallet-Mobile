@@ -202,7 +202,9 @@
     "watchOnlyAccount": "Watch-only account",
     "unknownAccount": "Unknown account",
     "noFaceIdPermission": "This app use Face ID to unlock password",
-    "tooManyAttemps": "Too many failed attempts. Please try again later or enter password."
+    "tooManyAttemps": "Too many failed attempts. Please try again later or enter password.",
+    "ratingAlertTitle": "Rate our app!",
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
   },
   "title": {
     "exportAccount": "Export account",
@@ -408,7 +410,10 @@
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Enable"
+    "enable": "Enable",
+    "rateSubwallet": "Rate SubWallet",
+    "sendFeedback": "Send feedback",
+    "notNow": "Not now"
   },
   "inputLabel": {
     "selectAcc": "Select account",
@@ -979,6 +984,7 @@
     "twitter": "Twitter",
     "discord": "Discord",
     "termOfService": "Terms of service",
+    "termOfUse": "Terms of use",
     "webViewDebugger": "Web view debugger",
     "immediately": "Immediately",
     "ifLeftFor15Seconds": "If left for 15 seconds",

@@ -173,7 +173,7 @@ export const StakingDetailModal = ({
         "You don't have any staked funds left to unstake. Check withdrawal status (how long left until the unstaking period ends) by scrolling down in the Details screen. Keep in mind that you need to withdraw manually.",
         [
           {
-            text: 'Check withdraw status',
+            text: 'Check withdrawal status',
             onPress: () => {
               setSeeMore(true);
 
