@@ -445,7 +445,6 @@ const AppNavigator = ({ isAppReady }: Props) => {
             <>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'fade_from_bottom' }}>
                 <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-                <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
                 <Stack.Screen name="SendFund" component={SendFund} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="SendNFT" component={SendNFT} options={{ gestureEnabled: false }} />
                 <Stack.Screen name="BrowserSearch" component={BrowserSearch} />
@@ -456,6 +455,7 @@ const AppNavigator = ({ isAppReady }: Props) => {
                 <Stack.Screen name="Drawer" component={DrawerScreen} options={{ gestureEnabled: false }} />
               </Stack.Group>
               <Stack.Group screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+                <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
                 <Stack.Screen name="History" component={HistoryScreen} />
                 <Stack.Screen name="NetworksSetting" component={NetworksSetting} />
                 <Stack.Screen name="ConnectList" component={ConnectionListScreen} />
