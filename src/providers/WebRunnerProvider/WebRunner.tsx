@@ -11,7 +11,7 @@ import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
 import VersionNumber from 'react-native-version-number';
 import { getId } from '@subwallet/extension-base/utils/getId';
-import {mmkvStore, restoreStorageData, triggerBackup, triggerBackupOnInit} from 'utils/storage';
+import { mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;

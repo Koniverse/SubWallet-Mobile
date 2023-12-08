@@ -161,7 +161,7 @@ import {
 import { _ChainAsset, _ChainInfo } from '@subwallet/chain-list/types';
 import { AuthUrls } from '@subwallet/extension-base/services/request-service/types';
 import { _getKnownHashes } from 'utils/defaultChains';
-import { needBackup, triggerBackup} from 'utils/storage';
+import { needBackup, triggerBackup } from 'utils/storage';
 
 interface Handler {
   resolve: (data: any) => void;
