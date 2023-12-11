@@ -33,6 +33,7 @@ enum SortKey {
   COMMISSION = 'commission',
   RETURN = 'return',
   MIN_STAKE = 'min-stake',
+  NOMINATING = 'nominating',
   DEFAULT = 'default',
 }
 
@@ -125,6 +126,14 @@ export const ValidatorSelector = forwardRef(
         });
       }
 
+      if (nominations && nominations.length > 0) {
+        result.push({
+          desc: true,
+          label: i18n.stakingScreen.nomination,
+          value: SortKey.NOMINATING,
+        });
+      }
+
       result.push({
         desc: false,
         label: i18n.stakingScreen.lowestActiveStake,
@@ -132,7 +141,7 @@ export const ValidatorSelector = forwardRef(
       });
 
       return result;
-    }, [hasReturn]);
+    }, [hasReturn, nominations]);
     const [sortSelection, setSortSelection] = useState<SortKey>(SortKey.DEFAULT);
     const fewValidators = changeValidators.length > 1;
     const applyLabel = useMemo(() => {
@@ -159,6 +168,26 @@ export const ValidatorSelector = forwardRef(
       }
     }, [chain, changeValidators.length, fewValidators]);
 
+    const nominatorValueList = useMemo(() => {
+      return nominations && nominations.length
+        ? nominations.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
+        : [];
+    }, [nominations]);
+
+    const sortValidator = useCallback(
+      (a: ValidatorDataType, b: ValidatorDataType) => {
+        const aKey = getValidatorKey(a.address, a.identity);
+        const bKey = getValidatorKey(b.address, b.identity);
+
+        if (nominatorValueList.includes(aKey) && !nominatorValueList.includes(bKey)) {
+          return -1;
+        }
+
+        return 1;
+      },
+      [nominatorValueList],
+    );
+
     const resultList = useMemo(() => {
       return [...items].sort((a: ValidatorDataType, b: ValidatorDataType) => {
         switch (sortSelection) {
@@ -168,12 +197,14 @@ export const ValidatorSelector = forwardRef(
             return (b.expectedReturn || 0) - (a.expectedReturn || 0);
           case SortKey.MIN_STAKE:
             return new BigN(a.minBond).minus(b.minBond).toNumber();
+          case SortKey.NOMINATING:
+            return sortValidator(a, b);
           case SortKey.DEFAULT:
           default:
             return 0;
         }
       });
-    }, [items, sortSelection]);
+    }, [items, sortSelection, sortValidator]);
 
     const renderListEmptyComponent = useCallback(() => {
       return (
@@ -207,12 +238,6 @@ export const ValidatorSelector = forwardRef(
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nominations, onInitValidators, isSingleSelect]);
-
-    const nominatorValueList = useMemo(() => {
-      return nominations && nominations.length
-        ? nominations.map(item => getValidatorKey(item.validatorAddress, item.validatorIdentity))
-        : [];
-    }, [nominations]);
 
     const renderSortingItem = (item: SortOption) => {
       return (
