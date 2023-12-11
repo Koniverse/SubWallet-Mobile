@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useImperativeHandle, useState } from 'react';
-import { DeviceEventEmitter, Dimensions, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { DeviceEventEmitter, Dimensions, Linking, StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ModalStyles from './styleV2';
@@ -108,6 +108,12 @@ const ModalBaseV2 = React.forwardRef<SWModalRefProps, SWModalProps>(
       setVisible(false);
       scrollTo(0);
     }, [onChangeModalVisible, scrollTo, setVisible]);
+
+    useEffect(() => {
+      const unsubscribe = Linking.addEventListener('url', () => onClose());
+
+      return () => unsubscribe.remove();
+    }, [numberOfConfirmations, onClose]);
 
     const isActive = useCallback(() => {
       return active.value;
