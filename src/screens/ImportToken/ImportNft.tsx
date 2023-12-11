@@ -9,7 +9,7 @@ import { upsertCustomToken, validateCustomToken } from 'messaging/index';
 import { ImportNftProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
-import { InputAddress } from 'components/Input/InputAddress';
+import { InputAddress, InputAddressRefProps } from 'components/Input/InputAddress';
 import { Warning } from 'components/Warning';
 import { NetworkField } from 'components/Field/Network';
 import { requestCameraPermission } from 'utils/permission/camera';
@@ -117,6 +117,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
   }, [chainInfoMap]);
   const [symbol, setSymbol] = useState<string>('');
   const symbolRef = useRef<string>('');
+  const inputAddressRef = useRef<InputAddressRefProps>(null);
 
   useEffect(() => {
     symbolRef.current = symbol;
@@ -276,13 +277,6 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     loading ||
     !!errors.smartContract;
 
-  const onUpdateNftContractAddress = useCallback(
-    (text: string) => {
-      setValue('smartContract', text);
-    },
-    [setValue],
-  );
-
   const onSelectNFTType = useCallback(
     (item: AssetTypeOption) => {
       setValue('selectedNftType', item.value);
@@ -295,18 +289,17 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
     return <Icon phosphorIcon={PlusCircle} size={'lg'} weight={'fill'} iconColor={color} />;
   };
 
-  const onScanContractAddress = useCallback(
-    (data: string) => {
+  const onScanContractAddress = useCallback((onChangeContractAddress?: (data: string) => void) => {
+    return (data: string) => {
       if (isAddress(data)) {
         setError(undefined);
         setShowQrModalVisible(false);
-        onUpdateNftContractAddress(data);
+        onChangeContractAddress && onChangeContractAddress(data);
       } else {
         setError(i18n.errorMessage.isNotContractAddress);
       }
-    },
-    [onUpdateNftContractAddress],
-  );
+    };
+  }, []);
 
   return (
     <ContainerWithSubHeader
@@ -349,10 +342,10 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
           control={control}
           showError
           rules={smartContractInputRules}
-          render={({ field: { value, ref, onChange } }) => (
+          render={({ field: { value, onChange } }) => (
             <InputAddress
               disabled={!chain}
-              ref={ref}
+              ref={inputAddressRef}
               label={i18n.inputLabel.contractAddress}
               value={value}
               onPressQrButton={onPressQrButton}
@@ -404,7 +397,7 @@ const ImportNft = ({ route: { params: routeParams } }: ImportNftProps) => {
             setError(undefined);
             setShowQrModalVisible(false);
           }}
-          onChangeAddress={onScanContractAddress}
+          onChangeAddress={onScanContractAddress(inputAddressRef.current?.onChange)}
           isShowError
           error={error}
           setQrModalVisible={setShowQrModalVisible}

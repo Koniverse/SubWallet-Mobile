@@ -32,7 +32,11 @@ const isValidCurrentAddress = (address: string, isEthereum: boolean) => {
   }
 };
 
-const Component = (inputAddressProps: InputProps, ref: ForwardedRef<any>) => {
+export type InputAddressRefProps = {
+  onChange: (value: string) => void;
+};
+
+const Component = (inputAddressProps: InputProps, ref: ForwardedRef<InputAddressRefProps>) => {
   const {
     containerStyle,
     disabled,
