@@ -8,6 +8,7 @@ import useGeneralStyles from 'components/MetaInfo/hooks/useGeneralStyles';
 import { View } from 'react-native';
 import { getSchemaColor, renderColContent } from 'components/MetaInfo/shared';
 import { ActivityIndicator, Number } from 'components/design-system-ui';
+import { TextSizeProps } from 'components/design-system-ui/typography';
 
 export interface NumberInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   value: string | number | BigN;
@@ -15,6 +16,7 @@ export interface NumberInfoItem extends Omit<InfoItemBase, 'valueColorSchema'> {
   suffix?: string;
   decimals?: number;
   valueColorSchema?: SchemeColor | 'even-odd';
+  size?: TextSizeProps;
 }
 
 const NumberItem: React.FC<NumberInfoItem> = ({
@@ -25,6 +27,7 @@ const NumberItem: React.FC<NumberInfoItem> = ({
   value,
   valueColorSchema,
   loading,
+  size,
 }: NumberInfoItem) => {
   const theme = useSubWalletTheme().swThemes;
   const _style = MetaInfoStyles(theme);
@@ -38,9 +41,29 @@ const NumberItem: React.FC<NumberInfoItem> = ({
     };
   }, [_style.value, theme, valueColorSchema, valueGeneralStyle]);
 
+  const valueSize = useMemo(() => {
+    if (size === 'sm') {
+      return 12;
+    }
+
+    if (size === 'xs') {
+      return 10;
+    }
+
+    if (size === 'md') {
+      return 16;
+    }
+
+    if (size === 'lg') {
+      return 20;
+    }
+
+    return 14;
+  }, [size]);
+
   return (
     <View style={_style.row}>
-      <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle })}</View>
+      <View style={[_style.col]}>{renderColContent(label, { ..._style.label, ...labelGeneralStyle }, size)}</View>
       <View style={[_style.col, _style['col.grow'], _style['col.to-right']]}>
         {loading ? (
           <ActivityIndicator size={20} />
@@ -54,7 +77,7 @@ const NumberItem: React.FC<NumberInfoItem> = ({
             decimalColor={valueColorSchema === 'even-odd' ? theme.colorTextLight4 : undefined}
             unitColor={valueColorSchema === 'even-odd' ? theme.colorTextLight2 : undefined}
             textStyle={valueStyle}
-            size={valueStyle.fontSize}
+            size={valueSize}
           />
         )}
       </View>

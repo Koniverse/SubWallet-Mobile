@@ -54,13 +54,13 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
           scrollEventThrottle={400}
           contentContainerStyle={{ gap: theme.padding }}>
           <>
-            {GENERAL_TERM_AND_CONDITION.map(item => (
-              <>
+            {GENERAL_TERM_AND_CONDITION.map((item, index) => (
+              <View key={index}>
                 <Typography.Text style={{ color: theme.colorWhite }}>{item.title}</Typography.Text>
                 <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
                   {item.data}
                 </Typography.Text>
-              </>
+              </View>
             ))}
           </>
         </ScrollView>
