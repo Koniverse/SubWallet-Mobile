@@ -643,7 +643,8 @@
   "filterOptions": {
     "polkadotParachain": "Polkadot Parachain",
     "kusamaParachain": "Kusama Parachain",
-    "win": "Thành công",
+    "won": "Won",
+    "inAuction": "In auction",
     "fail": "Thất bại",
     "pooled": "Pool",
     "nominated": "Nominate ",

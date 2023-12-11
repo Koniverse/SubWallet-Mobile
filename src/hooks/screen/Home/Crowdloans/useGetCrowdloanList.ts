@@ -1,8 +1,6 @@
 import { APIItemState, CrowdloanItem } from '@subwallet/extension-base/background/KoniTypes';
 import {
   _getChainNativeTokenBasicInfo,
-  _getCrowdloanUrlFromChain,
-  _getSubstrateParaId,
   _getSubstrateRelayParent,
 } from '@subwallet/extension-base/services/chain-service/utils';
 
@@ -10,140 +8,95 @@ import { _ChainInfo } from '@subwallet/chain-list/types';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { BN_ZERO } from 'utils/chainBalances';
-import BigN from 'bignumber.js';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getBalanceValue, getConvertedBalanceValue } from 'hooks/screen/useAccountBalance';
-import { CrowdloanItemType, CrowdloanContributeValueType, CrowdloanValueInfo } from 'types/index';
+import { _CrowdloanItemType } from 'types/index';
+import { fetchStaticData } from 'utils/fetchStaticData';
 
-const GroupDisplayNameMap: Record<string, string> = {
-  polkadot: 'Polkadot parachain',
-  kusama: 'Kusama parachain',
-};
-
-function getGroupDisplayName(key: string): string {
-  return GroupDisplayNameMap[key];
-}
-
-function getCrowdloanChains(chainInfoMap: Record<string, _ChainInfo>) {
-  const result: string[] = [];
-
-  for (const chainKey in chainInfoMap) {
-    if (!chainInfoMap.hasOwnProperty(chainKey)) {
-      continue;
-    }
-
-    const chainInfo = chainInfoMap[chainKey];
-
-    if (_getSubstrateParaId(chainInfo) === -1) {
-      continue;
-    }
-
-    result.push(chainKey);
-  }
-
-  return result;
-}
-
-function getCrowdloanContributeMap(
-  crowdloanChains: string[],
-  chainInfoMap: Record<string, _ChainInfo>,
+function getCrowdloanContributeList(
   crowdloanMap: Record<string, CrowdloanItem>,
+  chainInfoMap: Record<string, _ChainInfo>,
   priceMap: Record<string, number>,
-) {
-  const crowdloanContributeMap: Record<string, CrowdloanContributeValueType> = {};
+): _CrowdloanItemType[] {
+  const result: _CrowdloanItemType[] = [];
 
-  crowdloanChains.forEach(key => {
-    const chainInfo = chainInfoMap[key];
-    const relayParentKey = _getSubstrateRelayParent(chainInfo);
-    const relayChainInfo = chainInfoMap[relayParentKey];
+  Object.keys(crowdloanMap).forEach(chain => {
+    const chainInfo = chainInfoMap[chain];
+    const crowdloanItem = crowdloanMap[chain];
 
-    if (!chainInfo) {
+    if (!chainInfo || !crowdloanItem || crowdloanItem.state.valueOf() !== APIItemState.READY.valueOf()) {
       return;
     }
 
-    const crowdloanItem = crowdloanMap[key];
+    const relayParentKey = _getSubstrateRelayParent(chainInfo);
+    const relayChainInfo = chainInfoMap[relayParentKey];
 
-    if (!crowdloanItem || crowdloanItem.state.valueOf() !== APIItemState.READY.valueOf()) {
+    if (!relayChainInfo) {
       return;
     }
 
     const { decimals, symbol } = _getChainNativeTokenBasicInfo(relayChainInfo);
-    const price = priceMap[relayParentKey];
+    const price = priceMap[relayParentKey] || 0;
     const contributeValue = getBalanceValue(crowdloanItem.contribute, decimals);
-    const convertedContributeValue = getConvertedBalanceValue(contributeValue, price);
 
-    const contributeInfo = {
-      value: contributeValue,
-      convertedValue: convertedContributeValue,
-      symbol: symbol,
-    } as CrowdloanValueInfo;
-
-    crowdloanContributeMap[key] = {
-      paraState: crowdloanItem.paraState,
-      contribute: contributeInfo,
-    };
-  });
-
-  return crowdloanContributeMap;
-}
-
-function getCrowdloanItem(
-  slug: string,
-  contributeValueInfo: CrowdloanContributeValueType,
-  chainInfo: _ChainInfo,
-): CrowdloanItemType {
-  const relayParentKey = _getSubstrateRelayParent(chainInfo);
-  const relayParentDisplayName = getGroupDisplayName(relayParentKey);
-  const { convertedValue, symbol, value } = contributeValueInfo.contribute;
-
-  return {
-    contribute: value,
-    convertedContribute: convertedValue,
-    chainDisplayName: chainInfo.name,
-    slug: chainInfo.slug,
-    symbol,
-    relayParentDisplayName,
-    paraState: contributeValueInfo.paraState,
-    crowdloanUrl: _getCrowdloanUrlFromChain(chainInfo),
-  };
-}
-
-function getCrowdloanContributeList(
-  chainInfoMap: Record<string, _ChainInfo>,
-  chainKeys: string[],
-  crowdloanContributeMap: Record<string, CrowdloanContributeValueType>,
-  includeZeroBalance = false,
-): CrowdloanItemType[] {
-  const result: CrowdloanItemType[] = [];
-
-  chainKeys.forEach(n => {
-    const chainInfo = chainInfoMap[n];
-    const contributeValueInfo: CrowdloanContributeValueType = crowdloanContributeMap[n] || {
-      contribute: {
-        value: new BigN(0),
-        convertedValue: new BigN(0),
-      },
-    };
-
-    if (!includeZeroBalance && !BN_ZERO.lt(new BigN(contributeValueInfo.contribute.value))) {
+    if (!BN_ZERO.lt(contributeValue)) {
       return;
     }
 
-    result.push(getCrowdloanItem(n, contributeValueInfo, chainInfo));
+    const convertedContributeValue = getConvertedBalanceValue(contributeValue, price);
+
+    result.push({
+      fundId: crowdloanItem.fundId,
+      chainSlug: chainInfo.slug,
+      chainName: chainInfo.name,
+      relayChainSlug: relayChainInfo.slug,
+      relayChainName: relayChainInfo.name,
+      contribution: {
+        symbol,
+        value: contributeValue,
+        convertedValue: convertedContributeValue,
+      },
+      fundStatus: crowdloanItem.status,
+      unlockTime: new Date(crowdloanItem.endTime).getTime(),
+    });
   });
 
-  return result;
+  return result.sort((a, b) => {
+    if (a.unlockTime < b.unlockTime) {
+      return -1;
+    } else if (a.unlockTime > b.unlockTime) {
+      return 1;
+    } else {
+      return a.chainName.localeCompare(b.chainName);
+    }
+  });
 }
 
 export default function useGetCrowdloanList() {
   const crowdloanMap = useSelector((state: RootState) => state.crowdloan.crowdloanMap);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  // chainInfoMap needs to be fetched from online for dynamic usage
+  const [chainInfoMap, setChainInfoMap] = useState<Record<string, _ChainInfo>>({});
   const priceMap = useSelector((state: RootState) => state.price.priceMap);
-  const crowdloanChains = useMemo<string[]>(() => getCrowdloanChains(chainInfoMap), [chainInfoMap]);
 
-  return useMemo<CrowdloanItemType[]>(() => {
-    const crowdloanContributeMap = getCrowdloanContributeMap(crowdloanChains, chainInfoMap, crowdloanMap, priceMap);
+  useEffect(() => {
+    fetchStaticData<_ChainInfo[]>('chains')
+      .then(rs => {
+        const result: Record<string, _ChainInfo> = {};
 
-    return getCrowdloanContributeList(chainInfoMap, crowdloanChains, crowdloanContributeMap);
-  }, [crowdloanMap, crowdloanChains, chainInfoMap, priceMap]);
+        rs.forEach(ci => {
+          if (ci.slug) {
+            result[ci.slug] = ci;
+          }
+        });
+
+        setChainInfoMap(result);
+      })
+      .catch(e => {
+        console.log('fetch _ChainInfo error:', e);
+      });
+  }, []);
+
+  return useMemo<_CrowdloanItemType[]>(() => {
+    return getCrowdloanContributeList(crowdloanMap, chainInfoMap, priceMap);
+  }, [crowdloanMap, chainInfoMap, priceMap]);
 }
