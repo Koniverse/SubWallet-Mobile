@@ -410,7 +410,6 @@ export const Stake = ({
 
   const onSelectToken = useCallback(
     (item: TokenItemType) => {
-      console.log(item.originChain);
       setAsset(item.slug);
       validatorSelectorRef?.current?.resetValue();
       tokenRef.current = item.slug;

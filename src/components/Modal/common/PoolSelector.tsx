@@ -116,7 +116,7 @@ export const PoolSelector = ({
 
   const FILTER_OPTIONS: FilterOption[] = [
     {
-      label: i18n.common.active,
+      label: i18n.common.open,
       value: 'Open',
     },
     {

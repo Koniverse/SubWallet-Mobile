@@ -1,9 +1,9 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { NominationPoolDataType } from 'hooks/screen/Staking/useGetValidatorList';
 import { SwModal } from 'components/design-system-ui';
 import { View } from 'react-native';
 import MetaInfo from 'components/MetaInfo';
-import { StakingStatusUi } from 'constants/stakingStatusUi';
+import { StakingStatusType, StakingStatusUi } from 'constants/stakingStatusUi';
 import i18n from 'utils/i18n/i18n';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
@@ -14,9 +14,13 @@ interface Props {
 }
 
 export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, setVisible }: Props) => {
-  const { address = '', bondedAmount, memberCounter = 0, name, state, symbol, decimals } = detailItem;
+  const { address = '', bondedAmount, memberCounter = 0, name, state, symbol, decimals, isProfitable } = detailItem;
   const stakingStatusUi = StakingStatusUi();
   const modalBaseV2Ref = useRef<SWModalRefProps>(null);
+
+  const earningStatus: StakingStatusType = useMemo(() => {
+    return isProfitable ? 'active' : 'inactive';
+  }, [isProfitable]);
 
   const onCancel = useCallback(() => modalBaseV2Ref?.current?.close(), []);
 
@@ -37,6 +41,12 @@ export const PoolSelectorDetailModal = ({ detailModalVisible, detailItem, setVis
             label={i18n.inputLabel.status}
             statusIcon={stakingStatusUi.active.icon}
             valueColorSchema={stakingStatusUi.active.schema}
+          />
+          <MetaInfo.Status
+            label={i18n.inputLabel.stakingStatus}
+            statusIcon={stakingStatusUi[earningStatus].icon}
+            statusName={stakingStatusUi[earningStatus].name}
+            valueColorSchema={stakingStatusUi[earningStatus].schema}
           />
 
           <MetaInfo.Number
