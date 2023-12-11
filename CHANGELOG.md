@@ -1,3 +1,6 @@
+## 1.1.17 (269)
+- Improve deeplink (Add more deeplink type) (Round 2) (#1070)
+
 ## 1.1.16 (268)
 
 
