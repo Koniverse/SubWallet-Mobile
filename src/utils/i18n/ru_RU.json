@@ -203,7 +203,9 @@
     "watchOnlyAccount": "Прикрепить аккаунт только для просмотра",
     "unknownAccount": "Неизвестный аккаунт",
     "noFaceIdPermission": "This app use Face ID to unlock password",
-    "tooManyAttemps": "Too many failed attempts. Please try again later or enter password."
+    "tooManyAttemps": "Too many failed attempts. Please try again later or enter password.",
+    "ratingAlertTitle": "Rate our app!",
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
   },
   "title": {
     "exportAccount": "Экспорт аккаунта",
@@ -408,7 +410,10 @@
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Enable"
+    "enable": "Enable",
+    "rateSubwallet": "Rate SubWallet",
+    "sendFeedback": "Send feedback",
+    "notNow": "Not now"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",
@@ -980,6 +985,7 @@
     "twitter": "Твиттер",
     "discord": "Дискорд",
     "termOfService": "Условия использования",
+    "termOfUse": "Terms of use",
     "webViewDebugger": "Отладчик веб-просмотра",
     "immediately": "Немедленно",
     "ifLeftFor15Seconds": "Если оставить на 15 секунд",

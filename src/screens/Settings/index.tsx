@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { Linking, ScrollView, StyleProp, View } from 'react-native';
+import { Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import {
   ArrowSquareOut,
   Book,
   BookBookmark,
-  BookOpen,
   CaretRight,
+  ChatCircleText,
   Clock,
   Coin,
   DiscordLogo,
@@ -18,6 +18,7 @@ import {
   Lock,
   ShareNetwork,
   ShieldCheck,
+  Star,
   TelegramLogo,
   TwitterLogo,
   X,
@@ -26,15 +27,7 @@ import { FontMedium, FontSemiBold, sharedStyles } from 'styles/sharedStyles';
 import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import {
-  DISCORD_URL,
-  PRIVACY_AND_POLICY_URL,
-  TELEGRAM_URL,
-  TERMS_OF_SERVICE_URL,
-  TWITTER_URL,
-  WEBSITE_URL,
-  WIKI_URL,
-} from 'constants/index';
+import { DISCORD_URL, TELEGRAM_URL, TERMS_OF_USE_URL, TWITTER_URL, WEBSITE_URL, WIKI_URL } from 'constants/index';
 import VersionNumber from 'react-native-version-number';
 import useAppLock from 'hooks/useAppLock';
 import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
@@ -73,7 +66,6 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
   const theme = useSubWalletTheme().swThemes;
   const { lock } = useAppLock();
   const [hiddenCount, setHiddenCount] = useState(0);
-
   const settingList: settingItemType[][] = useMemo(
     () => [
       [
@@ -131,6 +123,26 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
       ],
       [
         {
+          icon: Star,
+          title: 'Rate our app',
+          rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => {
+            Linking.openURL(
+              Platform.OS === 'ios'
+                ? 'https://apps.apple.com/vn/app/subwallet-polkadot-wallet/id1633050285'
+                : 'https://play.google.com/store/apps/details?id=app.subwallet.mobile',
+            );
+          },
+          backgroundColor: '#86C338',
+        },
+        {
+          icon: ChatCircleText,
+          title: 'Request a feature',
+          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
+          onPress: () => Linking.openURL('mailto:agent@subwallet.app'),
+          backgroundColor: '#E6478E',
+        },
+        {
           icon: TwitterLogo,
           title: i18n.settings.twitter,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
@@ -168,29 +180,16 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           backgroundColor: '#2DA73F',
         },
         {
-          icon: BookOpen,
-          title: i18n.settings.termOfService,
-          rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(TERMS_OF_SERVICE_URL),
-          backgroundColor: '#D96F00',
-        },
-        {
           icon: BookBookmark,
-          title: i18n.settings.privacyPolicy,
+          title: i18n.settings.termOfUse,
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL(PRIVACY_AND_POLICY_URL),
-          backgroundColor: '#004BFF',
+          onPress: () => Linking.openURL(TERMS_OF_USE_URL),
+          backgroundColor: '#D96F00',
         },
       ],
     ],
     [navigation, theme.colorTextLight3],
   );
-  //
-  // useEffect(() => {
-  //   if (isEmptyAccounts) {
-  //     drawerNavigation ? drawerNavigation.closeDrawer() : navigation.goBack();
-  //   }
-  // }, [drawerNavigation, isEmptyAccounts, navigation]);
 
   const onPressVersionNumber = () => {
     if (hiddenCount > 9) {

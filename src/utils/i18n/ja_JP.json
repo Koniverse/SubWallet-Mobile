@@ -203,7 +203,9 @@
     "watchOnlyAccount": "ウォッチのみのアカウントをアタッチ",
     "unknownAccount": "不明なアカウント",
     "noFaceIdPermission": "This app use Face ID to unlock password",
-    "tooManyAttemps": "Too many failed attempts. Please try again later or enter password."
+    "tooManyAttemps": "Too many failed attempts. Please try again later or enter password.",
+    "ratingAlertTitle": "Rate our app!",
+    "ratingAlertMessage": "If you find SubWallet helpful, please take a moment to rate it in the App Store. We appreciate your ratings and your feedback, as we strive to make SubWallet better everyday."
   },
   "title": {
     "exportAccount": "エクスポートアカウント",
@@ -408,7 +410,10 @@
     "addNetwork": "Add network",
     "iDontCare": "I don't care",
     "joinNow": "Join now",
-    "enable": "Enable"
+    "enable": "Enable",
+    "rateSubwallet": "Rate SubWallet",
+    "sendFeedback": "Send feedback",
+    "notNow": "Not now"
   },
   "inputLabel": {
     "selectAcc": "アカウントを選択",
@@ -980,6 +985,7 @@
     "twitter": "ツイッター",
     "discord": "ディスコード",
     "termOfService": "利用規約",
+    "termOfUse": "Terms of use",
     "webViewDebugger": "Webビューデバッガー",
     "immediately": "すぐに",
     "ifLeftFor15Seconds": "15秒間放置した場合",
