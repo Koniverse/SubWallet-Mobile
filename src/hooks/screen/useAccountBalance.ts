@@ -124,13 +124,18 @@ function getAccountBalance(
         return;
       }
 
+      const balanceItem = balanceMap[address]?.[tokenSlug];
+
+      if (!balanceItem) {
+        return;
+      }
+
       const tokenBalance = getDefaultTokenBalance(tokenSlug, chainAsset);
       const originChain = _getAssetOriginChain(chainAsset);
-      const balanceItem = balanceMap[address]?.[tokenSlug];
       const decimals = _getAssetDecimals(chainAsset);
 
-      const isTokenBalanceReady = !!balanceItem && balanceItem.state !== APIItemState.PENDING;
-      const isTokenNotSupport = !!balanceItem && balanceItem.state === APIItemState.NOT_SUPPORT;
+      const isTokenBalanceReady = balanceItem.state !== APIItemState.PENDING;
+      const isTokenNotSupport = balanceItem.state === APIItemState.NOT_SUPPORT;
 
       tokenGroupNotSupport.push(isTokenNotSupport);
       tokenGroupBalanceReady.push(isTokenBalanceReady);
@@ -245,7 +250,7 @@ function getAccountBalance(
       }
     });
 
-    const isTokenGroupBalanceReady = tokenGroupBalanceReady.every(e => e);
+    const isTokenGroupBalanceReady = tokenGroupBalanceReady.some(e => e);
 
     tokenGroupBalance.isReady = isTokenGroupBalanceReady;
     tokenGroupBalance.isNotSupport = tokenGroupNotSupport.every(e => e);
