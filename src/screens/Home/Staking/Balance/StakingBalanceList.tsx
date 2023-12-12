@@ -229,7 +229,7 @@ export const StakingBalanceList = ({
           }}
           modalVisible={
             instructionModalVisible &&
-            selectedItem &&
+            !!selectedItem &&
             selectedItem.staking.chain === 'vara_network' &&
             selectedItem.staking.type === 'pooled'
           }
