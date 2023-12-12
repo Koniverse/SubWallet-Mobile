@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Number, SwModal, Typography } from 'components/design-system-ui';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { TokenBalanceItemType } from 'types/balance';
 import BigN from 'bignumber.js';
 import { ThemeTypes } from 'styles/themes';
@@ -127,6 +127,7 @@ export const TokenDetailModal = ({ modalVisible, currentTokenInfo, tokenBalanceM
       modalBaseV2Ref={modalBaseV2Ref}
       modalVisible={modalVisible}
       modalTitle={i18n.header.tokenDetails}
+      isAllowSwipeDown={Platform.OS === 'ios'}
       onChangeModalVisible={() => setSelectedTab('tokenDetails')}
       onBackButtonPress={onChangeModalVisible}>
       <>
