@@ -70,7 +70,7 @@ export type RootStackParamList = {
   NetworkConfig: undefined;
   SigningAction: NavigatorScreenParams<SigningActionStackParamList>;
   WebViewModal: undefined;
-  History: { chain?: string; extrinsicHash?: string; transactionId?: string };
+  History: { address?: string; chain?: string; extrinsicHash?: string; transactionId?: string };
   Login: undefined;
   AddProvider: { slug: string };
   ConnectParitySigner: undefined;

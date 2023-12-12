@@ -127,7 +127,7 @@ import {
   ResponseQrSignSubstrate,
   ResponseResetWallet,
   ResponseSeedCreateV2,
-  ResponseSeedValidateV2,
+  ResponseSeedValidateV2, ResponseSubscribeHistory,
   ResponseUnlockKeyring,
   StakingJson,
   StakingRewardJson,
@@ -1461,4 +1461,12 @@ export async function getMetadata(genesisHash?: string | null, isPartial = false
 
 export async function completeBannerCampaign(request: RequestCampaignBannerComplete): Promise<boolean> {
   return sendMessage('pri(campaign.banner.complete)', request);
+}
+
+export async function subscribeTransactionHistory(
+  chain: string,
+  address: string,
+  callback: (items: TransactionHistoryItem[]) => void,
+): Promise<ResponseSubscribeHistory> {
+  return sendMessage('pri(transaction.history.subscribe)', { address, chain }, callback);
 }

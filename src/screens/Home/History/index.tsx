@@ -1,11 +1,12 @@
 import { HistoryDetailModal } from './Detail';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Aperture,
   ArrowDownLeft,
   ArrowUpRight,
   ClockCounterClockwise,
   Database,
+  FadersHorizontal,
   IconProps,
   ListBullets,
   Rocket,
@@ -24,12 +25,11 @@ import { customFormatDate, formatHistoryDate } from 'utils/customFormatDate';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
-import reformatAddress from 'utils/index';
-import { isAddress } from '@polkadot/util-crypto';
+import reformatAddress, { findAccountByAddress } from 'utils/index';
+import { isAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { HistoryItem } from 'components/common/HistoryItem';
 import { TxTypeNameMap } from 'screens/Home/History/shared';
 import i18n from 'utils/i18n/i18n';
-import { FlatListScreen } from 'components/FlatListScreen';
 import { FontMedium } from 'styles/sharedStyles';
 import { Keyboard, ListRenderItemInfo, View } from 'react-native';
 import { SectionListData } from 'react-native/Libraries/Lists/SectionList';
@@ -38,8 +38,23 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { EmptyList } from 'components/EmptyList';
 import { HistoryProps, RootNavigationProps } from 'routes/index';
 import { SortFunctionInterface } from 'types/ui-types';
-import { SectionItem } from 'components/LazySectionList';
+import { LazySectionList, SectionItem } from 'components/LazySectionList';
 import { useNavigation } from '@react-navigation/native';
+import { useHistorySelection } from 'hooks/history';
+import useChainInfoWithState from 'hooks/chain/useChainInfoWithState';
+import { AccountJson } from '@subwallet/extension-base/background/types';
+import { ChainItemType } from 'types/index';
+import { _isChainEvmCompatible } from '@subwallet/extension-base/services/chain-service/utils';
+import { ModalRef } from 'types/modalRef';
+import { cancelSubscription, subscribeTransactionHistory } from 'messaging/index';
+import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
+import { _ChainInfo } from '@subwallet/chain-list/types';
+import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
+import FilterModal from 'components/common/FilterModal';
+import { useFilterModal } from 'hooks/useFilterModal';
+import { HistoryAccountSelector } from 'screens/Home/History/parts/HistoryAccountSelector';
+import { HistoryChainSelector } from 'screens/Home/History/parts/HistoryChainSelector';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = {};
 
@@ -216,21 +231,65 @@ const filterFunction = (items: TransactionHistoryDisplayItem[], filters: string[
   return filteredChainList;
 };
 
+function findLedgerChainOfSelectedAccount(
+  address: string,
+  accounts: AccountJson[],
+  chainInfoMap: Record<string, _ChainInfo>,
+): string | undefined {
+  if (!address) {
+    return undefined;
+  }
+
+  const isAccountEthereum = isEthereumAddress(address);
+
+  const account = findAccountByAddress(accounts, address);
+
+  if (isAccountEthereum && account?.isHardware) {
+    return 'ethereum';
+  }
+
+  if (!account || !account.isHardware) {
+    return undefined;
+  }
+
+  const validGen: string[] = account.availableGenesisHashes || [];
+  const validLedgerNetworks = validGen
+    .map(genesisHash => findNetworkJsonByGenesisHash(chainInfoMap, genesisHash)?.slug)
+    .filter(i => !!i);
+
+  if (validLedgerNetworks.length) {
+    return validLedgerNetworks[0];
+  }
+
+  return undefined;
+}
+
+const gradientBackground = ['rgba(76, 234, 172, 0.10)', 'rgba(76, 234, 172, 0.00)'];
+
 function History({
   route: {
-    params: { chain, transactionId },
+    params: { address: propAddress, chain, transactionId },
   },
 }: HistoryProps): React.ReactElement<Props> {
   const theme = useSubWalletTheme().swThemes;
+  const { selectedAddress, selectedChain, setSelectedAddress, setSelectedChain } = useHistorySelection(
+    chain,
+    propAddress,
+  );
+  const isAllAccount = useSelector((root: RootState) => root.accountState.isAllAccount);
   const accounts = useSelector((root: RootState) => root.accountState.accounts);
   const currentAccount = useSelector((root: RootState) => root.accountState.currentAccount);
-  const rawHistoryList = useSelector((root: RootState) => root.transactionHistory.historyList);
+  const [rawHistoryList, setRawHistoryList] = useState<TransactionHistoryItem[]>([]);
   const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const [isOpenByLink, setIsOpenByLink] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const language = useSelector((state: RootState) => state.settings.language) as LanguageType;
   const navigation = useNavigation<RootNavigationProps>();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
+  const chainInfoList = useChainInfoWithState();
+  const { filterSelectionMap, openFilterModal, onApplyFilter, onChangeFilterOption, selectedFilters, filterModalRef } =
+    useFilterModal();
   const accountMap = useMemo(() => {
     return accounts.reduce((accMap, cur) => {
       accMap[cur.address.toLowerCase()] = cur.name || '';
@@ -238,6 +297,8 @@ function History({
       return accMap;
     }, {} as Record<string, string>);
   }, [accounts]);
+  const accountSelectorRef = useRef<ModalRef>();
+  const chainSelectorRef = useRef<ModalRef>();
   const FILTER_OPTIONS = [
     { label: i18n.filterOptions.sendToken, value: FilterValue.SEND },
     { label: i18n.filterOptions.receiveToken, value: FilterValue.RECEIVED },
@@ -302,7 +363,6 @@ function History({
   useEffect(() => {
     const timeoutID = setTimeout(() => {
       setHistoryMap(getHistoryMap());
-      setLoading(false);
     });
     return () => clearTimeout(timeoutID);
   }, [getHistoryMap]);
@@ -359,7 +419,7 @@ function History({
     ({ item }: ListRenderItemInfo<TransactionHistoryDisplayItem>) => {
       return (
         <HistoryItem
-          style={{ marginTop: theme.marginXS }}
+          style={{ marginBottom: theme.marginXS }}
           item={item}
           key={`${item.transactionId || item.extrinsicHash}-${item.address}-${item.direction}`}
           onPress={onOpenDetail(item)}
@@ -369,34 +429,6 @@ function History({
     },
     [isShowBalance, onOpenDetail, theme.marginXS],
   );
-
-  const searchFunc = useCallback((items: TransactionHistoryDisplayItem[], searchText: string) => {
-    if (!searchText) {
-      return items;
-    }
-
-    const searchTextLowerCase = searchText.toLowerCase();
-
-    return items.filter(item => {
-      if (
-        item.direction === TransactionDirection.SEND &&
-        !!item.fromName &&
-        item.fromName.toLowerCase().includes(searchTextLowerCase)
-      ) {
-        return true;
-      }
-
-      if (
-        item.direction === TransactionDirection.RECEIVED &&
-        !!item.toName &&
-        item.toName.toLowerCase().includes(searchTextLowerCase)
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-  }, []);
 
   const groupBy = useCallback(
     (item: TransactionHistoryDisplayItem) => {
@@ -412,10 +444,9 @@ function History({
       return (
         <View
           style={{
-            paddingTop: theme.sizeXS,
-            backgroundColor: theme.colorBgDefault,
-            marginBottom: -theme.sizeXS,
             paddingBottom: theme.sizeXS,
+            // marginTop: -theme.sizeXS,
+            paddingTop: theme.sizeXS,
           }}>
           <Typography.Text size={'sm'} style={{ color: theme.colorTextLight3, ...FontMedium }}>
             {info.section.title.split('|')[1]}
@@ -423,7 +454,7 @@ function History({
         </View>
       );
     },
-    [theme.colorBgDefault, theme.colorTextLight3, theme.sizeXS],
+    [theme.colorTextLight3, theme.sizeXS],
   );
 
   const sortSection = useCallback<SortFunctionInterface<SectionItem<TransactionHistoryDisplayItem>>>((a, b) => {
@@ -448,6 +479,43 @@ function History({
     );
   }, []);
 
+  const accountItems = useMemo(() => {
+    return accounts.filter(a => !isAccountAll(a.address));
+  }, [accounts]);
+
+  const chainItems = useMemo<ChainItemType[]>(() => {
+    if (!selectedAddress) {
+      return [];
+    }
+
+    const result: ChainItemType[] = [];
+
+    Object.values(chainInfoList).forEach(c => {
+      if (_isChainEvmCompatible(c) === isEthereumAddress(selectedAddress)) {
+        result.push({
+          name: c.name,
+          slug: c.slug,
+        });
+      }
+    });
+
+    return result;
+  }, [chainInfoList, selectedAddress]);
+
+  const onSelectAccount = useCallback(
+    (item: AccountJson) => {
+      setSelectedAddress(item.address);
+    },
+    [setSelectedAddress],
+  );
+
+  const onSelectChain = useCallback(
+    (item: ChainItemType) => {
+      setSelectedChain(item.slug);
+    },
+    [setSelectedChain],
+  );
+
   useEffect(() => {
     if (detailModalVisible) {
       setSelectedItem(selected => {
@@ -462,32 +530,185 @@ function History({
     }
   }, [detailModalVisible, historyMap]);
 
+  const currentLedgerChainOfSelectedAccount = useMemo(() => {
+    return findLedgerChainOfSelectedAccount(selectedAddress, accounts, chainInfoMap);
+  }, [accounts, chainInfoMap, selectedAddress]);
+
+  const isChainSelectorEmpty = !chainItems.length;
+
+  const chainSelectorDisabled = useMemo(() => {
+    if (loading || !selectedAddress || isChainSelectorEmpty) {
+      return true;
+    }
+
+    if (!isEthereumAddress(selectedAddress)) {
+      return !!currentLedgerChainOfSelectedAccount;
+    }
+
+    return false;
+  }, [loading, selectedAddress, isChainSelectorEmpty, currentLedgerChainOfSelectedAccount]);
+
+  useEffect(() => {
+    let id: string;
+    let isSubscribed = true;
+
+    setLoading(true);
+
+    subscribeTransactionHistory(selectedChain, selectedAddress, (items: TransactionHistoryItem[]) => {
+      if (isSubscribed) {
+        setRawHistoryList(items);
+      }
+
+      setTimeout(() => {
+        if (isSubscribed) {
+          setLoading(false);
+        }
+      }, 400);
+    })
+      .then(res => {
+        id = res.id;
+
+        if (isSubscribed) {
+          setRawHistoryList(res.items);
+        } else {
+          cancelSubscription(id).catch(console.log);
+        }
+      })
+      .catch(e => {
+        console.log('subscribeTransactionHistory error:', e);
+      });
+
+    return () => {
+      isSubscribed = false;
+
+      if (id) {
+        cancelSubscription(id).catch(console.log);
+      }
+    };
+  }, [selectedAddress, selectedChain]);
+
+  useEffect(() => {
+    if (chainItems.length) {
+      setSelectedChain(prevChain => {
+        const _isEthereumAddress = isEthereumAddress(selectedAddress);
+
+        if (currentLedgerChainOfSelectedAccount) {
+          if (!_isEthereumAddress) {
+            return currentLedgerChainOfSelectedAccount;
+          }
+        }
+
+        if (prevChain && chainInfoMap[prevChain]) {
+          const _isPrevChainEvm = _isChainEvmCompatible(chainInfoMap[prevChain]);
+
+          if (_isEthereumAddress && !_isPrevChainEvm && currentLedgerChainOfSelectedAccount) {
+            return currentLedgerChainOfSelectedAccount;
+          }
+
+          if (_isPrevChainEvm === _isEthereumAddress) {
+            return prevChain;
+          }
+        }
+
+        return chainItems[0].slug;
+      });
+    }
+  }, [chainInfoMap, chainItems, currentLedgerChainOfSelectedAccount, selectedAddress, setSelectedChain]);
+
   return (
     <>
-      <FlatListScreen
-        autoFocus={false}
+      <ContainerWithSubHeader
         showLeftBtn={true}
         onPressBack={() => navigation.goBack()}
-        items={historyList}
         title={i18n.header.history}
-        placeholder={i18n.placeholder.searchHistory}
-        searchFunction={searchFunc}
-        renderItem={renderItem}
-        isShowFilterBtn
-        renderListEmptyComponent={emptyList}
-        grouping={grouping}
-        filterOptions={FILTER_OPTIONS}
-        filterFunction={filterFunction}
-        sortFunction={sortFunction}
-        loading={loading}
-        flatListStyle={{ paddingHorizontal: theme.padding, paddingBottom: theme.padding }}
-      />
+        titleTextAlign={'center'}
+        showRightBtn={true}
+        rightIcon={FadersHorizontal}
+        onPressRightIcon={() => {
+          Keyboard.dismiss();
+          setTimeout(() => openFilterModal(), 100);
+        }}>
+        <View style={{ position: 'relative', flex: 1 }}>
+          <LinearGradient
+            locations={[0, 0.5]}
+            colors={gradientBackground}
+            style={{
+              height: 388,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+            }}
+          />
+
+          <View
+            style={{
+              position: 'relative',
+              backgroundColor: theme.colorBgDefault,
+              borderBottomLeftRadius: 16,
+              borderBottomRightRadius: 16,
+              padding: theme.padding,
+              gap: theme.sizeSM,
+              zIndex: 10,
+              flexDirection: 'row',
+            }}>
+            {isAllAccount && (
+              <View style={{ flex: 1 }}>
+                <HistoryAccountSelector
+                  items={accountItems}
+                  value={selectedAddress}
+                  onSelectItem={onSelectAccount}
+                  disabled={loading}
+                  selectorRef={accountSelectorRef}
+                />
+              </View>
+            )}
+
+            <View style={{ flex: 1 }}>
+              <HistoryChainSelector
+                items={chainItems}
+                value={selectedChain}
+                onSelectItem={onSelectChain}
+                disabled={chainSelectorDisabled}
+                selectorRef={chainSelectorRef}
+                loading={loading}
+              />
+            </View>
+          </View>
+
+          <LazySectionList
+            listStyle={{
+              paddingLeft: theme.padding,
+              paddingRight: theme.padding,
+              paddingTop: theme.paddingXS,
+              paddingBottom: theme.paddingXS,
+            }}
+            items={historyList}
+            renderItem={renderItem}
+            renderListEmptyComponent={emptyList}
+            filterFunction={filterFunction}
+            selectedFilters={selectedFilters}
+            sortItemFunction={sortFunction}
+            sortSectionFunction={grouping.sortSection}
+            groupBy={grouping.groupBy}
+            renderSectionHeader={grouping.renderSectionHeader}
+          />
+        </View>
+      </ContainerWithSubHeader>
 
       <HistoryDetailModal
         data={selectedItem}
         onChangeModalVisible={onCloseDetail}
         modalVisible={detailModalVisible}
         setDetailModalVisible={setDetailModalVisible}
+      />
+
+      <FilterModal
+        filterModalRef={filterModalRef}
+        options={FILTER_OPTIONS}
+        onChangeOption={onChangeFilterOption}
+        optionSelectionMap={filterSelectionMap}
+        onApplyFilter={onApplyFilter}
       />
     </>
   );
