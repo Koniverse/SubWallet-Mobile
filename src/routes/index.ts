@@ -27,7 +27,7 @@ export type RootStackParamList = {
   UnlockModal: { isUpdateBiometric?: boolean };
   ChangePassword: undefined;
   ConnectList: { isDelete?: boolean };
-  ConnectDetail: { topic: string };
+  ConnectDetail: { topic: string; isLastItem: boolean };
   ConnectWalletConnect: undefined;
   MigratePassword: undefined;
   CreateAccount: { keyTypes?: KeypairType[]; isBack?: boolean };

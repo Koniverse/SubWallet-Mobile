@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { useNavigation } from '@react-navigation/native';
 import { ConnectDetailProps, RootNavigationProps } from 'routes/index';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { FontMedium } from 'styles/sharedStyles';
 import { AbstractAddressJson } from '@subwallet/extension-base/background/types';
@@ -28,7 +28,7 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 
 export const ConnectionDetail = ({
   route: {
-    params: { topic },
+    params: { topic, isLastItem },
   },
 }: ConnectDetailProps) => {
   const { sessions } = useSelector((state: RootState) => state.walletConnect);
@@ -87,7 +87,14 @@ export const ConnectionDetail = ({
       .finally(() => {
         setLoading(false);
         setDisconnectModalVisible(false);
-        navigation.navigate('ConnectList', { isDelete: true });
+        DeviceEventEmitter.emit('isDeleteWc', true);
+        if (isLastItem) {
+          // double this line to back straight to Settings screen
+          navigation.goBack();
+          navigation.goBack();
+        } else {
+          navigation.navigate('ConnectList', { isDelete: true });
+        }
       });
   };
 
