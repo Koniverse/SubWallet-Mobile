@@ -24,10 +24,10 @@ import { RootState } from 'stores/index';
 import { getMaxTransfer, makeCrossChainTransfer, makeTransfer, saveRecentAccountId } from 'messaging/index';
 import { findAccountByAddress } from 'utils/account';
 import { findNetworkJsonByGenesisHash } from 'utils/getNetworkJsonByGenesisHash';
-import { formatBalance } from 'utils/number';
+import { balanceFormatter, formatBalance, formatNumber } from 'utils/number';
 import useGetChainPrefixBySlug from 'hooks/chain/useGetChainPrefixBySlug';
 import { TokenItemType, TokenSelector } from 'components/Modal/common/TokenSelector';
-import useHandleSubmitTransaction from 'hooks/transaction/useHandleSubmitTransaction';
+import useHandleSubmitTransaction, { insufficientMessages } from 'hooks/transaction/useHandleSubmitTransaction';
 import { isAccountAll } from 'utils/accountAll';
 import { ChainInfo, ChainItemType } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -36,6 +36,7 @@ import usePreCheckAction from 'hooks/account/usePreCheckAction';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
 import { useWatch } from 'react-hook-form';
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -305,6 +306,16 @@ const filterAccountFunc = (
   };
 };
 
+function analysisResponse(rs: SWTransactionResponse) {
+  const { errors, id, warnings } = rs;
+
+  return {
+    isPass: !errors.length && !warnings.length && !!id,
+    isAnyError: !!errors.length,
+    isAnyWarning: !!warnings.length,
+  };
+}
+
 export const SendFund = ({
   route: {
     params: { slug: tokenGroupSlug, recipient: scanRecipient },
@@ -365,6 +376,7 @@ export const SendFund = ({
     nativeTokenBalance,
     nativeTokenSlug,
     tokenBalance,
+    chainInfo,
   } = useGetBalance(chainValue, fromValue, assetValue);
 
   const { chainInfoMap, chainStateMap } = useSelector((root: RootState) => root.chainStore);
@@ -395,24 +407,11 @@ export const SendFund = ({
     return targetAccount?.name || '';
   }, [accounts, fromValue]);
 
-  const handleTransferAll = useCallback(
-    (value: boolean) => {
-      setForceUpdateValue({ value: maxTransfer });
-      setIsTransferAll(value);
-    },
-    [maxTransfer],
-  );
-
-  const triggerOnChangeValue = () => {
+  const triggerOnChangeValue = useCallback(() => {
     setForceUpdateValue({ value: transferAmount });
-  };
+  }, [transferAmount]);
 
-  const { onError, onSuccess } = useHandleSubmitTransaction(
-    onDone,
-    setTransactionDone,
-    triggerOnChangeValue,
-    handleTransferAll,
-  );
+  const { onError, onSuccess } = useHandleSubmitTransaction(onDone, setTransactionDone, triggerOnChangeValue);
 
   const accountItems = useMemo(() => {
     return accounts.filter(filterAccountFunc(chainInfoMap, assetRegistry, multiChainAssetMap, tokenGroupSlug));
@@ -664,83 +663,209 @@ export const SendFund = ({
     }
   }, [navigation, resetField, viewStep]);
 
+  const transferAllAlertIntercept = useCallback(
+    (onAccept: () => void, onCancel?: () => void) => {
+      if (nativeTokenSlug && !!chainValue) {
+        if (new BigN(nativeTokenBalance.value).eq(new BigN(0))) {
+          Alert.alert(
+            'Insufficient balance',
+            `Your available ${nativeTokenBalance.symbol} balance is 0, which is not enough to pay gas fees on the ${chainInfo?.name} network. Deposit ${nativeTokenBalance.symbol} to continue.`,
+            [
+              {
+                text: 'I understand',
+                onPress: () => {
+                  onCancel?.();
+                },
+              },
+            ],
+          );
+
+          return;
+        }
+        let maxTransferDisplay: string;
+        if (assetValue === nativeTokenSlug) {
+          maxTransferDisplay = `${formatNumber(maxTransfer, nativeTokenBalance.decimals, balanceFormatter)} ${
+            nativeTokenBalance.symbol
+          }`;
+        } else {
+          maxTransferDisplay = `${formatNumber(maxTransfer, tokenBalance.decimals, balanceFormatter)} ${
+            tokenBalance.symbol
+          }`;
+        }
+
+        //todo: i18n this
+
+        const alertMessage =
+          "After performing this transaction, your account won't have enough balance to pay network fees for other transactions.";
+
+        Alert.alert('Pay attention!', alertMessage, [
+          {
+            text: i18n.buttonTitles.cancel,
+            onPress: () => {
+              onCancel?.();
+            },
+          },
+          {
+            text: `Transfer ${maxTransferDisplay}`,
+            onPress: () => {
+              onAccept();
+            },
+          },
+        ]);
+      } else {
+        onAccept();
+      }
+    },
+    [
+      assetValue,
+      chainInfo?.name,
+      chainValue,
+      maxTransfer,
+      nativeTokenBalance.decimals,
+      nativeTokenBalance.symbol,
+      nativeTokenBalance.value,
+      nativeTokenSlug,
+      tokenBalance.decimals,
+      tokenBalance.symbol,
+    ],
+  );
+
   // Submit transaction
+  const doSubmit = useCallback(
+    (values: TransferFormValues, maxValue: string, transferAll: boolean) => {
+      return new Promise<SWTransactionResponse>((resolve, reject) => {
+        const { chain, destChain, to, value, from, asset } = values;
+
+        let sendPromise: Promise<SWTransactionResponse>;
+
+        const account = findAccountByAddress(accounts, from);
+
+        if (!account) {
+          setLoading(false);
+          hideAll();
+
+          // todo: i18n this
+          const eMessage = "Can't find account";
+
+          show(eMessage);
+          reject(new Error(eMessage));
+          return;
+        }
+
+        const isLedger = !!account.isHardware;
+        const isEthereum = isEthereumAddress(account.address);
+        const chainAsset = assetRegistry[asset];
+
+        if (chain === destChain) {
+          if (isLedger) {
+            if (isEthereum) {
+              if (!_isTokenTransferredByEvm(chainAsset)) {
+                setLoading(false);
+                hideAll();
+
+                // todo: i18n this
+                const eMessage = 'Ledger does not support transfer for this token';
+
+                show(eMessage);
+                reject(new Error(eMessage));
+                return;
+              }
+            }
+          }
+
+          // Transfer token or send fund
+          sendPromise = makeTransfer({
+            from,
+            networkKey: chain,
+            to: to,
+            tokenSlug: asset,
+            value: transferAll ? maxValue : value,
+            transferAll,
+          });
+        } else {
+          if (isLedger) {
+            setLoading(false);
+            hideAll();
+
+            // todo: i18n this
+            const eMessage = 'This feature is not available for Ledger account';
+
+            show(eMessage);
+            reject(new Error(eMessage));
+            return;
+          }
+
+          // Make cross chain transfer
+          sendPromise = makeCrossChainTransfer({
+            destinationNetworkKey: destChain,
+            from,
+            originNetworkKey: chain,
+            tokenSlug: asset,
+            to,
+            value: transferAll ? maxValue : value,
+            transferAll,
+          });
+        }
+
+        setTimeout(() => {
+          // Handle transfer action
+          sendPromise.then(resolve).catch(reject);
+        }, 300);
+      });
+    },
+    [accounts, assetRegistry, hideAll, show],
+  );
+
   const onSubmit = useCallback(
     (values: TransferFormValues) => {
       Keyboard.dismiss();
-      setLoading(true);
-      const { chain, destChain, to, value, from, asset } = values;
 
-      let sendPromise: Promise<SWTransactionResponse>;
+      const doTransferAll = () => {
+        transferAllAlertIntercept(() => {
+          setLoading(true);
+          doSubmit(values, maxTransfer, true)
+            .then(onSuccess)
+            .catch(onError)
+            .finally(() => {
+              setLoading(false);
+            });
+        });
+      };
 
-      const account = findAccountByAddress(accounts, from);
-
-      if (!account) {
-        setLoading(false);
-        hideAll();
-        show("Can't find account");
+      if (isTransferAll) {
+        doTransferAll();
 
         return;
       }
 
-      const isLedger = !!account.isHardware;
-      const isEthereum = isEthereumAddress(account.address);
-      const chainAsset = assetRegistry[asset];
+      setLoading(true);
+      doSubmit(values, maxTransfer, false)
+        .then(res => {
+          const { isPass } = analysisResponse(res);
+          if (isPass) {
+            onSuccess(res);
+          } else {
+            const { errors: currentErrors, warnings } = res;
+            console.log('currentErrors', currentErrors, warnings);
+            if (currentErrors?.[0]?.message.startsWith('You must transfer at least')) {
+              console.log('123123');
+              onError(currentErrors[0]);
+            }
 
-      if (chain === destChain) {
-        if (isLedger) {
-          if (isEthereum) {
-            if (!_isTokenTransferredByEvm(chainAsset)) {
-              setLoading(false);
-              hideAll();
-              show('Ledger does not support transfer for this token');
-
-              return;
+            if (
+              insufficientMessages.includes(currentErrors[0]?.message || '') ||
+              warnings[0]?.warningType === 'notEnoughExistentialDeposit'
+            ) {
+              doTransferAll();
             }
           }
-        }
-
-        // Transfer token or send fund
-        sendPromise = makeTransfer({
-          from,
-          networkKey: chain,
-          to: to,
-          tokenSlug: asset,
-          value: value,
-          transferAll: isTransferAll,
-        });
-      } else {
-        if (isLedger) {
+        })
+        .catch(onError)
+        .finally(() => {
           setLoading(false);
-          hideAll();
-          show('This feature is not available for Ledger account');
-
-          return;
-        }
-
-        // Make cross chain transfer
-        sendPromise = makeCrossChainTransfer({
-          destinationNetworkKey: destChain,
-          from,
-          originNetworkKey: chain,
-          tokenSlug: asset,
-          to,
-          value,
-          transferAll: isTransferAll,
         });
-      }
-
-      setTimeout(() => {
-        // Handle transfer action
-        sendPromise
-          .then(onSuccess)
-          .catch(onError)
-          .finally(() => {
-            setLoading(false);
-          });
-      }, 300);
     },
-    [accounts, assetRegistry, isTransferAll, hideAll, show, onSuccess, onError],
+    [doSubmit, isTransferAll, maxTransfer, onError, onSuccess, transferAllAlertIntercept],
   );
 
   const isNextButtonDisable = (() => {
@@ -763,6 +888,7 @@ export const SendFund = ({
 
   const renderAmountInput = useCallback(
     ({ field: { onBlur, onChange, value, ref } }: UseControllerReturn<TransferFormValues>) => {
+      console.log('value', value);
       return (
         <>
           <Amount
@@ -800,10 +926,6 @@ export const SendFund = ({
       });
     }
   }, [scanRecipient, setValue]);
-
-  useEffect(() => {
-    setForceUpdateValue(isTransferAll ? { value: maxTransfer } : undefined);
-  }, [destChainValue, isTransferAll, maxTransfer]);
 
   useEffect(() => {
     const { asset, from } = getValues();
@@ -1103,6 +1225,8 @@ export const SendFund = ({
                         {viewStep === 2 && (
                           <TouchableOpacity
                             onPress={() => {
+                              console.log('run to this');
+                              setFocus('value');
                               setForceUpdateValue({ value: maxTransfer });
                               const bnMaxTransfer = new BN(maxTransfer);
 
@@ -1118,10 +1242,10 @@ export const SendFund = ({
                       <Button
                         disabled={isSubmitButtonDisable}
                         loading={loading}
-                        type={isTransferAll ? 'warning' : undefined}
+                        type={undefined}
                         onPress={checkAction(handleSubmit(onSubmit), extrinsicType)}
                         icon={getButtonIcon(PaperPlaneTilt)}>
-                        {isTransferAll ? i18n.buttonTitles.transferAll : i18n.buttonTitles.transfer}
+                        {i18n.buttonTitles.transfer}
                       </Button>
                     </>
                   )}
