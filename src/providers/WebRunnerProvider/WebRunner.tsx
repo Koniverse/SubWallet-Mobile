@@ -15,7 +15,7 @@ import { mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storag
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
 
 const WEB_SERVER_PORT = 9135;
-const LONG_TIMEOUT = 300000; //5*60*1000
+const LONG_TIMEOUT = 60000; //9*60*1000
 const ACCEPTABLE_RESPONSE_TIME = 30000;
 export const NEED_UPDATE_CHROME = 'need_update_chrome';
 
