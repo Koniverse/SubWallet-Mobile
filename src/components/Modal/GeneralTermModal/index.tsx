@@ -1,12 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
 import { NativeScrollEvent, Platform, ScrollView, View } from 'react-native';
 import InputCheckBox from 'components/Input/InputCheckBox';
-import { GENERAL_TERM_AND_CONDITION } from 'constants/termAndCondition';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
 import { ArrowCircleRight, CaretDown } from 'phosphor-react-native';
 import { deviceHeight } from 'constants/index';
+import Markdown from 'react-native-markdown-display';
+import { baseStaticDataUrl } from 'hooks/static-content/useGetDAppList';
 
 interface Props {
   modalVisible: boolean;
@@ -19,7 +20,19 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
   const theme = useSubWalletTheme().swThemes;
   const [checked, setChecked] = useState<boolean>(false);
   const [disableAcceptBtn, setDisableAcceptBtn] = useState<boolean>(true);
-  const scrollRef = useRef<ScrollView>();
+  const [staticData, setStaticData] = useState({ md: '' });
+  const scrollRef = useRef<ScrollView>(null);
+
+  console.log('disableAcceptBtn', disableAcceptBtn);
+
+  useEffect(() => {
+    fetch(`${baseStaticDataUrl}/term-and-condition/index.md`)
+      .then(rs => rs.text())
+      .then(md => setStaticData({ md }))
+      .catch(e => {
+        console.log('fetch _termAndCondition error:', e);
+      });
+  }, []);
 
   const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
     const paddingToBottom = 20;
@@ -30,8 +43,14 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
     <SwModal
       isUseModalV2
       modalVisible={modalVisible}
-      onBackdropPress={() => setChecked(false)}
-      onChangeModalVisible={() => setChecked(false)}
+      onBackdropPress={() => {
+        setChecked(false);
+        setDisableAcceptBtn(true);
+      }}
+      onChangeModalVisible={() => {
+        setChecked(false);
+        setDisableAcceptBtn(true);
+      }}
       setVisible={setVisible}
       disabledOnPressBackDrop={disabledOnPressBackDrop}
       isAllowSwipeDown={Platform.OS === 'ios' && !disabledOnPressBackDrop}
@@ -53,16 +72,13 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
           }}
           scrollEventThrottle={400}
           contentContainerStyle={{ gap: theme.padding }}>
-          <>
-            {GENERAL_TERM_AND_CONDITION.map((item, index) => (
-              <View key={index}>
-                <Typography.Text style={{ color: theme.colorWhite }}>{item.title}</Typography.Text>
-                <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
-                  {item.data}
-                </Typography.Text>
-              </View>
-            ))}
-          </>
+          <Markdown
+            style={{
+              body: { color: theme.colorTextLight4, fontSize: theme.fontSizeSM },
+              heading3: { color: theme.colorWhite, fontSize: theme.fontSize },
+            }}>
+            {staticData.md}
+          </Markdown>
         </ScrollView>
         <View style={{ position: 'relative' }}>
           <InputCheckBox
