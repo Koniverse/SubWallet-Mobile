@@ -13,12 +13,13 @@ import { Button } from 'components/design-system-ui';
 import { SVGImages } from 'assets/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ConnectionItem } from 'components/WalletConnect/ConnectionItem';
-import { ListRenderItemInfo } from 'react-native';
+import { DeviceEventEmitter, ListRenderItemInfo } from 'react-native';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { validWalletConnectUri } from 'utils/scanner/walletConnect';
 import { addConnection } from 'messaging/index';
 import { requestCameraPermission } from 'utils/permission/camera';
 import { RESULTS } from 'react-native-permissions';
+import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
 
 const searchFunc = (items: SessionTypes.Struct[], searchString: string) => {
   const searchTextLowerCase = searchString.toLowerCase();
@@ -51,18 +52,23 @@ export const ConnectionList = ({
   const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!items.length) {
-      async function checkPermission() {
-        const result = await requestCameraPermission(() => navigation.goBack());
+    async function checkPermission() {
+      const result = await requestCameraPermission(() => navigation.goBack());
 
-        if (result !== RESULTS.GRANTED) {
-          setIsScanning(false);
-        }
+      if (result !== RESULTS.GRANTED) {
+        setIsScanning(false);
       }
-
-      checkPermission();
     }
-  }, [items.length, navigation]);
+
+    const deleteWcCallback = (isDeleteWc: boolean) => {
+      if (!isDeleteWc) {
+        checkPermission();
+      }
+    };
+    const deleteWcEvent = DeviceEventEmitter.addListener(OPEN_UNLOCK_FROM_MODAL, deleteWcCallback);
+
+    return () => deleteWcEvent.remove();
+  }, [navigation]);
 
   const renderEmptyList = () => {
     return (
@@ -75,8 +81,8 @@ export const ConnectionList = ({
   };
 
   const onPressItem = useCallback(
-    (topic: string) => navigation.navigate('ConnectDetail', { topic: topic }),
-    [navigation],
+    (topic: string) => navigation.navigate('ConnectDetail', { topic: topic, isLastItem: items.length === 1 }),
+    [items.length, navigation],
   );
 
   const renderItem = ({ item }: ListRenderItemInfo<SessionTypes.Struct>) => (
