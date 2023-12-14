@@ -1,3 +1,9 @@
+## 1.1.18 (274)
+- Fix bug show popup instruction when staking nominate for Vara Network (#1215)
+- Fix bug crash app when accept Camera on Android (#1198)
+- Integrate App Center (#1210)
+- Apply static content for T&C (#1211)
+
 ## 1.1.18 (273)
 
 
