@@ -127,6 +127,12 @@ export const CancelUnstake = ({
     setValue('unstakeIndex', value);
   };
 
+  useEffect(() => {
+    if (!fromValue && accountList.length === 1) {
+      setFrom(accountList[0].address);
+    }
+  }, [accountList, fromValue, setFrom]);
+
   return (
     <>
       {!isTransactionDone ? (

@@ -294,6 +294,12 @@ export const Unbond = ({
     [currentValue, errors.value, fromValue, loading],
   );
 
+  useEffect(() => {
+    if (!fromValue && accountList.length === 1) {
+      setFrom(accountList[0].address);
+    }
+  }, [accountList, fromValue, setFrom]);
+
   return (
     <>
       {!isTransactionDone ? (
