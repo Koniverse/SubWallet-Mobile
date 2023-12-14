@@ -11,7 +11,9 @@ import { Input } from 'react-native-elements';
 import { mmkvStore } from 'utils/storage';
 import { AddressScanner } from 'components/Scanner/AddressScanner';
 import { Button } from 'components/design-system-ui';
+import env from 'react-native-config';
 
+const CODEPUSH_DEPLOYMENT = env.CODEPUSH_DEPLOYMENT;
 export const WebViewDebugger = () => {
   const navigation = useNavigation<RootNavigationProps>();
   const { webState, reload } = useContext(WebRunnerContext);
@@ -84,6 +86,7 @@ export const WebViewDebugger = () => {
           <Text style={textStyle}>{`${i18n.common.lastBackup}${lastBackup}`}</Text>
           <Text style={textStyle}>{`${i18n.common.lastRestore}${lastRestore}`}</Text>
           <Text style={textStyle}>{`${i18n.common.lastMigration}${lastMigration}`}</Text>
+          <Text style={textStyle}>{`${i18n.common.codePushDeployment}${CODEPUSH_DEPLOYMENT}`}</Text>
           <Button onPress={onPressReload}>{i18n.common.reloadBackground}</Button>
         </View>
         <View style={containerStyle}>

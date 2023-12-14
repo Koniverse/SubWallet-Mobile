@@ -3,6 +3,11 @@
 #import <React/RCTBundleURLProvider.h>
 #import "RNSplashScreen.h"
 
+#import <AppCenterReactNative.h>
+#import <CodePush/CodePush.h>
+
+
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -13,6 +18,7 @@
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   self.initialProps = @{};
   [RNSplashScreen show];
+  [AppCenterReactNative register];
 
   return YES;
 }
@@ -22,7 +28,7 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [CodePush bundleURL];
 #endif
 }
 
