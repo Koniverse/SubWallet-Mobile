@@ -23,8 +23,6 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
   const [staticData, setStaticData] = useState({ md: '' });
   const scrollRef = useRef<ScrollView>(null);
 
-  console.log('disableAcceptBtn', disableAcceptBtn);
-
   useEffect(() => {
     fetch(`${baseStaticDataUrl}/term-and-condition/index.md`)
       .then(rs => rs.text())

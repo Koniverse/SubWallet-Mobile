@@ -614,7 +614,7 @@ export const Stake = ({
       ) : (
         <TransactionDone transactionDoneInfo={transactionDoneInfo} />
       )}
-      {chain === 'vara_network' && (
+      {chain === 'vara_network' && currentStakingType === StakingType.POOLED && (
         <InstructionModal
           setDetailModalVisible={() => {
             setInstructionModalVisible(false);
