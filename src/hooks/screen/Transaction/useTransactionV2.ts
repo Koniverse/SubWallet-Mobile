@@ -25,6 +25,7 @@ export interface TransactionDoneInfo {
   chainType: string;
   chain: string;
   path: string;
+  address: string;
 }
 
 export const useTransaction = <T extends TransactionFormValues = TransactionFormValues, TContext = any>(
@@ -98,6 +99,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     chainType: '',
     chain: '',
     path: '',
+    address: '',
   });
 
   const { getValues, setValue } = form;
@@ -106,7 +108,7 @@ export const useTransaction = <T extends TransactionFormValues = TransactionForm
     (id: string) => {
       const { from, chain } = getValues();
       const chainType = isEthereumAddress(from) ? 'ethereum' : 'substrate';
-      setTransactionDoneInfo({ id, chain, chainType, path: homePath });
+      setTransactionDoneInfo({ id, chain, chainType, path: homePath, address: from });
     },
     [getValues, homePath],
   );

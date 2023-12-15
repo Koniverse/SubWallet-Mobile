@@ -11,7 +11,7 @@ interface Props {
   renderSelected?: () => JSX.Element;
   disabled?: boolean;
   acceptDefaultValue?: boolean;
-  chainSelectorRef: React.MutableRefObject<ModalRef | undefined>;
+  chainSelectorRef?: React.MutableRefObject<ModalRef | undefined>;
 }
 
 export const ChainSelector = ({

@@ -23,7 +23,7 @@ interface Props {
 const SHOW_RATE_APP_SCREENS = [ExtrinsicType.STAKING_WITHDRAW];
 
 export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) => {
-  const { id, path, chain } = transactionDoneInfo;
+  const { id, path, chain, address } = transactionDoneInfo;
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<RootNavigationProps>();
   const _style = TransactionDoneStyle(theme);
@@ -44,13 +44,13 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
     }
   }, [extrinsicType, isShowRateAppNoti]);
 
-  const viewInExplorer = useCallback(() => {
-    if (chain && id) {
-      navigation.navigate('History', { chain, transactionId: id });
+  const viewTransaction = useCallback(() => {
+    if (chain && id && address) {
+      navigation.navigate('History', { chain, transactionId: id, address });
     } else {
       navigation.navigate('History', {});
     }
-  }, [chain, id, navigation]);
+  }, [address, chain, id, navigation]);
 
   const goHome = useCallback(() => {
     if (path === 'Staking') {
@@ -83,7 +83,7 @@ export const TransactionDone = ({ extrinsicType, transactionDoneInfo }: Props) =
         </View>
 
         <View style={{ width: '100%', ...MarginBottomForSubmitButton }}>
-          <Button onPress={viewInExplorer} style={{ marginBottom: 16 }} type={'secondary'}>
+          <Button onPress={viewTransaction} style={{ marginBottom: 16 }} type={'secondary'}>
             {i18n.buttonTitles.viewTransaction}
           </Button>
 

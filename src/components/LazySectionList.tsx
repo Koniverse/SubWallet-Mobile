@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityLoading } from 'components/ActivityLoading';
 import { ListRenderItemInfo, RefreshControlProps, SectionList, StyleProp, View, ViewStyle } from 'react-native';
 import { ScrollViewStyle } from 'styles/sharedStyles';
@@ -12,7 +12,7 @@ export type SectionItem<T> = { title: string; data: T[] };
 
 interface Props<T> {
   items: T[];
-  searchString: string;
+  searchString?: string;
   renderListEmptyComponent: (searchString?: string) => JSX.Element;
   renderSectionHeader: (info: { section: SectionListData<T> }) => React.ReactElement | null;
   searchFunction?: (items: T[], searchString: string) => T[];
@@ -37,7 +37,7 @@ export function LazySectionList<T>({
   items,
   renderListEmptyComponent,
   renderSectionHeader,
-  searchString,
+  searchString = '',
   searchFunction,
   filterFunction,
   selectedFilters,
@@ -52,47 +52,48 @@ export function LazySectionList<T>({
 }: Props<T>) {
   const theme = useSubWalletTheme().swThemes;
   const sectionListRef = useRef<SectionList>(null);
-  const filteredItems = useMemo(() => {
-    let searchItems = searchFunction ? searchFunction(items, searchString) : items;
+  const [sections, setSections] = useState<SectionItem<T>[]>([]);
 
-    return filterFunction && selectedFilters ? filterFunction(searchItems, selectedFilters) : searchItems;
-  }, [searchFunction, items, searchString, filterFunction, selectedFilters]);
+  const sortedItems = useMemo(() => {
+    const result = [...items];
 
-  const sections = useMemo(() => {
-    const _sections = filteredItems.reduce((groups: SectionItem<T>[], item) => {
-      const groupTitle = groupBy(item);
-      const group = groups.find(g => g.title === groupTitle);
-      if (group) {
-        group.data.push(item);
-      } else {
-        groups.push({ title: groupTitle, data: [item] });
-      }
-
-      if (sortItemFunction) {
-        groups.forEach(g => {
-          g.data.sort(sortItemFunction);
-        });
-      }
-
-      return groups;
-    }, []);
-
-    if (sortSectionFunction) {
-      _sections.sort(sortSectionFunction);
+    if (sortItemFunction) {
+      result.sort(sortItemFunction);
     }
 
-    return _sections;
-  }, [filteredItems, groupBy, sortItemFunction, sortSectionFunction]);
+    return result;
+  }, [items, sortItemFunction]);
 
-  const {
-    isLoading,
-    lazyList: lazySections,
-    onLoadMore,
-    setPageNumber,
-  } = useLazyList(sections, {
-    itemPerPage: 2,
-    lazyTime: 300,
-  });
+  const filteredItems = useMemo(() => {
+    let searchItems = searchFunction ? searchFunction(sortedItems, searchString) : sortedItems;
+
+    return filterFunction && selectedFilters ? filterFunction(searchItems, selectedFilters) : searchItems;
+  }, [searchFunction, sortedItems, searchString, filterFunction, selectedFilters]);
+
+  const getSections = useCallback(
+    (lazyList: T[]) => {
+      const _sections = lazyList.reduce((groups: SectionItem<T>[], item) => {
+        const groupTitle = groupBy(item);
+        const group = groups.find(g => g.title === groupTitle);
+        if (group) {
+          group.data.push(item);
+        } else {
+          groups.push({ title: groupTitle, data: [item] });
+        }
+
+        return groups;
+      }, []);
+
+      if (sortSectionFunction) {
+        _sections.sort(sortSectionFunction);
+      }
+
+      setSections(_sections);
+    },
+    [groupBy, sortSectionFunction],
+  );
+
+  const { isLoading, onLoadMore, setPageNumber } = useLazyList(filteredItems, { onAfterSetLazyList: getSections });
 
   useEffect(() => {
     let unmount = false;
@@ -127,7 +128,7 @@ export function LazySectionList<T>({
 
   return (
     <>
-      {lazySections.length ? (
+      {sections.length ? (
         <View style={{ flex: 1 }}>
           <SectionList
             ref={sectionListRef}
@@ -139,7 +140,7 @@ export function LazySectionList<T>({
             refreshControl={refreshControl}
             ListFooterComponent={renderLoadingAnimation}
             contentContainerStyle={listStyle}
-            sections={lazySections}
+            sections={sections}
             getItemLayout={getItemLayout}
             onEndReachedThreshold={0.5}
             maxToRenderPerBatch={12}
