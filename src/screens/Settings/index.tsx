@@ -139,7 +139,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: ChatCircleText,
           title: 'Request a feature',
           rightIcon: <Icon phosphorIcon={ArrowSquareOut} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => Linking.openURL('mailto:agent@subwallet.app'),
+          onPress: () => Linking.openURL('mailto:agent@subwallet.app?subject=%5BSubWallet%20In-app%20Feedback%5D'),
           backgroundColor: '#E6478E',
         },
         {
