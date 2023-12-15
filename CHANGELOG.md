@@ -18,6 +18,7 @@
 - Fix bug crash app when accept Camera on Android (#1198)
 - Integrate App Center (#1210)
 - Apply static content for T&C (#1211)
+- Update auto select account for Cancel unstake, Claim reward, Stake, Unbond (#1208)
 
 ## 1.1.18 (273)
 

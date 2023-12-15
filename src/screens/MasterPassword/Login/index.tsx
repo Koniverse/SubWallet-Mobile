@@ -278,6 +278,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
                     onSubmitField={onSubmitField('password')}
                     containerStyle={{ marginBottom: 0 }}
                   />
+
                   <View style={styles.fullWidth}>
                     <TouchableOpacity style={styles.forgotpasswordButton} onPress={onToggleModal}>
                       <Typography.Text size="sm" style={styles.forgotpasswordText}>

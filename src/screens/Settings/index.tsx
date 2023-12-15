@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { SubScreenContainer } from 'components/SubScreenContainer';
 import { useNavigation } from '@react-navigation/native';
-import { Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
+import { DeviceEventEmitter, Linking, Platform, ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import {
   ArrowSquareOut,
@@ -107,7 +107,10 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
           icon: Clock,
           title: i18n.header.walletConnect,
           rightIcon: <Icon phosphorIcon={CaretRight} size={'sm'} iconColor={theme.colorTextLight3} />,
-          onPress: () => navigation.navigate('ConnectList', { isDelete: false }),
+          onPress: () => {
+            DeviceEventEmitter.emit('isDeleteWc', false);
+            navigation.navigate('ConnectList', { isDelete: false });
+          },
           backgroundColor: '#004BFF',
         },
       ],

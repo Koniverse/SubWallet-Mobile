@@ -277,7 +277,7 @@
   "createAccount": {
     "createWithNewSeedPhrase": "Tạo mới bằng seed phrase",
     "deriveFromAnExistingAcc": "Tạo tài khoản phái sinh",
-    "substrate": "Substrate",
+    "polkadot": "Polkadot",
     "ethereum": "Ethereum"
   },
   "importAccount": {

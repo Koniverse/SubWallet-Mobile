@@ -1,6 +1,6 @@
 import useUnlockModal from 'hooks/modal/useUnlockModal';
 import React, { useEffect, useState } from 'react';
-import { StyleProp, View } from 'react-native';
+import { ScrollView, StyleProp, View } from 'react-native';
 import Text from 'components/Text';
 import { SeedWord } from 'components/SeedWord';
 import { ColorMap } from 'styles/color';
@@ -27,6 +27,7 @@ const bodyAreaStyle: StyleProp<any> = {
 
 const footerAreaStyle: StyleProp<any> = {
   ...MarginBottomForSubmitButton,
+  paddingTop: 16,
 };
 
 const infoBlockStyle: StyleProp<any> = {
@@ -112,7 +113,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
 
   return (
     <View style={sharedStyles.layoutContainer}>
-      <View style={bodyAreaStyle}>
+      <ScrollView contentContainerStyle={bodyAreaStyle}>
         <View style={infoBlockStyle}>
           <Text style={infoTextStyle}>{i18n.warningMessage.initSecretPhrase}</Text>
         </View>
@@ -123,7 +124,7 @@ export const VerifySecretPhrase = ({ onPressSubmit, seed, isBusy, navigation }: 
           style={phraseAreaStyle}
         />
         <View style={phraseBlockStyle}>{shuffleWords && shuffleWords.map(renderSeedWord)}</View>
-      </View>
+      </ScrollView>
       <View style={footerAreaStyle}>
         <Button
           icon={getCreateAccBtn(

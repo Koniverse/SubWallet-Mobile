@@ -22,6 +22,8 @@ import i18n from 'utils/i18n/i18n';
 
 import createStyle from './styles';
 import { OPEN_UNLOCK_FROM_MODAL } from 'components/common/Modal/UnlockModal';
+import { isValidSubstrateAddress } from '@subwallet/extension-base/utils';
+import { isEthereumAddress } from '@polkadot/util-crypto';
 
 interface Props {
   request: AuthorizeRequest;
@@ -76,7 +78,6 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     accountAuthType === 'substrate' ? 'Substrate' : accountAuthType === 'evm' ? 'EVM' : 'Substrate & EVM';
   // Selected map with default values is map of all accounts
   const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
-
   // Create selected map by default
   useEffect(() => {
     setSelectedMap(map => {
@@ -166,6 +167,19 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
     [visibleAccounts],
   );
 
+  const isDisable = useMemo(() => {
+    let filteredSelectMap: Record<string, boolean>;
+    if (accountAuthType === 'substrate') {
+      filteredSelectMap = Object.fromEntries(
+        Object.entries(selectedMap).filter(([key]) => isValidSubstrateAddress(key)),
+      );
+    } else {
+      filteredSelectMap = Object.fromEntries(Object.entries(selectedMap).filter(([key]) => isEthereumAddress(key)));
+    }
+
+    return Object.values(filteredSelectMap).every(value => !value);
+  }, [accountAuthType, selectedMap]);
+
   return (
     <React.Fragment>
       <ConfirmationContent gap={theme.size}>
@@ -216,11 +230,7 @@ const AuthorizeConfirmation: React.FC<Props> = (props: Props) => {
             <Button block={true} type="secondary" onPress={onCancel}>
               {i18n.common.cancel}
             </Button>
-            <Button
-              block={true}
-              onPress={onConfirm}
-              disabled={Object.values(selectedMap).every(value => !value)}
-              loading={loading}>
+            <Button block={true} onPress={onConfirm} disabled={isDisable} loading={loading}>
               {i18n.common.connect}
             </Button>
           </>
