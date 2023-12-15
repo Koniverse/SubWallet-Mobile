@@ -1,3 +1,7 @@
+## 1.1.19 (275)
+- Add default subject in email feedback in app (#1245)
+- Update history feature (#1207)
+
 ## 1.1.18 (274)
 - Fix bug show popup instruction when staking nominate for Vara Network (#1215)
 - Fix bug crash app when accept Camera on Android (#1198)
