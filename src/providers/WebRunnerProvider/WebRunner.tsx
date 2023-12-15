@@ -9,7 +9,7 @@ import StaticServer from 'react-native-static-server';
 import { listenMessage, restartAllHandlers } from 'messaging/index';
 import { Message } from '@subwallet/extension-base/types';
 import RNFS from 'react-native-fs';
-import VersionNumber from 'react-native-version-number';
+import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { mmkvStore, restoreStorageData, triggerBackupOnInit } from 'utils/storage';
 import { notifyUnstable } from 'providers/WebRunnerProvider/nofifyUnstable';
@@ -292,8 +292,7 @@ interface WebRunnerControlAction {
 
 const now = new Date().getTime();
 
-const URI_PARAMS =
-  '?platform=' + Platform.OS + `&version=${VersionNumber.appVersion}&build=${VersionNumber.buildVersion}&time=${now}`;
+const URI_PARAMS = '?platform=' + Platform.OS + `&version=${getVersion()}&build=${getBuildNumber()}&time=${now}`;
 
 const devWebRunnerURL = mmkvStore.getString('__development_web_runner_url__');
 const osWebRunnerURL =

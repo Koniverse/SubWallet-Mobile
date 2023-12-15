@@ -28,12 +28,13 @@ import { ColorMap } from 'styles/color';
 import { RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
 import { DISCORD_URL, TELEGRAM_URL, TERMS_OF_USE_URL, TWITTER_URL, WEBSITE_URL, WIKI_URL } from 'constants/index';
-import VersionNumber from 'react-native-version-number';
+import { getVersion, getBuildNumber } from 'react-native-device-info';
 import useAppLock from 'hooks/useAppLock';
 import { BackgroundIcon, Button, Icon, SelectItem } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import packageJSON from '../../../package.json';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -61,6 +62,10 @@ type settingItemType = {
   backgroundColor: string;
 };
 
+const bundleVersion =
+  Platform.OS === 'android'
+    ? packageJSON.bundleVersion.split('-')[0].split('(')[1].slice(0, -1)
+    : packageJSON.bundleVersion.split('-')[1].split('(')[1].slice(0, -1);
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;
@@ -289,7 +294,7 @@ export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponen
         </ScrollView>
         <Text
           onPress={onPressVersionNumber}
-          style={versionAppStyle}>{`SubWallet v${VersionNumber.appVersion} (${VersionNumber.buildVersion})`}</Text>
+          style={versionAppStyle}>{`SubWallet v${getVersion()} (${getBuildNumber()}) b-${bundleVersion}`}</Text>
       </>
     </SubScreenContainer>
   );
