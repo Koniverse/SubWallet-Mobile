@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Keyboard, Linking, ScrollView, Text, View } from 'react-native';
+import { Alert, Keyboard, Linking, ScrollView, Text, View } from 'react-native';
 import { CheckCircle, Info } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -103,6 +103,14 @@ const CreateMasterPassword = ({
     onSubmitForm: onSubmit,
   });
 
+  const showAlertWarning = () => {
+    Alert.alert(
+      'Tick the checkbox',
+      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to be able to click Continue',
+      [{ text: 'I understand' }],
+    );
+  };
+
   const _onChangePasswordValue = (currentValue: string) => {
     if (formState.data.repeatPassword) {
       onChangeValue('repeatPassword')('');
@@ -111,9 +119,9 @@ const CreateMasterPassword = ({
   };
 
   const isDisabled = useMemo(() => {
-    return !checkValidateForm(formState.isValidated) || (errors && errors.length > 0) || isBusy || !checked;
+    return !checkValidateForm(formState.isValidated) || (errors && errors.length > 0) || isBusy;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errors, formState.isValidated.password, formState.isValidated.repeatPassword, isBusy, checked]);
+  }, [errors, formState.isValidated.password, formState.isValidated.repeatPassword, isBusy]);
 
   return (
     <ContainerWithSubHeader
@@ -155,7 +163,9 @@ const CreateMasterPassword = ({
         <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
           {i18n.warning.warningPasswordMessage}
         </Typography.Text>
+      </ScrollView>
 
+      <View style={_style.footerAreaStyle}>
         <InputCheckBox
           labelStyle={{ flex: 1 }}
           checked={checked}
@@ -181,20 +191,18 @@ const CreateMasterPassword = ({
           onPress={() => setChecked(!checked)}
           checkBoxSize={20}
         />
-      </ScrollView>
-
-      <View style={_style.footerAreaStyle}>
         <Button
           disabled={isDisabled}
+          showDisableStyle={!checked}
           icon={
             <Icon
               phosphorIcon={CheckCircle}
               size={'lg'}
               weight={'fill'}
-              iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
+              iconColor={isDisabled || !checked ? theme.colorTextLight5 : theme.colorTextLight1}
             />
           }
-          onPress={onSubmit}>
+          onPress={checked ? onSubmit : showAlertWarning}>
           {i18n.buttonTitles.continue}
         </Button>
       </View>

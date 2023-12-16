@@ -2,7 +2,7 @@ import { Warning } from 'components/Warning';
 import useHandlerHardwareBackPress from 'hooks/screen/useHandlerHardwareBackPress';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContainerWithSubHeader } from 'components/ContainerWithSubHeader';
-import { Keyboard, Linking, ScrollView, Text, View } from 'react-native';
+import { Alert, Keyboard, Linking, ScrollView, Text, View } from 'react-native';
 import { ArrowCircleRight, CheckCircle, Info } from 'phosphor-react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
@@ -121,6 +121,14 @@ const ChangeMasterPassword = () => {
     onSubmitForm: onSubmit,
   });
 
+  const showAlertWarning = () => {
+    Alert.alert(
+      'Tick the checkbox to continue',
+      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to Continue',
+      [{ text: 'I understand' }],
+    );
+  };
+
   const onNextStep = () => {
     const oldPassword = formState.data.curPassword;
     if (!oldPassword) {
@@ -171,8 +179,7 @@ const ChangeMasterPassword = () => {
         (errors && errors.length > 0) ||
         isBusy ||
         !formState.data.password ||
-        !formState.data.repeatPassword ||
-        !checked
+        !formState.data.repeatPassword
       );
     }
 
@@ -184,7 +191,6 @@ const ChangeMasterPassword = () => {
     formState.isValidated.repeatPassword,
     formState.isValidated.curPassword,
     isBusy,
-    checked,
   ]);
 
   return (
@@ -262,31 +268,6 @@ const ChangeMasterPassword = () => {
             <Typography.Text size={'sm'} style={{ color: theme.colorTextLight4 }}>
               {i18n.warning.warningPasswordMessage}
             </Typography.Text>
-            <InputCheckBox
-              labelStyle={{ flex: 1 }}
-              checked={checked}
-              label={
-                <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>
-                  I understand that SubWallet can't recover this password for me.{' '}
-                  <Text
-                    style={{
-                      textDecorationStyle: 'solid',
-                      textDecorationLine: 'underline',
-                      color: theme.colorPrimary,
-                      textDecorationColor: theme.colorPrimary,
-                    }}
-                    onPress={() =>
-                      Linking.openURL(
-                        'https://docs.subwallet.app/main/mobile-app-user-guide/getting-started/create-apply-change-and-what-to-do-when-forgot-password',
-                      )
-                    }>
-                    {'Learn more.'}
-                  </Text>
-                </Typography.Text>
-              }
-              onPress={() => setChecked(!checked)}
-              checkBoxSize={20}
-            />
           </>
         )}
         {errors.length > 0 &&
@@ -294,18 +275,50 @@ const ChangeMasterPassword = () => {
       </ScrollView>
 
       <View style={_style.footerAreaStyle}>
+        {step === 'NewPassword' && (
+          <InputCheckBox
+            labelStyle={{ flex: 1 }}
+            checked={checked}
+            label={
+              <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>
+                I understand that SubWallet can't recover this password for me.{' '}
+                <Text
+                  style={{
+                    textDecorationStyle: 'solid',
+                    textDecorationLine: 'underline',
+                    color: theme.colorPrimary,
+                    textDecorationColor: theme.colorPrimary,
+                  }}
+                  onPress={() =>
+                    Linking.openURL(
+                      'https://docs.subwallet.app/main/mobile-app-user-guide/getting-started/create-apply-change-and-what-to-do-when-forgot-password',
+                    )
+                  }>
+                  {'Learn more.'}
+                </Text>
+              </Typography.Text>
+            }
+            onPress={() => setChecked(!checked)}
+            checkBoxSize={20}
+          />
+        )}
         <Button
           disabled={isDisabled}
+          showDisableStyle={step === 'OldPassword' ? false : !checked}
           loading={isBusy}
           icon={
             <Icon
               phosphorIcon={step === 'OldPassword' ? ArrowCircleRight : CheckCircle}
               size={'lg'}
-              iconColor={isDisabled ? theme.colorTextLight5 : theme.colorTextLight1}
+              iconColor={
+                isDisabled || (step === 'OldPassword' ? false : !checked)
+                  ? theme.colorTextLight5
+                  : theme.colorTextLight1
+              }
               weight={'fill'}
             />
           }
-          onPress={step === 'OldPassword' ? onNextStep : onSubmit}>
+          onPress={step === 'OldPassword' ? onNextStep : checked ? onSubmit : showAlertWarning}>
           {step === 'OldPassword' ? i18n.buttonTitles.next : i18n.buttonTitles.finish}
         </Button>
       </View>

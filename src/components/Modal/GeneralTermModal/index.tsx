@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Icon, SwModal, Typography } from 'components/design-system-ui';
-import { NativeScrollEvent, Platform, ScrollView, View } from 'react-native';
+import { Alert, NativeScrollEvent, Platform, ScrollView, View } from 'react-native';
 import InputCheckBox from 'components/Input/InputCheckBox';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import i18n from 'utils/i18n/i18n';
@@ -35,6 +35,14 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
   const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }: NativeScrollEvent) => {
     const paddingToBottom = 20;
     return layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+  };
+
+  const showAlertWarning = () => {
+    Alert.alert(
+      'Tick the checkbox',
+      'Make sure to tick the checkbox "I understand and agree to the Terms of Use, which apply to my use of SubWallet and all of its feature" to be able to click Continue',
+      [{ text: 'I understand' }],
+    );
   };
 
   return (
@@ -109,8 +117,9 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
               iconColor={disableAcceptBtn || !checked ? theme.colorTextLight5 : theme.colorWhite}
             />
           }
-          onPress={onPressAcceptBtn}
-          disabled={disableAcceptBtn || !checked}>
+          onPress={!checked ? showAlertWarning : onPressAcceptBtn}
+          disabled={disableAcceptBtn}
+          showDisableStyle={!checked}>
           {i18n.buttonTitles.continue}
         </Button>
         <Typography.Text style={{ color: theme.colorTextLight4, textAlign: 'center', paddingTop: theme.padding }}>
