@@ -330,6 +330,7 @@ export default function useAccountBalance(
   tokenGroupMap: Record<string, string[]>,
   lazy?: boolean,
   showZero?: boolean,
+  selectedAccount?: string,
 ): AccountBalanceHookType {
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
@@ -348,7 +349,7 @@ export default function useAccountBalance(
     lazy
       ? DEFAULT_RESULT
       : getAccountBalance(
-          currentAccount?.address || '',
+          selectedAccount || currentAccount?.address || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -364,7 +365,7 @@ export default function useAccountBalance(
     const timeoutID = setTimeout(() => {
       setResult(
         getAccountBalance(
-          currentAccount?.address || '',
+          selectedAccount || currentAccount?.address || '',
           tokenGroupMap,
           balanceMap,
           priceMap,
@@ -386,6 +387,7 @@ export default function useAccountBalance(
     multiChainAssetMap,
     price24hMap,
     priceMap,
+    selectedAccount,
     tokenGroupMap,
   ]);
 

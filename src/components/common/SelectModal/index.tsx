@@ -18,6 +18,7 @@ import { RootState } from 'stores/index';
 import { ChainInfo } from 'types/index';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
+import { TokenBalanceItemType } from 'types/balance';
 
 interface Props<T> {
   items: T[];
@@ -56,7 +57,9 @@ interface Props<T> {
   onCloseModal?: () => void;
   onModalOpened?: () => void;
   rightIconOption?: RightIconOpt;
+  isShowBalance?: boolean;
   level?: number;
+  tokenBalanceMap?: Record<string, TokenBalanceItemType>;
 }
 const LOADING_TIMEOUT = Platform.OS === 'ios' ? 20 : 100;
 
@@ -93,7 +96,9 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
     onCloseModal: _onCloseModal,
     onModalOpened,
     rightIconOption,
+    isShowBalance,
     level,
+    tokenBalanceMap,
   } = selectModalProps;
   const chainInfoMap = useSelector((root: RootState) => root.chainStore.chainInfoMap);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -209,6 +214,8 @@ function _SelectModal<T>(selectModalProps: Props<T>, ref: ForwardedRef<any>) {
           selectedValueMap={selectedValueMap}
           onSelectItem={_onSelectItem}
           onCloseModal={() => closeModalAfterSelect && modalBaseV2Ref?.current?.close()}
+          isShowBalance={isShowBalance}
+          tokenBalance={tokenBalanceMap ? tokenBalanceMap[(item as TokenItemType).slug] : undefined}
         />
       );
     } else if (selectModalItemType === 'chain') {

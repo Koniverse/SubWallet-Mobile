@@ -5,9 +5,11 @@ import Text from 'components/Text';
 import { ColorMap } from 'styles/color';
 import { FontMedium, FontSemiBold } from 'styles/sharedStyles';
 import { CheckCircle } from 'phosphor-react-native';
-import { Icon, Typography } from 'components/design-system-ui';
+import { Icon, Typography, Number } from 'components/design-system-ui';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { ThemeTypes } from 'styles/themes';
+import { BN_ZERO } from 'utils/chainBalances';
+import { TokenBalanceItemType } from 'types/balance';
 
 interface Props extends TouchableOpacityProps {
   symbol: string;
@@ -19,6 +21,8 @@ interface Props extends TouchableOpacityProps {
   onSelectNetwork: () => void;
   defaultItemKey?: string;
   iconSize?: number;
+  isShowBalance?: boolean;
+  tokenBalance?: TokenBalanceItemType;
 }
 
 export const TokenSelectItem = ({
@@ -31,6 +35,8 @@ export const TokenSelectItem = ({
   onSelectNetwork,
   defaultItemKey,
   iconSize = 40,
+  isShowBalance = false,
+  tokenBalance,
 }: Props) => {
   const theme = useSubWalletTheme().swThemes;
   const styles = useMemo(() => createStyle(theme), [theme]);
@@ -52,11 +58,24 @@ export const TokenSelectItem = ({
           </View>
         </View>
 
-        {isSelected && (
-          <View style={styles.selectedIconWrapper}>
-            <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />
+        {!!isShowBalance && tokenBalance && tokenBalance.isReady && (
+          <View style={{ alignItems: 'flex-end' }}>
+            <Number size={16} value={tokenBalance.total.value || BN_ZERO} decimal={0} />
+            <Number
+              prefix={'$'}
+              size={12}
+              unitOpacity={0.45}
+              intOpacity={0.45}
+              decimalOpacity={0.45}
+              value={tokenBalance.total.convertedValue}
+              decimal={0}
+            />
           </View>
         )}
+
+        <View style={styles.selectedIconWrapper}>
+          {isSelected && <Icon phosphorIcon={CheckCircle} weight={'fill'} size={'sm'} iconColor={theme.colorSuccess} />}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -81,6 +100,7 @@ function createStyle(theme: ThemeTypes) {
       flexDirection: 'row',
       alignItems: 'center',
       flex: 1,
+      paddingRight: theme.paddingXS,
     },
 
     itemTextStyle: {
