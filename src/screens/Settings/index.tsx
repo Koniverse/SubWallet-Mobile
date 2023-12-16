@@ -35,6 +35,7 @@ import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { SVGImages } from 'assets/index';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import packageJSON from '../../../package.json';
+import env from 'react-native-config';
 
 const settingTitleStyle: StyleProp<any> = {
   fontSize: 12,
@@ -61,11 +62,11 @@ type settingItemType = {
   disabled?: boolean;
   backgroundColor: string;
 };
-
+const BUNDLE_ENV = env.BUNDLE_ENV;
+const bundleData =
+  BUNDLE_ENV === 'PRODUCTION' ? packageJSON.bundleVersion.split('-') : packageJSON.bundleVersionStaging.split('-');
 const bundleVersion =
-  Platform.OS === 'android'
-    ? packageJSON.bundleVersion.split('-')[0].split('(')[1].slice(0, -1)
-    : packageJSON.bundleVersion.split('-')[1].split('(')[1].slice(0, -1);
+  Platform.OS === 'android' ? bundleData[0].split('(')[1].slice(0, -1) : bundleData[1].split('(')[1].slice(0, -1);
 export const Settings = ({ navigation: drawerNavigation }: DrawerContentComponentProps) => {
   const navigation = useNavigation<RootNavigationProps>();
   const theme = useSubWalletTheme().swThemes;

@@ -54,7 +54,7 @@
     "lastBackup": "Last backup: ",
     "lastRestore": "Last restore: ",
     "lastMigration": "Last migration: ",
-    "codePushDeployment": "Code Push Deployment Name: ",
+    "bundleENV": "Bundle environment: ",
     "url": "URL: ",
     "version": "Version: ",
     "allAccounts": "All accounts",

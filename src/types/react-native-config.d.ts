@@ -7,7 +7,7 @@ declare module 'react-native-config' {
     BANXA_URL?: string;
     ANDROID_CODEPUSH_KEY?: string;
     IOS_CODEPUSH_KEY?: string;
-    CODEPUSH_DEPLOYMENT?: string;
+    BUNDLE_ENV?: string;
   }
 
   export const Config: NativeConfig;

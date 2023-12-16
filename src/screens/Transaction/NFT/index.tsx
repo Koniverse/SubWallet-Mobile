@@ -150,6 +150,7 @@ const SendNFT: React.FC<SendNFTProps> = ({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
+      from: owner,
       recipientAddress: '',
     },
   });
