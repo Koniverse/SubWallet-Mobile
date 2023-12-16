@@ -1,3 +1,10 @@
+## bundle-av4-iv5
+- Add Alert in case user do not check Checkbox (#1211)
+
+## bundle-av3-iv4
+- Fix unable to show Transfer NFT transaction in transaction history (#1250)
+
+
 ## 1.1.19 (275)
 - Add default subject in email feedback in app (#1245)
 - Update history feature (#1207)
