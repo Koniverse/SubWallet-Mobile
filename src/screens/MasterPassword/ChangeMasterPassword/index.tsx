@@ -123,8 +123,8 @@ const ChangeMasterPassword = () => {
 
   const showAlertWarning = () => {
     Alert.alert(
-      'Tick the checkbox to continue',
-      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to Continue',
+      'Tick the checkbox',
+      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to be able to click Continue',
       [{ text: 'I understand' }],
     );
   };
@@ -278,6 +278,7 @@ const ChangeMasterPassword = () => {
         {step === 'NewPassword' && (
           <InputCheckBox
             labelStyle={{ flex: 1 }}
+            needFocusCheckBox
             checked={checked}
             label={
               <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>

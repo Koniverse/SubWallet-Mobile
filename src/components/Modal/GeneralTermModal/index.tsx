@@ -88,6 +88,7 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
         </ScrollView>
         <View style={{ position: 'relative' }}>
           <InputCheckBox
+            needFocusCheckBox
             labelStyle={{ flex: 1 }}
             checked={checked}
             label={

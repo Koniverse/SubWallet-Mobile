@@ -14,6 +14,7 @@ interface Props {
   wrapperStyle?: StyleProp<ViewStyle>;
   label: string | ReactElement;
   style?: StyleProp<ViewStyle>;
+  needFocusCheckBox?: boolean;
 }
 
 const ContainerStyle: StyleProp<ViewStyle> = {
@@ -50,8 +51,13 @@ const InputCheckBox = ({
   wrapperStyle,
   checkBoxSize = 20,
   style,
+  needFocusCheckBox,
 }: Props) => {
-  const UncheckedIcon = (
+  const UncheckedIcon = needFocusCheckBox ? (
+    <Suspense>
+      <SVGImages.CheckBoxWithBorderIcon width={checkBoxSize} height={checkBoxSize} />
+    </Suspense>
+  ) : (
     <Suspense>
       <SVGImages.CheckBoxIcon width={checkBoxSize} height={checkBoxSize} />
     </Suspense>
