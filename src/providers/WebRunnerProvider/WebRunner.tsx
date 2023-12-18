@@ -378,6 +378,15 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
     }
   };
 
+  const onLoadProgress = () => {
+    // BACKUP-002: Back up local storage for first open app purpose
+    if (webRunnerRef.current) {
+      webRunnerRef.current.injectJavaScript(
+        'window.ReactNativeWebView.postMessage(JSON.stringify({backupStorage: window.localStorage || ""}));',
+      );
+    }
+  };
+
   return (
     <View style={{ height: 0 }}>
       {runnerGlobalState.uri && (
@@ -389,6 +398,7 @@ export const WebRunner = React.memo(({ webRunnerRef, webRunnerStateRef, webRunne
           injectedJavaScript={runnerGlobalState.injectScript}
           webviewDebuggingEnabled
           onLoadStart={onLoadStart}
+          onLoadProgress={onLoadProgress}
           onError={e => console.debug('### WebRunner error', e)}
           onHttpError={e => console.debug('### WebRunner HttpError', e)}
           javaScriptEnabled={true}

@@ -1,7 +1,7 @@
 {
   "name": "SubWalletMobile",
   "version": "1.1.19",
-  "build": "276",
+  "build": "278",
   "bundleVersion": "a(v8)-i(v3)",
   "bundleVersionStaging": "a(v4)-i(v5)",
   "private": true,
@@ -21,7 +21,9 @@
     "android": "ENVFILE=.env.development react-native run-android",
     "ios": "ENVFILE=.env.development react-native run-ios",
     "android:production": "cd android && export ENVFILE=.env.production && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
+    "android:staging": "cd android && export ENVFILE=.env.development && ./gradlew bundleRelease && open app/build/outputs/bundle/release/",
     "ios:production": "scripts/build-ios.sh",
+    "ios:staging": "scripts/build-ios.sh staging",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "react-native start",
     "test": "jest"
