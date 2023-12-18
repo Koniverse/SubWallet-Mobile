@@ -3,7 +3,6 @@
 #import <React/RCTBundleURLProvider.h>
 #import "RNSplashScreen.h"
 
-#import <AppCenterReactNative.h>
 #import <CodePush/CodePush.h>
 
 
@@ -18,7 +17,6 @@
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   self.initialProps = @{};
   [RNSplashScreen show];
-  [AppCenterReactNative register];
 
   return YES;
 }

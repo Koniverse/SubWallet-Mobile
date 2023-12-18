@@ -35,13 +35,13 @@ jobs:
             sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
             sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
             sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
-            sed -i '' "s/^CODEPUSH_DEPLOYMENT=.*/CODEPUSH_DEPLOYMENT=PRODUCTION/" .env.production
+            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=PRODUCTION/" .env.production
             else
             echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
             echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
             echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
             echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
-            echo "CODEPUSH_DEPLOYMENT=PRODUCTION" >> .env.production
+            echo "BUNDLE_ENV=PRODUCTION" >> .env.production
           fi
 
     - name: Cache Dependencies
@@ -141,13 +141,13 @@ jobs:
             sed -i '' "s/^COINBASE_PAY_ID=.*/COINBASE_PAY_ID=$COINBASE_PAY_ID/" .env.production
             sed -i '' "s/^IOS_CODEPUSH_KEY=.*/IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY/" .env.production
             sed -i '' "s/^ANDROID_CODEPUSH_KEY=.*/ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY/" .env.production
-            sed -i '' "s/^CODEPUSH_DEPLOYMENT=.*/CODEPUSH_DEPLOYMENT=PRODUCTION/" .env.production
+            sed -i '' "s/^BUNDLE_ENV=.*/BUNDLE_ENV=PRODUCTION/" .env.production
             else
             echo "TRANSAK_API_KEY=$TRANSAK_API_KEY" >> .env.production
             echo "COINBASE_PAY_ID=$COINBASE_PAY_ID" >> .env.production
             echo "IOS_CODEPUSH_KEY=$IOS_CODEPUSH_KEY" >> .env.production
             echo "ANDROID_CODEPUSH_KEY=$ANDROID_CODEPUSH_KEY" >> .env.production
-            echo "CODEPUSH_DEPLOYMENT=PRODUCTION" >> .env.production
+            echo "BUNDLE_ENV=PRODUCTION" >> .env.production
           fi
 
     - name: Cache Dependencies
