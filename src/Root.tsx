@@ -12,6 +12,8 @@ export const IOS_CODEPUSH_KEY = env.IOS_CODEPUSH_KEY;
 export const Root = () => {
   useEffect(() => {
     codePush.sync({
+      installMode: codePush.InstallMode.ON_NEXT_RESUME,
+      minimumBackgroundDuration: 600,
       deploymentKey: Platform.OS === 'ios' ? IOS_CODEPUSH_KEY : ANDROID_CODEPUSH_KEY,
     });
   }, []);

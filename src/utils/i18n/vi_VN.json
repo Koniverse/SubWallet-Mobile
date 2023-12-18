@@ -466,7 +466,7 @@
     "activeStaked": "Đang stake",
     "unstaked": "Đã unstake",
     "estimatedAnnualEarnings": "Thu nhập hàng năm ước tính",
-    "withdrawInXDays": "Rút token trong {0} ngày",
+    "withdrawInXDays": "Rút token trong {0}",
     "withdrawInADay": "Rút được trong một ngày",
     "availableForWithdraw": "Sẵn sàng để rút",
     "unstakeFromAcc": "Unstake từ tài khoản",

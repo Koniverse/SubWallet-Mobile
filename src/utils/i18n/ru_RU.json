@@ -465,7 +465,7 @@
     "activeStaked": "Активный стейк",
     "unstaked": "Анстейкинг",
     "estimatedAnnualEarnings": "Расчетный годовой доход",
-    "withdrawInXDays": "Вывод через {0} дней",
+    "withdrawInXDays": "Вывод через {0}",
     "withdrawInADay": "Вывод за день",
     "availableForWithdraw": "Доступно для вывода",
     "unstakeFromAcc": "Снять ставку со счета",

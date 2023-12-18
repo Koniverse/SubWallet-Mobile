@@ -3,7 +3,7 @@ import { getBondingOptions, getNominationPoolOptions } from 'messaging/index';
 import { store } from 'stores/index';
 import { ALL_KEY } from 'constants/index';
 import i18n from 'utils/i18n/i18n';
-import moment from 'moment';
+import humanizeDuration from 'humanize-duration';
 import { _STAKING_CHAIN_GROUP } from '@subwallet/extension-base/services/chain-service/constants';
 
 export function getUnstakingPeriod(unstakingPeriod?: number) {
@@ -24,13 +24,27 @@ export function getWaitingTime(waitingTime: number, status: UnstakingStatus) {
   if (status === UnstakingStatus.CLAIMABLE) {
     return i18n.inputLabel.availableForWithdraw;
   } else {
-    if (waitingTime > 24) {
-      const days = moment.duration(waitingTime, 'hours').days();
+    const waitingTimeInMs = waitingTime * 60 * 60 * 1000;
+    const formattedWaitingTime = humanizeDuration(waitingTimeInMs, {
+      units: ['d', 'h'],
+      round: true,
+      delimiter: ' ',
+      language: 'shortEn',
+      languages: {
+        shortEn: {
+          y: () => 'y',
+          mo: () => 'mo',
+          w: () => 'w',
+          d: () => 'd',
+          h: () => 'hr',
+          m: () => 'm',
+          s: () => 's',
+          ms: () => 'ms',
+        },
+      }, // TODO: should not be shorten
+    });
 
-      return i18n.formatString(i18n.inputLabel.withdrawInXDays, days);
-    } else {
-      return i18n.inputLabel.withdrawInADay;
-    }
+    return i18n.formatString(i18n.inputLabel.withdrawInXDays, formattedWaitingTime);
   }
 }
 
