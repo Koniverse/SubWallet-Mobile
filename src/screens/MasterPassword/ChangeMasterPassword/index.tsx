@@ -123,8 +123,8 @@ const ChangeMasterPassword = () => {
 
   const showAlertWarning = () => {
     Alert.alert(
-      'Tick the checkbox to continue',
-      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to Continue',
+      'Tick the checkbox',
+      'Make sure to tick the checkbox "I understand that SubWallet can\'t recover the password for me" to be able to click Continue',
       [{ text: 'I understand' }],
     );
   };

@@ -223,7 +223,7 @@ export default function useGetStakingList() {
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
 
   const isAll = useMemo(() => {
-    return currentAccount !== null && isAccountAll(currentAccount.address);
+    return !!currentAccount && isAccountAll(currentAccount.address);
   }, [currentAccount]);
 
   const partResult = useMemo(() => {
