@@ -35,6 +35,8 @@ import { Warning } from 'phosphor-react-native';
 import { Images } from 'assets/index';
 import Text from 'components/Text';
 import i18n from 'utils/i18n/i18n';
+import { mmkvStore } from 'utils/storage';
+import { updateShowZeroBalanceState } from 'stores/utils';
 
 const layerScreenStyle: StyleProp<any> = {
   top: 0,
@@ -158,6 +160,7 @@ export const App = () => {
   const { checkIsShowBuyToken } = useShowBuyToken();
   const { getDAppsData } = useGetDAppList();
   const [needUpdateChrome, setNeedUpdateChrome] = useState<boolean>(false);
+  const isEnableShowZeroBalanceFirstTime = mmkvStore.getBoolean('isEnableShowZeroBalanceFirstTime');
 
   // Enable lock screen on the start app
   useEffect(() => {
@@ -200,6 +203,11 @@ export const App = () => {
     DeviceEventEmitter.addListener(NEED_UPDATE_CHROME, (data: boolean) => {
       setNeedUpdateChrome(data);
     });
+
+    if (!isEnableShowZeroBalanceFirstTime) {
+      updateShowZeroBalanceState(true);
+      mmkvStore.set('isEnableShowZeroBalanceFirstTime', true);
+    }
     // if (buildNumber === 1) {
     // Set default value on the first time install
     // const buildNumberInt = parseInt(getBuildNumber(), 10);

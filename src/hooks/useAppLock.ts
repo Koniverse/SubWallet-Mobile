@@ -5,6 +5,7 @@ import { updateLockState } from 'stores/AppState';
 import { resetBrowserSetting } from 'stores/Browser';
 import { updateAutoLockTime, updateUseBiometric } from 'stores/MobileSettings';
 import { LockTimeout } from 'stores/types';
+import { updateShowZeroBalanceState } from 'stores/utils';
 
 export interface UseAppLockOptions {
   isLocked: boolean;
@@ -37,6 +38,7 @@ export default function useAppLock(): UseAppLockOptions {
     dispatch(resetBrowserSetting());
     dispatch(updateUseBiometric(false));
     dispatch(updateAutoLockTime(LockTimeout._15MINUTE));
+    updateShowZeroBalanceState(true);
   }, [dispatch]);
 
   return { isLocked, unlock, lock, resetPinCode, unlockApp };
