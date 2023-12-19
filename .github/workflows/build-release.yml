@@ -2,7 +2,7 @@ name: Release builds
 
 on:
   push:
-    tags: [ "*" ]
+    tags: [ "1.*" ]
 
 jobs:
   build-ios:
