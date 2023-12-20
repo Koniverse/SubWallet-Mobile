@@ -167,6 +167,7 @@ const CreateMasterPassword = ({
 
       <View style={_style.footerAreaStyle}>
         <InputCheckBox
+          needFocusCheckBox
           labelStyle={{ flex: 1 }}
           checked={checked}
           label={

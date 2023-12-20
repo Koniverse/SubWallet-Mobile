@@ -2,6 +2,7 @@ import React from 'react';
 import { ImageLogosMap } from 'assets/logo';
 
 const CheckBoxIcon = React.lazy(() => import('./checkbox.svg'));
+const CheckBoxWithBorderIcon = React.lazy(() => import('./checkbox-with-border.svg'));
 const SignalIcon = React.lazy(() => import('./signal.svg'));
 const SignalSplashIcon = React.lazy(() => import('./signal-splash.svg'));
 const CheckBoxFilledIcon = React.lazy(() => import('./checkbox-filled.svg'));
@@ -19,6 +20,7 @@ export const SVGImages = {
   LogoGradient,
   SubwalletStyled,
   CheckBoxIcon,
+  CheckBoxWithBorderIcon,
   CheckBoxFilledIcon,
   NftIcon,
   SignalIcon,

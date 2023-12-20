@@ -278,6 +278,7 @@ const ChangeMasterPassword = () => {
         {step === 'NewPassword' && (
           <InputCheckBox
             labelStyle={{ flex: 1 }}
+            needFocusCheckBox
             checked={checked}
             label={
               <Typography.Text style={{ color: theme.colorWhite, marginLeft: theme.marginXS, flex: 1 }}>
