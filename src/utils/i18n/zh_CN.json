@@ -466,7 +466,7 @@
     "activeStaked": "有效质押额",
     "unstaked": "解除质押",
     "estimatedAnnualEarnings": "预估年收入",
-    "withdrawInXDays": "{0}天内提款",
+    "withdrawInXDays": "{0}内提款",
     "withdrawInADay": "一天内提款",
     "availableForWithdraw": "可提款",
     "unstakeFromAcc": "从账户中解除质押",

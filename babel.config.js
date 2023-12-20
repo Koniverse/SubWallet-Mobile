@@ -30,6 +30,7 @@ module.exports = {
         root: ['.'],
       },
     ],
+    ['@babel/plugin-transform-class-static-block'],
     ['@babel/plugin-transform-flow-strip-types'],
     ['@babel/plugin-transform-private-methods', { loose: true }],
     'react-native-reanimated/plugin',

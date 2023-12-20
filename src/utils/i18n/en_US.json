@@ -466,7 +466,7 @@
     "activeStaked": "Active staked",
     "unstaked": "Unstaked",
     "estimatedAnnualEarnings": "Estimated annual earnings",
-    "withdrawInXDays": "Withdraw in {0} days",
+    "withdrawInXDays": "Withdraw in {0}",
     "withdrawInADay": "Withdraw in a day",
     "availableForWithdraw": "Available for withdraw",
     "unstakeFromAcc": "Unstake from account",
