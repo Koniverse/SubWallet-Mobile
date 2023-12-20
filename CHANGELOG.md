@@ -1,3 +1,9 @@
+## 1.1.20 (280)
+- Update web runner 1.1.26 (#1258)
+- Fix UI bug Filter screen (#1254)
+- Fix bug error page when reset account (#1255)
+- Fix bug automatically switch all accounts mode when connect or perform transaction via WalletConnect (#1221)
+
 ## 1.1.19 (276)
 
 
