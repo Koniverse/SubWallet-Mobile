@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, useCallback, useState } from 'react';
 import { StyleProp, View } from 'react-native';
 import getLanguageOptions, { LanguageOption } from 'utils/getLanguageOptions';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import { EmptyList } from 'components/EmptyList';
 import { MagnifyingGlass } from 'phosphor-react-native';
 import { saveLanguage } from 'messaging/index';
 import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
+import { ImageLogosMap } from 'assets/logo';
 
 const footerAreaStyle: StyleProp<any> = {
   marginTop: 8,
@@ -43,11 +44,60 @@ export const Languages = () => {
     }
   };
 
+  const getLanguageLogo = useCallback((val: string, size = 24) => {
+    if (val === 'en') {
+      return (
+        <Suspense>
+          <ImageLogosMap.en width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'vi') {
+      return (
+        <Suspense>
+          <ImageLogosMap.vi width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'zh') {
+      return (
+        <Suspense>
+          <ImageLogosMap.chi width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'ja') {
+      return (
+        <Suspense>
+          <ImageLogosMap.ja width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    if (val === 'ru') {
+      return (
+        <Suspense>
+          <ImageLogosMap.ru width={size} height={size} />
+        </Suspense>
+      );
+    }
+
+    return (
+      <Suspense>
+        <ImageLogosMap.en width={size} height={size} />
+      </Suspense>
+    );
+  }, []);
+
   // @ts-ignore
   const renderItem = ({ item }) => {
     return (
       <View style={{ paddingHorizontal: 16, marginBottom: 8 }}>
         <SelectItem
+          leftItemIcon={getLanguageLogo(item.value)}
           label={item.text}
           isSelected={item.value === selectedLang}
           onPress={() => setSelectedLang(item.value)}
