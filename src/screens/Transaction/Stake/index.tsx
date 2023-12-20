@@ -50,7 +50,6 @@ import { ModalRef } from 'types/modalRef';
 import { AccountSelector } from 'components/Modal/common/AccountSelector';
 import { BN, BN_ZERO } from '@polkadot/util';
 import { isSameAddress } from '@subwallet/extension-base/utils';
-import { ChainStatus } from 'hooks/chain/useChainChecker';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
 import { useWatch } from 'react-hook-form';
 import { ValidateResult } from 'react-hook-form/dist/types/validator';
@@ -59,6 +58,7 @@ import { InstructionModal } from 'screens/Home/Staking/InstructionModal';
 import { mmkvStore } from 'utils/storage';
 import { getInputValuesFromString } from 'components/Input/InputAmount';
 import { GeneralFreeBalance } from 'screens/Transaction/parts/GeneralFreeBalance';
+import { _ChainConnectionStatus } from '@subwallet/extension-base/services/chain-service/types';
 
 interface StakeFormValues extends TransactionFormValues {
   stakingType: StakingType;
@@ -74,7 +74,7 @@ export const Stake = ({
 }: StakeProps) => {
   const shownVaraInstruction = mmkvStore.getBoolean('shown-vara-instruction') ?? false;
   const theme = useSubWalletTheme().swThemes;
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { chainInfoMap, chainStateMap } = useSelector((state: RootState) => state.chainStore);
   const { nominationPoolInfoMap, validatorInfoMap } = useSelector((state: RootState) => state.bonding);
   const { accounts, currentAccount } = useSelector((state: RootState) => state.accountState);
   const [loading, setLoading] = useState(false);
@@ -115,7 +115,6 @@ export const Stake = ({
     onChangeAssetValue: setAsset,
     onTransactionDone: onDone,
     transactionDoneInfo,
-    connectingChainStatus,
   } = useTransaction<StakeFormValues>('stake', {
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -489,7 +488,7 @@ export const Stake = ({
               keyboardShouldPersistTaps={'handled'}>
               {_stakingType === ALL_KEY && (
                 <StakingTab
-                  disabled={connectingChainStatus === ChainStatus.CONNECTING}
+                  disabled={chainStateMap[chain].connectionStatus === _ChainConnectionStatus.CONNECTING}
                   from={from}
                   selectedType={currentStakingType as StakingType}
                   onSelectType={onChangeStakingType}
