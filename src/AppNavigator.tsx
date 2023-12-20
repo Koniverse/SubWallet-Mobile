@@ -313,21 +313,24 @@ const AppNavigator = ({ isAppReady }: Props) => {
           urlQueryMap[splitItem[0]] = splitItem[1];
         });
 
-        const accountByAddress = findAccountByAddress(accounts, urlQueryMap.address);
-        //change account follow url
-        if (accountByAddress) {
-          const accountInfo = {
-            address: urlQueryMap.address,
-          } as CurrentAccountInfo;
+        if (urlQuery.startsWith('wc')) {
+          const accountByAddress = findAccountByAddress(accounts, urlQueryMap.address);
+          //change account follow url
+          if (accountByAddress) {
+            const accountInfo = {
+              address: urlQueryMap.address,
+            } as CurrentAccountInfo;
 
-          saveCurrentAccountAddress(accountInfo).catch(e => {
-            console.error('There is a problem when set Current Account', e);
-          });
-        } else {
-          saveCurrentAccountAddress({ address: 'ALL' }).catch(e => {
-            console.error('There is a problem when set Current Account', e);
-          });
+            saveCurrentAccountAddress(accountInfo).catch(e => {
+              console.error('There is a problem when set Current Account', e);
+            });
+          } else {
+            saveCurrentAccountAddress({ address: 'ALL' }).catch(e => {
+              console.error('There is a problem when set Current Account', e);
+            });
+          }
         }
+
         //enable Network
         const originChain = urlQueryMap.slug ? urlQueryMap.slug.split('-')[1].toLowerCase() : '';
         const isChainConnected = checkChainConnected(originChain);
