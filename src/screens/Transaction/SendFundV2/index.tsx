@@ -73,7 +73,6 @@ import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
-import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -739,10 +738,10 @@ export const SendFund = ({
       }
     },
     [
+      assetRegistry,
       assetValue,
       chainInfo?.name,
       chainValue,
-      currentChainAsset,
       maxTransfer,
       nativeTokenBalance.decimals,
       nativeTokenBalance.symbol,

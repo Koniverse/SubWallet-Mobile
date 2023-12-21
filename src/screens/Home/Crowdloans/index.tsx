@@ -11,12 +11,14 @@ import { useIsFocused } from '@react-navigation/native';
 import { _CrowdloanItemType } from 'types/index';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { Linking, ListRenderItemInfo, TouchableOpacity } from 'react-native';
+import { Linking, ListRenderItemInfo, RefreshControl, TouchableOpacity } from 'react-native';
 import { CrowdloanItem } from 'screens/Home/Crowdloans/CrowdloanItem';
 import FastImage from 'react-native-fast-image';
 import { BUTTON_ACTIVE_OPACITY } from 'constants/index';
 import useGetBannerByScreen from 'hooks/campaign/useGetBannerByScreen';
 import { CampaignBanner } from '@subwallet/extension-base/background/KoniTypes';
+import { useRefresh } from 'hooks/useRefresh';
+import { reloadCron } from 'messaging/index';
 
 const renderListEmptyComponent = () => {
   return (
@@ -38,7 +40,7 @@ enum FilterValue {
 export const CrowdloansScreen = () => {
   const theme = useSubWalletTheme().swThemes;
   const items: _CrowdloanItemType[] = useGetCrowdloanList();
-  // const [isRefresh, refresh] = useRefresh();
+  const [isRefresh, refresh] = useRefresh();
   const isFocused = useIsFocused();
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
   const defaultFilterOpts = [
@@ -108,43 +110,50 @@ export const CrowdloansScreen = () => {
   }
 
   return (
-    <>
-      <FlatListScreen
-        isShowFilterBtn
-        title={i18n.header.crowdloans}
-        titleTextAlign={'left'}
-        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
-        renderListEmptyComponent={renderListEmptyComponent}
-        renderItem={renderItem}
-        autoFocus={false}
-        items={crowdloanData}
-        showLeftBtn={false}
-        searchFunction={doFilterOptions}
-        filterOptions={defaultFilterOpts}
-        filterFunction={getListByFilterOpt}
-        isShowMainHeader
-        placeholder={i18n.placeholder.searchProject}
-        beforeListItem={
-          <>
-            {banners.map(item => (
-              <TouchableOpacity
-                onPress={onPressBanner(item)}
-                activeOpacity={BUTTON_ACTIVE_OPACITY}
-                style={{ marginHorizontal: theme.margin }}>
-                <FastImage
-                  style={{
-                    height: 88,
-                    borderRadius: theme.borderRadiusLG,
-                    marginVertical: theme.marginXS,
-                  }}
-                  resizeMode="cover"
-                  source={{ uri: item.data.media }}
-                />
-              </TouchableOpacity>
-            ))}
-          </>
-        }
-      />
-    </>
+    <FlatListScreen
+      isShowFilterBtn
+      title={i18n.header.crowdloans}
+      titleTextAlign={'left'}
+      flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+      renderListEmptyComponent={renderListEmptyComponent}
+      renderItem={renderItem}
+      autoFocus={false}
+      items={crowdloanData}
+      showLeftBtn={false}
+      searchFunction={doFilterOptions}
+      filterOptions={defaultFilterOpts}
+      filterFunction={getListByFilterOpt}
+      isShowMainHeader
+      placeholder={i18n.placeholder.searchProject}
+      refreshControl={
+        <RefreshControl
+          // tintColor={ColorMap.light}
+          refreshing={isRefresh}
+          onRefresh={() => {
+            refresh(reloadCron({ data: 'crowdloan' }));
+          }}
+        />
+      }
+      beforeListItem={
+        <>
+          {banners.map(item => (
+            <TouchableOpacity
+              onPress={onPressBanner(item)}
+              activeOpacity={BUTTON_ACTIVE_OPACITY}
+              style={{ marginHorizontal: theme.margin }}>
+              <FastImage
+                style={{
+                  height: 88,
+                  borderRadius: theme.borderRadiusLG,
+                  marginVertical: theme.marginXS,
+                }}
+                resizeMode="cover"
+                source={{ uri: item.data.media }}
+              />
+            </TouchableOpacity>
+          ))}
+        </>
+      }
+    />
   );
 };
