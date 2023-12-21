@@ -106,7 +106,6 @@ export const Languages = () => {
     );
   };
 
-  // Todo: use FlatListScreen instead of SelectScreen
   return (
     <FlatListScreen
       title={i18n.header.language}

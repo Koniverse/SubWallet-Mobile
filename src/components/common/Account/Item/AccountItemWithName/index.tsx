@@ -3,14 +3,11 @@ import createStyle from './styles';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
-// TODO: check lib
-// @ts-ignore
-import Avatar from 'react-native-boring-avatars';
 import i18n from 'utils/i18n/i18n';
 import { toShort } from 'utils/index';
-
 import AccountItemBase, { AccountItemBaseProps } from '../AccountItemBase';
 import { AccountJson } from '@subwallet/extension-base/background/types';
+import AvatarGroup from 'components/common/AvatarGroup';
 
 interface Props extends AccountItemBaseProps {
   direction?: 'vertical' | 'horizontal';
@@ -35,18 +32,7 @@ const AccountItemWithName: React.FC<Props> = (props: Props) => {
     <AccountItemBase
       {...props}
       address={address}
-      leftItem={
-        isAll ? (
-          <Avatar
-            colors={['#5F545C', '#EB7072', '#F5BA90', '#F5E2B8', '#A2CAA5']}
-            name={address}
-            size={avatarSize}
-            variant={'beam'}
-          />
-        ) : (
-          props.leftItem
-        )
-      }
+      leftItem={isAll ? <AvatarGroup avatarSize={avatarSize} /> : props.leftItem}
       middleItem={
         <View
           style={[direction === 'horizontal' ? styles.contentDirectionHorizontal : styles.contentDirectionVertical]}>

@@ -1,27 +1,40 @@
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { ExtrinsicType } from '@subwallet/extension-base/background/KoniTypes';
 import { TRANSACTION_TITLE_MAP } from 'constants/transaction';
-import { useNavigation } from '@react-navigation/native';
-import { RootNavigationProps } from 'routes/index';
-import useFormControl, { FormControlConfig, FormControlOption } from 'hooks/screen/useFormControl';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import { _getOriginChainOfAsset } from '@subwallet/extension-base/services/chain-service/utils';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { isAccountAll } from 'utils/accountAll';
 import { ExtraExtrinsicType, ExtrinsicTypeMobile } from 'types/transaction';
 import useChainChecker from 'hooks/chain/useChainChecker';
 import { AppModalContext } from 'providers/AppModalContext';
+import { FieldValues, UseFormProps } from 'react-hook-form/dist/types';
+import { FieldPath, useForm } from 'react-hook-form';
+import { FieldPathValue } from 'react-hook-form/dist/types/path';
 import i18n from 'utils/i18n/i18n';
 
-export const useTransaction = (
+export interface TransactionFormValues extends FieldValues {
+  from: string;
+  chain: string;
+  asset: string;
+  value: string;
+}
+
+export interface TransactionDoneInfo {
+  id: string;
+  chainType: string;
+  chain: string;
+  path: string;
+  address: string;
+}
+
+export const useTransaction = <T extends TransactionFormValues = TransactionFormValues, TContext = any>(
   action: string,
-  extraFormConfig: FormControlConfig,
-  formControlOption?: FormControlOption,
+  formOptions: UseFormProps<T, TContext> = {},
 ) => {
   const { currentAccount } = useSelector((state: RootState) => state.accountState);
-  const navigation = useNavigation<RootNavigationProps>();
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const assetRegistry = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const { turnOnChain, checkChainConnected, connectingChainStatus } = useChainChecker();
   const appModalContext = useContext(AppModalContext);
   const transactionType = useMemo((): ExtrinsicTypeMobile => {
@@ -70,39 +83,34 @@ export const useTransaction = (
     return TRANSACTION_TITLE_MAP()[transactionType];
   }, [transactionType]);
 
-  const transactionFormConfig: FormControlConfig = {
-    from: {
-      name: 'From',
-      value: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
-    },
-    chain: {
-      name: 'Chain',
+  const form = useForm<T, TContext>({
+    mode: 'onChange',
+    ...formOptions,
+    defaultValues: {
+      from: (!isAccountAll(currentAccount?.address as string) && currentAccount?.address) || '',
+      chain: '',
+      asset: '',
       value: '',
-    },
-    asset: {
-      name: 'Asset',
-      value: '',
-    },
-    value: {
-      name: 'Value',
-      value: '',
-      require: true,
-    },
-    ...extraFormConfig,
-  };
+      ...formOptions.defaultValues,
+    } as UseFormProps<T, TContext>['defaultValues'],
+  });
+  const [transactionDoneInfo, setTransactionDoneInfo] = useState<TransactionDoneInfo>({
+    id: '',
+    chainType: '',
+    chain: '',
+    path: '',
+    address: '',
+  });
 
-  const { formState, onChangeValue, onSubmitField, onUpdateErrors, focus } = useFormControl(
-    transactionFormConfig,
-    formControlOption || {},
-  );
+  const { getValues, setValue } = form;
 
-  const onDone = useCallback(
+  const onTransactionDone = useCallback(
     (id: string) => {
-      const chainType = isEthereumAddress(formState.data.from) ? 'ethereum' : 'substrate';
-
-      navigation.navigate('TransactionDone', { chainType, chain: formState.data.chain, id, path: homePath });
+      const { from, chain } = getValues();
+      const chainType = isEthereumAddress(from) ? 'ethereum' : 'substrate';
+      setTransactionDoneInfo({ id, chain, chainType, path: homePath, address: from });
     },
-    [formState.data.chain, formState.data.from, homePath, navigation],
+    [getValues, homePath],
   );
 
   const showPopupEnableChain = useCallback(
@@ -122,8 +130,8 @@ export const useTransaction = (
               appModalContext.hideConfirmModal();
             },
             onCompleteModal: () => {
-              appModalContext.hideConfirmModal();
-              setTimeout(() => turnOnChain(chain), 200);
+              turnOnChain(chain);
+              setTimeout(() => appModalContext.hideConfirmModal(), 300);
             },
             messageIcon: chain,
           });
@@ -136,51 +144,49 @@ export const useTransaction = (
 
   const onChangeFromValue = useCallback(
     (value: string) => {
-      onChangeValue('from')(value);
+      setValue('from' as FieldPath<T>, value as FieldPathValue<T, FieldPath<T>>);
     },
-    [onChangeValue],
+    [setValue],
   );
 
   const onChangeAssetValue = useCallback(
     (value: string) => {
-      const chain = _getOriginChainOfAsset(value);
-      onChangeValue('asset')(value);
-      onChangeValue('chain')(chain);
+      const chain = assetRegistry[value]?.originChain;
+
+      setValue('asset' as FieldPath<T>, value as FieldPathValue<T, FieldPath<T>>);
+      setValue('chain' as FieldPath<T>, chain as FieldPathValue<T, FieldPath<T>>);
       showPopupEnableChain(chain);
     },
-    [onChangeValue, showPopupEnableChain],
+    [assetRegistry, setValue, showPopupEnableChain],
   );
 
   const onChangeChainValue = useCallback(
     (value: string) => {
-      onChangeValue('chain')(value);
+      setValue('chain' as FieldPath<T>, value as FieldPathValue<T, FieldPath<T>>);
       showPopupEnableChain(value);
     },
-    [onChangeValue, showPopupEnableChain],
+    [setValue, showPopupEnableChain],
   );
 
   const onChangeAmountValue = useCallback(
     (value: string) => {
-      onChangeValue('value')(value);
+      setValue('value' as FieldPath<T>, value as FieldPathValue<T, FieldPath<T>>);
     },
-    [onChangeValue],
+    [setValue],
   );
 
   return {
     title,
     transactionType,
-    formState,
-    onSubmitField,
-    focus,
+    form,
     onChangeFromValue,
     onChangeAssetValue,
     onChangeChainValue,
     onChangeAmountValue,
-    onChangeValue,
-    onDone,
-    onUpdateErrors,
+    onTransactionDone,
     showPopupEnableChain,
     checkChainConnected,
+    transactionDoneInfo,
     connectingChainStatus,
   };
 };

@@ -182,7 +182,6 @@ export const FirstScreen = () => {
           </View>
         </View>
 
-        {/*//TODO: add hyperlink for T&C and Privacy Policy*/}
         <Text style={firstScreenNotificationStyle}>{i18n.common.firstScreenMessagePart1}</Text>
         <Text style={firstScreenNotificationStyle}>
           <Text onPress={onPressTermsCondition} style={{ color: theme.colorTextLight1 }}>
