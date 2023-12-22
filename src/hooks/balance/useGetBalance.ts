@@ -131,7 +131,7 @@ const useGetBalance = (chain = '', address = '', tokenSlug = '') => {
     nativeTokenActive,
   ]);
 
-  return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error };
+  return { refreshBalance, tokenBalance, nativeTokenBalance, nativeTokenSlug, isLoading, error, chainInfo };
 };
 
 export default useGetBalance;
