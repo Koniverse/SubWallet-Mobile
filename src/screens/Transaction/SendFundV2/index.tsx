@@ -7,6 +7,7 @@ import { AccountJson } from '@subwallet/extension-base/background/types';
 import {
   _getAssetDecimals,
   _getOriginChainOfAsset,
+  _getTokenMinAmount,
   _isAssetFungibleToken,
   _isChainEvmCompatible,
   _isTokenTransferredByEvm,
@@ -72,6 +73,7 @@ import { FreeBalanceDisplay } from 'screens/Transaction/parts/FreeBalanceDisplay
 import { ModalRef } from 'types/modalRef';
 import useChainAssets from 'hooks/chain/useChainAssets';
 import { TransactionDone } from 'screens/Transaction/TransactionDone';
+import { getInputValuesFromString } from 'components/Input/InputAmountV2';
 
 interface TransferFormValues extends TransactionFormValues {
   to: string;
@@ -430,6 +432,7 @@ export const SendFund = ({
   }, [viewStep, destChainItems, chainInfoMap, fromValue, toValue, chainValue]);
 
   const currentChainAsset = useMemo(() => {
+    console.log('123123', assetValue);
     return assetValue ? assetRegistry[assetValue] : undefined;
   }, [assetValue, assetRegistry]);
 
@@ -666,10 +669,36 @@ export const SendFund = ({
   const transferAllAlertIntercept = useCallback(
     (onAccept: () => void, onCancel?: () => void) => {
       if (nativeTokenSlug && !!chainValue) {
+        const nativeChainAsset = assetRegistry[nativeTokenSlug];
+        const currentEd = _getTokenMinAmount(nativeChainAsset);
+
         if (new BigN(nativeTokenBalance.value).eq(new BigN(0))) {
           Alert.alert(
             'Insufficient balance',
             `Your available ${nativeTokenBalance.symbol} balance is 0, which is not enough to pay gas fees on the ${chainInfo?.name} network. Deposit ${nativeTokenBalance.symbol} to continue.`,
+            [
+              {
+                text: 'I understand',
+                onPress: () => {
+                  onCancel?.();
+                },
+              },
+            ],
+          );
+
+          return;
+        }
+
+        if (new BigN(nativeTokenBalance.value).eq(new BigN(currentEd))) {
+          Alert.alert(
+            'Insufficient balance',
+            `Your available ${nativeTokenBalance.symbol} balance is ${getInputValuesFromString(
+              nativeTokenBalance.value,
+              nativeTokenBalance.decimals,
+            )}. You need to have at least ${getInputValuesFromString(
+              currentEd,
+              nativeChainAsset?.decimals || 0,
+            )} to pay gas fees on the ${chainInfo?.name} network. Deposit ${nativeTokenBalance.symbol} to continue.`,
             [
               {
                 text: 'I understand',
@@ -720,6 +749,7 @@ export const SendFund = ({
       assetValue,
       chainInfo?.name,
       chainValue,
+      currentChainAsset,
       maxTransfer,
       nativeTokenBalance.decimals,
       nativeTokenBalance.symbol,
@@ -846,17 +876,18 @@ export const SendFund = ({
             onSuccess(res);
           } else {
             const { errors: currentErrors, warnings } = res;
-            console.log('currentErrors', currentErrors, warnings);
-            if (currentErrors?.[0]?.message.startsWith('You must transfer at least')) {
-              console.log('123123');
-              onError(currentErrors[0]);
-            }
+            console.log('currentErrors', currentErrors);
 
             if (
-              insufficientMessages.includes(currentErrors[0]?.message || '') ||
+              insufficientMessages.some(v => currentErrors?.[0]?.message.includes(v)) ||
               warnings[0]?.warningType === 'notEnoughExistentialDeposit'
             ) {
+              console.log('123123123123123123123');
               doTransferAll();
+              return;
+            }
+            if (currentErrors?.[0]?.message.startsWith('You must transfer at least')) {
+              onError(currentErrors[0]);
             }
           }
         })
@@ -888,7 +919,6 @@ export const SendFund = ({
 
   const renderAmountInput = useCallback(
     ({ field: { onBlur, onChange, value, ref } }: UseControllerReturn<TransferFormValues>) => {
-      console.log('value', value);
       return (
         <>
           <Amount
