@@ -8,6 +8,7 @@ import { ArrowCircleRight, CaretDown } from 'phosphor-react-native';
 import { deviceHeight } from 'constants/index';
 import Markdown from 'react-native-markdown-display';
 import { baseStaticDataUrl } from 'hooks/static-content/useGetDAppList';
+import { GENERAL_TERM_AND_CONDITION } from 'constants/termAndCondition';
 
 interface Props {
   modalVisible: boolean;
@@ -27,8 +28,8 @@ export const GeneralTermModal = ({ modalVisible, setVisible, onPressAcceptBtn, d
     fetch(`${baseStaticDataUrl}/term-and-condition/index.md`)
       .then(rs => rs.text())
       .then(md => setStaticData({ md }))
-      .catch(e => {
-        console.log('fetch _termAndCondition error:', e);
+      .catch(() => {
+        setStaticData({ md: GENERAL_TERM_AND_CONDITION });
       });
   }, []);
 
