@@ -36,6 +36,8 @@ import {
   getMissionPoolData,
   subscribeBuyTokens,
   subscribeBuyServices,
+  subscribeYieldPoolInfo,
+  subscribeYieldPositionInfo,
 } from 'stores/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
@@ -193,6 +195,8 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
     if (isWebRunnerReady) {
       // Init subscription if start and restart them if WebRunner is reload
       if (readyFlag.current.isStart) {
+        /* Accounts */
+
         _DataContext.addHandler({
           ...subscribeAccountsData,
           name: 'subscribeAccountsData',
@@ -212,6 +216,10 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           isStartImmediately: true,
         });
 
+        /* Accounts */
+
+        /* Chains */
+
         _DataContext.addHandler({
           ...subscribeChainStateMap,
           name: 'subscribeChainStateMap',
@@ -224,6 +232,11 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           relatedStores: ['chainStore'],
           isStartImmediately: true,
         });
+
+        /* Chains */
+
+        /* Assets */
+
         _DataContext.addHandler({
           ...subscribeAssetRegistry,
           name: 'subscribeAssetRegistry',
@@ -249,17 +262,14 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           isStartImmediately: true,
         });
 
-        // Settings
+        /* Assets */
+
+        /* Settings */
+
         _DataContext.addHandler({
           ...subscribeUiSettings,
           name: 'subscribeUiSettings',
           relatedStores: ['settings'],
-          isStartImmediately: true,
-        });
-        _DataContext.addHandler({
-          ...getLogoMaps,
-          name: 'getLogoMaps',
-          relatedStores: ['logoMaps'],
           isStartImmediately: true,
         });
         _DataContext.addHandler({
@@ -268,6 +278,21 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           relatedStores: ['settings'],
           isStartImmediately: true,
         });
+
+        /* Settings */
+
+        /* Logo */
+
+        _DataContext.addHandler({
+          ...getLogoMaps,
+          name: 'getLogoMaps',
+          relatedStores: ['logoMaps'],
+          isStartImmediately: true,
+        });
+
+        /* Logo */
+
+        /* Requests */
 
         // Confirmations
         _DataContext.addHandler({
@@ -307,6 +332,8 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           isStartImmediately: true,
         });
 
+        /* Requests */
+
         // Features
         _DataContext.addHandler({
           ...subscribeProcessingCampaign,
@@ -333,6 +360,9 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           name: 'subscribeNftCollections',
           relatedStores: ['nft'],
         });
+
+        /* Staking */
+
         _DataContext.addHandler({ ...subscribeStaking, name: 'subscribeStaking', relatedStores: ['staking'] });
         _DataContext.addHandler({
           ...subscribeStakingReward,
@@ -349,6 +379,9 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           name: 'subscribeStakingNominatorMetadata',
           relatedStores: ['staking'],
         });
+
+        /* Staking */
+
         _DataContext.addHandler({
           ...subscribeTxHistory,
           name: 'subscribeTxHistory',
@@ -365,6 +398,9 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           relatedStores: ['missionPool'],
           isStartImmediately: true,
         });
+
+        /* Buy service */
+
         _DataContext.addHandler({
           ...subscribeBuyTokens,
           name: 'subscribeBuyTokens',
@@ -377,6 +413,24 @@ export const DataContextProvider = ({ children }: DataContextProviderProps) => {
           relatedStores: ['buyService'],
           isStartImmediately: true,
         });
+
+        /* Buy service */
+
+        /* Earning */
+
+        _DataContext.addHandler({
+          ...subscribeYieldPoolInfo,
+          name: 'subscribeYieldPoolInfo',
+          relatedStores: ['earning'],
+        });
+
+        _DataContext.addHandler({
+          ...subscribeYieldPositionInfo,
+          name: 'subscribeYieldPositionInfo',
+          relatedStores: ['earning'],
+        });
+
+        /* Earning */
 
         readyFlag.current.isStart = false;
       }

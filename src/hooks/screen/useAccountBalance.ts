@@ -19,7 +19,7 @@ import { RootState } from 'stores/index';
 import { AccountBalanceHookType } from 'types/hook';
 import { TokenBalanceItemType } from 'types/balance';
 import { AssetRegistryStore, BalanceStore, ChainStore, PriceStore } from 'stores/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SubstrateBalance } from '@subwallet/extension-base/types';
 
 const BN_0 = new BigN(0);
@@ -329,6 +329,7 @@ const DEFAULT_RESULT = {
 export default function useAccountBalance(
   tokenGroupMap: Record<string, string[]>,
   lazy?: boolean,
+  showZero?: boolean,
 ): AccountBalanceHookType {
   const currentAccount = useSelector((state: RootState) => state.accountState.currentAccount);
   const balanceMap = useSelector((state: RootState) => state.balance.balanceMap);
@@ -337,7 +338,12 @@ export default function useAccountBalance(
   const price24hMap = useSelector((state: RootState) => state.price.price24hMap);
   const assetRegistryMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const multiChainAssetMap = useSelector((state: RootState) => state.assetRegistry.multiChainAssetMap);
-  const isShowZeroBalance = useSelector((state: RootState) => state.settings.isShowZeroBalance);
+  const isShowZeroBalanceSetting = useSelector((state: RootState) => state.settings.isShowZeroBalance);
+
+  const isShowZeroBalance = useMemo(() => {
+    return showZero || isShowZeroBalanceSetting;
+  }, [isShowZeroBalanceSetting, showZero]);
+
   const [result, setResult] = useState<AccountBalanceHookType>(
     lazy
       ? DEFAULT_RESULT

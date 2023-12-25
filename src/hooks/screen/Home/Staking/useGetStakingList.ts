@@ -6,7 +6,6 @@ import {
   NominatorMetadata,
   StakingItem,
   StakingRewardItem,
-  StakingStatus,
   StakingType,
 } from '@subwallet/extension-base/background/KoniTypes';
 import { ALL_ACCOUNT_KEY } from '@subwallet/extension-base/constants';
@@ -21,6 +20,7 @@ import { BN, BN_ZERO } from '@polkadot/util';
 import { RootState } from 'stores/index';
 import { isAccountAll } from 'utils/accountAll';
 import { StakingData, StakingDataType } from 'hooks/types';
+import { EarningStatus } from '@subwallet/extension-base/types';
 
 function validateValueInString(value?: string) {
   try {
@@ -153,18 +153,18 @@ const groupStakingRewardItems = (stakingRewardItems: StakingRewardItem[]): Staki
   return groupedStakingRewardItems;
 };
 
-const getGroupStatus = (earnMapping: Record<string, StakingStatus> = {}): StakingStatus => {
+const getGroupStatus = (earnMapping: Record<string, EarningStatus> = {}): EarningStatus => {
   const list = Object.values(earnMapping);
 
-  if (list.every(value => value === StakingStatus.NOT_EARNING)) {
-    return StakingStatus.NOT_EARNING;
+  if (list.every(value => value === EarningStatus.NOT_EARNING)) {
+    return EarningStatus.NOT_EARNING;
   }
 
-  if (list.every(value => value === StakingStatus.EARNING_REWARD)) {
-    return StakingStatus.EARNING_REWARD;
+  if (list.every(value => value === EarningStatus.EARNING_REWARD)) {
+    return EarningStatus.EARNING_REWARD;
   }
 
-  return StakingStatus.PARTIALLY_EARNING;
+  return EarningStatus.PARTIALLY_EARNING;
 };
 
 const groupNominatorMetadatas = (nominatorMetadataList: NominatorMetadata[]): NominatorMetadata[] => {
@@ -190,11 +190,11 @@ const groupNominatorMetadatas = (nominatorMetadataList: NominatorMetadata[]): No
       activeStake: '',
       nominations: [],
       unstakings: [],
-      status: StakingStatus.NOT_EARNING,
+      status: EarningStatus.NOT_EARNING,
     };
 
     let groupedActiveStake = BN_ZERO;
-    const earnMapping: Record<string, StakingStatus> = {};
+    const earnMapping: Record<string, EarningStatus> = {};
 
     for (const nominatorMetadata of nominatorMetadataList) {
       if (nominatorMetadata.chain === chain && nominatorMetadata.type === type) {

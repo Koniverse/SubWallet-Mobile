@@ -1,4 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { isDevMode } from 'constants/index';
 import mobileSettingsReducer from './MobileSettings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import appStateReducer from './AppState';
@@ -30,6 +31,7 @@ import ChainStoreReducer from './feature/common/ChainStore';
 import CrowdloanReducer from './feature/Crowdloan';
 import NftReducer from './feature/Nft';
 import PriceReducer from './feature/Price';
+import EarningReducer from './feature/Earning';
 import StakingReducer from './feature/Staking';
 import WalletConnectReducer from './feature/WalletConnect';
 import TransactionHistoryReducer from './feature/TransactionHistory';
@@ -94,6 +96,7 @@ const rootReducer = combineReducers({
   settings: SettingsReducer,
   accountState: AccountStateReducer,
   logoMaps: LogoMap,
+  earning: EarningReducer,
 
   // API
   [browserDAPPs.reducerPath]: persistReducer(
@@ -112,9 +115,12 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
+      serializableCheck: isDevMode
+        ? false
+        : {
+            ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+          },
+      immutableCheck: !isDevMode,
     })
       .concat(browserDAPPs.middleware)
       .concat(tokenConfig.middleware),

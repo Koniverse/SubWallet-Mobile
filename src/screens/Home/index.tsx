@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import StakingScreen from './Staking/StakingScreen';
+import EarningScreen from 'screens/Home/Earning';
 
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -137,10 +137,10 @@ const MainScreen = () => {
         }}
       />
       <Tab.Screen
-        name={'Staking'}
-        component={StakingScreen}
+        name={'Earning'}
+        component={EarningScreen}
         options={{
-          tabBarLabel: i18n.tabName.staking,
+          tabBarLabel: i18n.tabName.earning,
           tabBarHideOnKeyboard: Platform.OS === 'android',
           tabBarIcon: stakingTabbarIcon,
         }}

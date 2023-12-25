@@ -244,14 +244,16 @@
     "authorizeMessage": "Authorize message",
     "serviceSelect": "Select service",
     "login": "Login",
-    "slogan": "Polkadot, Substrate & Ethereum wallet"
+    "slogan": "Polkadot, Substrate & Ethereum wallet",
+    "earning": "Earning"
   },
   "tabName": {
     "tokens": "Tokens",
     "nfts": "NFTs",
     "crowdloans": "Crowdloans",
     "staking": "Staking",
-    "browser": "Browser"
+    "browser": "Browser",
+    "earning": "Earning"
   },
   "welcomeScreen": {
     "welcomeBackTitle": "Welcome back!",
@@ -792,7 +794,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "Disconnect",
     "connectedNetworks": "Connected networks",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "earning": "Earning"
   },
   "cryptoScreen": {
     "address": "Address",

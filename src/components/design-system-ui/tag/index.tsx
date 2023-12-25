@@ -23,6 +23,7 @@ const Tag: React.FC<TagNativeProps> = props => {
     afterClose,
     style,
     children,
+    bgColor,
     color = 'secondary',
     bgType = 'filled',
     shape = 'default',
@@ -48,10 +49,10 @@ const Tag: React.FC<TagNativeProps> = props => {
     const tagText = bgType === 'default' || bgType === 'gray' ? theme[`${color}-7`] : theme.colorText;
 
     return {
-      backgroundColor: tagBgc,
+      backgroundColor: bgColor || tagBgc,
       color: tagText,
     };
-  }, [bgType, color, theme]);
+  }, [bgType, color, theme, bgColor]);
 
   const getTagColorText: TextStyle = useMemo(() => {
     const tagText =
@@ -86,7 +87,12 @@ const Tag: React.FC<TagNativeProps> = props => {
 
   return !closed ? (
     <View style={[_styles.tag, style]}>
-      <View style={[_styles.wrap, presetColor && wrapStyle, shape && _styles[`shape${capitalize(shape)}Style`]]}>
+      <View
+        style={[
+          _styles.wrap,
+          (presetColor || bgColor) && wrapStyle,
+          shape && _styles[`shape${capitalize(shape)}Style`],
+        ]}>
         {icon}
         {React.isValidElement(children) ? (
           children

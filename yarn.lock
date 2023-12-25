@@ -1421,13 +1421,13 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.8.1.tgz#182b5a4704ef8ad91bde93f7a860a88fd92c79a3"
   integrity sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==
 
-"@equilab/api@^1.14.25":
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/@equilab/api/-/api-1.15.1.tgz#5b8517b4dbc5ec31c04a4d4e51e1d8e82a11f813"
-  integrity sha512-6MKdZcvXGYE+meBwz5GIxlpzloy+LpG2+0QJkVfhnemDbbzGJK7eYM57VIPhSxeb6X9dHvymnYfYln745J3pBQ==
+"@equilab/api@~1.14.25":
+  version "1.14.25"
+  resolved "https://registry.yarnpkg.com/@equilab/api/-/api-1.14.25.tgz#51a6386e7cfe032b815be1716ecfef4a0608a3c5"
+  integrity sha512-D6KrRmwjhdIPfznpstPO/FaBe9CsGr4wJ05kn2EKxJ6R5lOuvBylkzCtN2EhLC+yQ6xBMknFOsiit9vNGmUiSA==
   dependencies:
     "@equilab/definitions" "1.4.18"
-    "@polkadot/api" "10.7.1"
+    "@polkadot/api" "9.11.1"
     abort-controller "^3.0.0"
     isomorphic-fetch "^3.0.0"
 
@@ -2630,7 +2630,7 @@
     "@polkadot/util" "^12.6.2"
     tslib "^2.6.2"
 
-"@polkadot/api-base@10.11.2":
+"@polkadot/api-base@10.11.2", "@polkadot/api-base@^10.9.1":
   version "10.11.2"
   resolved "https://registry.yarnpkg.com/@polkadot/api-base/-/api-base-10.11.2.tgz#135de5ab83769a1fd3ad9f845f27338a65b0ffe3"
   integrity sha512-4LIjaUfO9nOzilxo7XqzYKCNMtmUypdk8oHPdrRnSjKEsnK7vDsNi+979z2KXNXd2KFSCFHENmI523fYnMnReg==
@@ -2672,7 +2672,7 @@
     rxjs "^7.8.1"
     tslib "^2.6.2"
 
-"@polkadot/api@10.11.2", "@polkadot/api@10.7.1", "@polkadot/api@^10.1.4", "@polkadot/api@^10.11.1", "@polkadot/api@^10.7.2", "@polkadot/api@^10.7.3", "@polkadot/api@^10.9.1", "@polkadot/api@^7.2.1", "@polkadot/api@^9.13.2", "@polkadot/api@^9.14.1", "@polkadot/api@latest":
+"@polkadot/api@10.11.2", "@polkadot/api@9.11.1", "@polkadot/api@^10.1.4", "@polkadot/api@^10.11.1", "@polkadot/api@^10.7.2", "@polkadot/api@^10.7.3", "@polkadot/api@^10.9.1", "@polkadot/api@^7.2.1", "@polkadot/api@^9.13.2", "@polkadot/api@^9.14.1", "@polkadot/api@latest":
   version "10.11.2"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-10.11.2.tgz#16cd07062d51cc9cf77a3a6afa3cb4e526e44a82"
   integrity sha512-AorCZxCWCoTtdbl4DPUZh+ACe/pbLIS1BkdQY0AFJuZllm0x/yWzjgampcPd5jQAA/O3iKShRBkZqj6Mk9yG/A==
@@ -4260,15 +4260,13 @@
     "@polkadot/util" "^12.5.1"
     eventemitter3 "^5.0.1"
 
-"@subwallet/extension-base@^1.1.26-0":
+"@subwallet/extension-base@^1.1.26-0", "@subwallet/extension-base@file:../SubWallet-Earning/packages/extension-base/build/":
   version "1.1.26-0"
-  resolved "https://registry.yarnpkg.com/@subwallet/extension-base/-/extension-base-1.1.26-0.tgz#13df80b334aff5e74a57dd57d4f786378c91fa20"
-  integrity sha512-LacMe0FMrqqu6M3SlNgFeyfvKc/tbUodXzWCKF7+HYSpxEgyu+qPha7p9A7En4DTQ8J42p22dENk8/OIurxEtA==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@apollo/client" "^3.7.14"
     "@azns/resolver-core" "^1.4.0"
-    "@equilab/api" "^1.14.25"
+    "@equilab/api" "~1.14.25"
     "@ethereumjs/common" "^2.6.5"
     "@ethereumjs/tx" "^4.0.2"
     "@ethersproject/abi" "^5.7.0"
@@ -4277,6 +4275,7 @@
     "@metaverse-network-sdk/type-definitions" "^0.0.1-13"
     "@oak-foundation/types" "^0.0.23"
     "@polkadot/api" "^10.11.1"
+    "@polkadot/api-base" "^10.9.1"
     "@polkadot/api-contract" "^10.11.1"
     "@polkadot/api-derive" "^10.11.1"
     "@polkadot/apps-config" "^0.133.1"
@@ -6518,9 +6517,9 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"

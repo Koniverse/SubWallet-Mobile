@@ -42,7 +42,7 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { SessionTypes } from '@walletconnect/types';
 import { MissionInfo } from 'types/missionPool';
 import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
-import { BalanceJson } from '@subwallet/extension-base/types';
+import { BalanceJson, YieldPoolInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
 // Setup redux stores
 
 function voidFn() {
@@ -370,6 +370,8 @@ export const updateStaking = (data: StakingJson) => {
   store.dispatch({ type: 'staking/updateStaking', payload: data.details });
 };
 
+/* Staking */
+
 export const subscribeStaking = lazySubscribeMessage(
   'pri(staking.getSubscription)',
   null,
@@ -410,6 +412,34 @@ export const subscribeStakingNominatorMetadata = lazySubscribeMessage(
   updateStakingNominatorMetadata,
 );
 
+/* Staking */
+
+/* Earning */
+
+export const updateYieldPoolInfo = (data: YieldPoolInfo[]) => {
+  store.dispatch({ type: 'earning/updateYieldPoolInfo', payload: data });
+};
+
+export const subscribeYieldPoolInfo = lazySubscribeMessage(
+  'pri(yield.subscribePoolInfo)',
+  null,
+  updateYieldPoolInfo,
+  updateYieldPoolInfo,
+);
+
+export const updateYieldPositionInfo = (data: YieldPositionInfo[]) => {
+  store.dispatch({ type: 'earning/updateYieldPositionInfo', payload: data });
+};
+
+export const subscribeYieldPositionInfo = lazySubscribeMessage(
+  'pri(yield.subscribeYieldPosition)',
+  null,
+  updateYieldPositionInfo,
+  updateYieldPositionInfo,
+);
+
+/* Earning */
+
 export const updateTxHistory = (data: TransactionHistoryItem[]) => {
   store.dispatch({ type: 'transactionHistory/update', payload: data });
 };
@@ -421,7 +451,8 @@ export const subscribeTxHistory = lazySubscribeMessage(
   updateTxHistory,
 );
 
-// Wallet connect
+/* Wallet connect */
+
 export const updateConnectWCRequests = (data: WalletConnectSessionRequest[]) => {
   // Convert data to object with key as id
   const requests = convertConfirmationToMap(data);
@@ -452,7 +483,10 @@ export const subscribeWalletConnectSessions = lazySubscribeMessage(
   updateWalletConnectSessions,
 );
 
+/* Wallet connect */
+
 /* Campaign */
+
 export const updateBanner = (data: CampaignBanner[]) => {
   const filtered = data.filter(item => !item.isDone);
 
@@ -465,6 +499,7 @@ export const subscribeProcessingCampaign = lazySubscribeMessage(
   updateBanner,
   updateBanner,
 );
+
 /* Campaign */
 
 export const updateMissionPoolStore = (missions: MissionInfo[]) => {
@@ -511,6 +546,8 @@ export const getMissionPoolData = (() => {
   return rs;
 })();
 
+/* Buy service */
+
 export const updateBuyTokens = (data: Record<string, BuyTokenInfo>) => {
   store.dispatch({ type: 'buyService/updateBuyTokens', payload: data });
 };
@@ -532,6 +569,8 @@ export const subscribeBuyServices = lazySubscribeMessage(
   updateBuyServices,
   updateBuyServices,
 );
+
+/* Buy service */
 
 // export const updateChainValidators = (data: ChainValidatorParams) => {
 //   store.dispatch({ type: 'bonding/updateChainValidators', payload: data });

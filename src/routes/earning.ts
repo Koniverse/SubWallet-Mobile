@@ -1,0 +1,18 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
+export type EarningScreenStackParamList = {
+  EarningGroupList: undefined;
+  EarningPoolList: {
+    group: string;
+  };
+  EarningPositionList: undefined;
+};
+
+export type NavigationProps = NativeStackScreenProps<EarningScreenStackParamList>;
+export type EarningScreenNavigationProps = NavigationProps['navigation'];
+// export type StakeScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Stake'>;
+// export type UnbondScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Unbond'>;
+// export type ClaimRewardScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'ClaimReward'>;
+// export type WithDrawScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Withdraw'>;
+// export type CancelUnstakeScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'CancelUnstake'>;
+export type EarningPoolListProps = NativeStackScreenProps<EarningScreenStackParamList, 'EarningPoolList'>;

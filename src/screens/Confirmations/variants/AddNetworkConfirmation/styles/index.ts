@@ -7,7 +7,7 @@ export interface ComponentStyle {
   text: TextStyle;
   textField: ViewStyle;
   networkUrlField: ViewStyle;
-  row: ViewStyle;
+  containerRow: ViewStyle;
   row1column1: ViewStyle;
   row1column2: ViewStyle;
   row2column: ViewStyle;
@@ -44,7 +44,7 @@ export default (theme: ThemeTypes) => {
       lineHeight: theme.fontSizeHeading4 * theme.lineHeightHeading4,
       ...FontSemiBold,
     },
-    row: {
+    containerRow: {
       display: 'flex',
       flexDirection: 'row',
       gap: theme.sizeSM,

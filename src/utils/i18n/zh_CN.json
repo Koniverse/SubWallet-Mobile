@@ -244,14 +244,16 @@
     "authorizeMessage": "授权消息",
     "serviceSelect": "选择服务",
     "login": "登录",
-    "slogan": "Polkadot, Substrate & Ethereum wallet"
+    "slogan": "Polkadot, Substrate & Ethereum wallet",
+    "earning": "Earning"
   },
   "tabName": {
     "tokens": "通证",
     "nfts": "NFTs",
     "crowdloans": "众贷",
     "staking": "质押",
-    "browser": "浏览器"
+    "browser": "浏览器",
+    "earning": "Earning"
   },
   "welcomeScreen": {
     "welcomeBackTitle": "欢迎回来！",
@@ -792,7 +794,8 @@
     "walletConnect": "连接钱包",
     "disconnect": "断开",
     "connectedNetworks": "Connected networks",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "earning": "Earning"
   },
   "cryptoScreen": {
     "address": "地址",

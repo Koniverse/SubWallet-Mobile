@@ -156,7 +156,7 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
           </FieldBase>
 
           {errorMessage && <Warning isDanger message={errorMessage} style={{ marginBottom: 8 }} />}
-          <View style={styles.row}>
+          <View style={styles.containerRow}>
             <View style={styles.row1column1}>
               <FieldBase>
                 <View style={styles.textField}>
@@ -178,7 +178,7 @@ const AddNetworkConfirmation: React.FC<Props> = (props: Props) => {
               </FieldBase>
             </View>
           </View>
-          <View style={styles.row}>
+          <View style={styles.containerRow}>
             <View style={styles.row2column}>
               <FieldBase>
                 <View style={styles.textField}>

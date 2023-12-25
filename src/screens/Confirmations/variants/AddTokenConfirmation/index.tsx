@@ -78,7 +78,7 @@ const AddTokenConfirmation: React.FC<Props> = (props: Props) => {
             </View>
           </FieldBase>
           <TextField icon={CopySimple} text={toShort(contractAddress) || i18n.confirmation.contractAddress} />
-          <View style={styles.row}>
+          <View style={styles.containerRow}>
             <View style={styles.rowColumn}>
               <FieldBase>
                 <View style={styles.textField}>

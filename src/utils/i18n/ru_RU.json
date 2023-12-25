@@ -244,14 +244,16 @@
     "authorizeMessage": "Авторизовать сообщение",
     "serviceSelect": "Выбрать услуг ",
     "login": "Логин",
-    "slogan": "Кошелек Polkadot, Substrate и Ethereum"
+    "slogan": "Кошелек Polkadot, Substrate и Ethereum",
+    "earning": "Earning"
   },
   "tabName": {
     "tokens": "Токены",
     "nfts": "NFTs",
     "crowdloans": "Краудлоуны",
     "staking": "Стейкинг",
-    "browser": "Браузер"
+    "browser": "Браузер",
+    "earning": "Earning"
   },
   "welcomeScreen": {
     "welcomeBackTitle": "С возвращением!",
@@ -405,6 +407,7 @@
     "reload": "Reload",
     "unlockWithBiometric": "Unlock with your biometric",
     "enterMasterPassword": "Enter master password",
+    "agree": "Agree",
     "startStaking": "Start staking",
     "addNft": "Add NFT",
     "addToken": "Add token",
@@ -791,7 +794,8 @@
     "walletConnect": "WalletConnect",
     "disconnect": "Отключить",
     "connectedNetworks": "Подключенные сети",
-    "missionPools": "Mission Pools"
+    "missionPools": "Mission Pools",
+    "earning": "Earning"
   },
   "cryptoScreen": {
     "address": "Адрес",
@@ -1021,8 +1025,6 @@
     "clearHistory": "Очистить историю",
     "updateNetwork": "Обновить сеть",
     "expiredConnectionTitle": "Connection expired",
-    "noInternetConnection": "No internet connection",
-    "internetConnected": "Internet connected",
     "unsupportedNetworkTitle": "Unsupported network",
     "insufficientBalance": "Insufficient balance"
   },

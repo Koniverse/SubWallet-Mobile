@@ -2,7 +2,6 @@ import {
   ActiveCronAndSubscriptionMap,
   AddressBookState,
   AssetSetting,
-  BalanceItem,
   CampaignBanner,
   ChainStakingMetadata,
   ConfirmationDefinitions,
@@ -13,7 +12,6 @@ import {
   LanguageType,
   NftCollection,
   NftItem,
-  NominationPoolInfo,
   NominatorMetadata,
   PriceJson,
   StakingItem,
@@ -34,6 +32,14 @@ import { SettingsStruct } from '@polkadot/ui-settings/types';
 import { SWTransactionResult } from '@subwallet/extension-base/services/transaction-service/types';
 import { _AssetRef, _ChainAsset, _ChainInfo, _MultiChainAsset } from '@subwallet/chain-list/types';
 import { _ChainState } from '@subwallet/extension-base/services/chain-service/types';
+import {
+  BalanceMap,
+  BuyServiceInfo,
+  BuyTokenInfo,
+  NominationPoolInfo,
+  YieldPoolInfo,
+  YieldPositionInfo,
+} from '@subwallet/extension-base/types';
 import { SessionTypes } from '@walletconnect/types';
 import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/wallet-connect-service/types';
 import { MissionInfo } from 'types/missionPool';
@@ -194,7 +200,7 @@ export interface ChainStore extends BaseReduxStore {
 }
 
 export interface BalanceStore extends BaseReduxStore {
-  balanceMap: Record<string, BalanceItem>;
+  balanceMap: BalanceMap;
 }
 
 export interface CampaignStore extends BaseReduxStore {
@@ -249,4 +255,9 @@ export interface MissionPoolStore extends BaseReduxStore {
 export interface BuyServiceStore extends BaseReduxStore {
   tokens: Record<string, BuyTokenInfo>;
   services: Record<string, BuyServiceInfo>;
+}
+
+export interface EarningStore extends BaseReduxStore {
+  poolInfoMap: Record<string, YieldPoolInfo>;
+  yieldPositions: YieldPositionInfo[];
 }

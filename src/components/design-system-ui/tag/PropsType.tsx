@@ -11,4 +11,5 @@ export interface TagPropsType {
   bgType?: 'default' | 'gray' | 'filled';
   shape?: 'default' | 'square' | 'round';
   color?: LiteralUnion<PresetColorType | PresetStatusColorType | PresetBrandColorType>;
+  bgColor?: string;
 }
