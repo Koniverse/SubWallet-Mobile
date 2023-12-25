@@ -1,3 +1,8 @@
+## 1.1.22 (282)
+- Add swipe down to reload balance on tokens screen & update web runner 1.1.27 (#1266)
+- Fallback t&c content incase static content offline (#1276)
+- Fix UI bug on some devices (#1228)
+
 ## 1.1.21 (281)
 # bundle-av8-iv4
 - Update UX in case transfer all (#1224)
