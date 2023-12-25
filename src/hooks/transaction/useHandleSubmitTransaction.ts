@@ -5,6 +5,8 @@ import { Alert } from 'react-native';
 import { AmountData } from '@subwallet/extension-base/background/KoniTypes';
 import i18n from 'utils/i18n/i18n';
 
+export const insufficientMessages = ['残高不足', 'Недостаточный баланс', 'Insufficient balance'];
+
 const useHandleSubmitTransaction = (
   onDone: (id: string) => void,
   setTransactionDone: (value: boolean) => void,
@@ -21,7 +23,7 @@ const useHandleSubmitTransaction = (
         if (errors[0]?.message !== 'Rejected by user') {
           if (
             handleDataForInsufficientAlert &&
-            ['残高不足', 'Недостаточный баланс', 'Insufficient balance'].some(v => errors[0]?.message.includes(v)) &&
+            insufficientMessages.some(v => errors[0]?.message.includes(v)) &&
             estimateFee
           ) {
             const _data = handleDataForInsufficientAlert(estimateFee);
@@ -68,7 +70,7 @@ const useHandleSubmitTransaction = (
     (error: Error) => {
       setTransactionDone(false);
       hideAll();
-      show(error.message, { type: 'danger' });
+      show(error.message, { type: 'danger', duration: 5000 });
     },
     [hideAll, setTransactionDone, show],
   );
