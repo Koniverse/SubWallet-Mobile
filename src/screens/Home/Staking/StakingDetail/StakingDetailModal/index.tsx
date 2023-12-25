@@ -51,6 +51,7 @@ import { SWModalRefProps } from 'components/design-system-ui/modal/ModalBaseV2';
 import StakingActionModal from 'screens/Home/Staking/StakingDetail/StakingActionModal';
 import useGetAccountsByStaking from 'hooks/screen/Staking/useGetAccountsByStaking';
 import { BN_ZERO } from 'utils/chainBalances';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   nominatorMetadata?: NominatorMetadata;
@@ -92,8 +93,6 @@ const renderAccountItemLabel = (theme: ThemeTypes, address: string, name?: strin
   );
 };
 
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 220;
-
 export const StakingDetailModal = ({
   modalVisible,
   chainStakingMetadata,
@@ -119,7 +118,7 @@ export const StakingDetailModal = ({
   const networkPrefix = _getChainSubstrateAddressPrefix(chainInfo);
   const account = useGetAccountByAddress(staking.address);
   const navigation = useNavigation<RootNavigationProps>();
-  const scrollRef = useRef<ScrollView>();
+  const scrollRef = useRef<ScrollView>(null);
   const stakingTypeNameMap: Record<string, string> = {
     nominated: i18n.filterOptions.nominated,
     pooled: i18n.filterOptions.pooled,
@@ -129,6 +128,9 @@ export const StakingDetailModal = ({
     nominatorMetadata?.chain || '',
     nominatorMetadata?.type || StakingType.NOMINATED,
   );
+  const insets = useSafeAreaInsets();
+
+  const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 130;
 
   const onCloseDetailModal = useCallback(() => modalRef?.current?.close(), []);
 
@@ -356,7 +358,7 @@ export const StakingDetailModal = ({
         <Button
           style={{ marginRight: 6 }}
           type={'secondary'}
-          onPress={onClickMoreAction}
+          onPress={onClickFooterButton(onClickMoreAction)}
           icon={<Icon phosphorIcon={DotsThree} size={'lg'} iconColor={theme.colorWhite} />}
         />
         {isActionWithdrawAvailable ? (

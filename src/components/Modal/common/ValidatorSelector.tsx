@@ -28,6 +28,7 @@ import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal
 import BigN from 'bignumber.js';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
 import { EmptyValidator } from 'components/EmptyValidator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 enum SortKey {
   COMMISSION = 'commission',
@@ -63,8 +64,6 @@ const searchFunction = (items: ValidatorDataType[], searchString: string) => {
       (identity ? identity.toLowerCase().includes(lowerCaseSearchString) : false),
   );
 };
-
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 export interface ValidatorSelectorRef {
   resetValue: () => void;
@@ -106,6 +105,8 @@ export const ValidatorSelector = forwardRef(
       onChangeSelectedValidator,
       onInitValidators,
     } = useSelectValidators(maxCount, onSelectItem, isSingleSelect, undefined, toastRef);
+    const insets = useSafeAreaInsets();
+    const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - insets.bottom - insets.top - 50;
     const hasReturn = useMemo(() => items[0]?.expectedReturn !== undefined, [items]);
     const validatorSelectModalRef = useRef<ModalRef>();
     const sortingModalRef = useRef<ModalRef>();

@@ -18,7 +18,7 @@ import {
 } from 'phosphor-react-native';
 import { AccountsScreenProps, RootNavigationProps } from 'routes/index';
 import i18n from 'utils/i18n/i18n';
-import { FontMedium, FontSemiBold, MarginBottomForSubmitButton, STATUS_BAR_HEIGHT } from 'styles/sharedStyles';
+import { FontMedium, FontSemiBold, MarginBottomForSubmitButton } from 'styles/sharedStyles';
 import { forgetAccount, saveCurrentAccountAddress } from 'messaging/index';
 import { isAccountAll } from '@subwallet/extension-base/utils';
 import { findAccountByAddress, toShort } from 'utils/index';
@@ -31,10 +31,7 @@ import { ModalRef } from 'types/modalRef';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Toast, { useToast } from 'react-native-toast-notifications';
-import { deviceHeight, TOAST_DURATION } from 'constants/index';
-import { ColorMap } from 'styles/color';
-import ToastContainer from 'react-native-toast-notifications';
+import { useToast } from 'react-native-toast-notifications';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import DeleteModal from 'components/common/Modal/DeleteModal';
 import useConfirmModal from 'hooks/modal/useConfirmModal';
@@ -57,7 +54,6 @@ const searchFunction = (items: AccountJson[], searchString: string) => {
       account.address.toLowerCase().includes(searchString.toLowerCase()),
   );
 };
-const OFFSET_BOTTOM = deviceHeight - STATUS_BAR_HEIGHT - 140;
 
 const receiveModalContentWrapper: StyleProp<any> = {
   alignItems: 'center',
@@ -79,7 +75,6 @@ export const AccountsScreen = ({
   const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [deleting, setDeleting] = useState(false);
-  const toastRef = useRef<ToastContainer>(null);
   const accounts = useMemo(() => {
     if (fullAccounts.length > 2) {
       const foundAccountAll = fullAccounts.find(a => isAccountAll(a.address));
@@ -400,15 +395,6 @@ export const AccountsScreen = ({
               {i18n.common.share}
             </Button>
           </View>
-          {
-            <Toast
-              duration={TOAST_DURATION}
-              normalColor={ColorMap.notification}
-              ref={toastRef}
-              placement={'bottom'}
-              offsetBottom={OFFSET_BOTTOM}
-            />
-          }
         </View>
       </SwModal>
 

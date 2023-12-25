@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
-import { Platform, StyleProp, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, Platform, StyleProp, StyleSheet, TextInput, View } from 'react-native';
 import { DisabledStyle, FontMedium } from 'styles/sharedStyles';
 import { Scan } from 'phosphor-react-native';
 import reformatAddress, { toShort } from 'utils/index';
@@ -62,6 +62,11 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<InputAddress
   );
 
   useEffect(() => setAdjustResize(), []);
+
+  const _onPressQrButton = () => {
+    Keyboard.dismiss();
+    onPressQrButton();
+  };
 
   const onChangeInputText = (rawText: string) => {
     const text = rawText.trim();
@@ -140,7 +145,7 @@ const Component = (inputAddressProps: InputProps, ref: ForwardedRef<InputAddress
         disabled={disabled || readonly}
         size={'xs'}
         type={'ghost'}
-        onPress={onPressQrButton}
+        onPress={_onPressQrButton}
         icon={
           <Icon phosphorIcon={Scan} size={'sm'} iconColor={readonly ? theme.colorTextLight5 : theme.colorTextLight3} />
         }

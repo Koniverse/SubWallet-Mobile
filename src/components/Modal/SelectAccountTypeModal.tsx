@@ -27,7 +27,7 @@ export const SelectAccountTypeModal = ({ onConfirm, selectTypeRef }: Props) => {
     {
       icon: 'polkadot',
       key: SUBSTRATE_ACCOUNT_TYPE,
-      label: i18n.createAccount.substrate,
+      label: i18n.createAccount.polkadot,
     },
     {
       icon: 'ethereum',

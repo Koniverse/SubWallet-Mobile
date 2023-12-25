@@ -2,7 +2,7 @@ import React from 'react';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import i18n from 'utils/i18n/i18n';
 import { FullSizeSelectModal } from 'components/common/SelectModal';
-import { ListRenderItemInfo } from 'react-native';
+import { Keyboard, ListRenderItemInfo } from 'react-native';
 import { ModalRef } from 'types/modalRef';
 
 interface Props {
@@ -32,12 +32,17 @@ export const AccountSelector = ({
   children,
   renderCustomItem,
 }: Props) => {
+  const _onSelectItem = (item: AccountJson) => {
+    Keyboard.dismiss();
+    onSelectItem && onSelectItem(item);
+  };
+
   return (
     <FullSizeSelectModal
       items={items}
       onBackButtonPress={() => accountSelectorRef?.current?.onCloseModal()}
       selectedValueMap={selectedValueMap}
-      onSelectItem={onSelectItem}
+      onSelectItem={_onSelectItem}
       selectModalType={'single'}
       selectModalItemType={'account'}
       disabled={disabled}
