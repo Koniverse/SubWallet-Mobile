@@ -13,6 +13,7 @@ import { IconProps } from 'phosphor-react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
 import { LanguageType } from '@subwallet/extension-base/background/KoniTypes';
+import { isAbleToShowFee } from 'components/common/HistoryItem';
 
 interface Props {
   data: TransactionHistoryDisplayItem;
@@ -43,7 +44,7 @@ const HistoryDetailLayout: React.FC<Props> = (props: Props) => {
         {formatHistoryDate(data.time, language, 'detail')}
       </MetaInfo.Default>
       <HistoryDetailAmount data={data} />
-      <HistoryDetailFee data={data} />
+      {isAbleToShowFee(data) && <HistoryDetailFee data={data} />}
     </MetaInfo>
   );
 };

@@ -264,6 +264,36 @@ function findLedgerChainOfSelectedAccount(
   return undefined;
 }
 
+function filterDuplicateItems(items: TransactionHistoryItem[]): TransactionHistoryItem[] {
+  const result: TransactionHistoryItem[] = [];
+
+  const exclusionMap: Record<string, boolean> = {};
+
+  const getExclusionKey = (i: TransactionHistoryItem): string => {
+    return `${i.direction}_${i.blockNumber}_${i.type}_${i.from}_${i.to}`.toLowerCase();
+  };
+
+  items.forEach(i => {
+    if (i.origin === 'app' && i.blockNumber > 0 && i.type === ExtrinsicType.TRANSFER_BALANCE) {
+      exclusionMap[getExclusionKey(i)] = true;
+    }
+  });
+
+  if (!Object.keys(exclusionMap).length) {
+    return items;
+  }
+
+  items.forEach(i => {
+    if (i.origin === 'subscan' && exclusionMap[getExclusionKey(i)]) {
+      return;
+    }
+
+    result.push(i);
+  });
+
+  return result;
+}
+
 const gradientBackground = ['rgba(76, 234, 172, 0.10)', 'rgba(76, 234, 172, 0.00)'];
 
 function History({
@@ -548,6 +578,12 @@ function History({
     return false;
   }, [loading, selectedAddress, isChainSelectorEmpty, currentLedgerChainOfSelectedAccount]);
 
+  const isSelectedChainEvm = useMemo(() => {
+    const selectedChainInfo = chainInfoMap[selectedChain];
+
+    return selectedChainInfo && _isChainEvmCompatible(selectedChainInfo);
+  }, [chainInfoMap, selectedChain]);
+
   useEffect(() => {
     let id: string;
     let isSubscribed = true;
@@ -556,7 +592,7 @@ function History({
 
     subscribeTransactionHistory(selectedChain, selectedAddress, (items: TransactionHistoryItem[]) => {
       if (isSubscribed) {
-        setRawHistoryList(items);
+        setRawHistoryList(isSelectedChainEvm ? filterDuplicateItems(items) : items);
       }
 
       setTimeout(() => {
@@ -569,7 +605,7 @@ function History({
         id = res.id;
 
         if (isSubscribed) {
-          setRawHistoryList(res.items);
+          setRawHistoryList(isSelectedChainEvm ? filterDuplicateItems(res.items) : res.items);
         } else {
           cancelSubscription(id).catch(console.log);
         }
@@ -585,7 +621,7 @@ function History({
         cancelSubscription(id).catch(console.log);
       }
     };
-  }, [selectedAddress, selectedChain]);
+  }, [isSelectedChainEvm, selectedAddress, selectedChain]);
 
   useEffect(() => {
     if (chainItems.length) {
