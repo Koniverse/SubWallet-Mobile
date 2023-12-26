@@ -1,3 +1,6 @@
+## 1.1.22 (284)
+- Add bundle release config
+
 ## 1.1.22 (282)
 - Add swipe down to reload balance on tokens screen & update web runner 1.1.27 (#1266)
 - Fallback t&c content incase static content offline (#1276)
