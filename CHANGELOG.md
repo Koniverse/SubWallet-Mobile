@@ -1,3 +1,6 @@
+## 1.1.22 (285)
+- Update disable popup backup seed phrase on Android
+
 ## 1.1.22 (284)
 - Add bundle release config
 
