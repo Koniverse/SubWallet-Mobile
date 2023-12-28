@@ -19,7 +19,7 @@ import { EmptyList } from 'components/EmptyList';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import createStyles from './styles';
+import createStyles from './style';
 
 export const PoolList: React.FC<EarningPoolListProps> = ({
   route: {
@@ -166,7 +166,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   return (
     <>
       <FlatListScreen
-        style={{ flex: 1, paddingBottom: 16 }}
+        style={styles.wrapper}
         title={i18n.header.earning}
         titleTextAlign={'left'}
         items={items}
@@ -175,7 +175,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
-        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+        flatListStyle={styles.container}
         renderItem={renderItem}
         onPressBack={onBack}
         // rightIconOption={rightIconOption}
@@ -183,7 +183,7 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         isShowMainHeader
         refreshControl={
           <RefreshControl
-            style={{ backgroundColor: ColorMap.dark1 }}
+            style={styles.refreshIndicator}
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => {

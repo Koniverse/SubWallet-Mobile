@@ -293,26 +293,24 @@ export const Unbond = ({
         <TransactionLayout title={title} disableLeftButton={loading} disableMainHeader={loading}>
           <>
             <ScrollView style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }} keyboardShouldPersistTaps="handled">
-              {isAllAccount && (
-                <AccountSelector
-                  items={accountList}
-                  selectedValueMap={{ [fromValue]: true }}
-                  disabled={loading}
-                  onSelectItem={item => {
-                    setFrom(item.address);
-                    accountSelectorRef && accountSelectorRef.current?.onCloseModal();
-                  }}
-                  renderSelected={() => (
-                    <AccountSelectField
-                      label={i18n.inputLabel.unstakeFromAcc}
-                      accountName={accountInfo?.name || ''}
-                      value={fromValue}
-                      showIcon
-                    />
-                  )}
-                  accountSelectorRef={accountSelectorRef}
-                />
-              )}
+              <AccountSelector
+                items={accountList}
+                selectedValueMap={{ [fromValue]: true }}
+                disabled={loading || !isAllAccount}
+                onSelectItem={item => {
+                  setFrom(item.address);
+                  accountSelectorRef && accountSelectorRef.current?.onCloseModal();
+                }}
+                renderSelected={() => (
+                  <AccountSelectField
+                    label={i18n.inputLabel.unstakeFromAcc}
+                    accountName={accountInfo?.name || ''}
+                    value={fromValue}
+                    showIcon
+                  />
+                )}
+                accountSelectorRef={accountSelectorRef}
+              />
 
               <GeneralFreeBalance address={fromValue} chain={chainValue} />
 

@@ -16,7 +16,7 @@ import { EmptyList } from 'components/EmptyList';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
-import createStyles from './styles';
+import createStyles from './style';
 
 const groupOrdinal = (group: YieldGroupInfo): number => {
   if (group.group === 'DOT-Polkadot') {
@@ -122,7 +122,7 @@ export const GroupList = () => {
   return (
     <>
       <FlatListScreen
-        style={{ flex: 1, paddingBottom: 16 }}
+        style={styles.wrapper}
         title={i18n.header.earning}
         titleTextAlign={'left'}
         items={items}
@@ -131,14 +131,14 @@ export const GroupList = () => {
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
-        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+        flatListStyle={styles.container}
         renderItem={renderItem}
         // rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader
         refreshControl={
           <RefreshControl
-            style={{ backgroundColor: ColorMap.dark1 }}
+            style={styles.refreshIndicator}
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => {
@@ -147,17 +147,6 @@ export const GroupList = () => {
           />
         }
       />
-
-      {/*{selectedItem && (*/}
-      {/*  <StakingDetailModal*/}
-      {/*    modalVisible={detailModalVisible}*/}
-      {/*    chainStakingMetadata={selectedItem.chainStakingMetadata}*/}
-      {/*    nominatorMetadata={selectedItem.nominatorMetadata}*/}
-      {/*    rewardItem={selectedItem.reward}*/}
-      {/*    staking={selectedItem.staking}*/}
-      {/*    setDetailModalVisible={setDetailModalVisible}*/}
-      {/*  />*/}
-      {/*)}*/}
     </>
   );
 };

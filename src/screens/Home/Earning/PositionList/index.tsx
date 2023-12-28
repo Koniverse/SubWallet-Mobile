@@ -18,16 +18,16 @@ import { RootState } from 'stores/index';
 import { ColorMap } from 'styles/color';
 import { ExtraYieldPositionInfo } from 'types/earning';
 import i18n from 'utils/i18n/i18n';
-import createStyles from './styles';
+import createStyles from './style';
 
 export const PositionList = () => {
   const theme = useSubWalletTheme().swThemes;
   const navigation = useNavigation<EarningScreenNavigationProps>();
-  const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
+  const { isShowBalance } = useSelector((state: RootState) => state.settings);
   const { priceMap } = useSelector((state: RootState) => state.price);
   const { poolInfoMap } = useSelector((state: RootState) => state.earning);
-  const assetInfoMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+  const { assetRegistry: assetInfoMap } = useSelector((state: RootState) => state.assetRegistry);
+  const { chainInfoMap } = useSelector((state: RootState) => state.chainStore);
   const [isRefresh, refresh] = useRefresh();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const data = useGroupYieldPosition();
@@ -139,7 +139,7 @@ export const PositionList = () => {
   return (
     <>
       <FlatListScreen
-        style={{ flex: 1, paddingBottom: 16 }}
+        style={styles.wrapper}
         title={i18n.header.earning}
         titleTextAlign={'left'}
         items={items}
@@ -148,14 +148,14 @@ export const PositionList = () => {
         autoFocus={false}
         renderListEmptyComponent={renderEmpty}
         searchFunction={searchFunction}
-        flatListStyle={{ paddingHorizontal: theme.padding, gap: theme.sizeXS, paddingBottom: 8 }}
+        flatListStyle={styles.container}
         renderItem={renderItem}
         rightIconOption={rightIconOption}
         isShowFilterBtn
         isShowMainHeader
         refreshControl={
           <RefreshControl
-            style={{ backgroundColor: ColorMap.dark1 }}
+            style={styles.refreshIndicator}
             tintColor={ColorMap.light}
             refreshing={isRefresh}
             onRefresh={() => {
