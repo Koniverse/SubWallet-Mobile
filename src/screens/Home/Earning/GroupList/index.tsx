@@ -32,6 +32,10 @@ const testnetOrdinal = (group: YieldGroupInfo): number => {
   return group.isTestnet ? 0 : 1;
 };
 
+const apyOrdinal = (group: YieldGroupInfo): number => {
+  return !group.maxApy ? -1 : group.maxApy;
+};
+
 export const GroupList = () => {
   const theme = useSubWalletTheme().swThemes;
   const isShowBalance = useSelector((state: RootState) => state.settings.isShowBalance);
@@ -51,7 +55,7 @@ export const GroupList = () => {
 
   const items = useMemo(() => {
     return [...data].sort((a, b) => {
-      return groupOrdinal(b) - groupOrdinal(a) || testnetOrdinal(b) - testnetOrdinal(a);
+      return groupOrdinal(b) - groupOrdinal(a) || testnetOrdinal(b) - testnetOrdinal(a) || apyOrdinal(b) - apyOrdinal(a);
     });
   }, [data]);
 

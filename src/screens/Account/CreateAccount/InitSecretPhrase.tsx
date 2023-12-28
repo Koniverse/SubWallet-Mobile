@@ -1,5 +1,5 @@
 import WordPhrase from 'components/common/WordPhrase';
-import AlertBox from 'components/design-system-ui/alert-box';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 import React, { useCallback, useState } from 'react';
 import { ScrollView, Share, StyleProp, View } from 'react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';

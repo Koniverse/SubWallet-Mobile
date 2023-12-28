@@ -9,7 +9,7 @@ import { useRefresh } from 'hooks/useRefresh';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { reloadCron } from 'messaging/index';
 import { Plus, Trophy } from 'phosphor-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Keyboard, ListRenderItemInfo, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { setAdjustPan } from 'rn-android-keyboard-adjust';
@@ -29,17 +29,17 @@ export const PositionList = () => {
   const assetInfoMap = useSelector((state: RootState) => state.assetRegistry.assetRegistry);
   const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
   const [isRefresh, refresh] = useRefresh();
-  const [selectedItem, setSelectedItem] = useState<ExtraYieldPositionInfo | undefined>(undefined);
-  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
   const styles = useMemo(() => createStyles(theme), [theme]);
   const data = useGroupYieldPosition();
-  const handleOnPress = useCallback((stakingData: ExtraYieldPositionInfo): (() => void) => {
-    return () => {
-      Keyboard.dismiss();
-      setSelectedItem(stakingData);
-      setDetailModalVisible(true);
-    };
-  }, []);
+  const handleOnPress = useCallback(
+    (positionInfo: ExtraYieldPositionInfo): (() => void) => {
+      return () => {
+        Keyboard.dismiss();
+        navigation.navigate('EarningPositionDetail', { slug: positionInfo.slug });
+      };
+    },
+    [navigation],
+  );
 
   const items: ExtraYieldPositionInfo[] = useMemo(() => {
     if (!data.length) {
@@ -164,17 +164,6 @@ export const PositionList = () => {
           />
         }
       />
-
-      {/*{selectedItem && (*/}
-      {/*  <StakingDetailModal*/}
-      {/*    modalVisible={detailModalVisible}*/}
-      {/*    chainStakingMetadata={selectedItem.chainStakingMetadata}*/}
-      {/*    nominatorMetadata={selectedItem.nominatorMetadata}*/}
-      {/*    rewardItem={selectedItem.reward}*/}
-      {/*    staking={selectedItem.staking}*/}
-      {/*    setDetailModalVisible={setDetailModalVisible}*/}
-      {/*  />*/}
-      {/*)}*/}
     </>
   );
 };

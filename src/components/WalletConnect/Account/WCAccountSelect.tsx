@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { AccountJson } from '@subwallet/extension-base/background/types';
 import { VoidFunction } from 'types/index';
-import AlertBox from 'components/design-system-ui/alert-box';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 import i18n from 'utils/i18n/i18n';
 import { BasicSelectModal } from 'components/common/SelectModal/BasicSelectModal';
 import { Button, Icon } from 'components/design-system-ui';

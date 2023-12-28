@@ -12,7 +12,7 @@ import { RootState } from 'stores/index';
 
 import { BaseTransactionConfirmationProps } from './Base';
 import i18n from 'utils/i18n/i18n';
-import AlertBox from 'components/design-system-ui/alert-box';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 type Props = BaseTransactionConfirmationProps;
 

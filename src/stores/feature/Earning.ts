@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit/dist';
-import { YieldPoolInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { EarningRewardItem, YieldPoolInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
 import { ReduxStatus, EarningStore } from 'stores/types';
 
-const initialState = {
+const initialState: EarningStore = {
   poolInfoMap: {},
   yieldPositions: [],
   reduxStatus: ReduxStatus.INIT,
-} as EarningStore;
+  earningRewards: [],
+};
 
 const earningSlice = createSlice({
   initialState,
@@ -35,8 +36,15 @@ const earningSlice = createSlice({
         reduxStatus: ReduxStatus.READY,
       };
     },
+    updateYieldReward(state, action: PayloadAction<EarningRewardItem[]>): EarningStore {
+      return {
+        ...state,
+        earningRewards: action.payload,
+        reduxStatus: ReduxStatus.READY,
+      };
+    },
   },
 });
 
-export const { updateYieldPoolInfo, updateYieldPositionInfo } = earningSlice.actions;
+export const { updateYieldPoolInfo, updateYieldPositionInfo, updateYieldReward } = earningSlice.actions;
 export default earningSlice.reducer;

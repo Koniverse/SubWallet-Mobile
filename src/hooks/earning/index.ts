@@ -6,3 +6,5 @@
 // export { default as useGetYieldPositions } from './useGetYieldPositions';
 export { default as useGroupYieldPosition } from './useGroupYieldPosition';
 export { default as useYieldGroupInfo } from './useYieldGroupInfo';
+export { default as useYieldPoolInfoByGroup } from './useYieldPoolInfoByGroup';
+export { default as useYieldPositionDetail } from './useYieldPositionDetail';

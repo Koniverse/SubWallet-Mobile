@@ -1,11 +1,11 @@
 import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
-import { YieldPoolInfo, YieldPoolType } from '@subwallet/extension-base/types';
+import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import BigN from 'bignumber.js';
 import { Number, Typography } from 'components/design-system-ui';
 import EarningTypeTag from 'components/Tag/EarningTypeTag';
-import useChainInfo from 'hooks/chain/useChainInfo';
 import useGetChainAssetInfo from 'hooks/common/userGetChainAssetInfo';
-import React, { useMemo } from 'react';
+import { useYieldPositionDetail } from 'hooks/earning';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
@@ -17,26 +17,40 @@ import { BN_TEN } from 'utils/number';
 
 interface Props {
   poolInfo: YieldPoolInfo;
-  onPress: (value: YieldPoolInfo) => () => void;
+  onStakeMore: (value: string) => void;
+  onOpenPopup: (value: string) => void;
 }
 
-const EarningPoolItem = ({ poolInfo, onPress }: Props) => {
-  const { metadata, chain, name, type, logo } = poolInfo;
+const EarningPoolItem = (props: Props) => {
+  const { poolInfo, onOpenPopup, onStakeMore } = props;
+  const { metadata, chain, type, logo, shortName, group, slug } = poolInfo;
   const { inputAsset, tvl, totalApy, totalApr } = metadata;
   const theme = useSubWalletTheme().swThemes;
   const styleSheet = createStyleSheet(theme);
   const asset = useGetChainAssetInfo(inputAsset);
-  const chainInfo = useChainInfo(chain);
 
   const { priceMap } = useSelector((state: RootState) => state.price);
+  const { assetRegistry, multiChainAssetMap } = useSelector((state: RootState) => state.assetRegistry);
+  const { compound } = useYieldPositionDetail(slug);
 
   const showSubLogo = useMemo(() => {
-    return ![YieldPoolType.NOMINATION_POOL, YieldPoolType.NATIVE_STAKING].includes(type);
-  }, [type]);
+    const isGroup = group in multiChainAssetMap;
+    if (isGroup) {
+      const _group = multiChainAssetMap[group];
 
-  const poolName = useMemo(() => {
-    return chainInfo?.name || name;
-  }, [chainInfo?.name, name]);
+      if (_group.originChainAsset) {
+        const _asset = assetRegistry[_group.originChainAsset];
+
+        return _asset.originChain !== chain;
+      } else {
+        return true;
+      }
+    } else {
+      const _asset = assetRegistry[group];
+
+      return _asset.originChain !== chain;
+    }
+  }, [assetRegistry, chain, group, multiChainAssetMap]);
 
   const apy = useMemo((): number | undefined => {
     if (totalApy) {
@@ -70,14 +84,25 @@ const EarningPoolItem = ({ poolInfo, onPress }: Props) => {
     }
   }, [asset, priceMap, tvl]);
 
+  const onPress = useCallback(() => {
+    if (compound) {
+      onStakeMore(slug);
+    } else {
+      onOpenPopup(slug);
+    }
+  }, [compound, onOpenPopup, onStakeMore, slug]);
+
   return (
-    <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={onPress(poolInfo)}>
+    <TouchableOpacity style={styleSheet.wrapper} activeOpacity={0.5} onPress={onPress}>
       <View style={styleSheet.infoContainer}>
         {getTokenLogo(inputAsset, showSubLogo ? logo || chain : undefined, 40)}
         <View style={{ flex: 1, paddingLeft: theme.paddingXS }}>
           <View style={styleSheet.containerRow}>
             <Text style={styleSheet.groupSymbol} numberOfLines={1} ellipsizeMode={'tail'}>
-              {poolName}
+              {asset?.symbol || ''}
+              <Text style={styleSheet.groupNetwork} numberOfLines={1} ellipsizeMode={'tail'}>
+                &nbsp;({shortName})
+              </Text>
             </Text>
 
             {apy && (
@@ -193,6 +218,10 @@ function createStyleSheet(theme: ThemeTypes) {
       ...FontSemiBold,
       color: theme.colorTextLight1,
       flex: 1,
+    },
+
+    groupNetwork: {
+      color: theme.colorTextTertiary,
     },
 
     iconWrapper: {

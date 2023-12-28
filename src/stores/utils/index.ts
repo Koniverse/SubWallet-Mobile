@@ -42,7 +42,7 @@ import { WalletConnectSessionRequest } from '@subwallet/extension-base/services/
 import { SessionTypes } from '@walletconnect/types';
 import { MissionInfo } from 'types/missionPool';
 import { BuyServiceInfo, BuyTokenInfo } from 'types/buy';
-import { BalanceJson, YieldPoolInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
+import { BalanceJson, EarningRewardJson, YieldPoolInfo, YieldPositionInfo } from '@subwallet/extension-base/types';
 // Setup redux stores
 
 function voidFn() {
@@ -436,6 +436,17 @@ export const subscribeYieldPositionInfo = lazySubscribeMessage(
   null,
   updateYieldPositionInfo,
   updateYieldPositionInfo,
+);
+
+export const updateYieldReward = (data: EarningRewardJson) => {
+  store.dispatch({ type: 'earning/updateYieldReward', payload: Object.values(data.data) });
+};
+
+export const subscribeYieldReward = lazySubscribeMessage(
+  'pri(yield.subscribeYieldReward)',
+  null,
+  updateYieldReward,
+  updateYieldReward,
 );
 
 /* Earning */

@@ -31,7 +31,7 @@ import { Plus, PlusCircle } from 'phosphor-react-native';
 import { useSubWalletTheme } from 'hooks/useSubWalletTheme';
 import { useToast } from 'react-native-toast-notifications';
 import { TransactionFormValues, useTransaction } from 'hooks/screen/Transaction/useTransactionV2';
-import AlertBox from 'components/design-system-ui/alert-box';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { ModalRef } from 'types/modalRef';
 import { TokenTypeSelectField } from 'components/Field/TokenTypeSelect';
 import { ChainSelector } from 'components/Modal/common/ChainSelector';

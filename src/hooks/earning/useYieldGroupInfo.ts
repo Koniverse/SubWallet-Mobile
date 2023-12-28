@@ -1,12 +1,14 @@
 // Copyright 2019-2022 @subwallet/extension-koni-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { BN_ZERO } from '@polkadot/util';
 import { useGetChainSlugs } from 'hooks/screen/Home/useGetChainSlugs';
 import useAccountBalance from 'hooks/screen/useAccountBalance';
 import useTokenGroup from 'hooks/screen/useTokenGroup';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from 'stores/index';
+import { BalanceValueInfo } from 'types/balance';
 import { YieldGroupInfo } from 'types/earning';
 
 const useYieldGroupInfo = (): YieldGroupInfo[] => {
@@ -35,14 +37,18 @@ const useYieldGroupInfo = (): YieldGroupInfo[] => {
         } else {
           const token = multiChainAssetMap[group] || assetRegistry[group];
           const balance = tokenGroupBalanceMap[group] || tokenBalanceMap[group];
-          console.log(token.slug, balance);
+          const freeBalance: BalanceValueInfo = balance?.free || {
+            value: BN_ZERO,
+            convertedValue: BN_ZERO,
+            pastConvertedValue: BN_ZERO,
+          };
 
           result[group] = {
             group: group,
             token: token.slug,
             maxApy: pool.metadata.totalApy,
             symbol: token.symbol,
-            balance: balance.free,
+            balance: freeBalance,
             isTestnet: chainInfo.isTestnet,
             name: token.name,
           };

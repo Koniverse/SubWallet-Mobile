@@ -10,4 +10,5 @@ export const ImageLogosMap = {
   default: require('./default.png'),
   banxa: require('./banxa.png'),
   coinbase: require('./coinbase.png'),
+  stellaswap: require('./stellaswap.png'),
 };

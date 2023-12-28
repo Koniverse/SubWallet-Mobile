@@ -417,7 +417,9 @@
     "enable": "Enable",
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
-    "notNow": "Not now"
+    "notNow": "Not now",
+    "withdraw": "Withdraw",
+    "cancelUnstake": "Cancel unstake"
   },
   "inputLabel": {
     "selectAcc": "Выбрать аккаунт",

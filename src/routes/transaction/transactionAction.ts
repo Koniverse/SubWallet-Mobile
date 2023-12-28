@@ -10,7 +10,7 @@ export type TransactionActionStackParamList = {
   };
   Stake: { chain?: string; type?: string };
   Unbond: { chain?: string; type?: string };
-  Withdraw: { chain?: string; type?: string };
+  Withdraw: { slug: string };
   ClaimReward: { chain?: string; type?: string };
   CancelUnstake: { chain?: string; type?: string };
 };

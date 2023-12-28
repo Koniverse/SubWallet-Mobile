@@ -1,7 +1,9 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { calculateReward } from '@subwallet/extension-base/services/earning-service/utils';
 import { YieldPoolInfo } from '@subwallet/extension-base/types';
 import { FlatListScreen } from 'components/FlatListScreen';
 import EarningPoolItem from 'components/Item/Earning/EarningPoolItem';
+import EarningPoolDetailModal from 'components/Modal/Earning/EarningPoolDetailModal';
 import useYieldPoolInfoByGroup from 'hooks/earning/useYieldPoolInfoByGroup';
 import { Trophy } from 'phosphor-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,30 +27,87 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   },
 }: EarningPoolListProps) => {
   const theme = useSubWalletTheme().swThemes;
+  const isFocused = useIsFocused();
   const navigation = useNavigation<RootNavigationProps>();
-  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+
   const [isRefresh, refresh] = useRefresh();
-  const [selectedItem, setSelectedItem] = useState<YieldPoolInfo | undefined>(undefined);
-  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
-  const styles = useMemo(() => createStyles(theme), [theme]);
   const pools = useYieldPoolInfoByGroup(poolGroup);
-  const handleOnPress = useCallback((poolInfo: YieldPoolInfo): (() => void) => {
-    return () => {
-      Keyboard.dismiss();
-      setSelectedItem(poolInfo);
-      setDetailModalVisible(true);
-    };
-  }, []);
+  const chainInfoMap = useSelector((state: RootState) => state.chainStore.chainInfoMap);
+
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const [selectedSlug, setSelectedSlug] = useState<string>('');
+  const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
 
   const items: YieldPoolInfo[] = useMemo(() => {
     if (!pools.length) {
       return [];
     }
     const result = [...pools];
+
+    result.sort((a, b) => {
+      const getApy = (pool: YieldPoolInfo) => {
+        const {
+          metadata: { totalApy, totalApr },
+        } = pool;
+        if (totalApy) {
+          return totalApy;
+        }
+
+        if (totalApr) {
+          const rs = calculateReward(totalApr);
+
+          return rs.apy;
+        }
+
+        return undefined;
+      };
+
+      const aApy = getApy(a);
+      const bApy = getApy(b);
+
+      if (aApy === undefined && bApy === undefined) {
+        return 0;
+      } else if (aApy === undefined) {
+        return 1;
+      } else if (bApy === undefined) {
+        return -1;
+      } else {
+        return bApy - aApy;
+      }
+    });
+
     return result;
   }, [pools]);
 
-  const renderEmpty = () => {
+  const handleOnStakeMore = useCallback(
+    (slug: string): void => {
+      Keyboard.dismiss();
+      // navigation.navigate('Drawer', {
+      //   screen: 'TransactionAction',
+      //   params: {
+      //     screen: 'Stake',
+      //     params: { slug },
+      //   },
+      // });
+    },
+    [navigation],
+  );
+
+  const handleOpenDetailModal = useCallback((slug: string): void => {
+    Keyboard.dismiss();
+    setSelectedSlug(slug);
+    setDetailModalVisible(true);
+  }, []);
+
+  const onChangeModalVisible = useCallback((value: boolean) => {
+    setSelectedSlug('');
+    setDetailModalVisible(value);
+  }, []);
+
+  const handleBack = useCallback(() => navigation.goBack(), [navigation]);
+
+  const renderEmpty = useCallback(() => {
     return (
       <EmptyList
         title={i18n.emptyScreen.stakingEmptyTitle}
@@ -56,36 +115,24 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         message={i18n.emptyScreen.stakingEmptyMessage}
         onPressReload={() => refresh(reloadCron({ data: 'staking' }))}
         isRefresh={isRefresh}
-        addBtnLabel={i18n.buttonTitles.startStaking}
-        onPressAddBtn={handlePressStartStaking}
+        addBtnLabel={i18n.buttonTitles.backToHome}
+        onPressAddBtn={handleBack}
       />
     );
-  };
-
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    if (isFocused) {
-      setAdjustPan();
-    }
-  }, [isFocused]);
+  }, [handleBack, isRefresh, refresh]);
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<YieldPoolInfo>) => {
-      return <EarningPoolItem key={item.slug} onPress={handleOnPress} poolInfo={item} />;
+      return (
+        <EarningPoolItem
+          key={item.slug}
+          onStakeMore={handleOnStakeMore}
+          onOpenPopup={handleOpenDetailModal}
+          poolInfo={item}
+        />
+      );
     },
-    [handleOnPress],
-  );
-
-  const handlePressStartStaking = useCallback(
-    () =>
-      navigation.navigate('Drawer', {
-        screen: 'TransactionAction',
-        params: {
-          screen: 'Stake',
-          params: {},
-        },
-      }),
-    [navigation],
+    [handleOnStakeMore, handleOpenDetailModal],
   );
 
   // const rightIconOption = useMemo(() => {
@@ -109,6 +156,12 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
   const onBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
+
+  useEffect(() => {
+    if (isFocused) {
+      setAdjustPan();
+    }
+  }, [isFocused]);
 
   return (
     <>
@@ -140,16 +193,14 @@ export const PoolList: React.FC<EarningPoolListProps> = ({
         }
       />
 
-      {/*{selectedItem && (*/}
-      {/*  <StakingDetailModal*/}
-      {/*    modalVisible={detailModalVisible}*/}
-      {/*    chainStakingMetadata={selectedItem.chainStakingMetadata}*/}
-      {/*    nominatorMetadata={selectedItem.nominatorMetadata}*/}
-      {/*    rewardItem={selectedItem.reward}*/}
-      {/*    staking={selectedItem.staking}*/}
-      {/*    setDetailModalVisible={setDetailModalVisible}*/}
-      {/*  />*/}
-      {/*)}*/}
+      {selectedSlug && (
+        <EarningPoolDetailModal
+          modalVisible={detailModalVisible}
+          slug={selectedSlug}
+          setVisible={onChangeModalVisible}
+          onStakeMore={handleOnStakeMore}
+        />
+      )}
     </>
   );
 };

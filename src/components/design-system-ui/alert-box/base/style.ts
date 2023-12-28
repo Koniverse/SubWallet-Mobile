@@ -29,6 +29,7 @@ const createStyles = (theme: ThemeTypes) => {
       flex: 1,
     },
     title: {
+      color: theme.colorTextBase,
       fontSize: theme.fontSizeLG,
       lineHeight: theme.fontSizeLG * theme.lineHeightLG,
       ...FontMedium,

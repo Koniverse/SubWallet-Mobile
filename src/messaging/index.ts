@@ -1,3 +1,4 @@
+import { TransactionError } from '@subwallet/extension-base/background/errors/TransactionError';
 import { getId } from '@subwallet/extension-base/utils/getId';
 import { metadataExpand } from '@subwallet/extension-chains';
 import { Chain } from '@subwallet/extension-chains/types';
@@ -48,7 +49,6 @@ import {
   NftCollection,
   NftJson,
   NftTransactionRequest,
-  NominationPoolInfo,
   NominatorMetadata,
   OptionInputAddress,
   PriceJson,
@@ -86,11 +86,8 @@ import {
   RequestResetWallet,
   RequestSettingsType,
   RequestSigningApprovePasswordV2,
-  RequestStakeCancelWithdrawal,
-  RequestStakeClaimReward,
   RequestStakePoolingBonding,
   RequestStakePoolingUnbonding,
-  RequestStakeWithdrawal,
   RequestSubscribeBalance,
   RequestSubscribeBalancesVisibility,
   RequestSubscribeCrowdloan,
@@ -106,6 +103,7 @@ import {
   RequestTuringStakeCompound,
   RequestUnbondingSubmit,
   RequestUnlockKeyring,
+  RequestYieldFastWithdrawal,
   ResolveAddressToDomainRequest,
   ResolveDomainRequest,
   ResponseAccountCreateSuriV2,
@@ -141,7 +139,18 @@ import {
   ValidateNetworkResponse,
   ValidatorInfo,
 } from '@subwallet/extension-base/background/KoniTypes';
-import { BalanceJson, Message } from '@subwallet/extension-base/types';
+import {
+  BalanceJson,
+  Message,
+  NominationPoolInfo,
+  OptimalYieldPathParams,
+  RequestStakeCancelWithdrawal,
+  RequestStakeClaimReward,
+  RequestYieldStepSubmit,
+  RequestYieldWithdrawal,
+  ValidateYieldProcessParams,
+  YieldPoolInfo,
+} from '@subwallet/extension-base/types';
 import type { KeyringPair$Json } from '@subwallet/keyring/types';
 import type { KeyringAddress, KeyringPairs$Json } from '@subwallet/ui-keyring/types';
 import type { HexString } from '@polkadot/util/types';
@@ -1267,10 +1276,6 @@ export async function getBondingOptions(networkKey: string, type: StakingType): 
   return sendMessage('pri(bonding.getBondingOptions)', { chain: networkKey, type });
 }
 
-export async function getNominationPoolOptions(chain: string): Promise<NominationPoolInfo[]> {
-  return sendMessage('pri(bonding.getNominationPoolOptions)', chain);
-}
-
 export async function subscribeChainStakingMetadata(
   callback: (data: ChainStakingMetadata[]) => void,
 ): Promise<ChainStakingMetadata[]> {
@@ -1297,20 +1302,6 @@ export async function submitPoolBonding(request: RequestStakePoolingBonding): Pr
 
 export async function submitUnbonding(request: RequestUnbondingSubmit): Promise<SWTransactionResponse> {
   return sendMessage('pri(unbonding.submitTransaction)', request);
-}
-
-export async function submitStakeWithdrawal(params: RequestStakeWithdrawal): Promise<SWTransactionResponse> {
-  return sendMessage('pri(unbonding.submitWithdrawal)', params);
-}
-
-export async function submitStakeClaimReward(request: RequestStakeClaimReward): Promise<SWTransactionResponse> {
-  return sendMessage('pri(staking.submitClaimReward)', request);
-}
-
-export async function submitStakeCancelWithdrawal(
-  request: RequestStakeCancelWithdrawal,
-): Promise<SWTransactionResponse> {
-  return sendMessage('pri(staking.submitCancelWithdrawal)', request);
 }
 
 export async function parseEVMTransactionInput(
@@ -1471,3 +1462,55 @@ export async function subscribeTransactionHistory(
 ): Promise<ResponseSubscribeHistory> {
   return sendMessage('pri(transaction.history.subscribe)', { address, chain }, callback);
 }
+
+/* Earning */
+
+export async function subscribeYieldPoolInfo(callback: (data: YieldPoolInfo[]) => void): Promise<YieldPoolInfo[]> {
+  return sendMessage('pri(yield.subscribePoolInfo)', null, callback);
+}
+
+export async function getOptimalYieldPath(data: OptimalYieldPathParams) {
+  return sendMessage('pri(yield.join.getOptimalPath)', data);
+}
+
+export async function submitJoinYieldPool(data: RequestYieldStepSubmit): Promise<SWTransactionResponse> {
+  return sendMessage('pri(yield.join.handleStep)', data);
+}
+
+export async function getYieldNativeStakingValidators(poolInfo: YieldPoolInfo): Promise<ValidatorInfo[]> {
+  return sendMessage('pri(yield.getNativeStakingValidators)', poolInfo);
+}
+
+export async function getYieldNominationPools(poolInfo: YieldPoolInfo): Promise<NominationPoolInfo[]> {
+  return sendMessage('pri(yield.getStakingNominationPools)', poolInfo);
+}
+
+export async function validateYieldProcess(data: ValidateYieldProcessParams): Promise<TransactionError[]> {
+  return sendMessage('pri(yield.join.validateProcess)', data);
+}
+
+export async function yieldSubmitUnstaking(data: RequestUnbondingSubmit) {
+  return sendMessage('pri(yield.staking.submitUnstaking)', data);
+}
+
+export async function yieldSubmitStakingWithdrawal(data: RequestYieldWithdrawal) {
+  return sendMessage('pri(yield.withdraw.submit)', data);
+}
+
+export async function yieldSubmitStakingCancelWithdrawal(data: RequestStakeCancelWithdrawal) {
+  return sendMessage('pri(yield.cancelWithdrawal.submit)', data);
+}
+
+export async function yieldSubmitStakingClaimReward(data: RequestStakeClaimReward) {
+  return sendMessage('pri(yield.claimReward.submit)', data);
+}
+
+export async function yieldSubmitNominationPoolUnstaking(data: RequestStakePoolingUnbonding) {
+  return sendMessage('pri(yield.nominationPool.submitUnstaking)', data);
+}
+
+export async function yieldSubmitRedeem(data: RequestYieldFastWithdrawal) {
+  return sendMessage('pri(yield.submitRedeem)', data);
+}
+
+/* Earning */

@@ -6,6 +6,9 @@ export type EarningScreenStackParamList = {
     group: string;
   };
   EarningPositionList: undefined;
+  EarningPositionDetail: {
+    slug: string;
+  };
 };
 
 export type NavigationProps = NativeStackScreenProps<EarningScreenStackParamList>;
@@ -16,3 +19,4 @@ export type EarningScreenNavigationProps = NavigationProps['navigation'];
 // export type WithDrawScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'Withdraw'>;
 // export type CancelUnstakeScreenNavigationProps = NativeStackScreenProps<EarningScreenStackParamList, 'CancelUnstake'>;
 export type EarningPoolListProps = NativeStackScreenProps<EarningScreenStackParamList, 'EarningPoolList'>;
+export type EarningPositionDetailProps = NativeStackScreenProps<EarningScreenStackParamList, 'EarningPositionDetail'>;

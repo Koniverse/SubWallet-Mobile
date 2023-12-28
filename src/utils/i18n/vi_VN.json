@@ -417,7 +417,9 @@
     "enable": "Bật mạng",
     "rateSubwallet": "Rate SubWallet",
     "sendFeedback": "Send feedback",
-    "notNow": "Not now"
+    "notNow": "Not now",
+    "withdraw": "Withdraw",
+    "cancelUnstake": "Cancel unstake"
   },
   "inputLabel": {
     "selectAcc": "Chọn tài khoản",

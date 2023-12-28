@@ -13,7 +13,7 @@ import { convertKeyTypes } from 'utils/index';
 import { RootStackParamList } from 'routes/index';
 import ConfirmationContent from '../../../../components/common/Confirmation/ConfirmationContent';
 import ConfirmationGeneralInfo from '../../../../components/common/Confirmation/ConfirmationGeneralInfo';
-import AlertBox from 'components/design-system-ui/alert-box';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 import { View } from 'react-native';
 import { Button, Icon, Typography } from 'components/design-system-ui';
 import { ConfirmationFooter } from 'components/common/Confirmation';

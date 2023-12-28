@@ -6,7 +6,7 @@ import { RequestStakePoolingBonding } from '@subwallet/extension-base/background
 import useGetNativeTokenBasicInfo from 'hooks/useGetNativeTokenBasicInfo';
 import MetaInfo from 'components/MetaInfo';
 import i18n from 'utils/i18n/i18n';
-import AlertBox from 'components/design-system-ui/alert-box';
+import AlertBox from 'components/design-system-ui/alert-box/simple';
 
 type Props = BaseTransactionConfirmationProps;
 
